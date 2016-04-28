@@ -1,0 +1,12 @@
+language: go
+go:
+  - tip
+install:
+  - go get github.com/sirupsen/logrus
+  - go get github.com/spf13/viper
+  - go get github.com/tuvistavie/securerandom
+  - go get github.com/njuettner/edgegrid
+  - go install .
+script:
+  - export PATH="$PATH:$HOME/gopath/bin"
+

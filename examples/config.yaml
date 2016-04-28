@@ -1,0 +1,6 @@
+---
+ClientToken:  xxxx-xxxxxxxxxxx-xxxxxxxxxxx
+ClientSecret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+AccessToken:  xxxx-xxxxxxxxxxx-xxxxxxxxxxx
+MaxBody:      1024
+Debug:        False
