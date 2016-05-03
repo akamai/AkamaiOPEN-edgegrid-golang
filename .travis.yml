@@ -4,11 +4,12 @@ go:
 before_install:
   - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
-install:
+  - go get github.com/stretchr/testify/assert
   - go get github.com/sirupsen/logrus
   - go get github.com/spf13/viper
   - go get github.com/tuvistavie/securerandom
   - go get github.com/njuettner/edgegrid
+install:
   - go install .
 script:
   - export PATH="$PATH:$HOME/gopath/bin"
