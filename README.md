@@ -1,5 +1,6 @@
 # EdgeGrid for GoLang
 
+[![Build Status](https://travis-ci.org/njuettner/edgegrid.svg?branch=master)](https://travis-ci.org/njuettner/edgegrid)
 
 This library implements an Authentication handler for [net/http](https://golang.org/pkg/net/http/)
 that provides the [Akamai {OPEN} Edgegrid Authentication](https://developer.akamai.com/introduction/Client_Auth.html) 
