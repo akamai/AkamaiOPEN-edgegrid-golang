@@ -16,7 +16,12 @@ func main() {
 		ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 		AccessToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
 		MaxBody:      1024,
-		Debug:        false,
+		HeaderToSign: []string{
+			"X-Test1",
+			"X-Test2",
+			"X-Test3",
+		},
+		Debug: false,
 	}
 
 	req = edgegrid.MakeHeader(base, req)

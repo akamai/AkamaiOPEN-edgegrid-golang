@@ -12,8 +12,10 @@ import (
 	"github.com/tuvistavie/securerandom"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
+	"unicode"
 )
 
 // Base struct provides all the neccessary fields to
@@ -22,6 +24,7 @@ type Base struct {
 	ClientToken  string
 	ClientSecret string
 	AccessToken  string
+	HeaderToSign []string
 	MaxBody      int
 	Debug        bool
 }
@@ -47,6 +50,22 @@ func createNonce() string {
 	return uuid
 }
 
+func stringMinifier(in string) (out string) {
+	white := false
+	for _, c := range in {
+		if unicode.IsSpace(c) {
+			if !white {
+				out = out + " "
+			}
+			white = true
+		} else {
+			out = out + string(c)
+			white = false
+		}
+	}
+	return
+}
+
 // createSignature is the base64-encoding of the SHA–256 HMAC of the data to sign with the signing key.
 func createSignature(message string, secret string) string {
 	key := []byte(secret)
@@ -58,6 +77,25 @@ func createSignature(message string, secret string) string {
 func createHash(data string) string {
 	h := sha256.Sum256([]byte(data))
 	return base64.StdEncoding.EncodeToString(h[:])
+}
+
+func (b *Base) canonicalizeHeaders(req *http.Request) string {
+	var unsortedHeader []string
+	var sortedHeader []string
+	for k := range req.Header {
+		unsortedHeader = append(unsortedHeader, k)
+	}
+	sort.Strings(unsortedHeader)
+	for _, k := range unsortedHeader {
+		for _, sign := range b.HeaderToSign {
+			if sign == k {
+				v := strings.TrimSpace(req.Header.Get(k))
+				sortedHeader = append(sortedHeader, fmt.Sprintf("%s:%s", strings.ToLower(k), strings.ToLower(stringMinifier(v))))
+			}
+		}
+	}
+	return strings.Join(sortedHeader, "\t")
+
 }
 
 // signingKey is derived from the client secret.
@@ -89,7 +127,7 @@ func (b *Base) createContentHash(req *http.Request) string {
 	if req.Method == "POST" && len(preparedBody) > 0 {
 		log.Debugf("Signing content: %s", preparedBody)
 		if len(preparedBody) > b.MaxBody {
-			log.Errorf("Data length %d is larger than maximum %d",
+			log.Debugf("Data length %d is larger than maximum %d",
 				len(preparedBody), b.MaxBody)
 
 			preparedBody = preparedBody[0:b.MaxBody]
@@ -111,7 +149,7 @@ func (b *Base) signingData(req *http.Request, authHeader string) string {
 		req.URL.Scheme,
 		req.URL.Host,
 		req.URL.Path + req.URL.RawQuery,
-		"",
+		b.canonicalizeHeaders(req),
 		b.createContentHash(req),
 		authHeader,
 	}
@@ -149,6 +187,7 @@ func MakeHeader(b Base, req *http.Request) *http.Request {
 	}
 	timestamp := makeEdgeTimeStamp()
 	nonce := createNonce()
+
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", b.createAuthHeader(req, timestamp, nonce))
 	return req

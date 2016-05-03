@@ -4,3 +4,7 @@ ClientSecret: xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 AccessToken:  xxxx-xxxxxxxxxxx-xxxxxxxxxxx
 MaxBody:      1024
 Debug:        False
+HeaderToSign: 
+  - X-Test1
+	- X-Test2
+	- X-Test3
