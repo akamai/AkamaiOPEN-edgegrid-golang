@@ -61,7 +61,7 @@ func TestCreateNonce(t *testing.T) {
 	}
 }
 
-func TestMakeHeader(t *testing.T) {
+func TestCreateAuthHeader(t *testing.T) {
 	var edgegrid JsonTests
 	byt, err := ioutil.ReadFile(testFile)
 	if err != nil {
@@ -91,4 +91,20 @@ func TestMakeHeader(t *testing.T) {
 		}
 
 	}
+}
+
+func TestInitConfig(t *testing.T) {
+	testConfig := "testconfig.yaml"
+	wrongtestConfig := "wrongtestconfig.yaml"
+	noneConfig := "UNKNOWN"
+	testBase := InitConfig(testConfig)
+	assert.Equal(t, testBase.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testBase.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, testBase.AccessToken, "xxxx-xxxxxxxxxxx-xxxxxxxxxxx")
+	assert.Equal(t, testBase.MaxBody, 131072)
+	assert.Equal(t, testBase.HeaderToSign, []string{"X-Test1", "X-Test2", "X-Test3"})
+
+	assert.Panics(t, func() { InitConfig(noneConfig) }, "Fail: Should raise a PANIC")
+	assert.Panics(t, func() { InitConfig(wrongtestConfig) }, "Fail: Should raise a PANIC")
+
 }
