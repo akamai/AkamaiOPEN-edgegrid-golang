@@ -26,6 +26,11 @@ scheme. For more information visit the [Akamai {OPEN} Developer Community](https
       ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
       AccessToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
       MaxBody:      1024,
+      HeaderToSign: []string{
+        "X-Test1",
+        "X-Test2",
+        "X-Test3",
+      },
       Debug:        false,
     }
 
