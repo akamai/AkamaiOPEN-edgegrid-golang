@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"regexp"
 	"testing"
 )
 
@@ -44,7 +45,20 @@ type Test struct {
 	ExpectedAuthorization string `json:"expectedAuthorization"`
 }
 
-func TestmakeEdgeTimeStamp(t *testing.T) {
+func TestMakeEdgeTimeStamp(t *testing.T) {
+	actual := makeEdgeTimeStamp()
+	expected := regexp.MustCompile(`^\d{4}[0-1][0-9][0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]\+0000$`)
+	if assert.Regexp(t, expected, actual, "Fail: Regex do not match") {
+		t.Log("Pass: Regex matches")
+	}
+}
+
+func TestCreateNonce(t *testing.T) {
+	actual := createNonce()
+	for i := 0; i < 100; i++ {
+		expected := createNonce()
+		assert.NotEqual(t, actual, expected, "Fail: Nonce matches")
+	}
 }
 
 func TestMakeHeader(t *testing.T) {
@@ -71,8 +85,8 @@ func TestMakeHeader(t *testing.T) {
 			}
 		}
 		actual := base.createAuthHeader(req, timestamp, nonce)
-		if assert.Equal(t, edge.ExpectedAuthorization, actual, fmt.Sprintf("Failed: %s", edge.Name)) {
-			t.Logf("Passed: %s\n", edge.Name)
+		if assert.Equal(t, edge.ExpectedAuthorization, actual, fmt.Sprintf("Fail: %s", edge.Name)) {
+			t.Logf("Pass: %s\n", edge.Name)
 			t.Logf("Expected: %s - Actual %s", edge.ExpectedAuthorization, actual)
 		}
 
