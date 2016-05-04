@@ -93,6 +93,17 @@ func TestCreateAuthHeader(t *testing.T) {
 	}
 }
 
+func TestMakeHeader(t *testing.T) {
+	req, err := http.NewRequest("GET", baseURL, nil)
+	if err != nil {
+		t.Errorf("Fail: %s", err)
+	}
+	actual := MakeHeader(base, req)
+	assert.NotEmpty(t, actual.Header.Get("Authorization"))
+	assert.NotEmpty(t, actual.Header.Get("Content-Type"))
+
+}
+
 func TestInitConfig(t *testing.T) {
 	testConfig := "testconfig.yaml"
 	wrongtestConfig := "wrongtestconfig.yaml"
