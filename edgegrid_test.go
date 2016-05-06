@@ -119,7 +119,7 @@ func TestInitConfigBroken(t *testing.T) {
 	testConfigBroken := InitConfig(testSample, "broken")
 	assert.Equal(t, testConfigBroken.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
 	assert.Equal(t, testConfigBroken.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	assert.NotEqual(t, testConfigBroken.MaxBody, 128*1024)
+	assert.Equal(t, testConfigBroken.MaxBody, 128*1024)
 	assert.Equal(t, testConfigBroken.HeaderToSign, []string(nil))
 }
 
@@ -136,6 +136,5 @@ func TestInitConfigHeaders(t *testing.T) {
 
 func TestInitConfigDashes(t *testing.T) {
 	testSample := "sample_edgerc"
-	testConfigBroken := InitConfig(testSample, "dashes")
-	assert.NotEqual(t, testConfigBroken.MaxBody, 128*1024)
+	assert.Panics(t, func() { InitConfig(testSample, "dashes") }, "Fail: Should raise a PANIC")
 }

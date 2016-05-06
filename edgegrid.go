@@ -198,7 +198,9 @@ func AddRequestHeader(c Config, req *http.Request) *http.Request {
 // InitConfig initializes configuration file
 func InitConfig(file string, section string) Config {
 	var (
-		c Config
+		c               Config
+		requiredOptions = []string{"client_token", "client_secret", "access_token"}
+		missing         []string
 	)
 	if section == "" {
 		section = "default"
@@ -208,5 +210,16 @@ func InitConfig(file string, section string) Config {
 		log.Panicf("Fatal error config file: %s \n", err)
 	}
 	edgerc.Section(section).MapTo(&c)
+	for _, opt := range requiredOptions {
+		if !(edgerc.Section(section).HasKey(opt)) {
+			missing = append(missing, opt)
+		}
+	}
+	if len(missing) > 0 {
+		log.Panicf("Fatal missing required options: %s \n", missing)
+	}
+	if c.MaxBody == 0 {
+		c.MaxBody = 131072
+	}
 	return c
 }
