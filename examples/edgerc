@@ -1,0 +1,7 @@
+[default]
+client_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+access_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+max_body = 131072
+headers_to_sign=X-MyThing1,X-MyThing2
+debug = true
