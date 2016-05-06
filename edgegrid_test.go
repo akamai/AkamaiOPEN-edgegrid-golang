@@ -17,7 +17,7 @@ var (
 	baseURL   = "https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/"
 	timestamp = "20140321T19:34:21+0000"
 	nonce     = "nonce-xx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-	base      = Base{
+	config    = Config{
 		AccessToken:  "akab-access-token-xxx-xxxxxxxxxxxxxxxx",
 		ClientToken:  "akab-client-token-xxx-xxxxxxxxxxxxxxxx",
 		ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
@@ -84,7 +84,7 @@ func TestCreateAuthHeader(t *testing.T) {
 				req.Header.Set(k, v)
 			}
 		}
-		actual := base.createAuthHeader(req, timestamp, nonce)
+		actual := config.createAuthHeader(req, timestamp, nonce)
 		if assert.Equal(t, edge.ExpectedAuthorization, actual, fmt.Sprintf("Fail: %s", edge.Name)) {
 			t.Logf("Pass: %s\n", edge.Name)
 			t.Logf("Expected: %s - Actual %s", edge.ExpectedAuthorization, actual)
@@ -93,29 +93,49 @@ func TestCreateAuthHeader(t *testing.T) {
 	}
 }
 
-func TestMakeHeader(t *testing.T) {
+func TestAddRequestHeader(t *testing.T) {
 	req, err := http.NewRequest("GET", baseURL, nil)
 	if err != nil {
 		t.Errorf("Fail: %s", err)
 	}
-	actual := MakeHeader(base, req)
+	actual := AddRequestHeader(config, req)
 	assert.NotEmpty(t, actual.Header.Get("Authorization"))
 	assert.NotEmpty(t, actual.Header.Get("Content-Type"))
 
 }
 
-func TestInitConfig(t *testing.T) {
-	testConfig := "testconfig.yaml"
-	wrongtestConfig := "wrongtestconfig.yaml"
-	noneConfig := "UNKNOWN"
-	testBase := InitConfig(testConfig)
-	assert.Equal(t, testBase.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	assert.Equal(t, testBase.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
-	assert.Equal(t, testBase.AccessToken, "xxxx-xxxxxxxxxxx-xxxxxxxxxxx")
-	assert.Equal(t, testBase.MaxBody, 131072)
-	assert.Equal(t, testBase.HeaderToSign, []string{"X-Test1", "X-Test2", "X-Test3"})
+func TestInitConfigDefault(t *testing.T) {
+	testSample := "sample_edgerc"
+	testConfigDefault := InitConfig(testSample, "")
+	assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigDefault.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, testConfigDefault.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigDefault.MaxBody, 131072)
+	assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
+}
 
-	assert.Panics(t, func() { InitConfig(noneConfig) }, "Fail: Should raise a PANIC")
-	assert.Panics(t, func() { InitConfig(wrongtestConfig) }, "Fail: Should raise a PANIC")
+func TestInitConfigBroken(t *testing.T) {
+	testSample := "sample_edgerc"
+	testConfigBroken := InitConfig(testSample, "broken")
+	assert.Equal(t, testConfigBroken.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, testConfigBroken.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NotEqual(t, testConfigBroken.MaxBody, 128*1024)
+	assert.Equal(t, testConfigBroken.HeaderToSign, []string(nil))
+}
 
+func TestInitConfigUnparsable(t *testing.T) {
+	testSample := "edgerc_test_doesnt_parse"
+	assert.Panics(t, func() { InitConfig(testSample, "") }, "Fail: Should raise a PANIC")
+}
+
+func TestInitConfigHeaders(t *testing.T) {
+	testSample := "sample_edgerc"
+	testConfigBroken := InitConfig(testSample, "headers")
+	assert.Equal(t, testConfigBroken.HeaderToSign, []string{"X-MyThing1", "X-MyThing2"})
+}
+
+func TestInitConfigDashes(t *testing.T) {
+	testSample := "sample_edgerc"
+	testConfigBroken := InitConfig(testSample, "dashes")
+	assert.NotEqual(t, testConfigBroken.MaxBody, 128*1024)
 }

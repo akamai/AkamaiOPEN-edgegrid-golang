@@ -7,8 +7,8 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
+	"github.com/go-ini/ini"
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"github.com/tuvistavie/securerandom"
 	"io/ioutil"
 	"net/http"
@@ -18,15 +18,17 @@ import (
 	"unicode"
 )
 
-// Base struct provides all the neccessary fields to
+var section string
+
+// Config struct provides all the neccessary fields to
 // create authorization header, debug is optional
-type Base struct {
-	ClientToken  string
-	ClientSecret string
-	AccessToken  string
-	HeaderToSign []string
-	MaxBody      int
-	Debug        bool
+type Config struct {
+	ClientToken  string   `ini:"client_token"`
+	ClientSecret string   `ini:"client_secret"`
+	AccessToken  string   `ini:"access_token"`
+	HeaderToSign []string `ini:"headers_to_sign"`
+	MaxBody      int      `ini:"max_body"`
+	Debug        bool     `ini:"debug"`
 }
 
 // Must be assigned the UTC time when the request is signed.
@@ -79,7 +81,7 @@ func createHash(data string) string {
 	return base64.StdEncoding.EncodeToString(h[:])
 }
 
-func (b *Base) canonicalizeHeaders(req *http.Request) string {
+func (c *Config) canonicalizeHeaders(req *http.Request) string {
 	var unsortedHeader []string
 	var sortedHeader []string
 	for k := range req.Header {
@@ -87,7 +89,7 @@ func (b *Base) canonicalizeHeaders(req *http.Request) string {
 	}
 	sort.Strings(unsortedHeader)
 	for _, k := range unsortedHeader {
-		for _, sign := range b.HeaderToSign {
+		for _, sign := range c.HeaderToSign {
 			if sign == k {
 				v := strings.TrimSpace(req.Header.Get(k))
 				sortedHeader = append(sortedHeader, fmt.Sprintf("%s:%s", strings.ToLower(k), strings.ToLower(stringMinifier(v))))
@@ -101,17 +103,17 @@ func (b *Base) canonicalizeHeaders(req *http.Request) string {
 // signingKey is derived from the client secret.
 // The signing key is computed as the base64 encoding of the SHA–256 HMAC of the timestamp string
 // (the field value included in the HTTP authorization header described above) with the client secret as the key.
-func (b *Base) signingKey(timestamp string) string {
-	key := createSignature(timestamp, b.ClientSecret)
+func (c *Config) signingKey(timestamp string) string {
+	key := createSignature(timestamp, c.ClientSecret)
 	return key
 }
 
 // The content hash is the base64-encoded SHA–256 hash of the POST body.
-// For any other request methods, this field is empty. But the tab separator (\t) must be included.
+// For any other request methods, this field is empty. But the tac separator (\t) must be included.
 // The size of the POST body must be less than or equal to the value specified by the service.
 // Any request that does not meet this criteria SHOULD be rejected during the signing process,
 // as the request will be rejected by EdgeGrid.
-func (b *Base) createContentHash(req *http.Request) string {
+func (c *Config) createContentHash(req *http.Request) string {
 	var (
 		contentHash  string
 		preparedBody string
@@ -126,11 +128,11 @@ func (b *Base) createContentHash(req *http.Request) string {
 	log.Debugf("Body is %s", preparedBody)
 	if req.Method == "POST" && len(preparedBody) > 0 {
 		log.Debugf("Signing content: %s", preparedBody)
-		if len(preparedBody) > b.MaxBody {
+		if len(preparedBody) > c.MaxBody {
 			log.Debugf("Data length %d is larger than maximum %d",
-				len(preparedBody), b.MaxBody)
+				len(preparedBody), c.MaxBody)
 
-			preparedBody = preparedBody[0:b.MaxBody]
+			preparedBody = preparedBody[0:c.MaxBody]
 			log.Debugf("Data truncated to %d for computing the hash", len(preparedBody))
 		}
 		contentHash = createHash(preparedBody)
@@ -142,69 +144,69 @@ func (b *Base) createContentHash(req *http.Request) string {
 // The data to sign includes the information from the HTTP request that is relevant to ensuring that the request is authentic.
 // This data set comprised of the request data combined with the authorization header value (excluding the signature field,
 // but including the ; right before the signature field).
-func (b *Base) signingData(req *http.Request, authHeader string) string {
+func (c *Config) signingData(req *http.Request, authHeader string) string {
 
 	dataSign := []string{
 		req.Method,
 		req.URL.Scheme,
 		req.URL.Host,
 		req.URL.Path + req.URL.RawQuery,
-		b.canonicalizeHeaders(req),
-		b.createContentHash(req),
+		c.canonicalizeHeaders(req),
+		c.createContentHash(req),
 		authHeader,
 	}
 	log.Debugf("Data to sign %s", fmt.Sprintf(strings.Join(dataSign, "\t")))
 	return fmt.Sprintf(strings.Join(dataSign, "\t"))
 }
 
-func (b *Base) signingRequest(req *http.Request, authHeader string, timestamp string) string {
-	return createSignature(b.signingData(req, authHeader),
-		b.signingKey(timestamp))
+func (c *Config) signingRequest(req *http.Request, authHeader string, timestamp string) string {
+	return createSignature(c.signingData(req, authHeader),
+		c.signingKey(timestamp))
 }
 
 // The Authorization header starts with the signing algorithm moniker (name of the algorithm) used to sign the request.
 // The moniker below identifies EdgeGrid V1, hash message authentication code, SHA–256 as the hash standard.
 // This moniker is then followed by a space and an ordered list of name value pairs with each field separated by a semicolon.
-func (b *Base) createAuthHeader(req *http.Request, timestamp string, nonce string) string {
+func (c *Config) createAuthHeader(req *http.Request, timestamp string, nonce string) string {
 	authHeader := fmt.Sprintf("EG1-HMAC-SHA256 client_token=%s;access_token=%s;timestamp=%s;nonce=%s;",
-		b.ClientToken,
-		b.AccessToken,
+		c.ClientToken,
+		c.AccessToken,
 		timestamp,
 		nonce,
 	)
 	log.Debugf("Unsigned authorization header: '%s'", authHeader)
 
-	signedAuthHeader := fmt.Sprintf("%ssignature=%s", authHeader, b.signingRequest(req, authHeader, timestamp))
+	signedAuthHeader := fmt.Sprintf("%ssignature=%s", authHeader, c.signingRequest(req, authHeader, timestamp))
 
 	log.Debugf("Signed authorization header: '%s'", signedAuthHeader)
 	return signedAuthHeader
 }
 
-// MakeHeader sets the authorization header to use Akamai Open API
-func MakeHeader(b Base, req *http.Request) *http.Request {
-	if b.Debug {
+// AddRequestHeader sets the authorization header to use Akamai Open API
+func AddRequestHeader(c Config, req *http.Request) *http.Request {
+	if c.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
 	timestamp := makeEdgeTimeStamp()
 	nonce := createNonce()
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", b.createAuthHeader(req, timestamp, nonce))
+	req.Header.Set("Authorization", c.createAuthHeader(req, timestamp, nonce))
 	return req
 }
 
 // InitConfig initializes configuration file
-func InitConfig(file string) Base {
-	var b Base
-	viper.SetConfigType("yaml")
-	viper.SetConfigFile(file)
-	err := viper.ReadInConfig()
+func InitConfig(file string, section string) Config {
+	var (
+		c Config
+	)
+	if section == "" {
+		section = "default"
+	}
+	edgerc, err := ini.Load(file)
 	if err != nil {
 		log.Panicf("Fatal error config file: %s \n", err)
 	}
-	err = viper.Unmarshal(&b)
-	if err != nil {
-		log.Panicf("Fatal error unable to unmarshal config file: %s \n", err)
-	}
-	return b
+	edgerc.Section(section).MapTo(&c)
+	return c
 }

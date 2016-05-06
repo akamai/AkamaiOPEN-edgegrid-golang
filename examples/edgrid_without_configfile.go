@@ -11,7 +11,7 @@ func main() {
 	client := http.Client{}
 	baseURL := "https://xxxxxx.luna.akamaiapis.net"
 	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/siteshield/v1/maps", baseURL), nil)
-	base := edgegrid.Base{
+	config := edgegrid.Config{
 		ClientToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
 		ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 		AccessToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
@@ -24,7 +24,7 @@ func main() {
 		Debug: false,
 	}
 
-	req = edgegrid.MakeHeader(base, req)
+	req = edgegrid.AddRequestHeader(config, req)
 	resp, _ := client.Do(req)
 	byt, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println(string(byt))

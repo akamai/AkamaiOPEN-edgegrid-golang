@@ -12,9 +12,9 @@ func main() {
 	baseURL := "https://xxxxxx.luna.akamaiapis.net"
 	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/siteshield/v1/maps", baseURL), nil)
 
-	base := edgegrid.InitConfig("config.yaml")
+	config := edgegrid.InitConfig("egderc")
 
-	req = edgegrid.MakeHeader(base, req)
+	req = edgegrid.AddRequestHeader(config, req)
 	resp, _ := client.Do(req)
 	byt, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println(string(byt))

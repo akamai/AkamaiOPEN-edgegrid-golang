@@ -21,7 +21,7 @@ scheme. For more information visit the [Akamai {OPEN} Developer Community](https
     client := http.Client{}
     baseURL := "https://xxxxxx.luna.akamaiapis.net"
     req, _ := http.NewRequest("GET", fmt.Sprintf("%s/siteshield/v1/maps", baseURL), nil)
-    base := edgegrid.Base{
+    config := edgegrid.Config{
       ClientToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
       ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
       AccessToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
@@ -34,14 +34,14 @@ scheme. For more information visit the [Akamai {OPEN} Developer Community](https
       Debug:        false,
     }
 
-    req = edgegrid.MakeHeader(base, req)
+    req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
     byt, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(string(byt))
   }
 ```
 
-Alternatively, your program can read the settings from a YAML file.
+Alternatively, your program can read the settings from an INI file.
 
 ```go
   package main
@@ -58,9 +58,9 @@ Alternatively, your program can read the settings from a YAML file.
     baseURL := "https://xxxxxx.luna.akamaiapis.net"
     req, _ := http.NewRequest("GET", fmt.Sprintf("%s/siteshield/v1/maps", baseURL), nil)
 
-    base := edgegrid.InitConfig("config.yaml")
+    config := edgegrid.InitConfig("edgerc")
 
-    req = edgegrid.MakeHeader(base, req)
+    req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
     byt, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(string(byt))
