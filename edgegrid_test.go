@@ -123,7 +123,7 @@ func TestInitConfigBroken(t *testing.T) {
 }
 
 func TestInitConfigUnparsable(t *testing.T) {
-	testSample := "edgerc_test_doesnt_parse"
+	testSample := "edgerc_that_doesnt_parse"
 	assert.Panics(t, func() { InitConfig(testSample, "") }, "Fail: Should raise a PANIC")
 }
 
