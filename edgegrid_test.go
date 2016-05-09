@@ -31,7 +31,7 @@ var (
 	}
 )
 
-type JsonTests struct {
+type JSONTests struct {
 	Tests []Test `json:"tests"`
 }
 type Test struct {
@@ -62,7 +62,7 @@ func TestCreateNonce(t *testing.T) {
 }
 
 func TestCreateAuthHeader(t *testing.T) {
-	var edgegrid JsonTests
+	var edgegrid JSONTests
 	byt, err := ioutil.ReadFile(testFile)
 	if err != nil {
 		t.Fatalf("Test file not found, err %s", err)

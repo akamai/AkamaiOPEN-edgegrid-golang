@@ -20,7 +20,7 @@ import (
 
 var section string
 
-// Config struct provides all the neccessary fields to
+// Config struct provides all the necessary fields to
 // create authorization header, debug is optional
 type Config struct {
 	Host         string   `ini:"host"`
