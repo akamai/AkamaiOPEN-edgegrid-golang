@@ -9,9 +9,8 @@ import (
 
 func main() {
 	client := http.Client{}
-	baseURL := "https://xxxxxx.luna.akamaiapis.net"
-	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/siteshield/v1/maps", baseURL), nil)
 	config := edgegrid.Config{
+		Host:         "xxxxxx.luna.akamaiapis.net",
 		ClientToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
 		ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 		AccessToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
@@ -24,6 +23,7 @@ func main() {
 		Debug: false,
 	}
 
+	req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
 	req = edgegrid.AddRequestHeader(config, req)
 	resp, _ := client.Do(req)
 	byt, _ := ioutil.ReadAll(resp.Body)

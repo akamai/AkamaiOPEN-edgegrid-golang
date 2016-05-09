@@ -14,10 +14,10 @@ import (
 
 var (
 	testFile  = "testdata.json"
-	baseURL   = "https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/"
 	timestamp = "20140321T19:34:21+0000"
 	nonce     = "nonce-xx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 	config    = Config{
+		Host:         "https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/",
 		AccessToken:  "akab-access-token-xxx-xxxxxxxxxxxxxxxx",
 		ClientToken:  "akab-client-token-xxx-xxxxxxxxxxxxxxxx",
 		ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
@@ -67,7 +67,7 @@ func TestCreateAuthHeader(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Test file not found, err %s", err)
 	}
-	url, err := url.Parse(baseURL)
+	url, err := url.Parse(config.Host)
 	if err != nil {
 		t.Fatalf("URL is not parsable, err %s", err)
 	}
@@ -94,14 +94,13 @@ func TestCreateAuthHeader(t *testing.T) {
 }
 
 func TestAddRequestHeader(t *testing.T) {
-	req, err := http.NewRequest("GET", baseURL, nil)
+	req, err := http.NewRequest("GET", config.Host, nil)
 	if err != nil {
 		t.Errorf("Fail: %s", err)
 	}
 	actual := AddRequestHeader(config, req)
 	assert.NotEmpty(t, actual.Header.Get("Authorization"))
 	assert.NotEmpty(t, actual.Header.Get("Content-Type"))
-
 }
 
 func TestInitConfigDefault(t *testing.T) {

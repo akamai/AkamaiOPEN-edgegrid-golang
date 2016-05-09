@@ -23,6 +23,7 @@ var section string
 // Config struct provides all the neccessary fields to
 // create authorization header, debug is optional
 type Config struct {
+	Host         string   `ini:"host"`
 	ClientToken  string   `ini:"client_token"`
 	ClientSecret string   `ini:"client_secret"`
 	AccessToken  string   `ini:"access_token"`
@@ -199,7 +200,7 @@ func AddRequestHeader(c Config, req *http.Request) *http.Request {
 func InitConfig(file string, section string) Config {
 	var (
 		c               Config
-		requiredOptions = []string{"client_token", "client_secret", "access_token"}
+		requiredOptions = []string{"host", "client_token", "client_secret", "access_token"}
 		missing         []string
 	)
 	if section == "" {
