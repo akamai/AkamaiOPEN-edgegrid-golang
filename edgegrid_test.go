@@ -127,6 +127,11 @@ func TestInitConfigUnparsable(t *testing.T) {
 	assert.Panics(t, func() { InitConfig(testSample, "") }, "Fail: Should raise a PANIC")
 }
 
+func TestInitConfigNotFound(t *testing.T) {
+	testSample := "edgerc_not_found"
+	assert.Panics(t, func() { InitConfig(testSample, "") }, "Fail: Should raise a PANIC")
+}
+
 func TestInitConfigHeaders(t *testing.T) {
 	testSample := "sample_edgerc"
 	testConfigBroken := InitConfig(testSample, "headers")
