@@ -21,19 +21,8 @@ scheme. For more information visit the [Akamai {OPEN} Developer Community](https
 
   func main() {
     client := http.Client{}
-    config := edgegrid.Config{
-      Host : "xxxxxx.luna.akamaiapis.net",
-      ClientToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
-      ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      AccessToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
-      MaxBody:      1024,
-      HeaderToSign: []string{
-        "X-Test1",
-        "X-Test2",
-        "X-Test3",
-      },
-      Debug:        false,
-    }
+
+    config := edgegrid.InitConfig("~/.edgerc", "default")
 
     req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
     req = edgegrid.AddRequestHeader(config, req)
@@ -43,7 +32,7 @@ scheme. For more information visit the [Akamai {OPEN} Developer Community](https
   }
 ```
 
-Alternatively, your program can read the settings from an INI file.
+Alternatively, your program can read it from config struct.
 
 ```go
   package main
@@ -57,8 +46,19 @@ Alternatively, your program can read the settings from an INI file.
 
   func main() {
     client := http.Client{}
-
-    config := edgegrid.InitConfig("edgerc")
+    config := edgegrid.Config{
+      Host : "xxxxxx.luna.akamaiapis.net",
+      ClientToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
+      ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      AccessToken:  "xxxx-xxxxxxxxxxx-xxxxxxxxxxx",
+      MaxBody:      1024,
+      HeaderToSign: []string{
+        "X-Test1",
+        "X-Test2",
+        "X-Test3",
+      },
+      Debug:        false,
+    }
 
     req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
     req = edgegrid.AddRequestHeader(config, req)
