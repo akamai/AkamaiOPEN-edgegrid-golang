@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/go-ini/ini"
+	"github.com/mattes/go-expand-tilde"
 	log "github.com/sirupsen/logrus"
 	"github.com/tuvistavie/securerandom"
 	"io/ioutil"
@@ -17,8 +18,6 @@ import (
 	"time"
 	"unicode"
 )
-
-var section string
 
 // Config struct provides all the necessary fields to
 // create authorization header, debug is optional
@@ -197,7 +196,7 @@ func AddRequestHeader(c Config, req *http.Request) *http.Request {
 }
 
 // InitConfig initializes configuration file
-func InitConfig(file string, section string) Config {
+func InitConfig(filepath string, section string) Config {
 	var (
 		c               Config
 		requiredOptions = []string{"host", "client_token", "client_secret", "access_token"}
@@ -206,7 +205,17 @@ func InitConfig(file string, section string) Config {
 	if section == "" {
 		section = "default"
 	}
-	edgerc, err := ini.Load(file)
+
+	// Tilde seems to be not working when passing ~/.edgerc as file
+	// Takes current user and use home dir instead
+
+	path, err := tilde.Expand(filepath)
+
+	if err != nil {
+		log.Panic("Fatal could not find home dir from user: %s \n", err)
+	}
+
+	edgerc, err := ini.Load(path)
 	if err != nil {
 		log.Panicf("Fatal error config file: %s \n", err)
 	}
