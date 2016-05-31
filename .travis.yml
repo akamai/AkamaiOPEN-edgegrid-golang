@@ -9,10 +9,10 @@ before_install:
   - go get github.com/spf13/viper
   - go get github.com/tuvistavie/securerandom
   - go get github.com/njuettner/edgegrid
-  - cp sample_edge_rc ~/.edgerc
 install:
   - go install .
 script:
   - export PATH="$PATH:$HOME/gopath/bin"
+  - cp $HOME/gopath/src/github.com/njuettner/edgegrid/sample_edgerc $HOME/.edgerc
   - $HOME/gopath/bin/goveralls -service=travis-ci
 
