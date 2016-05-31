@@ -164,7 +164,7 @@ Alternatively, your program can read it from config struct.
   }
 ```
 
-For more examples please checkout [Akamai API Catalog]('https://developer.akamai.com/api/'). Click on the API Name you're currently interested in and use the reference.
+For more examples please checkout [Akamai API Catalog](https://developer.akamai.com/api/). Click on the API Name you're currently interested in and use the reference.
 Use also the Mock Server to test your requests (GO is supported).
 
 ## Installation
