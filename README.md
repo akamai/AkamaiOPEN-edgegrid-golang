@@ -26,6 +26,7 @@ GET Example:
 
     config := edgegrid.InitConfig("~/.edgerc", "default")
 
+    // Retrieve a list all maps belonging to an account
     req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
@@ -56,6 +57,7 @@ Parameter Example:
     //  The ID of the report pack.
     reportPackId = "1"
 
+    // List Audience Analytics Data Stores
     req, _ := http.NewRequest("PUT", fmt.Sprintf("https://%s/media-analytics/v1/audience-analytics/report-packs/%s", config.Host, reportPackId), nil)
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
@@ -82,7 +84,8 @@ POST Example:
     client := http.Client{}
 
     config := edgegrid.InitConfig("~/.edgerc", "default")
-
+    
+    // Acknowledge a map
     req, _ := http.NewRequest("POST", fmt.Sprintf("https://%s/siteshield/v1/maps/1/acknowledge", config.Host), nil)
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
@@ -110,7 +113,8 @@ PUT Example:
 
     config := edgegrid.InitConfig("~/.edgerc", "default")
     body := []byte("{\n  \"name\": \"Simple List\",\n  \"type\": \"IP\",\n  \"unique-id\": \"345_BOTLIST\",\n  \"list\": [\n    \"192.168.0.1\",\n    \"192.168.0.2\",\n  ],\n  \"sync-point\": 0\n}")
-
+    
+    // Update a Network List
     req, _ := http.NewRequest("PUT", fmt.Sprintf("https://%s/network-list/v1/network_lists/unique-id?extended=extended", config.Host), bytes.NewBuffer(body))
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
@@ -148,7 +152,8 @@ Alternatively, your program can read it from config struct.
       },
       Debug:        false,
     }
-
+    
+    // Retrieve a list all maps belonging to an account
     req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
