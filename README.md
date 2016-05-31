@@ -9,6 +9,8 @@ This library implements an Authentication handler for [net/http](https://golang.
 that provides the [Akamai {OPEN} Edgegrid Authentication](https://developer.akamai.com/introduction/Client_Auth.html) 
 scheme. For more information visit the [Akamai {OPEN} Developer Community](https://developer.akamai.com).
 
+GET Example:
+
 ```go
   package main
 
@@ -27,6 +29,93 @@ scheme. For more information visit the [Akamai {OPEN} Developer Community](https
     req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
+
+    defer resp.Body.Close()
+    byt, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println(string(byt))
+  }
+```
+
+Parameter Example:
+
+```go
+  package main
+
+  import (
+    "fmt"
+    "github.com/njuettner/edgegrid"
+    "io/ioutil"
+    "net/http"
+  )
+
+  func main() {
+    client := http.Client{}
+
+    config := edgegrid.InitConfig("~/.edgerc", "default")
+
+    //  The ID of the report pack.
+    reportPackId = "1"
+
+    req, _ := http.NewRequest("PUT", fmt.Sprintf("https://%s/media-analytics/v1/audience-analytics/report-packs/%s", config.Host, reportPackId), nil)
+    req = edgegrid.AddRequestHeader(config, req)
+    resp, _ := client.Do(req)
+
+    defer resp.Body.Close()
+    byt, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println(string(byt))
+  }
+```
+
+POST Example:
+
+```go
+  package main
+
+  import (
+    "fmt"
+    "github.com/njuettner/edgegrid"
+    "io/ioutil"
+    "net/http"
+  )
+
+  func main() {
+    client := http.Client{}
+
+    config := edgegrid.InitConfig("~/.edgerc", "default")
+
+    req, _ := http.NewRequest("POST", fmt.Sprintf("https://%s/siteshield/v1/maps/1/acknowledge", config.Host), nil)
+    req = edgegrid.AddRequestHeader(config, req)
+    resp, _ := client.Do(req)
+
+    defer resp.Body.Close()
+    byt, _ := ioutil.ReadAll(resp.Body)
+    fmt.Println(string(byt))
+  }
+```
+
+PUT Example:
+
+```go
+  package main
+
+  import (
+    "fmt"
+    "github.com/njuettner/edgegrid"
+    "io/ioutil"
+    "net/http"
+  )
+
+  func main() {
+    client := http.Client{}
+
+    config := edgegrid.InitConfig("~/.edgerc", "default")
+    body := []byte("{\n  \"name\": \"Simple List\",\n  \"type\": \"IP\",\n  \"unique-id\": \"345_BOTLIST\",\n  \"list\": [\n    \"192.168.0.1\",\n    \"192.168.0.2\",\n  ],\n  \"sync-point\": 0\n}")
+
+    req, _ := http.NewRequest("PUT", fmt.Sprintf("https://%s/network-list/v1/network_lists/unique-id?extended=extended", config.Host), bytes.NewBuffer(body))
+    req = edgegrid.AddRequestHeader(config, req)
+    resp, _ := client.Do(req)
+
+    defer resp.Body.Close()
     byt, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(string(byt))
   }
@@ -63,6 +152,8 @@ Alternatively, your program can read it from config struct.
     req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
+
+    defer resp.Body.Close()
     byt, _ := ioutil.ReadAll(resp.Body)
     fmt.Println(string(byt))
   }

@@ -10,7 +10,7 @@ import (
 func main() {
 	client := http.Client{}
 
-	config := edgegrid.InitConfig(".egderc", "default")
+	config := edgegrid.InitConfig("~/.egderc", "default")
 
 	req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
 	req = edgegrid.AddRequestHeader(config, req)
