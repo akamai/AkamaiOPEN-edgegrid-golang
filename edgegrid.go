@@ -202,6 +202,13 @@ func InitConfig(filepath string, section string) Config {
 		requiredOptions = []string{"host", "client_token", "client_secret", "access_token"}
 		missing         []string
 	)
+
+	// Check if filepath is empty
+	if filepath == "" {
+		filepath = "~/.edgerc"
+	}
+
+	// Check if section is empty
 	if section == "" {
 		section = "default"
 	}
