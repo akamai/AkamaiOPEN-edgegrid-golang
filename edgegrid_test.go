@@ -103,16 +103,6 @@ func TestAddRequestHeader(t *testing.T) {
 	assert.NotEmpty(t, actual.Header.Get("Content-Type"))
 }
 
-func TestInitConfigDefault(t *testing.T) {
-	testSample := "sample_edgerc"
-	testConfigDefault := InitConfig(testSample, "")
-	assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	assert.Equal(t, testConfigDefault.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
-	assert.Equal(t, testConfigDefault.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	assert.Equal(t, testConfigDefault.MaxBody, 131072)
-	assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
-}
-
 func TestInitConfigBroken(t *testing.T) {
 	testSample := "sample_edgerc"
 	testConfigBroken := InitConfig(testSample, "broken")
@@ -143,21 +133,18 @@ func TestInitConfigDashes(t *testing.T) {
 	assert.Panics(t, func() { InitConfig(testSample, "dashes") }, "Fail: Should raise a PANIC")
 }
 
-func TestEmptyFilePathParameter(t *testing.T) {
-	// Assumes ~/.edgerc is the default filepath
-	testConfigDefault := InitConfig("", "")
-	assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	assert.Equal(t, testConfigDefault.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
-	assert.Equal(t, testConfigDefault.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	assert.Equal(t, testConfigDefault.MaxBody, 131072)
-	assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
-}
-
-func TestTildeFilePathParameter(t *testing.T) {
-	testConfigDefault := InitConfig("~/.edgerc", "default")
-	assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	assert.Equal(t, testConfigDefault.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
-	assert.Equal(t, testConfigDefault.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	assert.Equal(t, testConfigDefault.MaxBody, 131072)
-	assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
+func TestInitConfigDefault(t *testing.T) {
+	var configDefault = map[string]string{
+		"sample_edgerc": "",
+		"":              "",
+		"~/.edgerc":     "default",
+	}
+	for filepath, section := range configDefault {
+		testConfigDefault := InitConfig(filepath, section)
+		assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+		assert.Equal(t, testConfigDefault.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+		assert.Equal(t, testConfigDefault.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+		assert.Equal(t, testConfigDefault.MaxBody, 131072)
+		assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
+	}
 }
