@@ -9,6 +9,7 @@ before_install:
   - go get github.com/spf13/viper
   - go get github.com/tuvistavie/securerandom
   - go get github.com/njuettner/edgegrid
+  - cp sample_edge_rc ~/.edgerc
 install:
   - go install .
 script:

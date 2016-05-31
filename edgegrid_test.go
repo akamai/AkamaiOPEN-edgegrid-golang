@@ -142,3 +142,22 @@ func TestInitConfigDashes(t *testing.T) {
 	testSample := "sample_edgerc"
 	assert.Panics(t, func() { InitConfig(testSample, "dashes") }, "Fail: Should raise a PANIC")
 }
+
+func TestEmptyFilePathParameter(t *testing.T) {
+	// Assumes ~/.edgerc is the default filepath
+	testConfigDefault := InitConfig("", "")
+	assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigDefault.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, testConfigDefault.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigDefault.MaxBody, 131072)
+	assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
+}
+
+func TestTildeFilePathParameter(t *testing.T) {
+	testConfigDefault := InitConfig("~/.edgerc", "default")
+	assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigDefault.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, testConfigDefault.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigDefault.MaxBody, 131072)
+	assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
+}
