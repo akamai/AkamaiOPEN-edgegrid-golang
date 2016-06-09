@@ -17,7 +17,7 @@ GET Example:
 
   import (
     "fmt"
-    "github.com/njuettner/edgegrid"
+    "github.com/akamai-open/AkamaiOPEN-edgegrid-golang"
     "io/ioutil"
     "net/http"
   )
@@ -45,7 +45,7 @@ Parameter Example:
 
   import (
     "fmt"
-    "github.com/njuettner/edgegrid"
+    "github.com/akamai-open/AkamaiOPEN-edgegrid-golang"
     "io/ioutil"
     "net/http"
   )
@@ -76,7 +76,7 @@ POST Example:
 
   import (
     "fmt"
-    "github.com/njuettner/edgegrid"
+    "github.com/akamai-open/AkamaiOPEN-edgegrid-golang"
     "io/ioutil"
     "net/http"
   )
@@ -104,7 +104,7 @@ PUT Example:
 
   import (
     "fmt"
-    "github.com/njuettner/edgegrid"
+    "github.com/akamai-open/AkamaiOPEN-edgegrid-golang"
     "io/ioutil"
     "net/http"
   )
@@ -133,7 +133,7 @@ Alternatively, your program can read it from config struct.
 
   import (
     "fmt"
-    "github.com/njuettner/edgegrid"
+    "github.com/akamai-open/AkamaiOPEN-edgegrid-golang"
     "io/ioutil"
     "net/http"
   )
