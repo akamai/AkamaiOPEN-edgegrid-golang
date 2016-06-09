@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/njuettner/edgegrid"
+	"github.com/akamai-open/AkamaiOPEN-edgegrid-golang"
 	"io/ioutil"
 	"net/http"
 )
@@ -12,7 +12,7 @@ func main() {
 
 	config := edgegrid.InitConfig("~/.egderc", "default")
 
-	req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
+	req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/diagnostic-tools/v1/locations", config.Host), nil)
 	req = edgegrid.AddRequestHeader(config, req)
 	resp, _ := client.Do(req)
 	byt, _ := ioutil.ReadAll(resp.Body)
