@@ -219,7 +219,7 @@ func InitConfig(filepath string, section string) Config {
 	path, err := tilde.Expand(filepath)
 
 	if err != nil {
-		log.Panic("Fatal could not find home dir from user: %s \n", err)
+		log.Panicf("Fatal could not find home dir from user: %s \n", err)
 	}
 
 	edgerc, err := ini.Load(path)
