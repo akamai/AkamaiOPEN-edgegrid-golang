@@ -27,8 +27,8 @@ GET Example:
 
     config := edgegrid.InitConfig("~/.edgerc", "default")
 
-    // Retrieve a list all maps belonging to an account
-    req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
+    // Retrieve all locations for diagnostic tools
+    req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/diagnostic-tools/v1/locations", config.Host), nil)
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
 
@@ -55,11 +55,8 @@ Parameter Example:
 
     config := edgegrid.InitConfig("~/.edgerc", "default")
 
-    //  The ID of the report pack.
-    reportPackId = "1"
-
-    // List Audience Analytics Data Stores
-    req, _ := http.NewRequest("PUT", fmt.Sprintf("https://%s/media-analytics/v1/audience-analytics/report-packs/%s", config.Host, reportPackId), nil)
+    // Retrieve dig information for specified location
+    req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/diagnostic-tools/v1/dig", config.Host), nil)
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
 
@@ -154,8 +151,8 @@ Alternatively, your program can read it from config struct.
       Debug:        false,
     }
     
-    // Retrieve a list all maps belonging to an account
-    req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/siteshield/v1/maps", config.Host), nil)
+    // Retrieve all locations for diagnostic tools
+    req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/diagnostic-tools/v1/locations", config.Host), nil)
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
 
