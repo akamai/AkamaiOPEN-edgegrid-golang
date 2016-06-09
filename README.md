@@ -168,7 +168,7 @@ Alternatively, your program can read it from config struct.
 ## Installation
 
 ```bash
-  $ go get github.com/njuettner/edgegrid
+  $ go get github.com/akamai-open/AkamaiOPEN-edgegrid-golang
 ```
 
 ## Contribute
