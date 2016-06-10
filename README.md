@@ -1,6 +1,6 @@
 # EdgeGrid for GoLang
 
-[![Build Status](https://travis-ci.org/njuettner/edgegrid.svg?branch=master)](https://travis-ci.org/njuettner/edgegrid)
+[![Build Status](https://travis-ci.org/akamai-open/AkamaiOPEN-edgegrid-golang.svg?branch=master)](https://travis-ci.org/akamai-open/AkamaiOPEN-edgegrid-golang)
 [![Coverage Status](https://coveralls.io/repos/github/njuettner/edgegrid/badge.svg?branch=master)](https://coveralls.io/github/njuettner/edgegrid?branch=master)
 [![GoDoc](https://godoc.org/github.com/akamai-open/AkamaiOPEN-edgegrid-golang?status.svg)](https://godoc.org/github.com/akamai-open/AkamaiOPEN-edgegrid-golang)
 [![Go Report Card](https://goreportcard.com/badge/github.com/akamai-open/AkamaiOPEN-edgegrid-golang)](https://goreportcard.com/report/github.com/akamai-open/AkamaiOPEN-edgegrid-golang)
