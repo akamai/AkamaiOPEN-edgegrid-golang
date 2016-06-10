@@ -15,5 +15,3 @@ install:
 script:
   - export PATH="$PATH:$HOME/gopath/bin"
   - cp $HOME/gopath/src/github.com/akamai-open/AkamaiOPEN-edgegrid-golang/sample_edgerc $HOME/.edgerc
-  - $HOME/gopath/bin/goveralls -service=travis-ci
-
