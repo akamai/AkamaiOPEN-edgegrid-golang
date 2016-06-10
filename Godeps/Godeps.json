@@ -1,15 +1,11 @@
 {
-	"ImportPath": "github.com/njuettner/edgegrid",
+	"ImportPath": "github.com/akamai-open/AkamaiOPEN-edgegrid-golang",
 	"GoVersion": "go1.6.2",
 	"Deps": [
 		{
 			"ImportPath": "github.com/go-ini/ini",
 			"Comment": "v1.11.0",
 			"Rev": "12f418cc7edc5a618a51407b7ac1f1f512139df3"
-		},
-		{
-			"ImportPath": "github.com/mattes/go-expand-tilde",
-			"Rev": "cb884138e64c9a8bf5c7d6106d74b0fca082df0c"
 		},
 		{
 			"ImportPath": "github.com/sirupsen/logrus",
@@ -23,6 +19,10 @@
 		{
 			"ImportPath": "github.com/tuvistavie/securerandom",
 			"Rev": "15512123a948d62f6361bd84818e11f2ad84059a"
+		},
+		{
+			"ImportPath": "gopkg.in/mattes/go-expand-tilde.v1",
+			"Rev": "cb884138e64c9a8bf5c7d6106d74b0fca082df0c"
 		}
 	]
 }
