@@ -56,7 +56,14 @@ Parameter Example:
     config := edgegrid.InitConfig("~/.edgerc", "default")
 
     // Retrieve dig information for specified location
-    req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/diagnostic-tools/v1/dig", config.Host), nil)
+    req, _ := http.NewRequest("GET", fmt.Sprintf("https://%sdiagnostic-tools/v1/dig", config.Host), nil)
+
+    q := req.URL.Query()
+    q.Add("hostname", "developer.akamai.com")
+    q.Add("queryType", "A")
+    q.Add("location", "Auckland, New Zealand")
+
+    req.URL.RawQuery = q.Encode()
     req = edgegrid.AddRequestHeader(config, req)
     resp, _ := client.Do(req)
 
