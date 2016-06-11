@@ -68,6 +68,13 @@ func stringMinifier(in string) (out string) {
 	return
 }
 
+func concatPathQuery(path, query string) string {
+	if query == "" {
+		return path
+	}
+	return fmt.Sprintf("%s?%s", path, query)
+}
+
 // createSignature is the base64-encoding of the SHA–256 HMAC of the data to sign with the signing key.
 func createSignature(message string, secret string) string {
 	key := []byte(secret)
@@ -150,13 +157,13 @@ func (c *Config) signingData(req *http.Request, authHeader string) string {
 		req.Method,
 		req.URL.Scheme,
 		req.URL.Host,
-		req.URL.Path + req.URL.RawQuery,
+		concatPathQuery(req.URL.Path, req.URL.RawQuery),
 		c.canonicalizeHeaders(req),
 		c.createContentHash(req),
 		authHeader,
 	}
-	log.Debugf("Data to sign %s", fmt.Sprintf(strings.Join(dataSign, "\t")))
-	return fmt.Sprintf(strings.Join(dataSign, "\t"))
+	log.Debugf("Data to sign %s", strings.Join(dataSign, "\t"))
+	return strings.Join(dataSign, "\t")
 }
 
 func (c *Config) signingRequest(req *http.Request, authHeader string, timestamp string) string {
