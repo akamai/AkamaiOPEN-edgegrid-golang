@@ -1,16 +1,27 @@
 {
-	"ImportPath": "github.com/akamai-open/AkamaiOPEN-edgegrid-golang",
-	"GoVersion": "go1.6.2",
+	"ImportPath": "github.com/ashokrajar/AkamaiOPEN-edgegrid-golang",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v74",
 	"Deps": [
+		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.10.0-38-g3ec0642",
+			"Rev": "3ec0642a7fb6488f65b06f9040adc67e3990296a"
+		},
+		{
+			"ImportPath": "github.com/davecgh/go-spew/spew",
+			"Comment": "v1.0.0-3-g6d21280",
+			"Rev": "6d212800a42e8ab5c146b8ace3490ee17e5225f9"
+		},
 		{
 			"ImportPath": "github.com/go-ini/ini",
 			"Comment": "v1.11.0",
 			"Rev": "12f418cc7edc5a618a51407b7ac1f1f512139df3"
 		},
 		{
-			"ImportPath": "github.com/sirupsen/logrus",
-			"Comment": "v0.10.0-16-gcd7d1bb",
-			"Rev": "cd7d1bbe41066b6c1f19780f895901052150a575"
+			"ImportPath": "github.com/pmezard/go-difflib/difflib",
+			"Comment": "v1.0.0",
+			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
 		},
 		{
 			"ImportPath": "github.com/stretchr/testify/assert",
@@ -19,6 +30,10 @@
 		{
 			"ImportPath": "github.com/tuvistavie/securerandom",
 			"Rev": "15512123a948d62f6361bd84818e11f2ad84059a"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "9d4e42a20653790449273b3c85e67d6d8bae6e2e"
 		},
 		{
 			"ImportPath": "gopkg.in/mattes/go-expand-tilde.v1",
