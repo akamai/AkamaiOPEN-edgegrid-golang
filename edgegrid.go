@@ -8,7 +8,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/go-ini/ini"
-	log "github.com/sirupsen/logrus"
+	log "github.com/Sirupsen/logrus"
 	"github.com/tuvistavie/securerandom"
 	"gopkg.in/mattes/go-expand-tilde.v1"
 	"io/ioutil"
