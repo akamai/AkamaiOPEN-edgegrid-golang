@@ -1,7 +1,7 @@
 # EdgeGrid for GoLang
 
 [![Build Status](https://travis-ci.org/akamai-open/AkamaiOPEN-edgegrid-golang.svg?branch=master)](https://travis-ci.org/akamai-open/AkamaiOPEN-edgegrid-golang)
-[![Coverage Status](https://coveralls.io/repos/github/njuettner/edgegrid/badge.svg?branch=master)](https://coveralls.io/github/njuettner/edgegrid?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/akamai-open/AkamaiOPEN-edgegrid-golang/badge.svg?branch=master)](https://coveralls.io/github/njuettner/edgegrid?branch=master)
 [![GoDoc](https://godoc.org/github.com/akamai-open/AkamaiOPEN-edgegrid-golang?status.svg)](https://godoc.org/github.com/akamai-open/AkamaiOPEN-edgegrid-golang)
 [![Go Report Card](https://goreportcard.com/badge/github.com/akamai-open/AkamaiOPEN-edgegrid-golang)](https://goreportcard.com/report/github.com/akamai-open/AkamaiOPEN-edgegrid-golang)
 [![License](http://img.shields.io/:license-apache-blue.svg)](https://github.com/akamai-open/AkamaiOPEN-edgegrid-golang/blob/master/LICENSE)
@@ -177,10 +177,11 @@ Alternatively, your program can read it from config struct.
 
 ## Contribute
 
-1. Fork [the repository](https://github.com/njuettner/edgegrid) to start making your changes to the **master** branch
+1. Fork [the repository](https://github.com/akamai-open/AkamaiOPEN-edgegrid-golang) to start making your changes to the **master** branch
 2. Send a pull request.
 
 ## Author
 
 [Nick Juettner](mailto:hello@juni.io) - Software Engineer @ [Zalando SE](https://tech.zalando.com/)
+[Davey Shafik](mailto:dshafik@akamai.com)
 
