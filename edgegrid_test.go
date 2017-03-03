@@ -122,12 +122,6 @@ func TestInitConfigNotFound(t *testing.T) {
 	assert.Panics(t, func() { InitConfig(testSample, "") }, "Fail: Should raise a PANIC")
 }
 
-func TestInitConfigHeaders(t *testing.T) {
-	testSample := "sample_edgerc"
-	testConfigBroken := InitConfig(testSample, "headers")
-	assert.Equal(t, testConfigBroken.HeaderToSign, []string{"X-MyThing1", "X-MyThing2"})
-}
-
 func TestInitConfigDashes(t *testing.T) {
 	testSample := "sample_edgerc"
 	assert.Panics(t, func() { InitConfig(testSample, "dashes") }, "Fail: Should raise a PANIC")
