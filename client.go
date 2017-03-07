@@ -97,7 +97,7 @@ func (c *Client) NewJsonRequest(method, urlStr string, body interface{}) (*http.
 }
 
 func (c *Client) Do(req *http.Request) (*Response, error) {
-	req = AddRequestHeader(c.Config, req)
+	req = c.Config.AddRequestHeader(req)
 	response, err := c.Client.Do(req)
 
 	if err != nil {
@@ -116,7 +116,7 @@ func (c *Client) Get(url string) (resp *Response, err error) {
 		return nil, err
 	}
 
-	req = AddRequestHeader(c.Config, req)
+	req = c.Config.AddRequestHeader(req)
 	response, err := c.Do(req)
 
 	if err != nil {
@@ -138,7 +138,7 @@ func (c *Client) Post(url string, bodyType string, body interface{}) (resp *Resp
 
 	req.Header.Set("Content-Type", bodyType)
 
-	req = AddRequestHeader(c.Config, req)
+	req = c.Config.AddRequestHeader(req)
 	response, err := c.Do(req)
 
 	if err != nil {

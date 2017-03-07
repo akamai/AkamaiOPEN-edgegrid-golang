@@ -194,6 +194,10 @@ func (c *Config) createAuthHeader(req *http.Request, timestamp string, nonce str
 
 // AddRequestHeader sets the authorization header to use Akamai Open API
 func AddRequestHeader(c Config, req *http.Request) *http.Request {
+	return c.AddRequestHeader(req)
+}
+
+func (c Config) AddRequestHeader(req *http.Request) *http.Request {
 	if c.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
