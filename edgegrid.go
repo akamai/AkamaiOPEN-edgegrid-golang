@@ -6,14 +6,17 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 	"fmt"
-	"github.com/go-ini/ini"
 	log "github.com/Sirupsen/logrus"
+	"github.com/go-ini/ini"
 	"github.com/tuvistavie/securerandom"
 	"gopkg.in/mattes/go-expand-tilde.v1"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
@@ -203,7 +206,7 @@ func AddRequestHeader(c Config, req *http.Request) *http.Request {
 }
 
 // InitConfig initializes configuration file
-func InitConfig(filepath string, section string) Config {
+func InitEdgeRc(filepath string, section string) (Config, error) {
 	var (
 		c               Config
 		requiredOptions = []string{"host", "client_token", "client_secret", "access_token"}
@@ -226,12 +229,12 @@ func InitConfig(filepath string, section string) Config {
 	path, err := tilde.Expand(filepath)
 
 	if err != nil {
-		log.Panicf("Fatal could not find home dir from user: %s \n", err)
+		return c, errors.New(fmt.Sprintf("Fatal could not find home dir from user: %s \n", err))
 	}
 
 	edgerc, err := ini.Load(path)
 	if err != nil {
-		log.Panicf("Fatal error config file: %s \n", err)
+		return c, errors.New(fmt.Sprintf("Fatal error config file: %s \n", err))
 	}
 	edgerc.Section(section).MapTo(&c)
 	for _, opt := range requiredOptions {
@@ -240,10 +243,113 @@ func InitConfig(filepath string, section string) Config {
 		}
 	}
 	if len(missing) > 0 {
-		log.Panicf("Fatal missing required options: %s \n", missing)
+		return c, errors.New(fmt.Sprintf("Fatal missing required options: %s \n", missing))
 	}
 	if c.MaxBody == 0 {
 		c.MaxBody = 131072
 	}
+	return c, nil
+}
+
+func InitEnv(section string) (Config, error) {
+	var (
+		c               Config
+		requiredOptions = []string{"HOST", "CLIENT_TOKEN", "CLIENT_SECRET", "ACCESS_TOKEN"}
+		missing         []string
+		prefix          string
+	)
+
+	// Check if section is empty
+	if section == "" {
+		section = "DEFAULT"
+	} else {
+		section = strings.ToUpper(section)
+	}
+
+	prefix = "AKAMAI_"
+	_, ok := os.LookupEnv("AKAMAI_" + section + "_HOST")
+	if ok {
+		prefix = "AKAMAI_" + section + "_"
+	}
+
+	for _, opt := range requiredOptions {
+		val, ok := os.LookupEnv(prefix + opt)
+		if !ok {
+			missing = append(missing, prefix+opt)
+		} else {
+			switch {
+			case opt == "HOST":
+				c.Host = val
+			case opt == "CLIENT_TOKEN":
+				c.ClientToken = val
+			case opt == "CLIENT_SECRET":
+				c.ClientSecret = val
+			case opt == "ACCESS_TOKEN":
+				c.AccessToken = val
+			}
+		}
+	}
+
+	if len(missing) > 0 {
+		return c, errors.New(fmt.Sprintf("Fatal missing required environment variables: %s \n", missing))
+	}
+
+	c.MaxBody = 0
+
+	val, ok := os.LookupEnv(prefix + "MAX_BODY")
+	if i, err := strconv.Atoi(val); err == nil {
+		c.MaxBody = i
+	}
+
+	if !ok || c.MaxBody == 0 {
+		c.MaxBody = 131072
+	}
+
+	return c, nil
+}
+
+// Deprecated: Backwards compatible wrapper around InitEdgeRc which should be used instead
+func InitConfig(filepath string, section string) Config {
+	c, err := InitEdgeRc(filepath, section)
+	if err != nil {
+		log.Panic(err.Error())
+	}
+
 	return c
+}
+
+func Init(filepath string, section string) (Config, error) {
+	if section == "" {
+		section = "DEFAULT"
+	} else {
+		section = strings.ToUpper(section)
+	}
+
+	_, exists := os.LookupEnv("AKAMAI_" + section + "_HOST")
+	if !exists && section == "DEFAULT" {
+		_, exists := os.LookupEnv("AKAMAI_HOST")
+
+		if exists {
+			return InitEnv("")
+		}
+	}
+
+	if exists {
+		return InitEnv(section)
+	}
+
+	c, err := InitEdgeRc(filepath, strings.ToLower(section))
+
+	if err == nil {
+		return c, nil
+	}
+
+	if section != "DEFAULT" {
+		_, ok := os.LookupEnv("AKAMAI_HOST")
+		if ok {
+			return InitEnv("")
+		}
+	}
+
+	return c, errors.New("Unable to create instance using environment or .edgerc file")
 }

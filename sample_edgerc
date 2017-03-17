@@ -4,18 +4,17 @@ client_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
 client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
 access_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
 max_body = 131072
+[test]
+host = test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/
+client_token = test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+client_secret = testxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+access_token = test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+max_body = 131072
 [broken]
 host = "https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/"
 client_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
 client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
 access_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
-[headers]
-host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/
-client_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
-client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
-access_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
-max_body = 131072
-headers_to_sign=X-MyThing1,X-MyThing2
 [dashes]
 host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/
 client-token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx

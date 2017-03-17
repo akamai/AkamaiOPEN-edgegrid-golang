@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"regexp"
 	"testing"
 )
@@ -122,29 +123,197 @@ func TestInitConfigNotFound(t *testing.T) {
 	assert.Panics(t, func() { InitConfig(testSample, "") }, "Fail: Should raise a PANIC")
 }
 
-func TestInitConfigHeaders(t *testing.T) {
-	testSample := "sample_edgerc"
-	testConfigBroken := InitConfig(testSample, "headers")
-	assert.Equal(t, testConfigBroken.HeaderToSign, []string{"X-MyThing1", "X-MyThing2"})
-}
-
 func TestInitConfigDashes(t *testing.T) {
 	testSample := "sample_edgerc"
 	assert.Panics(t, func() { InitConfig(testSample, "dashes") }, "Fail: Should raise a PANIC")
 }
 
 func TestInitConfigDefault(t *testing.T) {
-	var configDefault = map[string]string{
-		"sample_edgerc": "",
-		"":              "",
-		"~/.edgerc":     "default",
+	var configDefault = []string{
+		"",
+		"default",
 	}
-	for filepath, section := range configDefault {
-		testConfigDefault := InitConfig(filepath, section)
+	for _, section := range configDefault {
+		testConfigDefault := InitConfig("sample_edgerc", section)
 		assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
 		assert.Equal(t, testConfigDefault.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
 		assert.Equal(t, testConfigDefault.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
 		assert.Equal(t, testConfigDefault.MaxBody, 131072)
 		assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
 	}
+}
+
+func TestInitConfigSection(t *testing.T) {
+	testConfigDefault := InitConfig("sample_edgerc", "test")
+	assert.Equal(t, testConfigDefault.Host, "test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.Equal(t, testConfigDefault.ClientToken, "test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigDefault.ClientSecret, "testxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, testConfigDefault.AccessToken, "test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigDefault.MaxBody, 131072)
+	assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
+}
+
+func TestInitEdgeRcBroken(t *testing.T) {
+	testSample := "sample_edgerc"
+	testConfigBroken, err := InitEdgeRc(testSample, "broken")
+	assert.NoError(t, err)
+	assert.Equal(t, testConfigBroken.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, testConfigBroken.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigBroken.MaxBody, 128*1024)
+	assert.Equal(t, testConfigBroken.HeaderToSign, []string(nil))
+}
+
+func TestInitEdgeRcUnparsable(t *testing.T) {
+	testSample := "edgerc_that_doesnt_parse"
+	_, err := InitEdgeRc(testSample, "")
+	assert.Error(t, err)
+}
+
+func TestInitEdgeRcNotFound(t *testing.T) {
+	testSample := "edgerc_not_found"
+	_, err := InitEdgeRc(testSample, "")
+	assert.Error(t, err)
+}
+
+func TestInitEdgeRcDashes(t *testing.T) {
+	testSample := "sample_edgerc"
+	_, err := InitEdgeRc(testSample, "dashes")
+	assert.Error(t, err)
+}
+
+func TestInitEdgeRcDefault(t *testing.T) {
+	var configDefault = []string{
+		"",
+		"default",
+	}
+	for _, section := range configDefault {
+		testConfigDefault, err := InitEdgeRc("sample_edgerc", section)
+		assert.NoError(t, err)
+		assert.Equal(t, testConfigDefault.Host, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+		assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+		assert.Equal(t, testConfigDefault.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+		assert.Equal(t, testConfigDefault.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+		assert.Equal(t, testConfigDefault.MaxBody, 131072)
+		assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
+	}
+}
+
+func TestInitEdgeRcSection(t *testing.T) {
+	testConfigDefault, err := InitEdgeRc("sample_edgerc", "test")
+	assert.NoError(t, err)
+	assert.Equal(t, testConfigDefault.Host, "test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.Equal(t, testConfigDefault.ClientToken, "test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigDefault.ClientSecret, "testxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, testConfigDefault.AccessToken, "test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, testConfigDefault.MaxBody, 131072)
+	assert.Equal(t, testConfigDefault.HeaderToSign, []string(nil))
+}
+
+func TestInitEnv(t *testing.T) {
+	os.Clearenv()
+	os.Setenv("AKAMAI_HOST", "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	os.Setenv("AKAMAI_CLIENT_TOKEN", "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	os.Setenv("AKAMAI_CLIENT_SECRET", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	os.Setenv("AKAMAI_ACCESS_TOKEN", "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+
+	c, err := InitEnv("")
+	assert.NoError(t, err)
+	assert.Equal(t, c.Host, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.Equal(t, c.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, c.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.MaxBody, 131072)
+	assert.Equal(t, c.HeaderToSign, []string(nil))
+}
+
+func TestInitEnvIncomplete(t *testing.T) {
+	os.Clearenv()
+	os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+
+	_, err := InitEnv("")
+	assert.Error(t, err)
+	assert.Equal(t, err.Error(), "Fatal missing required environment variables: [AKAMAI_CLIENT_TOKEN AKAMAI_CLIENT_SECRET AKAMAI_ACCESS_TOKEN] \n")
+}
+
+func TestInitEnvMaxBody(t *testing.T) {
+	os.Clearenv()
+	os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	os.Setenv("AKAMAI_CLIENT_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	os.Setenv("AKAMAI_CLIENT_SECRET", "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	os.Setenv("AKAMAI_ACCESS_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	os.Setenv("AKAMAI_MAX_BODY", "42")
+
+	c, err := Init("sample_edgerc", "")
+	assert.NoError(t, err)
+	assert.Equal(t, c.Host, "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.Equal(t, c.ClientToken, "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.ClientSecret, "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, c.AccessToken, "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.MaxBody, 42)
+	assert.Equal(t, c.HeaderToSign, []string(nil))
+}
+
+func TestInitWithEnv(t *testing.T) {
+	os.Clearenv()
+	os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	os.Setenv("AKAMAI_CLIENT_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	os.Setenv("AKAMAI_CLIENT_SECRET", "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	os.Setenv("AKAMAI_ACCESS_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+
+	c, err := Init("sample_edgerc", "")
+	assert.NoError(t, err)
+	assert.Equal(t, c.Host, "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.Equal(t, c.ClientToken, "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.ClientSecret, "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, c.AccessToken, "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.MaxBody, 131072)
+	assert.Equal(t, c.HeaderToSign, []string(nil))
+}
+
+func TestInitWithoutEnv(t *testing.T) {
+	os.Clearenv()
+
+	c, err := Init("sample_edgerc", "")
+	assert.NoError(t, err)
+	assert.Equal(t, c.Host, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.Equal(t, c.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, c.AccessToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.MaxBody, 131072)
+	assert.Equal(t, c.HeaderToSign, []string(nil))
+}
+
+func TestInitWithSectionEnv(t *testing.T) {
+	os.Clearenv()
+
+	os.Setenv("AKAMAI_TEST_HOST", "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	os.Setenv("AKAMAI_TEST_CLIENT_TOKEN", "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	os.Setenv("AKAMAI_TEST_CLIENT_SECRET", "testenvxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	os.Setenv("AKAMAI_TEST_ACCESS_TOKEN", "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+
+	c, err := Init("sample_edgerc", "test")
+	assert.NoError(t, err)
+	assert.Equal(t, c.Host, "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.Equal(t, c.ClientToken, "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.ClientSecret, "testenvxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, c.AccessToken, "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.MaxBody, 131072)
+	assert.Equal(t, c.HeaderToSign, []string(nil))
+}
+
+func TestInitWithInvalidEdgeRcNotDefault(t *testing.T) {
+	os.Clearenv()
+	os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	os.Setenv("AKAMAI_CLIENT_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	os.Setenv("AKAMAI_CLIENT_SECRET", "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	os.Setenv("AKAMAI_ACCESS_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+
+	c, err := Init("edgerc_that_doesnt_parse", "test")
+	assert.NoError(t, err)
+	assert.Equal(t, c.Host, "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.Equal(t, c.ClientToken, "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.ClientSecret, "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.Equal(t, c.AccessToken, "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.Equal(t, c.MaxBody, 131072)
+	assert.Equal(t, c.HeaderToSign, []string(nil))
 }
