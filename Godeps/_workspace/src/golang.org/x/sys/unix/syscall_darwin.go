@@ -172,7 +172,7 @@ func getAttrList(path string, attrList attrList, attrBuf []byte, options uint) (
 		attrs = append(attrs, dat[datOff:end])
 		i = end
 		if r := i % 4; r != 0 {
-			i += (4 - r)
+			i += 4 - r
 		}
 	}
 	return

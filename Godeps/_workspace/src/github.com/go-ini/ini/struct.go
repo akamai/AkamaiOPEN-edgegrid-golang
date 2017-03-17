@@ -49,7 +49,7 @@ var (
 				if i > 0 {
 					newstr = append(newstr, '_')
 				}
-				chr -= ('A' - 'a')
+				chr -= 'A' - 'a'
 			}
 			newstr = append(newstr, chr)
 		}
