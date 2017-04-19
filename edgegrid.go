@@ -6,12 +6,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"errors"
 	"fmt"
-	log "github.com/Sirupsen/logrus"
-	"github.com/go-ini/ini"
-	"github.com/tuvistavie/securerandom"
-	"gopkg.in/mattes/go-expand-tilde.v1"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -20,7 +15,14 @@ import (
 	"strings"
 	"time"
 	"unicode"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/go-ini/ini"
+	"github.com/tuvistavie/securerandom"
+	"gopkg.in/mattes/go-expand-tilde.v1"
 )
+
+const defaultSection = "DEFAULT"
 
 // Config struct provides all the necessary fields to
 // create authorization header, debug is optional
@@ -233,21 +235,24 @@ func InitEdgeRc(filepath string, section string) (Config, error) {
 	path, err := tilde.Expand(filepath)
 
 	if err != nil {
-		return c, errors.New(fmt.Sprintf("Fatal could not find home dir from user: %s \n", err))
+		return c, fmt.Errorf("Fatal could not find home dir from user: %s", err)
 	}
 
 	edgerc, err := ini.Load(path)
 	if err != nil {
-		return c, errors.New(fmt.Sprintf("Fatal error config file: %s \n", err))
+		return c, fmt.Errorf("Fatal error config file: %s", err)
 	}
-	edgerc.Section(section).MapTo(&c)
+	err = edgerc.Section(section).MapTo(&c)
+	if err != nil {
+		return c, fmt.Errorf("Could not map section: %s", err)
+	}
 	for _, opt := range requiredOptions {
 		if !(edgerc.Section(section).HasKey(opt)) {
 			missing = append(missing, opt)
 		}
 	}
 	if len(missing) > 0 {
-		return c, errors.New(fmt.Sprintf("Fatal missing required options: %s \n", missing))
+		return c, fmt.Errorf("Fatal missing required options: %s", missing)
 	}
 	if c.MaxBody == 0 {
 		c.MaxBody = 131072
@@ -265,7 +270,7 @@ func InitEnv(section string) (Config, error) {
 
 	// Check if section is empty
 	if section == "" {
-		section = "DEFAULT"
+		section = defaultSection
 	} else {
 		section = strings.ToUpper(section)
 	}
@@ -295,7 +300,7 @@ func InitEnv(section string) (Config, error) {
 	}
 
 	if len(missing) > 0 {
-		return c, errors.New(fmt.Sprintf("Fatal missing required environment variables: %s \n", missing))
+		return c, fmt.Errorf("Fatal missing required environment variables: %s", missing)
 	}
 
 	c.MaxBody = 0
@@ -324,13 +329,13 @@ func InitConfig(filepath string, section string) Config {
 
 func Init(filepath string, section string) (Config, error) {
 	if section == "" {
-		section = "DEFAULT"
+		section = defaultSection
 	} else {
 		section = strings.ToUpper(section)
 	}
 
 	_, exists := os.LookupEnv("AKAMAI_" + section + "_HOST")
-	if !exists && section == "DEFAULT" {
+	if !exists && section == defaultSection {
 		_, exists := os.LookupEnv("AKAMAI_HOST")
 
 		if exists {
@@ -348,12 +353,12 @@ func Init(filepath string, section string) (Config, error) {
 		return c, nil
 	}
 
-	if section != "DEFAULT" {
+	if section != defaultSection {
 		_, ok := os.LookupEnv("AKAMAI_HOST")
 		if ok {
 			return InitEnv("")
 		}
 	}
 
-	return c, errors.New("Unable to create instance using environment or .edgerc file")
+	return c, fmt.Errorf("Unable to create instance using environment or .edgerc file")
 }

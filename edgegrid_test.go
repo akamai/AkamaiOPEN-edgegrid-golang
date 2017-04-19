@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"regexp"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -72,7 +73,10 @@ func TestCreateAuthHeader(t *testing.T) {
 	if err != nil {
 		t.Fatalf("URL is not parsable, err %s", err)
 	}
-	json.Unmarshal(byt, &edgegrid)
+	err = json.Unmarshal(byt, &edgegrid)
+	if err != nil {
+		t.Fatalf("JSON is not parsable, err %s", err)
+	}
 	for _, edge := range edgegrid.Tests {
 		url.Path = edge.Request.Path
 		req, _ := http.NewRequest(
@@ -211,10 +215,15 @@ func TestInitEdgeRcSection(t *testing.T) {
 
 func TestInitEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AKAMAI_HOST", "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
-	os.Setenv("AKAMAI_CLIENT_TOKEN", "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	os.Setenv("AKAMAI_CLIENT_SECRET", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
-	os.Setenv("AKAMAI_ACCESS_TOKEN", "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	err := os.Setenv("AKAMAI_HOST", "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.NoError(t, err)
+
+	err = os.Setenv("AKAMAI_CLIENT_TOKEN", "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_CLIENT_SECRET", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_ACCESS_TOKEN", "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NoError(t, err)
 
 	c, err := InitEnv("")
 	assert.NoError(t, err)
@@ -228,20 +237,26 @@ func TestInitEnv(t *testing.T) {
 
 func TestInitEnvIncomplete(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	err := os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.NoError(t, err)
 
-	_, err := InitEnv("")
+	_, err = InitEnv("")
 	assert.Error(t, err)
-	assert.Equal(t, err.Error(), "Fatal missing required environment variables: [AKAMAI_CLIENT_TOKEN AKAMAI_CLIENT_SECRET AKAMAI_ACCESS_TOKEN] \n")
+	assert.Equal(t, err.Error(), "Fatal missing required environment variables: [AKAMAI_CLIENT_TOKEN AKAMAI_CLIENT_SECRET AKAMAI_ACCESS_TOKEN]")
 }
 
 func TestInitEnvMaxBody(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
-	os.Setenv("AKAMAI_CLIENT_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	os.Setenv("AKAMAI_CLIENT_SECRET", "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
-	os.Setenv("AKAMAI_ACCESS_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	os.Setenv("AKAMAI_MAX_BODY", "42")
+	err := os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_CLIENT_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_CLIENT_SECRET", "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_ACCESS_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_MAX_BODY", "42")
+	assert.NoError(t, err)
 
 	c, err := Init("sample_edgerc", "")
 	assert.NoError(t, err)
@@ -255,10 +270,14 @@ func TestInitEnvMaxBody(t *testing.T) {
 
 func TestInitWithEnv(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
-	os.Setenv("AKAMAI_CLIENT_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	os.Setenv("AKAMAI_CLIENT_SECRET", "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
-	os.Setenv("AKAMAI_ACCESS_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	err := os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_CLIENT_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_CLIENT_SECRET", "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_ACCESS_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NoError(t, err)
 
 	c, err := Init("sample_edgerc", "")
 	assert.NoError(t, err)
@@ -286,10 +305,14 @@ func TestInitWithoutEnv(t *testing.T) {
 func TestInitWithSectionEnv(t *testing.T) {
 	os.Clearenv()
 
-	os.Setenv("AKAMAI_TEST_HOST", "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
-	os.Setenv("AKAMAI_TEST_CLIENT_TOKEN", "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	os.Setenv("AKAMAI_TEST_CLIENT_SECRET", "testenvxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
-	os.Setenv("AKAMAI_TEST_ACCESS_TOKEN", "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	err := os.Setenv("AKAMAI_TEST_HOST", "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_TEST_CLIENT_TOKEN", "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_TEST_CLIENT_SECRET", "testenvxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_TEST_ACCESS_TOKEN", "testenv-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NoError(t, err)
 
 	c, err := Init("sample_edgerc", "test")
 	assert.NoError(t, err)
@@ -303,10 +326,14 @@ func TestInitWithSectionEnv(t *testing.T) {
 
 func TestInitWithInvalidEdgeRcNotDefault(t *testing.T) {
 	os.Clearenv()
-	os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
-	os.Setenv("AKAMAI_CLIENT_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
-	os.Setenv("AKAMAI_CLIENT_SECRET", "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
-	os.Setenv("AKAMAI_ACCESS_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	err := os.Setenv("AKAMAI_HOST", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_CLIENT_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_CLIENT_SECRET", "envxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
+	assert.NoError(t, err)
+	err = os.Setenv("AKAMAI_ACCESS_TOKEN", "env-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
+	assert.NoError(t, err)
 
 	c, err := Init("edgerc_that_doesnt_parse", "test")
 	assert.NoError(t, err)

@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/akamai-open/AkamaiOPEN-edgegrid-golang"
 	"log"
 	"math/rand"
 	"net/url"
 	"time"
+
+	"github.com/akamai-open/AkamaiOPEN-edgegrid-golang"
 )
 
 func random(min int, max int) int {
@@ -17,21 +18,21 @@ func random(min int, max int) int {
 }
 
 type LocationsResponse struct {
-	Locations []string `json:locations`
+	Locations []string `json:"locations"`
 }
 
 type DigResponse struct {
 	Dig struct {
-		Hostname    string `json:hostname`
-		QueryType   string `json:queryType`
-		Result      string `json:result`
-		ErrorString string `json:errorString`
-	} `json:dig`
+		Hostname    string `json:"hostname"`
+		QueryType   string `json:"queryType"`
+		Result      string `json:"result"`
+		ErrorString string `json:"errorString"`
+	} `json:"dig"`
 }
 
 func main() {
 	config, err := edgegrid.Init("~/.edgerc", "default")
-	//config.Debug = true
+	config.Debug = false
 	if err == nil {
 		client, err := edgegrid.New(nil, config)
 		if err == nil {
@@ -43,7 +44,7 @@ func main() {
 			}
 
 			locationsResponse := LocationsResponse{}
-			res.BodyJson(&locationsResponse)
+			res.BodyJSON(&locationsResponse)
 
 			if err != nil {
 				log.Fatal(err.Error())
@@ -68,7 +69,7 @@ func main() {
 			}
 
 			digResponse := DigResponse{}
-			res.BodyJson(&digResponse)
+			res.BodyJSON(&digResponse)
 			fmt.Println(digResponse.Dig.Result)
 		} else {
 			log.Fatal(err.Error())

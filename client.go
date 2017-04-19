@@ -15,6 +15,8 @@ const (
 	libraryVersion = "0.1.0"
 )
 
+type Response http.Response
+
 type Client struct {
 	http.Client
 
@@ -30,20 +32,19 @@ type Client struct {
 	Config Config
 }
 
-type Response http.Response
-type JsonBody map[string]interface{}
+type JSONBody map[string]interface{}
 
 func New(httpClient *http.Client, config Config) (*Client, error) {
 	c := NewClient(httpClient)
 	c.Config = config
 
-	baseUrl, err := url.Parse("https://" + config.Host)
+	baseURL, err := url.Parse("https://" + config.Host)
 
 	if err != nil {
 		return nil, err
 	}
 
-	c.BaseURL = baseUrl
+	c.BaseURL = baseURL
 	return c, nil
 }
 
@@ -76,13 +77,16 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	u := c.BaseURL.ResolveReference(rel)
 
 	req, err = http.NewRequest(method, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	req.Header.Add("User-Agent", c.UserAgent)
 
 	return req, nil
 }
 
-func (c *Client) NewJsonRequest(method, urlStr string, body interface{}) (*http.Request, error) {
+func (c *Client) NewJSONRequest(method, urlStr string, body interface{}) (*http.Request, error) {
 	buf := new(bytes.Buffer)
 	err := json.NewEncoder(buf).Encode(body)
 	if err != nil {
@@ -90,26 +94,26 @@ func (c *Client) NewJsonRequest(method, urlStr string, body interface{}) (*http.
 	}
 
 	req, err := c.NewRequest(method, urlStr, buf)
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json,*/*")
 
-	return req, err
+	return req, nil
 }
 
 func (c *Client) Do(req *http.Request) (*Response, error) {
 	req = c.Config.AddRequestHeader(req)
 	response, err := c.Client.Do(req)
-
 	if err != nil {
 		return nil, err
 	}
-
 	res := Response(*response)
-
-	return &res, err
+	return &res, nil
 }
 
-func (c *Client) Get(url string) (resp *Response, err error) {
+func (c *Client) Get(url string) (*Response, error) {
 	req, err := c.NewRequest("GET", url, nil)
 
 	if err != nil {
@@ -123,15 +127,11 @@ func (c *Client) Get(url string) (resp *Response, err error) {
 		return nil, err
 	}
 
-	res := Response(*response)
-
-	return &res, err
+	return response, nil
 }
 
-func (c *Client) Post(url string, bodyType string, body interface{}) (resp *Response, err error) {
-	var req *http.Request
-
-	req, err = c.NewRequest("POST", url, body)
+func (c *Client) Post(url string, bodyType string, body interface{}) (*Response, error) {
+	req, err := c.NewRequest("POST", url, body)
 	if err != nil {
 		return nil, err
 	}
@@ -142,21 +142,19 @@ func (c *Client) Post(url string, bodyType string, body interface{}) (resp *Resp
 	response, err := c.Do(req)
 
 	if err != nil {
-		return response, err
+		return nil, err
 	}
 
-	res := Response(*response)
-
-	return &res, err
+	return response, nil
 }
 
-func (c *Client) PostForm(url string, data url.Values) (resp *Response, err error) {
+func (c *Client) PostForm(url string, data url.Values) (*Response, error) {
 	return c.Post(url, "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
 }
 
-func (c *Client) PostJson(url string, data interface{}) (resp *Response, err error) {
+func (c *Client) PostJSON(url string, data interface{}) (*Response, error) {
 	buf := new(bytes.Buffer)
-	err = json.NewEncoder(buf).Encode(data)
+	err := json.NewEncoder(buf).Encode(data)
 	if err != nil {
 		return nil, err
 	}
@@ -164,8 +162,8 @@ func (c *Client) PostJson(url string, data interface{}) (resp *Response, err err
 	return c.Post(url, "application/json", buf)
 }
 
-func (c *Client) Head(url string) (resp *Response, err error) {
-	req, _ := c.NewRequest("HEAD", url, nil)
+func (c *Client) Head(url string) (*Response, error) {
+	req, err := c.NewRequest("HEAD", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -175,17 +173,19 @@ func (c *Client) Head(url string) (resp *Response, err error) {
 		return nil, err
 	}
 
-	res := Response(*response)
-	return &res, err
+	return response, nil
 }
 
-func (r *Response) BodyJson(data interface{}) error {
+func (r *Response) BodyJSON(data interface{}) error {
 	if data == nil {
 		return errors.New("You must pass in an interface{}")
 	}
 
-	body, _ := ioutil.ReadAll(r.Body)
-	err := json.Unmarshal(body, &data)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(body, &data)
 
 	return err
 }
