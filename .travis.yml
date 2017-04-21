@@ -1,16 +1,22 @@
 language: go
+sudo: false
 go:
+  - 1.6
+  - 1.7
+  - 1.8
   - tip
-before_install:
-  - go get github.com/mattn/goveralls
-  - go get golang.org/x/tools/cmd/cover
-  - go get github.com/stretchr/testify/assert
-  - go get github.com/Sirupsen/logrus
-  - go get github.com/spf13/viper
-  - go get github.com/tuvistavie/securerandom
-  - go get gopkg.in/mattes/go-expand-tilde.v1
-  - go get github.com/akamai-open/AkamaiOPEN-edgegrid-golang
+matrix:
+  allow_failures:
+    - go: 1.6
+    - go: tip
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:masterminds/glide'
+    packages:
+      - glide
 install:
+  - glide install
   - go install .
 script:
   - export PATH="$PATH:$HOME/gopath/bin"

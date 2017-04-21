@@ -1,4 +1,4 @@
-# EdgeGrid for GoLang
+# Akamai OPEN EdgeGrid for GoLang
 
 [![Build Status](https://travis-ci.org/akamai-open/AkamaiOPEN-edgegrid-golang.svg?branch=master)](https://travis-ci.org/akamai-open/AkamaiOPEN-edgegrid-golang)
 [![Coverage Status](https://coveralls.io/repos/github/akamai-open/AkamaiOPEN-edgegrid-golang/badge.svg?branch=master)](https://coveralls.io/github/njuettner/edgegrid?branch=master)
@@ -9,6 +9,16 @@
 This library implements an Authentication handler for [net/http](https://golang.org/pkg/net/http/)
 that provides the [Akamai {OPEN} Edgegrid Authentication](https://developer.akamai.com/introduction/Client_Auth.html) 
 scheme. For more information visit the [Akamai {OPEN} Developer Community](https://developer.akamai.com).
+
+## Installation
+
+This package uses [Glide](https://glide.sh) to manage to dependencies and installation. To install Glide, see the [Glide install documentation](https://github.com/Masterminds/glide#install)
+
+```bash
+  $ glide get github.com/akamai-open/AkamaiOPEN-edgegrid-golang
+```
+
+## Usage
 
 GET Example:
 
@@ -25,7 +35,7 @@ GET Example:
   func main() {
     client := http.Client{}
 
-    config := edgegrid.InitConfig("~/.edgerc", "default")
+    config, _ := edgegrid.Init("~/.edgerc", "default")
 
     // Retrieve all locations for diagnostic tools
     req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/diagnostic-tools/v1/locations", config.Host), nil)
@@ -53,7 +63,7 @@ Parameter Example:
   func main() {
     client := http.Client{}
 
-    config := edgegrid.InitConfig("~/.edgerc", "default")
+    config, _ := edgegrid.Init("~/.edgerc", "default")
 
     // Retrieve dig information for specified location
     req, _ := http.NewRequest("GET", fmt.Sprintf("https://%sdiagnostic-tools/v1/dig", config.Host), nil)
@@ -88,7 +98,7 @@ POST Example:
   func main() {
     client := http.Client{}
 
-    config := edgegrid.InitConfig("~/.edgerc", "default")
+    config, _ := edgegrid.Init("~/.edgerc", "default")
     
     // Acknowledge a map
     req, _ := http.NewRequest("POST", fmt.Sprintf("https://%s/siteshield/v1/maps/1/acknowledge", config.Host), nil)
@@ -116,7 +126,7 @@ PUT Example:
   func main() {
     client := http.Client{}
 
-    config := edgegrid.InitConfig("~/.edgerc", "default")
+    config, _ := edgegrid.Init("~/.edgerc", "default")
     body := []byte("{\n  \"name\": \"Simple List\",\n  \"type\": \"IP\",\n  \"unique-id\": \"345_BOTLIST\",\n  \"list\": [\n    \"192.168.0.1\",\n    \"192.168.0.2\",\n  ],\n  \"sync-point\": 0\n}")
     
     // Update a Network List
@@ -169,12 +179,6 @@ Alternatively, your program can read it from config struct.
   }
 ```
 
-## Installation
-
-```bash
-  $ go get github.com/akamai-open/AkamaiOPEN-edgegrid-golang
-```
-
 ## Contribute
 
 1. Fork [the repository](https://github.com/akamai-open/AkamaiOPEN-edgegrid-golang) to start making your changes to the **master** branch
@@ -182,6 +186,6 @@ Alternatively, your program can read it from config struct.
 
 ## Author
 
-[Nick Juettner](mailto:hello@juni.io) - Software Engineer @ [Zalando SE](https://tech.zalando.com/)
-[Davey Shafik](mailto:dshafik@akamai.com)
+[Nick Juettner](mailto:hello@juni.io) - Software Engineer @ [Zalando SE](https://tech.zalando.com/)  
+[Davey Shafik](mailto:dshafik@akamai.com) - Developer Evangelist @ [Akamai Technologies](https://developer.akamai.com)
 
