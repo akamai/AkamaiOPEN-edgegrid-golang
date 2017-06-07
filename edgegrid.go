@@ -16,7 +16,7 @@ import (
 	"time"
 	"unicode"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/go-ini/ini"
 	"github.com/tuvistavie/securerandom"
 	"gopkg.in/mattes/go-expand-tilde.v1"

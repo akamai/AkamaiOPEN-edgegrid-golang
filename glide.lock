@@ -11,7 +11,7 @@ imports:
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
   - difflib
-- name: github.com/Sirupsen/logrus
+- name: github.com/sirupsen/logrus
   version: 3ec0642a7fb6488f65b06f9040adc67e3990296a
 - name: github.com/stretchr/testify
   version: 59fc8e570cd707a33a93842b00a9aae4b5cd38b2
