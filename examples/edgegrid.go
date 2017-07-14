@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/akamai-open/AkamaiOPEN-edgegrid-golang"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 )
 
 func main() {
@@ -29,11 +29,11 @@ func main() {
 		AKAMAI_CLIENT_SECRET or AKAMAI_{SECTION}_CLIENT_SECRET
 		AKAMAI_ACCESS_TOKEN or AKAMAI_{SECTION}_ACCESS_TOKEN
 	*/
-	config, err := edgegrid.Init("~/.edgerc", "default")
+	config, err := edgegrid.InitEdgeRc("~/.edgerc", "default")
 
 	if err == nil {
 		req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/diagnostic-tools/v1/locations", config.Host), nil)
-		req = config.AddRequestHeader(req)
+		req = edgegrid.AddRequestHeader(config, req)
 		resp, _ := client.Do(req)
 		byt, _ := ioutil.ReadAll(resp.Body)
 		fmt.Println(string(byt))

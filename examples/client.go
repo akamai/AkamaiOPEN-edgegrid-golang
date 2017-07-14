@@ -1,3 +1,4 @@
+// An example Diagnostic Tools v1 API Client
 package main
 
 import (
@@ -7,7 +8,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/akamai-open/AkamaiOPEN-edgegrid-golang"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 )
 
 func random(min int, max int) int {
@@ -31,20 +33,34 @@ type DigResponse struct {
 }
 
 func main() {
-	config, err := edgegrid.Init("~/.edgerc", "default")
+	Example()
+}
+
+func Example() {
+	config, err := edgegrid.InitEdgeRc("~/.edgerc", "default")
 	config.Debug = false
 	if err == nil {
-		client, err := edgegrid.New(nil, config)
 		if err == nil {
 			fmt.Println("Requesting locations that support the diagnostic-tools API.")
 
-			res, err := client.Get("/diagnostic-tools/v1/locations")
+			req, err := client.NewRequest(
+				config,
+				"GET",
+				"/diagnostic-tools/v1/locations",
+				nil,
+			)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
 
+			res, err := client.Do(config, req)
+			if err != nil {
+				log.Fatal(err.Error())
+				return
+			}
+
 			locationsResponse := LocationsResponse{}
-			res.BodyJSON(&locationsResponse)
+			client.BodyJSON(res, &locationsResponse)
 
 			if err != nil {
 				log.Fatal(err.Error())
@@ -62,14 +78,26 @@ func main() {
 
 			fmt.Println("Running dig from " + location)
 
-			client.Timeout = 5 * time.Minute
-			res, err = client.Get("/diagnostic-tools/v1/dig?hostname=developer.akamai.com&location=" + url.QueryEscape(location) + "&queryType=A")
+			client.Client.Timeout = 5 * time.Minute
+			req, err = client.NewRequest(
+				config,
+				"GET",
+				"/diagnostic-tools/v1/dig?hostname=developer.akamai.com&location="+url.QueryEscape(location)+"&queryType=A",
+				nil,
+			)
 			if err != nil {
 				log.Fatal(err.Error())
+				return
+			}
+
+			res, err = client.Do(config, req)
+			if err != nil {
+				log.Fatal(err.Error())
+				return
 			}
 
 			digResponse := DigResponse{}
-			res.BodyJSON(&digResponse)
+			client.BodyJSON(res, &digResponse)
 			fmt.Println(digResponse.Dig.Result)
 		} else {
 			log.Fatal(err.Error())
