@@ -1,4 +1,4 @@
-package: github.com/akamai-open/AkamaiOPEN-edgegrid-golang
+package: github.com/akamai/AkamaiOPEN-edgegrid-golang
 import:
 - package: github.com/sirupsen/logrus
   version: 3ec0642a7fb6488f65b06f9040adc67e3990296a
