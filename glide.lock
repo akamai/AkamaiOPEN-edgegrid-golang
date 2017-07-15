@@ -1,12 +1,12 @@
-hash: 98f2481dc812064a88e3d2386f54b0c630319d84897998ce4d02c304af980736
-updated: 2017-04-12T09:38:06.795149467-07:00
+hash: 523f057e8a574694dd91d84ddc809a4bd73fede0b61e973b39c38df793dd0997
+updated: 2017-06-29T20:06:06.759611182-07:00
 imports:
 - name: github.com/davecgh/go-spew
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
   subpackages:
   - spew
 - name: github.com/go-ini/ini
-  version: e7fea39b01aea8d5671f6858f0532f56e8bff3a5
+  version: d3de07a94d22b4a0972deb4b96d790c2c0ce8333
 - name: github.com/pmezard/go-difflib
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
@@ -24,7 +24,7 @@ imports:
 - name: github.com/xeipuuv/gojsonreference
   version: e02fc20de94c78484cd5ffb007f8af96be030a45
 - name: github.com/xeipuuv/gojsonschema
-  version: 702b404897d4364af44dc8dcabc9815947942325
+  version: 0c8571ac0ce161a5feb57375a9cdf148c98c0f70
 - name: golang.org/x/sys
   version: 9d4e42a20653790449273b3c85e67d6d8bae6e2e
   subpackages:
