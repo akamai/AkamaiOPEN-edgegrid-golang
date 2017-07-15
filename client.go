@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	libraryVersion = "0.1.0"
+	libraryVersion = "0.4.0"
 )
 
 type Response http.Response
