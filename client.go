@@ -1,3 +1,4 @@
+// Deprecated: use client-v1/client instead
 package edgegrid
 
 import (
