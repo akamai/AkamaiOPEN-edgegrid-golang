@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	testFile  = "../test/testdata.json"
+	testFile  = "../testdata/testdata.json"
 	timestamp = "20140321T19:34:21+0000"
 	nonce     = "nonce-xx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 	config    = Config{
@@ -99,7 +99,7 @@ func TestCreateAuthHeader(t *testing.T) {
 }
 
 func TestInitConfigBroken(t *testing.T) {
-	testSample := "../test/sample_edgerc"
+	testSample := "../testdata/sample_edgerc"
 	testConfigBroken, err := InitEdgeRc(testSample, "broken")
 	assert.Equal(t, err, nil)
 	assert.Equal(t, testConfigBroken.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
@@ -109,7 +109,7 @@ func TestInitConfigBroken(t *testing.T) {
 }
 
 func TestInitConfigUnparsable(t *testing.T) {
-	testSample := "../test/edgerc_that_doesnt_parse"
+	testSample := "../testdata/edgerc_that_doesnt_parse"
 	assert.Panics(t, func() { InitEdgeRc(testSample, "") }, "Fail: Should raise a PANIC")
 }
 
@@ -119,7 +119,7 @@ func TestInitConfigNotFound(t *testing.T) {
 }
 
 func TestInitConfigDashes(t *testing.T) {
-	testSample := "../test/sample_edgerc"
+	testSample := "../testdata/sample_edgerc"
 	assert.Panics(t, func() { InitEdgeRc(testSample, "dashes") }, "Fail: Should raise a PANIC")
 }
 
@@ -129,7 +129,7 @@ func TestInitConfigDefault(t *testing.T) {
 		"default",
 	}
 	for _, section := range configDefault {
-		testConfigDefault, err := InitEdgeRc("../test/sample_edgerc", section)
+		testConfigDefault, err := InitEdgeRc("../testdata/sample_edgerc", section)
 		assert.Equal(t, err, nil)
 		assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
 		assert.Equal(t, testConfigDefault.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
@@ -140,7 +140,7 @@ func TestInitConfigDefault(t *testing.T) {
 }
 
 func TestInitConfigSection(t *testing.T) {
-	testConfigDefault, err := InitEdgeRc("../test/sample_edgerc", "test")
+	testConfigDefault, err := InitEdgeRc("../testdata/sample_edgerc", "test")
 	assert.Equal(t, err, nil)
 	assert.Equal(t, testConfigDefault.Host, "test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
 	assert.Equal(t, testConfigDefault.ClientToken, "test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
@@ -151,7 +151,7 @@ func TestInitConfigSection(t *testing.T) {
 }
 
 func TestInitEdgeRcBroken(t *testing.T) {
-	testSample := "../test/sample_edgerc"
+	testSample := "../testdata/sample_edgerc"
 	testConfigBroken, err := InitEdgeRc(testSample, "broken")
 	assert.NoError(t, err)
 	assert.Equal(t, testConfigBroken.ClientSecret, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=")
@@ -166,7 +166,7 @@ func TestInitEdgeRcDefault(t *testing.T) {
 		"default",
 	}
 	for _, section := range configDefault {
-		testConfigDefault, err := InitEdgeRc("../test/sample_edgerc", section)
+		testConfigDefault, err := InitEdgeRc("../testdata/sample_edgerc", section)
 		assert.NoError(t, err)
 		assert.Equal(t, testConfigDefault.Host, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
 		assert.Equal(t, testConfigDefault.ClientToken, "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
@@ -178,7 +178,7 @@ func TestInitEdgeRcDefault(t *testing.T) {
 }
 
 func TestInitEdgeRcSection(t *testing.T) {
-	testConfigDefault, err := InitEdgeRc("../test/sample_edgerc", "test")
+	testConfigDefault, err := InitEdgeRc("../testdata/sample_edgerc", "test")
 	assert.NoError(t, err)
 	assert.Equal(t, testConfigDefault.Host, "test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/")
 	assert.Equal(t, testConfigDefault.ClientToken, "test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx")
