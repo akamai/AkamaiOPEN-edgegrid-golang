@@ -54,7 +54,7 @@ func (hostnames *Hostnames) PostUnmarshalJSON() error {
 //
 // See: Property.GetHostnames()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listapropertyshostnames
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/{propertyVersion}/hostnames/{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/{propertyVersion}/hostnames/{?contractId,groupId}
 func (hostnames *Hostnames) GetHostnames(version *Version) error {
 	if version == nil {
 		property := NewProperty(NewProperties())
@@ -74,7 +74,7 @@ func (hostnames *Hostnames) GetHostnames(version *Version) error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions/%d/hostnames/?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/hostnames/?contractId=%s&groupId=%s",
 			hostnames.PropertyID,
 			version.PropertyVersion,
 			hostnames.ContractID,
@@ -115,7 +115,7 @@ func (hostnames *Hostnames) Save() error {
 		Config,
 		"PUT",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions/%d/hostnames?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/hostnames?contractId=%s&groupId=%s",
 			hostnames.PropertyID,
 			hostnames.PropertyVersion,
 			hostnames.ContractID,

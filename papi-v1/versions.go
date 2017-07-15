@@ -61,7 +61,7 @@ func (versions *Versions) AddVersion(version *Version) {
 //
 // See: Property.GetVersions()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listversions
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/{?contractId,groupId}
 func (versions *Versions) GetVersions(property *Property) error {
 	if property == nil {
 		return errors.New("You must provide a property")
@@ -71,7 +71,7 @@ func (versions *Versions) GetVersions(property *Property) error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions?contractId=%s&groupId=%s",
 			property.PropertyID,
 			property.Contract.ContractID,
 			property.Group.GroupID,
@@ -98,7 +98,7 @@ func (versions *Versions) GetVersions(property *Property) error {
 //
 // See: Property.GetLatestVersion()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getthelatestversion
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/latest{?contractId,groupId,activatedOn}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/latest{?contractId,groupId,activatedOn}
 func (versions *Versions) GetLatestVersion(activatedOn NetworkValue) (*Version, error) {
 	if activatedOn != "" {
 		activatedOn = "&activatedOn=" + activatedOn
@@ -108,7 +108,7 @@ func (versions *Versions) GetLatestVersion(activatedOn NetworkValue) (*Version, 
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions/latest?contractId=%s&groupId=%s%s",
+			"/papi/v1/properties/%s/versions/latest?contractId=%s&groupId=%s%s",
 			versions.PropertyID,
 			versions.ContractID,
 			versions.GroupID,
@@ -186,7 +186,7 @@ func NewVersion(parent *Versions) *Version {
 // GetVersion populates a Version
 //
 // Api Docs: https://developer.akamai.com/api/luna/papi/resources.html#getaversion
-// Endpoint: /papi/v0/properties/{propertyId}/versions/{propertyVersion}{?contractId,groupId}
+// Endpoint: /papi/v1/properties/{propertyId}/versions/{propertyVersion}{?contractId,groupId}
 func (version *Version) GetVersion(property *Property, getVersion int) error {
 	if getVersion == 0 {
 		getVersion = property.LatestVersion
@@ -196,7 +196,7 @@ func (version *Version) GetVersion(property *Property, getVersion int) error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions/%d?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d?contractId=%s&groupId=%s",
 			property.PropertyID,
 			getVersion,
 			property.Contract.ContractID,
@@ -265,7 +265,7 @@ func (version *Version) HasBeenActivated(activatedOn NetworkValue) (bool, error)
 // Save creates a new version
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#createanewversion
-// Endpoint: POST /papi/v0/properties/{propertyId}/versions/{?contractId,groupId}
+// Endpoint: POST /papi/v1/properties/{propertyId}/versions/{?contractId,groupId}
 func (version *Version) Save() error {
 	if version.PropertyVersion != 0 {
 		return fmt.Errorf("version (%d) already exists", version.PropertyVersion)
@@ -275,7 +275,7 @@ func (version *Version) Save() error {
 		Config,
 		"POST",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions/?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/?contractId=%s&groupId=%s",
 			version.parent.PropertyID,
 			version.parent.ContractID,
 			version.parent.GroupID,

@@ -46,7 +46,7 @@ func (properties *Properties) PostUnmarshalJSON() error {
 // GetProperties populates Properties with property data
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listproperties
-// Endpoint: GET /papi/v0/properties/{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{?contractId,groupId}
 func (properties *Properties) GetProperties(contract *Contract, group *Group) error {
 	if contract == nil {
 		contract = NewContract(NewContracts())
@@ -57,7 +57,7 @@ func (properties *Properties) GetProperties(contract *Contract, group *Group) er
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/properties?groupId=%s&contractId=%s",
+			"/papi/v1/properties?groupId=%s&contractId=%s",
 			group.GroupID,
 			contract.ContractID,
 		),
@@ -173,13 +173,13 @@ func (property *Property) PreMarshalJSON() error {
 // GetProperty populates a Property
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getaproperty
-// Endpoint: GET /papi/v0/properties/{propertyId}{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}{?contractId,groupId}
 func (property *Property) GetProperty() error {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s?contractId=%s&groupId=%s",
 			property.PropertyID,
 			property.Contract.ContractID,
 			property.Group.GroupID,
@@ -225,7 +225,7 @@ func (property *Property) GetProperty() error {
 //
 // See: Activations.GetActivations()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listactivations
-// Endpoint: GET /papi/v0/properties/{propertyId}/activations/{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/activations/{?contractId,groupId}
 func (property *Property) GetActivations() (*Activations, error) {
 	activations := NewActivations()
 
@@ -240,7 +240,7 @@ func (property *Property) GetActivations() (*Activations, error) {
 //
 // See: AvailableBehaviors.GetAvailableBehaviors
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listavailablebehaviors
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/{propertyVersion}/available-behaviors{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/{propertyVersion}/available-behaviors{?contractId,groupId}
 func (property *Property) GetAvailableBehaviors() (*AvailableBehaviors, error) {
 	behaviors := NewAvailableBehaviors()
 	if err := behaviors.GetAvailableBehaviors(property); err != nil {
@@ -254,7 +254,7 @@ func (property *Property) GetAvailableBehaviors() (*AvailableBehaviors, error) {
 //
 // See: Rules.GetRules
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getaruletree
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
 func (property *Property) GetRules() (*Rules, error) {
 	rules := NewRules()
 
@@ -269,7 +269,7 @@ func (property *Property) GetRules() (*Rules, error) {
 //
 // See: Rules.GetRulesDigest()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getaruletreesdigest
-// Endpoint: HEAD /papi/v0/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
+// Endpoint: HEAD /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
 func (property *Property) GetRulesDigest() (string, error) {
 	rules := NewRules()
 	return rules.GetRulesDigest(property)
@@ -279,7 +279,7 @@ func (property *Property) GetRulesDigest() (string, error) {
 //
 // See: Versions.GetVersions()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listversions
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/{?contractId,groupId}
 func (property *Property) GetVersions() (*Versions, error) {
 	versions := NewVersions()
 	err := versions.GetVersions(property)
@@ -294,7 +294,7 @@ func (property *Property) GetVersions() (*Versions, error) {
 //
 // See: Versions.GetLatestVersion()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getthelatestversion
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/latest{?contractId,groupId,activatedOn}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/latest{?contractId,groupId,activatedOn}
 func (property *Property) GetLatestVersion(activatedOn NetworkValue) (*Version, error) {
 	versions := NewVersions()
 	versions.PropertyID = property.PropertyID
@@ -310,7 +310,7 @@ func (property *Property) GetLatestVersion(activatedOn NetworkValue) (*Version, 
 //
 // See: Hostnames.GetHostnames()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listapropertyshostnames
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/{propertyVersion}/hostnames/{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/{propertyVersion}/hostnames/{?contractId,groupId}
 func (property *Property) GetHostnames(version *Version) (*Hostnames, error) {
 	hostnames := NewHostnames()
 	hostnames.PropertyID = property.PropertyID
@@ -359,13 +359,13 @@ func (property *Property) PostUnmarshalJSON() error {
 // Save will create a property, optionally cloned from another property
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#createorcloneaproperty
-// Endpoint: POST /papi/v0/properties/{?contractId,groupId}
+// Endpoint: POST /papi/v1/properties/{?contractId,groupId}
 func (property *Property) Save() error {
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
 		fmt.Sprintf(
-			"/papi/v0/properties?contractId=%s&groupId=%s",
+			"/papi/v1/properties?contractId=%s&groupId=%s",
 			property.Contract.ContractID,
 			property.Group.GroupID,
 		),
@@ -437,7 +437,7 @@ func (property *Property) Save() error {
 //
 // See: Activation.Save()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#activateaproperty
-// Endpoint: POST /papi/v0/properties/{propertyId}/activations/{?contractId,groupId}
+// Endpoint: POST /papi/v1/properties/{propertyId}/activations/{?contractId,groupId}
 func (property *Property) Activate(activation *Activation, acknowledgeWarnings bool) error {
 	return activation.Save(property, acknowledgeWarnings)
 }
@@ -445,14 +445,14 @@ func (property *Property) Activate(activation *Activation, acknowledgeWarnings b
 // Delete a property
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#removeaproperty
-// Endpoint: DELETE /papi/v0/properties/{propertyId}{?contractId,groupId}
+// Endpoint: DELETE /papi/v1/properties/{propertyId}{?contractId,groupId}
 func (property *Property) Delete() error {
-	// /papi/v0/properties/{propertyId}{?contractId,groupId}
+	// /papi/v1/properties/{propertyId}{?contractId,groupId}
 	req, err := client.NewRequest(
 		Config,
 		"DELETE",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s?contractId=%s&groupId=%s",
 			property.PropertyID,
 			property.Contract.ContractID,
 			property.Group.GroupID,

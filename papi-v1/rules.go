@@ -185,13 +185,13 @@ func (rules *Rules) PrintRules() error {
 //
 // See: Property.GetRules
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getaruletree
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
 func (rules *Rules) GetRules(property *Property) error {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions/%d/rules?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/rules?contractId=%s&groupId=%s",
 			property.PropertyID,
 			property.LatestVersion,
 			property.Contract.ContractID,
@@ -223,13 +223,13 @@ func (rules *Rules) GetRules(property *Property) error {
 //
 // See: Property.GetRulesDigest()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getaruletreesdigest
-// Endpoint: HEAD /papi/v0/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
+// Endpoint: HEAD /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
 func (rules *Rules) GetRulesDigest(property *Property) (string, error) {
 	req, err := client.NewRequest(
 		Config,
 		"HEAD",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions/%d/rules?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/rules?contractId=%s&groupId=%s",
 			property.PropertyID,
 			property.LatestVersion,
 			property.Contract.ContractID,
@@ -268,16 +268,16 @@ func (rules *Rules) GetAllRules() []*Rule {
 // Save creates/updates a rule tree for a property
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#updatearuletree
-// Endpoint: PUT /papi/v0/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
+// Endpoint: PUT /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
 func (rules *Rules) Save() error {
 	rules.Errors = []*RuleErrors{}
 
-	// /papi/v0/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
+	// /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
 	req, err := client.NewJSONRequest(
 		Config,
 		"PUT",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions/%d/rules/?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/rules/?contractId=%s&groupId=%s",
 			rules.PropertyID,
 			rules.PropertyVersion,
 			rules.ContractID,
@@ -561,13 +561,13 @@ func NewAvailableCriteria() *AvailableCriteria {
 // GetAvailableCriteria retrieves criteria available for a given property
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listavailablecriteria
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/{propertyVersion}/available-criteria{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/{propertyVersion}/available-criteria{?contractId,groupId}
 func (availableCriteria *AvailableCriteria) GetAvailableCriteria(property *Property) error {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions/%d/available-criteria?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/available-criteria?contractId=%s&groupId=%s",
 			property.PropertyID,
 			property.LatestVersion,
 			property.Contract.ContractID,
@@ -634,13 +634,13 @@ func (availableBehaviors *AvailableBehaviors) PostUnmarshalJSON() error {
 //
 // See: Property.GetAvailableBehaviors
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listavailablebehaviors
-// Endpoint: GET /papi/v0/properties/{propertyId}/versions/{propertyVersion}/available-behaviors{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/versions/{propertyVersion}/available-behaviors{?contractId,groupId}
 func (availableBehaviors *AvailableBehaviors) GetAvailableBehaviors(property *Property) error {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/versions/%d/available-behaviors?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/available-behaviors?contractId=%s&groupId=%s",
 			property.PropertyID,
 			property.LatestVersion,
 			property.Contract.ContractID,

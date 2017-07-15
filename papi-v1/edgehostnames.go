@@ -60,7 +60,7 @@ func (edgeHostnames *EdgeHostnames) NewEdgeHostname() *EdgeHostname {
 // GetEdgeHostnames will populate EdgeHostnames with Edge Hostname data
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listedgehostnames
-// Endpoint: GET /papi/v0/edgehostnames/{?contractId,groupId,options}
+// Endpoint: GET /papi/v1/edgehostnames/{?contractId,groupId,options}
 func (edgeHostnames *EdgeHostnames) GetEdgeHostnames(contract *Contract, group *Group, options string) error {
 	if contract == nil && group == nil {
 		return errors.New("function requires at least \"group\" argument")
@@ -78,7 +78,7 @@ func (edgeHostnames *EdgeHostnames) GetEdgeHostnames(contract *Contract, group *
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/edgehostnames?groupId=%s&contractId=%s%s",
+			"/papi/v1/edgehostnames?groupId=%s&contractId=%s%s",
 			group.GroupID,
 			contract.ContractID,
 			options,
@@ -175,7 +175,7 @@ func (edgeHostname *EdgeHostname) Init() {
 // GetEdgeHostname populates EdgeHostname with data
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getanedgehostname
-// Endpoint: GET /papi/v0/edgehostnames/{edgeHostnameId}{?contractId,groupId,options}
+// Endpoint: GET /papi/v1/edgehostnames/{edgeHostnameId}{?contractId,groupId,options}
 func (edgeHostname *EdgeHostname) GetEdgeHostname(options string) error {
 	if options != "" {
 		options = "&options=" + options
@@ -185,7 +185,7 @@ func (edgeHostname *EdgeHostname) GetEdgeHostname(options string) error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/edgehostnames/%s?contractId=%s&groupId=%s%s",
+			"/papi/v1/edgehostnames/%s?contractId=%s&groupId=%s%s",
 			edgeHostname.EdgeHostnameID,
 			edgeHostname.parent.ContractID,
 			edgeHostname.parent.GroupID,
@@ -257,7 +257,7 @@ func (edgeHostname *EdgeHostname) GetEdgeHostname(options string) error {
 // Save creates a new Edge Hostname
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#createanewedgehostname
-// Endpoint: POST /papi/v0/edgehostnames/{?contractId,groupId,options}
+// Endpoint: POST /papi/v1/edgehostnames/{?contractId,groupId,options}
 func (edgeHostname *EdgeHostname) Save(options string) error {
 	if options != "" {
 		options = "&options=" + options
@@ -266,7 +266,7 @@ func (edgeHostname *EdgeHostname) Save(options string) error {
 		Config,
 		"POST",
 		fmt.Sprintf(
-			"/papi/v0/edgehostnames/?contractId=%s&groupId=%s%s",
+			"/papi/v1/edgehostnames/?contractId=%s&groupId=%s%s",
 			edgeHostname.parent.ContractID,
 			edgeHostname.parent.GroupID,
 			options,

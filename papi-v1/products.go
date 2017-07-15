@@ -45,13 +45,13 @@ func (products *Products) PostUnmarshalJSON() error {
 // GetProducts populates Products with product data
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listproducts
-// Endpoint: GET /papi/v0/products/{?contractId}
+// Endpoint: GET /papi/v1/products/{?contractId}
 func (products *Products) GetProducts(contract *Contract) error {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/products?contractId=%s",
+			"/papi/v1/products?contractId=%s",
 			contract.ContractID,
 		),
 		nil,

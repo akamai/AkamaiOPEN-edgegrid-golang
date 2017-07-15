@@ -19,9 +19,9 @@ func NewClientSettings() *ClientSettings {
 // GetClientSettings populates ClientSettings
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getclientsettings
-// Endpoint: GET /papi/v0/client-settings
+// Endpoint: GET /papi/v1/client-settings
 func (clientSettings *ClientSettings) GetClientSettings() error {
-	req, err := client.NewRequest(Config, "GET", "/papi/v0/client-settings", nil)
+	req, err := client.NewRequest(Config, "GET", "/papi/v1/client-settings", nil)
 	if err != nil {
 		return err
 	}
@@ -45,12 +45,12 @@ func (clientSettings *ClientSettings) GetClientSettings() error {
 // Save updates client settings
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#updateclientsettings
-// Endpoint: PUT /papi/v0/client-settings
+// Endpoint: PUT /papi/v1/client-settings
 func (clientSettings *ClientSettings) Save() error {
 	req, err := client.NewJSONRequest(
 		Config,
 		"PUT",
-		"/papi/v0/client-settings",
+		"/papi/v1/client-settings",
 		clientSettings,
 	)
 	if err != nil {

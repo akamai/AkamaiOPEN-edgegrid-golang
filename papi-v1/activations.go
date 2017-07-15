@@ -33,12 +33,12 @@ func NewActivations() *Activations {
 //
 // See: Property.GetActivations()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listactivations
-// Endpoint: GET /papi/v0/properties/{propertyId}/activations/{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/activations/{?contractId,groupId}
 func (activations *Activations) GetActivations(property *Property) error {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
-		fmt.Sprintf("/papi/v0/properties/%s/activations?contractId=%s&groupId=%s",
+		fmt.Sprintf("/papi/v1/properties/%s/activations?contractId=%s&groupId=%s",
 			property.PropertyID,
 			property.Contract.ContractID,
 			property.Group.GroupID,
@@ -149,13 +149,13 @@ func (activation *Activation) Init() {
 // GetActivation populates the Activation resource
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getanactivation
-// Endpoint: GET /papi/v0/properties/{propertyId}/activations/{activationId}{?contractId,groupId}
+// Endpoint: GET /papi/v1/properties/{propertyId}/activations/{activationId}{?contractId,groupId}
 func (activation *Activation) GetActivation(property *Property) (time.Duration, error) {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/activations/%s?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/activations/%s?contractId=%s&groupId=%s",
 			property.PropertyID,
 			activation.ActivationID,
 			property.Contract.ContractID,
@@ -211,7 +211,7 @@ func (activation *Activation) GetActivation(property *Property) (time.Duration, 
 //
 // See: Property.Activate()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#activateaproperty
-// Endpoint: POST /papi/v0/properties/{propertyId}/activations/{?contractId,groupId}
+// Endpoint: POST /papi/v1/properties/{propertyId}/activations/{?contractId,groupId}
 func (activation *Activation) Save(property *Property, acknowledgeWarnings bool) error {
 	if activation.ComplianceRecord == nil {
 		activation.ComplianceRecord = &ActivationComplianceRecord{
@@ -223,7 +223,7 @@ func (activation *Activation) Save(property *Property, acknowledgeWarnings bool)
 		Config,
 		"POST",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/activations?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/activations?contractId=%s&groupId=%s",
 			property.PropertyID,
 			property.Contract.ContractID,
 			property.Group.GroupID,
@@ -376,13 +376,13 @@ func (activation *Activation) PollStatus(property *Property) bool {
 // Cancel an activation in progress
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#cancelapendingactivation
-// Endpoint: DELETE /papi/v0/properties/{propertyId}/activations/{activationId}{?contractId,groupId}
+// Endpoint: DELETE /papi/v1/properties/{propertyId}/activations/{activationId}{?contractId,groupId}
 func (activation *Activation) Cancel(property *Property) error {
 	req, err := client.NewRequest(
 		Config,
 		"DELETE",
 		fmt.Sprintf(
-			"/papi/v0/properties/%s/activations?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/activations?contractId=%s&groupId=%s",
 			property.PropertyID,
 			property.Contract.ContractID,
 			property.Group.GroupID,

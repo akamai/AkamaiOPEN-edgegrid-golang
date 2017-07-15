@@ -26,12 +26,12 @@ func NewRuleFormats() *RuleFormats {
 // GetRuleFormats populates RuleFormats
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listruleformats
-// Endpoint: GET /papi/v0/rule-formats
+// Endpoint: GET /papi/v1/rule-formats
 func (ruleFormats *RuleFormats) GetRuleFormats() error {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
-		"/papi/v0/rule-formats",
+		"/papi/v1/rule-formats",
 		nil,
 	)
 	if err != nil {
@@ -57,13 +57,13 @@ func (ruleFormats *RuleFormats) GetRuleFormats() error {
 // GetSchema fetches the schema for a given product and rule format
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getaruleformatsschema
-// Endpoint: /papi/v0/schemas/products/{productId}/{ruleFormat}
+// Endpoint: /papi/v1/schemas/products/{productId}/{ruleFormat}
 func (ruleFormats *RuleFormats) GetSchema(product string, ruleFormat string) (*gojsonschema.Schema, error) {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/schemas/products/%s/%s",
+			"/papi/v1/schemas/products/%s/%s",
 			product,
 			ruleFormat,
 		),

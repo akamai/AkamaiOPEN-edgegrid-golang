@@ -71,7 +71,7 @@ func (cpcodes *CpCodes) PostUnmarshalJSON() error {
 // GetCpCodes populates a *CpCodes with it's related CP Codes
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listcpcodes
-// Endpoint: GET /papi/v0/cpcodes/{?contractId,groupId}
+// Endpoint: GET /papi/v1/cpcodes/{?contractId,groupId}
 func (cpcodes *CpCodes) GetCpCodes() error {
 	if cpcodes.Contract == nil {
 		cpcodes.Contract = NewContract(NewContracts())
@@ -82,7 +82,7 @@ func (cpcodes *CpCodes) GetCpCodes() error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/cpcodes?groupId=%s&contractId=%s",
+			"/papi/v1/cpcodes?groupId=%s&contractId=%s",
 			cpcodes.Group.GroupID,
 			cpcodes.Contract.ContractID,
 		),
@@ -172,13 +172,13 @@ func NewCpCode(parent *CpCodes) *CpCode {
 // GetCpCode populates the *CpCode with it's data
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getacpcode
-// Endpoint: GET /papi/v0/cpcodes/{cpcodeId}{?contractId,groupId}
+// Endpoint: GET /papi/v1/cpcodes/{cpcodeId}{?contractId,groupId}
 func (cpcode *CpCode) GetCpCode() error {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v0/cpcodes/%s?contractId=%s&groupId=%s",
+			"/papi/v1/cpcodes/%s?contractId=%s&groupId=%s",
 			cpcode.CpcodeID,
 			cpcode.parent.Contract.ContractID,
 			cpcode.parent.Group.GroupID,
@@ -230,13 +230,13 @@ func (cpcode *CpCode) ID() int {
 // trying to do so will result in an error.
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#createanewcpcode
-// Endpoint: POST /papi/v0/cpcodes/{?contractId,groupId}
+// Endpoint: POST /papi/v1/cpcodes/{?contractId,groupId}
 func (cpcode *CpCode) Save() error {
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
 		fmt.Sprintf(
-			"/papi/v0/cpcodes?contractId=%s&groupId=%s",
+			"/papi/v1/cpcodes?contractId=%s&groupId=%s",
 			cpcode.parent.Contract.ContractID,
 			cpcode.parent.Group.GroupID,
 		),
