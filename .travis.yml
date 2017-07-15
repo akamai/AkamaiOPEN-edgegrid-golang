@@ -17,6 +17,7 @@ env:
   # Upgrade to the latest dependencies
   - DEPS='update'
 matrix:
+  fast_finish: true
   allow_failures:
   # Allow Go 1.6, and tip to fail, as well as whenever we use upgraded dependencies
   - go: 1.6
