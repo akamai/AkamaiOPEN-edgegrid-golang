@@ -3,39 +3,38 @@ package dns
 import (
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"strings"
 )
 
 // Zone represents a DNS zone
 type Zone struct {
 	Token string `json:"token"`
 	Zone  struct {
-		Name       string               `json:"name,omitempty"`
-		A          RecordSet            `json:"a,omitempty"`
-		AAAA       RecordSet            `json:"aaaa,omitempty"`
-		Afsdb      RecordSet            `json:"afsdb,omitempty"`
-		Cname      RecordSet            `json:"cname,omitempty"`
-		Dnskey     RecordSet            `json:"dnskey,omitempty"`
-		Ds         RecordSet            `json:"ds,omitempty"`
-		Hinfo      RecordSet            `json:"hinfo,omitempty"`
-		Loc        RecordSet            `json:"loc,omitempty"`
-		Mx         RecordSet            `json:"mx,omitempty"`
-		Naptr      RecordSet            `json:"naptr,omitempty"`
-		Ns         RecordSet            `json:"ns,omitempty"`
-		Nsec3      RecordSet            `json:"nsec3,omitempty"`
-		Nsec3param RecordSet            `json:"nsec3param,omitempty"`
-		Ptr        RecordSet            `json:"ptr,omitempty"`
-		Rp         RecordSet            `json:"rp,omitempty"`
-		Rrsig      RecordSet            `json:"rrsig,omitempty"`
-		Soa        *Record              `json:"soa,omitempty"`
-		Spf        RecordSet            `json:"spf,omitempty"`
-		Srv        RecordSet            `json:"srv,omitempty"`
-		Sshfp      RecordSet            `json:"sshfp,omitempty"`
-		Txt        RecordSet            `json:"txt,omitempty"`
-		Records    map[string]RecordSet `json:"-"`
+		Name       string              `json:"name,omitempty"`
+		A          RecordSet           `json:"a,omitempty"`
+		AAAA       RecordSet           `json:"aaaa,omitempty"`
+		Afsdb      RecordSet           `json:"afsdb,omitempty"`
+		Cname      RecordSet           `json:"cname,omitempty"`
+		Dnskey     RecordSet           `json:"dnskey,omitempty"`
+		Ds         RecordSet           `json:"ds,omitempty"`
+		Hinfo      RecordSet           `json:"hinfo,omitempty"`
+		Loc        RecordSet           `json:"loc,omitempty"`
+		Mx         RecordSet           `json:"mx,omitempty"`
+		Naptr      NaptrRecordSet      `json:"naptr,omitempty"`
+		Ns         NsRecordSet         `json:"ns,omitempty"`
+		Nsec3      Nsec3RecordSet      `json:"nsec3,omitempty"`
+		Nsec3param Nsec3paramRecordSet `json:"nsec3param,omitempty"`
+		Ptr        RecordSet           `json:"ptr,omitempty"`
+		Rp         RecordSet           `json:"rp,omitempty"`
+		Rrsig      RecordSet           `json:"rrsig,omitempty"`
+		Soa        *Record             `json:"soa,omitempty"`
+		Spf        RecordSet           `json:"spf,omitempty"`
+		Srv        SrvRecordSet        `json:"srv,omitempty"`
+		Sshfp      RecordSet           `json:"sshfp,omitempty"`
+		Txt        RecordSet           `json:"txt,omitempty"`
 	} `json:"zone"`
 }
 

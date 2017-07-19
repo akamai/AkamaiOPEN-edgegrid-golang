@@ -51,6 +51,58 @@ type Record struct {
 	Weight              uint   `json:"weight,omitempty"`
 }
 
+type NaptrRecord struct {
+	Record
+	Active      bool   `json:"active,omitempty"`
+	Flags       string `json:"flags,omitempty""`
+	Name        string `json:"name,omitempty"`
+	Order       int    `json:"order"`
+	Preference  int    `json:"preference,omitempty"`
+	Regexp      string `json:"regexp,omitempty"`
+	Replacement string `json:"replacement,omitempty"`
+	Service     string `json:"service,omitempty"`
+	TTL         int    `json:"ttl,omitempty"`
+}
+
+type NsRecord struct {
+	Active bool    `json:"active,omitempty"`
+	Name   *string `json:"name"`
+	Target string  `json:"target,omitempty"`
+	TTL    int     `json:"ttl,omitempty"`
+}
+
+type Nsec3Record struct {
+	Active              bool   `json:"active,omitempty"`
+	Algorithm           int    `json:"algorithm,omitempty"`
+	Flags               int    `json:"flags"`
+	Iterations          int    `json:"iterations,omitempty"`
+	Name                string `json:"name,omitempty"`
+	NextHashedOwnerName string `json:"next_hashed_owner_name,omitempty"`
+	Salt                string `json:"salt,omitempty"`
+	TTL                 int    `json:"ttl,omitempty"`
+	TypeBitmaps         string `json:"type_bitmaps,omitempty"`
+}
+
+type Nsec3paramRecord struct {
+	Active     bool   `json:"active,omitempty"`
+	Algorithm  int    `json:"algorithm,omitempty"`
+	Flags      int    `json:"flags"`
+	Iterations int    `json:"iterations,omitempty"`
+	Name       string `json:"name,omitempty"`
+	Salt       string `json:"salt,omitempty"`
+	TTL        int    `json:"ttl,omitempty"`
+}
+
+type SrvRecord struct {
+	Active   bool   `json:"active,omitempty"`
+	Name     string `json:"name,omitempty"`
+	Port     int    `json:"port,omitempty"`
+	Priority int    `json:"priority,omitempty"`
+	Target   string `json:"target,omitempty"`
+	TTL      int    `json:"ttl,omitempty"`
+	Weight   uint   `json:"weight"`
+}
+
 // Allows will validates if a the current record type allows a given field
 func (record *Record) Allows(field string) bool {
 	field = strings.ToLower(field)
