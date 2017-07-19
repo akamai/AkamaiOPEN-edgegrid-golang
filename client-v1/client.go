@@ -26,7 +26,17 @@ var (
 // NewRequest creates an HTTP request that can be sent to Akamai APIs. A relative URL can be provided in path, which will be resolved to the
 // Host specified in Config. If body is specified, it will be sent as the request body.
 func NewRequest(config edgegrid.Config, method, path string, body io.Reader) (*http.Request, error) {
-	baseURL, err := url.Parse("https://" + config.Host)
+	var (
+		baseURL *url.URL
+		err     error
+	)
+
+	if strings.HasPrefix(config.Host, "https://") {
+		baseURL, err = url.Parse(config.Host)
+	} else {
+		baseURL, err = url.Parse("https://" + config.Host)
+	}
+
 	if err != nil {
 		return nil, err
 	}
