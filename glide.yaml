@@ -25,3 +25,5 @@ import:
 - package: gopkg.in/mattes/go-expand-tilde.v1
   version: cb884138e64c9a8bf5c7d6106d74b0fca082df0c
 - package: github.com/xeipuuv/gojsonschema
+- package: github.com/h2non/gock
+  version: ^1.0.4
