@@ -8,7 +8,7 @@ import (
 
 // Marshal wraps encoding/json.Marshal, calls v.PreMarshalJSON() if it exists
 func Marshal(v interface{}) ([]byte, error) {
-	if _, ok := v.(PreJSONMarshaler); ok {
+	if ImplementsPreJSONMarshaler(&v) {
 		err := v.(PreJSONMarshaler).PreMarshalJSON()
 		if err != nil {
 			return nil, err
@@ -25,7 +25,7 @@ func Unmarshal(data []byte, v interface{}) error {
 		return err
 	}
 
-	if _, ok := v.(PostJSONUnmarshaler); ok {
+	if ImplementsPostJSONUnmarshaler(&v) {
 		err := v.(PostJSONUnmarshaler).PostUnmarshalJSON()
 		if err != nil {
 			return err
@@ -52,7 +52,7 @@ type PostJSONUnmarshaler interface {
 }
 
 // ImplementsPostJSONUnmarshaler checks for support for the PostUnmarshalJSON post-hook
-func ImplementsPostJSONUnmarshaler(v interface{}) (interface{}, bool) {
-	v, ok := v.(PostJSONUnmarshaler)
-	return v, ok
+func ImplementsPostJSONUnmarshaler(v interface{}) bool {
+	_, ok := v.(PostJSONUnmarshaler)
+	return ok
 }
