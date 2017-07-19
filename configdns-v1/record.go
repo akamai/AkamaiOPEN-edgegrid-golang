@@ -47,7 +47,7 @@ type Record struct {
 	TTL                 int    `json:"ttl,omitempty"`
 	Txt                 string `json:"txt,omitempty"`
 	TypeBitmaps         string `json:"type_bitmaps,omitempty"`
-	TypeCovered         string `json:"type_coverered,omitempty"`
+	TypeCovered         string `json:"type_covered,omitempty"`
 	Weight              uint   `json:"weight,omitempty"`
 }
 
