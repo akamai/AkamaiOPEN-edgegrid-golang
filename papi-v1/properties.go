@@ -2,8 +2,8 @@ package papi
 
 import (
 	"fmt"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 )
 
 // Properties is a collection of PAPI Property resources
@@ -30,11 +30,8 @@ func (properties *Properties) PostUnmarshalJSON() error {
 
 	for key, property := range properties.Properties.Items {
 		properties.Properties.Items[key].parent = properties
-		if property, ok := jsonhooks.ImplementsPostJSONUnmarshaler(property); ok {
-			err := property.(jsonhooks.PostJSONUnmarshaler).PostUnmarshalJSON()
-			if err != nil {
-				return err
-			}
+		if err := property.PostUnmarshalJSON(); err != nil {
+			return err
 		}
 	}
 

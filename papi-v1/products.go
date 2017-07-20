@@ -2,8 +2,8 @@ package papi
 
 import (
 	"fmt"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 )
 
 // Products represents a collection of products
@@ -32,10 +32,8 @@ func (products *Products) PostUnmarshalJSON() error {
 
 	for key, product := range products.Products.Items {
 		products.Products.Items[key].parent = products
-		if product, ok := jsonhooks.ImplementsPostJSONUnmarshaler(product); ok {
-			if err := product.(jsonhooks.PostJSONUnmarshaler).PostUnmarshalJSON(); err != nil {
-				return err
-			}
+		if err := product.PostUnmarshalJSON(); err != nil {
+			return err
 		}
 	}
 

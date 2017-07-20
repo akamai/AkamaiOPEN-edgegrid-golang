@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 )
 
 // EdgeHostnames is a collection for PAPI Edge Hostname resources
@@ -38,10 +37,8 @@ func (edgeHostnames *EdgeHostnames) PostUnmarshalJSON() error {
 	for key, edgeHostname := range edgeHostnames.EdgeHostnames.Items {
 		edgeHostnames.EdgeHostnames.Items[key].parent = edgeHostnames
 
-		if edgeHostname, ok := jsonhooks.ImplementsPostJSONUnmarshaler(edgeHostname); ok {
-			if err := edgeHostname.(jsonhooks.PostJSONUnmarshaler).PostUnmarshalJSON(); err != nil {
-				return err
-			}
+		if err := edgeHostname.PostUnmarshalJSON(); err != nil {
+			return err
 		}
 	}
 
