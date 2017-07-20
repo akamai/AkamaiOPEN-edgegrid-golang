@@ -36,15 +36,15 @@ type Optionals struct {
 }
 
 type MixedTypes struct {
-	I  int
-	B  bool
-	F  float64
-	S  string
+	I  int     `json:"I"`
+	B  bool    `json:"B"`
+	F  float64 `json:"F"`
+	S  string  `json:"S"`
 	St struct {
-		Foo int
-		Bar string
-	}
-	A []string
+		Foo int    `json:"Foo"`
+		Bar string `json:"Bar"`
+	} `json:"St"`
+	A []string `json:"A"`
 }
 
 type WithHooks MixedTypes
@@ -108,7 +108,7 @@ func TestUnmarshalCompat(t *testing.T) {
 	}`
 
 	expected := &Optionals{}
-	_  = json.Unmarshal([]byte(data), expected)
+	_ = json.Unmarshal([]byte(data), expected)
 
 	actual := &Optionals{}
 	err := Unmarshal([]byte(data), actual)
@@ -121,6 +121,22 @@ func TestUnmarshalCompat(t *testing.T) {
 	)
 }
 
+func TestImplementsPreJSONMarshaler(t *testing.T) {
+	noHooks := &MixedTypes{}
+	withHooks := &WithHooks{}
+
+	assert.False(t, ImplementsPreJSONMarshaler(noHooks))
+	assert.True(t, ImplementsPreJSONMarshaler(withHooks))
+}
+
+func TestImplementsPostJSONUnmarshaler(t *testing.T) {
+	noHooks := &MixedTypes{}
+	withHooks := &WithHooks{}
+
+	assert.False(t, ImplementsPostJSONUnmarshaler(noHooks))
+	assert.True(t, ImplementsPostJSONUnmarshaler(withHooks))
+}
+
 func TestPreJSONMarshal(t *testing.T) {
 	noHooks := &MixedTypes{
 		I: 1,
@@ -128,11 +144,13 @@ func TestPreJSONMarshal(t *testing.T) {
 		F: 1.0,
 		S: "testing",
 		St: struct {
-			Foo int
-			Bar string
+			Foo int    `json:"Foo"`
+			Bar string `json:"Bar"`
 		}{2, "test"},
 		A: []string{"one", "two", "three"},
 	}
+
+	withHooks := (*WithHooks)(noHooks)
 
 	expected, _ := json.Marshal(&MixedTypes{
 		I: 1 * 1000,
@@ -140,22 +158,21 @@ func TestPreJSONMarshal(t *testing.T) {
 		F: 1.0 * 1.1,
 		S: "TESTING",
 		St: struct {
-			Foo int
-			Bar string
+			Foo int    `json:"Foo"`
+			Bar string `json:"Bar"`
 		}{2 * 2000, "TEST"},
 		A: []string{"ONE", "TWO", "THREE"},
 	})
-
-	withHooks := (*WithHooks)(noHooks)
 
 	gojson, _ := json.Marshal(withHooks)
 	actualNoHooks, _ := Marshal(noHooks)
 	actualWithHooks, err := Marshal(withHooks)
 
 	assert.NoError(t, err)
-	assert.NotEqual(t, gojson, actualWithHooks)
-	assert.NotEqual(t, actualNoHooks, actualWithHooks)
-	assert.Equal(t, expected, actualWithHooks)
+	assert.Equal(t, string(gojson), string(actualNoHooks))
+	assert.NotEqual(t, string(gojson), string(actualWithHooks))
+	assert.NotEqual(t, string(actualNoHooks), string(actualWithHooks))
+	assert.Equal(t, string(expected), string(actualWithHooks))
 }
 
 func TestPostJSONUnmarshal(t *testing.T) {
@@ -165,8 +182,8 @@ func TestPostJSONUnmarshal(t *testing.T) {
 		F: 1.0,
 		S: "testing",
 		St: struct {
-			Foo int
-			Bar string
+			Foo int    `json:"Foo"`
+			Bar string `json:"Bar"`
 		}{2, "test"},
 		A: []string{"one", "two", "three"},
 	}
