@@ -371,7 +371,7 @@ func (rules *Rules) SetBehaviorOptions(path string, newOptions OptionValue) erro
 // making the path "/Performance/JPEG Images/adaptiveImageCompression":
 //
 //	rules.AddBehaviorOptions(
-//		"/Performance/JPEG Images/adaptiveImageCompression"",
+//		"/Performance/JPEG Images/adaptiveImageCompression",
 //		edgegrid.OptionValue{
 //			"tier3StandardCompressionValue": 30,
 //		},
@@ -444,7 +444,7 @@ type Rule struct {
 	Criteria            []*Criteria                  `json:"criteria,omitempty"`
 	Behaviors           []*Behavior                  `json:"behaviors,omitempty"`
 	Children            []*Rule                      `json:"children,omitempty"`
-	Comment             string                       `json:"comment,omitempty"`
+	Comments            string                       `json:"comments,omitempty"`
 	CriteriaLocked      bool                         `json:"criteriaLocked,omitempty"`
 	CriteriaMustSatisfy RuleCriteriaMustSatisfyValue `json:"criteriaMustSatisfy,omitempty"`
 	UUID                string                       `json:"uuid,omitempty"`
@@ -487,8 +487,8 @@ func (rule *Rule) AddChildRule(child *Rule) {
 }
 
 // AddCriteria appends a rule criteria
-func (rule *Rule) AddCriteria(critera *Criteria) {
-	rule.Criteria = append(rule.Criteria, critera)
+func (rule *Rule) AddCriteria(criteria *Criteria) {
+	rule.Criteria = append(rule.Criteria, criteria)
 }
 
 // AddBehavior appends a rule behavior
