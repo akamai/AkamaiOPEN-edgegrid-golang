@@ -26,6 +26,7 @@ type Rules struct {
 // NewRules creates a new Rules
 func NewRules() *Rules {
 	rules := &Rules{}
+	rules.Rules = NewRule(rules)
 	rules.Init()
 
 	return rules
@@ -393,6 +394,30 @@ func (rules *Rules) AddBehaviorOptions(path string, newOptions OptionValue) erro
 	return nil
 }
 
+func (rules *Rules) AddRule(path string, rule *Rule) error {
+	if path == "/" || path == "" {
+		rules.Rules = rule
+		return nil
+	}
+
+	parent, err := rules.FindRule(path)
+	if err != nil {
+		return err
+	}
+
+	parent.Children = append(parent.Children, rule)
+
+	return nil
+}
+
+func (rules *Rules) FindParentRule(path string) (*Rule, error) {
+	sep := "/"
+	segments := strings.Split(strings.ToLower(strings.TrimPrefix(path, sep)), sep)
+	parentPath := strings.Join(segments[0:len(segments)-1], sep)
+
+	return rules.FindRule(parentPath)
+}
+
 // FindBehavior locates a specific behavior by path
 //
 // See SetBehaviorOptions and AddBehaviorOptions for examples of paths.
@@ -401,38 +426,71 @@ func (rules *Rules) FindBehavior(path string) (*Behavior, error) {
 		return nil, fmt.Errorf("Invalid Path: \"%s\"", path)
 	}
 
-	sep := "/"
-	segments := strings.Split(strings.ToLower(strings.TrimPrefix(path, sep)), sep)
-
-	if len(segments) == 1 {
-		for _, behavior := range rules.Rules.Behaviors {
-			if strings.ToLower(behavior.Name) == segments[0] {
-				return behavior, nil
-			}
-		}
-		return nil, fmt.Errorf("Path not found: \"%s\"", path)
+	rule, err := rules.FindParentRule(path)
+	if err != nil {
+		return nil, err
 	}
+
+	sep := "/"
+	segments := strings.Split(path, sep)
+	behaviorName := segments[len(segments)-1]
+	for _, behavior := range rule.Behaviors {
+		if strings.ToLower(behavior.Name) == behaviorName {
+			return behavior, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Behavior not found: \"%s\"", path)
+}
+
+// FindRule locates a specific rule by path
+//
+// See SetBehaviorOptions and AddBehaviorOptions for examples of paths.
+func (rules *Rules) FindRule(path string) (*Rule, error) {
+	path = rules.fixupPath(path)
+
+	if path == "" {
+		return rules.Rules, nil
+	}
+
+	sep := "/"
+	segments := strings.Split(path, sep)
 
 	currentRule := rules.Rules
-	i := 0
 	for _, segment := range segments {
-		i++
-		if i < len(segments) {
-			for _, rule := range currentRule.GetChildren(0, 1) {
-				if strings.ToLower(rule.Name) == segment {
-					currentRule = rule
-				}
+		found := false
+		for _, rule := range currentRule.GetChildren(0, 1) {
+			if strings.ToLower(rule.Name) == segment {
+				currentRule = rule
+				found = true
 			}
-		} else {
-			for _, behavior := range currentRule.Behaviors {
-				if strings.ToLower(behavior.Name) == segment {
-					return behavior, nil
-				}
-			}
+		}
+		if found != true {
+			return nil, fmt.Errorf("Rule not found: \"%s\"", path)
 		}
 	}
 
-	return nil, fmt.Errorf("Path not found: \"%s\"", path)
+	return currentRule, nil
+}
+
+func (rules *Rules) fixupPath(path string) string {
+	sep := "/"
+
+	path = strings.Replace(path, sep+sep, sep, -1)
+	path = strings.TrimSuffix(path, sep)
+
+	if path == "" || path == "/default" {
+		return ""
+	}
+
+	if strings.HasPrefix(path, sep+"default"+sep) {
+		path = "/" + strings.TrimPrefix(path, "/default/")
+	}
+
+	path = strings.TrimPrefix(path, "/")
+	path = strings.ToLower(path)
+
+	return path
 }
 
 // Rule represents a property rule resource
@@ -455,7 +513,7 @@ type Rule struct {
 
 // NewRule creates a new Rule
 func NewRule(parent *Rules) *Rule {
-	rule := &Rule{parent: parent}
+	rule := &Rule{parent: parent, Children: []*Rule{}}
 	rule.Init()
 
 	return rule
