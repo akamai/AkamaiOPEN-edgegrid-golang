@@ -2,8 +2,8 @@ package papi
 
 import (
 	"fmt"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 )
 
 // Groups represents a collection of PAPI groups
@@ -29,10 +29,8 @@ func (groups *Groups) PostUnmarshalJSON() error {
 	groups.Init()
 	for key, group := range groups.Groups.Items {
 		groups.Groups.Items[key].parent = groups
-		if group, ok := jsonhooks.ImplementsPostJSONUnmarshaler(group); ok {
-			if err := group.(jsonhooks.PostJSONUnmarshaler).PostUnmarshalJSON(); err != nil {
-				return err
-			}
+		if err := group.PostUnmarshalJSON(); err != nil {
+			return err
 		}
 	}
 

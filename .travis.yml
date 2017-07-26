@@ -23,6 +23,12 @@ matrix:
   - go: 1.6
   - go: tip
   - env: DEPS=update
+before_install:
+  # Fix pathing for forks
+  - mkdir -p $HOME/gopath/src/github.com/akamai/AkamaiOPEN-edgegrid-golang
+  - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/akamai/AkamaiOPEN-edgegrid-golang/
+  - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/akamai/AkamaiOPEN-edgegrid-golang
+  - cd $HOME/gopath/src/github.com/akamai/AkamaiOPEN-edgegrid-golang
 install:
   - glide $DEPS
 script:

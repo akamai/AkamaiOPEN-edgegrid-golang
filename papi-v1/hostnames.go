@@ -2,8 +2,8 @@ package papi
 
 import (
 	"fmt"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 )
 
 // Hostnames is a collection of Property Hostnames
@@ -36,10 +36,8 @@ func (hostnames *Hostnames) PostUnmarshalJSON() error {
 
 	for key, hostname := range hostnames.Hostnames.Items {
 		hostnames.Hostnames.Items[key].parent = hostnames
-		if hostname, ok := jsonhooks.ImplementsPostJSONUnmarshaler(hostname); ok {
-			if err := hostname.(jsonhooks.PostJSONUnmarshaler).PostUnmarshalJSON(); err != nil {
-				return err
-			}
+		if err := hostname.PostUnmarshalJSON(); err != nil {
+			return err
 		}
 	}
 
@@ -148,9 +146,9 @@ type Hostname struct {
 	client.Resource
 	parent         *Hostnames
 	CnameType      CnameTypeValue `json:"cnameType"`
-	EdgeHostnameID string             `json:"edgeHostnameId"`
-	CnameFrom      string             `json:"cnameFrom"`
-	CnameTo        string             `json:"cnameTo,omitempty"`
+	EdgeHostnameID string         `json:"edgeHostnameId"`
+	CnameFrom      string         `json:"cnameFrom"`
+	CnameTo        string         `json:"cnameTo,omitempty"`
 }
 
 // NewHostname creates a new Hostname

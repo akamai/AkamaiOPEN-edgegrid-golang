@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 )
 
 // CpCodes represents a collection of CP Codes
@@ -58,10 +57,8 @@ func (cpcodes *CpCodes) PostUnmarshalJSON() error {
 	for key, cpcode := range cpcodes.CpCodes.Items {
 		cpcodes.CpCodes.Items[key].parent = cpcodes
 
-		if cpcode, ok := jsonhooks.ImplementsPostJSONUnmarshaler(cpcode); ok {
-			if err := cpcode.(jsonhooks.PostJSONUnmarshaler).PostUnmarshalJSON(); err != nil {
-				return err
-			}
+		if err := cpcode.PostUnmarshalJSON(); err != nil {
+			return err
 		}
 	}
 

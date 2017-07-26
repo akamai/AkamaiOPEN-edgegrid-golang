@@ -2,8 +2,8 @@ package papi
 
 import (
 	"fmt"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 )
 
 // Contracts represents a collection of property manager contracts
@@ -31,10 +31,8 @@ func (contracts *Contracts) PostUnmarshalJSON() error {
 	for key, contract := range contracts.Contracts.Items {
 		contracts.Contracts.Items[key].parent = contracts
 
-		if contract, ok := jsonhooks.ImplementsPostJSONUnmarshaler(contract); ok {
-			if err := contract.(jsonhooks.PostJSONUnmarshaler).PostUnmarshalJSON(); err != nil {
-				return err
-			}
+		if err := contract.PostUnmarshalJSON(); err != nil {
+			return err
 		}
 	}
 	contracts.Complete <- true

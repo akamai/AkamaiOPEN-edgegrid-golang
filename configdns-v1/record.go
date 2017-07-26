@@ -65,6 +65,7 @@ type NaptrRecord struct {
 }
 
 type NsRecord struct {
+	Record
 	Active bool    `json:"active,omitempty"`
 	Name   *string `json:"name"`
 	Target string  `json:"target,omitempty"`
@@ -72,6 +73,7 @@ type NsRecord struct {
 }
 
 type Nsec3Record struct {
+	Record
 	Active              bool   `json:"active,omitempty"`
 	Algorithm           int    `json:"algorithm,omitempty"`
 	Flags               int    `json:"flags"`
@@ -84,6 +86,7 @@ type Nsec3Record struct {
 }
 
 type Nsec3paramRecord struct {
+	Record
 	Active     bool   `json:"active,omitempty"`
 	Algorithm  int    `json:"algorithm,omitempty"`
 	Flags      int    `json:"flags"`
@@ -94,6 +97,7 @@ type Nsec3paramRecord struct {
 }
 
 type SrvRecord struct {
+	Record
 	Active   bool   `json:"active,omitempty"`
 	Name     string `json:"name,omitempty"`
 	Port     int    `json:"port,omitempty"`
