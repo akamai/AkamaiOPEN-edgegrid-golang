@@ -1,4 +1,5 @@
 // Package edgegrid provides the Akamai OPEN Edgegrid Authentication scheme
+//
 // Deprecated: use edgegrid/config and edgegrid/signer instead
 package edgegrid
 
@@ -27,6 +28,7 @@ const defaultSection = "DEFAULT"
 
 // Config struct provides all the necessary fields to
 // create authorization header, debug is optional
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid
 type Config struct {
 	Host         string   `ini:"host"`
@@ -197,12 +199,14 @@ func (c *Config) createAuthHeader(req *http.Request, timestamp string, nonce str
 }
 
 // AddRequestHeader sets the authorization header to use Akamai Open API
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid
 func AddRequestHeader(c Config, req *http.Request) *http.Request {
 	return c.AddRequestHeader(req)
 }
 
 // AddRequestHeader set the authorization header to use Akamai OPEN API
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid
 func (c Config) AddRequestHeader(req *http.Request) *http.Request {
 	if c.Debug {
@@ -217,6 +221,7 @@ func (c Config) AddRequestHeader(req *http.Request) *http.Request {
 }
 
 // InitEdgeRc initializes Config using an .edgerc (INI) configuration file
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid
 func InitEdgeRc(filepath string, section string) (Config, error) {
 	var (
@@ -267,6 +272,7 @@ func InitEdgeRc(filepath string, section string) (Config, error) {
 }
 
 // InitEnv initializes Config using ENV variables
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid
 func InitEnv(section string) (Config, error) {
 	var (
@@ -326,6 +332,7 @@ func InitEnv(section string) (Config, error) {
 }
 
 // InitConfig initializes Config using .edgerc files
+//
 // Deprecated: Backwards compatible wrapper around InitEdgeRc which should be used instead
 func InitConfig(filepath string, section string) Config {
 	c, err := InitEdgeRc(filepath, section)
@@ -337,6 +344,7 @@ func InitConfig(filepath string, section string) Config {
 }
 
 // Init initializes Config using first ENV variables, with fallback to .edgerc file
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid
 func Init(filepath string, section string) (Config, error) {
 	if section == "" {

@@ -1,4 +1,5 @@
 // Package edgegrid provides the Akamai OPEN Edgegrid Authentication scheme
+//
 // Deprecated: use client-v1/client instead
 package edgegrid
 
@@ -18,10 +19,12 @@ const (
 )
 
 // Response is a Wrapper for http.Response
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 type Response http.Response
 
 // Client is a simple http.Client wrapper that transparently signs requests
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 type Client struct {
 	http.Client
@@ -39,10 +42,12 @@ type Client struct {
 }
 
 // JSONBody represents a generic JSON response
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 type JSONBody map[string]interface{}
 
 // New creates a new Client with a given Config
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func New(httpClient *http.Client, config Config) (*Client, error) {
 	c := NewClient(httpClient)
@@ -59,6 +64,7 @@ func New(httpClient *http.Client, config Config) (*Client, error) {
 }
 
 // NewClient creates a new Client
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func NewClient(httpClient *http.Client) *Client {
 	if httpClient == nil {
@@ -76,6 +82,7 @@ func NewClient(httpClient *http.Client) *Client {
 
 // NewRequest creates an API request. A relative URL can be provided in urlStr, which will be resolved to the
 // BaseURL of the Client. If specified, the value pointed to by body is JSON encoded and included in as the request body.
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
 	var req *http.Request
@@ -101,6 +108,7 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 
 // NewJSONRequest creates an API request with JSON body. A relative URL can be provided in urlStr, which will be resolved to the
 // BaseURL of the Client. If specified, the value pointed to by body is JSON encoded and included in as the request body.
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func (c *Client) NewJSONRequest(method, urlStr string, body interface{}) (*http.Request, error) {
 	buf := new(bytes.Buffer)
@@ -120,6 +128,7 @@ func (c *Client) NewJSONRequest(method, urlStr string, body interface{}) (*http.
 }
 
 // Do executes the HTTP request
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func (c *Client) Do(req *http.Request) (*Response, error) {
 	req = c.Config.AddRequestHeader(req)
@@ -132,6 +141,7 @@ func (c *Client) Do(req *http.Request) (*Response, error) {
 }
 
 // Get performs an HTTP GET request
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func (c *Client) Get(url string) (*Response, error) {
 	req, err := c.NewRequest("GET", url, nil)
@@ -151,6 +161,7 @@ func (c *Client) Get(url string) (*Response, error) {
 }
 
 // Post performs an HTTP POST request
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func (c *Client) Post(url string, bodyType string, body interface{}) (*Response, error) {
 	req, err := c.NewRequest("POST", url, body)
@@ -171,12 +182,14 @@ func (c *Client) Post(url string, bodyType string, body interface{}) (*Response,
 }
 
 // PostForm performs an HTTP POST request with a form body
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func (c *Client) PostForm(url string, data url.Values) (*Response, error) {
 	return c.Post(url, "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
 }
 
 // PostJSON performs an HTTP POST request with a JSON body
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func (c *Client) PostJSON(url string, data interface{}) (*Response, error) {
 	buf := new(bytes.Buffer)
@@ -189,6 +202,7 @@ func (c *Client) PostJSON(url string, data interface{}) (*Response, error) {
 }
 
 // Head performs an HTTP HEAD request
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func (c *Client) Head(url string) (*Response, error) {
 	req, err := c.NewRequest("HEAD", url, nil)
@@ -205,6 +219,7 @@ func (c *Client) Head(url string) (*Response, error) {
 }
 
 // BodyJSON retrieves and unmarshals a responses JSON body
+//
 // Deprecated: use github.com/akamai/AkamaiOPEN-edgegrid-golang/client
 func (r *Response) BodyJSON(data interface{}) error {
 	if data == nil {
