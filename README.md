@@ -1,6 +1,6 @@
 # Akamai OPEN EdgeGrid for GoLang
 
-[![Build Status](https://travis-ci.org/akamai-open/AkamaiOPEN-edgegrid-golang.svg?branch=master)](https://travis-ci.org/akamai-open/AkamaiOPEN-edgegrid-golang)
+[![Build Status](https://travis-ci.org/akamai/AkamaiOPEN-edgegrid-golang.svg?branch=master)](https://travis-ci.org/akamai/AkamaiOPEN-edgegrid-golang)
 [![GoDoc](https://godoc.org/github.com/akamai/AkamaiOPEN-edgegrid-golang?status.svg)](https://godoc.org/github.com/akamai/AkamaiOPEN-edgegrid-golang)
 [![Go Report Card](https://goreportcard.com/badge/github.com/akamai/AkamaiOPEN-edgegrid-golang)](https://goreportcard.com/report/github.com/akamai/AkamaiOPEN-edgegrid-golang)
 [![License](http://img.shields.io/:license-apache-blue.svg)](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/blob/master/LICENSE)
