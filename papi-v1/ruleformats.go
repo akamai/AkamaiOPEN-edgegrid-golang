@@ -2,9 +2,11 @@ package papi
 
 import (
 	"fmt"
+	"io/ioutil"
+	"sort"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"github.com/xeipuuv/gojsonschema"
-	"io/ioutil"
 )
 
 // RuleFormats is a collection of available rule formats
@@ -51,7 +53,20 @@ func (ruleFormats *RuleFormats) GetRuleFormats() error {
 		return err
 	}
 
+	sort.Strings(ruleFormats.RuleFormats.Items)
+
 	return nil
+}
+
+func (ruleFormats *RuleFormats) GetLatest() (string, error) {
+	if len(ruleFormats.RuleFormats.Items) == 0 {
+		err := ruleFormats.GetRuleFormats()
+		if err != nil {
+			return "", err
+		}
+	}
+
+	return ruleFormats.RuleFormats.Items[len(ruleFormats.RuleFormats.Items)-1], nil
 }
 
 // GetSchema fetches the schema for a given product and rule format
