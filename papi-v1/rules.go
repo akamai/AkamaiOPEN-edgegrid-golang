@@ -64,124 +64,6 @@ func (rules *Rules) PreMarshalJSON() error {
 	return nil
 }
 
-// PrintRules prints a reasonably easy to read tree of all rules and behaviors on a property
-func (rules *Rules) PrintRules() error {
-	group := NewGroup(NewGroups())
-	group.GroupID = rules.GroupID
-	group.ContractIDs = []string{rules.ContractID}
-
-	properties, _ := group.GetProperties(nil)
-	var property *Property
-	for _, property = range properties.Properties.Items {
-		if property.PropertyID == rules.PropertyID {
-			break
-		}
-	}
-
-	fmt.Println(property.PropertyName)
-
-	fmt.Println("├── Criteria")
-	for _, criteria := range rules.Rules.Criteria {
-		fmt.Printf("│   ├── %s\n", criteria.Name)
-		i := 0
-		for option, value := range *criteria.Options {
-			i++
-			if i < len(*criteria.Options) {
-				fmt.Printf("│   │   ├── %s: %#v\n", option, value)
-			} else {
-				fmt.Printf("│   │   └── %s: %#v\n", option, value)
-			}
-		}
-	}
-
-	fmt.Println("└── Behaviors")
-
-	prefix := "   │"
-	i := 0
-	for _, behavior := range rules.Rules.Behaviors {
-		i++
-		if i < len(rules.Rules.Behaviors) && len(rules.Rules.Children) != 0 {
-			fmt.Printf("   ├── Behavior: %s\n", behavior.Name)
-		} else {
-			fmt.Printf("   └── Behavior: %s\n", behavior.Name)
-		}
-
-		j := 0
-
-		for option, value := range *behavior.Options {
-			j++
-			if i == len(rules.Rules.Behaviors) && len(rules.Rules.Children) == 0 {
-				prefix = strings.TrimSuffix(prefix, "│")
-			}
-
-			if j < len(*behavior.Options) {
-				fmt.Printf("%s   ├── Option: %s: %#v\n", prefix, option, value)
-			} else {
-				fmt.Printf("%s   └── Option: %s: %#v\n", prefix, option, value)
-			}
-		}
-	}
-
-	if len(rules.Rules.Children) > 0 {
-		i := 0
-		children := rules.Rules.GetChildren(0, 0)
-		for _, child := range children {
-			i++
-			spacer := strings.TrimSuffix(strings.Repeat(prefix, child.Depth), "│")
-			if i < len(children) {
-				fmt.Printf("%s├── Section: %s\n", spacer, child.Name)
-			} else {
-				fmt.Printf("%s└── Section: %s\n", spacer, child.Name)
-			}
-
-			spacer = strings.TrimSuffix(strings.Repeat(prefix, child.Depth+1), "│")
-			j := 0
-			for _, behavior := range child.Behaviors {
-				j++
-				if j < len(child.Behaviors) {
-					fmt.Printf("%s├── Behavior: %s\n", spacer, behavior.Name)
-				} else {
-					//spacer = strings.TrimSuffix(spacer, "│   ") + "    "
-					fmt.Printf("%s└── Behavior: %s\n", spacer, behavior.Name)
-				}
-				space := strings.TrimSuffix(strings.Repeat(prefix, child.Depth+2), "│")
-
-				fmt.Printf("%s├── Criteria\n", space)
-				i := 0
-				for _, criteria := range child.Criteria {
-					i++
-					if i < len(child.Criteria) {
-						fmt.Printf("   │%s├── %s\n", space, criteria.Name)
-					} else {
-						fmt.Printf("   │%s└── %s\n", space, criteria.Name)
-					}
-					k := 0
-					for option, value := range *criteria.Options {
-						k++
-						if k < len(*criteria.Options) {
-							fmt.Printf("   │   │%s├── %s: %#v\n", space, option, value)
-						} else {
-							fmt.Printf("   │   │%s└── %s: %#v\n", space, option, value)
-						}
-					}
-				}
-
-				k := 0
-				for option, value := range *behavior.Options {
-					k++
-					if k < len(*behavior.Options) {
-						fmt.Printf("%s├── Option: %s: %#v\n", space, option, value)
-					} else {
-						fmt.Printf("%s└── Option: %s: %#v\n", space, option, value)
-					}
-				}
-			}
-		}
-	}
-
-	return nil
-}
-
 // GetRules populates Rules with rule data for a given property
 //
 // See: Property.GetRules
@@ -273,7 +155,6 @@ func (rules *Rules) GetAllRules() []*Rule {
 func (rules *Rules) Save() error {
 	rules.Errors = []*RuleErrors{}
 
-	// /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
 	req, err := client.NewJSONRequest(
 		Config,
 		"PUT",
@@ -304,9 +185,49 @@ func (rules *Rules) Save() error {
 	}
 
 	if len(rules.Errors) != 0 {
-		return fmt.Errorf("there were %d errors. See rules.Errors for details", len(rules.Errors))
+		return ErrorMap[ErrInvalidRules]
 	}
 
+	return nil
+}
+
+// AddChildBehavior adds a behavior as a child of the given rule path
+//
+// If the behavior already exists, it's options are merged with the existing
+// options.
+func (rules *Rules) AddChildBehavior(path string, behavior *Behavior) error {
+	_, err := rules.FindBehavior(path + "/" + behavior.Name)
+	if err == nil {
+		path = path + "/" + behavior.Name
+
+		return rules.AddBehaviorOptions(path, *behavior.Options)
+	}
+
+	parent, err := rules.FindRule(path)
+	if err != nil {
+		return err
+	}
+
+	parent.Behaviors = append(parent.Behaviors, behavior)
+	return nil
+}
+
+// SetChildBehavior adds a behavior as a child of the given rule path
+//
+// If the behavior already exists it is replaced with the given behavior
+func (rules *Rules) SetChildBehavior(path string, behavior *Behavior) error {
+	existingBehavior, err := rules.FindBehavior(path + "/" + behavior.Name)
+	if err == nil {
+		*existingBehavior = *behavior
+		return nil
+	}
+
+	parent, err := rules.FindRule(path)
+	if err != nil {
+		return err
+	}
+
+	parent.Behaviors = append(parent.Behaviors, behavior)
 	return nil
 }
 
@@ -342,8 +263,22 @@ func (rules *Rules) Save() error {
 // would fail to validate without the other required options.
 func (rules *Rules) SetBehaviorOptions(path string, newOptions OptionValue) error {
 	behavior, err := rules.FindBehavior(path)
-	if err != nil {
+	if err != nil && err != ErrorMap[ErrBehaviorNotFound] {
 		return err
+	}
+
+	// Create the missing behavior
+	if err != nil && err == ErrorMap[ErrBehaviorNotFound] {
+		parent, err := rules.FindParentRule(path)
+		if err != nil {
+			return err
+		}
+
+		sep := "/"
+		segments := strings.Split(path, sep)
+		behavior = NewBehavior(parent)
+		behavior.Name = segments[len(segments)-1]
+		rules.AddChildBehavior(strings.Join(segments[:len(segments)-1], sep), behavior)
 	}
 
 	behavior.Options = &newOptions
@@ -381,8 +316,22 @@ func (rules *Rules) SetBehaviorOptions(path string, newOptions OptionValue) erro
 // This will only change the "tier3StandardCompressionValue" option value.
 func (rules *Rules) AddBehaviorOptions(path string, newOptions OptionValue) error {
 	behavior, err := rules.FindBehavior(path)
-	if err != nil {
+	if err != nil && err != ErrorMap[ErrBehaviorNotFound] {
 		return err
+	}
+
+	// Create the missing behavior
+	if err != nil && err == ErrorMap[ErrBehaviorNotFound] {
+		parent, err := rules.FindParentRule(path)
+		if err != nil {
+			return err
+		}
+
+		sep := "/"
+		segments := strings.Split(path, sep)
+		behavior = NewBehavior(parent)
+		behavior.Name = segments[len(segments)-1]
+		rules.AddChildBehavior(strings.Join(segments[:len(segments)-1], sep), behavior)
 	}
 
 	options := *behavior.Options
@@ -394,9 +343,35 @@ func (rules *Rules) AddBehaviorOptions(path string, newOptions OptionValue) erro
 	return nil
 }
 
-func (rules *Rules) AddRule(path string, rule *Rule) error {
-	if path == "/" || path == "" {
-		rules.Rules = rule
+// AddChildRule adds a rule as a child of the rule specified by the given path
+//
+// If the rule already exists, criteria, behaviors, and child rules are added to
+// the existing rule.
+func (rules *Rules) AddChildRule(path string, rule *Rule) error {
+	_, err := rules.FindRule(path + "/" + rule.Name)
+	if err == nil {
+		path = path + "/" + rule.Name
+		for _, criteria := range rule.Criteria {
+			err := rules.AddCriteriaOptions(path+"/"+criteria.Name, *criteria.Options)
+			if err != nil {
+				return err
+			}
+		}
+
+		for _, behavior := range rule.Behaviors {
+			err := rules.AddBehaviorOptions(path+"/"+behavior.Name, *behavior.Options)
+			if err != nil {
+				return err
+			}
+		}
+
+		for _, childRule := range rule.Children {
+			err := rules.AddChildRule(path, childRule)
+			if err != nil {
+				return err
+			}
+		}
+
 		return nil
 	}
 
@@ -410,6 +385,129 @@ func (rules *Rules) AddRule(path string, rule *Rule) error {
 	return nil
 }
 
+// SetChildRule adds a rule as a child of the rule specified by the given path
+//
+// If the rule already exists, it is replaced by the given rule.
+func (rules *Rules) SetChildRule(path string, rule *Rule) error {
+	exists, err := rules.FindRule(path + "/" + rule.Name)
+	if err != nil {
+		*exists = *rule
+		return nil
+	}
+
+	parent, err := rules.FindRule(path)
+	if err != nil {
+		return err
+	}
+
+	parent.Children = append(parent.Children, rule)
+
+	return nil
+}
+
+// SetCriteriaOptions sets the options on a given criteria path
+//
+// path is a / delimited path from the root of the rule set to the criteria.
+// All existing options are overwritten. To add/replace options see AddCriteriaOptions
+// instead.
+func (rules *Rules) SetCriteriaOptions(path string, newOptions OptionValue) error {
+	criteria, err := rules.FindCriteria(path)
+	if err != nil && err != ErrorMap[ErrCriteriaNotFound] {
+		return err
+	}
+
+	// Create the missing criteria
+	if err != nil && err == ErrorMap[ErrCriteriaNotFound] {
+		parent, err := rules.FindParentRule(path)
+		if err != nil {
+			return err
+		}
+
+		sep := "/"
+		segments := strings.Split(path, sep)
+		criteria = NewCriteria(parent)
+		criteria.Name = segments[len(segments)-1]
+		rules.AddChildCriteria(strings.Join(segments[:len(segments)-1], sep), criteria)
+	}
+
+	criteria.Options = &newOptions
+	return nil
+}
+
+// AddCriteriaOptions adds/replaces options on a given Criteria path
+//
+// path is a / delimited path from the root of the rule set to the criteria.
+// Individual existing options are overwritten. To replace all options, see SetCriteriaOptions
+// instead.
+func (rules *Rules) AddCriteriaOptions(path string, newOptions OptionValue) error {
+	criteria, err := rules.FindCriteria(path)
+	if err != nil && err != ErrorMap[ErrCriteriaNotFound] {
+		return err
+	}
+
+	// Create the missing criteria
+	if err != nil && err == ErrorMap[ErrCriteriaNotFound] {
+		parent, err := rules.FindParentRule(path)
+		if err != nil {
+			return err
+		}
+
+		sep := "/"
+		segments := strings.Split(path, sep)
+		criteria = NewCriteria(parent)
+		criteria.Name = segments[len(segments)-1]
+		rules.AddChildCriteria(strings.Join(segments[:len(segments)-1], sep), criteria)
+	}
+
+	options := *criteria.Options
+	for key, value := range newOptions {
+		options[key] = value
+	}
+	criteria.Options = &options
+
+	return nil
+}
+
+// AddChildCriteria adds criteria as a child of the rule specified by the given path
+//
+// If the criteria already exists it's options are added to the existing criteria.
+func (rules *Rules) AddChildCriteria(path string, criteria *Criteria) error {
+	_, err := rules.FindCriteria(path + "/" + criteria.Name)
+	if err == nil {
+		path = path + "/" + criteria.Name
+
+		return rules.AddCriteriaOptions(path, *criteria.Options)
+	}
+
+	parent, err := rules.FindRule(path)
+	if err != nil {
+		return err
+	}
+
+	parent.Criteria = append(parent.Criteria, criteria)
+	return nil
+}
+
+// SetChildCriteria adds criteria as a child of the rule specified by the given path
+//
+// If the criteria already exists it will replace the existing criteria.
+func (rules *Rules) SetChildCriteria(path string, criteria *Criteria) error {
+	existingCriteria, err := rules.FindCriteria(path + "/" + criteria.Name)
+	if err == nil {
+		*existingCriteria = *criteria
+		return nil
+	}
+
+	parent, err := rules.FindRule(path)
+	if err != nil {
+		return err
+	}
+
+	parent.Criteria = append(parent.Criteria, criteria)
+	return nil
+}
+
+// Find the parent rule for a given rule, criteria, or behavior path
 func (rules *Rules) FindParentRule(path string) (*Rule, error) {
 	sep := "/"
 	segments := strings.Split(strings.ToLower(strings.TrimPrefix(path, sep)), sep)
@@ -423,7 +521,7 @@ func (rules *Rules) FindParentRule(path string) (*Rule, error) {
 // See SetBehaviorOptions and AddBehaviorOptions for examples of paths.
 func (rules *Rules) FindBehavior(path string) (*Behavior, error) {
 	if len(path) <= 1 {
-		return nil, fmt.Errorf("Invalid Path: \"%s\"", path)
+		return nil, ErrorMap[ErrInvalidPath]
 	}
 
 	rule, err := rules.FindParentRule(path)
@@ -433,14 +531,39 @@ func (rules *Rules) FindBehavior(path string) (*Behavior, error) {
 
 	sep := "/"
 	segments := strings.Split(path, sep)
-	behaviorName := segments[len(segments)-1]
+	behaviorName := strings.ToLower(segments[len(segments)-1])
 	for _, behavior := range rule.Behaviors {
 		if strings.ToLower(behavior.Name) == behaviorName {
 			return behavior, nil
 		}
 	}
 
-	return nil, fmt.Errorf("Behavior not found: \"%s\"", path)
+	return nil, ErrorMap[ErrBehaviorNotFound]
+}
+
+// FindCriteria locates a specific Critieria by path
+//
+// See SetCriteriaOptions and AddCriteriaOptions for examples of paths.
+func (rules *Rules) FindCriteria(path string) (*Criteria, error) {
+	if len(path) <= 1 {
+		return nil, ErrorMap[ErrInvalidPath]
+	}
+
+	rule, err := rules.FindParentRule(path)
+	if err != nil {
+		return nil, err
+	}
+
+	sep := "/"
+	segments := strings.Split(path, sep)
+	criteriaName := strings.ToLower(segments[len(segments)-1])
+	for _, criteria := range rule.Criteria {
+		if strings.ToLower(criteria.Name) == criteriaName {
+			return criteria, nil
+		}
+	}
+
+	return nil, ErrorMap[ErrCriteriaNotFound]
 }
 
 // FindRule locates a specific rule by path
@@ -466,11 +589,53 @@ func (rules *Rules) FindRule(path string) (*Rule, error) {
 			}
 		}
 		if found != true {
-			return nil, fmt.Errorf("Rule not found: \"%s\"", path)
+			return nil, ErrorMap[ErrRuleNotFound]
 		}
 	}
 
 	return currentRule, nil
+}
+
+// Freeze pins a properties rule set to a specific rule set version
+func (rules *Rules) Freeze(format string) error {
+	rules.Errors = []*RuleErrors{}
+
+	req, err := client.NewJSONRequest(
+		Config,
+		"PUT",
+		fmt.Sprintf(
+			"/papi/v1/properties/%s/versions/%d/rules/?contractId=%s&groupId=%s",
+			rules.PropertyID,
+			rules.PropertyVersion,
+			rules.ContractID,
+			rules.GroupID,
+		),
+		rules,
+	)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", fmt.Sprintf("application/vnd.akamai.papirules.%s+json", format))
+
+	res, err := client.Do(Config, req)
+	if err != nil {
+		return err
+	}
+
+	if client.IsError(res) {
+		return client.NewAPIError(res)
+	}
+
+	if err = client.BodyJSON(res, rules); err != nil {
+		return err
+	}
+
+	if len(rules.Errors) != 0 {
+		return ErrorMap[ErrInvalidRules]
+	}
+
+	return nil
 }
 
 func (rules *Rules) fixupPath(path string) string {
@@ -580,7 +745,7 @@ type Behavior struct {
 
 // NewBehavior creates a new Behavior
 func NewBehavior(parent *Rule) *Behavior {
-	behavior := &Behavior{parent: parent}
+	behavior := &Behavior{parent: parent, Options: &OptionValue{}}
 	behavior.Init()
 
 	return behavior
