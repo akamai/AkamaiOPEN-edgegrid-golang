@@ -348,9 +348,12 @@ func (rules *Rules) AddBehaviorOptions(path string, newOptions OptionValue) erro
 // If the rule already exists, criteria, behaviors, and child rules are added to
 // the existing rule.
 func (rules *Rules) AddChildRule(path string, rule *Rule) error {
-	_, err := rules.FindRule(path + "/" + rule.Name)
+	existingRule, err := rules.FindRule(path + "/" + rule.Name)
 	if err == nil {
 		path = path + "/" + rule.Name
+
+		existingRule.Name = rule.Name
+
 		for _, criteria := range rule.Criteria {
 			err := rules.AddCriteriaOptions(path+"/"+criteria.Name, *criteria.Options)
 			if err != nil {
