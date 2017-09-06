@@ -18,7 +18,7 @@ func GetZone(hostname string) (*Zone, error) {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
-		"/edgegrid-dns/v1/zones/"+hostname,
+		"/config-dns/v1/zones/"+hostname,
 		nil,
 	)
 	if err != nil {

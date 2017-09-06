@@ -21,9 +21,9 @@ var (
 func TestGetZoneSimple(t *testing.T) {
 	defer gock.Off()
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/edgegrid-dns/v1/zones/example.com")
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-dns/v1/zones/example.com")
 	mock.
-		Get("/edgegrid-dns/v1/zones/example.com").
+		Get("/config-dns/v1/zones/example.com").
 		HeaderPresent("Authorization").
 		Reply(200).
 		SetHeader("Content-Type", "application/json").
@@ -114,9 +114,9 @@ func TestGetZone(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
-			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/edgegrid-dns/v1/zones/example.com")
+			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-dns/v1/zones/example.com")
 			mock.
-				Get("/edgegrid-dns/v1/zones/example.com").
+				Get("/config-dns/v1/zones/example.com").
 				HeaderPresent("Authorization").
 				Reply(200).
 				SetHeader("Content-Type", "application/json").
@@ -190,9 +190,9 @@ func TestGetZoneNaptrRecords(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
-			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/edgegrid-dns/v1/zones/example.com")
+			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-dns/v1/zones/example.com")
 			mock.
-				Get("/edgegrid-dns/v1/zones/example.com").
+				Get("/config-dns/v1/zones/example.com").
 				HeaderPresent("Authorization").
 				Reply(200).
 				SetHeader("Content-Type", "application/json").
@@ -278,9 +278,9 @@ func TestGetZoneNsRecords(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
-			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/edgegrid-dns/v1/zones/example.com")
+			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-dns/v1/zones/example.com")
 			mock.
-				Get("/edgegrid-dns/v1/zones/example.com").
+				Get("/config-dns/v1/zones/example.com").
 				HeaderPresent("Authorization").
 				Reply(200).
 				SetHeader("Content-Type", "application/json").
@@ -354,9 +354,9 @@ func TestGetZoneNsec3Records(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
-			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/edgegrid-dns/v1/zones/example.com")
+			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-dns/v1/zones/example.com")
 			mock.
-				Get("/edgegrid-dns/v1/zones/example.com").
+				Get("/config-dns/v1/zones/example.com").
 				HeaderPresent("Authorization").
 				Reply(200).
 				SetHeader("Content-Type", "application/json").
@@ -426,9 +426,9 @@ func TestGetZoneNsec3paramRecords(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
-			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/edgegrid-dns/v1/zones/example.com")
+			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-dns/v1/zones/example.com")
 			mock.
-				Get("/edgegrid-dns/v1/zones/example.com").
+				Get("/config-dns/v1/zones/example.com").
 				HeaderPresent("Authorization").
 				Reply(200).
 				SetHeader("Content-Type", "application/json").
@@ -498,9 +498,9 @@ func TestGetZoneSrvRecords(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
-			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/edgegrid-dns/v1/zones/example.com")
+			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-dns/v1/zones/example.com")
 			mock.
-				Get("/edgegrid-dns/v1/zones/example.com").
+				Get("/config-dns/v1/zones/example.com").
 				HeaderPresent("Authorization").
 				Reply(200).
 				SetHeader("Content-Type", "application/json").

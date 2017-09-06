@@ -77,7 +77,7 @@ func (zone *Zone) Save() error {
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
-		"/edgegrid-dns/v1/zones/"+zone.Zone.Name,
+		"/config-dns/v1/zones/"+zone.Zone.Name,
 		zone,
 	)
 	if err != nil {
