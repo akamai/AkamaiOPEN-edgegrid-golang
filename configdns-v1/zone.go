@@ -110,7 +110,7 @@ func (zone *Zone) Save() error {
 	}
 
 	if err != nil {
-		return fmt.Errorf(errorMap[ErrFailedToSave], err.Error())
+		return &FailedToSaveError{err: err}
 	}
 
 	log.Printf("[INFO] Zone Saved")

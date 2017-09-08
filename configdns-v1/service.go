@@ -34,7 +34,7 @@ func GetZone(hostname string) (*Zone, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, fmt.Errorf(errorMap[ErrZoneNotFound], hostname)
+		return nil, &ZoneNotFoundError{zoneName: hostname}
 	} else {
 		err = client.BodyJSON(res, &zone)
 		if err != nil {
