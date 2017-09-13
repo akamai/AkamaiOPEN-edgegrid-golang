@@ -41,6 +41,6 @@ func GetZone(hostname string) (*Zone, error) {
 			return nil, err
 		}
 
-		return &zone, nil
+		return zone, nil
 	}
 }
