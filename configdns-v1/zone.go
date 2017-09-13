@@ -66,8 +66,8 @@ type Zone struct {
 }
 
 // NewZone creates a new Zone
-func NewZone(hostname string) Zone {
-	zone := Zone{Token: "new"}
+func NewZone(hostname string) *Zone {
+	zone := &Zone{Token: "new"}
 	zone.Zone.Name = hostname
 	return zone
 }
