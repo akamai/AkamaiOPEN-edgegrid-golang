@@ -19,14 +19,14 @@ type ZoneError struct {
 }
 
 func (e *ZoneError) Network() bool {
-	if httpErrorMessage != "" {
+	if e.httpErrorMessage != "" {
 		return true
 	}
 	return false
 }
 
 func (e *ZoneError) NotFound() bool {
-	if e.err == nil && httpErrorMessage == "" {
+	if e.err == nil && e.httpErrorMessage == "" {
 		return true
 	}
 	return false
@@ -41,10 +41,6 @@ func (e *ZoneError) ValidationFailed() bool {
 }
 
 func (e *ZoneError) Error() string {
-	if e == nil {
-		return "<nil>"
-	}
-
 	if e.Network() {
 		return fmt.Sprintf("Zone \"%s\" network error: [%s]", e.zoneName, e.httpErrorMessage)
 	}
@@ -60,6 +56,8 @@ func (e *ZoneError) Error() string {
 	if e.ValidationFailed() {
 		return fmt.Sprintf("Zone \"%s\" validation failed: [%s]", e.zoneName, e.err.Error())
 	}
+
+	return "<nil>"
 }
 
 type RecordError struct {
@@ -69,7 +67,7 @@ type RecordError struct {
 }
 
 func (e *RecordError) Network() bool {
-	if httpErrorMessage != "" {
+	if e.httpErrorMessage != "" {
 		return true
 	}
 	return false
@@ -80,24 +78,20 @@ func (e *RecordError) NotFound() bool {
 }
 
 func (e *RecordError) FailedToSave() bool {
-	if fieldName == "" {
+	if e.fieldName == "" {
 		return true
 	}
 	return false
 }
 
 func (e *RecordError) ValidationFailed() bool {
-	if fieldName != "" {
+	if e.fieldName != "" {
 		return true
 	}
 	return false
 }
 
 func (e *RecordError) Error() string {
-	if e == nil {
-		return "<nil>"
-	}
-
 	if e.Network() {
 		return fmt.Sprintf("Record network error: [%s]", e.httpErrorMessage)
 	}
@@ -113,4 +107,6 @@ func (e *RecordError) Error() string {
 	if e.ValidationFailed() {
 		return fmt.Sprintf("Record validation failed for field [%s]: [%s]", e.fieldName, e.err.Error())
 	}
+
+	return "<nil>"
 }
