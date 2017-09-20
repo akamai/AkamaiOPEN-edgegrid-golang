@@ -1,28 +1,8 @@
 package dns
 
 import (
-	// "fmt"
 	"strings"
 )
-
-// type ValidationFailedError struct {
-// 	fieldName string
-// 	err       error
-// }
-//
-// type Error interface {
-// 	error
-// 	IsZoneNotFound() bool
-// 	IsFailedToSave() bool
-// 	IsValidationFailed() bool
-// }
-//
-// func (e ValidationFailedError) Error() string {
-// 	if e == nil {
-// 		return "<nil>"
-// 	}
-// 	return fmt.Sprintf("Validation Failed - Field is not allowed for this type: %s", e.fieldName)
-// }
 
 // All record types (below) must implement the DNSRecord interface
 // This allows the record to be used dynamically in slices - see the Zone struct definition in zone.go
@@ -129,7 +109,7 @@ func (record ARecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type AaaaRecord struct {
@@ -173,7 +153,7 @@ func (record AaaaRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type AfsdbRecord struct {
@@ -220,7 +200,7 @@ func (record AfsdbRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type CnameRecord struct {
@@ -264,7 +244,7 @@ func (record CnameRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type DnskeyRecord struct {
@@ -317,7 +297,7 @@ func (record DnskeyRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type DsRecord struct {
@@ -370,7 +350,7 @@ func (record DsRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type HinfoRecord struct {
@@ -417,7 +397,7 @@ func (record HinfoRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type LocRecord struct {
@@ -461,7 +441,7 @@ func (record LocRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type MxRecord struct {
@@ -508,7 +488,7 @@ func (record MxRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type NaptrRecord struct {
@@ -567,7 +547,7 @@ func (record NaptrRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type NsRecord struct {
@@ -611,7 +591,7 @@ func (record NsRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type Nsec3Record struct {
@@ -670,7 +650,7 @@ func (record Nsec3Record) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type Nsec3paramRecord struct {
@@ -723,7 +703,7 @@ func (record Nsec3paramRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type PtrRecord struct {
@@ -767,7 +747,7 @@ func (record PtrRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type RpRecord struct {
@@ -814,7 +794,7 @@ func (record RpRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type RrsigRecord struct {
@@ -885,7 +865,7 @@ func (record RrsigRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type SoaRecord struct {
@@ -941,7 +921,7 @@ func (record SoaRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type SpfRecord struct {
@@ -985,7 +965,7 @@ func (record SpfRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type SrvRecord struct {
@@ -1038,7 +1018,7 @@ func (record SrvRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type SshfpRecord struct {
@@ -1088,7 +1068,7 @@ func (record SshfpRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 type TxtRecord struct {
@@ -1132,7 +1112,7 @@ func (record TxtRecord) SetField(name string, value interface{}) error {
 		}
 		return nil
 	}
-	return &ValidationFailedError{fieldName: name}
+	return &RecordError{fieldName: name}
 }
 
 func contains(fieldMap []string, field string) bool {

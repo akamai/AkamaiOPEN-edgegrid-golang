@@ -1,7 +1,6 @@
 package dns
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -97,7 +96,7 @@ func (zone *Zone) Save() error {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return &ZoneError{zoneName: zone.Zone.Name, err: err}
+		return &ZoneError{zoneName: zone.Zone.Name, apiErrorMessage: err.Title, err: err}
 	}
 
 	for {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-type configDNSError interface {
+type ConfigDNSError interface {
 	error
 	Network() bool
 	NotFound() bool
@@ -12,9 +12,15 @@ type configDNSError interface {
 	ValidationFailed() bool
 }
 
+func IsConfigDNSError(e error) bool {
+	_, ok := e.(ConfigDNSError)
+	return ok
+}
+
 type ZoneError struct {
 	zoneName         string
 	httpErrorMessage string
+	apiErrorMessage  string
 	err              error
 }
 
@@ -37,6 +43,9 @@ func (e *ZoneError) FailedToSave() bool {
 }
 
 func (e *ZoneError) ValidationFailed() bool {
+	if e.apiErrorMessage != "" {
+		return true
+	}
 	return false
 }
 
@@ -55,6 +64,10 @@ func (e *ZoneError) Error() string {
 
 	if e.ValidationFailed() {
 		return fmt.Sprintf("Zone \"%s\" validation failed: [%s]", e.zoneName, e.err.Error())
+	}
+
+	if e.err != nil {
+		return e.err.Error()
 	}
 
 	return "<nil>"
