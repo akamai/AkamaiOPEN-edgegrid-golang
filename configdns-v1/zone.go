@@ -84,13 +84,20 @@ func (zone *Zone) Save() error {
 	}
 
 	res, err := client.Do(Config, req)
+
+	// Network error
 	if err != nil {
-		return err
+		return &ZoneError{
+			zoneName:         zone.Zone.Name,
+			httpErrorMessage: err.Error(),
+			err:              err,
+		}
 	}
 
+	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return fmt.Errorf("Unable to save record (%s)", err.Error())
+		return &ZoneError{zoneName: zone.Zone.Name, err: err}
 	}
 
 	for {
@@ -106,10 +113,6 @@ func (zone *Zone) Save() error {
 		}
 		log.Println("[DEBUG] Token not updated, retrying...")
 		time.Sleep(time.Second)
-	}
-
-	if err != nil {
-		return &FailedToSaveError{err: err}
 	}
 
 	log.Printf("[INFO] Zone Saved")
