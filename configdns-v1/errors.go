@@ -68,7 +68,7 @@ type RecordError struct {
 	err              error
 }
 
-func (e *ZoneError) Network() bool {
+func (e *RecordError) Network() bool {
 	if httpErrorMessage != "" {
 		return true
 	}
