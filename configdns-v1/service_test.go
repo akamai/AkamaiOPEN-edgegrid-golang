@@ -15,6 +15,7 @@ var (
 		ClientToken:  "akab-client-token-xxx-xxxxxxxxxxxxxxxx",
 		ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
 		MaxBody:      2048,
+		Debug:        true,
 	}
 )
 

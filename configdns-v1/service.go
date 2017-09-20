@@ -1,10 +1,9 @@
 package dns
 
 import (
-	"fmt"
-
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -25,21 +24,23 @@ func GetZone(hostname string) (*Zone, error) {
 		return nil, err
 	}
 
+	log.Debugf("Request being sent: %s", req)
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return nil, err
 	}
+	log.Debugf("Response received: %s", res)
 
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, fmt.Errorf(errorMap[ErrZoneNotFound], hostname)
+		return nil, &ZoneError{zoneName: hostname}
 	} else {
 		err = client.BodyJSON(res, &zone)
 		if err != nil {
 			return nil, err
 		}
 
-		return &zone, nil
+		return zone, nil
 	}
 }

@@ -66,8 +66,8 @@ type Zone struct {
 }
 
 // NewZone creates a new Zone
-func NewZone(hostname string) Zone {
-	zone := Zone{Token: "new"}
+func NewZone(hostname string) *Zone {
+	zone := &Zone{Token: "new"}
 	zone.Zone.Name = hostname
 	return zone
 }
@@ -85,13 +85,20 @@ func (zone *Zone) Save() error {
 	}
 
 	res, err := client.Do(Config, req)
+
+	// Network error
 	if err != nil {
-		return err
+		return &ZoneError{
+			zoneName:         zone.Zone.Name,
+			httpErrorMessage: err.Error(),
+			err:              err,
+		}
 	}
 
+	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return fmt.Errorf("Unable to save record (%s)", err.Error())
+		return &ZoneError{zoneName: zone.Zone.Name, err: err}
 	}
 
 	for {
@@ -107,10 +114,6 @@ func (zone *Zone) Save() error {
 		}
 		log.Println("[DEBUG] Token not updated, retrying...")
 		time.Sleep(time.Second)
-	}
-
-	if err != nil {
-		return fmt.Errorf(errorMap[ErrFailedToSave], err.Error())
 	}
 
 	log.Printf("[INFO] Zone Saved")
