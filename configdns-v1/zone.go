@@ -490,6 +490,7 @@ func (zone *Zone) addRrsigRecord(record *RrsigRecord, replace bool) error {
 }
 
 func (zone *Zone) addSoaRecord(record *SoaRecord, replace bool) error {
+	// Only one SOA records is allowed
 	zone.Zone.Soa = record
 	return nil
 }
@@ -912,8 +913,9 @@ func (zone *Zone) removeTxtRecord(record *TxtRecord) error {
 }
 
 func (zone *Zone) PreMarshalJSON() error {
-	if zone.Zone.Soa != nil {
-		zone.Zone.Soa.Serial = int(time.Now().Unix())
+	if zone.Zone.Soa == nil {
+		zone.Zone.Soa = NewSoaRecord()
 	}
+	zone.Zone.Soa.Serial = int(time.Now().Unix())
 	return nil
 }
