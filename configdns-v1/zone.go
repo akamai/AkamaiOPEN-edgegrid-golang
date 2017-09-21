@@ -121,45 +121,45 @@ func (zone *Zone) Save() error {
 
 func (zone *Zone) AddRecord(recordPtr interface{}) error {
 	switch recordPtr.(type) {
-	case ARecord:
+	case *ARecord:
 		return zone.addARecord(recordPtr.(*ARecord), true)
-	case AaaaRecord:
+	case *AaaaRecord:
 		return zone.addAaaaRecord(recordPtr.(*AaaaRecord), true)
-	case AfsdbRecord:
+	case *AfsdbRecord:
 		return zone.addAfsdbRecord(recordPtr.(*AfsdbRecord), true)
-	case CnameRecord:
+	case *CnameRecord:
 		return zone.addCnameRecord(recordPtr.(*CnameRecord), true)
-	case DnskeyRecord:
+	case *DnskeyRecord:
 		return zone.addDnskeyRecord(recordPtr.(*DnskeyRecord), true)
-	case DsRecord:
+	case *DsRecord:
 		return zone.addDsRecord(recordPtr.(*DsRecord), true)
-	case HinfoRecord:
+	case *HinfoRecord:
 		return zone.addHinfoRecord(recordPtr.(*HinfoRecord), true)
-	case LocRecord:
+	case *LocRecord:
 		return zone.addLocRecord(recordPtr.(*LocRecord), true)
-	case MxRecord:
+	case *MxRecord:
 		return zone.addMxRecord(recordPtr.(*MxRecord), true)
-	case NaptrRecord:
+	case *NaptrRecord:
 		return zone.addNaptrRecord(recordPtr.(*NaptrRecord), true)
-	case NsRecord:
+	case *NsRecord:
 		return zone.addNsRecord(recordPtr.(*NsRecord), true)
-	case Nsec3Record:
+	case *Nsec3Record:
 		return zone.addNsec3Record(recordPtr.(*Nsec3Record), true)
-	case Nsec3paramRecord:
+	case *Nsec3paramRecord:
 		return zone.addNsec3paramRecord(recordPtr.(*Nsec3paramRecord), true)
-	case PtrRecord:
+	case *PtrRecord:
 		return zone.addPtrRecord(recordPtr.(*PtrRecord), true)
-	case RpRecord:
+	case *RpRecord:
 		return zone.addRpRecord(recordPtr.(*RpRecord), true)
-	case RrsigRecord:
+	case *RrsigRecord:
 		return zone.addRrsigRecord(recordPtr.(*RrsigRecord), true)
-	case SpfRecord:
+	case *SpfRecord:
 		return zone.addSpfRecord(recordPtr.(*SpfRecord), true)
-	case SrvRecord:
+	case *SrvRecord:
 		return zone.addSrvRecord(recordPtr.(*SrvRecord), true)
-	case SshfpRecord:
+	case *SshfpRecord:
 		return zone.addSshfpRecord(recordPtr.(*SshfpRecord), true)
-	case TxtRecord:
+	case *TxtRecord:
 		return zone.addTxtRecord(recordPtr.(*TxtRecord), true)
 	}
 
@@ -168,45 +168,45 @@ func (zone *Zone) AddRecord(recordPtr interface{}) error {
 
 func (zone *Zone) RemoveRecord(recordPtr interface{}) error {
 	switch recordPtr.(type) {
-	case ARecord:
+	case *ARecord:
 		return zone.removeARecord(recordPtr.(*ARecord))
-	case AaaaRecord:
+	case *AaaaRecord:
 		return zone.removeAaaaRecord(recordPtr.(*AaaaRecord))
-	case AfsdbRecord:
+	case *AfsdbRecord:
 		return zone.removeAfsdbRecord(recordPtr.(*AfsdbRecord))
-	case CnameRecord:
+	case *CnameRecord:
 		return zone.removeCnameRecord(recordPtr.(*CnameRecord))
-	case DnskeyRecord:
+	case *DnskeyRecord:
 		return zone.removeDnskeyRecord(recordPtr.(*DnskeyRecord))
-	case DsRecord:
+	case *DsRecord:
 		return zone.removeDsRecord(recordPtr.(*DsRecord))
-	case HinfoRecord:
+	case *HinfoRecord:
 		return zone.removeHinfoRecord(recordPtr.(*HinfoRecord))
-	case LocRecord:
+	case *LocRecord:
 		return zone.removeLocRecord(recordPtr.(*LocRecord))
-	case MxRecord:
+	case *MxRecord:
 		return zone.removeMxRecord(recordPtr.(*MxRecord))
-	case NaptrRecord:
+	case *NaptrRecord:
 		return zone.removeNaptrRecord(recordPtr.(*NaptrRecord))
-	case NsRecord:
+	case *NsRecord:
 		return zone.removeNsRecord(recordPtr.(*NsRecord))
-	case Nsec3Record:
+	case *Nsec3Record:
 		return zone.removeNsec3Record(recordPtr.(*Nsec3Record))
-	case Nsec3paramRecord:
+	case *Nsec3paramRecord:
 		return zone.removeNsec3paramRecord(recordPtr.(*Nsec3paramRecord))
-	case PtrRecord:
+	case *PtrRecord:
 		return zone.removePtrRecord(recordPtr.(*PtrRecord))
-	case RpRecord:
+	case *RpRecord:
 		return zone.removeRpRecord(recordPtr.(*RpRecord))
-	case RrsigRecord:
+	case *RrsigRecord:
 		return zone.removeRrsigRecord(recordPtr.(*RrsigRecord))
-	case SpfRecord:
+	case *SpfRecord:
 		return zone.removeSpfRecord(recordPtr.(*SpfRecord))
-	case SrvRecord:
+	case *SrvRecord:
 		return zone.removeSrvRecord(recordPtr.(*SrvRecord))
-	case SshfpRecord:
+	case *SshfpRecord:
 		return zone.removeSshfpRecord(recordPtr.(*SshfpRecord))
-	case TxtRecord:
+	case *TxtRecord:
 		return zone.removeTxtRecord(recordPtr.(*TxtRecord))
 	}
 
