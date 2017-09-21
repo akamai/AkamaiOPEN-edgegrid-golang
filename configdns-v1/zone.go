@@ -66,6 +66,7 @@ type Zone struct {
 // NewZone creates a new Zone
 func NewZone(hostname string) *Zone {
 	zone := &Zone{Token: "new"}
+	zone.Zone.Soa = NewSoaRecord()
 	zone.Zone.Name = hostname
 	return zone
 }
@@ -909,13 +910,5 @@ func (zone *Zone) removeTxtRecord(record *TxtRecord) error {
 		return errors.New("Txt Record not found")
 	}
 
-	return nil
-}
-
-func (zone *Zone) PreMarshalJSON() error {
-	if zone.Zone.Soa == nil {
-		zone.Zone.Soa = NewSoaRecord()
-	}
-	zone.Zone.Soa.SetField("serial", int(time.Now().Unix()))
 	return nil
 }

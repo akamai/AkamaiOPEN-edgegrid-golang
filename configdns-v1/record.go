@@ -2,6 +2,7 @@ package dns
 
 import (
 	"strings"
+	"time"
 )
 
 // All record types (below) must implement the DNSRecord interface
@@ -875,7 +876,7 @@ type SoaRecord struct {
 }
 
 func NewSoaRecord() *SoaRecord {
-	return &SoaRecord{
+	r := &SoaRecord{
 		&baseRecord{
 			RecordType: "SOA",
 			fieldMap: []string{
@@ -890,6 +891,8 @@ func NewSoaRecord() *SoaRecord {
 			},
 		},
 	}
+	r.SetField("serial", int(time.Now().Unix()))
+	return r
 }
 
 func (record *SoaRecord) Allows(field string) bool {
