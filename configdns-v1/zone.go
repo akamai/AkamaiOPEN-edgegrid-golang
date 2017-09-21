@@ -916,6 +916,6 @@ func (zone *Zone) PreMarshalJSON() error {
 	if zone.Zone.Soa == nil {
 		zone.Zone.Soa = NewSoaRecord()
 	}
-	zone.Zone.Soa.Serial = int(time.Now().Unix())
+	zone.Zone.Soa.SetField("serial", int(time.Now().Unix()))
 	return nil
 }
