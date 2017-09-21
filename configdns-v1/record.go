@@ -69,12 +69,12 @@ type baseRecord struct {
 }
 
 type ARecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewARecord() ARecord {
-	return ARecord{
-		baseRecord{
+func NewARecord() *ARecord {
+	return &ARecord{
+		&baseRecord{
 			RecordType: "A",
 			fieldMap: []string{
 				"active",
@@ -86,15 +86,15 @@ func NewARecord() ARecord {
 	}
 }
 
-func (record ARecord) Allows(field string) bool {
+func (record *ARecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record ARecord) GetAllowedFields() []string {
+func (record *ARecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record ARecord) SetField(name string, value interface{}) error {
+func (record *ARecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -106,6 +106,8 @@ func (record ARecord) SetField(name string, value interface{}) error {
 			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		default:
+			return &RecordError{fieldName: name}
 		}
 		return nil
 	}
@@ -113,12 +115,12 @@ func (record ARecord) SetField(name string, value interface{}) error {
 }
 
 type AaaaRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewAaaaRecord() AaaaRecord {
-	return AaaaRecord{
-		baseRecord{
+func NewAaaaRecord() *AaaaRecord {
+	return &AaaaRecord{
+		&baseRecord{
 			RecordType: "AAAA",
 			fieldMap: []string{
 				"active",
@@ -130,15 +132,15 @@ func NewAaaaRecord() AaaaRecord {
 	}
 }
 
-func (record AaaaRecord) Allows(field string) bool {
+func (record *AaaaRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record AaaaRecord) GetAllowedFields() []string {
+func (record *AaaaRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record AaaaRecord) SetField(name string, value interface{}) error {
+func (record *AaaaRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -157,12 +159,12 @@ func (record AaaaRecord) SetField(name string, value interface{}) error {
 }
 
 type AfsdbRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewAfsdbRecord() AfsdbRecord {
-	return AfsdbRecord{
-		baseRecord{
+func NewAfsdbRecord() *AfsdbRecord {
+	return &AfsdbRecord{
+		&baseRecord{
 			RecordType: "AFSDB",
 			fieldMap: []string{
 				"active",
@@ -175,15 +177,15 @@ func NewAfsdbRecord() AfsdbRecord {
 	}
 }
 
-func (record AfsdbRecord) Allows(field string) bool {
+func (record *AfsdbRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record AfsdbRecord) GetAllowedFields() []string {
+func (record *AfsdbRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record AfsdbRecord) SetField(name string, value interface{}) error {
+func (record *AfsdbRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -204,12 +206,12 @@ func (record AfsdbRecord) SetField(name string, value interface{}) error {
 }
 
 type CnameRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewCnameRecord() CnameRecord {
-	return CnameRecord{
-		baseRecord{
+func NewCnameRecord() *CnameRecord {
+	return &CnameRecord{
+		&baseRecord{
 			RecordType: "CNAME",
 			fieldMap: []string{
 				"active",
@@ -221,15 +223,15 @@ func NewCnameRecord() CnameRecord {
 	}
 }
 
-func (record CnameRecord) Allows(field string) bool {
+func (record *CnameRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record CnameRecord) GetAllowedFields() []string {
+func (record *CnameRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record CnameRecord) SetField(name string, value interface{}) error {
+func (record *CnameRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -248,12 +250,12 @@ func (record CnameRecord) SetField(name string, value interface{}) error {
 }
 
 type DnskeyRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewDnskeyRecord() DnskeyRecord {
-	return DnskeyRecord{
-		baseRecord{
+func NewDnskeyRecord() *DnskeyRecord {
+	return &DnskeyRecord{
+		&baseRecord{
 			RecordType: "DNSKEY",
 			fieldMap: []string{
 				"active",
@@ -268,15 +270,15 @@ func NewDnskeyRecord() DnskeyRecord {
 	}
 }
 
-func (record DnskeyRecord) Allows(field string) bool {
+func (record *DnskeyRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record DnskeyRecord) GetAllowedFields() []string {
+func (record *DnskeyRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record DnskeyRecord) SetField(name string, value interface{}) error {
+func (record *DnskeyRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -301,12 +303,12 @@ func (record DnskeyRecord) SetField(name string, value interface{}) error {
 }
 
 type DsRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewDsRecord() DsRecord {
-	return DsRecord{
-		baseRecord{
+func NewDsRecord() *DsRecord {
+	return &DsRecord{
+		&baseRecord{
 			RecordType: "DS",
 			fieldMap: []string{
 				"active",
@@ -321,15 +323,15 @@ func NewDsRecord() DsRecord {
 	}
 }
 
-func (record DsRecord) Allows(field string) bool {
+func (record *DsRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record DsRecord) GetAllowedFields() []string {
+func (record *DsRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record DsRecord) SetField(name string, value interface{}) error {
+func (record *DsRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -354,12 +356,12 @@ func (record DsRecord) SetField(name string, value interface{}) error {
 }
 
 type HinfoRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewHinfoRecord() HinfoRecord {
-	return HinfoRecord{
-		baseRecord{
+func NewHinfoRecord() *HinfoRecord {
+	return &HinfoRecord{
+		&baseRecord{
 			RecordType: "HINFO",
 			fieldMap: []string{
 				"active",
@@ -372,15 +374,15 @@ func NewHinfoRecord() HinfoRecord {
 	}
 }
 
-func (record HinfoRecord) Allows(field string) bool {
+func (record *HinfoRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record HinfoRecord) GetAllowedFields() []string {
+func (record *HinfoRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record HinfoRecord) SetField(name string, value interface{}) error {
+func (record *HinfoRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -401,12 +403,12 @@ func (record HinfoRecord) SetField(name string, value interface{}) error {
 }
 
 type LocRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewLocRecord() LocRecord {
-	return LocRecord{
-		baseRecord{
+func NewLocRecord() *LocRecord {
+	return &LocRecord{
+		&baseRecord{
 			RecordType: "LOC",
 			fieldMap: []string{
 				"active",
@@ -418,15 +420,15 @@ func NewLocRecord() LocRecord {
 	}
 }
 
-func (record LocRecord) Allows(field string) bool {
+func (record *LocRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record LocRecord) GetAllowedFields() []string {
+func (record *LocRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record LocRecord) SetField(name string, value interface{}) error {
+func (record *LocRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -445,12 +447,12 @@ func (record LocRecord) SetField(name string, value interface{}) error {
 }
 
 type MxRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewMxRecord() MxRecord {
-	return MxRecord{
-		baseRecord{
+func NewMxRecord() *MxRecord {
+	return &MxRecord{
+		&baseRecord{
 			RecordType: "MX",
 			fieldMap: []string{
 				"active",
@@ -463,15 +465,15 @@ func NewMxRecord() MxRecord {
 	}
 }
 
-func (record MxRecord) Allows(field string) bool {
+func (record *MxRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record MxRecord) GetAllowedFields() []string {
+func (record *MxRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record MxRecord) SetField(name string, value interface{}) error {
+func (record *MxRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -492,12 +494,12 @@ func (record MxRecord) SetField(name string, value interface{}) error {
 }
 
 type NaptrRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewNaptrRecord() NaptrRecord {
-	return NaptrRecord{
-		baseRecord{
+func NewNaptrRecord() *NaptrRecord {
+	return &NaptrRecord{
+		&baseRecord{
 			RecordType: "NAPTR",
 			fieldMap: []string{
 				"active",
@@ -514,15 +516,15 @@ func NewNaptrRecord() NaptrRecord {
 	}
 }
 
-func (record NaptrRecord) Allows(field string) bool {
+func (record *NaptrRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record NaptrRecord) GetAllowedFields() []string {
+func (record *NaptrRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record NaptrRecord) SetField(name string, value interface{}) error {
+func (record *NaptrRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -551,12 +553,12 @@ func (record NaptrRecord) SetField(name string, value interface{}) error {
 }
 
 type NsRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewNsRecord() NsRecord {
-	return NsRecord{
-		baseRecord{
+func NewNsRecord() *NsRecord {
+	return &NsRecord{
+		&baseRecord{
 			RecordType: "NS",
 			fieldMap: []string{
 				"active",
@@ -568,15 +570,15 @@ func NewNsRecord() NsRecord {
 	}
 }
 
-func (record NsRecord) Allows(field string) bool {
+func (record *NsRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record NsRecord) GetAllowedFields() []string {
+func (record *NsRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record NsRecord) SetField(name string, value interface{}) error {
+func (record *NsRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -595,12 +597,12 @@ func (record NsRecord) SetField(name string, value interface{}) error {
 }
 
 type Nsec3Record struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewNsec3Record() Nsec3Record {
-	return Nsec3Record{
-		baseRecord{
+func NewNsec3Record() *Nsec3Record {
+	return &Nsec3Record{
+		&baseRecord{
 			RecordType: "NSEC3",
 			fieldMap: []string{
 				"active",
@@ -617,15 +619,15 @@ func NewNsec3Record() Nsec3Record {
 	}
 }
 
-func (record Nsec3Record) Allows(field string) bool {
+func (record *Nsec3Record) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record Nsec3Record) GetAllowedFields() []string {
+func (record *Nsec3Record) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record Nsec3Record) SetField(name string, value interface{}) error {
+func (record *Nsec3Record) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -654,12 +656,12 @@ func (record Nsec3Record) SetField(name string, value interface{}) error {
 }
 
 type Nsec3paramRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewNsec3paramRecord() Nsec3paramRecord {
-	return Nsec3paramRecord{
-		baseRecord{
+func NewNsec3paramRecord() *Nsec3paramRecord {
+	return &Nsec3paramRecord{
+		&baseRecord{
 			RecordType: "NSEC3PARAM",
 			fieldMap: []string{
 				"active",
@@ -674,15 +676,15 @@ func NewNsec3paramRecord() Nsec3paramRecord {
 	}
 }
 
-func (record Nsec3paramRecord) Allows(field string) bool {
+func (record *Nsec3paramRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record Nsec3paramRecord) GetAllowedFields() []string {
+func (record *Nsec3paramRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record Nsec3paramRecord) SetField(name string, value interface{}) error {
+func (record *Nsec3paramRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -707,12 +709,12 @@ func (record Nsec3paramRecord) SetField(name string, value interface{}) error {
 }
 
 type PtrRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewPtrRecord() PtrRecord {
-	return PtrRecord{
-		baseRecord{
+func NewPtrRecord() *PtrRecord {
+	return &PtrRecord{
+		&baseRecord{
 			RecordType: "PTR",
 			fieldMap: []string{
 				"active",
@@ -724,15 +726,15 @@ func NewPtrRecord() PtrRecord {
 	}
 }
 
-func (record PtrRecord) Allows(field string) bool {
+func (record *PtrRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record PtrRecord) GetAllowedFields() []string {
+func (record *PtrRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record PtrRecord) SetField(name string, value interface{}) error {
+func (record *PtrRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -751,12 +753,12 @@ func (record PtrRecord) SetField(name string, value interface{}) error {
 }
 
 type RpRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewRpRecord() RpRecord {
-	return RpRecord{
-		baseRecord{
+func NewRpRecord() *RpRecord {
+	return &RpRecord{
+		&baseRecord{
 			RecordType: "RP",
 			fieldMap: []string{
 				"active",
@@ -769,15 +771,15 @@ func NewRpRecord() RpRecord {
 	}
 }
 
-func (record RpRecord) Allows(field string) bool {
+func (record *RpRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record RpRecord) GetAllowedFields() []string {
+func (record *RpRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record RpRecord) SetField(name string, value interface{}) error {
+func (record *RpRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -798,12 +800,12 @@ func (record RpRecord) SetField(name string, value interface{}) error {
 }
 
 type RrsigRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewRrsigRecord() RrsigRecord {
-	return RrsigRecord{
-		baseRecord{
+func NewRrsigRecord() *RrsigRecord {
+	return &RrsigRecord{
+		&baseRecord{
 			RecordType: "RRSIG",
 			fieldMap: []string{
 				"active",
@@ -824,15 +826,15 @@ func NewRrsigRecord() RrsigRecord {
 	}
 }
 
-func (record RrsigRecord) Allows(field string) bool {
+func (record *RrsigRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record RrsigRecord) GetAllowedFields() []string {
+func (record *RrsigRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record RrsigRecord) SetField(name string, value interface{}) error {
+func (record *RrsigRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -869,12 +871,12 @@ func (record RrsigRecord) SetField(name string, value interface{}) error {
 }
 
 type SoaRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewSoaRecord() SoaRecord {
-	return SoaRecord{
-		baseRecord{
+func NewSoaRecord() *SoaRecord {
+	return &SoaRecord{
+		&baseRecord{
 			RecordType: "SOA",
 			fieldMap: []string{
 				"contact",
@@ -890,15 +892,15 @@ func NewSoaRecord() SoaRecord {
 	}
 }
 
-func (record SoaRecord) Allows(field string) bool {
+func (record *SoaRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record SoaRecord) GetAllowedFields() []string {
+func (record *SoaRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record SoaRecord) SetField(name string, value interface{}) error {
+func (record *SoaRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "contact":
@@ -925,12 +927,12 @@ func (record SoaRecord) SetField(name string, value interface{}) error {
 }
 
 type SpfRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewSpfRecord() SpfRecord {
-	return SpfRecord{
-		baseRecord{
+func NewSpfRecord() *SpfRecord {
+	return &SpfRecord{
+		&baseRecord{
 			RecordType: "SPF",
 			fieldMap: []string{
 				"active",
@@ -942,15 +944,15 @@ func NewSpfRecord() SpfRecord {
 	}
 }
 
-func (record SpfRecord) Allows(field string) bool {
+func (record *SpfRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record SpfRecord) GetAllowedFields() []string {
+func (record *SpfRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record SpfRecord) SetField(name string, value interface{}) error {
+func (record *SpfRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -969,12 +971,12 @@ func (record SpfRecord) SetField(name string, value interface{}) error {
 }
 
 type SrvRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewSrvRecord() SrvRecord {
-	return SrvRecord{
-		baseRecord{
+func NewSrvRecord() *SrvRecord {
+	return &SrvRecord{
+		&baseRecord{
 			RecordType: "SRV",
 			fieldMap: []string{
 				"active",
@@ -989,15 +991,15 @@ func NewSrvRecord() SrvRecord {
 	}
 }
 
-func (record SrvRecord) Allows(field string) bool {
+func (record *SrvRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record SrvRecord) GetAllowedFields() []string {
+func (record *SrvRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record SrvRecord) SetField(name string, value interface{}) error {
+func (record *SrvRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -1022,12 +1024,12 @@ func (record SrvRecord) SetField(name string, value interface{}) error {
 }
 
 type SshfpRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewSshfpRecord() SshfpRecord {
-	return SshfpRecord{
-		baseRecord{
+func NewSshfpRecord() *SshfpRecord {
+	return &SshfpRecord{
+		&baseRecord{
 			RecordType: "SSHFP",
 			fieldMap: []string{
 				"active",
@@ -1041,15 +1043,15 @@ func NewSshfpRecord() SshfpRecord {
 	}
 }
 
-func (record SshfpRecord) Allows(field string) bool {
+func (record *SshfpRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record SshfpRecord) GetAllowedFields() []string {
+func (record *SshfpRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record SshfpRecord) SetField(name string, value interface{}) error {
+func (record *SshfpRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":
@@ -1072,12 +1074,12 @@ func (record SshfpRecord) SetField(name string, value interface{}) error {
 }
 
 type TxtRecord struct {
-	baseRecord
+	*baseRecord
 }
 
-func NewTxtRecord() TxtRecord {
-	return TxtRecord{
-		baseRecord{
+func NewTxtRecord() *TxtRecord {
+	return &TxtRecord{
+		&baseRecord{
 			RecordType: "TXT",
 			fieldMap: []string{
 				"active",
@@ -1089,15 +1091,15 @@ func NewTxtRecord() TxtRecord {
 	}
 }
 
-func (record TxtRecord) Allows(field string) bool {
+func (record *TxtRecord) Allows(field string) bool {
 	return contains(record.fieldMap, field)
 }
 
-func (record TxtRecord) GetAllowedFields() []string {
+func (record *TxtRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
 
-func (record TxtRecord) SetField(name string, value interface{}) error {
+func (record *TxtRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "active":

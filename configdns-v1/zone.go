@@ -38,28 +38,28 @@ var (
 type Zone struct {
 	Token string `json:"token"`
 	Zone  struct {
-		Name       string    `json:"name,omitempty"`
-		A          RecordSet `json:"a,omitempty"`
-		Aaaa       RecordSet `json:"aaaa,omitempty"`
-		Afsdb      RecordSet `json:"afsdb,omitempty"`
-		Cname      RecordSet `json:"cname,omitempty"`
-		Dnskey     RecordSet `json:"dnskey,omitempty"`
-		Ds         RecordSet `json:"ds,omitempty"`
-		Hinfo      RecordSet `json:"hinfo,omitempty"`
-		Loc        RecordSet `json:"loc,omitempty"`
-		Mx         RecordSet `json:"mx,omitempty"`
-		Naptr      RecordSet `json:"naptr,omitempty"`
-		Ns         RecordSet `json:"ns,omitempty"`
-		Nsec3      RecordSet `json:"nsec3,omitempty"`
-		Nsec3param RecordSet `json:"nsec3param,omitempty"`
-		Ptr        RecordSet `json:"ptr,omitempty"`
-		Rp         RecordSet `json:"rp,omitempty"`
-		Rrsig      RecordSet `json:"rrsig,omitempty"`
-		Soa        SoaRecord `json:"soa,omitempty"`
-		Spf        RecordSet `json:"spf,omitempty"`
-		Srv        RecordSet `json:"srv,omitempty"`
-		Sshfp      RecordSet `json:"sshfp,omitempty"`
-		Txt        RecordSet `json:"txt,omitempty"`
+		Name       string     `json:"name,omitempty"`
+		A          RecordSet  `json:"a,omitempty"`
+		Aaaa       RecordSet  `json:"aaaa,omitempty"`
+		Afsdb      RecordSet  `json:"afsdb,omitempty"`
+		Cname      RecordSet  `json:"cname,omitempty"`
+		Dnskey     RecordSet  `json:"dnskey,omitempty"`
+		Ds         RecordSet  `json:"ds,omitempty"`
+		Hinfo      RecordSet  `json:"hinfo,omitempty"`
+		Loc        RecordSet  `json:"loc,omitempty"`
+		Mx         RecordSet  `json:"mx,omitempty"`
+		Naptr      RecordSet  `json:"naptr,omitempty"`
+		Ns         RecordSet  `json:"ns,omitempty"`
+		Nsec3      RecordSet  `json:"nsec3,omitempty"`
+		Nsec3param RecordSet  `json:"nsec3param,omitempty"`
+		Ptr        RecordSet  `json:"ptr,omitempty"`
+		Rp         RecordSet  `json:"rp,omitempty"`
+		Rrsig      RecordSet  `json:"rrsig,omitempty"`
+		Soa        *SoaRecord `json:"soa,omitempty"`
+		Spf        RecordSet  `json:"spf,omitempty"`
+		Srv        RecordSet  `json:"srv,omitempty"`
+		Sshfp      RecordSet  `json:"sshfp,omitempty"`
+		Txt        RecordSet  `json:"txt,omitempty"`
 	} `json:"zone"`
 }
 
@@ -217,7 +217,7 @@ func (zone *Zone) addARecord(record *ARecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.A {
-			if r.(ARecord).Name == record.Name {
+			if r.(*ARecord).Name == record.Name {
 				zone.Zone.A[key] = record
 				found = true
 			}
@@ -235,7 +235,7 @@ func (zone *Zone) addAaaaRecord(record *AaaaRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Aaaa {
-			if r.(AaaaRecord).Name == record.Name {
+			if r.(*AaaaRecord).Name == record.Name {
 				zone.Zone.Aaaa[key] = record
 				found = true
 			}
@@ -253,7 +253,7 @@ func (zone *Zone) addAfsdbRecord(record *AfsdbRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Afsdb {
-			if r.(AfsdbRecord).Name == record.Name {
+			if r.(*AfsdbRecord).Name == record.Name {
 				zone.Zone.Afsdb[key] = record
 				found = true
 			}
@@ -277,7 +277,7 @@ func (zone *Zone) addDnskeyRecord(record *DnskeyRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Dnskey {
-			if r.(DnskeyRecord).Name == record.Name {
+			if r.(*DnskeyRecord).Name == record.Name {
 				zone.Zone.Dnskey[key] = record
 				found = true
 			}
@@ -295,7 +295,7 @@ func (zone *Zone) addDsRecord(record *DsRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Ds {
-			if r.(DsRecord).Name == record.Name {
+			if r.(*DsRecord).Name == record.Name {
 				zone.Zone.Ds[key] = record
 				found = true
 			}
@@ -313,7 +313,7 @@ func (zone *Zone) addHinfoRecord(record *HinfoRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Hinfo {
-			if r.(HinfoRecord).Name == record.Name {
+			if r.(*HinfoRecord).Name == record.Name {
 				zone.Zone.Hinfo[key] = record
 				found = true
 			}
@@ -331,7 +331,7 @@ func (zone *Zone) addLocRecord(record *LocRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Loc {
-			if r.(LocRecord).Name == record.Name {
+			if r.(*LocRecord).Name == record.Name {
 				zone.Zone.Loc[key] = record
 				found = true
 			}
@@ -349,7 +349,7 @@ func (zone *Zone) addMxRecord(record *MxRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Mx {
-			if r.(MxRecord).Name == record.Name {
+			if r.(*MxRecord).Name == record.Name {
 				zone.Zone.Mx[key] = record
 				found = true
 			}
@@ -367,7 +367,7 @@ func (zone *Zone) addNaptrRecord(record *NaptrRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Naptr {
-			if r.(NaptrRecord).Name == record.Name {
+			if r.(*NaptrRecord).Name == record.Name {
 				zone.Zone.Naptr[key] = record
 				found = true
 			}
@@ -385,7 +385,7 @@ func (zone *Zone) addNsRecord(record *NsRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Ns {
-			if r.(NsRecord).Name == record.Name {
+			if r.(*NsRecord).Name == record.Name {
 				zone.Zone.Ns[key] = record
 				found = true
 			}
@@ -403,7 +403,7 @@ func (zone *Zone) addNsec3Record(record *Nsec3Record, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Nsec3 {
-			if r.(Nsec3Record).Name == record.Name {
+			if r.(*Nsec3Record).Name == record.Name {
 				zone.Zone.Nsec3[key] = record
 				found = true
 			}
@@ -421,7 +421,7 @@ func (zone *Zone) addNsec3paramRecord(record *Nsec3paramRecord, replace bool) er
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Nsec3param {
-			if r.(Nsec3paramRecord).Name == record.Name {
+			if r.(*Nsec3paramRecord).Name == record.Name {
 				zone.Zone.Nsec3param[key] = record
 				found = true
 			}
@@ -439,7 +439,7 @@ func (zone *Zone) addPtrRecord(record *PtrRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Ptr {
-			if r.(PtrRecord).Name == record.Name {
+			if r.(*PtrRecord).Name == record.Name {
 				zone.Zone.Ptr[key] = record
 				found = true
 			}
@@ -457,7 +457,7 @@ func (zone *Zone) addRpRecord(record *RpRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Rp {
-			if r.(RpRecord).Name == record.Name {
+			if r.(*RpRecord).Name == record.Name {
 				zone.Zone.Rp[key] = record
 				found = true
 			}
@@ -475,7 +475,7 @@ func (zone *Zone) addRrsigRecord(record *RrsigRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Rrsig {
-			if r.(RrsigRecord).Name == record.Name {
+			if r.(*RrsigRecord).Name == record.Name {
 				zone.Zone.Rrsig[key] = record
 				found = true
 			}
@@ -490,7 +490,7 @@ func (zone *Zone) addRrsigRecord(record *RrsigRecord, replace bool) error {
 }
 
 func (zone *Zone) addSoaRecord(record *SoaRecord, replace bool) error {
-	zone.Zone.Soa = *record
+	zone.Zone.Soa = record
 	return nil
 }
 
@@ -498,7 +498,7 @@ func (zone *Zone) addSpfRecord(record *SpfRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Spf {
-			if r.(SpfRecord).Name == record.Name {
+			if r.(*SpfRecord).Name == record.Name {
 				zone.Zone.Spf[key] = record
 				found = true
 			}
@@ -516,7 +516,7 @@ func (zone *Zone) addSrvRecord(record *SrvRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Srv {
-			if r.(SrvRecord).Name == record.Name {
+			if r.(*SrvRecord).Name == record.Name {
 				zone.Zone.Srv[key] = record
 				found = true
 			}
@@ -534,7 +534,7 @@ func (zone *Zone) addSshfpRecord(record *SshfpRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Sshfp {
-			if r.(SshfpRecord).Name == record.Name {
+			if r.(*SshfpRecord).Name == record.Name {
 				zone.Zone.Sshfp[key] = record
 				found = true
 			}
@@ -552,7 +552,7 @@ func (zone *Zone) addTxtRecord(record *TxtRecord, replace bool) error {
 	var found bool
 	if replace == true {
 		for key, r := range zone.Zone.Txt {
-			if r.(TxtRecord).Name == record.Name {
+			if r.(*TxtRecord).Name == record.Name {
 				zone.Zone.Txt[key] = record
 				found = true
 			}
@@ -839,7 +839,7 @@ func (zone *Zone) removeRrsigRecord(record *RrsigRecord) error {
 }
 
 func (zone *Zone) removeSoaRecord(record *SoaRecord) error {
-	zone.Zone.Soa = *record
+	zone.Zone.Soa = record
 	return nil
 }
 
@@ -912,6 +912,8 @@ func (zone *Zone) removeTxtRecord(record *TxtRecord) error {
 }
 
 func (zone *Zone) PreMarshalJSON() error {
-	zone.Zone.Soa.Serial = int(time.Now().Unix())
+	if zone.Zone.Soa != nil {
+		zone.Zone.Soa.Serial = int(time.Now().Unix())
+	}
 	return nil
 }

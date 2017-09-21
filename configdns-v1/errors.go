@@ -118,7 +118,7 @@ func (e *RecordError) Error() string {
 	}
 
 	if e.ValidationFailed() {
-		return fmt.Sprintf("Record validation failed for field [%s]: [%s]", e.fieldName, e.err.Error())
+		return fmt.Sprintf("Record validation failed for field [%s]", e.fieldName)
 	}
 
 	return "<nil>"
