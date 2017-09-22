@@ -160,6 +160,8 @@ func (zone *Zone) AddRecord(recordPtr interface{}) error {
 		return zone.addRpRecord(recordPtr.(*RpRecord), true)
 	case *RrsigRecord:
 		return zone.addRrsigRecord(recordPtr.(*RrsigRecord), true)
+	case *SoaRecord:
+		return zone.addSoaRecord(recordPtr.(*SoaRecord), true)
 	case *SpfRecord:
 		return zone.addSpfRecord(recordPtr.(*SpfRecord), true)
 	case *SrvRecord:
@@ -207,6 +209,8 @@ func (zone *Zone) RemoveRecord(recordPtr interface{}) error {
 		return zone.removeRpRecord(recordPtr.(*RpRecord))
 	case *RrsigRecord:
 		return zone.removeRrsigRecord(recordPtr.(*RrsigRecord))
+	case *SoaRecord:
+		return zone.removeSoaRecord(recordPtr.(*SoaRecord))
 	case *SpfRecord:
 		return zone.removeSpfRecord(recordPtr.(*SpfRecord))
 	case *SrvRecord:
