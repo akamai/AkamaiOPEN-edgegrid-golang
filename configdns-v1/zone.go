@@ -8,32 +8,6 @@ import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
-var (
-	recordTypes = []string{
-		"A",
-		"AAAA",
-		"AFSDB",
-		"CNAME",
-		"DNSKEY",
-		"DS",
-		"HINFO",
-		"LOC",
-		"MX",
-		"NAPTR",
-		"NS",
-		"NSEC3",
-		"NSEC3PARAM",
-		"PTR",
-		"RP",
-		"RRSIG",
-		"SOA",
-		"SPF",
-		"SRV",
-		"SSHFP",
-		"TXT",
-	}
-)
-
 // Zone represents a DNS zone
 type Zone struct {
 	Token string `json:"token"`
@@ -69,6 +43,38 @@ func NewZone(hostname string) *Zone {
 	zone.Zone.Soa = NewSoaRecord()
 	zone.Zone.Name = hostname
 	return zone
+}
+
+// GetZone retrieves a DNS Zone for a given hostname
+func GetZone(hostname string) (*Zone, error) {
+	zone := NewZone(hostname)
+	req, err := client.NewRequest(
+		Config,
+		"GET",
+		"/config-dns/v1/zones/"+hostname,
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) && res.StatusCode != 404 {
+		return nil, client.NewAPIError(res)
+	} else if res.StatusCode == 404 {
+		return nil, &ZoneError{zoneName: hostname}
+	} else {
+		err = client.BodyJSON(res, &zone)
+		if err != nil {
+			return nil, err
+		}
+
+		return zone, nil
+	}
 }
 
 // Save updates the Zone
