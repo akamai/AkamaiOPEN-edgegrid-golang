@@ -19,70 +19,23 @@ type DNSRecord interface {
 // RecordSet represents a collection of Records
 type RecordSet []DNSRecord
 
-// baseRecord represents the basic settings required for all types of DNS Records
-type baseRecord struct {
-	fieldMap            []string `json:"-"`
-	RecordType          string   `json:"-"`
-	Active              bool     `json:"active,omitempty"`
-	Algorithm           int      `json:"algorithm,omitempty"`
-	Contact             string   `json:"contact,omitempty"`
-	Digest              string   `json:"digest,omitempty"`
-	DigestType          int      `json:"digest_type,omitempty"`
-	Expiration          string   `json:"expiration,omitempty"`
-	Expire              int      `json:"expire,omitempty"`
-	Fingerprint         string   `json:"fingerprint,omitempty"`
-	FingerprintType     int      `json:"fingerprint_type,omitempty"`
-	Flags               int      `json:"flags,omitempty"`
-	Hardware            string   `json:"hardware,omitempty"`
-	Inception           string   `json:"inception,omitempty"`
-	Iterations          int      `json:"iterations,omitempty"`
-	Key                 string   `json:"key,omitempty"`
-	Keytag              int      `json:"keytag,omitempty"`
-	Labels              int      `json:"labels,omitempty"`
-	Mailbox             string   `json:"mailbox,omitempty"`
-	Minimum             int      `json:"minimum,omitempty"`
-	Name                string   `json:"name,omitempty"`
-	NextHashedOwnerName string   `json:"next_hashed_owner_name,omitempty"`
-	Order               int      `json:"order,omitempty"`
-	OriginalTTL         int      `json:"original_ttl,omitempty"`
-	Originserver        string   `json:"originserver,omitempty"`
-	Port                int      `json:"port,omitempty"`
-	Preference          int      `json:"preference,omitempty"`
-	Priority            int      `json:"priority,omitempty"`
-	Protocol            int      `json:"protocol,omitempty"`
-	Refresh             int      `json:"refresh,omitempty"`
-	Regexp              string   `json:"regexp,omitempty"`
-	Replacement         string   `json:"replacement,omitempty"`
-	Retry               int      `json:"retry,omitempty"`
-	Salt                string   `json:"salt,omitempty"`
-	Serial              int      `json:"serial,omitempty"`
-	Service             string   `json:"service,omitempty"`
-	Signature           string   `json:"signature,omitempty"`
-	Signer              string   `json:"signer,omitempty"`
-	Software            string   `json:"software,omitempty"`
-	Subtype             int      `json:"subtype,omitempty"`
-	Target              string   `json:"target,omitempty"`
-	TTL                 int      `json:"ttl,omitempty"`
-	Txt                 string   `json:"txt,omitempty"`
-	TypeBitmaps         string   `json:"type_bitmaps,omitempty"`
-	TypeCovered         string   `json:"type_covered,omitempty"`
-	Weight              uint     `json:"weight,omitempty"`
-}
-
 type ARecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
 }
 
 func NewARecord() *ARecord {
 	return &ARecord{
-		&baseRecord{
-			RecordType: "A",
-			fieldMap: []string{
-				"active",
-				"name",
-				"targets",
-				"ttl",
-			},
+		RecordType: "A",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
 		},
 	}
 }
@@ -98,37 +51,36 @@ func (record *ARecord) GetAllowedFields() []string {
 func (record *ARecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
-		default:
-			return &RecordError{fieldName: name}
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
 
 type AaaaRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
 }
 
 func NewAaaaRecord() *AaaaRecord {
 	return &AaaaRecord{
-		&baseRecord{
-			RecordType: "AAAA",
-			fieldMap: []string{
-				"active",
-				"name",
-				"targets",
-				"ttl",
-			},
+		RecordType: "AAAA",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
 		},
 	}
 }
@@ -144,15 +96,14 @@ func (record *AaaaRecord) GetAllowedFields() []string {
 func (record *AaaaRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
 		}
 		return nil
 	}
@@ -160,20 +111,24 @@ func (record *AaaaRecord) SetField(name string, value interface{}) error {
 }
 
 type AfsdbRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
+	Subtype    int      `json:"subtype,omitempty"`
 }
 
 func NewAfsdbRecord() *AfsdbRecord {
 	return &AfsdbRecord{
-		&baseRecord{
-			RecordType: "AFSDB",
-			fieldMap: []string{
-				"active",
-				"name",
-				"subtype",
-				"targets",
-				"ttl",
-			},
+		RecordType: "AFSDB",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
+			"subtype",
 		},
 	}
 }
@@ -189,17 +144,16 @@ func (record *AfsdbRecord) GetAllowedFields() []string {
 func (record *AfsdbRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "subtype":
-			record.Subtype = value.(int)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
+		case "subtype":
+			record.Subtype = value.(int)
 		}
 		return nil
 	}
@@ -207,19 +161,22 @@ func (record *AfsdbRecord) SetField(name string, value interface{}) error {
 }
 
 type CnameRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
 }
 
 func NewCnameRecord() *CnameRecord {
 	return &CnameRecord{
-		&baseRecord{
-			RecordType: "CNAME",
-			fieldMap: []string{
-				"active",
-				"name",
-				"targets",
-				"ttl",
-			},
+		RecordType: "CNAME",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
 		},
 	}
 }
@@ -235,15 +192,14 @@ func (record *CnameRecord) GetAllowedFields() []string {
 func (record *CnameRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
 		}
 		return nil
 	}
@@ -251,22 +207,28 @@ func (record *CnameRecord) SetField(name string, value interface{}) error {
 }
 
 type DnskeyRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Flags      int      `json:"flags,omitempty"`
+	Protocol   int      `json:"protocol,omitempty"`
+	Algorithm  int      `json:"algorithm,omitempty"`
+	Key        string   `json:"key,omitempty"`
 }
 
 func NewDnskeyRecord() *DnskeyRecord {
 	return &DnskeyRecord{
-		&baseRecord{
-			RecordType: "DNSKEY",
-			fieldMap: []string{
-				"active",
-				"algorithm",
-				"flags",
-				"key",
-				"name",
-				"protocol",
-				"targets",
-			},
+		RecordType: "DNSKEY",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"flags",
+			"protocol",
+			"algorithm",
+			"key",
 		},
 	}
 }
@@ -282,21 +244,20 @@ func (record *DnskeyRecord) GetAllowedFields() []string {
 func (record *DnskeyRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
-		case "algorithm":
-			record.Algorithm = value.(int)
-		case "flags":
-			record.Flags = value.(int)
-		case "key":
-			record.Key = value.(string)
 		case "name":
 			record.Name = value.(string)
+		case "ttl":
+			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "flags":
+			record.Flags = value.(int)
 		case "protocol":
 			record.Protocol = value.(int)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
+		case "algorithm":
+			record.Algorithm = value.(int)
+		case "key":
+			record.Key = value.(string)
 		}
 		return nil
 	}
@@ -304,22 +265,28 @@ func (record *DnskeyRecord) SetField(name string, value interface{}) error {
 }
 
 type DsRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Keytag     int      `json:"keytag,omitempty"`
+	Algorithm  int      `json:"algorithm,omitempty"`
+	DigestType int      `json:"digest_type,omitempty"`
+	Digest     string   `json:"digest,omitempty"`
 }
 
 func NewDsRecord() *DsRecord {
 	return &DsRecord{
-		&baseRecord{
-			RecordType: "DS",
-			fieldMap: []string{
-				"active",
-				"algorithm",
-				"digest",
-				"digesttype",
-				"key",
-				"name",
-				"targets",
-			},
+		RecordType: "DS",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"keytag",
+			"algorithm",
+			"digesttype",
+			"digest",
 		},
 	}
 }
@@ -335,21 +302,20 @@ func (record *DsRecord) GetAllowedFields() []string {
 func (record *DsRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
-		case "algorithm":
-			record.Algorithm = value.(int)
-		case "digest":
-			record.Digest = value.(string)
-		case "digesttype":
-			record.DigestType = value.(int)
-		case "key":
-			record.Key = value.(string)
 		case "name":
 			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
+		case "ttl":
+			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "keytag":
+			record.Keytag = value.(int)
+		case "algorithm":
+			record.Algorithm = value.(int)
+		case "digesttype":
+			record.DigestType = value.(int)
+		case "digest":
+			record.Digest = value.(string)
 		}
 		return nil
 	}
@@ -357,20 +323,24 @@ func (record *DsRecord) SetField(name string, value interface{}) error {
 }
 
 type HinfoRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Hardware   string   `json:"hardware,omitempty"`
+	Software   string   `json:"software,omitempty"`
 }
 
 func NewHinfoRecord() *HinfoRecord {
 	return &HinfoRecord{
-		&baseRecord{
-			RecordType: "HINFO",
-			fieldMap: []string{
-				"active",
-				"hardware",
-				"name",
-				"software",
-				"targets",
-			},
+		RecordType: "HINFO",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"hardware",
+			"software",
 		},
 	}
 }
@@ -386,17 +356,16 @@ func (record *HinfoRecord) GetAllowedFields() []string {
 func (record *HinfoRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
+		case "name":
+			record.Name = value.(string)
+		case "ttl":
+			record.TTL = value.(int)
 		case "active":
 			record.Active = value.(bool)
 		case "hardware":
 			record.Hardware = value.(string)
-		case "name":
-			record.Name = value.(string)
 		case "software":
 			record.Software = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		}
 		return nil
 	}
@@ -404,19 +373,22 @@ func (record *HinfoRecord) SetField(name string, value interface{}) error {
 }
 
 type LocRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
 }
 
 func NewLocRecord() *LocRecord {
 	return &LocRecord{
-		&baseRecord{
-			RecordType: "LOC",
-			fieldMap: []string{
-				"active",
-				"name",
-				"targets",
-				"ttl",
-			},
+		RecordType: "LOC",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
 		},
 	}
 }
@@ -432,15 +404,14 @@ func (record *LocRecord) GetAllowedFields() []string {
 func (record *LocRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
 		}
 		return nil
 	}
@@ -448,20 +419,24 @@ func (record *LocRecord) SetField(name string, value interface{}) error {
 }
 
 type MxRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
+	Priority   int      `json:"priority,omitempty"`
 }
 
 func NewMxRecord() *MxRecord {
 	return &MxRecord{
-		&baseRecord{
-			RecordType: "MX",
-			fieldMap: []string{
-				"active",
-				"name",
-				"priority",
-				"targets",
-				"ttl",
-			},
+		RecordType: "MX",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
+			"priority",
 		},
 	}
 }
@@ -477,17 +452,16 @@ func (record *MxRecord) GetAllowedFields() []string {
 func (record *MxRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "priority":
-			record.Priority = value.(int)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
+		case "priority":
+			record.Priority = value.(int)
 		}
 		return nil
 	}
@@ -495,24 +469,32 @@ func (record *MxRecord) SetField(name string, value interface{}) error {
 }
 
 type NaptrRecord struct {
-	*baseRecord
+	fieldMap    []string `json:"-"`
+	RecordType  string   `json:"-"`
+	Name        string   `json:"name,omitempty"`
+	TTL         int      `json:"ttl,omitempty"`
+	Active      bool     `json:"active,omitempty"`
+	Order       int      `json:"order,omitempty"`
+	Preference  int      `json:"preference,omitempty"`
+	Flags       int      `json:"flags,omitempty"`
+	Service     string   `json:"service,omitempty"`
+	Regexp      string   `json:"regexp,omitempty"`
+	Replacement string   `json:"replacement,omitempty"`
 }
 
 func NewNaptrRecord() *NaptrRecord {
 	return &NaptrRecord{
-		&baseRecord{
-			RecordType: "NAPTR",
-			fieldMap: []string{
-				"active",
-				"flags",
-				"name",
-				"order",
-				"preference",
-				"regexp",
-				"replacement",
-				"service",
-				"targets",
-			},
+		RecordType: "NAPTR",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"order",
+			"preference",
+			"flags",
+			"service",
+			"regexp",
+			"replacement",
 		},
 	}
 }
@@ -528,25 +510,24 @@ func (record *NaptrRecord) GetAllowedFields() []string {
 func (record *NaptrRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
-		case "flags":
-			record.Flags = value.(int)
 		case "name":
 			record.Name = value.(string)
+		case "ttl":
+			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
 		case "order":
 			record.Order = value.(int)
 		case "preference":
 			record.Preference = value.(int)
+		case "flags":
+			record.Flags = value.(int)
+		case "service":
+			record.Service = value.(string)
 		case "regexp":
 			record.Regexp = value.(string)
 		case "replacement":
 			record.Replacement = value.(string)
-		case "service":
-			record.Service = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		}
 		return nil
 	}
@@ -554,19 +535,22 @@ func (record *NaptrRecord) SetField(name string, value interface{}) error {
 }
 
 type NsRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
 }
 
 func NewNsRecord() *NsRecord {
 	return &NsRecord{
-		&baseRecord{
-			RecordType: "NS",
-			fieldMap: []string{
-				"active",
-				"name",
-				"targets",
-				"ttl",
-			},
+		RecordType: "NS",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
 		},
 	}
 }
@@ -582,15 +566,14 @@ func (record *NsRecord) GetAllowedFields() []string {
 func (record *NsRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
 		}
 		return nil
 	}
@@ -598,24 +581,32 @@ func (record *NsRecord) SetField(name string, value interface{}) error {
 }
 
 type Nsec3Record struct {
-	*baseRecord
+	fieldMap            []string `json:"-"`
+	RecordType          string   `json:"-"`
+	Name                string   `json:"name,omitempty"`
+	TTL                 int      `json:"ttl,omitempty"`
+	Active              bool     `json:"active,omitempty"`
+	Algorithm           int      `json:"algorithm,omitempty"`
+	Flags               int      `json:"flags,omitempty"`
+	Iterations          int      `json:"iterations,omitempty"`
+	Salt                string   `json:"salt,omitempty"`
+	NextHashedOwnerName string   `json:"next_hashed_owner_name,omitempty"`
+	TypeBitmaps         string   `json:"type_bitmaps,omitempty"`
 }
 
 func NewNsec3Record() *Nsec3Record {
 	return &Nsec3Record{
-		&baseRecord{
-			RecordType: "NSEC3",
-			fieldMap: []string{
-				"active",
-				"algorithm",
-				"flags",
-				"iterations",
-				"name",
-				"nexthashedownername",
-				"salt",
-				"targets",
-				"typebitmaps",
-			},
+		RecordType: "NSEC3",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"algorithm",
+			"flags",
+			"iterations",
+			"salt",
+			"nexthashedownername",
+			"typebitmaps",
 		},
 	}
 }
@@ -631,6 +622,10 @@ func (record *Nsec3Record) GetAllowedFields() []string {
 func (record *Nsec3Record) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
+		case "name":
+			record.Name = value.(string)
+		case "ttl":
+			record.TTL = value.(int)
 		case "active":
 			record.Active = value.(bool)
 		case "algorithm":
@@ -639,15 +634,10 @@ func (record *Nsec3Record) SetField(name string, value interface{}) error {
 			record.Flags = value.(int)
 		case "iterations":
 			record.Iterations = value.(int)
-		case "name":
-			record.Name = value.(string)
-		case "nexthashedownername":
-			record.NextHashedOwnerName = value.(string)
 		case "salt":
 			record.Salt = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
+		case "nexthashedownername":
+			record.NextHashedOwnerName = value.(string)
 		case "typebitmaps":
 			record.TypeBitmaps = value.(string)
 		}
@@ -657,22 +647,28 @@ func (record *Nsec3Record) SetField(name string, value interface{}) error {
 }
 
 type Nsec3paramRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Algorithm  int      `json:"algorithm,omitempty"`
+	Flags      int      `json:"flags,omitempty"`
+	Iterations int      `json:"iterations,omitempty"`
+	Salt       string   `json:"salt,omitempty"`
 }
 
 func NewNsec3paramRecord() *Nsec3paramRecord {
 	return &Nsec3paramRecord{
-		&baseRecord{
-			RecordType: "NSEC3PARAM",
-			fieldMap: []string{
-				"active",
-				"algorithm",
-				"flags",
-				"iterations",
-				"name",
-				"salt",
-				"targets",
-			},
+		RecordType: "NSEC3PARAM",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"algorithm",
+			"flags",
+			"iterations",
+			"salt",
 		},
 	}
 }
@@ -688,6 +684,10 @@ func (record *Nsec3paramRecord) GetAllowedFields() []string {
 func (record *Nsec3paramRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
+		case "name":
+			record.Name = value.(string)
+		case "ttl":
+			record.TTL = value.(int)
 		case "active":
 			record.Active = value.(bool)
 		case "algorithm":
@@ -696,13 +696,8 @@ func (record *Nsec3paramRecord) SetField(name string, value interface{}) error {
 			record.Flags = value.(int)
 		case "iterations":
 			record.Iterations = value.(int)
-		case "name":
-			record.Name = value.(string)
 		case "salt":
 			record.Salt = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		}
 		return nil
 	}
@@ -710,19 +705,22 @@ func (record *Nsec3paramRecord) SetField(name string, value interface{}) error {
 }
 
 type PtrRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
 }
 
 func NewPtrRecord() *PtrRecord {
 	return &PtrRecord{
-		&baseRecord{
-			RecordType: "PTR",
-			fieldMap: []string{
-				"active",
-				"name",
-				"targets",
-				"ttl",
-			},
+		RecordType: "PTR",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
 		},
 	}
 }
@@ -738,15 +736,14 @@ func (record *PtrRecord) GetAllowedFields() []string {
 func (record *PtrRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
 		}
 		return nil
 	}
@@ -754,20 +751,24 @@ func (record *PtrRecord) SetField(name string, value interface{}) error {
 }
 
 type RpRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Mailbox    string   `json:"mailbox,omitempty"`
+	Txt        string   `json:"txt,omitempty"`
 }
 
 func NewRpRecord() *RpRecord {
 	return &RpRecord{
-		&baseRecord{
-			RecordType: "RP",
-			fieldMap: []string{
-				"active",
-				"mailbox",
-				"name",
-				"targets",
-				"txt",
-			},
+		RecordType: "RP",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"mailbox",
+			"txt",
 		},
 	}
 }
@@ -783,15 +784,14 @@ func (record *RpRecord) GetAllowedFields() []string {
 func (record *RpRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
+		case "name":
+			record.Name = value.(string)
+		case "ttl":
+			record.TTL = value.(int)
 		case "active":
 			record.Active = value.(bool)
 		case "mailbox":
 			record.Mailbox = value.(string)
-		case "name":
-			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "txt":
 			record.Txt = value.(string)
 		}
@@ -801,28 +801,38 @@ func (record *RpRecord) SetField(name string, value interface{}) error {
 }
 
 type RrsigRecord struct {
-	*baseRecord
+	fieldMap    []string `json:"-"`
+	RecordType  string   `json:"-"`
+	Name        string   `json:"name,omitempty"`
+	TTL         int      `json:"ttl,omitempty"`
+	Active      bool     `json:"active,omitempty"`
+	TypeCovered string   `json:"type_covered,omitempty"`
+	Algorithm   int      `json:"algorithm,omitempty"`
+	OriginalTTL int      `json:"original_ttl,omitempty"`
+	Expiration  string   `json:"expiration,omitempty"`
+	Inception   string   `json:"inception,omitempty"`
+	Keytag      int      `json:"keytag,omitempty"`
+	Signer      string   `json:"signer,omitempty"`
+	Signature   string   `json:"signature,omitempty"`
+	Labels      int      `json:"labels,omitempty"`
 }
 
 func NewRrsigRecord() *RrsigRecord {
 	return &RrsigRecord{
-		&baseRecord{
-			RecordType: "RRSIG",
-			fieldMap: []string{
-				"active",
-				"algorithm",
-				"expiration",
-				"inception",
-				"keytag",
-				"labels",
-				"name",
-				"originalttl",
-				"service",
-				"signature",
-				"signer",
-				"targets",
-				"typecovered",
-			},
+		RecordType: "RRSIG",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"typecovered",
+			"algorithm",
+			"originalttl",
+			"expiration",
+			"inception",
+			"keytag",
+			"signer",
+			"signature",
+			"labels",
 		},
 	}
 }
@@ -838,33 +848,30 @@ func (record *RrsigRecord) GetAllowedFields() []string {
 func (record *RrsigRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
+		case "name":
+			record.Name = value.(string)
+		case "ttl":
+			record.TTL = value.(int)
 		case "active":
 			record.Active = value.(bool)
+		case "typecovered":
+			record.TypeCovered = value.(string)
 		case "algorithm":
 			record.Algorithm = value.(int)
+		case "originalttl":
+			record.OriginalTTL = value.(int)
 		case "expiration":
 			record.Expiration = value.(string)
 		case "inception":
 			record.Inception = value.(string)
 		case "keytag":
 			record.Keytag = value.(int)
-		case "labels":
-			record.Labels = value.(int)
-		case "name":
-			record.Name = value.(string)
-		case "originalttl":
-			record.OriginalTTL = value.(int)
-		case "service":
-			record.Service = value.(string)
-		case "signature":
-			record.Signature = value.(string)
 		case "signer":
 			record.Signer = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
-		case "typecovered":
-			record.TypeCovered = value.(string)
+		case "signature":
+			record.Signature = value.(string)
+		case "labels":
+			record.Labels = value.(int)
 		}
 		return nil
 	}
@@ -872,23 +879,30 @@ func (record *RrsigRecord) SetField(name string, value interface{}) error {
 }
 
 type SoaRecord struct {
-	*baseRecord
+	fieldMap     []string `json:"-"`
+	RecordType   string   `json:"-"`
+	TTL          int      `json:"ttl,omitempty"`
+	Originserver string   `json:"originserver,omitempty"`
+	Contact      string   `json:"contact,omitempty"`
+	Serial       int      `json:"serial,omitempty"`
+	Refresh      int      `json:"refresh,omitempty"`
+	Retry        int      `json:"retry,omitempty"`
+	Expire       int      `json:"expire,omitempty"`
+	Minimum      int      `json:"minimum,omitempty"`
 }
 
 func NewSoaRecord() *SoaRecord {
 	r := &SoaRecord{
-		&baseRecord{
-			RecordType: "SOA",
-			fieldMap: []string{
-				"contact",
-				"expire",
-				"minimum",
-				"originserver",
-				"refresh",
-				"retry",
-				"serial",
-				"targets",
-			},
+		RecordType: "SOA",
+		fieldMap: []string{
+			"ttl",
+			"originserver",
+			"contact",
+			"serial",
+			"refresh",
+			"retry",
+			"expire",
+			"minimum",
 		},
 	}
 	r.SetField("serial", int(time.Now().Unix()))
@@ -906,23 +920,22 @@ func (record *SoaRecord) GetAllowedFields() []string {
 func (record *SoaRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "contact":
-			record.Contact = value.(string)
-		case "expire":
-			record.Expire = value.(int)
-		case "minimum":
-			record.Minimum = value.(int)
+		case "ttl":
+			record.TTL = value.(int)
 		case "originserver":
 			record.Originserver = value.(string)
+		case "contact":
+			record.Contact = value.(string)
+		case "serial":
+			record.Serial = value.(int)
 		case "refresh":
 			record.Refresh = value.(int)
 		case "retry":
 			record.Retry = value.(int)
-		case "serial":
-			record.Serial = value.(int)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
+		case "expire":
+			record.Expire = value.(int)
+		case "minimum":
+			record.Minimum = value.(int)
 		}
 		return nil
 	}
@@ -930,19 +943,22 @@ func (record *SoaRecord) SetField(name string, value interface{}) error {
 }
 
 type SpfRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
 }
 
 func NewSpfRecord() *SpfRecord {
 	return &SpfRecord{
-		&baseRecord{
-			RecordType: "SPF",
-			fieldMap: []string{
-				"active",
-				"name",
-				"targets",
-				"ttl",
-			},
+		RecordType: "SPF",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
 		},
 	}
 }
@@ -958,15 +974,14 @@ func (record *SpfRecord) GetAllowedFields() []string {
 func (record *SpfRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
 		}
 		return nil
 	}
@@ -974,22 +989,28 @@ func (record *SpfRecord) SetField(name string, value interface{}) error {
 }
 
 type SrvRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
+	Priority   int      `json:"priority,omitempty"`
+	Weight     uint     `json:"weight,omitempty"`
+	Port       int      `json:"port,omitempty"`
 }
 
 func NewSrvRecord() *SrvRecord {
 	return &SrvRecord{
-		&baseRecord{
-			RecordType: "SRV",
-			fieldMap: []string{
-				"active",
-				"name",
-				"port",
-				"priority",
-				"targets",
-				"ttl",
-				"weight",
-			},
+		RecordType: "SRV",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
+			"priority",
+			"weight",
+			"port",
 		},
 	}
 }
@@ -1005,21 +1026,20 @@ func (record *SrvRecord) GetAllowedFields() []string {
 func (record *SrvRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "port":
-			record.Port = value.(int)
-		case "priority":
-			record.Priority = value.(int)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
+		case "priority":
+			record.Priority = value.(int)
 		case "weight":
 			record.Weight = value.(uint)
+		case "port":
+			record.Port = value.(int)
 		}
 		return nil
 	}
@@ -1027,21 +1047,26 @@ func (record *SrvRecord) SetField(name string, value interface{}) error {
 }
 
 type SshfpRecord struct {
-	*baseRecord
+	fieldMap        []string `json:"-"`
+	RecordType      string   `json:"-"`
+	Name            string   `json:"name,omitempty"`
+	TTL             int      `json:"ttl,omitempty"`
+	Active          bool     `json:"active,omitempty"`
+	Algorithm       int      `json:"algorithm,omitempty"`
+	FingerprintType int      `json:"fingerprint_type,omitempty"`
+	Fingerprint     string   `json:"fingerprint,omitempty"`
 }
 
 func NewSshfpRecord() *SshfpRecord {
 	return &SshfpRecord{
-		&baseRecord{
-			RecordType: "SSHFP",
-			fieldMap: []string{
-				"active",
-				"algorithm",
-				"fingerprint",
-				"fingerprinttype",
-				"name",
-				"targets",
-			},
+		RecordType: "SSHFP",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"algorithm",
+			"fingerprinttype",
+			"fingerprint",
 		},
 	}
 }
@@ -1057,19 +1082,18 @@ func (record *SshfpRecord) GetAllowedFields() []string {
 func (record *SshfpRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
+		case "name":
+			record.Name = value.(string)
+		case "ttl":
+			record.TTL = value.(int)
 		case "active":
 			record.Active = value.(bool)
 		case "algorithm":
 			record.Algorithm = value.(int)
-		case "fingerprint":
-			record.Fingerprint = value.(string)
 		case "fingerprinttype":
 			record.FingerprintType = value.(int)
-		case "name":
-			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
+		case "fingerprint":
+			record.Fingerprint = value.(string)
 		}
 		return nil
 	}
@@ -1077,19 +1101,22 @@ func (record *SshfpRecord) SetField(name string, value interface{}) error {
 }
 
 type TxtRecord struct {
-	*baseRecord
+	fieldMap   []string `json:"-"`
+	RecordType string   `json:"-"`
+	Name       string   `json:"name,omitempty"`
+	TTL        int      `json:"ttl,omitempty"`
+	Active     bool     `json:"active,omitempty"`
+	Target     string   `json:"target,omitempty"`
 }
 
 func NewTxtRecord() *TxtRecord {
 	return &TxtRecord{
-		&baseRecord{
-			RecordType: "TXT",
-			fieldMap: []string{
-				"active",
-				"name",
-				"targets",
-				"ttl",
-			},
+		RecordType: "TXT",
+		fieldMap: []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
 		},
 	}
 }
@@ -1105,15 +1132,14 @@ func (record *TxtRecord) GetAllowedFields() []string {
 func (record *TxtRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
-		case "active":
-			record.Active = value.(bool)
 		case "name":
 			record.Name = value.(string)
-		case "targets":
-			// targets should come through as single value
-			record.Target = value.(string)
 		case "ttl":
 			record.TTL = value.(int)
+		case "active":
+			record.Active = value.(bool)
+		case "target":
+			record.Target = value.(string)
 		}
 		return nil
 	}
