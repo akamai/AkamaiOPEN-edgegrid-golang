@@ -16,9 +16,6 @@ type DNSRecord interface {
 	SetField(name string, value interface{}) error
 }
 
-// RecordSet represents a collection of Records
-type RecordSet []DNSRecord
-
 type ARecord struct {
 	fieldMap []string `json:"-"`
 	Name     string   `json:"name,omitempty"`
