@@ -20,17 +20,15 @@ type DNSRecord interface {
 type RecordSet []DNSRecord
 
 type ARecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
 }
 
 func NewARecord() *ARecord {
 	return &ARecord{
-		RecordType: "A",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -65,17 +63,15 @@ func (record *ARecord) SetField(name string, value interface{}) error {
 }
 
 type AaaaRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
 }
 
 func NewAaaaRecord() *AaaaRecord {
 	return &AaaaRecord{
-		RecordType: "AAAA",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -111,18 +107,16 @@ func (record *AaaaRecord) SetField(name string, value interface{}) error {
 }
 
 type AfsdbRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
-	Subtype    int      `json:"subtype,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
+	Subtype  int      `json:"subtype,omitempty"`
 }
 
 func NewAfsdbRecord() *AfsdbRecord {
 	return &AfsdbRecord{
-		RecordType: "AFSDB",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -161,17 +155,15 @@ func (record *AfsdbRecord) SetField(name string, value interface{}) error {
 }
 
 type CnameRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
 }
 
 func NewCnameRecord() *CnameRecord {
 	return &CnameRecord{
-		RecordType: "CNAME",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -207,20 +199,18 @@ func (record *CnameRecord) SetField(name string, value interface{}) error {
 }
 
 type DnskeyRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Flags      int      `json:"flags,omitempty"`
-	Protocol   int      `json:"protocol,omitempty"`
-	Algorithm  int      `json:"algorithm,omitempty"`
-	Key        string   `json:"key,omitempty"`
+	fieldMap  []string `json:"-"`
+	Name      string   `json:"name,omitempty"`
+	TTL       int      `json:"ttl,omitempty"`
+	Active    bool     `json:"active,omitempty"`
+	Flags     int      `json:"flags,omitempty"`
+	Protocol  int      `json:"protocol,omitempty"`
+	Algorithm int      `json:"algorithm,omitempty"`
+	Key       string   `json:"key,omitempty"`
 }
 
 func NewDnskeyRecord() *DnskeyRecord {
 	return &DnskeyRecord{
-		RecordType: "DNSKEY",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -266,7 +256,6 @@ func (record *DnskeyRecord) SetField(name string, value interface{}) error {
 
 type DsRecord struct {
 	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
 	Name       string   `json:"name,omitempty"`
 	TTL        int      `json:"ttl,omitempty"`
 	Active     bool     `json:"active,omitempty"`
@@ -278,7 +267,6 @@ type DsRecord struct {
 
 func NewDsRecord() *DsRecord {
 	return &DsRecord{
-		RecordType: "DS",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -323,18 +311,16 @@ func (record *DsRecord) SetField(name string, value interface{}) error {
 }
 
 type HinfoRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Hardware   string   `json:"hardware,omitempty"`
-	Software   string   `json:"software,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Hardware string   `json:"hardware,omitempty"`
+	Software string   `json:"software,omitempty"`
 }
 
 func NewHinfoRecord() *HinfoRecord {
 	return &HinfoRecord{
-		RecordType: "HINFO",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -373,17 +359,15 @@ func (record *HinfoRecord) SetField(name string, value interface{}) error {
 }
 
 type LocRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
 }
 
 func NewLocRecord() *LocRecord {
 	return &LocRecord{
-		RecordType: "LOC",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -419,18 +403,16 @@ func (record *LocRecord) SetField(name string, value interface{}) error {
 }
 
 type MxRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
-	Priority   int      `json:"priority,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
+	Priority int      `json:"priority,omitempty"`
 }
 
 func NewMxRecord() *MxRecord {
 	return &MxRecord{
-		RecordType: "MX",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -470,7 +452,6 @@ func (record *MxRecord) SetField(name string, value interface{}) error {
 
 type NaptrRecord struct {
 	fieldMap    []string `json:"-"`
-	RecordType  string   `json:"-"`
 	Name        string   `json:"name,omitempty"`
 	TTL         int      `json:"ttl,omitempty"`
 	Active      bool     `json:"active,omitempty"`
@@ -484,7 +465,6 @@ type NaptrRecord struct {
 
 func NewNaptrRecord() *NaptrRecord {
 	return &NaptrRecord{
-		RecordType: "NAPTR",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -535,17 +515,15 @@ func (record *NaptrRecord) SetField(name string, value interface{}) error {
 }
 
 type NsRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
 }
 
 func NewNsRecord() *NsRecord {
 	return &NsRecord{
-		RecordType: "NS",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -582,7 +560,6 @@ func (record *NsRecord) SetField(name string, value interface{}) error {
 
 type Nsec3Record struct {
 	fieldMap            []string `json:"-"`
-	RecordType          string   `json:"-"`
 	Name                string   `json:"name,omitempty"`
 	TTL                 int      `json:"ttl,omitempty"`
 	Active              bool     `json:"active,omitempty"`
@@ -596,7 +573,6 @@ type Nsec3Record struct {
 
 func NewNsec3Record() *Nsec3Record {
 	return &Nsec3Record{
-		RecordType: "NSEC3",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -648,7 +624,6 @@ func (record *Nsec3Record) SetField(name string, value interface{}) error {
 
 type Nsec3paramRecord struct {
 	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
 	Name       string   `json:"name,omitempty"`
 	TTL        int      `json:"ttl,omitempty"`
 	Active     bool     `json:"active,omitempty"`
@@ -660,7 +635,6 @@ type Nsec3paramRecord struct {
 
 func NewNsec3paramRecord() *Nsec3paramRecord {
 	return &Nsec3paramRecord{
-		RecordType: "NSEC3PARAM",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -705,17 +679,15 @@ func (record *Nsec3paramRecord) SetField(name string, value interface{}) error {
 }
 
 type PtrRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
 }
 
 func NewPtrRecord() *PtrRecord {
 	return &PtrRecord{
-		RecordType: "PTR",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -751,18 +723,16 @@ func (record *PtrRecord) SetField(name string, value interface{}) error {
 }
 
 type RpRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Mailbox    string   `json:"mailbox,omitempty"`
-	Txt        string   `json:"txt,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Mailbox  string   `json:"mailbox,omitempty"`
+	Txt      string   `json:"txt,omitempty"`
 }
 
 func NewRpRecord() *RpRecord {
 	return &RpRecord{
-		RecordType: "RP",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -802,7 +772,6 @@ func (record *RpRecord) SetField(name string, value interface{}) error {
 
 type RrsigRecord struct {
 	fieldMap    []string `json:"-"`
-	RecordType  string   `json:"-"`
 	Name        string   `json:"name,omitempty"`
 	TTL         int      `json:"ttl,omitempty"`
 	Active      bool     `json:"active,omitempty"`
@@ -819,7 +788,6 @@ type RrsigRecord struct {
 
 func NewRrsigRecord() *RrsigRecord {
 	return &RrsigRecord{
-		RecordType: "RRSIG",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -880,7 +848,6 @@ func (record *RrsigRecord) SetField(name string, value interface{}) error {
 
 type SoaRecord struct {
 	fieldMap     []string `json:"-"`
-	RecordType   string   `json:"-"`
 	TTL          int      `json:"ttl,omitempty"`
 	Originserver string   `json:"originserver,omitempty"`
 	Contact      string   `json:"contact,omitempty"`
@@ -893,7 +860,6 @@ type SoaRecord struct {
 
 func NewSoaRecord() *SoaRecord {
 	r := &SoaRecord{
-		RecordType: "SOA",
 		fieldMap: []string{
 			"ttl",
 			"originserver",
@@ -943,17 +909,15 @@ func (record *SoaRecord) SetField(name string, value interface{}) error {
 }
 
 type SpfRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
 }
 
 func NewSpfRecord() *SpfRecord {
 	return &SpfRecord{
-		RecordType: "SPF",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -989,20 +953,18 @@ func (record *SpfRecord) SetField(name string, value interface{}) error {
 }
 
 type SrvRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
-	Priority   int      `json:"priority,omitempty"`
-	Weight     uint     `json:"weight,omitempty"`
-	Port       int      `json:"port,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
+	Priority int      `json:"priority,omitempty"`
+	Weight   uint     `json:"weight,omitempty"`
+	Port     int      `json:"port,omitempty"`
 }
 
 func NewSrvRecord() *SrvRecord {
 	return &SrvRecord{
-		RecordType: "SRV",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -1048,7 +1010,6 @@ func (record *SrvRecord) SetField(name string, value interface{}) error {
 
 type SshfpRecord struct {
 	fieldMap        []string `json:"-"`
-	RecordType      string   `json:"-"`
 	Name            string   `json:"name,omitempty"`
 	TTL             int      `json:"ttl,omitempty"`
 	Active          bool     `json:"active,omitempty"`
@@ -1059,7 +1020,6 @@ type SshfpRecord struct {
 
 func NewSshfpRecord() *SshfpRecord {
 	return &SshfpRecord{
-		RecordType: "SSHFP",
 		fieldMap: []string{
 			"name",
 			"ttl",
@@ -1101,17 +1061,15 @@ func (record *SshfpRecord) SetField(name string, value interface{}) error {
 }
 
 type TxtRecord struct {
-	fieldMap   []string `json:"-"`
-	RecordType string   `json:"-"`
-	Name       string   `json:"name,omitempty"`
-	TTL        int      `json:"ttl,omitempty"`
-	Active     bool     `json:"active,omitempty"`
-	Target     string   `json:"target,omitempty"`
+	fieldMap []string `json:"-"`
+	Name     string   `json:"name,omitempty"`
+	TTL      int      `json:"ttl,omitempty"`
+	Active   bool     `json:"active,omitempty"`
+	Target   string   `json:"target,omitempty"`
 }
 
 func NewTxtRecord() *TxtRecord {
 	return &TxtRecord{
-		RecordType: "TXT",
 		fieldMap: []string{
 			"name",
 			"ttl",
