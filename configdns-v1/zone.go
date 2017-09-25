@@ -922,3 +922,8 @@ func (zone *Zone) removeTxtRecord(record *TxtRecord) error {
 
 	return nil
 }
+
+func (zone *Zone) PreMarshalJSON() error {
+	zone.Zone.Soa.Serial = int(time.Now().Unix())
+	return nil
+}
