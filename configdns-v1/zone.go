@@ -8,6 +8,11 @@ import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
+var (
+	cnameNames    = map[string]bool{}
+	nonCnameNames = map[string]bool{}
+)
+
 // Zone represents a DNS zone
 type Zone struct {
 	Token string `json:"token"`
@@ -79,6 +84,13 @@ func GetZone(hostname string) (*Zone, error) {
 
 // Save updates the Zone
 func (zone *Zone) Save() error {
+	if !zone.validateCnames() {
+		return &ZoneError{
+			zoneName:        zone.Zone.Name,
+			apiErrorMessage: "CNAME 'name' property must be unique in the zone",
+		}
+	}
+
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
@@ -239,6 +251,8 @@ func (zone *Zone) addARecord(record *ARecord, replace bool) error {
 		zone.Zone.A = append(zone.Zone.A, record)
 	}
 
+	nonCnameNames[record.Name] = true
+
 	return nil
 }
 
@@ -256,6 +270,8 @@ func (zone *Zone) addAaaaRecord(record *AaaaRecord, replace bool) error {
 	if !found {
 		zone.Zone.Aaaa = append(zone.Zone.Aaaa, record)
 	}
+
+	nonCnameNames[record.Name] = true
 
 	return nil
 }
@@ -275,12 +291,28 @@ func (zone *Zone) addAfsdbRecord(record *AfsdbRecord, replace bool) error {
 		zone.Zone.Afsdb = append(zone.Zone.Afsdb, record)
 	}
 
+	nonCnameNames[record.Name] = true
+
 	return nil
 }
 
 func (zone *Zone) addCnameRecord(record *CnameRecord, replace bool) error {
-	// CNAME records are unique, so always replace the record
-	zone.Zone.Cname = []*CnameRecord{record}
+	var found bool
+	if replace == true {
+		for key, r := range zone.Zone.Cname {
+			if r.Name == record.Name {
+				zone.Zone.Cname[key] = record
+				found = true
+			}
+		}
+	}
+
+	if !found {
+		zone.Zone.Cname = append(zone.Zone.Cname, record)
+	}
+
+	cnameNames[record.Name] = true
+
 	return nil
 }
 
@@ -298,6 +330,8 @@ func (zone *Zone) addDnskeyRecord(record *DnskeyRecord, replace bool) error {
 	if !found {
 		zone.Zone.Dnskey = append(zone.Zone.Dnskey, record)
 	}
+
+	nonCnameNames[record.Name] = true
 
 	return nil
 }
@@ -317,6 +351,8 @@ func (zone *Zone) addDsRecord(record *DsRecord, replace bool) error {
 		zone.Zone.Ds = append(zone.Zone.Ds, record)
 	}
 
+	nonCnameNames[record.Name] = true
+
 	return nil
 }
 
@@ -334,6 +370,8 @@ func (zone *Zone) addHinfoRecord(record *HinfoRecord, replace bool) error {
 	if !found {
 		zone.Zone.Hinfo = append(zone.Zone.Hinfo, record)
 	}
+
+	nonCnameNames[record.Name] = true
 
 	return nil
 }
@@ -353,6 +391,8 @@ func (zone *Zone) addLocRecord(record *LocRecord, replace bool) error {
 		zone.Zone.Loc = append(zone.Zone.Loc, record)
 	}
 
+	nonCnameNames[record.Name] = true
+
 	return nil
 }
 
@@ -370,6 +410,8 @@ func (zone *Zone) addMxRecord(record *MxRecord, replace bool) error {
 	if !found {
 		zone.Zone.Mx = append(zone.Zone.Mx, record)
 	}
+
+	nonCnameNames[record.Name] = true
 
 	return nil
 }
@@ -389,6 +431,8 @@ func (zone *Zone) addNaptrRecord(record *NaptrRecord, replace bool) error {
 		zone.Zone.Naptr = append(zone.Zone.Naptr, record)
 	}
 
+	nonCnameNames[record.Name] = true
+
 	return nil
 }
 
@@ -406,6 +450,8 @@ func (zone *Zone) addNsRecord(record *NsRecord, replace bool) error {
 	if !found {
 		zone.Zone.Ns = append(zone.Zone.Ns, record)
 	}
+
+	nonCnameNames[record.Name] = true
 
 	return nil
 }
@@ -425,6 +471,8 @@ func (zone *Zone) addNsec3Record(record *Nsec3Record, replace bool) error {
 		zone.Zone.Nsec3 = append(zone.Zone.Nsec3, record)
 	}
 
+	nonCnameNames[record.Name] = true
+
 	return nil
 }
 
@@ -442,6 +490,8 @@ func (zone *Zone) addNsec3paramRecord(record *Nsec3paramRecord, replace bool) er
 	if !found {
 		zone.Zone.Nsec3param = append(zone.Zone.Nsec3param, record)
 	}
+
+	nonCnameNames[record.Name] = true
 
 	return nil
 }
@@ -461,6 +511,8 @@ func (zone *Zone) addPtrRecord(record *PtrRecord, replace bool) error {
 		zone.Zone.Ptr = append(zone.Zone.Ptr, record)
 	}
 
+	nonCnameNames[record.Name] = true
+
 	return nil
 }
 
@@ -479,6 +531,8 @@ func (zone *Zone) addRpRecord(record *RpRecord, replace bool) error {
 		zone.Zone.Rp = append(zone.Zone.Rp, record)
 	}
 
+	nonCnameNames[record.Name] = true
+
 	return nil
 }
 
@@ -496,6 +550,8 @@ func (zone *Zone) addRrsigRecord(record *RrsigRecord, replace bool) error {
 	if !found {
 		zone.Zone.Rrsig = append(zone.Zone.Rrsig, record)
 	}
+
+	nonCnameNames[record.Name] = true
 
 	return nil
 }
@@ -521,6 +577,8 @@ func (zone *Zone) addSpfRecord(record *SpfRecord, replace bool) error {
 		zone.Zone.Spf = append(zone.Zone.Spf, record)
 	}
 
+	nonCnameNames[record.Name] = true
+
 	return nil
 }
 
@@ -538,6 +596,8 @@ func (zone *Zone) addSrvRecord(record *SrvRecord, replace bool) error {
 	if !found {
 		zone.Zone.Srv = append(zone.Zone.Srv, record)
 	}
+
+	nonCnameNames[record.Name] = true
 
 	return nil
 }
@@ -557,6 +617,8 @@ func (zone *Zone) addSshfpRecord(record *SshfpRecord, replace bool) error {
 		zone.Zone.Sshfp = append(zone.Zone.Sshfp, record)
 	}
 
+	nonCnameNames[record.Name] = true
+
 	return nil
 }
 
@@ -574,6 +636,8 @@ func (zone *Zone) addTxtRecord(record *TxtRecord, replace bool) error {
 	if !found {
 		zone.Zone.Txt = append(zone.Zone.Txt, record)
 	}
+
+	nonCnameNames[record.Name] = true
 
 	return nil
 }
@@ -609,6 +673,8 @@ func (zone *Zone) removeAaaaRecord(record *AaaaRecord) error {
 		return errors.New("AAAA Record not found")
 	}
 
+	zone.removeNonCnameName(record.Name)
+
 	return nil
 }
 
@@ -625,6 +691,8 @@ func (zone *Zone) removeAfsdbRecord(record *AfsdbRecord) error {
 	if !found {
 		return errors.New("Afsdb Record not found")
 	}
+
+	zone.removeNonCnameName(record.Name)
 
 	return nil
 }
@@ -643,6 +711,8 @@ func (zone *Zone) removeCnameRecord(record *CnameRecord) error {
 		return errors.New("Cname Record not found")
 	}
 
+	zone.removeCnameName(record.Name)
+
 	return nil
 }
 
@@ -659,6 +729,8 @@ func (zone *Zone) removeDnskeyRecord(record *DnskeyRecord) error {
 	if !found {
 		return errors.New("Dnskey Record not found")
 	}
+
+	zone.removeNonCnameName(record.Name)
 
 	return nil
 }
@@ -677,6 +749,8 @@ func (zone *Zone) removeDsRecord(record *DsRecord) error {
 		return errors.New("Ds Record not found")
 	}
 
+	zone.removeNonCnameName(record.Name)
+
 	return nil
 }
 
@@ -693,6 +767,8 @@ func (zone *Zone) removeHinfoRecord(record *HinfoRecord) error {
 	if !found {
 		return errors.New("Hinfo Record not found")
 	}
+
+	zone.removeNonCnameName(record.Name)
 
 	return nil
 }
@@ -711,6 +787,8 @@ func (zone *Zone) removeLocRecord(record *LocRecord) error {
 		return errors.New("Loc Record not found")
 	}
 
+	zone.removeNonCnameName(record.Name)
+
 	return nil
 }
 
@@ -727,6 +805,8 @@ func (zone *Zone) removeMxRecord(record *MxRecord) error {
 	if !found {
 		return errors.New("Mx Record not found")
 	}
+
+	zone.removeNonCnameName(record.Name)
 
 	return nil
 }
@@ -745,6 +825,8 @@ func (zone *Zone) removeNaptrRecord(record *NaptrRecord) error {
 		return errors.New("Naptr Record not found")
 	}
 
+	zone.removeNonCnameName(record.Name)
+
 	return nil
 }
 
@@ -761,6 +843,8 @@ func (zone *Zone) removeNsRecord(record *NsRecord) error {
 	if !found {
 		return errors.New("Ns Record not found")
 	}
+
+	zone.removeNonCnameName(record.Name)
 
 	return nil
 }
@@ -779,6 +863,8 @@ func (zone *Zone) removeNsec3Record(record *Nsec3Record) error {
 		return errors.New("Nsec3 Record not found")
 	}
 
+	zone.removeNonCnameName(record.Name)
+
 	return nil
 }
 
@@ -795,6 +881,8 @@ func (zone *Zone) removeNsec3paramRecord(record *Nsec3paramRecord) error {
 	if !found {
 		return errors.New("Nsec3param Record not found")
 	}
+
+	zone.removeNonCnameName(record.Name)
 
 	return nil
 }
@@ -813,6 +901,8 @@ func (zone *Zone) removePtrRecord(record *PtrRecord) error {
 		return errors.New("Ptr Record not found")
 	}
 
+	zone.removeNonCnameName(record.Name)
+
 	return nil
 }
 
@@ -830,6 +920,8 @@ func (zone *Zone) removeRpRecord(record *RpRecord) error {
 		return errors.New("Rp Record not found")
 	}
 
+	zone.removeNonCnameName(record.Name)
+
 	return nil
 }
 
@@ -846,6 +938,8 @@ func (zone *Zone) removeRrsigRecord(record *RrsigRecord) error {
 	if !found {
 		return errors.New("Rrsig Record not found")
 	}
+
+	zone.removeNonCnameName(record.Name)
 
 	return nil
 }
@@ -869,6 +963,8 @@ func (zone *Zone) removeSpfRecord(record *SpfRecord) error {
 		return errors.New("Spf Record not found")
 	}
 
+	zone.removeNonCnameName(record.Name)
+
 	return nil
 }
 
@@ -885,6 +981,8 @@ func (zone *Zone) removeSrvRecord(record *SrvRecord) error {
 	if !found {
 		return errors.New("Srv Record not found")
 	}
+
+	zone.removeNonCnameName(record.Name)
 
 	return nil
 }
@@ -903,6 +1001,8 @@ func (zone *Zone) removeSshfpRecord(record *SshfpRecord) error {
 		return errors.New("Sshfp Record not found")
 	}
 
+	zone.removeNonCnameName(record.Name)
+
 	return nil
 }
 
@@ -920,10 +1020,37 @@ func (zone *Zone) removeTxtRecord(record *TxtRecord) error {
 		return errors.New("Txt Record not found")
 	}
 
+	zone.removeNonCnameName(record.Name)
+
 	return nil
 }
 
 func (zone *Zone) PreMarshalJSON() error {
 	zone.Zone.Soa.Serial = int(time.Now().Unix())
 	return nil
+}
+
+func (zone *Zone) validateCnames() bool {
+	for v, _ := range cnameNames {
+		for vv, _ := range nonCnameNames {
+			if vv == v {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func (zone *Zone) removeCnameName(host string) {
+	_, ok := cnameNames[host]
+	if ok {
+		delete(cnameNames, host)
+	}
+}
+
+func (zone *Zone) removeNonCnameName(host string) {
+	_, ok := nonCnameNames[host]
+	if ok {
+		delete(nonCnameNames, host)
+	}
 }

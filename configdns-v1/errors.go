@@ -32,7 +32,7 @@ func (e *ZoneError) Network() bool {
 }
 
 func (e *ZoneError) NotFound() bool {
-	if e.err == nil && e.httpErrorMessage == "" {
+	if e.err == nil && e.httpErrorMessage == "" && e.apiErrorMessage == "" {
 		return true
 	}
 	return false
@@ -63,7 +63,7 @@ func (e *ZoneError) Error() string {
 	}
 
 	if e.ValidationFailed() {
-		return fmt.Sprintf("Zone \"%s\" validation failed: [%s]", e.zoneName, e.err.Error())
+		return fmt.Sprintf("Zone \"%s\" validation failed: [%s]", e.zoneName, e.apiErrorMessage)
 	}
 
 	if e.err != nil {
