@@ -14,6 +14,8 @@ type DNSRecord interface {
 	GetAllowedFields() []string
 	// Set a field on the struct, which check for valid fields
 	SetField(name string, value interface{}) error
+	// Translate struct properties to a map
+	ToMap() map[string]interface{}
 }
 
 type ARecord struct {
@@ -59,6 +61,15 @@ func (record *ARecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *ARecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":   record.Name,
+		"ttl":    record.TTL,
+		"active": record.Active,
+		"target": record.Target,
+	}
+}
+
 type AaaaRecord struct {
 	fieldMap []string `json:"-"`
 	Name     string   `json:"name,omitempty"`
@@ -101,6 +112,15 @@ func (record *AaaaRecord) SetField(name string, value interface{}) error {
 		return nil
 	}
 	return &RecordError{fieldName: name}
+}
+
+func (record *AaaaRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":   record.Name,
+		"ttl":    record.TTL,
+		"active": record.Active,
+		"target": record.Target,
+	}
 }
 
 type AfsdbRecord struct {
@@ -151,6 +171,16 @@ func (record *AfsdbRecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *AfsdbRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":    record.Name,
+		"ttl":     record.TTL,
+		"active":  record.Active,
+		"target":  record.Target,
+		"subtype": record.Subtype,
+	}
+}
+
 type CnameRecord struct {
 	fieldMap []string `json:"-"`
 	Name     string   `json:"name,omitempty"`
@@ -193,6 +223,15 @@ func (record *CnameRecord) SetField(name string, value interface{}) error {
 		return nil
 	}
 	return &RecordError{fieldName: name}
+}
+
+func (record *CnameRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":   record.Name,
+		"ttl":    record.TTL,
+		"active": record.Active,
+		"target": record.Target,
+	}
 }
 
 type DnskeyRecord struct {
@@ -251,6 +290,18 @@ func (record *DnskeyRecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *DnskeyRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":      record.Name,
+		"ttl":       record.TTL,
+		"active":    record.Active,
+		"flags":     record.Flags,
+		"protocol":  record.Protocol,
+		"algorithm": record.Algorithm,
+		"key":       record.Key,
+	}
+}
+
 type DsRecord struct {
 	fieldMap   []string `json:"-"`
 	Name       string   `json:"name,omitempty"`
@@ -307,6 +358,18 @@ func (record *DsRecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *DsRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":       record.Name,
+		"ttl":        record.TTL,
+		"active":     record.Active,
+		"keytag":     record.Keytag,
+		"algorithm":  record.Algorithm,
+		"digesttype": record.DigestType,
+		"digest":     record.DigestType,
+	}
+}
+
 type HinfoRecord struct {
 	fieldMap []string `json:"-"`
 	Name     string   `json:"name,omitempty"`
@@ -355,6 +418,16 @@ func (record *HinfoRecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *HinfoRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":     record.Name,
+		"ttl":      record.TTL,
+		"active":   record.Active,
+		"hardware": record.Hardware,
+		"software": record.Software,
+	}
+}
+
 type LocRecord struct {
 	fieldMap []string `json:"-"`
 	Name     string   `json:"name,omitempty"`
@@ -397,6 +470,15 @@ func (record *LocRecord) SetField(name string, value interface{}) error {
 		return nil
 	}
 	return &RecordError{fieldName: name}
+}
+
+func (record *LocRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":   record.Name,
+		"ttl":    record.TTL,
+		"active": record.Active,
+		"target": record.Target,
+	}
 }
 
 type MxRecord struct {
@@ -445,6 +527,16 @@ func (record *MxRecord) SetField(name string, value interface{}) error {
 		return nil
 	}
 	return &RecordError{fieldName: name}
+}
+
+func (record *MxRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":     record.Name,
+		"ttl":      record.TTL,
+		"active":   record.Active,
+		"target":   record.Target,
+		"priority": record.Priority,
+	}
 }
 
 type NaptrRecord struct {
@@ -511,6 +603,20 @@ func (record *NaptrRecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *NaptrRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":        record.Name,
+		"ttl":         record.TTL,
+		"active":      record.Active,
+		"order":       record.Order,
+		"preference":  record.Preference,
+		"flags":       record.Flags,
+		"service":     record.Service,
+		"regexp":      record.Regexp,
+		"replacement": record.Replacement,
+	}
+}
+
 type NsRecord struct {
 	fieldMap []string `json:"-"`
 	Name     string   `json:"name,omitempty"`
@@ -553,6 +659,15 @@ func (record *NsRecord) SetField(name string, value interface{}) error {
 		return nil
 	}
 	return &RecordError{fieldName: name}
+}
+
+func (record *NsRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":   record.Name,
+		"ttl":    record.TTL,
+		"active": record.Active,
+		"target": record.Target,
+	}
 }
 
 type Nsec3Record struct {
@@ -619,6 +734,20 @@ func (record *Nsec3Record) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *Nsec3Record) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":                record.Name,
+		"ttl":                 record.TTL,
+		"active":              record.Active,
+		"algorithm":           record.Algorithm,
+		"flags":               record.Flags,
+		"iterations":          record.Iterations,
+		"salt":                record.Salt,
+		"nexthashedownername": record.NextHashedOwnerName,
+		"typebitmaps":         record.TypeBitmaps,
+	}
+}
+
 type Nsec3paramRecord struct {
 	fieldMap   []string `json:"-"`
 	Name       string   `json:"name,omitempty"`
@@ -675,6 +804,18 @@ func (record *Nsec3paramRecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *Nsec3paramRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":       record.Name,
+		"ttl":        record.TTL,
+		"active":     record.Active,
+		"algorithm":  record.Algorithm,
+		"flags":      record.Flags,
+		"iterations": record.Iterations,
+		"salt":       record.Salt,
+	}
+}
+
 type PtrRecord struct {
 	fieldMap []string `json:"-"`
 	Name     string   `json:"name,omitempty"`
@@ -717,6 +858,15 @@ func (record *PtrRecord) SetField(name string, value interface{}) error {
 		return nil
 	}
 	return &RecordError{fieldName: name}
+}
+
+func (record *PtrRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":   record.Name,
+		"ttl":    record.TTL,
+		"active": record.Active,
+		"target": record.Target,
+	}
 }
 
 type RpRecord struct {
@@ -765,6 +915,16 @@ func (record *RpRecord) SetField(name string, value interface{}) error {
 		return nil
 	}
 	return &RecordError{fieldName: name}
+}
+
+func (record *RpRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":    record.Name,
+		"ttl":     record.TTL,
+		"active":  record.Active,
+		"mailbox": record.Mailbox,
+		"txt":     record.Txt,
+	}
 }
 
 type RrsigRecord struct {
@@ -843,6 +1003,23 @@ func (record *RrsigRecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *RrsigRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":        record.Name,
+		"ttl":         record.TTL,
+		"active":      record.Active,
+		"typecovered": record.TypeCovered,
+		"algorithm":   record.Algorithm,
+		"originalttl": record.OriginalTTL,
+		"expiration":  record.Expiration,
+		"inception":   record.Inception,
+		"keytag":      record.Keytag,
+		"signer":      record.Signer,
+		"signature":   record.Signature,
+		"labels":      record.Labels,
+	}
+}
+
 type SoaRecord struct {
 	fieldMap     []string `json:"-"`
 	TTL          int      `json:"ttl,omitempty"`
@@ -905,6 +1082,19 @@ func (record *SoaRecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *SoaRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"ttl":          record.TTL,
+		"originserver": record.Originserver,
+		"contact":      record.Contact,
+		"serial":       record.Serial,
+		"refresh":      record.Refresh,
+		"retry":        record.Retry,
+		"expire":       record.Expire,
+		"minimum":      record.Minimum,
+	}
+}
+
 type SpfRecord struct {
 	fieldMap []string `json:"-"`
 	Name     string   `json:"name,omitempty"`
@@ -947,6 +1137,15 @@ func (record *SpfRecord) SetField(name string, value interface{}) error {
 		return nil
 	}
 	return &RecordError{fieldName: name}
+}
+
+func (record *SpfRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":   record.Name,
+		"ttl":    record.TTL,
+		"active": record.Active,
+		"target": record.Target,
+	}
 }
 
 type SrvRecord struct {
@@ -1005,6 +1204,18 @@ func (record *SrvRecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *SrvRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":     record.Name,
+		"ttl":      record.TTL,
+		"active":   record.Active,
+		"target":   record.Target,
+		"priority": record.Priority,
+		"weight":   record.Weight,
+		"port":     record.Port,
+	}
+}
+
 type SshfpRecord struct {
 	fieldMap        []string `json:"-"`
 	Name            string   `json:"name,omitempty"`
@@ -1057,6 +1268,17 @@ func (record *SshfpRecord) SetField(name string, value interface{}) error {
 	return &RecordError{fieldName: name}
 }
 
+func (record *SshfpRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":            record.Name,
+		"ttl":             record.TTL,
+		"active":          record.Active,
+		"algorithm":       record.Algorithm,
+		"fingerprinttype": record.FingerprintType,
+		"fingerprint":     record.Fingerprint,
+	}
+}
+
 type TxtRecord struct {
 	fieldMap []string `json:"-"`
 	Name     string   `json:"name,omitempty"`
@@ -1099,6 +1321,15 @@ func (record *TxtRecord) SetField(name string, value interface{}) error {
 		return nil
 	}
 	return &RecordError{fieldName: name}
+}
+
+func (record *TxtRecord) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":   record.Name,
+		"ttl":    record.TTL,
+		"active": record.Active,
+		"target": record.Target,
+	}
 }
 
 func contains(fieldMap []string, field string) bool {
