@@ -138,6 +138,33 @@ func (zone *Zone) Save() error {
 	return nil
 }
 
+func (zone *Zone) Delete() error {
+	// remove all the records except for SOA
+	// which is required and save the zone
+	zone.Zone.A = nil
+	zone.Zone.Aaaa = nil
+	zone.Zone.Afsdb = nil
+	zone.Zone.Cname = nil
+	zone.Zone.Dnskey = nil
+	zone.Zone.Ds = nil
+	zone.Zone.Hinfo = nil
+	zone.Zone.Loc = nil
+	zone.Zone.Mx = nil
+	zone.Zone.Naptr = nil
+	zone.Zone.Ns = nil
+	zone.Zone.Nsec3 = nil
+	zone.Zone.Nsec3param = nil
+	zone.Zone.Ptr = nil
+	zone.Zone.Rp = nil
+	zone.Zone.Rrsig = nil
+	zone.Zone.Spf = nil
+	zone.Zone.Srv = nil
+	zone.Zone.Sshfp = nil
+	zone.Zone.Txt = nil
+
+	return zone.Save()
+}
+
 func (zone *Zone) AddRecord(recordPtr interface{}) error {
 	switch recordPtr.(type) {
 	case *ARecord:
