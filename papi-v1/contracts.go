@@ -75,6 +75,24 @@ func (contracts *Contracts) GetContracts() error {
 	return nil
 }
 
+// FindContract finds a specific contract by ID
+func (contracts *Contracts) FindContract(id string) (*Contract, error) {
+	var contract *Contract
+	var contractFound bool
+	for _, contract = range contracts.Contracts.Items {
+		if contract.ContractID == id {
+			contractFound = true
+			break
+		}
+	}
+
+	if !contractFound {
+		return nil, fmt.Errorf("Unable to find contract: \"%s\"", id)
+	}
+
+	return contract, nil
+}
+
 // Contract represents a property contract resource
 type Contract struct {
 	client.Resource

@@ -74,6 +74,24 @@ func (products *Products) GetProducts(contract *Contract) error {
 	return nil
 }
 
+// FindProduct finds a specific product by ID
+func (products *Products) FindProduct(id string) (*Product, error) {
+	var product *Product
+	var productFound bool
+	for _, product = range products.Products.Items {
+		if product.ProductID == id {
+			productFound = true
+			break
+		}
+	}
+
+	if !productFound {
+		return nil, fmt.Errorf("Unable to find product: \"%s\"", id)
+	}
+
+	return product, nil
+}
+
 // Product represents a product resource
 type Product struct {
 	client.Resource

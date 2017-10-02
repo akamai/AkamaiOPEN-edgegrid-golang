@@ -86,19 +86,19 @@ func (groups *Groups) AddGroup(newGroup *Group) {
 	groups.Groups.Items = append(groups.Groups.Items, newGroup)
 }
 
-// FindGroup finds a specific group by name
-func (groups *Groups) FindGroup(name string) (*Group, error) {
+// FindGroup finds a specific group by ID
+func (groups *Groups) FindGroup(id string) (*Group, error) {
 	var group *Group
 	var groupFound bool
 	for _, group = range groups.Groups.Items {
-		if group.GroupName == name {
+		if group.GroupID == id {
 			groupFound = true
 			break
 		}
 	}
 
 	if !groupFound {
-		return nil, fmt.Errorf("Unable to find group: \"%s\"", name)
+		return nil, fmt.Errorf("Unable to find group: \"%s\"", id)
 	}
 
 	return group, nil
