@@ -95,19 +95,19 @@ func (properties *Properties) AddProperty(newProperty *Property) {
 	properties.Properties.Items = append(properties.Properties.Items, newProperty)
 }
 
-// FindProperty finds a property by name within the collection
-func (properties *Properties) FindProperty(name string) (*Property, error) {
+// FindProperty finds a property by ID within the collection
+func (properties *Properties) FindProperty(id string) (*Property, error) {
 	var property *Property
 	var propertyFound bool
 	for _, property = range properties.Properties.Items {
-		if property.PropertyName == name {
+		if property.PropertyID == id {
 			propertyFound = true
 			break
 		}
 	}
 
 	if !propertyFound {
-		return nil, fmt.Errorf("Unable to find property: \"%s\"", name)
+		return nil, fmt.Errorf("Unable to find property: \"%s\"", id)
 	}
 
 	return property, nil
