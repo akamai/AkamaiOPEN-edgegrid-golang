@@ -154,12 +154,6 @@ func (rules *Rules) Save() error {
 	return nil
 }
 
-// AddChildRule adds a rule as a child of the top level default rule
-func (rules *Rules) AddChildRule(rule *Rule) error {
-	rules.Rule.Children = append(rules.Rule.Children, rule)
-	return nil
-}
-
 // FindRule locates a specific rule by path
 func (rules *Rules) FindRule(path string) (*Rule, error) {
 	if path == "" {
@@ -289,13 +283,13 @@ func (rule *Rule) AddBehavior(behavior *Behavior) {
 // Criteria represents a rule criteria resource
 type Criteria struct {
 	client.Resource
-	Name    string       `json:"name"`
-	Options *OptionValue `json:"options"`
+	Name    string      `json:"name"`
+	Options OptionValue `json:"options"`
 }
 
 // NewCriteria creates a new Criteria
 func NewCriteria() *Criteria {
-	criteria := &Criteria{}
+	criteria := &Criteria{Options: OptionValue{}}
 	criteria.Init()
 
 	return criteria
@@ -304,13 +298,13 @@ func NewCriteria() *Criteria {
 // Behavior represents a rule behavior resource
 type Behavior struct {
 	client.Resource
-	Name    string       `json:"name"`
-	Options *OptionValue `json:"options"`
+	Name    string      `json:"name"`
+	Options OptionValue `json:"options"`
 }
 
 // NewBehavior creates a new Behavior
 func NewBehavior() *Behavior {
-	behavior := &Behavior{}
+	behavior := &Behavior{Options: OptionValue{}}
 	behavior.Init()
 
 	return behavior
