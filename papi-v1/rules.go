@@ -27,6 +27,7 @@ type Rules struct {
 func NewRules() *Rules {
 	rules := &Rules{}
 	rules.Rules = NewRule(rules)
+	rules.Rules.Name = "default"
 	rules.Init()
 
 	return rules
@@ -759,7 +760,7 @@ func NewBehavior(parent *Rule) *Behavior {
 // OptionValue is a map with string keys, and any
 // type of value. You can nest OptionValues as necessary
 // to create more complex values.
-type OptionValue client.JSONBody
+type OptionValue map[string]interface{}
 
 // AvailableCriteria represents a collection of available rule criteria
 type AvailableCriteria struct {
