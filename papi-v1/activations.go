@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
@@ -198,10 +197,10 @@ func (activation *Activation) GetActivation(property *Property) (time.Duration, 
 	activation.Note = activations.Activations.Items[0].Note
 	activation.NotifyEmails = activations.Activations.Items[0].NotifyEmails
 
-	retry, _ := strconv.Atoi(res.Header.Get("Retry-After"))
-	retry *= int(time.Second)
+	//retry, _ := strconv.Atoi(res.Header.Get("Retry-After"))
+	//retry *= int(time.Second)
 
-	return time.Duration(retry), nil
+	return time.Duration(30 * time.Second), nil
 }
 
 // Save activates a given property
