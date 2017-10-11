@@ -148,6 +148,7 @@ type Property struct {
 	ProductionVersion int                `json:"productionVersion,omitempty"`
 	Note              string             `json:"note,omitempty"`
 	ProductID         string             `json:"productId,omitempty"`
+	RuleFormat        string             `json:"ruleFormat",omitempty`
 	CloneFrom         *ClonePropertyFrom `json:"cloneFrom"`
 }
 
