@@ -214,6 +214,7 @@ func (property *Property) GetProperty() error {
 	property.ProductionVersion = newProperties.Properties.Items[0].ProductionVersion
 	property.Note = newProperties.Properties.Items[0].Note
 	property.ProductID = newProperties.Properties.Items[0].ProductID
+	property.RuleFormat = newProperties.Properties.Items[0].RuleFormat
 	property.CloneFrom = newProperties.Properties.Items[0].CloneFrom
 
 	return nil
