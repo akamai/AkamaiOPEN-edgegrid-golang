@@ -83,6 +83,8 @@ func (activations *Activations) GetLatestStagingActivation(status StatusValue) (
 // GetLatestActivation gets the latest activation for the specified network
 //
 // Default to NetworkProduction. Pass in a status to check for, defaults to StatusActive
+//
+// This can return an activation OR a deactivation. Check activation.ActivationType and activation.Status for what you're looking for
 func (activations *Activations) GetLatestActivation(network NetworkValue, status StatusValue) (*Activation, error) {
 	if network == "" {
 		network = NetworkProduction

@@ -27,7 +27,7 @@ type APIError struct {
 }
 
 func (error APIError) Error() string {
-	return strings.TrimSpace(fmt.Sprintf("API Error: %d %s %s", error.Status, error.Title, error.Detail))
+	return strings.TrimSpace(fmt.Sprintf("API Error: %d %s %s More Info %s", error.Status, error.Title, error.Detail, error.Type))
 }
 
 // NewAPIError creates a new API error based on a Response,
