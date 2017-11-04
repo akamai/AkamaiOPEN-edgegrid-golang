@@ -179,47 +179,47 @@ func (zone *Zone) Delete() error {
 func (zone *Zone) AddRecord(recordPtr interface{}) error {
 	switch recordPtr.(type) {
 	case *ARecord:
-		return zone.addARecord(recordPtr.(*ARecord), true)
+		zone.addARecord(recordPtr.(*ARecord))
 	case *AaaaRecord:
-		return zone.addAaaaRecord(recordPtr.(*AaaaRecord), true)
+		zone.addAaaaRecord(recordPtr.(*AaaaRecord))
 	case *AfsdbRecord:
-		return zone.addAfsdbRecord(recordPtr.(*AfsdbRecord), true)
+		zone.addAfsdbRecord(recordPtr.(*AfsdbRecord))
 	case *CnameRecord:
-		return zone.addCnameRecord(recordPtr.(*CnameRecord), true)
+		zone.addCnameRecord(recordPtr.(*CnameRecord))
 	case *DnskeyRecord:
-		return zone.addDnskeyRecord(recordPtr.(*DnskeyRecord), true)
+		zone.addDnskeyRecord(recordPtr.(*DnskeyRecord))
 	case *DsRecord:
-		return zone.addDsRecord(recordPtr.(*DsRecord), true)
+		zone.addDsRecord(recordPtr.(*DsRecord))
 	case *HinfoRecord:
-		return zone.addHinfoRecord(recordPtr.(*HinfoRecord), true)
+		zone.addHinfoRecord(recordPtr.(*HinfoRecord))
 	case *LocRecord:
-		return zone.addLocRecord(recordPtr.(*LocRecord), true)
+		zone.addLocRecord(recordPtr.(*LocRecord))
 	case *MxRecord:
-		return zone.addMxRecord(recordPtr.(*MxRecord), true)
+		zone.addMxRecord(recordPtr.(*MxRecord))
 	case *NaptrRecord:
-		return zone.addNaptrRecord(recordPtr.(*NaptrRecord), true)
+		zone.addNaptrRecord(recordPtr.(*NaptrRecord))
 	case *NsRecord:
-		return zone.addNsRecord(recordPtr.(*NsRecord), true)
+		zone.addNsRecord(recordPtr.(*NsRecord))
 	case *Nsec3Record:
-		return zone.addNsec3Record(recordPtr.(*Nsec3Record), true)
+		zone.addNsec3Record(recordPtr.(*Nsec3Record))
 	case *Nsec3paramRecord:
-		return zone.addNsec3paramRecord(recordPtr.(*Nsec3paramRecord), true)
+		zone.addNsec3paramRecord(recordPtr.(*Nsec3paramRecord))
 	case *PtrRecord:
-		return zone.addPtrRecord(recordPtr.(*PtrRecord), true)
+		zone.addPtrRecord(recordPtr.(*PtrRecord))
 	case *RpRecord:
-		return zone.addRpRecord(recordPtr.(*RpRecord), true)
+		zone.addRpRecord(recordPtr.(*RpRecord))
 	case *RrsigRecord:
-		return zone.addRrsigRecord(recordPtr.(*RrsigRecord), true)
+		zone.addRrsigRecord(recordPtr.(*RrsigRecord))
 	case *SoaRecord:
-		return zone.addSoaRecord(recordPtr.(*SoaRecord), true)
+		zone.addSoaRecord(recordPtr.(*SoaRecord))
 	case *SpfRecord:
-		return zone.addSpfRecord(recordPtr.(*SpfRecord), true)
+		zone.addSpfRecord(recordPtr.(*SpfRecord))
 	case *SrvRecord:
-		return zone.addSrvRecord(recordPtr.(*SrvRecord), true)
+		zone.addSrvRecord(recordPtr.(*SrvRecord))
 	case *SshfpRecord:
-		return zone.addSshfpRecord(recordPtr.(*SshfpRecord), true)
+		zone.addSshfpRecord(recordPtr.(*SshfpRecord))
 	case *TxtRecord:
-		return zone.addTxtRecord(recordPtr.(*TxtRecord), true)
+		zone.addTxtRecord(recordPtr.(*TxtRecord))
 	}
 
 	return nil
@@ -274,410 +274,109 @@ func (zone *Zone) RemoveRecord(recordPtr interface{}) error {
 	return nil
 }
 
-func (zone *Zone) addARecord(record *ARecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.A {
-			if r.Name == record.Name {
-				zone.Zone.A[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.A = append(zone.Zone.A, record)
-	}
-
+func (zone *Zone) addARecord(record *ARecord) {
+	zone.Zone.A = append(zone.Zone.A, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "A", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addAaaaRecord(record *AaaaRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Aaaa {
-			if r.Name == record.Name {
-				zone.Zone.Aaaa[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Aaaa = append(zone.Zone.Aaaa, record)
-	}
-
+func (zone *Zone) addAaaaRecord(record *AaaaRecord) {
+	zone.Zone.Aaaa = append(zone.Zone.Aaaa, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "AAAA", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addAfsdbRecord(record *AfsdbRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Afsdb {
-			if r.Name == record.Name {
-				zone.Zone.Afsdb[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Afsdb = append(zone.Zone.Afsdb, record)
-	}
-
+func (zone *Zone) addAfsdbRecord(record *AfsdbRecord) {
+	zone.Zone.Afsdb = append(zone.Zone.Afsdb, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "AFSDB", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addCnameRecord(record *CnameRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Cname {
-			if r.Name == record.Name {
-				zone.Zone.Cname[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Cname = append(zone.Zone.Cname, record)
-	}
-
+func (zone *Zone) addCnameRecord(record *CnameRecord) {
+	zone.Zone.Cname = append(zone.Zone.Cname, record)
 	cnameNames = append(cnameNames, name{recordType: "CNAME", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addDnskeyRecord(record *DnskeyRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Dnskey {
-			if r.Name == record.Name {
-				zone.Zone.Dnskey[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Dnskey = append(zone.Zone.Dnskey, record)
-	}
-
+func (zone *Zone) addDnskeyRecord(record *DnskeyRecord) {
+	zone.Zone.Dnskey = append(zone.Zone.Dnskey, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "DNSKEY", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addDsRecord(record *DsRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Ds {
-			if r.Name == record.Name {
-				zone.Zone.Ds[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Ds = append(zone.Zone.Ds, record)
-	}
-
+func (zone *Zone) addDsRecord(record *DsRecord) {
+	zone.Zone.Ds = append(zone.Zone.Ds, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "DS", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addHinfoRecord(record *HinfoRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Hinfo {
-			if r.Name == record.Name {
-				zone.Zone.Hinfo[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Hinfo = append(zone.Zone.Hinfo, record)
-	}
-
+func (zone *Zone) addHinfoRecord(record *HinfoRecord) {
+	zone.Zone.Hinfo = append(zone.Zone.Hinfo, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "HINFO", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addLocRecord(record *LocRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Loc {
-			if r.Name == record.Name {
-				zone.Zone.Loc[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Loc = append(zone.Zone.Loc, record)
-	}
-
+func (zone *Zone) addLocRecord(record *LocRecord) {
+	zone.Zone.Loc = append(zone.Zone.Loc, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "LOC", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addMxRecord(record *MxRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Mx {
-			if r.Name == record.Name {
-				zone.Zone.Mx[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Mx = append(zone.Zone.Mx, record)
-	}
-
+func (zone *Zone) addMxRecord(record *MxRecord) {
+	zone.Zone.Mx = append(zone.Zone.Mx, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "MX", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addNaptrRecord(record *NaptrRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Naptr {
-			if r.Name == record.Name {
-				zone.Zone.Naptr[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Naptr = append(zone.Zone.Naptr, record)
-	}
-
+func (zone *Zone) addNaptrRecord(record *NaptrRecord) {
+	zone.Zone.Naptr = append(zone.Zone.Naptr, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "NAPTR", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addNsRecord(record *NsRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Ns {
-			if r.Name == record.Name {
-				zone.Zone.Ns[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Ns = append(zone.Zone.Ns, record)
-	}
-
+func (zone *Zone) addNsRecord(record *NsRecord) {
+	zone.Zone.Ns = append(zone.Zone.Ns, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "NS", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addNsec3Record(record *Nsec3Record, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Nsec3 {
-			if r.Name == record.Name {
-				zone.Zone.Nsec3[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Nsec3 = append(zone.Zone.Nsec3, record)
-	}
-
+func (zone *Zone) addNsec3Record(record *Nsec3Record) {
+	zone.Zone.Nsec3 = append(zone.Zone.Nsec3, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "NSEC3", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addNsec3paramRecord(record *Nsec3paramRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Nsec3param {
-			if r.Name == record.Name {
-				zone.Zone.Nsec3param[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Nsec3param = append(zone.Zone.Nsec3param, record)
-	}
-
+func (zone *Zone) addNsec3paramRecord(record *Nsec3paramRecord) {
+	zone.Zone.Nsec3param = append(zone.Zone.Nsec3param, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "NSEC3PARAM", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addPtrRecord(record *PtrRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Ptr {
-			if r.Name == record.Name {
-				zone.Zone.Ptr[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Ptr = append(zone.Zone.Ptr, record)
-	}
-
+func (zone *Zone) addPtrRecord(record *PtrRecord) {
+	zone.Zone.Ptr = append(zone.Zone.Ptr, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "PTR", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addRpRecord(record *RpRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Rp {
-			if r.Name == record.Name {
-				zone.Zone.Rp[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Rp = append(zone.Zone.Rp, record)
-	}
-
+func (zone *Zone) addRpRecord(record *RpRecord) {
+	zone.Zone.Rp = append(zone.Zone.Rp, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "RP", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addRrsigRecord(record *RrsigRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Rrsig {
-			if r.Name == record.Name {
-				zone.Zone.Rrsig[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Rrsig = append(zone.Zone.Rrsig, record)
-	}
-
+func (zone *Zone) addRrsigRecord(record *RrsigRecord) {
+	zone.Zone.Rrsig = append(zone.Zone.Rrsig, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "RRSIG", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addSoaRecord(record *SoaRecord, replace bool) error {
+func (zone *Zone) addSoaRecord(record *SoaRecord) {
 	// Only one SOA records is allowed
 	zone.Zone.Soa = record
-	return nil
 }
 
-func (zone *Zone) addSpfRecord(record *SpfRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Spf {
-			if r.Name == record.Name {
-				zone.Zone.Spf[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Spf = append(zone.Zone.Spf, record)
-	}
-
+func (zone *Zone) addSpfRecord(record *SpfRecord) {
+	zone.Zone.Spf = append(zone.Zone.Spf, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "SPF", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addSrvRecord(record *SrvRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Srv {
-			if r.Name == record.Name {
-				zone.Zone.Srv[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Srv = append(zone.Zone.Srv, record)
-	}
-
+func (zone *Zone) addSrvRecord(record *SrvRecord) {
+	zone.Zone.Srv = append(zone.Zone.Srv, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "SRV", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addSshfpRecord(record *SshfpRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Sshfp {
-			if r.Name == record.Name {
-				zone.Zone.Sshfp[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Sshfp = append(zone.Zone.Sshfp, record)
-	}
-
+func (zone *Zone) addSshfpRecord(record *SshfpRecord) {
+	zone.Zone.Sshfp = append(zone.Zone.Sshfp, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "SSHFP", name: record.Name})
-
-	return nil
 }
 
-func (zone *Zone) addTxtRecord(record *TxtRecord, replace bool) error {
-	var found bool
-	if replace == true {
-		for key, r := range zone.Zone.Txt {
-			if r.Name == record.Name {
-				zone.Zone.Txt[key] = record
-				found = true
-			}
-		}
-	}
-
-	if !found {
-		zone.Zone.Txt = append(zone.Zone.Txt, record)
-	}
-
+func (zone *Zone) addTxtRecord(record *TxtRecord) {
+	zone.Zone.Txt = append(zone.Zone.Txt, record)
 	nonCnameNames = append(nonCnameNames, name{recordType: "TXT", name: record.Name})
-
-	return nil
 }
 
 func (zone *Zone) removeARecord(record *ARecord) error {
