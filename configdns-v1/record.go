@@ -54,6 +54,7 @@ func (record *ARecord) SetField(name string, value interface{}) error {
 		case "target":
 			record.Target = value.(string)
 		}
+		return nil
 	}
 	return &RecordError{fieldName: name}
 }
