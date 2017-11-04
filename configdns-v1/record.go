@@ -7,9 +7,10 @@ import (
 
 // All record types (below) must implement the DNSRecord interface
 // This allows the record to be used dynamically in slices - see the Zone struct definition in zone.go
+//
+// The record types implemented and their fields are as defined here
+// https://developer.akamai.com/api/luna/config-dns/data.html
 type DNSRecord interface {
-	// Allows will validates if a the current record type allows a given field
-	Allows(field string) bool
 	// Get the list of allowed fields for this type
 	GetAllowedFields() []string
 	// Set a field on the struct, which check for valid fields
@@ -35,10 +36,6 @@ func NewARecord() *ARecord {
 			"target",
 		},
 	}
-}
-
-func (record *ARecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *ARecord) GetAllowedFields() []string {
@@ -87,10 +84,6 @@ func NewAaaaRecord() *AaaaRecord {
 			"target",
 		},
 	}
-}
-
-func (record *AaaaRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *AaaaRecord) GetAllowedFields() []string {
@@ -144,10 +137,6 @@ func NewAfsdbRecord() *AfsdbRecord {
 	}
 }
 
-func (record *AfsdbRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
-}
-
 func (record *AfsdbRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
@@ -198,10 +187,6 @@ func NewCnameRecord() *CnameRecord {
 			"target",
 		},
 	}
-}
-
-func (record *CnameRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *CnameRecord) GetAllowedFields() []string {
@@ -257,10 +242,6 @@ func NewDnskeyRecord() *DnskeyRecord {
 			"key",
 		},
 	}
-}
-
-func (record *DnskeyRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *DnskeyRecord) GetAllowedFields() []string {
@@ -327,10 +308,6 @@ func NewDsRecord() *DsRecord {
 	}
 }
 
-func (record *DsRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
-}
-
 func (record *DsRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
@@ -391,10 +368,6 @@ func NewHinfoRecord() *HinfoRecord {
 	}
 }
 
-func (record *HinfoRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
-}
-
 func (record *HinfoRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
@@ -447,10 +420,6 @@ func NewLocRecord() *LocRecord {
 	}
 }
 
-func (record *LocRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
-}
-
 func (record *LocRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
@@ -500,10 +469,6 @@ func NewMxRecord() *MxRecord {
 			"priority",
 		},
 	}
-}
-
-func (record *MxRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *MxRecord) GetAllowedFields() []string {
@@ -566,10 +531,6 @@ func NewNaptrRecord() *NaptrRecord {
 			"replacement",
 		},
 	}
-}
-
-func (record *NaptrRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *NaptrRecord) GetAllowedFields() []string {
@@ -636,10 +597,6 @@ func NewNsRecord() *NsRecord {
 	}
 }
 
-func (record *NsRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
-}
-
 func (record *NsRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
@@ -697,10 +654,6 @@ func NewNsec3Record() *Nsec3Record {
 			"typebitmaps",
 		},
 	}
-}
-
-func (record *Nsec3Record) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *Nsec3Record) GetAllowedFields() []string {
@@ -773,10 +726,6 @@ func NewNsec3paramRecord() *Nsec3paramRecord {
 	}
 }
 
-func (record *Nsec3paramRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
-}
-
 func (record *Nsec3paramRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
@@ -835,10 +784,6 @@ func NewPtrRecord() *PtrRecord {
 	}
 }
 
-func (record *PtrRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
-}
-
 func (record *PtrRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
@@ -888,10 +833,6 @@ func NewRpRecord() *RpRecord {
 			"txt",
 		},
 	}
-}
-
-func (record *RpRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *RpRecord) GetAllowedFields() []string {
@@ -960,10 +901,6 @@ func NewRrsigRecord() *RrsigRecord {
 			"labels",
 		},
 	}
-}
-
-func (record *RrsigRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *RrsigRecord) GetAllowedFields() []string {
@@ -1049,10 +986,6 @@ func NewSoaRecord() *SoaRecord {
 	return r
 }
 
-func (record *SoaRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
-}
-
 func (record *SoaRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
@@ -1114,10 +1047,6 @@ func NewSpfRecord() *SpfRecord {
 	}
 }
 
-func (record *SpfRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
-}
-
 func (record *SpfRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
@@ -1171,10 +1100,6 @@ func NewSrvRecord() *SrvRecord {
 			"port",
 		},
 	}
-}
-
-func (record *SrvRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *SrvRecord) GetAllowedFields() []string {
@@ -1239,10 +1164,6 @@ func NewSshfpRecord() *SshfpRecord {
 	}
 }
 
-func (record *SshfpRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
-}
-
 func (record *SshfpRecord) GetAllowedFields() []string {
 	return record.fieldMap
 }
@@ -1296,10 +1217,6 @@ func NewTxtRecord() *TxtRecord {
 			"target",
 		},
 	}
-}
-
-func (record *TxtRecord) Allows(field string) bool {
-	return contains(record.fieldMap, field)
 }
 
 func (record *TxtRecord) GetAllowedFields() []string {
