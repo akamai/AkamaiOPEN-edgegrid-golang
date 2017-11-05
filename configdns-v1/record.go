@@ -512,7 +512,7 @@ type NaptrRecord struct {
 	Active      bool     `json:"active,omitempty"`
 	Order       int      `json:"order,omitempty"`
 	Preference  int      `json:"preference,omitempty"`
-	Flags       int      `json:"flags,omitempty"`
+	Flags       string   `json:"flags,omitempty"`
 	Service     string   `json:"service,omitempty"`
 	Regexp      string   `json:"regexp,omitempty"`
 	Replacement string   `json:"replacement,omitempty"`
@@ -552,7 +552,7 @@ func (record *NaptrRecord) SetField(name string, value interface{}) error {
 		case "preference":
 			record.Preference = value.(int)
 		case "flags":
-			record.Flags = value.(int)
+			record.Flags = value.(string)
 		case "service":
 			record.Service = value.(string)
 		case "regexp":
