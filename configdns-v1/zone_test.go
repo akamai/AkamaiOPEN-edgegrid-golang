@@ -1,8 +1,6 @@
 package dns
 
 import (
-	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
@@ -258,48 +256,34 @@ func TestZone_JSON(t *testing.T) {
 }
 
 func TestZone_AddRecord(t *testing.T) {
-	for i, records := range testZone_AddRecord_Provider() {
-		t.Run(fmt.Sprintf("Data Set #%d", i), func(t *testing.T) {
-			t.Parallel()
-
-			zone := NewZone("example.org")
-
-			for _, record := range records {
-				err := zone.AddRecord(record)
-				assert.NoError(t, err)
-			}
-
-			assert.Equal(t, records, zone.GetRecordType("A").(RecordSet))
-		})
+	records := testZone_AddRecord_Provider()
+	zone := NewZone("example.org")
+	for _, record := range records {
+		err := zone.AddRecord(record)
+		assert.NoError(t, err)
 	}
+	assert.Equal(t, records, zone.Zone.A)
 }
 
-func testZone_AddRecord_Provider() []RecordSet {
-	return []RecordSet{
-		RecordSet{
-			&Record{
-				RecordType: "A",
-				Name:       "www",
-				Active:     true,
-				Target:     "1.2.3.4",
-				TTL:        30,
-			},
+func testZone_AddRecord_Provider() []*ARecord {
+	return []*ARecord{
+		&ARecord{
+			Name:   "www",
+			Active: true,
+			Target: "1.2.3.4",
+			TTL:    30,
 		},
-		RecordSet{
-			&Record{
-				RecordType: "A",
-				Name:       "www",
-				Active:     true,
-				Target:     "1.2.3.4",
-				TTL:        30,
-			},
-			&Record{
-				RecordType: "A",
-				Name:       "www",
-				Active:     true,
-				Target:     "1.2.3.5",
-				TTL:        30,
-			},
+		&ARecord{
+			Name:   "www",
+			Active: true,
+			Target: "1.2.3.4",
+			TTL:    30,
+		},
+		&ARecord{
+			Name:   "www",
+			Active: true,
+			Target: "1.2.3.5",
+			TTL:    30,
 		},
 	}
 }
