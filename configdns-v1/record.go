@@ -46,15 +46,30 @@ func (record *ARecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -95,15 +110,30 @@ func (record *AaaaRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -146,17 +176,36 @@ func (record *AfsdbRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		case "subtype":
-			record.Subtype = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Subtype = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -198,15 +247,30 @@ func (record *CnameRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -253,21 +317,48 @@ func (record *DnskeyRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "flags":
-			record.Flags = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Flags = v
+				return nil
+			}
 		case "protocol":
-			record.Protocol = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Protocol = v
+				return nil
+			}
 		case "algorithm":
-			record.Algorithm = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Algorithm = v
+				return nil
+			}
 		case "key":
-			record.Key = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Key = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -317,21 +408,48 @@ func (record *DsRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "keytag":
-			record.Keytag = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Keytag = v
+				return nil
+			}
 		case "algorithm":
-			record.Algorithm = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Algorithm = v
+				return nil
+			}
 		case "digesttype":
-			record.DigestType = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.DigestType = v
+				return nil
+			}
 		case "digest":
-			record.Digest = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Digest = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -377,17 +495,36 @@ func (record *HinfoRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "hardware":
-			record.Hardware = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Hardware = v
+				return nil
+			}
 		case "software":
-			record.Software = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Software = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -429,15 +566,30 @@ func (record *LocRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -480,17 +632,36 @@ func (record *MxRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		case "priority":
-			record.Priority = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Priority = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -542,25 +713,60 @@ func (record *NaptrRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "order":
-			record.Order = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Order = v
+				return nil
+			}
 		case "preference":
-			record.Preference = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Preference = v
+				return nil
+			}
 		case "flags":
-			record.Flags = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Flags = v
+				return nil
+			}
 		case "service":
-			record.Service = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Service = v
+				return nil
+			}
 		case "regexp":
-			record.Regexp = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Regexp = v
+				return nil
+			}
 		case "replacement":
-			record.Replacement = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Replacement = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -606,15 +812,30 @@ func (record *NsRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -665,25 +886,60 @@ func (record *Nsec3Record) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "algorithm":
-			record.Algorithm = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Algorithm = v
+				return nil
+			}
 		case "flags":
-			record.Flags = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Flags = v
+				return nil
+			}
 		case "iterations":
-			record.Iterations = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Iterations = v
+				return nil
+			}
 		case "salt":
-			record.Salt = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Salt = v
+				return nil
+			}
 		case "nexthashedownername":
-			record.NextHashedOwnerName = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.NextHashedOwnerName = v
+				return nil
+			}
 		case "typebitmaps":
-			record.TypeBitmaps = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.TypeBitmaps = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -735,21 +991,48 @@ func (record *Nsec3paramRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "algorithm":
-			record.Algorithm = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Algorithm = v
+				return nil
+			}
 		case "flags":
-			record.Flags = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Flags = v
+				return nil
+			}
 		case "iterations":
-			record.Iterations = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Iterations = v
+				return nil
+			}
 		case "salt":
-			record.Salt = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Salt = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -793,15 +1076,30 @@ func (record *PtrRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -844,17 +1142,36 @@ func (record *RpRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "mailbox":
-			record.Mailbox = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Mailbox = v
+				return nil
+			}
 		case "txt":
-			record.Txt = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Txt = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -912,31 +1229,78 @@ func (record *RrsigRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "typecovered":
-			record.TypeCovered = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.TypeCovered = v
+				return nil
+			}
 		case "algorithm":
-			record.Algorithm = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Algorithm = v
+				return nil
+			}
 		case "originalttl":
-			record.OriginalTTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.OriginalTTL = v
+				return nil
+			}
 		case "expiration":
-			record.Expiration = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Expiration = v
+				return nil
+			}
 		case "inception":
-			record.Inception = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Inception = v
+				return nil
+			}
 		case "keytag":
-			record.Keytag = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Keytag = v
+				return nil
+			}
 		case "signer":
-			record.Signer = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Signer = v
+				return nil
+			}
 		case "signature":
-			record.Signature = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Signature = v
+				return nil
+			}
 		case "labels":
-			record.Labels = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Labels = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -995,23 +1359,54 @@ func (record *SoaRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "originserver":
-			record.Originserver = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Originserver = v
+				return nil
+			}
 		case "contact":
-			record.Contact = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Contact = v
+				return nil
+			}
 		case "serial":
-			record.Serial = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Serial = v
+				return nil
+			}
 		case "refresh":
-			record.Refresh = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Refresh = v
+				return nil
+			}
 		case "retry":
-			record.Retry = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Retry = v
+				return nil
+			}
 		case "expire":
-			record.Expire = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Expire = v
+				return nil
+			}
 		case "minimum":
-			record.Minimum = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Minimum = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -1056,15 +1451,30 @@ func (record *SpfRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -1111,21 +1521,48 @@ func (record *SrvRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		case "priority":
-			record.Priority = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Priority = v
+				return nil
+			}
 		case "weight":
-			record.Weight = value.(uint)
+			v, ok := value.(uint)
+			if ok {
+				record.Weight = v
+				return nil
+			}
 		case "port":
-			record.Port = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Port = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -1173,19 +1610,42 @@ func (record *SshfpRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "algorithm":
-			record.Algorithm = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.Algorithm = v
+				return nil
+			}
 		case "fingerprinttype":
-			record.FingerprintType = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.FingerprintType = v
+				return nil
+			}
 		case "fingerprint":
-			record.Fingerprint = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Fingerprint = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
@@ -1228,15 +1688,30 @@ func (record *TxtRecord) SetField(name string, value interface{}) error {
 	if contains(record.fieldMap, name) {
 		switch name {
 		case "name":
-			record.Name = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Name = v
+				return nil
+			}
 		case "ttl":
-			record.TTL = value.(int)
+			v, ok := value.(int)
+			if ok {
+				record.TTL = v
+				return nil
+			}
 		case "active":
-			record.Active = value.(bool)
+			v, ok := value.(bool)
+			if ok {
+				record.Active = v
+				return nil
+			}
 		case "target":
-			record.Target = value.(string)
+			v, ok := value.(string)
+			if ok {
+				record.Target = v
+				return nil
+			}
 		}
-		return nil
 	}
 	return &RecordError{fieldName: name}
 }
