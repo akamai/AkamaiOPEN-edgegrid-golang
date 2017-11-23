@@ -89,16 +89,16 @@ func InitEdgeRc(filepath string, section string) (Config, error) {
 	path, err := tilde.Expand(filepath)
 
 	if err != nil {
-		panic(fmt.Errorf(errorMap[ErrHomeDirNotFound], err))
+		return Config{}, fmt.Errorf(errorMap[ErrHomeDirNotFound], err)
 	}
 
 	edgerc, err := ini.Load(path)
 	if err != nil {
-		panic(fmt.Errorf(errorMap[ErrConfigFile], err))
+		return Config{}, fmt.Errorf(errorMap[ErrConfigFile], err)
 	}
 	err = edgerc.Section(section).MapTo(&c)
 	if err != nil {
-		panic(fmt.Errorf(errorMap[ErrConfigFileSection], err))
+		return Config{}, fmt.Errorf(errorMap[ErrConfigFileSection], err)
 	}
 	for _, opt := range requiredOptions {
 		if !(edgerc.Section(section).HasKey(opt)) {
@@ -106,7 +106,7 @@ func InitEdgeRc(filepath string, section string) (Config, error) {
 		}
 	}
 	if len(missing) > 0 {
-		panic(fmt.Errorf(errorMap[ErrConfigMissingOptions], missing))
+		return Config{}, fmt.Errorf(errorMap[ErrConfigMissingOptions], missing)
 	}
 	if c.MaxBody == 0 {
 		c.MaxBody = 131072
