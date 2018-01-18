@@ -154,7 +154,7 @@ type Property struct {
 
 // NewProperty creates a new Property
 func NewProperty(parent *Properties) *Property {
-	property := &Property{parent: parent}
+	property := &Property{parent: parent, Group: &Group{}, Contract: &Contract{}}
 	property.Init()
 	return property
 }
