@@ -90,6 +90,11 @@ func (groups *Groups) AddGroup(newGroup *Group) {
 func (groups *Groups) FindGroup(id string) (*Group, error) {
 	var group *Group
 	var groupFound bool
+
+	if id == "" {
+		goto err
+	}
+
 	for _, group = range groups.Groups.Items {
 		if group.GroupID == id {
 			groupFound = true
@@ -97,6 +102,7 @@ func (groups *Groups) FindGroup(id string) (*Group, error) {
 		}
 	}
 
+err:
 	if !groupFound {
 		return nil, fmt.Errorf("Unable to find group: \"%s\"", id)
 	}
