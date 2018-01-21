@@ -154,32 +154,6 @@ func (rules *Rules) Save() error {
 	return nil
 }
 
-// FindRule locates a specific rule by path
-func (rules *Rules) FindRule(path string) (*Rule, error) {
-	if path == "" {
-		return rules.Rule, nil
-	}
-
-	sep := "/"
-	segments := strings.Split(path, sep)
-
-	currentRule := rules.Rule
-	for _, segment := range segments {
-		found := false
-		for _, rule := range currentRule.Children {
-			if strings.ToLower(rule.Name) == segment {
-				currentRule = rule
-				found = true
-			}
-		}
-		if found != true {
-			return nil, ErrorMap[ErrRuleNotFound]
-		}
-	}
-
-	return currentRule, nil
-}
-
 // Freeze pins a properties rule set to a specific rule set version
 func (rules *Rules) Freeze(format string) error {
 	rules.Errors = []*RuleErrors{}
@@ -247,37 +221,193 @@ func NewRule() *Rule {
 	return rule
 }
 
-// AddChildRule appends a child rule
-func (rule *Rule) AddChildRule(child *Rule) {
-	for k, v := range rule.Children {
-		if v.Name == child.Name {
-			rule.Children[k] = child
+// MergeBehavior merges a behavior into a rule
+//
+// If the behavior already exists, it's options are merged with the existing
+// options.
+func (rule *Rule) MergeBehavior(behavior *Behavior) {
+	for _, existingBehavior := range rule.Behaviors {
+		if existingBehavior.Name == behavior.Name {
+			existingBehavior.MergeOptions(behavior.Options)
 			return
 		}
 	}
-	rule.Children = append(rule.Children, child)
-}
 
-// AddCriteria appends a rule criteria
-func (rule *Rule) AddCriteria(criteria *Criteria) {
-	for k, v := range rule.Criteria {
-		if v.Name == criteria.Name {
-			rule.Criteria[k] = criteria
-			return
-		}
-	}
-	rule.Criteria = append(rule.Criteria, criteria)
-}
-
-// AddBehavior appends a rule behavior
-func (rule *Rule) AddBehavior(behavior *Behavior) {
-	for k, v := range rule.Behaviors {
-		if v.Name == behavior.Name {
-			rule.Behaviors[k] = behavior
-			return
-		}
-	}
 	rule.Behaviors = append(rule.Behaviors, behavior)
+	return
+}
+
+// AddBehavior adds a behavior to the rule
+//
+// If the behavior already exists it is replaced with the given behavior
+func (rule *Rule) AddBehavior(behavior *Behavior) {
+	for key, existingBehavior := range rule.Behaviors {
+		if existingBehavior.Name == behavior.Name {
+			rule.Behaviors[key] = behavior
+			return
+		}
+	}
+
+	rule.Behaviors = append(rule.Behaviors, behavior)
+	return
+}
+
+// MergeCriteria merges a criteria into a rule
+//
+// If the criteria already exists, it's options are merged with the existing
+// options.
+func (rule *Rule) MergeCriteria(criteria *Criteria) {
+	for _, existingCriteria := range rule.Criteria {
+		if existingCriteria.Name == criteria.Name {
+			existingCriteria.MergeOptions(criteria.Options)
+			return
+		}
+	}
+
+	rule.Criteria = append(rule.Criteria, criteria)
+	return
+}
+
+// AddCriteria add a criteria to a rule
+//
+// If the criteria already exists, it is replaced with the given criteria.
+func (rule *Rule) AddCriteria(criteria *Criteria) {
+	for key, existingCriteria := range rule.Criteria {
+		if existingCriteria.Name == criteria.Name {
+			rule.Criteria[key] = criteria
+			return
+		}
+	}
+
+	rule.Criteria = append(rule.Criteria, criteria)
+	return
+}
+
+
+// MergeChildRule adds a child rule to this rule
+//
+// If the rule already exists, criteria, behaviors, and child rules are added to
+// the existing rule.
+func (rule *Rule) MergeChildRule(childRule *Rule) error {
+	for key, existingChildRule := range rule.Children {
+		if existingChildRule.Name == childRule.Name {
+			for _, behavior := range childRule.Behaviors {
+				rule.Children[key].MergeBehavior(behavior)
+			}
+
+			for _, criteria := range childRule.Criteria {
+				rule.Children[key].MergeCriteria(criteria)
+			}
+
+			for _, child := range childRule.Children {
+				rule.Children[key].MergeChildRule(child)
+			}
+
+			return nil
+		}
+	}
+
+	rule.Children = append(rule.Children, childRule)
+
+	return nil
+}
+
+// AddChildRule adds a rule as a child of this rule
+//
+// If the rule already exists, it is replaced by the given rule.
+func (rule *Rule) AddChildRule(childRule *Rule) {
+	for key, existingChildRule := range rule.Children {
+		if existingChildRule.Name == childRule.Name {
+			rule.Children[key] = childRule
+
+			return
+		}
+	}
+
+	rule.Children = append(rule.Children, childRule)
+
+	return
+}
+
+// FindBehavior locates a specific behavior by path
+func (rules *Rules) FindBehavior(path string) (*Behavior, error) {
+	if len(path) <= 1 {
+		return nil, ErrorMap[ErrInvalidPath]
+	}
+
+	rule, err := rules.FindParentRule(path)
+	if err != nil {
+		return nil, err
+	}
+
+	sep := "/"
+	segments := strings.Split(path, sep)
+	behaviorName := strings.ToLower(segments[len(segments)-1])
+	for _, behavior := range rule.Behaviors {
+		if strings.ToLower(behavior.Name) == behaviorName {
+			return behavior, nil
+		}
+	}
+
+	return nil, ErrorMap[ErrBehaviorNotFound]
+}
+
+// FindCriteria locates a specific Critieria by path
+func (rules *Rules) FindCriteria(path string) (*Criteria, error) {
+	if len(path) <= 1 {
+		return nil, ErrorMap[ErrInvalidPath]
+	}
+
+	rule, err := rules.FindParentRule(path)
+	if err != nil {
+		return nil, err
+	}
+
+	sep := "/"
+	segments := strings.Split(path, sep)
+	criteriaName := strings.ToLower(segments[len(segments)-1])
+	for _, criteria := range rule.Criteria {
+		if strings.ToLower(criteria.Name) == criteriaName {
+			return criteria, nil
+		}
+	}
+
+	return nil, ErrorMap[ErrCriteriaNotFound]
+}
+
+// FindRule locates a specific rule by path
+func (rules *Rules) FindRule(path string) (*Rule, error) {
+	if path == "" {
+		return rules.Rule, nil
+	}
+
+	sep := "/"
+	segments := strings.Split(path, sep)
+
+	currentRule := rules.Rule
+	for _, segment := range segments {
+		found := false
+		for _, rule := range currentRule.Children {
+			if strings.ToLower(rule.Name) == segment {
+				currentRule = rule
+				found = true
+			}
+		}
+		if found != true {
+			return nil, ErrorMap[ErrRuleNotFound]
+		}
+	}
+
+	return currentRule, nil
+}
+
+// Find the parent rule for a given rule, criteria, or behavior path
+func (rules *Rules) FindParentRule(path string) (*Rule, error) {
+	sep := "/"
+	segments := strings.Split(strings.ToLower(strings.TrimPrefix(path, sep)), sep)
+	parentPath := strings.Join(segments[0:len(segments)-1], sep)
+
+	return rules.FindRule(parentPath)
 }
 
 // Criteria represents a rule criteria resource
@@ -295,6 +425,20 @@ func NewCriteria() *Criteria {
 	return criteria
 }
 
+// MergeOptions merges the given options with the existing options
+func (criteria *Criteria) MergeOptions(newOptions OptionValue) {
+	options := make(map[string]interface{})
+	for k, v := range criteria.Options {
+		options[k] = v
+	}
+
+	for k, v := range newOptions {
+		options[k] = v
+	}
+
+	criteria.Options = OptionValue(options)
+}
+
 // Behavior represents a rule behavior resource
 type Behavior struct {
 	client.Resource
@@ -308,6 +452,20 @@ func NewBehavior() *Behavior {
 	behavior.Init()
 
 	return behavior
+}
+
+// MergeOptions merges the given options with the existing options
+func (behavior *Behavior) MergeOptions(newOptions OptionValue) {
+	options := make(map[string]interface{})
+	for k, v := range behavior.Options {
+		options[k] = v
+	}
+
+	for k, v := range newOptions {
+		options[k] = v
+	}
+
+	behavior.Options = OptionValue(options)
 }
 
 // OptionValue represents a generic option value
