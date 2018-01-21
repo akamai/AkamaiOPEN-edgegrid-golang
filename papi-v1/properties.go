@@ -297,8 +297,6 @@ func (property *Property) GetVersions() (*Versions, error) {
 func (property *Property) GetLatestVersion(activatedOn NetworkValue) (*Version, error) {
 	versions := NewVersions()
 	versions.PropertyID = property.PropertyID
-	versions.GroupID = property.Group.GroupID
-	versions.ContractID = property.Contract.ContractID
 
 	return versions.GetLatestVersion(activatedOn)
 }
@@ -308,7 +306,7 @@ func (property *Property) GetLatestVersion(activatedOn NetworkValue) (*Version, 
 // If no version is given, the latest version is used
 //
 // See: Hostnames.GetHostnames()
-// API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listapropertyshostnames
+// API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getpropertyversionhostnames
 // Endpoint: GET /papi/v1/properties/{propertyId}/versions/{propertyVersion}/hostnames/{?contractId,groupId}
 func (property *Property) GetHostnames(version *Version) (*Hostnames, error) {
 	hostnames := NewHostnames()
