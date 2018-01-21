@@ -127,12 +127,12 @@ func (versions *Versions) GetLatestVersion(activatedOn NetworkValue) (*Version, 
 		return nil, client.NewAPIError(res)
 	}
 
-	latest := NewVersion(versions)
-	if err := client.BodyJSON(res, latest); err != nil {
+	newVersions := NewVersions()
+	if err := client.BodyJSON(res, newVersions); err != nil {
 		return nil, err
 	}
 
-	return latest, nil
+	return newVersions.Versions.Items[0], nil
 }
 
 // NewVersion creates a new version associated with the Versions collection
