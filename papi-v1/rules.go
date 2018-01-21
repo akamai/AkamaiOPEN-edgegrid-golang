@@ -211,6 +211,7 @@ type Rule struct {
 	Options             struct {
 		IsSecure bool `json:"is_secure,omitempty"`
 	} `json:"options,omitempty"`
+	Variables 			[]*Variable `json:"variables,omitempty"`
 }
 
 // NewRule creates a new Rule
@@ -234,7 +235,6 @@ func (rule *Rule) MergeBehavior(behavior *Behavior) {
 	}
 
 	rule.Behaviors = append(rule.Behaviors, behavior)
-	return
 }
 
 // AddBehavior adds a behavior to the rule
@@ -249,7 +249,6 @@ func (rule *Rule) AddBehavior(behavior *Behavior) {
 	}
 
 	rule.Behaviors = append(rule.Behaviors, behavior)
-	return
 }
 
 // MergeCriteria merges a criteria into a rule
@@ -265,7 +264,6 @@ func (rule *Rule) MergeCriteria(criteria *Criteria) {
 	}
 
 	rule.Criteria = append(rule.Criteria, criteria)
-	return
 }
 
 // AddCriteria add a criteria to a rule
@@ -280,15 +278,13 @@ func (rule *Rule) AddCriteria(criteria *Criteria) {
 	}
 
 	rule.Criteria = append(rule.Criteria, criteria)
-	return
 }
-
 
 // MergeChildRule adds a child rule to this rule
 //
 // If the rule already exists, criteria, behaviors, and child rules are added to
 // the existing rule.
-func (rule *Rule) MergeChildRule(childRule *Rule) error {
+func (rule *Rule) MergeChildRule(childRule *Rule)  {
 	for key, existingChildRule := range rule.Children {
 		if existingChildRule.Name == childRule.Name {
 			for _, behavior := range childRule.Behaviors {
@@ -303,13 +299,11 @@ func (rule *Rule) MergeChildRule(childRule *Rule) error {
 				rule.Children[key].MergeChildRule(child)
 			}
 
-			return nil
+			return
 		}
 	}
 
 	rule.Children = append(rule.Children, childRule)
-
-	return nil
 }
 
 // AddChildRule adds a rule as a child of this rule
@@ -325,8 +319,21 @@ func (rule *Rule) AddChildRule(childRule *Rule) {
 	}
 
 	rule.Children = append(rule.Children, childRule)
+}
 
-	return
+// AddVariable adds a variable as a child of this rule
+//
+// If the rule already exists, it is replaced by the given rule.
+func (rule *Rule) AddVariable(variable *Variable) {
+	for key, existingVariable := range rule.Variables {
+		if existingVariable.Name == variable.Name {
+			rule.Variables[key] = variable
+
+			return
+		}
+	}
+
+	rule.Variables = append(rule.Variables, variable)
 }
 
 // FindBehavior locates a specific behavior by path
@@ -373,6 +380,29 @@ func (rules *Rules) FindCriteria(path string) (*Criteria, error) {
 	}
 
 	return nil, ErrorMap[ErrCriteriaNotFound]
+}
+
+// FindVariable locates a specific Variable by path
+func (rules *Rules) FindVariable(path string) (*Variable, error) {
+	if len(path) <= 1 {
+		return nil, ErrorMap[ErrInvalidPath]
+	}
+
+	rule, err := rules.FindParentRule(path)
+	if err != nil {
+		return nil, err
+	}
+
+	sep := "/"
+	segments := strings.Split(path, sep)
+	variableName := strings.ToLower(segments[len(segments)-1])
+	for _, variable := range rule.Variables {
+		if strings.ToLower(variable.Name) == variableName {
+			return variable, nil
+		}
+	}
+
+	return nil, ErrorMap[ErrVariableNotFound]
 }
 
 // FindRule locates a specific rule by path
@@ -474,6 +504,23 @@ func (behavior *Behavior) MergeOptions(newOptions OptionValue) {
 // type of value. You can nest OptionValues as necessary
 // to create more complex values.
 type OptionValue map[string]interface{}
+
+type Variable struct {
+	client.Resource
+	Name string `json:"name"`
+	Value string `json:"value"`
+	Description string `json:"description"`
+	Hidden bool `json:"hidden"`
+	Sensitive bool `json:"sensitive"`
+}
+
+// NewVariable creates a new Variable
+func NewVariable() *Variable {
+	variable := &Variable{}
+	variable.Init()
+
+	return variable
+}
 
 // RuleErrors represents an validate error returned for a rule
 type RuleErrors struct {

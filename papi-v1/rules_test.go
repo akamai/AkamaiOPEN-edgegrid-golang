@@ -476,6 +476,109 @@ func TestRule_MergeCriteria(t *testing.T) {
 	}
 }
 
+func TestRule_AddVariable(t *testing.T) {
+	tests := []struct {
+		ParentRule Rule
+		Variables  []*Variable
+		Expected   Rule
+	}{
+		{
+			ParentRule: Rule{
+				Name: "Parent Rule",
+			},
+			Variables: []*Variable{
+				&Variable{
+					Name: "Test Variable",
+					Description: "Test Description",
+					Value: "Test Value",
+					Hidden: true,
+					Sensitive: true,
+				},
+			},
+			Expected: Rule {
+				Name: "Parent Rule",
+				Variables: []*Variable {
+					&Variable{
+						Name: "Test Variable",
+						Description: "Test Description",
+						Value: "Test Value",
+						Hidden: true,
+						Sensitive: true,
+					},
+				},
+			},
+		},
+		{
+			ParentRule: Rule{
+				Name: "Parent Rule",
+				Variables: []*Variable {
+					&Variable {
+						Name: "Existing Variable",
+					},
+				},
+			},
+			Variables: []*Variable{
+				&Variable{
+					Name: "Existing Variable",
+					Description: "New Description",
+					Value: "New Value",
+					Hidden: true,
+					Sensitive: true,
+				},
+			},
+			Expected: Rule {
+				Name: "Parent Rule",
+				Variables: []*Variable{
+					&Variable{
+						Name: "Existing Variable",
+						Description: "New Description",
+						Value: "New Value",
+						Hidden: true,
+						Sensitive: true,
+					},
+				},
+			},
+		},
+		{
+			ParentRule: Rule{
+				Name: "Parent Rule",
+				Variables: []*Variable {
+					&Variable {
+						Name: "Existing Variable",
+					},
+				},
+			},
+			Variables: []*Variable{
+				&Variable {
+					Name: "Existing Variable",
+					Description: "Updated Description",
+				},
+				&Variable{
+					Name: "New Variable",
+				},
+			},
+			Expected: Rule {
+				Name: "Parent Rule",
+				Variables: []*Variable {
+					&Variable {
+						Name: "Existing Variable",
+						Description: "Updated Description",
+					},
+					&Variable{
+						Name: "New Variable",
+					},
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		for _, variable := range test.Variables {
+			test.ParentRule.AddVariable(variable)
+		}
+	}
+}
+
 func TestRule_AddChildRule(t *testing.T) {
 	tests := []struct {
 		ParentRule Rule
@@ -1480,6 +1583,10 @@ func assertRulesMatch(t *testing.T, expected *Rule, actual *Rule) bool {
 	}
 
 	if !assert.Equal(t, expected.Behaviors, actual.Behaviors) {
+		valid = false
+	}
+
+	if !assert.Equal(t, expected.Variables, actual.Variables) {
 		valid = false
 	}
 
