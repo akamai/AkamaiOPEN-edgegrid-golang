@@ -81,6 +81,11 @@ func NewJSONRequest(config edgegrid.Config, method, path string, body interface{
 // Do performs a given HTTP Request, signed with the Akamai OPEN Edgegrid
 // Authorization header. An edgegrid.Response or an error is returned.
 func Do(config edgegrid.Config, req *http.Request) (*http.Response, error) {
+	Client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		req = edgegrid.AddRequestHeader(config, req)
+		return nil
+	}
+
 	req = edgegrid.AddRequestHeader(config, req)
 	res, err := Client.Do(req)
 	if err != nil {

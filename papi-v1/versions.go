@@ -101,17 +101,15 @@ func (versions *Versions) GetVersions(property *Property) error {
 // Endpoint: GET /papi/v1/properties/{propertyId}/versions/latest{?contractId,groupId,activatedOn}
 func (versions *Versions) GetLatestVersion(activatedOn NetworkValue) (*Version, error) {
 	if activatedOn != "" {
-		activatedOn = "&activatedOn=" + activatedOn
+		activatedOn = "?activatedOn=" + activatedOn
 	}
 
 	req, err := client.NewRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions/latest?contractId=%s&groupId=%s%s",
+			"/papi/v1/properties/%s/versions/latest%s",
 			versions.PropertyID,
-			versions.ContractID,
-			versions.GroupID,
 			activatedOn,
 		),
 		nil,
@@ -129,12 +127,12 @@ func (versions *Versions) GetLatestVersion(activatedOn NetworkValue) (*Version, 
 		return nil, client.NewAPIError(res)
 	}
 
-	latest := NewVersion(versions)
-	if err := client.BodyJSON(res, latest); err != nil {
+	newVersions := NewVersions()
+	if err := client.BodyJSON(res, newVersions); err != nil {
 		return nil, err
 	}
 
-	return latest, nil
+	return newVersions.Versions.Items[0], nil
 }
 
 // NewVersion creates a new version associated with the Versions collection
@@ -275,10 +273,8 @@ func (version *Version) Save() error {
 		Config,
 		"POST",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions/?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions",
 			version.parent.PropertyID,
-			version.parent.ContractID,
-			version.parent.GroupID,
 		),
 		version,
 	)
