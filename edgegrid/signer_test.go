@@ -110,17 +110,20 @@ func TestInitConfigBroken(t *testing.T) {
 
 func TestInitConfigUnparsable(t *testing.T) {
 	testSample := "../testdata/edgerc_that_doesnt_parse"
-	assert.Panics(t, func() { InitEdgeRc(testSample, "") }, "Fail: Should raise a PANIC")
+	_, err := InitEdgeRc(testSample, "")
+	assert.Error(t, err)
 }
 
 func TestInitConfigNotFound(t *testing.T) {
 	testSample := "edgerc_not_found"
-	assert.Panics(t, func() { InitEdgeRc(testSample, "") }, "Fail: Should raise a PANIC")
+	_, err := InitEdgeRc(testSample, "")
+	assert.Error(t, err)
 }
 
 func TestInitConfigDashes(t *testing.T) {
 	testSample := "../testdata/sample_edgerc"
-	assert.Panics(t, func() { InitEdgeRc(testSample, "dashes") }, "Fail: Should raise a PANIC")
+	_, err := InitEdgeRc(testSample, "dashes")
+	assert.Error(t, err)
 }
 
 func TestInitConfigDefault(t *testing.T) {
