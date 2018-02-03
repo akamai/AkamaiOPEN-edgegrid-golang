@@ -765,7 +765,11 @@ func (zone *Zone) removeTxtRecord(record *TxtRecord) error {
 }
 
 func (zone *Zone) PreMarshalJSON() error {
-	zone.Zone.Soa.Serial = int(time.Now().Unix())
+	if zone.Zone.Soa.Serial > 0 {
+		zone.Zone.Soa.Serial = zone.Zone.Soa.Serial + 1
+	} else {
+		zone.Zone.Soa.Serial = int(time.Now().Unix())
+	}
 	return nil
 }
 
