@@ -169,6 +169,7 @@ type Version struct {
 	Note                  string      `json:"note,omitempty"`
 	CreateFromVersion     int         `json:"createFromVersion,omitempty"`
 	CreateFromVersionEtag string      `json:"createFromVersionEtag,omitempty"`
+	RuleFormat            string      `json:"ruleFormat,omitempty"`
 }
 
 // NewVersion creates a new Version

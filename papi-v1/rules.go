@@ -200,10 +200,17 @@ type Rule struct {
 	CriteriaLocked      bool                         `json:"criteriaLocked,omitempty"`
 	CriteriaMustSatisfy RuleCriteriaMustSatisfyValue `json:"criteriaMustSatisfy,omitempty"`
 	UUID                string                       `json:"uuid,omitempty"`
-	Options             struct {
+	Variables           []*Variable                  `json:"variables,omitempty"`
+	AdvancedOverride    string                       `json:"advancedOverride,omitempty"`
+
+	Options struct {
 		IsSecure bool `json:"is_secure,omitempty"`
 	} `json:"options,omitempty"`
-	Variables 			[]*Variable `json:"variables,omitempty"`
+
+	CustomOverride struct {
+		Name       string `json:"name"`
+		OverrideID string `json:"overrideId"`
+	} `json:"customOverride,omitempty"`
 }
 
 // NewRule creates a new Rule
@@ -276,7 +283,7 @@ func (rule *Rule) AddCriteria(criteria *Criteria) {
 //
 // If the rule already exists, criteria, behaviors, and child rules are added to
 // the existing rule.
-func (rule *Rule) MergeChildRule(childRule *Rule)  {
+func (rule *Rule) MergeChildRule(childRule *Rule) {
 	for key, existingChildRule := range rule.Children {
 		if existingChildRule.Name == childRule.Name {
 			for _, behavior := range childRule.Behaviors {
@@ -437,6 +444,8 @@ type Criteria struct {
 	client.Resource
 	Name    string      `json:"name"`
 	Options OptionValue `json:"options"`
+	UUID    string      `json:"uuid,omitempty"`
+	Locked  bool        `json:"locked,omitempty"`
 }
 
 // NewCriteria creates a new Criteria
@@ -466,6 +475,8 @@ type Behavior struct {
 	client.Resource
 	Name    string      `json:"name"`
 	Options OptionValue `json:"options"`
+	Locked  bool        `json:"locked,omitempty"`
+	UUID    string      `json:"uuid,omitempty"`
 }
 
 // NewBehavior creates a new Behavior
@@ -499,11 +510,11 @@ type OptionValue map[string]interface{}
 
 type Variable struct {
 	client.Resource
-	Name string `json:"name"`
-	Value string `json:"value"`
+	Name        string `json:"name"`
+	Value       string `json:"value"`
 	Description string `json:"description"`
-	Hidden bool `json:"hidden"`
-	Sensitive bool `json:"sensitive"`
+	Hidden      bool   `json:"hidden"`
+	Sensitive   bool   `json:"sensitive"`
 }
 
 // NewVariable creates a new Variable
