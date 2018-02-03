@@ -71,10 +71,8 @@ func (versions *Versions) GetVersions(property *Property) error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions",
 			property.PropertyID,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)
@@ -194,11 +192,9 @@ func (version *Version) GetVersion(property *Property, getVersion int) error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions/%d?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d",
 			property.PropertyID,
 			getVersion,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)

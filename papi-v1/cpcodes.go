@@ -175,10 +175,8 @@ func (cpcode *CpCode) GetCpCode() error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/cpcodes/%s?contractId=%s&groupId=%s",
+			"/papi/v1/cpcodes/%s",
 			cpcode.CpcodeID,
-			cpcode.parent.Contract.ContractID,
-			cpcode.parent.Group.GroupID,
 		),
 		nil,
 	)

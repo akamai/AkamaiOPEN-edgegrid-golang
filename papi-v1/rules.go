@@ -49,11 +49,9 @@ func (rules *Rules) GetRules(property *Property) error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions/%d/rules?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/rules",
 			property.PropertyID,
 			property.LatestVersion,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)
@@ -87,11 +85,9 @@ func (rules *Rules) GetRulesDigest(property *Property) (string, error) {
 		Config,
 		"HEAD",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions/%d/rules?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/rules",
 			property.PropertyID,
 			property.LatestVersion,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)
@@ -113,8 +109,8 @@ func (rules *Rules) GetRulesDigest(property *Property) (string, error) {
 
 // Save creates/updates a rule tree for a property
 //
-// API Docs: https://developer.akamai.com/api/luna/papi/resources.html#updatearuletree
-// Endpoint: PUT /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
+// API Docs: https://developer.akamai.com/api/luna/papi/resources.html#putpropertyversionrules
+// Endpoint: PUT /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules{?contractId,groupId}
 func (rules *Rules) Save() error {
 	rules.Errors = []*RuleErrors{}
 
@@ -122,11 +118,9 @@ func (rules *Rules) Save() error {
 		Config,
 		"PUT",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions/%d/rules/?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/rules",
 			rules.PropertyID,
 			rules.PropertyVersion,
-			rules.ContractID,
-			rules.GroupID,
 		),
 		rules,
 	)
@@ -162,11 +156,9 @@ func (rules *Rules) Freeze(format string) error {
 		Config,
 		"PUT",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions/%d/rules/?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/rules",
 			rules.PropertyID,
 			rules.PropertyVersion,
-			rules.ContractID,
-			rules.GroupID,
 		),
 		rules,
 	)
