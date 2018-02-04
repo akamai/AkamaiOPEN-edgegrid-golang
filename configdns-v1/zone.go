@@ -3,6 +3,7 @@ package dns
 import (
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"errors"
@@ -17,6 +18,7 @@ type name struct {
 var (
 	cnameNames    []name
 	nonCnameNames []name
+	zoneWriteLock sync.Mutex
 )
 
 // Zone represents a DNS zone
@@ -90,6 +92,14 @@ func GetZone(hostname string) (*Zone, error) {
 
 // Save updates the Zone
 func (zone *Zone) Save() error {
+	// This lock will restrict the concurrency of API calls
+	// to 1 save request at a time. This is needed for the Soa.Serial value which
+	// is required to be incremented for every subsequent update to a zone
+	// so we have to save just one request at a time to ensure this is always
+	// incremented properly
+	zoneWriteLock.Lock()
+	defer zoneWriteLock.Unlock()
+
 	valid, f := zone.validateCnames()
 	if valid == false {
 		var msg string
