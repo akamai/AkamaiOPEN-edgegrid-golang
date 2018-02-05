@@ -177,10 +177,8 @@ func (property *Property) GetProperty() error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s",
 			property.PropertyID,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)
@@ -449,10 +447,8 @@ func (property *Property) Delete() error {
 		Config,
 		"DELETE",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s",
 			property.PropertyID,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)

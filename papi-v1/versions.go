@@ -71,10 +71,8 @@ func (versions *Versions) GetVersions(property *Property) error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions",
 			property.PropertyID,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)
@@ -171,6 +169,7 @@ type Version struct {
 	Note                  string      `json:"note,omitempty"`
 	CreateFromVersion     int         `json:"createFromVersion,omitempty"`
 	CreateFromVersionEtag string      `json:"createFromVersionEtag,omitempty"`
+	RuleFormat            string      `json:"ruleFormat,omitempty"`
 }
 
 // NewVersion creates a new Version
@@ -194,11 +193,9 @@ func (version *Version) GetVersion(property *Property, getVersion int) error {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions/%d?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d",
 			property.PropertyID,
 			getVersion,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)

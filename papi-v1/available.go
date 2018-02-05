@@ -40,11 +40,9 @@ func (availableCriteria *AvailableCriteria) GetAvailableCriteria(property *Prope
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions/%d/available-criteria?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/available-criteria",
 			property.PropertyID,
 			property.LatestVersion,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)
@@ -113,11 +111,9 @@ func (availableBehaviors *AvailableBehaviors) GetAvailableBehaviors(property *Pr
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/versions/%d/available-behaviors?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/versions/%d/available-behaviors",
 			property.PropertyID,
 			property.LatestVersion,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)

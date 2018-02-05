@@ -156,11 +156,9 @@ func (activation *Activation) GetActivation(property *Property) (time.Duration, 
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/activations/%s?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/activations/%s",
 			property.PropertyID,
 			activation.ActivationID,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)
@@ -224,10 +222,8 @@ func (activation *Activation) Save(property *Property, acknowledgeWarnings bool)
 		Config,
 		"POST",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/activations?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/activations",
 			property.PropertyID,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		activation,
 	)
@@ -383,10 +379,8 @@ func (activation *Activation) Cancel(property *Property) error {
 		Config,
 		"DELETE",
 		fmt.Sprintf(
-			"/papi/v1/properties/%s/activations?contractId=%s&groupId=%s",
+			"/papi/v1/properties/%s/activations",
 			property.PropertyID,
-			property.Contract.ContractID,
-			property.Group.GroupID,
 		),
 		nil,
 	)

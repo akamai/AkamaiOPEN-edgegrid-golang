@@ -3,7 +3,20 @@ package papi
 import (
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
+	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
+)
+
+var (
+	config = edgegrid.Config{
+		Host:         "akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/",
+		AccessToken:  "akab-access-token-xxx-xxxxxxxxxxxxxxxx",
+		ClientToken:  "akab-client-token-xxx-xxxxxxxxxxxxxxxx",
+		ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
+		MaxBody:      2048,
+		Debug:        false,
+	}
 )
 
 func TestRule_AddBehavior(t *testing.T) {
@@ -13,17 +26,15 @@ func TestRule_AddBehavior(t *testing.T) {
 		Expected Rule
 	}{
 		{
-			Rule: Rule{
-
-			},
+			Rule: Rule{},
 			Behavior: Behavior{
 				Name: "foo",
 				Options: OptionValue{
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Behaviors: []*Behavior {
+			Expected: Rule{
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "foo",
 						Options: OptionValue{
@@ -35,7 +46,7 @@ func TestRule_AddBehavior(t *testing.T) {
 		},
 		{
 			Rule: Rule{
-				Behaviors: []*Behavior {
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
@@ -50,8 +61,8 @@ func TestRule_AddBehavior(t *testing.T) {
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Behaviors: []*Behavior {
+			Expected: Rule{
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
@@ -69,7 +80,7 @@ func TestRule_AddBehavior(t *testing.T) {
 		},
 		{
 			Rule: Rule{
-				Behaviors: []*Behavior {
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
@@ -84,8 +95,8 @@ func TestRule_AddBehavior(t *testing.T) {
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Behaviors: []*Behavior {
+			Expected: Rule{
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
@@ -114,17 +125,15 @@ func TestRule_MergeBehavior(t *testing.T) {
 		Expected Rule
 	}{
 		{
-			Rule: Rule{
-
-			},
+			Rule: Rule{},
 			Behavior: Behavior{
 				Name: "foo",
 				Options: OptionValue{
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Behaviors: []*Behavior {
+			Expected: Rule{
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "foo",
 						Options: OptionValue{
@@ -136,7 +145,7 @@ func TestRule_MergeBehavior(t *testing.T) {
 		},
 		{
 			Rule: Rule{
-				Behaviors: []*Behavior {
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
@@ -151,8 +160,8 @@ func TestRule_MergeBehavior(t *testing.T) {
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Behaviors: []*Behavior {
+			Expected: Rule{
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
@@ -170,7 +179,7 @@ func TestRule_MergeBehavior(t *testing.T) {
 		},
 		{
 			Rule: Rule{
-				Behaviors: []*Behavior {
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
@@ -185,13 +194,13 @@ func TestRule_MergeBehavior(t *testing.T) {
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Behaviors: []*Behavior {
+			Expected: Rule{
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
 							"existingkey": "existingvalue",
-							"bar": "baz",
+							"bar":         "baz",
 						},
 					},
 				},
@@ -199,12 +208,12 @@ func TestRule_MergeBehavior(t *testing.T) {
 		},
 		{
 			Rule: Rule{
-				Behaviors: []*Behavior {
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
 							"existingkey": "existingvalue",
-							"otherkey": "won't change",
+							"otherkey":    "won't change",
 						},
 					},
 				},
@@ -213,17 +222,17 @@ func TestRule_MergeBehavior(t *testing.T) {
 				Name: "existing",
 				Options: OptionValue{
 					"existingkey": "newvalue",
-					"bar": "baz",
+					"bar":         "baz",
 				},
 			},
-			Expected: Rule {
-				Behaviors: []*Behavior {
+			Expected: Rule{
+				Behaviors: []*Behavior{
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
 							"existingkey": "newvalue",
-							"otherkey": "won't change",
-							"bar": "baz",
+							"otherkey":    "won't change",
+							"bar":         "baz",
 						},
 					},
 				},
@@ -248,17 +257,15 @@ func TestRule_AddCriteria(t *testing.T) {
 		Expected Rule
 	}{
 		{
-			Rule: Rule{
-
-			},
+			Rule: Rule{},
 			Criteria: Criteria{
 				Name: "foo",
 				Options: OptionValue{
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Criteria: []*Criteria {
+			Expected: Rule{
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "foo",
 						Options: OptionValue{
@@ -270,7 +277,7 @@ func TestRule_AddCriteria(t *testing.T) {
 		},
 		{
 			Rule: Rule{
-				Criteria: []*Criteria {
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
@@ -285,8 +292,8 @@ func TestRule_AddCriteria(t *testing.T) {
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Criteria: []*Criteria {
+			Expected: Rule{
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
@@ -304,7 +311,7 @@ func TestRule_AddCriteria(t *testing.T) {
 		},
 		{
 			Rule: Rule{
-				Criteria: []*Criteria {
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
@@ -319,8 +326,8 @@ func TestRule_AddCriteria(t *testing.T) {
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Criteria: []*Criteria {
+			Expected: Rule{
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
@@ -349,17 +356,15 @@ func TestRule_MergeCriteria(t *testing.T) {
 		Expected Rule
 	}{
 		{
-			Rule: Rule{
-
-			},
+			Rule: Rule{},
 			Criteria: Criteria{
 				Name: "foo",
 				Options: OptionValue{
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Criteria: []*Criteria {
+			Expected: Rule{
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "foo",
 						Options: OptionValue{
@@ -371,7 +376,7 @@ func TestRule_MergeCriteria(t *testing.T) {
 		},
 		{
 			Rule: Rule{
-				Criteria: []*Criteria {
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
@@ -386,8 +391,8 @@ func TestRule_MergeCriteria(t *testing.T) {
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Criteria: []*Criteria {
+			Expected: Rule{
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
@@ -405,7 +410,7 @@ func TestRule_MergeCriteria(t *testing.T) {
 		},
 		{
 			Rule: Rule{
-				Criteria: []*Criteria {
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
@@ -420,13 +425,13 @@ func TestRule_MergeCriteria(t *testing.T) {
 					"bar": "baz",
 				},
 			},
-			Expected: Rule {
-				Criteria: []*Criteria {
+			Expected: Rule{
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
 							"existingkey": "existingvalue",
-							"bar": "baz",
+							"bar":         "baz",
 						},
 					},
 				},
@@ -434,12 +439,12 @@ func TestRule_MergeCriteria(t *testing.T) {
 		},
 		{
 			Rule: Rule{
-				Criteria: []*Criteria {
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
 							"existingkey": "existingvalue",
-							"otherkey": "won't change",
+							"otherkey":    "won't change",
 						},
 					},
 				},
@@ -448,17 +453,17 @@ func TestRule_MergeCriteria(t *testing.T) {
 				Name: "existing",
 				Options: OptionValue{
 					"existingkey": "newvalue",
-					"bar": "baz",
+					"bar":         "baz",
 				},
 			},
-			Expected: Rule {
-				Criteria: []*Criteria {
+			Expected: Rule{
+				Criteria: []*Criteria{
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
 							"existingkey": "newvalue",
-							"otherkey": "won't change",
-							"bar": "baz",
+							"otherkey":    "won't change",
+							"bar":         "baz",
 						},
 					},
 				},
@@ -488,22 +493,22 @@ func TestRule_AddVariable(t *testing.T) {
 			},
 			Variables: []*Variable{
 				&Variable{
-					Name: "Test Variable",
+					Name:        "Test Variable",
 					Description: "Test Description",
-					Value: "Test Value",
-					Hidden: true,
-					Sensitive: true,
+					Value:       "Test Value",
+					Hidden:      true,
+					Sensitive:   true,
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Variables: []*Variable {
+				Variables: []*Variable{
 					&Variable{
-						Name: "Test Variable",
+						Name:        "Test Variable",
 						Description: "Test Description",
-						Value: "Test Value",
-						Hidden: true,
-						Sensitive: true,
+						Value:       "Test Value",
+						Hidden:      true,
+						Sensitive:   true,
 					},
 				},
 			},
@@ -511,30 +516,30 @@ func TestRule_AddVariable(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Variables: []*Variable {
-					&Variable {
+				Variables: []*Variable{
+					&Variable{
 						Name: "Existing Variable",
 					},
 				},
 			},
 			Variables: []*Variable{
 				&Variable{
-					Name: "Existing Variable",
+					Name:        "Existing Variable",
 					Description: "New Description",
-					Value: "New Value",
-					Hidden: true,
-					Sensitive: true,
+					Value:       "New Value",
+					Hidden:      true,
+					Sensitive:   true,
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
 				Variables: []*Variable{
 					&Variable{
-						Name: "Existing Variable",
+						Name:        "Existing Variable",
 						Description: "New Description",
-						Value: "New Value",
-						Hidden: true,
-						Sensitive: true,
+						Value:       "New Value",
+						Hidden:      true,
+						Sensitive:   true,
 					},
 				},
 			},
@@ -542,26 +547,26 @@ func TestRule_AddVariable(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Variables: []*Variable {
-					&Variable {
+				Variables: []*Variable{
+					&Variable{
 						Name: "Existing Variable",
 					},
 				},
 			},
 			Variables: []*Variable{
-				&Variable {
-					Name: "Existing Variable",
+				&Variable{
+					Name:        "Existing Variable",
 					Description: "Updated Description",
 				},
 				&Variable{
 					Name: "New Variable",
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Variables: []*Variable {
-					&Variable {
-						Name: "Existing Variable",
+				Variables: []*Variable{
+					&Variable{
+						Name:        "Existing Variable",
 						Description: "Updated Description",
 					},
 					&Variable{
@@ -582,7 +587,7 @@ func TestRule_AddVariable(t *testing.T) {
 func TestRule_AddChildRule(t *testing.T) {
 	tests := []struct {
 		ParentRule Rule
-		ChildRules  []*Rule
+		ChildRules []*Rule
 		Expected   Rule
 	}{
 		{
@@ -594,9 +599,9 @@ func TestRule_AddChildRule(t *testing.T) {
 					Name: "Child Rule",
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
 					},
@@ -606,8 +611,8 @@ func TestRule_AddChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
 					},
 				},
@@ -617,10 +622,10 @@ func TestRule_AddChildRule(t *testing.T) {
 					Name: "Child Rule",
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
 					},
 					&Rule{
@@ -632,11 +637,11 @@ func TestRule_AddChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Existing Child Rule",
 							},
 						},
@@ -653,21 +658,21 @@ func TestRule_AddChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Existing Child Rule",
 							},
 						},
 					},
 					&Rule{
 						Name: "Child Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Child Rule",
 							},
 						},
@@ -678,29 +683,29 @@ func TestRule_AddChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
 					},
 				},
 			},
-			ChildRules: []*Rule {
+			ChildRules: []*Rule{
 				&Rule{
 					Name: "Existing Rule",
-					Children: []*Rule {
-						&Rule {
+					Children: []*Rule{
+						&Rule{
 							Name: "Sub-Child Existing Rule",
 						},
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Existing Rule",
 							},
 						},
@@ -711,45 +716,45 @@ func TestRule_AddChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
 					},
 				},
 			},
-			ChildRules: []*Rule {
+			ChildRules: []*Rule{
 				&Rule{
 					Name: "Existing Rule",
-					Children: []*Rule {
-						&Rule {
+					Children: []*Rule{
+						&Rule{
 							Name: "Sub-Child Existing Rule",
 						},
 					},
 				},
 				&Rule{
 					Name: "Child Rule",
-					Children: []*Rule {
-						&Rule {
+					Children: []*Rule{
+						&Rule{
 							Name: "Sub-Child Child Rule",
 						},
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Existing Rule",
 							},
 						},
 					},
 					&Rule{
 						Name: "Child Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Child Rule",
 							},
 						},
@@ -760,25 +765,25 @@ func TestRule_AddChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Existing Rule",
 							},
 						},
 					},
 				},
 			},
-			ChildRules: []*Rule {
+			ChildRules: []*Rule{
 				&Rule{
 					Name: "Existing Rule",
-					Children: []*Rule {
-						&Rule {
+					Children: []*Rule{
+						&Rule{
 							Name: "Sub-Child Existing Rule",
-							Children: []*Rule {
-								&Rule {
+							Children: []*Rule{
+								&Rule{
 									Name: "Sub-Sub-Child Existing Rule",
 								},
 							},
@@ -786,16 +791,16 @@ func TestRule_AddChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Existing Rule",
-								Children: []*Rule {
-									&Rule {
+								Children: []*Rule{
+									&Rule{
 										Name: "Sub-Sub-Child Existing Rule",
 									},
 								},
@@ -812,7 +817,7 @@ func TestRule_AddChildRule(t *testing.T) {
 			ChildRules: []*Rule{
 				&Rule{
 					Name: "Child Rule",
-					Behaviors: []*Behavior {
+					Behaviors: []*Behavior{
 						&Behavior{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -820,7 +825,7 @@ func TestRule_AddChildRule(t *testing.T) {
 							},
 						},
 					},
-					Criteria: []*Criteria {
+					Criteria: []*Criteria{
 						&Criteria{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -830,12 +835,12 @@ func TestRule_AddChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -843,7 +848,7 @@ func TestRule_AddChildRule(t *testing.T) {
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -858,7 +863,7 @@ func TestRule_AddChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
 					},
@@ -867,7 +872,7 @@ func TestRule_AddChildRule(t *testing.T) {
 			ChildRules: []*Rule{
 				&Rule{
 					Name: "Child Rule",
-					Behaviors: []*Behavior {
+					Behaviors: []*Behavior{
 						&Behavior{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -875,7 +880,7 @@ func TestRule_AddChildRule(t *testing.T) {
 							},
 						},
 					},
-					Criteria: []*Criteria {
+					Criteria: []*Criteria{
 						&Criteria{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -885,12 +890,12 @@ func TestRule_AddChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -898,7 +903,7 @@ func TestRule_AddChildRule(t *testing.T) {
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -913,7 +918,7 @@ func TestRule_AddChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
 					},
@@ -925,7 +930,7 @@ func TestRule_AddChildRule(t *testing.T) {
 			ChildRules: []*Rule{
 				&Rule{
 					Name: "Child Rule",
-					Behaviors: []*Behavior {
+					Behaviors: []*Behavior{
 						&Behavior{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -933,7 +938,7 @@ func TestRule_AddChildRule(t *testing.T) {
 							},
 						},
 					},
-					Criteria: []*Criteria {
+					Criteria: []*Criteria{
 						&Criteria{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -943,12 +948,12 @@ func TestRule_AddChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -956,7 +961,7 @@ func TestRule_AddChildRule(t *testing.T) {
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -974,10 +979,10 @@ func TestRule_AddChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -985,7 +990,7 @@ func TestRule_AddChildRule(t *testing.T) {
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1004,9 +1009,9 @@ func TestRule_AddChildRule(t *testing.T) {
 					Name: "Child Rule",
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
 					},
@@ -1030,7 +1035,7 @@ func TestRule_AddChildRule(t *testing.T) {
 func TestRule_MergeChildRule(t *testing.T) {
 	tests := []struct {
 		ParentRule Rule
-		ChildRules  []*Rule
+		ChildRules []*Rule
 		Expected   Rule
 	}{
 		{
@@ -1042,9 +1047,9 @@ func TestRule_MergeChildRule(t *testing.T) {
 					Name: "Child Rule",
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
 					},
@@ -1054,8 +1059,8 @@ func TestRule_MergeChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
 					},
 				},
@@ -1065,10 +1070,10 @@ func TestRule_MergeChildRule(t *testing.T) {
 					Name: "Child Rule",
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
 					},
 					&Rule{
@@ -1080,11 +1085,11 @@ func TestRule_MergeChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Existing Child Rule",
 							},
 						},
@@ -1101,21 +1106,21 @@ func TestRule_MergeChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Existing Child Rule",
 							},
 						},
 					},
 					&Rule{
 						Name: "Child Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Child Rule",
 							},
 						},
@@ -1126,29 +1131,29 @@ func TestRule_MergeChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
 					},
 				},
 			},
-			ChildRules: []*Rule {
+			ChildRules: []*Rule{
 				&Rule{
 					Name: "Existing Rule",
-					Children: []*Rule {
-						&Rule {
+					Children: []*Rule{
+						&Rule{
 							Name: "Sub-Child Existing Rule",
 						},
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Existing Rule",
 							},
 						},
@@ -1159,45 +1164,45 @@ func TestRule_MergeChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
 					},
 				},
 			},
-			ChildRules: []*Rule {
+			ChildRules: []*Rule{
 				&Rule{
 					Name: "Existing Rule",
-					Children: []*Rule {
-						&Rule {
+					Children: []*Rule{
+						&Rule{
 							Name: "Sub-Child Existing Rule",
 						},
 					},
 				},
 				&Rule{
 					Name: "Child Rule",
-					Children: []*Rule {
-						&Rule {
+					Children: []*Rule{
+						&Rule{
 							Name: "Sub-Child Child Rule",
 						},
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
-					&Rule {
+				Children: []*Rule{
+					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Existing Rule",
 							},
 						},
 					},
 					&Rule{
 						Name: "Child Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Child Rule",
 							},
 						},
@@ -1208,25 +1213,25 @@ func TestRule_MergeChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Existing Rule",
 							},
 						},
 					},
 				},
 			},
-			ChildRules: []*Rule {
+			ChildRules: []*Rule{
 				&Rule{
 					Name: "Existing Rule",
-					Children: []*Rule {
-						&Rule {
+					Children: []*Rule{
+						&Rule{
 							Name: "Sub-Child Existing Rule",
-							Children: []*Rule {
-								&Rule {
+							Children: []*Rule{
+								&Rule{
 									Name: "Sub-Sub-Child Existing Rule",
 								},
 							},
@@ -1234,16 +1239,16 @@ func TestRule_MergeChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Existing Rule",
-						Children: []*Rule {
-							&Rule {
+						Children: []*Rule{
+							&Rule{
 								Name: "Sub-Child Existing Rule",
-								Children: []*Rule {
-									&Rule {
+								Children: []*Rule{
+									&Rule{
 										Name: "Sub-Sub-Child Existing Rule",
 									},
 								},
@@ -1260,7 +1265,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 			ChildRules: []*Rule{
 				&Rule{
 					Name: "Child Rule",
-					Behaviors: []*Behavior {
+					Behaviors: []*Behavior{
 						&Behavior{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -1268,7 +1273,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 							},
 						},
 					},
-					Criteria: []*Criteria {
+					Criteria: []*Criteria{
 						&Criteria{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -1278,12 +1283,12 @@ func TestRule_MergeChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1291,7 +1296,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1306,7 +1311,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
 					},
@@ -1315,7 +1320,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 			ChildRules: []*Rule{
 				&Rule{
 					Name: "Child Rule",
-					Behaviors: []*Behavior {
+					Behaviors: []*Behavior{
 						&Behavior{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -1323,7 +1328,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 							},
 						},
 					},
-					Criteria: []*Criteria {
+					Criteria: []*Criteria{
 						&Criteria{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -1333,12 +1338,12 @@ func TestRule_MergeChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1346,7 +1351,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1361,7 +1366,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
 					},
@@ -1373,7 +1378,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 			ChildRules: []*Rule{
 				&Rule{
 					Name: "Child Rule",
-					Behaviors: []*Behavior {
+					Behaviors: []*Behavior{
 						&Behavior{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -1381,7 +1386,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 							},
 						},
 					},
-					Criteria: []*Criteria {
+					Criteria: []*Criteria{
 						&Criteria{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -1391,12 +1396,12 @@ func TestRule_MergeChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1404,7 +1409,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1422,10 +1427,10 @@ func TestRule_MergeChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1433,7 +1438,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1452,12 +1457,12 @@ func TestRule_MergeChildRule(t *testing.T) {
 					Name: "Child Rule",
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1465,7 +1470,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1483,10 +1488,10 @@ func TestRule_MergeChildRule(t *testing.T) {
 		{
 			ParentRule: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1494,7 +1499,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
@@ -1511,7 +1516,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 			ChildRules: []*Rule{
 				&Rule{
 					Name: "Child Rule",
-					Behaviors: []*Behavior {
+					Behaviors: []*Behavior{
 						&Behavior{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -1519,7 +1524,7 @@ func TestRule_MergeChildRule(t *testing.T) {
 							},
 						},
 					},
-					Criteria: []*Criteria {
+					Criteria: []*Criteria{
 						&Criteria{
 							Name: "Behavior",
 							Options: OptionValue{
@@ -1529,25 +1534,25 @@ func TestRule_MergeChildRule(t *testing.T) {
 					},
 				},
 			},
-			Expected: Rule {
+			Expected: Rule{
 				Name: "Parent Rule",
-				Children: []*Rule {
+				Children: []*Rule{
 					&Rule{
 						Name: "Child Rule",
-						Behaviors: []*Behavior {
+						Behaviors: []*Behavior{
 							&Behavior{
 								Name: "Behavior",
 								Options: OptionValue{
-									"Option": "Value",
+									"Option":  "Value",
 									"Option2": "Value2",
 								},
 							},
 						},
-						Criteria: []*Criteria {
+						Criteria: []*Criteria{
 							&Criteria{
 								Name: "Behavior",
 								Options: OptionValue{
-									"Option": "Value",
+									"Option":  "Value",
 									"Option2": "Value2",
 								},
 							},
@@ -1570,6 +1575,158 @@ func TestRule_MergeChildRule(t *testing.T) {
 			t.Errorf("Data set %d failed!", i+1)
 		}
 	}
+}
+
+func TestRules_GetRules_Locked(t *testing.T) {
+	defer gock.Off()
+
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/papi/v1/properties/prp_123/versions/1/rules")
+	mock.
+		Get("/papi/v1/properties/prp_123/versions/1/rules").
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/json").
+		BodyString(`{
+			"accountId": "act_TEST",
+			"contractId": "ctr_TEST",
+			"groupId": "grp_123",
+			"propertyId": "prp_1232",
+			"propertyName": "example.org",
+			"propertyVersion": 1,
+			"etag": "3c98a3bd6ac66a91fc9986803f01f05dde494ef0",
+			"rules": {
+				"name": "default",
+				"children": [              
+					{
+						"name": "Parent",
+						"children": [],
+						"behaviors": [
+						  {
+							"name": "testing",
+							"options": {
+							},
+							"uuid": "04d66607-a767-4b18-be0c-7aa9bbc3bbc4",
+							"locked": true
+						  }
+						],
+						"criteria": [
+						  {
+							"name": "matchAdvanced",
+							"options": {
+							},
+							"uuid": "0a16be91-4c7b-4e94-ae7b-565867f19ffb",
+							"locked": true
+						  }
+						],
+						"uuid": "44b00323-df7a-4e6b-8ed7-2a49c92f6e44",
+						"criteriaMustSatisfy": "all"
+					}
+				]
+			}
+		}`)
+
+	Init(config)
+
+	property := NewProperty(&Properties{})
+	property.PropertyID = "prp_123"
+	property.LatestVersion = 1
+
+	rules, err := property.GetRules()
+
+	assert.NoError(t, err)
+	assert.Equal(t, "44b00323-df7a-4e6b-8ed7-2a49c92f6e44", rules.Rule.Children[0].UUID)
+	assert.Equal(t, "04d66607-a767-4b18-be0c-7aa9bbc3bbc4", rules.Rule.Children[0].Behaviors[0].UUID)
+	assert.True(t, rules.Rule.Children[0].Behaviors[0].Locked)
+	assert.Equal(t, "0a16be91-4c7b-4e94-ae7b-565867f19ffb", rules.Rule.Children[0].Criteria[0].UUID)
+	assert.True(t, rules.Rule.Children[0].Criteria[0].Locked)
+}
+
+func TestRules_GetRules_CustomOverrides(t *testing.T) {
+	defer gock.Off()
+
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/papi/v1/properties/prp_123/versions/1/rules")
+	mock.
+		Get("/papi/v1/properties/prp_123/versions/1/rules").
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/json").
+		BodyString(`{
+			"accountId": "act_TEST",
+			"contractId": "ctr_TEST",
+			"groupId": "grp_123",
+			"propertyId": "prp_1232",
+			"propertyName": "example.org",
+			"propertyVersion": 1,
+			"etag": "3c98a3bd6ac66a91fc9986803f01f05dde494ef0",
+			"rules": {
+				"name": "default",
+				"children": [],
+				"customOverride": {
+					"overrideId": "cbo_12345",
+					"name": "my_override"
+				}
+			}
+		}`)
+
+	Init(config)
+
+	property := NewProperty(&Properties{})
+	property.PropertyID = "prp_123"
+	property.LatestVersion = 1
+
+	rules, err := property.GetRules()
+
+	assert.NoError(t, err)
+	assert.Equal(t, "cbo_12345", rules.Rule.CustomOverride.OverrideID)
+	assert.Equal(t, "my_override", rules.Rule.CustomOverride.Name)
+}
+
+func TestRules_GetRules_Variables(t *testing.T) {
+	defer gock.Off()
+
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/papi/v1/properties/prp_123/versions/1/rules")
+	mock.
+		Get("/papi/v1/properties/prp_123/versions/1/rules").
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/json").
+		BodyString(`{
+				"rules": {
+					"name": "default",
+					"options": {
+						"is_secure": false
+					},
+					"variables": [
+						{
+							"name": "VAR_NAME",
+							"value": "default value",
+							"description": "This is a sample Property Manager variable.",
+							"hidden": false,
+							"sensitive": false
+						}
+					],
+					"criteriaMustSatisfy": "all",
+					"criteria": [],
+					"behaviors": [],
+					"children": []
+				}
+			}`)
+
+	Init(config)
+
+	property := NewProperty(&Properties{})
+	property.PropertyID = "prp_123"
+	property.LatestVersion = 1
+
+	rules, err := property.GetRules()
+
+	assert.NoError(t, err)
+	assert.Len(t, rules.Rule.Variables, 1)
+	assert.Equal(t, "VAR_NAME", rules.Rule.Variables[0].Name)
+	assert.Equal(t, "default value", rules.Rule.Variables[0].Value)
+	assert.Equal(t, "This is a sample Property Manager variable.", rules.Rule.Variables[0].Description)
+	assert.False(t, rules.Rule.Variables[0].Hidden)
+	assert.False(t, rules.Rule.Variables[0].Sensitive)
 }
 
 func assertRulesMatch(t *testing.T, expected *Rule, actual *Rule) bool {
