@@ -4,7 +4,6 @@ package client
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -12,8 +11,8 @@ import (
 	"runtime"
 	"strings"
 
+	jsonhooks "github.com/RafPe/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 	edgegrid "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 )
 
 const (
@@ -21,35 +20,42 @@ const (
 )
 
 var (
-	edgercConfig  edgegrid.Config
-	isInitialized bool
-	UserAgent     = "Akamai-Open-Edgegrid-golang/" + libraryVersion + " golang/" + strings.TrimPrefix(runtime.Version(), "go")
-	Client        = http.DefaultClient
+	UserAgent = "Akamai-Open-Edgegrid-golang/" + libraryVersion + " golang/" + strings.TrimPrefix(runtime.Version(), "go")
 )
 
-//Init initialise our client with selected configuration which later on can be used
-func Init(c edgegrid.Config) {
-	edgercConfig = c
-	fmt.Println("Print me host :")
-	fmt.Println(c.Host)
-	isInitialized = true
+// A Client manages communication with the Akamai API.
+type Client struct {
+	// HTTP client used to communicate with the API.
+	clientHTTP *http.Client
+
+	// Configuration used for communication
+	edgercConfig edgegrid.Config
+
+	// User agent used when communicating with the GitLab API.
+	UserAgent string
+}
+
+func newClient(c edgegrid.Config, httpClient *http.Client) *Client {
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
+
+	apiClient := &Client{clientHTTP: httpClient, UserAgent: UserAgent, edgercConfig: c}
+
+	return apiClient
 }
 
 // prepareHTTPRequest creates an HTTP request accordingly to requirements of Akamai API
-func prepareHTTPRequest(method, path string, body io.Reader) (*http.Request, error) {
+func (cl *Client) prepareHTTPRequest(method, path string, body io.Reader) (*http.Request, error) {
 	var (
 		baseURL *url.URL
 		err     error
 	)
 
-	if isInitialized != true {
-		return nil, err
-	}
-
-	if strings.HasPrefix(edgercConfig.Host, "https://") {
-		baseURL, err = url.Parse(edgercConfig.Host)
+	if strings.HasPrefix(cl.edgercConfig.Host, "https://") {
+		baseURL, err = url.Parse(cl.edgercConfig.Host)
 	} else {
-		baseURL, err = url.Parse("https://" + edgercConfig.Host)
+		baseURL, err = url.Parse("https://" + cl.edgercConfig.Host)
 	}
 
 	if err != nil {
@@ -75,21 +81,17 @@ func prepareHTTPRequest(method, path string, body io.Reader) (*http.Request, err
 
 // RequestHTTP creates an HTTP request accordingly to requirements of Akamais API
 // and execute it returning response object.
-func RequestHTTP(method, path string, body io.Reader) (*http.Response, error) {
+func (cl *Client) RequestHTTP(method, path string, body io.Reader) (*http.Response, error) {
 	var (
 		err error
 	)
 
-	if isInitialized != true {
-		return nil, err
-	}
-
-	req, err := prepareHTTPRequest(method, path, body)
+	req, err := cl.prepareHTTPRequest(method, path, body)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := ExecuteRequest(req)
+	res, err := cl.ExecuteRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -99,14 +101,14 @@ func RequestHTTP(method, path string, body io.Reader) (*http.Response, error) {
 
 // RequestJSON creates an HTTP request that can be sent to the Akamai APIs with a JSON body
 // The JSON body is encoded and the Content-Type/Accept headers are set automatically.
-func RequestJSON(method, path string, body interface{}) (*http.Response, error) {
+func (cl *Client) RequestJSON(method, path string, body interface{}) (*http.Response, error) {
 	jsonBody, err := jsonhooks.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 
 	buf := bytes.NewReader(jsonBody)
-	req, err := prepareHTTPRequest(method, path, buf)
+	req, err := cl.prepareHTTPRequest(method, path, buf)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +116,7 @@ func RequestJSON(method, path string, body interface{}) (*http.Response, error) 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json,*/*")
 
-	res, err := ExecuteRequest(req)
+	res, err := cl.ExecuteRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -124,14 +126,14 @@ func RequestJSON(method, path string, body interface{}) (*http.Response, error) 
 
 // ExecuteRequest performs a given HTTP Request, signed with the Akamai OPEN Edgegrid
 // Authorization header. An edgegrid.Response or an error is returned.
-func ExecuteRequest(req *http.Request) (*http.Response, error) {
-	Client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
-		req = edgegrid.AddRequestHeader(edgercConfig, req)
+func (cl *Client) ExecuteRequest(req *http.Request) (*http.Response, error) {
+	cl.clientHTTP.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		req = edgegrid.AddRequestHeader(cl.edgercConfig, req)
 		return nil
 	}
 
-	req = edgegrid.AddRequestHeader(edgercConfig, req)
-	res, err := Client.Do(req)
+	req = edgegrid.AddRequestHeader(cl.edgercConfig, req)
+	res, err := cl.clientHTTP.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +142,7 @@ func ExecuteRequest(req *http.Request) (*http.Response, error) {
 }
 
 // BodyJSON unmarshals the Response.Body into a given data structure
-func BodyJSON(r *http.Response, data interface{}) error {
+func (cl *Client) BodyJSON(r *http.Response, data interface{}) error {
 	if data == nil {
 		return errors.New("You must pass in an interface{}")
 	}
