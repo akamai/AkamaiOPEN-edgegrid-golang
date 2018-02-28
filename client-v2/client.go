@@ -1,5 +1,5 @@
-// Package client is a simple library for http.Client to sign Akamai OPEN Edgegrid API requests
-package client
+// Package edgeClient is library for making Akamai OPEN Edgegrid API requests
+package edgeClient
 
 import (
 	"bytes"
@@ -33,6 +33,12 @@ type Client struct {
 
 	// User agent used when communicating with the GitLab API.
 	UserAgent string
+}
+
+// NewClient returns a new edgeClient API client. If a nil httpClient is
+// provided, http.DefaultClient will be used.
+func NewClient(c edgegrid.Config, httpClient *http.Client) *Client {
+	return newClient(c, httpClient)
 }
 
 func newClient(c edgegrid.Config, httpClient *http.Client) *Client {

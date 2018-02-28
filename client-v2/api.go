@@ -1,4 +1,4 @@
-package client
+package edgeClient
 
 import (
 	"encoding/json"
