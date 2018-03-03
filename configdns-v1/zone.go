@@ -2,7 +2,6 @@ package dns
 
 import (
 	"fmt"
-	"log"
 	"sync"
 	"time"
 
@@ -146,15 +145,11 @@ func (zone *Zone) Save() error {
 		}
 
 		if updatedZone.Token != zone.Token {
-			log.Printf("[TRACE] Token updated: old: %s, new: %s", zone.Token, updatedZone.Token)
 			*zone = *updatedZone
 			break
 		}
-		log.Println("[DEBUG] Token not updated, retrying...")
 		time.Sleep(time.Second)
 	}
-
-	log.Printf("[INFO] Zone Saved")
 
 	return nil
 }
