@@ -79,11 +79,11 @@ func TestGetZoneSimple(t *testing.T) {
 	assert.IsType(t, &SoaRecord{}, zone.Zone.Soa)
 	assert.Equal(t, "hostmaster.akamai.com.", zone.Zone.Soa.Contact)
 	assert.Equal(t, 604800, zone.Zone.Soa.Expire)
-	assert.Equal(t, 180, zone.Zone.Soa.Minimum)
+	assert.Equal(t, uint(180), zone.Zone.Soa.Minimum)
 	assert.Equal(t, "use4.akamai.com.", zone.Zone.Soa.Originserver)
 	assert.Equal(t, 900, zone.Zone.Soa.Refresh)
 	assert.Equal(t, 300, zone.Zone.Soa.Retry)
-	assert.Equal(t, 1271354824, zone.Zone.Soa.Serial)
+	assert.Equal(t, uint(1271354824), zone.Zone.Soa.Serial)
 	assert.Equal(t, 900, zone.Zone.Soa.TTL)
 
 	assert.IsType(t, []*NsRecord{}, zone.Zone.Ns)

@@ -773,7 +773,7 @@ func (zone *Zone) PreMarshalJSON() error {
 	if zone.Zone.Soa.Serial > 0 {
 		zone.Zone.Soa.Serial = zone.Zone.Soa.Serial + 1
 	} else {
-		zone.Zone.Soa.Serial = int(time.Now().Unix())
+		zone.Zone.Soa.Serial = uint(time.Now().Unix())
 	}
 	return nil
 }
