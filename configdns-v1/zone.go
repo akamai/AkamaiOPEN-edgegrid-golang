@@ -2,6 +2,7 @@ package dns
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -808,4 +809,757 @@ func (zone *Zone) removeNonCnameName(host string) {
 			nonCnameNames = append(r, nonCnameNames[i+1:]...)
 		}
 	}
+}
+
+func (zone *Zone) FindRecords(recordType string, options map[string]interface{}) []DNSRecord {
+	switch strings.ToUpper(recordType) {
+	case "A":
+		return zone.findARecord(options)
+	case "AAAA":
+		return zone.findAaaaRecord(options)
+	case "AFSDB":
+		return zone.findAfsdbRecord(options)
+	case "CNAME":
+		return zone.findCnameRecord(options)
+	case "DNSKEY":
+		return zone.findDnskeyRecord(options)
+	case "DS":
+		return zone.findDsRecord(options)
+	case "HINFO":
+		return zone.findHinfoRecord(options)
+	case "LOC":
+		return zone.findLocRecord(options)
+	case "MX":
+		return zone.findMxRecord(options)
+	case "NAPTR":
+		return zone.findNaptrRecord(options)
+	case "NS":
+		return zone.findNsRecord(options)
+	case "NSEC3":
+		return zone.findNsec3Record(options)
+	case "NSEC3PARAM":
+		return zone.findNsec3paramRecord(options)
+	case "PTR":
+		return zone.findPtrRecord(options)
+	case "RP":
+		return zone.findRpRecord(options)
+	case "RRSIG":
+		return zone.findRrsigRecord(options)
+	case "SPF":
+		return zone.findSpfRecord(options)
+	case "SRV":
+		return zone.findSrvRecord(options)
+	case "SSHFP":
+		return zone.findSshfpRecord(options)
+	case "TXT":
+		return zone.findTxtRecord(options)
+	}
+
+	return make([]DNSRecord, 0)
+}
+
+func (zone *Zone) findARecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.A {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+
+	return found
+}
+
+func (zone *Zone) findAaaaRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Aaaa {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+
+	return found
+}
+
+func (zone *Zone) findAfsdbRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Afsdb {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if subtype, ok := options["subtype"]; ok && record.Subtype == subtype.(int) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findCnameRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Cname {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findDnskeyRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Dnskey {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if flags, ok := options["flags"]; ok && record.Flags == flags.(int) {
+			matchCounter++
+		}
+
+		if protocol, ok := options["protocol"]; ok && record.Protocol == protocol.(int) {
+			matchCounter++
+		}
+
+		if algorithm, ok := options["algorithm"]; ok && record.Algorithm == algorithm.(int) {
+			matchCounter++
+		}
+
+		if key, ok := options["key"]; ok && record.Key == key.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findDsRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Ds {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if keytag, ok := options["keytag"]; ok && record.Keytag == keytag.(int) {
+			matchCounter++
+		}
+
+		if algorithm, ok := options["algorithm"]; ok && record.Algorithm == algorithm.(int) {
+			matchCounter++
+		}
+
+		if digesttype, ok := options["digesttype"]; ok && record.DigestType == digesttype.(int) {
+			matchCounter++
+		}
+
+		if digest, ok := options["digest"]; ok && record.Digest == digest.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findHinfoRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Hinfo {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if hardware, ok := options["hardware"]; ok && record.Hardware == hardware.(string) {
+			matchCounter++
+		}
+
+		if software, ok := options["software"]; ok && record.Software == software.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findLocRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Loc {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findMxRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Mx {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if priority, ok := options["priority"]; ok && record.Priority == priority.(int) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findNaptrRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Naptr {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if order, ok := options["order"]; ok && record.Order == order.(uint16) {
+			matchCounter++
+		}
+
+		if preference, ok := options["preference"]; ok && record.Preference == preference.(uint16) {
+			matchCounter++
+		}
+
+		if flags, ok := options["flags"]; ok && record.Flags == flags.(string) {
+			matchCounter++
+		}
+
+		if service, ok := options["service"]; ok && record.Service == service.(string) {
+			matchCounter++
+		}
+
+		if regexp, ok := options["regexp"]; ok && record.Regexp == regexp.(string) {
+			matchCounter++
+		}
+
+		if replacement, ok := options["replacement"]; ok && record.Replacement == replacement.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findNsRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Ns {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findNsec3Record(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Nsec3 {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if algorithm, ok := options["algorithm"]; ok && record.Algorithm == algorithm.(int) {
+			matchCounter++
+		}
+
+		if flags, ok := options["flags"]; ok && record.Flags == flags.(int) {
+			matchCounter++
+		}
+
+		if iterations, ok := options["iterations"]; ok && record.Iterations == iterations.(int) {
+			matchCounter++
+		}
+
+		if salt, ok := options["salt"]; ok && record.Salt == salt.(string) {
+			matchCounter++
+		}
+
+		if nextHashedOwnerName, ok := options["nextHashedOwnerName"]; ok && record.NextHashedOwnerName == nextHashedOwnerName.(string) {
+			matchCounter++
+		}
+
+		if typeBitmaps, ok := options["typeBitmaps"]; ok && record.TypeBitmaps == typeBitmaps.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findNsec3paramRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Nsec3param {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if algorithm, ok := options["algorithm"]; ok && record.Algorithm == algorithm.(int) {
+			matchCounter++
+		}
+
+		if flags, ok := options["flags"]; ok && record.Flags == flags.(int) {
+			matchCounter++
+		}
+
+		if iterations, ok := options["iterations"]; ok && record.Iterations == iterations.(int) {
+			matchCounter++
+		}
+
+		if salt, ok := options["salt"]; ok && record.Salt == salt.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findPtrRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Ptr {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findRpRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Rp {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if mailbox, ok := options["mailbox"]; ok && record.Mailbox == mailbox.(string) {
+			matchCounter++
+		}
+
+		if txt, ok := options["txt"]; ok && record.Txt == txt.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findRrsigRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Rrsig {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if typeCovered, ok := options["typeCovered"]; ok && record.TypeCovered == typeCovered.(string) {
+			matchCounter++
+		}
+
+		if algorithm, ok := options["algorithm"]; ok && record.Algorithm == algorithm.(int) {
+			matchCounter++
+		}
+
+		if originalTTL, ok := options["originalTTL"]; ok && record.OriginalTTL == originalTTL.(int) {
+			matchCounter++
+		}
+
+		if expiration, ok := options["expiration"]; ok && record.Expiration == expiration.(string) {
+			matchCounter++
+		}
+
+		if inception, ok := options["inception"]; ok && record.Inception == inception.(string) {
+			matchCounter++
+		}
+
+		if keytag, ok := options["keytag"]; ok && record.Keytag == keytag.(int) {
+			matchCounter++
+		}
+
+		if signer, ok := options["signer"]; ok && record.Signer == signer.(string) {
+			matchCounter++
+		}
+
+		if signature, ok := options["signature"]; ok && record.Signature == signature.(string) {
+			matchCounter++
+		}
+
+		if labels, ok := options["labels"]; ok && record.Labels == labels.(int) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findSpfRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Spf {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findSrvRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Srv {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if priority, ok := options["priority"]; ok && record.Priority == priority.(int) {
+			matchCounter++
+		}
+
+		if weight, ok := options["weight"]; ok && record.Weight == weight.(uint16) {
+			matchCounter++
+		}
+
+		if port, ok := options["port"]; ok && record.Port == port.(uint16) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findSshfpRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Sshfp {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if algorithm, ok := options["algorithm"]; ok && record.Algorithm == algorithm.(int) {
+			matchCounter++
+		}
+
+		if fingerprintType, ok := options["fingerprintType"]; ok && record.FingerprintType == fingerprintType.(int) {
+			matchCounter++
+		}
+
+		if fingerprint, ok := options["fingerprint"]; ok && record.Fingerprint == fingerprint.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
+}
+
+func (zone *Zone) findTxtRecord(options map[string]interface{}) []DNSRecord {
+	found := make([]DNSRecord, 0)
+	matchCounter := 0
+	matchesNeeded := len(options)
+	for _, record := range zone.Zone.Txt {
+		if name, ok := options["name"]; ok && record.Name == name.(string) {
+			matchCounter++
+		}
+
+		if active, ok := options["active"]; ok && record.Active == active.(bool) {
+			matchCounter++
+		}
+
+		if ttl, ok := options["ttl"]; ok && record.TTL == ttl.(int) {
+			matchCounter++
+		}
+
+		if target, ok := options["target"]; ok && record.Target == target.(string) {
+			matchCounter++
+		}
+
+		if matchCounter >= matchesNeeded {
+			found = append(found, record)
+		}
+	}
+	return found
 }
