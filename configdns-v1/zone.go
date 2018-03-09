@@ -1,12 +1,13 @@
 package dns
 
 import (
+	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
 
-	"errors"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
@@ -136,7 +137,7 @@ func (zone *Zone) Save() error {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return &ZoneError{zoneName: zone.Zone.Name, apiErrorMessage: err.Title, err: err}
+		return &ZoneError{zoneName: zone.Zone.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	for {
@@ -386,75 +387,77 @@ func (zone *Zone) addTxtRecord(record *TxtRecord) {
 }
 
 func (zone *Zone) removeARecord(record *ARecord) error {
-	var found bool
 	for key, r := range zone.Zone.A {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.A[:key]
-			zone.Zone.A = append(records, zone.Zone.A[key+1:]...)
-			found = true
+			if len(zone.Zone.A) > key {
+				if len(zone.Zone.A) > key {
+					zone.Zone.A = append(records, zone.Zone.A[key+1:]...)
+				} else {
+					zone.Zone.A = records
+				}
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("A Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("A Record not found")
 }
 
 func (zone *Zone) removeAaaaRecord(record *AaaaRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Aaaa {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Aaaa[:key]
-			zone.Zone.Aaaa = append(records, zone.Zone.Aaaa[key+1:]...)
-			found = true
+			if len(zone.Zone.Aaaa) > key {
+				zone.Zone.Aaaa = append(records, zone.Zone.Aaaa[key+1:]...)
+			} else {
+				zone.Zone.Aaaa = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("AAAA Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("AAAA Record not found")
 }
 
 func (zone *Zone) removeAfsdbRecord(record *AfsdbRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Afsdb {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Afsdb[:key]
-			zone.Zone.Afsdb = append(records, zone.Zone.Afsdb[key+1:]...)
-			found = true
+			if len(zone.Zone.Afsdb) > key {
+				zone.Zone.Afsdb = append(records, zone.Zone.Afsdb[key+1:]...)
+			} else {
+				zone.Zone.Afsdb = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Afsdb Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Afsdb Record not found")
 }
 
 func (zone *Zone) removeCnameRecord(record *CnameRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Cname {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Cname[:key]
-			zone.Zone.Cname = append(records, zone.Zone.Cname[key+1:]...)
-			found = true
+			if len(zone.Zone.Cname) > key {
+				zone.Zone.Cname = append(records, zone.Zone.Cname[key+1:]...)
+			} else {
+				zone.Zone.Cname = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Cname Record not found")
-	}
+	return errors.New("Cname Record not found")
 
 	zone.removeCnameName(record.Name)
 
@@ -462,312 +465,301 @@ func (zone *Zone) removeCnameRecord(record *CnameRecord) error {
 }
 
 func (zone *Zone) removeDnskeyRecord(record *DnskeyRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Dnskey {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Dnskey[:key]
-			zone.Zone.Dnskey = append(records, zone.Zone.Dnskey[key+1:]...)
-			found = true
+			if len(zone.Zone.Dnskey) > key {
+				zone.Zone.Dnskey = append(records, zone.Zone.Dnskey[key+1:]...)
+			} else {
+				zone.Zone.Dnskey = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Dnskey Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Dnskey Record not found")
 }
 
 func (zone *Zone) removeDsRecord(record *DsRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Ds {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Ds[:key]
-			zone.Zone.Ds = append(records, zone.Zone.Ds[key+1:]...)
-			found = true
+			if len(zone.Zone.Ds) > key {
+				zone.Zone.Ds = append(records, zone.Zone.Ds[key+1:]...)
+			} else {
+				zone.Zone.Ds = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Ds Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Ds Record not found")
 }
 
 func (zone *Zone) removeHinfoRecord(record *HinfoRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Hinfo {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Hinfo[:key]
-			zone.Zone.Hinfo = append(records, zone.Zone.Hinfo[key+1:]...)
-			found = true
+			if len(zone.Zone.Hinfo) > key {
+				zone.Zone.Hinfo = append(records, zone.Zone.Hinfo[key+1:]...)
+			} else {
+				zone.Zone.Hinfo = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Hinfo Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Hinfo Record not found")
 }
 
 func (zone *Zone) removeLocRecord(record *LocRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Loc {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Loc[:key]
-			zone.Zone.Loc = append(records, zone.Zone.Loc[key+1:]...)
-			found = true
+			if len(zone.Zone.Loc) > key {
+				zone.Zone.Loc = append(records, zone.Zone.Loc[key+1:]...)
+			} else {
+				zone.Zone.Loc = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Loc Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Loc Record not found")
 }
 
 func (zone *Zone) removeMxRecord(record *MxRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Mx {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Mx[:key]
-			zone.Zone.Mx = append(records, zone.Zone.Mx[key+1:]...)
-			found = true
+			if len(zone.Zone.Mx) > key {
+				zone.Zone.Mx = append(records, zone.Zone.Mx[key+1:]...)
+			} else {
+				zone.Zone.Mx = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Mx Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Mx Record not found")
 }
 
 func (zone *Zone) removeNaptrRecord(record *NaptrRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Naptr {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Naptr[:key]
-			zone.Zone.Naptr = append(records, zone.Zone.Naptr[key+1:]...)
-			found = true
+			if len(zone.Zone.Naptr) > key {
+				zone.Zone.Naptr = append(records, zone.Zone.Naptr[key+1:]...)
+			} else {
+				zone.Zone.Naptr = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Naptr Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Naptr Record not found")
 }
 
 func (zone *Zone) removeNsRecord(record *NsRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Ns {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Ns[:key]
-			zone.Zone.Ns = append(records, zone.Zone.Ns[key+1:]...)
-			found = true
+			if len(zone.Zone.Ns) > key {
+				zone.Zone.Ns = append(records, zone.Zone.Ns[key+1:]...)
+			} else {
+				zone.Zone.Ns = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Ns Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Ns Record not found")
 }
 
 func (zone *Zone) removeNsec3Record(record *Nsec3Record) error {
-	var found bool
 	for key, r := range zone.Zone.Nsec3 {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Nsec3[:key]
-			zone.Zone.Nsec3 = append(records, zone.Zone.Nsec3[key+1:]...)
-			found = true
+			if len(zone.Zone.Nsec3) > key {
+				zone.Zone.Nsec3 = append(records, zone.Zone.Nsec3[key+1:]...)
+			} else {
+				zone.Zone.Nsec3 = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Nsec3 Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Nsec3 Record not found")
 }
 
 func (zone *Zone) removeNsec3paramRecord(record *Nsec3paramRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Nsec3param {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Nsec3param[:key]
-			zone.Zone.Nsec3param = append(records, zone.Zone.Nsec3param[key+1:]...)
-			found = true
+			if len(zone.Zone.Nsec3param) > key {
+				zone.Zone.Nsec3param = append(records, zone.Zone.Nsec3param[key+1:]...)
+			} else {
+				zone.Zone.Nsec3param = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Nsec3param Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Nsec3param Record not found")
 }
 
 func (zone *Zone) removePtrRecord(record *PtrRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Ptr {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Ptr[:key]
-			zone.Zone.Ptr = append(records, zone.Zone.Ptr[key+1:]...)
-			found = true
+			if len(zone.Zone.Ptr) > key {
+				zone.Zone.Ptr = append(records, zone.Zone.Ptr[key+1:]...)
+			} else {
+				zone.Zone.Ptr = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Ptr Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Ptr Record not found")
 }
 
 func (zone *Zone) removeRpRecord(record *RpRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Rp {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Rp[:key]
-			zone.Zone.Rp = append(records, zone.Zone.Rp[key+1:]...)
-			found = true
+			if len(zone.Zone.Rp) > key {
+				zone.Zone.Rp = append(records, zone.Zone.Rp[key+1:]...)
+			} else {
+				zone.Zone.Rp = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Rp Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Rp Record not found")
 }
 
 func (zone *Zone) removeRrsigRecord(record *RrsigRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Rrsig {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Rrsig[:key]
-			zone.Zone.Rrsig = append(records, zone.Zone.Rrsig[key+1:]...)
-			found = true
+			if len(zone.Zone.Rrsig) > key {
+				zone.Zone.Rrsig = append(records, zone.Zone.Rrsig[key+1:]...)
+			} else {
+				zone.Zone.Rrsig = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Rrsig Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Rrsig Record not found")
 }
 
 func (zone *Zone) removeSoaRecord(record *SoaRecord) error {
-	zone.Zone.Soa = record
-	return nil
+	if reflect.DeepEqual(zone.Zone.Soa, record) {
+		zone.Zone.Soa = nil
+
+		return nil
+	}
+
+	return errors.New("SOA Record does not match")
 }
 
 func (zone *Zone) removeSpfRecord(record *SpfRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Spf {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Spf[:key]
-			zone.Zone.Spf = append(records, zone.Zone.Spf[key+1:]...)
-			found = true
+			if len(zone.Zone.Spf) > key {
+				zone.Zone.Spf = append(records, zone.Zone.Spf[key+1:]...)
+			} else {
+				zone.Zone.Spf = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Spf Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Spf Record not found")
 }
 
 func (zone *Zone) removeSrvRecord(record *SrvRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Srv {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Srv[:key]
-			zone.Zone.Srv = append(records, zone.Zone.Srv[key+1:]...)
-			found = true
+			if len(zone.Zone.Srv) > key {
+				zone.Zone.Srv = append(records, zone.Zone.Srv[key+1:]...)
+			} else {
+				zone.Zone.Srv = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Srv Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Srv Record not found")
 }
 
 func (zone *Zone) removeSshfpRecord(record *SshfpRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Sshfp {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Sshfp[:key]
-			zone.Zone.Sshfp = append(records, zone.Zone.Sshfp[key+1:]...)
-			found = true
+			if len(zone.Zone.Sshfp) > key {
+				zone.Zone.Sshfp = append(records, zone.Zone.Sshfp[key+1:]...)
+			} else {
+				zone.Zone.Sshfp = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Sshfp Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Sshfp Record not found")
 }
 
 func (zone *Zone) removeTxtRecord(record *TxtRecord) error {
-	var found bool
 	for key, r := range zone.Zone.Txt {
-		if r == record {
+		if reflect.DeepEqual(r, record) {
 			records := zone.Zone.Txt[:key]
-			zone.Zone.Txt = append(records, zone.Zone.Txt[key+1:]...)
-			found = true
+			if len(zone.Zone.Txt) > key {
+				zone.Zone.Txt = append(records, zone.Zone.Txt[key+1:]...)
+			} else {
+				zone.Zone.Txt = records
+			}
+			zone.removeNonCnameName(record.Name)
+
+			return nil
 		}
 	}
 
-	if !found {
-		return errors.New("Txt Record not found")
-	}
-
-	zone.removeNonCnameName(record.Name)
-
-	return nil
+	return errors.New("Txt Record not found")
 }
 
 func (zone *Zone) PreMarshalJSON() error {
