@@ -852,9 +852,9 @@ func (zone *Zone) FindRecords(recordType string, options map[string]interface{})
 
 func (zone *Zone) findARecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.A {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -881,9 +881,9 @@ func (zone *Zone) findARecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findAaaaRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Aaaa {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -910,9 +910,9 @@ func (zone *Zone) findAaaaRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findAfsdbRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Afsdb {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -942,9 +942,9 @@ func (zone *Zone) findAfsdbRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findCnameRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Cname {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -970,9 +970,9 @@ func (zone *Zone) findCnameRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findDnskeyRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Dnskey {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1010,9 +1010,9 @@ func (zone *Zone) findDnskeyRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findDsRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Ds {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1050,9 +1050,9 @@ func (zone *Zone) findDsRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findHinfoRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Hinfo {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1082,9 +1082,9 @@ func (zone *Zone) findHinfoRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findLocRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Loc {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1110,9 +1110,9 @@ func (zone *Zone) findLocRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findMxRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Mx {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1142,9 +1142,9 @@ func (zone *Zone) findMxRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findNaptrRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Naptr {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1190,9 +1190,9 @@ func (zone *Zone) findNaptrRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findNsRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Ns {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1218,9 +1218,9 @@ func (zone *Zone) findNsRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findNsec3Record(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Nsec3 {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1266,9 +1266,9 @@ func (zone *Zone) findNsec3Record(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findNsec3paramRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Nsec3param {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1306,9 +1306,9 @@ func (zone *Zone) findNsec3paramRecord(options map[string]interface{}) []DNSReco
 
 func (zone *Zone) findPtrRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Ptr {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1334,9 +1334,9 @@ func (zone *Zone) findPtrRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findRpRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Rp {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1366,9 +1366,9 @@ func (zone *Zone) findRpRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findRrsigRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Rrsig {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1426,9 +1426,9 @@ func (zone *Zone) findRrsigRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findSpfRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Spf {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1454,9 +1454,9 @@ func (zone *Zone) findSpfRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findSrvRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Srv {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1494,9 +1494,9 @@ func (zone *Zone) findSrvRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findSshfpRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Sshfp {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
@@ -1530,9 +1530,9 @@ func (zone *Zone) findSshfpRecord(options map[string]interface{}) []DNSRecord {
 
 func (zone *Zone) findTxtRecord(options map[string]interface{}) []DNSRecord {
 	found := make([]DNSRecord, 0)
-	matchCounter := 0
 	matchesNeeded := len(options)
 	for _, record := range zone.Zone.Txt {
+		matchCounter := 0
 		if name, ok := options["name"]; ok && record.Name == name.(string) {
 			matchCounter++
 		}
