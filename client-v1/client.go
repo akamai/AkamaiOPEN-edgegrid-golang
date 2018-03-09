@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	libraryVersion = "0.5.2"
+	libraryVersion = "0.5.3"
 	// UserAgent is the User-Agent value sent for all requests
 	UserAgent = "Akamai-Open-Edgegrid-golang/" + libraryVersion + " golang/" + strings.TrimPrefix(runtime.Version(), "go")
 	// Client is the *http.Client to use
