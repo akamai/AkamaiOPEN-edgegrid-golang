@@ -5,7 +5,7 @@ import (
   "os"
   "sort"
   "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
-  "github.com/xelwarto/AkamaiOPEN-edgegrid-golang/cps-v2"
+  "github.com/akamai/AkamaiOPEN-edgegrid-golang/cps-v2"
 )
 
 const edgerc = ".edgerc"
