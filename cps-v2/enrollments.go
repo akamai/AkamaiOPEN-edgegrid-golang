@@ -23,10 +23,10 @@ func (e *Enrollments) Get(config edgegrid.Config) error {
   if req, err := client.NewRequest(
     config,
     "GET",
-    "/cps/v2/enrollments",
+    GET_ENROLLMENTS_URI,
     nil,
     ); err == nil {
-    req.Header.Add("Accept", "application/vnd.akamai.cps.enrollments.v4+json")
+    req.Header.Add("Accept", ACCEPT_HEADER)
     if res, err := client.Do(config, req); err == nil {
       if client.IsError(res) {
     		return client.NewAPIError(res)
