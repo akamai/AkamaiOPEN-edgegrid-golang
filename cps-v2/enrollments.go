@@ -19,7 +19,7 @@ func NewEnrollments() *Enrollments {
 // Get populates Enrollments with the list of avaiable enrollments
 //
 // API Docs: https://developer.akamai.com/api/luna/cps/resources.html#getenrollments
-func (e *Enrollments) Get(config edgegrid.Config) error {
+func (e *Enrollments) GetEnrollments(config edgegrid.Config) error {
   if req, err := client.NewRequest(
     config,
     "GET",
