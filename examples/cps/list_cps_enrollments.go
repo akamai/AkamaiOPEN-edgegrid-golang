@@ -11,14 +11,18 @@ import (
 const edgerc = ".edgerc"
 
 func main() {
-  config, err := edgegrid.InitEdgeRc(os.Getenv("HOME") + "/" + edgerc, "cps")
-  if err != nil {
+  cfg_file := os.Getenv("HOME") + "/" + edgerc
+  if err := edgegrid.InitServiceConfig(
+    cfg_file,
+    "cps",
+    &cps.Config,
+  ); err != nil {
     fmt.Printf("Error: %v\n", err)
     os.Exit(1)
   }
 
   e := cps.NewEnrollments()
-  if err := e.Get(config); err != nil {
+  if err := e.GetEnrollments(); err != nil {
     fmt.Printf("Error: %v\n", err)
   } else {
     for _, en := range e.Enrollments {
