@@ -22,6 +22,21 @@ type Config struct {
 	Debug        bool     `ini:"debug"`
 }
 
+// ServiceConfig interface defines a simple service configuration
+type ServiceConfig interface {
+	NewConfig(Config)
+}
+
+// InitServiceConfig initializes a service configuration
+func InitServiceConfig(filepath string, section string, config ServiceConfig) error {
+	c, err := Init(filepath, section)
+	if err != nil {
+		return err
+	}
+	config.NewConfig(c)
+	return nil
+}
+
 // Init initializes by first attempting to use ENV vars, with .edgerc as a fallback
 //
 // See: InitEnv()
