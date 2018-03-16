@@ -23,7 +23,7 @@ func (e *Enrollments) Get(config edgegrid.Config) error {
   if req, err := client.NewRequest(
     config,
     "GET",
-    GET_ENROLLMENTS_URI,
+    "/cps/v2/enrollments",
     nil,
     ); err == nil {
     req.Header.Add("Accept", ACCEPT_HEADER)
