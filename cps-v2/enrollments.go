@@ -1,7 +1,6 @@
 package cps
 
 import (
-  "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
   "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
@@ -19,15 +18,18 @@ func NewEnrollments() *Enrollments {
 // Get populates Enrollments with the list of avaiable enrollments
 //
 // API Docs: https://developer.akamai.com/api/luna/cps/resources.html#getenrollments
-func (e *Enrollments) GetEnrollments(config edgegrid.Config) error {
+func (e *Enrollments) GetEnrollments() error {
   if req, err := client.NewRequest(
-    config,
+    Config.EdgeGridConfig,
     "GET",
     "/cps/v2/enrollments",
     nil,
     ); err == nil {
-    req.Header.Add("Accept", ACCEPT_HEADER)
-    if res, err := client.Do(config, req); err == nil {
+    for k, v := range Config.Headers {
+      req.Header.Add(k, v)
+    }
+
+    if res, err := client.Do(Config.EdgeGridConfig, req); err == nil {
       if client.IsError(res) {
     		return client.NewAPIError(res)
     	}
