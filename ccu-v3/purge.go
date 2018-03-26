@@ -59,6 +59,10 @@ func (p *Purge) purge(purgeMethod string, purgeByType PurgeTypeValue, network Ne
 		return nil, err
 	}
 
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
 	purge := &PurgeResponse{}
 	if err = client.BodyJSON(res, purge); err != nil {
 		return nil, err
