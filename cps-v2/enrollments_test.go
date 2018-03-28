@@ -63,7 +63,7 @@ func TestCPS_GetEnrollments(t *testing.T) {
                 "city": "Cambridge",
                 "organizationName": "Dark Side",
                 "firstName": "Darth",
-                "addressLineTwo": null,
+                "addressLineTwo": "Death Star",
                 "title": "Lord",
                 "addressLineOne": "666 Evil Way",
                 "lastName": "Vader",
@@ -146,7 +146,7 @@ func TestCPS_GetEnrollments(t *testing.T) {
                 "city": "Cambridge",
                 "organizationName": "Dark Side",
                 "firstName": "Darth",
-                "addressLineTwo": null,
+                "addressLineTwo": "Death Star",
                 "title": "Lord",
                 "addressLineOne": "666 Evil Way",
                 "lastName": "Vader",
@@ -200,6 +200,16 @@ func TestCPS_GetEnrollments(t *testing.T) {
     "/cps/v2/enrollments/10003/changes/10004",
   }
 
+  dns_names1 := []string{
+    "san2.example.com",
+    "san1.example.com",
+  }
+
+  dns_names2 := []string{
+    "san1.example.com",
+    "san2.example.com",
+  }
+
   Config.NewConfig(config)
   e := NewEnrollments()
   err := e.GetEnrollments()
@@ -214,7 +224,7 @@ func TestCPS_GetEnrollments(t *testing.T) {
   assert.Equal(t, "third-party", e1.RootAuth)
   assert.Equal(t, "third-party", e1.ValidationType)
   assert.Equal(t, "third-party", e1.CertificateType)
-  assert.Nil(t, e1.SignatureAlgorithm)
+  assert.Equal(t, "", e1.SignatureAlgorithm)
   assert.Equal(t, true, e1.ChangeManagement)
   assert.Equal(t, false, e1.EnableMultiStackedCertificates)
   assert.Equal(t, []string{}, e1.PendingChanges)
@@ -230,6 +240,65 @@ func TestCPS_GetEnrollments(t *testing.T) {
   assert.Equal(t, "WebEx", csr1.OrgUnit)
   assert.Equal(t, sans, csr1.SANS)
 
+  // Org
+  org1 := e1.Org
+  assert.IsType(t, Org{}, org1)
+  assert.Equal(t, "Akamai Technologies", org1.Name)
+  assert.Equal(t, "150 Broadway", org1.AddressLineOne)
+  assert.Equal(t, "", org1.AddressLineTwo)
+  assert.Equal(t, "Cambridge", org1.City)
+  assert.Equal(t, "MA", org1.Region)
+  assert.Equal(t, "02142", org1.PostalCode)
+  assert.Equal(t, "US", org1.Country)
+  assert.Equal(t, "617-555-0111", org1.Phone)
+
+  // TechContact
+  tc1 := e1.TechContact
+  assert.IsType(t, Contact{}, tc1)
+  assert.Equal(t, "R2", tc1.FirstName)
+  assert.Equal(t, "D2", tc1.LastName)
+  assert.Equal(t, "617-555-0111", tc1.Phone)
+  assert.Equal(t, "r2d2@akamai.com", tc1.Email)
+  assert.Equal(t, "150 Broadway", tc1.AddressLineOne)
+  assert.Equal(t, "", tc1.AddressLineTwo)
+  assert.Equal(t, "Cambridge", tc1.City)
+  assert.Equal(t, "US", tc1.Country)
+  assert.Equal(t, "Akamai", tc1.OrganizationName)
+  assert.Equal(t, "02142", tc1.PostalCode)
+  assert.Equal(t, "MA", tc1.Region)
+  assert.Equal(t, "Astromech Droid", tc1.Title)
+
+  // AdminContact
+  ac1 := e1.AdminContact
+  assert.IsType(t, Contact{}, ac1)
+  assert.Equal(t, "Darth", ac1.FirstName)
+  assert.Equal(t, "Vader", ac1.LastName)
+  assert.Equal(t, "617-555-0123", ac1.Phone)
+  assert.Equal(t, "vader@example.com", ac1.Email)
+  assert.Equal(t, "666 Evil Way", ac1.AddressLineOne)
+  assert.Equal(t, "Death Star", ac1.AddressLineTwo)
+  assert.Equal(t, "Cambridge", ac1.City)
+  assert.Equal(t, "US", ac1.Country)
+  assert.Equal(t, "Dark Side", ac1.OrganizationName)
+  assert.Equal(t, "02142", ac1.PostalCode)
+  assert.Equal(t, "MA", ac1.Region)
+  assert.Equal(t, "Lord", ac1.Title)
+
+  // NetworkConfiguration
+  nc1 := e1.NetworkConfiguration
+  assert.IsType(t, NetworkConfiguration{}, nc1)
+  assert.Equal(t, "core", nc1.Geography)
+  assert.Equal(t, "enhanced-tls", nc1.SecureNetwork)
+  assert.Equal(t, "ak-akamai-default2016q3", nc1.MustHaveCiphers)
+  assert.Equal(t, "ak-akamai-default", nc1.PreferredCiphers)
+  assert.Equal(t, []string{}, nc1.DisallowedTlsVersions)
+
+  // SNI
+  nc_sni1 := nc1.SNI
+  assert.IsType(t, SNI{}, nc_sni1)
+  assert.Equal(t, false, nc_sni1.CloneDnsNames)
+  assert.Equal(t, dns_names1, nc_sni1.DnsNames)
+
   // Second Enrollment
   e2 := e.Enrollments[1]
   assert.IsType(t, Enrollment{}, e2)
@@ -237,7 +306,7 @@ func TestCPS_GetEnrollments(t *testing.T) {
   assert.Equal(t, "third-party", e2.RootAuth)
   assert.Equal(t, "third-party", e2.ValidationType)
   assert.Equal(t, "third-party", e2.CertificateType)
-  assert.Nil(t, e2.SignatureAlgorithm)
+  assert.Equal(t, "", e2.SignatureAlgorithm)
   assert.Equal(t, true, e2.ChangeManagement)
   assert.Equal(t, false, e2.EnableMultiStackedCertificates)
   assert.Equal(t, pending, e2.PendingChanges)
@@ -252,4 +321,63 @@ func TestCPS_GetEnrollments(t *testing.T) {
   assert.Equal(t, "MA", csr2.State)
   assert.Equal(t, "WebEx", csr2.OrgUnit)
   assert.Equal(t, sans, csr2.SANS)
+
+  // Org
+  org2 := e2.Org
+  assert.IsType(t, Org{}, org2)
+  assert.Equal(t, "Akamai Technologies", org2.Name)
+  assert.Equal(t, "150 Broadway", org2.AddressLineOne)
+  assert.Equal(t, "", org2.AddressLineTwo)
+  assert.Equal(t, "Cambridge", org2.City)
+  assert.Equal(t, "MA", org2.Region)
+  assert.Equal(t, "02142", org2.PostalCode)
+  assert.Equal(t, "US", org2.Country)
+  assert.Equal(t, "617-555-0111", org2.Phone)
+
+  // TechContact
+  tc2 := e2.TechContact
+  assert.IsType(t, Contact{}, tc2)
+  assert.Equal(t, "R2", tc2.FirstName)
+  assert.Equal(t, "D2", tc2.LastName)
+  assert.Equal(t, "617-555-0111", tc2.Phone)
+  assert.Equal(t, "r2d2@akamai.com", tc2.Email)
+  assert.Equal(t, "150 Broadway", tc2.AddressLineOne)
+  assert.Equal(t, "", tc2.AddressLineTwo)
+  assert.Equal(t, "Cambridge", tc2.City)
+  assert.Equal(t, "US", tc2.Country)
+  assert.Equal(t, "Akamai", tc2.OrganizationName)
+  assert.Equal(t, "02142", tc2.PostalCode)
+  assert.Equal(t, "MA", tc2.Region)
+  assert.Equal(t, "Astromech Droid", tc2.Title)
+
+  // AdminContact
+  ac2 := e2.AdminContact
+  assert.IsType(t, Contact{}, ac2)
+  assert.Equal(t, "Darth", ac2.FirstName)
+  assert.Equal(t, "Vader", ac2.LastName)
+  assert.Equal(t, "617-555-0123", ac2.Phone)
+  assert.Equal(t, "vader@example.com", ac2.Email)
+  assert.Equal(t, "666 Evil Way", ac2.AddressLineOne)
+  assert.Equal(t, "Death Star", ac2.AddressLineTwo)
+  assert.Equal(t, "Cambridge", ac2.City)
+  assert.Equal(t, "US", ac2.Country)
+  assert.Equal(t, "Dark Side", ac2.OrganizationName)
+  assert.Equal(t, "02142", ac2.PostalCode)
+  assert.Equal(t, "MA", ac2.Region)
+  assert.Equal(t, "Lord", ac2.Title)
+
+  // NetworkConfiguration
+  nc2 := e2.NetworkConfiguration
+  assert.IsType(t, NetworkConfiguration{}, nc2)
+  assert.Equal(t, "core", nc2.Geography)
+  assert.Equal(t, "enhanced-tls", nc2.SecureNetwork)
+  assert.Equal(t, "ak-akamai-default2016q3", nc2.MustHaveCiphers)
+  assert.Equal(t, "ak-akamai-default", nc2.PreferredCiphers)
+  assert.Equal(t, []string{}, nc2.DisallowedTlsVersions)
+
+  // SNI
+  nc_sni2 := nc2.SNI
+  assert.IsType(t, SNI{}, nc_sni2)
+  assert.Equal(t, false, nc_sni2.CloneDnsNames)
+  assert.Equal(t, dns_names2, nc_sni2.DnsNames)
 }
