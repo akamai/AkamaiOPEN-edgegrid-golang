@@ -212,6 +212,11 @@ func TestCPS_GetEnrollments(t *testing.T) {
   assert.IsType(t, Enrollment{}, e1)
   assert.Equal(t, "/cps/v2/enrollments/10002", e1.Location)
   assert.Equal(t, "third-party", e1.RootAuth)
+  assert.Equal(t, "third-party", e1.ValidationType)
+  assert.Equal(t, "third-party", e1.CertificateType)
+  assert.Nil(t, e1.SignatureAlgorithm)
+  assert.Equal(t, true, e1.ChangeManagement)
+  assert.Equal(t, false, e1.EnableMultiStackedCertificates)
   assert.Equal(t, []string{}, e1.PendingChanges)
 
   // CSR
@@ -230,6 +235,11 @@ func TestCPS_GetEnrollments(t *testing.T) {
   assert.IsType(t, Enrollment{}, e2)
   assert.Equal(t, "/cps/v2/enrollments/10003", e2.Location)
   assert.Equal(t, "third-party", e2.RootAuth)
+  assert.Equal(t, "third-party", e2.ValidationType)
+  assert.Equal(t, "third-party", e2.CertificateType)
+  assert.Nil(t, e2.SignatureAlgorithm)
+  assert.Equal(t, true, e2.ChangeManagement)
+  assert.Equal(t, false, e2.EnableMultiStackedCertificates)
   assert.Equal(t, pending, e2.PendingChanges)
 
   // CSR
