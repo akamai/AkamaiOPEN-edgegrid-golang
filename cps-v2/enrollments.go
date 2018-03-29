@@ -73,7 +73,8 @@ func NewEnrollment() *Enrollment {
 // GetEnrollment populates an Enrollment
 //
 // API Docs: https://developer.akamai.com/api/luna/cps/resources.html#getasingleenrollment
-func (e *Enrollment) GetEnrollment(id string) error {
+func GetEnrollment(id string) (*Enrollment, error) {
+  e := NewEnrollment()
   if req, err := client.NewRequest(
     Config.EdgeGridConfig,
     "GET",
@@ -86,19 +87,19 @@ func (e *Enrollment) GetEnrollment(id string) error {
 
     if res, err := client.Do(Config.EdgeGridConfig, req); err == nil {
       if client.IsError(res) {
-    		return client.NewAPIError(res)
+    		return nil, client.NewAPIError(res)
     	}
       if err := client.BodyJSON(res, e); err != nil {
-    		return err
+    		return nil, err
     	}
     } else {
-      return err
+      return nil, err
     }
   } else {
-    return err
+    return nil, err
   }
 
-  return nil
+  return e, nil
 }
 
 // ThirdParty represents an enrollment thirdParty

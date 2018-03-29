@@ -420,7 +420,6 @@ func TestCPS_GetEnrollmentsParseError(t *testing.T) {
   assert.Error(t, err)
 }
 
-
 func TestCPS_NewEnrollment(t *testing.T) {
   e := NewEnrollment()
   assert.IsType(t, &Enrollment{}, e)
@@ -536,13 +535,10 @@ func TestCPS_GetEnrollment(t *testing.T) {
   }
 
   Config.NewConfig(config)
-  e := NewEnrollment()
-  err := e.GetEnrollment("")
+  _, err := GetEnrollment("")
   assert.Error(t, err)
 
-  e1 := NewEnrollment()
-  err1 := e1.GetEnrollment("10002")
-
+  e1, err1 := GetEnrollment("10002")
   assert.NoError(t, err1)
   assert.IsType(t, &Enrollment{}, e1)
   assert.Equal(t, "/cps/v2/enrollments/10002", e1.Location)
@@ -636,8 +632,7 @@ func TestCPS_GetEnrollmentError(t *testing.T) {
 		BodyString(`{}`)
 
   Config.NewConfig(config)
-  e := NewEnrollment()
-  err := e.GetEnrollment("10002")
+  _, err := GetEnrollment("10002")
   assert.Error(t, err)
 }
 
@@ -654,7 +649,6 @@ func TestCPS_GetEnrollmentParseError(t *testing.T) {
     }`)
 
   Config.NewConfig(config)
-  e := NewEnrollment()
-  err := e.GetEnrollment("10002")
+  _, err := GetEnrollment("10002")
   assert.Error(t, err)
 }
