@@ -21,8 +21,7 @@ func main() {
     os.Exit(1)
   }
 
-  e := cps.NewEnrollments()
-  if err := e.GetEnrollments(); err != nil {
+  if e, err := cps.GetEnrollments(); err != nil {
     fmt.Printf("Error: %v\n", err)
   } else {
     for _, en := range e.Enrollments {
