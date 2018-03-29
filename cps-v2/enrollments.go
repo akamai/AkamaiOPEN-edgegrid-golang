@@ -64,6 +64,43 @@ type Enrollment struct {
   PendingChanges []string `json:"pendingChanges"`
 }
 
+// NewEnrollment creates an empty Enrollment
+func NewEnrollment() *Enrollment {
+  e := &Enrollment{}
+  return e
+}
+
+// GetEnrollment populates an Enrollment
+//
+// API Docs: https://developer.akamai.com/api/luna/cps/resources.html#getasingleenrollment
+func (e *Enrollment) GetEnrollment(id string) error {
+  if req, err := client.NewRequest(
+    Config.EdgeGridConfig,
+    "GET",
+    "/cps/v2/enrollments/" + id,
+    nil,
+    ); err == nil {
+    for k, v := range Config.Headers {
+      req.Header.Add(k, v)
+    }
+
+    if res, err := client.Do(Config.EdgeGridConfig, req); err == nil {
+      if client.IsError(res) {
+    		return client.NewAPIError(res)
+    	}
+      if err := client.BodyJSON(res, e); err != nil {
+    		return err
+    	}
+    } else {
+      return err
+    }
+  } else {
+    return err
+  }
+
+  return nil
+}
+
 // ThirdParty represents an enrollment thirdParty
 type ThirdParty struct {
   ExcludeSans bool `json:"excludeSans"`
