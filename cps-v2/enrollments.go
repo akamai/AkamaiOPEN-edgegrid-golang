@@ -18,7 +18,8 @@ func NewEnrollments() *Enrollments {
 // GetEnrollments populates Enrollments with the list of avaiable enrollments
 //
 // API Docs: https://developer.akamai.com/api/luna/cps/resources.html#getenrollments
-func (e *Enrollments) GetEnrollments() error {
+func GetEnrollments() (*Enrollments, error) {
+  e := NewEnrollments()
   if req, err := client.NewRequest(
     Config.EdgeGridConfig,
     "GET",
@@ -31,19 +32,19 @@ func (e *Enrollments) GetEnrollments() error {
 
     if res, err := client.Do(Config.EdgeGridConfig, req); err == nil {
       if client.IsError(res) {
-    		return client.NewAPIError(res)
+    		return nil, client.NewAPIError(res)
     	}
       if err := client.BodyJSON(res, e); err != nil {
-    		return err
+    		return nil, err
     	}
     } else {
-      return err
+      return nil, err
     }
   } else {
-    return err
+    return nil, err
   }
 
-  return nil
+  return e, nil
 }
 
 // Enrollment represents a CPS enrollment resource

@@ -211,8 +211,7 @@ func TestCPS_GetEnrollments(t *testing.T) {
   }
 
   Config.NewConfig(config)
-  e := NewEnrollments()
-  err := e.GetEnrollments()
+  e, err := GetEnrollments()
 
   assert.NoError(t, err)
   assert.IsType(t, &Enrollments{}, e)
@@ -393,8 +392,7 @@ func TestCPS_GetEnrollmentsError(t *testing.T) {
 		BodyString(`{}`)
 
   Config.NewConfig(config)
-  e := NewEnrollments()
-  err := e.GetEnrollments()
+  _, err := GetEnrollments()
   assert.Error(t, err)
 }
 
@@ -415,8 +413,7 @@ func TestCPS_GetEnrollmentsParseError(t *testing.T) {
     }`)
 
   Config.NewConfig(config)
-  e := NewEnrollments()
-  err := e.GetEnrollments()
+  _, err := GetEnrollments()
   assert.Error(t, err)
 }
 
