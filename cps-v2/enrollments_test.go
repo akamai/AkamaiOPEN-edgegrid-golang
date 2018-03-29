@@ -382,6 +382,45 @@ func TestCPS_GetEnrollments(t *testing.T) {
   assert.Equal(t, dns_names2, nc_sni2.DnsNames)
 }
 
+func TestCPS_GetEnrollmentsError(t *testing.T) {
+  defer gock.Off()
+  mock := gock.New("https://test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/cps/v2/enrollments")
+	mock.
+		Get("/cps/v2/enrollments").
+		HeaderPresent("Authorization").
+		Reply(401).
+		SetHeader("Content-Type", "application/json").
+		BodyString(`{}`)
+
+  Config.NewConfig(config)
+  e := NewEnrollments()
+  err := e.GetEnrollments()
+  assert.Error(t, err)
+}
+
+func TestCPS_GetEnrollmentsParseError(t *testing.T) {
+  defer gock.Off()
+  mock := gock.New("https://test-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/cps/v2/enrollments")
+	mock.
+		Get("/cps/v2/enrollments").
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/json").
+		BodyString(`{
+      "enrollments": [
+        {
+          "location": "/cps/v2/enrollments/10002",
+        }
+      ]
+    }`)
+
+  Config.NewConfig(config)
+  e := NewEnrollments()
+  err := e.GetEnrollments()
+  assert.Error(t, err)
+}
+
+
 func TestCPS_NewEnrollment(t *testing.T) {
   e := NewEnrollment()
   assert.IsType(t, &Enrollment{}, e)
