@@ -15,7 +15,7 @@ func NewEnrollments() *Enrollments {
   return e
 }
 
-// Get populates Enrollments with the list of avaiable enrollments
+// GetEnrollments populates Enrollments with the list of avaiable enrollments
 //
 // API Docs: https://developer.akamai.com/api/luna/cps/resources.html#getenrollments
 func (e *Enrollments) GetEnrollments() error {
