@@ -22,20 +22,45 @@ type Config struct {
 	Debug        bool     `ini:"debug"`
 }
 
+type Options func(*Settings)
+
+type Settings struct {
+	FilePath string
+	Section  string
+}
+
+func Section(section string) Options {
+	return func(s *Settings) {
+		s.Section = section
+	}
+}
+
+func Filepath(filePath string) Options {
+	return func(s *Settings) {
+		s.FilePath = filePath
+	}
+}
+
 // Init initializes by first attempting to use ENV vars, with .edgerc as a fallback
 //
 // See: InitEnv()
 // See: InitEdgeRc()
-func Init(filepath string, section string) (Config, error) {
-	if section == "" {
-		section = defaultSection
-	} else {
-		section = strings.ToUpper(section)
+func Init(opts ...Options) (Config, error) {
+	s := &Settings{}
+
+	for _, opt := range opts {
+		opt(s)
 	}
 
-	_, exists := os.LookupEnv("AKAMAI_" + section + "_HOST")
-	if !exists && section == defaultSection {
-		_, exists := os.LookupEnv("AKAMAI_HOST")
+	if s.Section == "" {
+		s.Section = defaultSection
+	} else {
+		s.Section = strings.ToUpper(s.Section)
+	}
+
+	_, exists := os.LookupEnv("AKAMAI_" + s.Section + "_HOST")
+	if !exists && s.Section == defaultSection {
+		_, exists = os.LookupEnv("AKAMAI_HOST")
 
 		if exists {
 			return InitEnv("")
@@ -43,16 +68,16 @@ func Init(filepath string, section string) (Config, error) {
 	}
 
 	if exists {
-		return InitEnv(section)
+		return InitEnv(s.Section)
 	}
 
-	c, err := InitEdgeRc(filepath, strings.ToLower(section))
+	c, err := InitEdgeRc(s.FilePath, strings.ToLower(s.Section))
 
 	if err == nil {
 		return c, nil
 	}
 
-	if section != defaultSection {
+	if s.Section != defaultSection {
 		_, ok := os.LookupEnv("AKAMAI_HOST")
 		if ok {
 			return InitEnv("")
