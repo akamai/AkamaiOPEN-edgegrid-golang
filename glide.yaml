@@ -20,10 +20,9 @@ import:
   version: 9d4e42a20653790449273b3c85e67d6d8bae6e2e
   subpackages:
   - unix
-- package: gopkg.in/mattes/go-expand-tilde.v1
-  version: cb884138e64c9a8bf5c7d6106d74b0fca082df0c
 - package: github.com/xeipuuv/gojsonschema
 - package: github.com/h2non/gock
   version: ^1.0.4
 - package: github.com/google/uuid
   version: ~0.2.0
+- package: github.com/mitchellh/go-homedir

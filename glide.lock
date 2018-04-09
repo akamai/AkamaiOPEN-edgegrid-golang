@@ -1,5 +1,5 @@
-hash: 72c8a1e46b4bbf5b7f7819a39a1ec57edc0c6e35bf51e336fe3b641609e40e1a
-updated: 2018-04-08T21:44:15.40263106-07:00
+hash: 6aa94a6e4f079b026c29bb720b0ca97b39441a18353c786b4d23c0bf6a648c71
+updated: 2018-04-08T22:04:19.512033914-07:00
 imports:
 - name: github.com/davecgh/go-spew
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
@@ -15,6 +15,8 @@ imports:
   version: 064e2069ce9c359c118179501254f67d7d37ba24
 - name: github.com/h2non/gock
   version: 550b7ca3aa563b9974e2391274ea55a940d05ca9
+- name: github.com/mitchellh/go-homedir
+  version: b8bc1bf767474819792c23f32d8286a45736f1c6
 - name: github.com/pmezard/go-difflib
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
@@ -35,6 +37,4 @@ imports:
   version: 9d4e42a20653790449273b3c85e67d6d8bae6e2e
   subpackages:
   - unix
-- name: gopkg.in/mattes/go-expand-tilde.v1
-  version: cb884138e64c9a8bf5c7d6106d74b0fca082df0c
 testImports: []
