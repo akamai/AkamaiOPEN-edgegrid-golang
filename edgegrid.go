@@ -19,8 +19,8 @@ import (
 	"unicode"
 
 	"github.com/go-ini/ini"
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
-	"github.com/tuvistavie/securerandom"
 	"gopkg.in/mattes/go-expand-tilde.v1"
 )
 
@@ -53,12 +53,12 @@ func makeEdgeTimeStamp() string {
 // It is a random string used to detect replayed request messages.
 // A GUID is recommended.
 func createNonce() string {
-	uuid, err := securerandom.Uuid()
+	uuid, err := uuid.NewRandom()
 	if err != nil {
 		log.Errorf("Generate Uuid failed, %s", err)
 		return ""
 	}
-	return uuid
+	return uuid.String()
 }
 
 func stringMinifier(in string) (out string) {

@@ -16,8 +16,6 @@ import:
   version: 59fc8e570cd707a33a93842b00a9aae4b5cd38b2
   subpackages:
   - assert
-- package: github.com/tuvistavie/securerandom
-  version: 15512123a948d62f6361bd84818e11f2ad84059a
 - package: golang.org/x/sys
   version: 9d4e42a20653790449273b3c85e67d6d8bae6e2e
   subpackages:
@@ -27,3 +25,5 @@ import:
 - package: github.com/xeipuuv/gojsonschema
 - package: github.com/h2non/gock
   version: ^1.0.4
+- package: github.com/google/uuid
+  version: ~0.2.0
