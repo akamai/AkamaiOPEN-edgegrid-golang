@@ -1,10 +1,6 @@
-hash: 6aa94a6e4f079b026c29bb720b0ca97b39441a18353c786b4d23c0bf6a648c71
-updated: 2018-04-08T22:04:19.512033914-07:00
+hash: 8058c220195675f0db141e26135c5d5f9134b59705f0686c9d7bb2bb2d247ec2
+updated: 2018-04-08T23:10:13.343820275-07:00
 imports:
-- name: github.com/davecgh/go-spew
-  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
-  subpackages:
-  - spew
 - name: github.com/go-ini/ini
   version: 5e9692864e22d02ac79e2fa499cffb00520b4fea
 - name: github.com/google/go-querystring
@@ -13,28 +9,37 @@ imports:
   - query
 - name: github.com/google/uuid
   version: 064e2069ce9c359c118179501254f67d7d37ba24
-- name: github.com/h2non/gock
-  version: 550b7ca3aa563b9974e2391274ea55a940d05ca9
 - name: github.com/mitchellh/go-homedir
   version: b8bc1bf767474819792c23f32d8286a45736f1c6
-- name: github.com/pmezard/go-difflib
-  version: 792786c7400a136282c1664665ae0a8db921c6c2
-  subpackages:
-  - difflib
 - name: github.com/sirupsen/logrus
-  version: 3ec0642a7fb6488f65b06f9040adc67e3990296a
-- name: github.com/stretchr/testify
-  version: 59fc8e570cd707a33a93842b00a9aae4b5cd38b2
-  subpackages:
-  - assert
+  version: c155da19408a8799da419ed3eeb0cb5db0ad5dbc
 - name: github.com/xeipuuv/gojsonpointer
   version: 4e3ac2762d5f479393488629ee9370b50873b3a6
 - name: github.com/xeipuuv/gojsonreference
   version: bd5ef7bd5415a7ac448318e64f11a24cd21e594b
 - name: github.com/xeipuuv/gojsonschema
   version: 2c8e4be869c17540b336bab0ea18b8d73e6a28b7
+- name: golang.org/x/crypto
+  version: b2aa35443fbc700ab74c586ae79b81c171851023
+  subpackages:
+  - ssh/terminal
 - name: golang.org/x/sys
-  version: 9d4e42a20653790449273b3c85e67d6d8bae6e2e
+  version: 3b87a42e500a6dc65dae1a55d0b641295971163e
   subpackages:
   - unix
-testImports: []
+  - windows
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  subpackages:
+  - spew
+- name: github.com/h2non/gock
+  version: 550b7ca3aa563b9974e2391274ea55a940d05ca9
+- name: github.com/pmezard/go-difflib
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  subpackages:
+  - difflib
+- name: github.com/stretchr/testify
+  version: 12b6f73e6084dad08a7c6e575284b177ecafbc71
+  subpackages:
+  - assert
