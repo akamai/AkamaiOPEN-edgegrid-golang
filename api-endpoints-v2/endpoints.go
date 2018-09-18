@@ -92,6 +92,8 @@ type Endpoint struct {
 }
 
 type ListEndpointOptions struct {
+	ContractId        string                 `url:"contractId,omitempty"`
+	GroupId           string                 `url:"groupId,omitempty"`
 	Category          string                 `url:"category,omitempty"`
 	Contains          string                 `url:"contains,omitempty"`
 	Page              int                    `url:"page,omitempty"`
