@@ -15,7 +15,7 @@ type EndpointList struct {
 	TotalSize    int       `json:"totalSize"`
 }
 
-func (list *EndpointList) GetEndpointsList(options ListEndpointOptions) error {
+func (list *EndpointList) GetEndpointsList(options *ListEndpointOptions) error {
 	q, err := query.Values(options)
 	if err != nil {
 		return err
@@ -92,28 +92,14 @@ type Endpoint struct {
 }
 
 type ListEndpointOptions struct {
-	ContractId        string                 `url:"contractId,omitempty"`
-	GroupId           string                 `url:"groupId,omitempty"`
-	Category          string                 `url:"category,omitempty"`
-	Contains          string                 `url:"contains,omitempty"`
-	Page              int                    `url:"page,omitempty"`
-	PageSize          int                    `url:"pageSize,omitempty"`
-	Show              string                 `url:show,omitempty`
-	SortBy            SortByValue            `url:"sortBy,omitempty"`
-	SortOrder         SortOrderValue         `url:"sortOrder,omitempty"`
-	VersionPreference VersionPreferenceValue `url:"versionPreference,omitempty"`
+	ContractId        string `url:"contractId,omitempty"`
+	GroupId           int    `url:"groupId,omitempty"`
+	Category          string `url:"category,omitempty"`
+	Contains          string `url:"contains,omitempty"`
+	Page              int    `url:"page,omitempty"`
+	PageSize          int    `url:"pageSize,omitempty"`
+	Show              string `url:show,omitempty`
+	SortBy            string `url:"sortBy,omitempty"`
+	SortOrder         string `url:"sortOrder,omitempty"`
+	VersionPreference string `url:"versionPreference,omitempty"`
 }
-type SortByValue string
-type SortOrderValue string
-type VersionPreferenceValue string
-
-const (
-	SortByName       SortByValue = "name"
-	SortByUpdateDate SortByValue = "updateDate"
-
-	SortOrderAsc  SortOrderValue = "asc"
-	SortOrderDesc SortOrderValue = "desc"
-
-	VersionPreferenceActivatedFirst VersionPreferenceValue = "ACTIVATED_FIRST"
-	VersionPreferenceLastUpdated    VersionPreferenceValue = "LAST_UPDATED"
-)
