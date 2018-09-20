@@ -98,6 +98,7 @@ type ListEndpointOptions struct {
 	Contains          string                 `url:"contains,omitempty"`
 	Page              int                    `url:"page,omitempty"`
 	PageSize          int                    `url:"pageSize,omitempty"`
+	Show              string                 `url:show,omitempty`
 	SortBy            SortByValue            `url:"sortBy,omitempty"`
 	SortOrder         SortOrderValue         `url:"sortOrder,omitempty"`
 	VersionPreference VersionPreferenceValue `url:"versionPreference,omitempty"`
