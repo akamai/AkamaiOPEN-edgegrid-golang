@@ -116,45 +116,48 @@ func CreateEndpoint(options *CreateEndpointOptions) (*Endpoint, error) {
 type Endpoints []Endpoint
 
 type Endpoint struct {
-	APICategoryIds      []int              `json:"apiCategoryIds"`
-	APIEndPointHosts    []string           `json:"apiEndPointHosts"`
-	APIEndPointID       int                `json:"apiEndPointId,omitempty"`
-	APIEndPointLocked   bool               `json:"apiEndPointLocked,omitempty"`
-	APIEndPointName     string             `json:"apiEndPointName"`
-	APIEndPointScheme   string             `json:"apiEndPointScheme"`
-	APIResourceBaseInfo []ResourceBaseInfo `json:"apiResourceBaseInfo"`
-	BasePath            string             `json:"basePath"`
-	ClonedFromVersion   *int               `json:"clonedFromVersion,omitempty"`
-	ConsumeType         string             `json:"consumeType"`
-	ContractID          string             `json:"contractId,omitempty"`
-	CreateDate          string             `json:"createDate,omitempty"`
-	CreatedBy           string             `json:"createdBy,omitempty"`
-	Description         string             `json:"description"`
-	GroupID             int                `json:"groupId,omitempty"`
-	ProductionVersion   VersionSummary     `json:"productionVersion"`
-	ProtectedByAPIKey   bool               `json:"protectedByApiKey"`
-	StagingVersion      VersionSummary     `json:"stagingVersion"`
-	UpdateDate          string             `json:"updateDate"`
-	UpdatedBy           string             `json:"updatedBy"`
-	VersionNumber       int                `json:"versionNumber"`
+	APICategoryIds             []int                 `json:"apiCategoryIds,omitempty"`
+	APIEndPointHosts           []string              `json:"apiEndPointHosts"`
+	APIEndPointID              int                   `json:"apiEndPointId,omitempty"`
+	APIEndPointLocked          bool                  `json:"apiEndPointLocked,omitempty"`
+	APIEndPointName            string                `json:"apiEndPointName"`
+	APIEndPointScheme          string                `json:"apiEndPointScheme,omitempty"`
+	APIResourceBaseInfo        []*ResourceBaseInfo   `json:"apiResourceBaseInfo,omitempty"`
+	BasePath                   string                `json:"basePath,omitempty"`
+	ClonedFromVersion          *int                  `json:"clonedFromVersion,omitempty"`
+	ConsumeType                string                `json:"consumeType,omitempty"`
+	ContractID                 string                `json:"contractId,omitempty"`
+	CreateDate                 string                `json:"createDate,omitempty"`
+	CreatedBy                  string                `json:"createdBy,omitempty"`
+	Description                string                `json:"description,omitempty"`
+	GroupID                    int                   `json:"groupId,omitempty"`
+	ProductionVersion          *VersionSummary       `json:"productionVersion,omitempty"`
+	ProtectedByAPIKey          bool                  `json:"protectedByApiKey,omitempty"`
+	StagingVersion             *VersionSummary       `json:"stagingVersion,omitempty"`
+	UpdateDate                 string                `json:"updateDate,omitempty"`
+	UpdatedBy                  string                `json:"updatedBy,omitempty"`
+	VersionNumber              int                   `json:"versionNumber,omitempty"`
+	SecurityScheme             *SecurityScheme       `json:"securityScheme,omitempty"`
+	AkamaiSecurityRestrictions *SecurityRestrictions `json:"akamaiSecurityRestrictions,omitempty"`
+	APIResources               *Resources            `json:"apiResources,omitempty"`
+}
 
-	SecurityScheme struct {
-		SecuritySchemeType   string `json:"securitySchemeType"`
-		SecuritySchemeDetail struct {
-			APIKeyLocation string `json:"apiKeyLocation"`
-			APIKeyName     string `json:"apiKeyName"`
-		} `json:"securitySchemeDetail"`
-	} `json:"securityScheme"`
-	AkamaiSecurityRestrictions struct {
-		MaxJsonxmlElement       int `json:"MAX_JSONXML_ELEMENT"`
-		MaxElementNameLength    int `json:"MAX_ELEMENT_NAME_LENGTH"`
-		MaxDocDepth             int `json:"MAX_DOC_DEPTH"`
-		PositiveSecurityEnabled int `json:"POSITIVE_SECURITY_ENABLED"`
-		MaxStringLength         int `json:"MAX_STRING_LENGTH"`
-		MaxBodySize             int `json:"MAX_BODY_SIZE"`
-		MaxIntegerValue         int `json:"MAX_INTEGER_VALUE"`
-	} `json:"akamaiSecurityRestrictions"`
-	APIResources Resources `json:"apiResources"`
+type SecurityScheme struct {
+	SecuritySchemeType   string `json:"securitySchemeType,omitempty"`
+	SecuritySchemeDetail struct {
+		APIKeyLocation string `json:"apiKeyLocation,omitempty"`
+		APIKeyName     string `json:"apiKeyName,omitempty"`
+	} `json:"securitySchemeDetail,omitempty"`
+}
+
+type SecurityRestrictions struct {
+	MaxJsonxmlElement       int `json:"MAX_JSONXML_ELEMENT,omitempty"`
+	MaxElementNameLength    int `json:"MAX_ELEMENT_NAME_LENGTH,omitempty"`
+	MaxDocDepth             int `json:"MAX_DOC_DEPTH,omitempty"`
+	PositiveSecurityEnabled int `json:"POSITIVE_SECURITY_ENABLED,omitempty"`
+	MaxStringLength         int `json:"MAX_STRING_LENGTH,omitempty"`
+	MaxBodySize             int `json:"MAX_BODY_SIZE,omitempty"`
+	MaxIntegerValue         int `json:"MAX_INTEGER_VALUE,omitempty"`
 }
 
 type ListEndpointOptions struct {
