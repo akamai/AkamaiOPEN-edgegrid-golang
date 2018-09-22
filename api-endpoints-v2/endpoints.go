@@ -1,7 +1,11 @@
 package apiendpoints
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"github.com/google/go-querystring/query"
@@ -15,7 +19,7 @@ type EndpointList struct {
 	TotalSize    int       `json:"totalSize"`
 }
 
-func (list *EndpointList) GetEndpointsList(options *ListEndpointOptions) error {
+func (list *EndpointList) ListEndpoints(options *ListEndpointOptions) error {
 	q, err := query.Values(options)
 	if err != nil {
 		return err
@@ -45,6 +49,73 @@ func (list *EndpointList) GetEndpointsList(options *ListEndpointOptions) error {
 	}
 
 	return nil
+}
+
+func CreateEndpoint(options *CreateEndpointOptions) (*Endpoint, error) {
+	var req *http.Request
+	var err error
+	if options.JSON {
+		file, err := os.Open(options.ImportFile)
+		if err != nil {
+			return nil, err
+		}
+		defer file.Close()
+
+		bytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			return nil, err
+		}
+
+		var ep Endpoint
+		err = json.Unmarshal(bytes, &ep)
+		if err != nil {
+			return nil, err
+		}
+
+		req, err = client.NewJSONRequest(
+			Config,
+			"POST",
+			"/api-definitions/v2/endpoints",
+			ep,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		format := "raml"
+		if options.Swagger {
+			format = "swagger"
+		}
+
+		req, err = client.NewMultiPartFormDataRequest(
+			Config,
+			"/api-definitions/v2/endpoints/files",
+			options.ImportFile,
+			map[string]string{
+				"contractId":       options.ContractId,
+				"groupId":          options.GroupId,
+				"importFileFormat": format,
+			},
+		)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	res, err := client.Do(Config, req)
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	ep := &Endpoint{}
+	if err = client.BodyJSON(res, ep); err != nil {
+		return nil, err
+	}
+
+	return ep, nil
 }
 
 type Endpoints []Endpoint
@@ -102,4 +173,13 @@ type ListEndpointOptions struct {
 	SortBy            string `url:"sortBy,omitempty"`
 	SortOrder         string `url:"sortOrder,omitempty"`
 	VersionPreference string `url:"versionPreference,omitempty"`
+}
+
+type CreateEndpointOptions struct {
+	ContractId string `url:"contractId,omitempty"`
+	GroupId    string `url:"groupId,omitempty"`
+	ImportFile string `url:"importFile,omitempty"`
+	JSON       bool
+	RAML       bool
+	Swagger    bool
 }
