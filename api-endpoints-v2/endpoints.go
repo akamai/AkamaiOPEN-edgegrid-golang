@@ -54,7 +54,7 @@ func (list *EndpointList) ListEndpoints(options *ListEndpointOptions) error {
 func CreateEndpoint(options *CreateEndpointOptions) (*Endpoint, error) {
 	var req *http.Request
 	var err error
-	if options.JSON {
+	if options.Format == "json" {
 		file, err := os.Open(options.ImportFile)
 		if err != nil {
 			return nil, err
@@ -83,11 +83,6 @@ func CreateEndpoint(options *CreateEndpointOptions) (*Endpoint, error) {
 			return nil, err
 		}
 	} else {
-		format := "raml"
-		if options.Swagger {
-			format = "swagger"
-		}
-
 		req, err = client.NewMultiPartFormDataRequest(
 			Config,
 			"/api-definitions/v2/endpoints/files",
@@ -95,7 +90,7 @@ func CreateEndpoint(options *CreateEndpointOptions) (*Endpoint, error) {
 			map[string]string{
 				"contractId":       options.ContractId,
 				"groupId":          options.GroupId,
-				"importFileFormat": format,
+				"importFileFormat": options.Format,
 			},
 		)
 
@@ -179,7 +174,5 @@ type CreateEndpointOptions struct {
 	ContractId string `url:"contractId,omitempty"`
 	GroupId    string `url:"groupId,omitempty"`
 	ImportFile string `url:"importFile,omitempty"`
-	JSON       bool
-	RAML       bool
-	Swagger    bool
+	Format     string
 }
