@@ -1,15 +1,43 @@
 package apiendpoints
 
-type Activations struct {
-	Networks               []NetworkValue `json:"networks"`
-	NotificationRecipients []string       `json:"notificationRecipients"`
-	Notes                  string         `json:"notes"`
+import (
+	"fmt"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+)
+
+type Activation struct {
+	Networks               []string `json:"networks"`
+	NotificationRecipients []string `json:"notificationRecipients"`
+	Notes                  string   `json:"notes"`
 }
 
-// NetworkValue is used to create an "enum" of possible Activations.Networks[] values
-type NetworkValue string
+type ActivateEndpointOptions struct {
+	APIEndPointId int
+	VersionNumber int
+}
 
-const (
-	NetworkStaging    NetworkValue = "STAGING"
-	NetworkProduction NetworkValue = "PRODUCTION"
-)
+func ActivateEndpoint(options *ActivateEndpointOptions, activation *Activation) (*Activation, error) {
+	req, err := client.NewJSONRequest(
+		Config,
+		"POST",
+		fmt.Sprintf(
+			"/api-definitions/v2/endpoints/%d/versions/%d/activate",
+			options.APIEndPointId,
+			options.VersionNumber,
+		),
+		activation,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	return activation, nil
+}
