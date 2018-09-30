@@ -41,3 +41,28 @@ func ActivateEndpoint(options *ActivateEndpointOptions, activation *Activation) 
 
 	return activation, nil
 }
+
+func DeactivateEndpoint(options *ActivateEndpointOptions, activation *Activation) (*Activation, error) {
+	req, err := client.NewJSONRequest(
+		Config,
+		"DELETE",
+		fmt.Sprintf(
+			"/api-definitions/v2/endpoints/%d/versions/%d/deactivate",
+			options.APIEndPointId,
+			options.VersionNumber,
+		),
+		activation,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	return activation, nil
+}
