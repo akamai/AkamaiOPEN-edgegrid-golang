@@ -66,3 +66,19 @@ func DeactivateEndpoint(options *ActivateEndpointOptions, activation *Activation
 
 	return activation, nil
 }
+
+func IsActive(endpoint *Endpoint, network string) bool {
+	if network == "production" {
+		if endpoint.ProductionStatus == StatusPending || endpoint.ProductionStatus == StatusActive {
+			return true
+		}
+	}
+
+	if network == "staging" {
+		if endpoint.StagingStatus == StatusPending || endpoint.StagingStatus == StatusActive {
+			return true
+		}
+	}
+
+	return false
+}

@@ -1,9 +1,7 @@
 package apiendpoints
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"github.com/google/go-querystring/query"
@@ -28,7 +26,9 @@ type Endpoint struct {
 	Description                string                `json:"description,omitempty"`
 	GroupID                    int                   `json:"groupId,omitempty"`
 	ProductionVersion          *VersionSummary       `json:"productionVersion,omitempty"`
+	ProductionStatus           string                `json:"productionStatus,omitempty"`
 	ProtectedByAPIKey          bool                  `json:"protectedByApiKey,omitempty"`
+	StagingStatus              string                `json:"stagingStatus,omitempty"`
 	StagingVersion             *VersionSummary       `json:"stagingVersion,omitempty"`
 	UpdateDate                 string                `json:"updateDate,omitempty"`
 	UpdatedBy                  string                `json:"updatedBy,omitempty"`
@@ -65,98 +65,67 @@ type CreateEndpointOptions struct {
 }
 
 func CreateEndpoint(options *CreateEndpointOptions) (*Endpoint, error) {
-	ep, err := json.Marshal(options)
-	if err != nil {
-		return nil, err
-	}
-
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
 		"/api-definitions/v2/endpoints",
-		ep,
+		options,
 	)
 
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := client.Do(Config, req)
-
-	if client.IsError(res) {
-		return nil, client.NewAPIError(res)
-	}
-
-	rep := &Endpoint{}
-	if err = client.BodyJSON(res, rep); err != nil {
-		return nil, err
-	}
-
-	return rep, nil
+	return call(req, err)
 }
 
-type ImportEndpointOptions struct {
-	EndpointId string
-	Version    string
+type CreateEndpointFromFileOptions struct {
 	File       string
 	Format     string
 	ContractId string
 	GroupId    string
 }
 
-func ImportEndpoint(options *ImportEndpointOptions) (*Endpoint, error) {
-	var req *http.Request
-	var err error
+func CreateEndpointFromFile(options *CreateEndpointFromFileOptions) (*Endpoint, error) {
+	req, err := client.NewMultiPartFormDataRequest(
+		Config,
+		"/api-definitions/v2/endpoints/files",
+		options.File,
+		map[string]string{
+			"contractId":       options.ContractId,
+			"groupId":          options.GroupId,
+			"importFileFormat": options.Format,
+		},
+	)
 
-	if options.EndpointId != "" {
-		// TODO: get this from the API
-		if options.Version == "" {
-			options.Version = "1"
-		}
+	return call(req, err)
+}
 
-		url := fmt.Sprintf(
-			"/api-definitions/v2/endpoints/%s/versions/%s/file",
-			options.EndpointId,
-			options.Version,
-		)
+type UpdateEndpointFromFileOptions struct {
+	EndpointId string
+	Version    string
+	File       string
+	Format     string
+}
 
-		req, err = client.NewMultiPartFormDataRequest(
-			Config,
-			url,
-			options.File,
-			map[string]string{
-				"importFileFormat": options.Format,
-			},
-		)
-	} else {
-		req, err = client.NewMultiPartFormDataRequest(
-			Config,
-			"/api-definitions/v2/endpoints/files",
-			options.File,
-			map[string]string{
-				"contractId":       options.ContractId,
-				"groupId":          options.GroupId,
-				"importFileFormat": options.Format,
-			},
-		)
+func UpdateEndpointFromFile(options *UpdateEndpointFromFileOptions) (*Endpoint, error) {
+	// TODO: get this from the API
+	if options.Version == "" {
+		options.Version = "1"
 	}
 
-	if err != nil {
-		return nil, err
-	}
+	url := fmt.Sprintf(
+		"/api-definitions/v2/endpoints/%s/versions/%s/file",
+		options.EndpointId,
+		options.Version,
+	)
 
-	res, err := client.Do(Config, req)
+	req, err := client.NewMultiPartFormDataRequest(
+		Config,
+		url,
+		options.File,
+		map[string]string{
+			"importFileFormat": options.Format,
+		},
+	)
 
-	if client.IsError(res) {
-		return nil, client.NewAPIError(res)
-	}
-
-	ep := &Endpoint{}
-	if err = client.BodyJSON(res, ep); err != nil {
-		return nil, err
-	}
-
-	return ep, nil
+	return call(req, err)
 }
 
 type ListEndpointOptions struct {
@@ -210,39 +179,4 @@ func (list *EndpointList) ListEndpoints(options *ListEndpointOptions) error {
 	}
 
 	return nil
-}
-
-type RemoveEndpointOptions struct {
-	APIEndPointId int
-	VersionNumber int
-}
-
-type DeactivateEndpointOptions struct {
-	APIEndPointId int
-	VersionNumber int
-}
-
-func RemoveEndpoint(options *RemoveEndpointOptions) (*Endpoint, error) {
-	req, err := client.NewJSONRequest(
-		Config,
-		"DELETE",
-		fmt.Sprintf(
-			"/api-definitions/v2/endpoints/%d/versions/%d",
-			options.APIEndPointId,
-			options.VersionNumber,
-		),
-		nil,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := client.Do(Config, req)
-
-	if client.IsError(res) {
-		return nil, client.NewAPIError(res)
-	}
-
-	return &Endpoint{}, nil
 }
