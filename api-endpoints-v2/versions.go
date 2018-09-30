@@ -76,24 +76,31 @@ type ModifyVersionOptions struct {
 }
 
 func ModifyVersion(options *ModifyVersionOptions) (*Endpoint, error) {
-	ep, err := GetVersion(&GetVersionOptions{
-		options.EndpointId,
-		options.Version,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	if IsActive(ep, "production") || IsActive(ep, "staging") {
-
-	}
-
 	req, err := client.NewJSONRequest(
 		Config,
 		"PUT",
 		fmt.Sprintf(
 			"/api-definitions/v2/endpoints/%s/versions/%s",
+			options.EndpointId,
+			options.Version,
+		),
+		options,
+	)
+
+	return call(req, err)
+}
+
+type CloneVersionOptions struct {
+	EndpointId string
+	Version    string
+}
+
+func CloneVersion(options *CloneVersionOptions) (*Endpoint, error) {
+	req, err := client.NewJSONRequest(
+		Config,
+		"POST",
+		fmt.Sprintf(
+			"/api-definitions/v2/endpoints/%s/versions/%s/cloneVersion",
 			options.EndpointId,
 			options.Version,
 		),
