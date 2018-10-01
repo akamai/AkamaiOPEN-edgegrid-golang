@@ -105,11 +105,6 @@ type UpdateEndpointFromFileOptions struct {
 }
 
 func UpdateEndpointFromFile(options *UpdateEndpointFromFileOptions) (*Endpoint, error) {
-	// TODO: get this from the API
-	if options.Version == "" {
-		options.Version = "1"
-	}
-
 	url := fmt.Sprintf(
 		"/api-definitions/v2/endpoints/%s/versions/%s/file",
 		options.EndpointId,

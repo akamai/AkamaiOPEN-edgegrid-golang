@@ -2,6 +2,7 @@ package apiendpoints
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
@@ -45,12 +46,56 @@ const (
 	StatusFailed      string = "FAILED"
 )
 
+type ListVersionsOptions struct {
+	EndpointId string
+}
+
+func ListVersions(options *ListVersionsOptions) (*Versions, error) {
+	req, err := client.NewJSONRequest(
+		Config,
+		"GET",
+		fmt.Sprintf(
+			"/api-definitions/v2/endpoints/%s/versions",
+			options.EndpointId,
+		),
+		nil,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	rep := &Versions{}
+	if err = client.BodyJSON(res, rep); err != nil {
+		return nil, err
+	}
+
+	return rep, nil
+}
+
 type GetVersionOptions struct {
 	EndpointId string
 	Version    string
 }
 
 func GetVersion(options *GetVersionOptions) (*Endpoint, error) {
+	if options.Version == "latest" {
+		versions, err := ListVersions(&ListVersionsOptions{EndpointId: options.EndpointId})
+		if err != nil {
+			return nil, err
+		}
+
+		loc := len(versions.APIVersions) - 1
+		v := versions.APIVersions[loc]
+		options.Version = strconv.Itoa(v.VersionNumber)
+	}
+
 	req, err := client.NewJSONRequest(
 		Config,
 		"GET",
@@ -59,7 +104,7 @@ func GetVersion(options *GetVersionOptions) (*Endpoint, error) {
 			options.EndpointId,
 			options.Version,
 		),
-		options,
+		nil,
 	)
 
 	return call(req, err)
