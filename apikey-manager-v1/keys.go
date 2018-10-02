@@ -7,7 +7,7 @@ import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
-type Keys []Key
+type Keys []int
 
 type Key struct {
 	Id                  int      `json:"id,omitempty"`
@@ -112,4 +112,35 @@ func CollectionImportKeys(collectionId int, filename string) (*Keys, error) {
 	err = json.Unmarshal(fileContent, rep)
 
 	return rep, err
+}
+
+type RevokeKeys struct {
+	Keys Keys `json:"keys,omitempty"`
+}
+
+func RevokeKey(key int) (*Key, error) {
+	req, err := client.NewJSONRequest(
+		Config,
+		"POST",
+		"/apikey-manager-api/v1/keys/revoke",
+		&RevokeKeys{
+			Keys: Keys{key},
+		},
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	return &Key{}, nil
 }
