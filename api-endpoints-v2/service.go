@@ -25,6 +25,10 @@ func call(req *http.Request, err error) (*Endpoint, error) {
 
 	res, err := client.Do(Config, req)
 
+	if err != nil {
+		return nil, err
+	}
+
 	if client.IsError(res) {
 		return nil, client.NewAPIError(res)
 	}
