@@ -60,3 +60,40 @@ func ListCollections() (*Collections, error) {
 
 	return rep, nil
 }
+
+type CreateCollectionOptions struct {
+	ContractId  string `json:"contractId,omitempty"`
+	GroupId     int    `json:"groupId,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+func CreateCollection(options *CreateCollectionOptions) (*Collection, error) {
+	req, err := client.NewJSONRequest(
+		Config,
+		"POST",
+		"/apikey-manager-api/v1/collections",
+		options,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	rep := &Collection{}
+	if err = client.BodyJSON(res, rep); err != nil {
+		return nil, err
+	}
+
+	return rep, nil
+}
