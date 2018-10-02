@@ -98,15 +98,15 @@ func CreateEndpointFromFile(options *CreateEndpointFromFileOptions) (*Endpoint, 
 }
 
 type UpdateEndpointFromFileOptions struct {
-	EndpointId string
-	Version    string
+	EndpointId int
+	Version    int
 	File       string
 	Format     string
 }
 
 func UpdateEndpointFromFile(options *UpdateEndpointFromFileOptions) (*Endpoint, error) {
 	url := fmt.Sprintf(
-		"/api-definitions/v2/endpoints/%s/versions/%s/file",
+		"/api-definitions/v2/endpoints/%d/versions/%d/file",
 		options.EndpointId,
 		options.Version,
 	)

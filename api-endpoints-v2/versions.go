@@ -2,7 +2,6 @@ package apiendpoints
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
@@ -47,7 +46,7 @@ const (
 )
 
 type ListVersionsOptions struct {
-	EndpointId string
+	EndpointId int
 }
 
 func ListVersions(options *ListVersionsOptions) (*Versions, error) {
@@ -55,7 +54,7 @@ func ListVersions(options *ListVersionsOptions) (*Versions, error) {
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/api-definitions/v2/endpoints/%s/versions",
+			"/api-definitions/v2/endpoints/%d/versions",
 			options.EndpointId,
 		),
 		nil,
@@ -80,12 +79,12 @@ func ListVersions(options *ListVersionsOptions) (*Versions, error) {
 }
 
 type GetVersionOptions struct {
-	EndpointId string
-	Version    string
+	EndpointId int
+	Version    int
 }
 
 func GetVersion(options *GetVersionOptions) (*Endpoint, error) {
-	if options.Version == "latest" {
+	if options.Version == 0 {
 		versions, err := ListVersions(&ListVersionsOptions{EndpointId: options.EndpointId})
 		if err != nil {
 			return nil, err
@@ -93,14 +92,14 @@ func GetVersion(options *GetVersionOptions) (*Endpoint, error) {
 
 		loc := len(versions.APIVersions) - 1
 		v := versions.APIVersions[loc]
-		options.Version = strconv.Itoa(v.VersionNumber)
+		options.Version = v.VersionNumber
 	}
 
 	req, err := client.NewJSONRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/api-definitions/v2/endpoints/%s/versions/%s/resources-detail",
+			"/api-definitions/v2/endpoints/%d/versions/%d/resources-detail",
 			options.EndpointId,
 			options.Version,
 		),
@@ -110,34 +109,24 @@ func GetVersion(options *GetVersionOptions) (*Endpoint, error) {
 	return call(req, err)
 }
 
-type ModifyVersionOptions struct {
-	EndpointId  string   `json:"-"`
-	Version     string   `json:"-"`
-	Name        string   `json:"apiEndPointName,omitempty"`
-	Description string   `json:"description,omitempty"`
-	BasePath    string   `json:"basePath,omitempty"`
-	Hostnames   []string `json:"apiEndPointHosts,omitempty"`
-	Scheme      string   `json:"apiEndPointScheme,omitempty"`
-}
-
-func ModifyVersion(options *ModifyVersionOptions) (*Endpoint, error) {
+func ModifyVersion(endpoint *Endpoint) (*Endpoint, error) {
 	req, err := client.NewJSONRequest(
 		Config,
 		"PUT",
 		fmt.Sprintf(
-			"/api-definitions/v2/endpoints/%s/versions/%s",
-			options.EndpointId,
-			options.Version,
+			"/api-definitions/v2/endpoints/%d/versions/%d",
+			endpoint.APIEndPointID,
+			endpoint.VersionNumber,
 		),
-		options,
+		endpoint,
 	)
 
 	return call(req, err)
 }
 
 type CloneVersionOptions struct {
-	EndpointId string
-	Version    string
+	EndpointId int
+	Version    int
 }
 
 func CloneVersion(options *CloneVersionOptions) (*Endpoint, error) {
@@ -145,7 +134,7 @@ func CloneVersion(options *CloneVersionOptions) (*Endpoint, error) {
 		Config,
 		"POST",
 		fmt.Sprintf(
-			"/api-definitions/v2/endpoints/%s/versions/%s/cloneVersion",
+			"/api-definitions/v2/endpoints/%d/versions/%d/cloneVersion",
 			options.EndpointId,
 			options.Version,
 		),
