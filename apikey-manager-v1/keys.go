@@ -1,8 +1,13 @@
 package apikeymanager
 
 import (
+	"encoding/json"
+	"io/ioutil"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
+
+type Keys []Key
 
 type Key struct {
 	Id                  int      `json:"id,omitempty"`
@@ -64,4 +69,47 @@ func CollectionAddKey(collectionId int, name, value string) (*Key, error) {
 	}
 
 	return rep, nil
+}
+
+type ImportKey struct {
+	Name         string `json:"name,omitempty"`
+	Content      string `json:"content,omitempty"`
+	CollectionId int    `json:"collectionId,omitempty"`
+}
+
+func CollectionImportKeys(collectionId int, filename string) (*Keys, error) {
+	fileContent, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := client.NewJSONRequest(
+		Config,
+		"POST",
+		"/apikey-manager-api/v1/keys/import",
+		&ImportKey{
+			Name:         filename,
+			CollectionId: collectionId,
+			Content:      string(fileContent),
+		},
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	rep := &Keys{}
+	err = json.Unmarshal(fileContent, rep)
+
+	return rep, err
 }
