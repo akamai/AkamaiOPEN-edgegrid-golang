@@ -175,3 +175,28 @@ func (list *EndpointList) ListEndpoints(options *ListEndpointOptions) error {
 
 	return nil
 }
+
+func RemoveEndpoint(endpointId int) (*Endpoint, error) {
+	req, err := client.NewJSONRequest(
+		Config,
+		"DELETE",
+		fmt.Sprintf(
+			"/api-definitions/v2/endpoints/%d",
+			endpointId,
+		),
+		nil,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	rep := &Endpoint{}
+	return rep, nil
+}
