@@ -1,6 +1,8 @@
 package apikeymanager
 
 import (
+	"fmt"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
@@ -74,6 +76,119 @@ func CreateCollection(options *CreateCollectionOptions) (*Collection, error) {
 		"POST",
 		"/apikey-manager-api/v1/collections",
 		options,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	rep := &Collection{}
+	if err = client.BodyJSON(res, rep); err != nil {
+		return nil, err
+	}
+
+	return rep, nil
+}
+
+func GetCollection(collectionId int) (*Collection, error) {
+	req, err := client.NewJSONRequest(
+		Config,
+		"GET",
+		fmt.Sprintf("/apikey-manager-api/v1/collections/%d", collectionId),
+		nil,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	rep := &Collection{}
+	if err = client.BodyJSON(res, rep); err != nil {
+		return nil, err
+	}
+
+	return rep, nil
+}
+
+func CollectionAclAllow(collectionId int, acl []string) (*Collection, error) {
+	collection, err := GetCollection(collectionId)
+	if err != nil {
+		return collection, err
+	}
+
+	acl = append(acl, collection.GrantedACL...)
+
+	req, err := client.NewJSONRequest(
+		Config,
+		"PUT",
+		fmt.Sprintf("/apikey-manager-api/v1/collections/%d/acl", collectionId),
+		acl,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	rep := &Collection{}
+	if err = client.BodyJSON(res, rep); err != nil {
+		return nil, err
+	}
+
+	return rep, nil
+}
+
+func CollectionAclDeny(collectionId int, acl []string) (*Collection, error) {
+	collection, err := GetCollection(collectionId)
+	if err != nil {
+		return collection, err
+	}
+
+	for cIndex, currentAcl := range collection.GrantedACL {
+		for _, newAcl := range acl {
+			if newAcl == currentAcl {
+				collection.GrantedACL = append(
+					collection.GrantedACL[:cIndex],
+					collection.GrantedACL[cIndex+1:]...,
+				)
+			}
+		}
+	}
+
+	req, err := client.NewJSONRequest(
+		Config,
+		"PUT",
+		fmt.Sprintf("/apikey-manager-api/v1/collections/%d/acl", collectionId),
+		collection.GrantedACL,
 	)
 
 	if err != nil {
