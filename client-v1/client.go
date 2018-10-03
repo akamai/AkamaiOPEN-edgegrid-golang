@@ -64,13 +64,21 @@ func NewRequest(config edgegrid.Config, method, path string, body io.Reader) (*h
 // NewJSONRequest creates an HTTP request that can be sent to the Akamai APIs with a JSON body
 // The JSON body is encoded and the Content-Type/Accept headers are set automatically.
 func NewJSONRequest(config edgegrid.Config, method, path string, body interface{}) (*http.Request, error) {
-	jsonBody, err := jsonhooks.Marshal(body)
-	if err != nil {
-		return nil, err
+	var req *http.Request
+	var err error
+
+	if body != nil {
+		jsonBody, err := jsonhooks.Marshal(body)
+		if err != nil {
+			return nil, err
+		}
+
+		buf := bytes.NewReader(jsonBody)
+		req, err = NewRequest(config, method, path, buf)
+	} else {
+		req, err = NewRequest(config, method, path, nil)
 	}
 
-	buf := bytes.NewReader(jsonBody)
-	req, err := NewRequest(config, method, path, buf)
 	if err != nil {
 		return nil, err
 	}
