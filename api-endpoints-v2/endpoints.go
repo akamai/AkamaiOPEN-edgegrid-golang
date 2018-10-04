@@ -2,6 +2,7 @@ package apiendpoints
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"github.com/google/go-querystring/query"
@@ -58,7 +59,7 @@ type SecurityRestrictions struct {
 
 type CreateEndpointOptions struct {
 	ContractId string   `json:"contractId,omitempty"`
-	GroupId    string   `json:"groupId,omitempty"`
+	GroupId    int      `json:"groupId,omitempty"`
 	Name       string   `json:"apiEndPointName,omitempty"`
 	BasePath   string   `json:"basePath,omitempty"`
 	Hostnames  []string `json:"apiEndPointHosts,omitempty"`
@@ -79,7 +80,7 @@ type CreateEndpointFromFileOptions struct {
 	File       string
 	Format     string
 	ContractId string
-	GroupId    string
+	GroupId    int
 }
 
 func CreateEndpointFromFile(options *CreateEndpointFromFileOptions) (*Endpoint, error) {
@@ -89,7 +90,7 @@ func CreateEndpointFromFile(options *CreateEndpointFromFileOptions) (*Endpoint, 
 		options.File,
 		map[string]string{
 			"contractId":       options.ContractId,
-			"groupId":          options.GroupId,
+			"groupId":          strconv.Itoa(options.GroupId),
 			"importFileFormat": options.Format,
 		},
 	)
