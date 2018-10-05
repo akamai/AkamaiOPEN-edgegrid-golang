@@ -40,11 +40,13 @@ type Endpoint struct {
 }
 
 type SecurityScheme struct {
-	SecuritySchemeType   string `json:"securitySchemeType,omitempty"`
-	SecuritySchemeDetail struct {
-		APIKeyLocation string `json:"apiKeyLocation,omitempty"`
-		APIKeyName     string `json:"apiKeyName,omitempty"`
-	} `json:"securitySchemeDetail,omitempty"`
+	SecuritySchemeType   string                `json:"securitySchemeType,omitempty"`
+	SecuritySchemeDetail *SecuritySchemeDetail `json:"securitySchemeDetail,omitempty"`
+}
+
+type SecuritySchemeDetail struct {
+	APIKeyLocation string `json:"apiKeyLocation,omitempty"`
+	APIKeyName     string `json:"apiKeyName,omitempty"`
 }
 
 type SecurityRestrictions struct {
