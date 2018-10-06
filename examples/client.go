@@ -1,11 +1,10 @@
-// An example Diagnostic Tools v1 API Client
+//An example Diagnostic Tools v1 API Client
 package main
 
 import (
 	"fmt"
 	"log"
 	"math/rand"
-	"net/url"
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
@@ -19,17 +18,25 @@ func random(min int, max int) int {
 	return random
 }
 
-type LocationsResponse struct {
-	Locations []string `json:"locations"`
+//Location ghost location type
+type Location struct {
+	ID    string `json:"id"`
+	Value string `json:"value"`
 }
 
+//LocationsResponse response type for ghost locations
+type LocationsResponse struct {
+	Locations []Location `json:"locations"`
+}
+
+//DigResponse response type for dig API
 type DigResponse struct {
 	Dig struct {
 		Hostname    string `json:"hostname"`
 		QueryType   string `json:"queryType"`
 		Result      string `json:"result"`
 		ErrorString string `json:"errorString"`
-	} `json:"dig"`
+	} `json:"digInfo"`
 }
 
 func main() {
@@ -46,7 +53,7 @@ func Example() {
 			req, err := client.NewRequest(
 				config,
 				"GET",
-				"/diagnostic-tools/v1/locations",
+				"/diagnostic-tools/v2/ghost-locations/available",
 				nil,
 			)
 			if err != nil {
@@ -74,15 +81,15 @@ func Example() {
 
 			location := locationsResponse.Locations[random(0, len(locationsResponse.Locations))-1]
 
-			fmt.Println("We will make our call from " + location)
+			fmt.Println("We will make our call from " + location.Value)
 
-			fmt.Println("Running dig from " + location)
+			fmt.Println("Running dig from " + location.Value)
 
 			client.Client.Timeout = 5 * time.Minute
 			req, err = client.NewRequest(
 				config,
 				"GET",
-				"/diagnostic-tools/v1/dig?hostname=developer.akamai.com&location="+url.QueryEscape(location)+"&queryType=A",
+				"/diagnostic-tools/v2/ghost-locations/"+location.ID+"/dig-info?hostName=developer.akamai.com&queryType=A",
 				nil,
 			)
 			if err != nil {

@@ -32,7 +32,7 @@ func main() {
 	config, err := edgegrid.InitEdgeRc("~/.edgerc", "default")
 
 	if err == nil {
-		req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/diagnostic-tools/v1/locations", config.Host), nil)
+		req, _ := http.NewRequest("GET", fmt.Sprintf("https://%s/diagnostic-tools/v2/ghost-locations/available", config.Host), nil)
 		req = edgegrid.AddRequestHeader(config, req)
 		resp, _ := client.Do(req)
 		byt, _ := ioutil.ReadAll(resp.Body)
