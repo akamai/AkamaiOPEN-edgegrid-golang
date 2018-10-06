@@ -2,10 +2,13 @@ package apiendpoints
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"github.com/google/go-querystring/query"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cast"
 )
 
 type Endpoints []Endpoint
@@ -177,6 +180,27 @@ func (list *EndpointList) ListEndpoints(options *ListEndpointOptions) error {
 	}
 
 	return nil
+}
+
+func (list *EndpointList) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"ID", "Name", "Version", "Base Path", "# Resources", "Private"})
+
+	for _, endpoint := range list.APIEndPoints {
+		l := 0
+		if endpoint.APIResources != nil {
+			l = len(*endpoint.APIResources)
+		}
+		table.Append([]string{
+			cast.ToString(endpoint.APIEndPointID),
+			cast.ToString(endpoint.APIEndPointName),
+			cast.ToString(endpoint.VersionNumber),
+			cast.ToString(endpoint.BasePath),
+			cast.ToString(l),
+			cast.ToString(endpoint.ProtectedByAPIKey),
+		})
+	}
+	return table
 }
 
 func RemoveEndpoint(endpointId int) (*Endpoint, error) {
