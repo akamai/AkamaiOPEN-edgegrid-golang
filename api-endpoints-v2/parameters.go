@@ -9,6 +9,8 @@ type Parameters struct {
 	APIParameterType        APIParameterTypeValue     `json:"apiParameterType"`
 	APIParameterNotes       *string                   `json:"apiParameterNotes"`
 	APIParamLogicID         int                       `json:"apiParamLogicId"`
+	PathParamLocationId     int                       `json:"pathParamLocationId"`
+	APIResourceMethParamId  int                       `json:"apiResourceMethParamId"`
 	Array                   bool                      `json:"array"`
 	APIParameterRestriction struct {
 		RangeRestriction struct {

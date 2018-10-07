@@ -29,6 +29,7 @@ type Endpoint struct {
 	CreatedBy                  string                `json:"createdBy,omitempty"`
 	Description                string                `json:"description,omitempty"`
 	GroupID                    int                   `json:"groupId,omitempty"`
+	LockVersion                int                   `json:"lockVersion"`
 	ProductionVersion          *VersionSummary       `json:"productionVersion,omitempty"`
 	ProductionStatus           string                `json:"productionStatus,omitempty"`
 	ProtectedByAPIKey          bool                  `json:"protectedByApiKey,omitempty"`
