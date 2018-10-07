@@ -139,6 +139,9 @@ func GetResourceMulti(endpointId int, resource string, version int) ([]ResourceB
 			}
 		}
 	} else {
+		if resource[len(resource)] == "*" {
+			resource = resource[len(resource)-1] + ".*"
+		}
 		ret := []ResourceBaseInfo{}
 		for _, r := range *resources {
 			matched1, err := regexp.MatchString(resource, r.APIResourceName)
