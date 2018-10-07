@@ -46,6 +46,17 @@ type ResourceSettings struct {
 }
 
 func GetResources(endpointId int, version int) (*Resources, error) {
+	if version == 0 {
+		versions, err := ListVersions(&ListVersionsOptions{EndpointId: endpointId})
+		if err != nil {
+			return nil, err
+		}
+
+		loc := len(versions.APIVersions) - 1
+		v := versions.APIVersions[loc]
+		version = v.VersionNumber
+	}
+
 	req, err := client.NewJSONRequest(
 		Config,
 		"GET",
