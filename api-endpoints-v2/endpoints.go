@@ -188,8 +188,8 @@ func (list *EndpointList) ToTable() *tablewriter.Table {
 
 	for _, endpoint := range list.APIEndPoints {
 		l := 0
-		if endpoint.APIResources != nil {
-			l = len(*endpoint.APIResources)
+		if endpoint.APIResourceBaseInfo != nil {
+			l = len(endpoint.APIResourceBaseInfo)
 		}
 		table.Append([]string{
 			cast.ToString(endpoint.APIEndPointID),
