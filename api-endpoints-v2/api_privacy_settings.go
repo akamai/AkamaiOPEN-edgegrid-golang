@@ -18,17 +18,6 @@ type APIPrivacyResource struct {
 }
 
 func GetAPIPrivacySettings(endpointId, version int) (*APIPrivacySettings, error) {
-	if version == 0 {
-		versions, err := ListVersions(endpointId)
-		if err != nil {
-			return nil, err
-		}
-
-		loc := len(versions.APIVersions) - 1
-		v := versions.APIVersions[loc]
-		version = v.VersionNumber
-	}
-
 	req, err := client.NewJSONRequest(
 		Config,
 		"GET",
@@ -63,17 +52,6 @@ func GetAPIPrivacySettings(endpointId, version int) (*APIPrivacySettings, error)
 }
 
 func UpdateAPIPrivacySettings(endpointId, version int, settings *APIPrivacySettings) (*APIPrivacySettings, error) {
-	if version == 0 {
-		versions, err := ListVersions(endpointId)
-		if err != nil {
-			return nil, err
-		}
-
-		loc := len(versions.APIVersions) - 1
-		v := versions.APIVersions[loc]
-		version = v.VersionNumber
-	}
-
 	req, err := client.NewJSONRequest(
 		Config,
 		"PUT",
