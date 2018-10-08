@@ -130,6 +130,35 @@ func UpdateEndpointFromFile(options *UpdateEndpointFromFileOptions) (*Endpoint, 
 	return call(req, err)
 }
 
+func (endpoint *Endpoint) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"ID",
+		"Name",
+		"Version",
+		"Base Path",
+		"# Resources",
+		"Private",
+		"Staging Status",
+		"Production Status",
+	})
+	l := 0
+	if endpoint.APIResourceBaseInfo != nil {
+		l = len(endpoint.APIResourceBaseInfo)
+	}
+	table.Append([]string{
+		cast.ToString(endpoint.APIEndPointID),
+		cast.ToString(endpoint.APIEndPointName),
+		cast.ToString(endpoint.VersionNumber),
+		cast.ToString(endpoint.BasePath),
+		cast.ToString(l),
+		cast.ToString(endpoint.ProtectedByAPIKey),
+		cast.ToString(endpoint.StagingStatus),
+		cast.ToString(endpoint.ProductionStatus),
+	})
+	return table
+}
+
 type ListEndpointOptions struct {
 	ContractId        string `url:"contractId,omitempty"`
 	GroupId           int    `url:"groupId,omitempty"`

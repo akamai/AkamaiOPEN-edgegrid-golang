@@ -3,10 +3,14 @@ package apikeymanager
 import (
 	"errors"
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cast"
 )
 
 type Collections []Collection
@@ -52,6 +56,30 @@ func ListCollections() (*Collections, error) {
 	}
 
 	return rep, nil
+}
+
+func (c *Collections) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"ID",
+		"Name",
+		"Granted ACL",
+		"Quota Enabled",
+		"Quota Value",
+		"Quota Interval",
+	})
+
+	for _, collection := range *c {
+		table.Append([]string{
+			cast.ToString(collection.Id),
+			cast.ToString(collection.Name),
+			cast.ToString(strings.Join(collection.GrantedACL[:], ",")),
+			cast.ToString(collection.Quota.Enabled),
+			cast.ToString(collection.Quota.Value),
+			cast.ToString(collection.Quota.Interval),
+		})
+	}
+	return table
 }
 
 type CreateCollectionOptions struct {
@@ -119,6 +147,29 @@ func GetCollection(collectionId int) (*Collection, error) {
 	}
 
 	return rep, nil
+}
+
+func (collection *Collection) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"ID",
+		"Name",
+		"Granted ACL",
+		"Quota Enabled",
+		"Quota Value",
+		"Quota Interval",
+	})
+
+	table.Append([]string{
+		cast.ToString(collection.Id),
+		cast.ToString(collection.Name),
+		cast.ToString(strings.Join(collection.GrantedACL[:], ",")),
+		cast.ToString(collection.Quota.Enabled),
+		cast.ToString(collection.Quota.Value),
+		cast.ToString(collection.Quota.Interval),
+	})
+
+	return table
 }
 
 func GetCollectionMulti(collection string) (*Collections, error) {

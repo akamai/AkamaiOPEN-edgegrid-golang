@@ -2,8 +2,12 @@ package apiendpoints
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cast"
 )
 
 type APIPrivacySettings struct {
@@ -78,4 +82,34 @@ func UpdateAPIPrivacySettings(endpointId, version int, settings *APIPrivacySetti
 	}
 
 	return settings, nil
+}
+
+func (settings *APIPrivacySettings) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"Endpoint Private",
+		"Resource Path",
+		"Resource Methods",
+		"Inherits from Endpoint",
+		"Resource Private",
+	})
+
+	table.Append([]string{
+		cast.ToString(settings.Public),
+		"",
+		"",
+		"",
+		"",
+	})
+
+	for _, resource := range settings.Resources {
+		table.Append([]string{
+			"",
+			cast.ToString(resource.Path),
+			cast.ToString(strings.Join(resource.Methods[:], ",")),
+			cast.ToString(resource.InheritsFromEndpoint),
+			cast.ToString(resource.Public),
+		})
+	}
+	return table
 }
