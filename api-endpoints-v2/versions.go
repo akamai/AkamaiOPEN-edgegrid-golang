@@ -134,7 +134,17 @@ func RemoveVersion(endpointId, version int) (*Endpoint, error) {
 	return call(req, err)
 }
 
-func GetLatestVersionNumber(endpointId int) (int, error) {
+func (v *Version) IsImmutable() bool {
+	for _, a := range v.AvailableActions {
+		if a == "EDIT_ENDPOINT_DEFINITION" {
+			return false
+		}
+	}
+
+	return true
+}
+
+func GetLatestVersionNumber(endpointId int, cloneIfImmutable bool) (int, error) {
 	versions, err := ListVersions(endpointId)
 	if err != nil {
 		return 0, err
@@ -142,5 +152,16 @@ func GetLatestVersionNumber(endpointId int) (int, error) {
 
 	loc := len(versions.APIVersions) - 1
 	v := versions.APIVersions[loc]
+
+	if cloneIfImmutable == true {
+		if v.IsImmutable() {
+			e, err := CloneVersion(endpointId, v.VersionNumber)
+			if err != nil {
+				return 0, err
+			}
+			v.VersionNumber = e.VersionNumber
+		}
+	}
+
 	return v.VersionNumber, nil
 }
