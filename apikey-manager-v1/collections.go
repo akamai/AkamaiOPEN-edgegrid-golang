@@ -202,26 +202,27 @@ func CollectionAclDeny(collectionId int, acl []string) (*Collection, error) {
 }
 
 type Quota struct {
-	Enabled  bool   `json:"enabled,omitempty"`
-	Value    int    `json:"value,omitempty"`
-	Interval string `json:"interval,omitempty"`
+	Enabled  bool   `json:"enabled"`
+	Value    int    `json:"value"`
+	Interval string `json:"interval"`
 	Headers  struct {
-		DenyLimitHeaderShown      bool `json:"denyLimitHeaderShown,omitempty"`
-		DenyRemainingHeaderShown  bool `json:"denyRemainingHeaderShown,omitempty"`
-		DenyNextHeaderShown       bool `json:"denyNextHeaderShown,omitempty"`
-		AllowLimitHeaderShown     bool `json:"allowLimitHeaderShown,omitempty"`
-		AllowRemainingHeaderShown bool `json:"allowRemainingHeaderShown,omitempty"`
-		AllowResetHeaderShown     bool `json:"allowResetHeaderShown,omitempty"`
+		DenyLimitHeaderShown      bool `json:"denyLimitHeaderShown"`
+		DenyRemainingHeaderShown  bool `json:"denyRemainingHeaderShown"`
+		DenyNextHeaderShown       bool `json:"denyNextHeaderShown"`
+		AllowLimitHeaderShown     bool `json:"allowLimitHeaderShown"`
+		AllowRemainingHeaderShown bool `json:"allowRemainingHeaderShown"`
+		AllowResetHeaderShown     bool `json:"allowResetHeaderShown"`
 	} `json:"headers,omitempty"`
 }
 
-func CollectionSetQuota(collectionId int, value int) (*Collection, error) {
+func CollectionSetQuota(collectionId int, limit int, interval string) (*Collection, error) {
 	collection, err := GetCollection(collectionId)
 	if err != nil {
 		return collection, err
 	}
 
-	collection.Quota.Value = value
+	collection.Quota.Value = limit
+	collection.Quota.Interval = interval
 	req, err := client.NewJSONRequest(
 		Config,
 		"PUT",
