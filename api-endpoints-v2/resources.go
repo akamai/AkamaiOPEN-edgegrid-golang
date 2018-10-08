@@ -3,10 +3,14 @@ package apiendpoints
 import (
 	"errors"
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cast"
 )
 
 type Resources []ResourceBaseInfo
@@ -78,6 +82,22 @@ func GetResources(endpointId int, version int) (*Resources, error) {
 	}
 
 	return rep, nil
+}
+
+func (r *Resources) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"ID", "Name", "Path", "Methods", "Private"})
+
+	for _, resource := range *r {
+		table.Append([]string{
+			cast.ToString(resource.APIResourceID),
+			cast.ToString(resource.APIResourceName),
+			cast.ToString(resource.ResourcePath),
+			cast.ToString(strings.Join(resource.APIResourceMethodsNameLists[:], ",")),
+			cast.ToString(resource.Private),
+		})
+	}
+	return table
 }
 
 func GetResource(endpointId int, resource string, version int) (*ResourceBaseInfo, error) {
