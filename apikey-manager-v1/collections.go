@@ -329,39 +329,44 @@ type Quota struct {
 	} `json:"headers,omitempty"`
 }
 
-func CollectionSetQuota(collectionId int, limit int, interval string) (*Collection, error) {
-	collection, err := GetCollection(collectionId)
-	if err != nil {
-		return collection, err
-	}
-
-	collection.Quota.Value = limit
-	collection.Quota.Interval = interval
-	req, err := client.NewJSONRequest(
-		Config,
-		"PUT",
-		fmt.Sprintf("/apikey-manager-api/v1/collections/%d/quota", collectionId),
-		collection.Quota,
-	)
-
+func CollectionSetQuota(collection string, limit int, interval string) (*Collections, error) {
+	collections, err := GetCollectionMulti(collection)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := client.Do(Config, req)
+	rcollections := Collections{}
+	for _, collection := range *collections {
+		collection.Quota.Value = limit
+		collection.Quota.Interval = interval
+		req, err := client.NewJSONRequest(
+			Config,
+			"PUT",
+			fmt.Sprintf("/apikey-manager-api/v1/collections/%d/quota", collection.Id),
+			collection.Quota,
+		)
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+
+		res, err := client.Do(Config, req)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if client.IsError(res) {
+			return nil, client.NewAPIError(res)
+		}
+
+		rep := Collection{}
+		if err = client.BodyJSON(res, rep); err != nil {
+			return nil, err
+		}
+
+		rcollections = append(rcollections, rep)
 	}
 
-	if client.IsError(res) {
-		return nil, client.NewAPIError(res)
-	}
-
-	rep := &Collection{}
-	if err = client.BodyJSON(res, rep); err != nil {
-		return nil, err
-	}
-
-	return rep, nil
+	return &rcollections, nil
 }
