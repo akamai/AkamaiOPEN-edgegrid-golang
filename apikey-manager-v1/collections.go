@@ -224,12 +224,12 @@ func CollectionAclDeny(collectionId int, acl []string) (*Collection, error) {
 		return collection, err
 	}
 
-	for cIndex, currentAcl := range collection.GrantedACL {
+	for i := len(collection.GrantedACL) - 1; i >= 0; i-- {
 		for _, newAcl := range acl {
-			if newAcl == currentAcl {
+			if newAcl == collection.GrantedACL[i] {
 				collection.GrantedACL = append(
-					collection.GrantedACL[:cIndex],
-					collection.GrantedACL[cIndex+1:]...,
+					collection.GrantedACL[:i],
+					collection.GrantedACL[i+1:]...,
 				)
 			}
 		}
