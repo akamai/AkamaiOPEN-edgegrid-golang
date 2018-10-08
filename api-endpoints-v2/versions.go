@@ -45,11 +45,7 @@ const (
 	StatusFailed      string = "FAILED"
 )
 
-type ListVersionsOptions struct {
-	EndpointId int
-}
-
-func ListVersions(options *ListVersionsOptions) (*Versions, error) {
+func ListVersions(endpointId int) (*Versions, error) {
 	req, err := client.NewJSONRequest(
 		Config,
 		"GET",
@@ -78,30 +74,14 @@ func ListVersions(options *ListVersionsOptions) (*Versions, error) {
 	return rep, nil
 }
 
-type GetVersionOptions struct {
-	EndpointId int
-	Version    int
-}
-
-func GetVersion(options *GetVersionOptions) (*Endpoint, error) {
-	if options.Version == 0 {
-		versions, err := ListVersions(&ListVersionsOptions{EndpointId: options.EndpointId})
-		if err != nil {
-			return nil, err
-		}
-
-		loc := len(versions.APIVersions) - 1
-		v := versions.APIVersions[loc]
-		options.Version = v.VersionNumber
-	}
-
+func GetVersion(endpointId, version int) (*Endpoint, error) {
 	req, err := client.NewJSONRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
 			"/api-definitions/v2/endpoints/%d/versions/%d/resources-detail",
-			options.EndpointId,
-			options.Version,
+			endpointId,
+			version,
 		),
 		nil,
 	)
@@ -124,19 +104,14 @@ func ModifyVersion(endpoint *Endpoint) (*Endpoint, error) {
 	return call(req, err)
 }
 
-type CloneVersionOptions struct {
-	EndpointId int
-	Version    int
-}
-
-func CloneVersion(options *CloneVersionOptions) (*Endpoint, error) {
+func CloneVersion(endpointId, version int) (*Endpoint, error) {
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
 		fmt.Sprintf(
 			"/api-definitions/v2/endpoints/%d/versions/%d/cloneVersion",
-			options.EndpointId,
-			options.Version,
+			endpointId,
+			version,
 		),
 		options,
 	)
@@ -144,19 +119,14 @@ func CloneVersion(options *CloneVersionOptions) (*Endpoint, error) {
 	return call(req, err)
 }
 
-type RemoveVersionOptions struct {
-	EndpointId    int
-	VersionNumber int
-}
-
-func RemoveVersion(options *RemoveVersionOptions) (*Endpoint, error) {
+func RemoveVersion(endpointId, version int) (*Endpoint, error) {
 	req, err := client.NewJSONRequest(
 		Config,
 		"DELETE",
 		fmt.Sprintf(
 			"/api-definitions/v2/endpoints/%d/versions/%d",
-			options.EndpointId,
-			options.VersionNumber,
+			endpointId,
+			version,
 		),
 		nil,
 	)
@@ -165,7 +135,7 @@ func RemoveVersion(options *RemoveVersionOptions) (*Endpoint, error) {
 }
 
 func GetLatestVersionNumber(endpointId int) (int, error) {
-	versions, err := ListVersions(&ListVersionsOptions{EndpointId: endpointId})
+	versions, err := ListVersions(endpointId)
 	if err != nil {
 		return 0, err
 	}

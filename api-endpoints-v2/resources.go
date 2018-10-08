@@ -52,7 +52,7 @@ type ResourceSettings struct {
 
 func GetResources(endpointId int, version int) (*Resources, error) {
 	if version == 0 {
-		versions, err := ListVersions(&ListVersionsOptions{EndpointId: endpointId})
+		versions, err := ListVersions(endpointId)
 		if err != nil {
 			return nil, err
 		}

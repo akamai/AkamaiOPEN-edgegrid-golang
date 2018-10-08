@@ -19,7 +19,7 @@ type APIPrivacyResource struct {
 
 func GetAPIPrivacySettings(endpointId, version int) (*APIPrivacySettings, error) {
 	if version == 0 {
-		versions, err := ListVersions(&ListVersionsOptions{EndpointId: endpointId})
+		versions, err := ListVersions(endpointId)
 		if err != nil {
 			return nil, err
 		}
@@ -64,7 +64,7 @@ func GetAPIPrivacySettings(endpointId, version int) (*APIPrivacySettings, error)
 
 func UpdateAPIPrivacySettings(endpointId, version int, settings *APIPrivacySettings) (*APIPrivacySettings, error) {
 	if version == 0 {
-		versions, err := ListVersions(&ListVersionsOptions{EndpointId: endpointId})
+		versions, err := ListVersions(endpointId)
 		if err != nil {
 			return nil, err
 		}
