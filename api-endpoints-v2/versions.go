@@ -51,7 +51,7 @@ func ListVersions(endpointId int) (*Versions, error) {
 		"GET",
 		fmt.Sprintf(
 			"/api-definitions/v2/endpoints/%d/versions",
-			options.EndpointId,
+			endpointId,
 		),
 		nil,
 	)
@@ -113,7 +113,7 @@ func CloneVersion(endpointId, version int) (*Endpoint, error) {
 			endpointId,
 			version,
 		),
-		options,
+		nil,
 	)
 
 	return call(req, err)
