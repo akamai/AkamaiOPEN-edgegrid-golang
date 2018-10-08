@@ -339,6 +339,13 @@ func CollectionSetQuota(collection string, limit int, interval string) (*Collect
 	for _, collection := range *collections {
 		collection.Quota.Value = limit
 		collection.Quota.Interval = interval
+		collection.Quota.Enabled = true
+		collection.Quota.DenyLimitHeaderShown = true
+		collection.Quota.DenyRemainingHeaderShown = true
+		collection.Quota.DenyNextHeaderShown = true
+		collection.Quota.AllowLimitHeaderShown = true
+		collection.Quota.AllowRemainingHeaderShown = true
+		collection.Quota.AllowResetHeaderShown = true
 		req, err := client.NewJSONRequest(
 			Config,
 			"PUT",
