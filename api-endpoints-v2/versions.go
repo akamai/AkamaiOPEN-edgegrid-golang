@@ -163,3 +163,14 @@ func RemoveVersion(options *RemoveVersionOptions) (*Endpoint, error) {
 
 	return call(req, err)
 }
+
+func GetLatestVersionNumber(endpointId int) (int, error) {
+	versions, err := ListVersions(&ListVersionsOptions{EndpointId: endpointId})
+	if err != nil {
+		return 0, err
+	}
+
+	loc := len(versions.APIVersions) - 1
+	v := versions.APIVersions[loc]
+	return v.VersionNumber, nil
+}
