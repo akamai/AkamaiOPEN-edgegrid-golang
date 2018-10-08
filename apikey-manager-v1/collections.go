@@ -360,12 +360,12 @@ func CollectionSetQuota(collection string, limit int, interval string) (*Collect
 			return nil, client.NewAPIError(res)
 		}
 
-		rep := Collection{}
+		rep := &Collection{}
 		if err = client.BodyJSON(res, rep); err != nil {
 			return nil, err
 		}
 
-		rcollections = append(rcollections, rep)
+		rcollections = append(rcollections, *rep)
 	}
 
 	return &rcollections, nil
