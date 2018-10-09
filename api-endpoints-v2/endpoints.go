@@ -30,11 +30,11 @@ type Endpoint struct {
 	Description                string                `json:"description,omitempty"`
 	GroupID                    int                   `json:"groupId,omitempty"`
 	LockVersion                int                   `json:"lockVersion"`
-	ProductionVersion          *VersionSummary       `json:"productionVersion,omitempty"`
+	ProductionVersion          *VersionSummary       `json:"productionVersion"`
 	ProductionStatus           string                `json:"productionStatus,omitempty"`
 	ProtectedByAPIKey          bool                  `json:"protectedByApiKey,omitempty"`
 	StagingStatus              string                `json:"stagingStatus,omitempty"`
-	StagingVersion             *VersionSummary       `json:"stagingVersion,omitempty"`
+	StagingVersion             *VersionSummary       `json:"stagingVersion"`
 	UpdateDate                 string                `json:"updateDate,omitempty"`
 	UpdatedBy                  string                `json:"updatedBy,omitempty"`
 	VersionNumber              int                   `json:"versionNumber,omitempty"`
@@ -61,6 +61,35 @@ type SecurityRestrictions struct {
 	MaxStringLength         int `json:"MAX_STRING_LENGTH,omitempty"`
 	MaxBodySize             int `json:"MAX_BODY_SIZE,omitempty"`
 	MaxIntegerValue         int `json:"MAX_INTEGER_VALUE,omitempty"`
+}
+
+type EndpointStatus struct {
+	APIEndPointID     int             `json:"apiEndPointId,omitempty"`
+	APIEndPointName   string          `json:"apiEndPointName"`
+	ProductionVersion *VersionSummary `json:"productionVersion,omitempty"`
+	StagingVersion    *VersionSummary `json:"stagingVersion,omitempty"`
+}
+
+func (es *EndpointStatus) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"ID",
+		"Name",
+		"Production Version",
+		"Production Status",
+		"Staging Version",
+		"Staging Status",
+	})
+
+	table.Append([]string{
+		cast.ToString(es.APIEndPointID),
+		cast.ToString(es.APIEndPointName),
+		cast.ToString(es.ProductionVersion.VersionNumber),
+		cast.ToString(es.ProductionVersion.Status),
+		cast.ToString(es.StagingVersion.VersionNumber),
+		cast.ToString(es.StagingVersion.Status),
+	})
+	return table
 }
 
 type CreateEndpointOptions struct {

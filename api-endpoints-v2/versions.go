@@ -13,37 +13,28 @@ type Versions struct {
 }
 
 type Version struct {
-	CreatedBy            string       `json:"createdBy"`
-	CreateDate           string       `json:"createDate"`
-	UpdateDate           string       `json:"updateDate"`
-	UpdatedBy            string       `json:"updatedBy"`
-	APIEndPointVersionID int          `json:"apiEndPointVersionId"`
-	BasePath             string       `json:"basePath"`
-	Description          *string      `json:"description`
-	BasedOn              *int         `json:"basedOn"`
-	StagingStatus        *StatusValue `json:"stagingStatus"`
-	ProductionStatus     *StatusValue `json:"productionStatus"`
-	StagingDate          *string      `json:"stagingDate"`
-	ProductionDate       *string      `json:"productionDate"`
-	IsVersionLocked      bool         `json:"isVersionLocked"`
-	AvailableActions     []string     `json:"availableActions"`
-	VersionNumber        int          `json:"versionNumber"`
-	LockVersion          int          `json:"lockVersion"`
+	CreatedBy            string   `json:"createdBy"`
+	CreateDate           string   `json:"createDate"`
+	UpdateDate           string   `json:"updateDate"`
+	UpdatedBy            string   `json:"updatedBy"`
+	APIEndPointVersionID int      `json:"apiEndPointVersionId"`
+	BasePath             string   `json:"basePath"`
+	Description          *string  `json:"description`
+	BasedOn              *int     `json:"basedOn"`
+	StagingStatus        string   `json:"stagingStatus"`
+	ProductionStatus     string   `json:"productionStatus"`
+	StagingDate          *string  `json:"stagingDate"`
+	ProductionDate       *string  `json:"productionDate"`
+	IsVersionLocked      bool     `json:"isVersionLocked"`
+	AvailableActions     []string `json:"availableActions"`
+	VersionNumber        int      `json:"versionNumber"`
+	LockVersion          int      `json:"lockVersion"`
 }
 
 type VersionSummary struct {
-	Status        StatusValue `json:"status,omitempty"`
-	VersionNumber int         `json:"versionNumber,omitempty"`
+	Status        string `json:"status,omitempty"`
+	VersionNumber int    `json:"versionNumber,omitempty"`
 }
-
-type StatusValue string
-
-const (
-	StatusPending     string = "PENDING"
-	StatusActive      string = "ACTIVE"
-	StatusDeactivated string = "DEACTIVATED"
-	StatusFailed      string = "FAILED"
-)
 
 func ListVersions(endpointId int) (*Versions, error) {
 	req, err := client.NewJSONRequest(

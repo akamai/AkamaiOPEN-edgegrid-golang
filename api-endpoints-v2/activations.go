@@ -39,13 +39,13 @@ func ActivateEndpoint(endpointId int, version int, activation *Activation) (*Act
 
 func IsActive(endpoint *Endpoint, network string) bool {
 	if network == "production" {
-		if endpoint.ProductionStatus == StatusPending || endpoint.ProductionStatus == StatusActive {
+		if endpoint.ProductionStatus == "PENDING" || endpoint.ProductionStatus == "ACTIVE" {
 			return true
 		}
 	}
 
 	if network == "staging" {
-		if endpoint.StagingStatus == StatusPending || endpoint.StagingStatus == StatusActive {
+		if endpoint.StagingStatus == "PENDING" || endpoint.StagingStatus == "ACTIVE" {
 			return true
 		}
 	}
