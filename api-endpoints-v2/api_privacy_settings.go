@@ -94,8 +94,12 @@ func (settings *APIPrivacySettings) ToTable() *tablewriter.Table {
 		"Visibility",
 	})
 
+	es := "private"
+	if settings.Public == true {
+		es = "public"
+	}
 	table.Append([]string{
-		cast.ToString(settings.Public),
+		es,
 		"",
 		"",
 		"",
