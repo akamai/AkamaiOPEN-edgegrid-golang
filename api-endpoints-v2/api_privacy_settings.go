@@ -87,11 +87,11 @@ func UpdateAPIPrivacySettings(endpointId, version int, settings *APIPrivacySetti
 func (settings *APIPrivacySettings) ToTable() *tablewriter.Table {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{
-		"Endpoint Private",
+		"Endpoint",
 		"Resource Path",
-		"Resource Methods",
+		"Methods",
 		"Inherits from Endpoint",
-		"Resource Private",
+		"Visibility",
 	})
 
 	table.Append([]string{
@@ -103,12 +103,22 @@ func (settings *APIPrivacySettings) ToTable() *tablewriter.Table {
 	})
 
 	for _, resource := range settings.Resources {
+		i := "no"
+		if resource.InheritsFromEndpoint == true {
+			i = "yes"
+		}
+
+		v := "private"
+		if resource.Public == true {
+			v = "public"
+		}
+
 		table.Append([]string{
 			"",
 			cast.ToString(resource.Path),
 			cast.ToString(strings.Join(resource.Methods[:], ",")),
-			cast.ToString(resource.InheritsFromEndpoint),
-			cast.ToString(resource.Public),
+			i,
+			v,
 		})
 	}
 	return table
