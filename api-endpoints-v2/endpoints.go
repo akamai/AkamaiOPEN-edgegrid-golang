@@ -103,16 +103,20 @@ func (es *EndpointSecurity) ToTable() *tablewriter.Table {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.Append([]string{"ID", cast.ToString(es.APIEndPointID)})
 	table.Append([]string{"Name", cast.ToString(es.APIEndPointName)})
-	table.Append([]string{"Security Scheme Type", cast.ToString(es.SecurityScheme.SecuritySchemeType)})
-	table.Append([]string{"API Key Name", cast.ToString(es.SecurityScheme.SecuritySchemeDetail.APIKeyName)})
-	table.Append([]string{"API Key Location", cast.ToString(es.SecurityScheme.SecuritySchemeDetail.APIKeyLocation)})
-	table.Append([]string{"Max JSON XML Element", cast.ToString(es.AkamaiSecurityRestrictions.MaxJsonxmlElement)})
-	table.Append([]string{"Max Element Name Length", cast.ToString(es.AkamaiSecurityRestrictions.MaxElementNameLength)})
-	table.Append([]string{"Max Doc Depth", cast.ToString(es.AkamaiSecurityRestrictions.MaxDocDepth)})
-	table.Append([]string{"Positive Security Enabled", cast.ToString(es.AkamaiSecurityRestrictions.PositiveSecurityEnabled)})
-	table.Append([]string{"Max String Length", cast.ToString(es.AkamaiSecurityRestrictions.MaxStringLength)})
-	table.Append([]string{"Max Body Size", cast.ToString(es.AkamaiSecurityRestrictions.MaxBodySize)})
-	table.Append([]string{"Max Integer Value", cast.ToString(es.AkamaiSecurityRestrictions.MaxIntegerValue)})
+	if es.SecurityScheme != nil {
+		table.Append([]string{"Security Scheme Type", cast.ToString(es.SecurityScheme.SecuritySchemeType)})
+		table.Append([]string{"API Key Name", cast.ToString(es.SecurityScheme.SecuritySchemeDetail.APIKeyName)})
+		table.Append([]string{"API Key Location", cast.ToString(es.SecurityScheme.SecuritySchemeDetail.APIKeyLocation)})
+	}
+	if es.AkamaiSecurityRestrictions != nil {
+		table.Append([]string{"Max JSON XML Element", cast.ToString(es.AkamaiSecurityRestrictions.MaxJsonxmlElement)})
+		table.Append([]string{"Max Element Name Length", cast.ToString(es.AkamaiSecurityRestrictions.MaxElementNameLength)})
+		table.Append([]string{"Max Doc Depth", cast.ToString(es.AkamaiSecurityRestrictions.MaxDocDepth)})
+		table.Append([]string{"Positive Security Enabled", cast.ToString(es.AkamaiSecurityRestrictions.PositiveSecurityEnabled)})
+		table.Append([]string{"Max String Length", cast.ToString(es.AkamaiSecurityRestrictions.MaxStringLength)})
+		table.Append([]string{"Max Body Size", cast.ToString(es.AkamaiSecurityRestrictions.MaxBodySize)})
+		table.Append([]string{"Max Integer Value", cast.ToString(es.AkamaiSecurityRestrictions.MaxIntegerValue)})
+	}
 	return table
 }
 
