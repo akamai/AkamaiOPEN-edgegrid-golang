@@ -12,44 +12,14 @@ type Activation struct {
 	Notes                  string   `json:"notes"`
 }
 
-type ActivateEndpointOptions struct {
-	APIEndPointId int
-	VersionNumber int
-}
-
-func ActivateEndpoint(options *ActivateEndpointOptions, activation *Activation) (*Activation, error) {
+func ActivateEndpoint(endpointId int, version int, activation *Activation) (*Activation, error) {
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
 		fmt.Sprintf(
 			"/api-definitions/v2/endpoints/%d/versions/%d/activate",
-			options.APIEndPointId,
-			options.VersionNumber,
-		),
-		activation,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := client.Do(Config, req)
-
-	if client.IsError(res) {
-		return nil, client.NewAPIError(res)
-	}
-
-	return activation, nil
-}
-
-func DeactivateEndpoint(options *ActivateEndpointOptions, activation *Activation) (*Activation, error) {
-	req, err := client.NewJSONRequest(
-		Config,
-		"DELETE",
-		fmt.Sprintf(
-			"/api-definitions/v2/endpoints/%d/versions/%d/deactivate",
-			options.APIEndPointId,
-			options.VersionNumber,
+			endpointId,
+			version,
 		),
 		activation,
 	)
@@ -69,13 +39,13 @@ func DeactivateEndpoint(options *ActivateEndpointOptions, activation *Activation
 
 func IsActive(endpoint *Endpoint, network string) bool {
 	if network == "production" {
-		if endpoint.ProductionStatus == StatusPending || endpoint.ProductionStatus == StatusActive {
+		if endpoint.ProductionStatus == "PENDING" || endpoint.ProductionStatus == "ACTIVE" {
 			return true
 		}
 	}
 
 	if network == "staging" {
-		if endpoint.StagingStatus == StatusPending || endpoint.StagingStatus == StatusActive {
+		if endpoint.StagingStatus == "PENDING" || endpoint.StagingStatus == "ACTIVE" {
 			return true
 		}
 	}

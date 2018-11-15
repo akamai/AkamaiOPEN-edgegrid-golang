@@ -3,8 +3,11 @@ package apikeymanager
 import (
 	"encoding/json"
 	"io/ioutil"
+	"os"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cast"
 )
 
 type Keys []int
@@ -69,6 +72,28 @@ func CollectionAddKey(collectionId int, name, value string) (*Key, error) {
 	}
 
 	return rep, nil
+}
+
+func (k *Key) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"ID",
+		"Name",
+		"Value",
+		"Collection ID",
+		"Quota Usage",
+		"Revoked",
+	})
+
+	table.Append([]string{
+		cast.ToString(k.Id),
+		cast.ToString(k.Label),
+		cast.ToString(k.Value),
+		cast.ToString(k.CollectionId),
+		cast.ToString(k.QuotaUsage),
+		cast.ToString(k.Revoked),
+	})
+	return table
 }
 
 type ImportKey struct {

@@ -13,49 +13,36 @@ type Versions struct {
 }
 
 type Version struct {
-	CreatedBy            string       `json:"createdBy"`
-	CreateDate           string       `json:"createDate"`
-	UpdateDate           string       `json:"updateDate"`
-	UpdatedBy            string       `json:"updatedBy"`
-	APIEndPointVersionID int          `json:"apiEndPointVersionId"`
-	BasePath             string       `json:"basePath"`
-	Description          *string      `json:"description`
-	BasedOn              *int         `json:"basedOn"`
-	StagingStatus        *StatusValue `json:"stagingStatus"`
-	ProductionStatus     *StatusValue `json:"productionStatus"`
-	StagingDate          *string      `json:"stagingDate"`
-	ProductionDate       *string      `json:"productionDate"`
-	IsVersionLocked      bool         `json:"isVersionLocked"`
-	AvailableActions     []string     `json:"availableActions"`
-	VersionNumber        int          `json:"versionNumber"`
-	LockVersion          int          `json:"lockVersion"`
+	CreatedBy            string   `json:"createdBy"`
+	CreateDate           string   `json:"createDate"`
+	UpdateDate           string   `json:"updateDate"`
+	UpdatedBy            string   `json:"updatedBy"`
+	APIEndPointVersionID int      `json:"apiEndPointVersionId"`
+	BasePath             string   `json:"basePath"`
+	Description          *string  `json:"description`
+	BasedOn              *int     `json:"basedOn"`
+	StagingStatus        string   `json:"stagingStatus"`
+	ProductionStatus     string   `json:"productionStatus"`
+	StagingDate          *string  `json:"stagingDate"`
+	ProductionDate       *string  `json:"productionDate"`
+	IsVersionLocked      bool     `json:"isVersionLocked"`
+	AvailableActions     []string `json:"availableActions"`
+	VersionNumber        int      `json:"versionNumber"`
+	LockVersion          int      `json:"lockVersion"`
 }
 
 type VersionSummary struct {
-	Status        StatusValue `json:"status,omitempty"`
-	VersionNumber int         `json:"versionNumber,omitempty"`
+	Status        string `json:"status,omitempty"`
+	VersionNumber int    `json:"versionNumber,omitempty"`
 }
 
-type StatusValue string
-
-const (
-	StatusPending     string = "PENDING"
-	StatusActive      string = "ACTIVE"
-	StatusDeactivated string = "DEACTIVATED"
-	StatusFailed      string = "FAILED"
-)
-
-type ListVersionsOptions struct {
-	EndpointId int
-}
-
-func ListVersions(options *ListVersionsOptions) (*Versions, error) {
+func ListVersions(endpointId int) (*Versions, error) {
 	req, err := client.NewJSONRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
 			"/api-definitions/v2/endpoints/%d/versions",
-			options.EndpointId,
+			endpointId,
 		),
 		nil,
 	)
@@ -78,30 +65,14 @@ func ListVersions(options *ListVersionsOptions) (*Versions, error) {
 	return rep, nil
 }
 
-type GetVersionOptions struct {
-	EndpointId int
-	Version    int
-}
-
-func GetVersion(options *GetVersionOptions) (*Endpoint, error) {
-	if options.Version == 0 {
-		versions, err := ListVersions(&ListVersionsOptions{EndpointId: options.EndpointId})
-		if err != nil {
-			return nil, err
-		}
-
-		loc := len(versions.APIVersions) - 1
-		v := versions.APIVersions[loc]
-		options.Version = v.VersionNumber
-	}
-
+func GetVersion(endpointId, version int) (*Endpoint, error) {
 	req, err := client.NewJSONRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
 			"/api-definitions/v2/endpoints/%d/versions/%d/resources-detail",
-			options.EndpointId,
-			options.Version,
+			endpointId,
+			version,
 		),
 		nil,
 	)
@@ -124,42 +95,64 @@ func ModifyVersion(endpoint *Endpoint) (*Endpoint, error) {
 	return call(req, err)
 }
 
-type CloneVersionOptions struct {
-	EndpointId int
-	Version    int
-}
-
-func CloneVersion(options *CloneVersionOptions) (*Endpoint, error) {
+func CloneVersion(endpointId, version int) (*Endpoint, error) {
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
 		fmt.Sprintf(
 			"/api-definitions/v2/endpoints/%d/versions/%d/cloneVersion",
-			options.EndpointId,
-			options.Version,
-		),
-		options,
-	)
-
-	return call(req, err)
-}
-
-type RemoveVersionOptions struct {
-	EndpointId    int
-	VersionNumber int
-}
-
-func RemoveVersion(options *RemoveVersionOptions) (*Endpoint, error) {
-	req, err := client.NewJSONRequest(
-		Config,
-		"DELETE",
-		fmt.Sprintf(
-			"/api-definitions/v2/endpoints/%d/versions/%d",
-			options.EndpointId,
-			options.VersionNumber,
+			endpointId,
+			version,
 		),
 		nil,
 	)
 
 	return call(req, err)
+}
+
+func RemoveVersion(endpointId, version int) (*Endpoint, error) {
+	req, err := client.NewJSONRequest(
+		Config,
+		"DELETE",
+		fmt.Sprintf(
+			"/api-definitions/v2/endpoints/%d/versions/%d",
+			endpointId,
+			version,
+		),
+		nil,
+	)
+
+	return call(req, err)
+}
+
+func (v *Version) IsImmutable() bool {
+	for _, a := range v.AvailableActions {
+		if a == "EDIT_ENDPOINT_DEFINITION" {
+			return false
+		}
+	}
+
+	return true
+}
+
+func GetLatestVersionNumber(endpointId int, cloneIfImmutable bool) (int, error) {
+	versions, err := ListVersions(endpointId)
+	if err != nil {
+		return 0, err
+	}
+
+	loc := len(versions.APIVersions) - 1
+	v := versions.APIVersions[loc]
+
+	if cloneIfImmutable == true {
+		if v.IsImmutable() {
+			e, err := CloneVersion(endpointId, v.VersionNumber)
+			if err != nil {
+				return 0, err
+			}
+			v.VersionNumber = e.VersionNumber
+		}
+	}
+
+	return v.VersionNumber, nil
 }

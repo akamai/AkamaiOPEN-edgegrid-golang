@@ -2,9 +2,13 @@ package apiendpoints
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"github.com/google/go-querystring/query"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cast"
 )
 
 type Endpoints []Endpoint
@@ -25,11 +29,12 @@ type Endpoint struct {
 	CreatedBy                  string                `json:"createdBy,omitempty"`
 	Description                string                `json:"description,omitempty"`
 	GroupID                    int                   `json:"groupId,omitempty"`
-	ProductionVersion          *VersionSummary       `json:"productionVersion,omitempty"`
+	LockVersion                int                   `json:"lockVersion"`
+	ProductionVersion          *VersionSummary       `json:"productionVersion"`
 	ProductionStatus           string                `json:"productionStatus,omitempty"`
 	ProtectedByAPIKey          bool                  `json:"protectedByApiKey,omitempty"`
 	StagingStatus              string                `json:"stagingStatus,omitempty"`
-	StagingVersion             *VersionSummary       `json:"stagingVersion,omitempty"`
+	StagingVersion             *VersionSummary       `json:"stagingVersion"`
 	UpdateDate                 string                `json:"updateDate,omitempty"`
 	UpdatedBy                  string                `json:"updatedBy,omitempty"`
 	VersionNumber              int                   `json:"versionNumber,omitempty"`
@@ -39,11 +44,13 @@ type Endpoint struct {
 }
 
 type SecurityScheme struct {
-	SecuritySchemeType   string `json:"securitySchemeType,omitempty"`
-	SecuritySchemeDetail struct {
-		APIKeyLocation string `json:"apiKeyLocation,omitempty"`
-		APIKeyName     string `json:"apiKeyName,omitempty"`
-	} `json:"securitySchemeDetail,omitempty"`
+	SecuritySchemeType   string                `json:"securitySchemeType,omitempty"`
+	SecuritySchemeDetail *SecuritySchemeDetail `json:"securitySchemeDetail,omitempty"`
+}
+
+type SecuritySchemeDetail struct {
+	APIKeyLocation string `json:"apiKeyLocation,omitempty"`
+	APIKeyName     string `json:"apiKeyName,omitempty"`
 }
 
 type SecurityRestrictions struct {
@@ -56,9 +63,66 @@ type SecurityRestrictions struct {
 	MaxIntegerValue         int `json:"MAX_INTEGER_VALUE,omitempty"`
 }
 
+type EndpointStatus struct {
+	APIEndPointID     int             `json:"apiEndPointId,omitempty"`
+	APIEndPointName   string          `json:"apiEndPointName"`
+	ProductionVersion *VersionSummary `json:"productionVersion,omitempty"`
+	StagingVersion    *VersionSummary `json:"stagingVersion,omitempty"`
+}
+
+func (es *EndpointStatus) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"ID",
+		"Name",
+		"Production Version",
+		"Production Status",
+		"Staging Version",
+		"Staging Status",
+	})
+
+	table.Append([]string{
+		cast.ToString(es.APIEndPointID),
+		cast.ToString(es.APIEndPointName),
+		cast.ToString(es.ProductionVersion.VersionNumber),
+		cast.ToString(es.ProductionVersion.Status),
+		cast.ToString(es.StagingVersion.VersionNumber),
+		cast.ToString(es.StagingVersion.Status),
+	})
+	return table
+}
+
+type EndpointSecurity struct {
+	APIEndPointID              int                   `json:"apiEndPointId,omitempty"`
+	APIEndPointName            string                `json:"apiEndPointName"`
+	SecurityScheme             *SecurityScheme       `json:"securityScheme,omitempty"`
+	AkamaiSecurityRestrictions *SecurityRestrictions `json:"akamaiSecurityRestrictions,omitempty"`
+}
+
+func (es *EndpointSecurity) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.Append([]string{"ID", cast.ToString(es.APIEndPointID)})
+	table.Append([]string{"Name", cast.ToString(es.APIEndPointName)})
+	if es.SecurityScheme != nil {
+		table.Append([]string{"Security Scheme Type", cast.ToString(es.SecurityScheme.SecuritySchemeType)})
+		table.Append([]string{"API Key Name", cast.ToString(es.SecurityScheme.SecuritySchemeDetail.APIKeyName)})
+		table.Append([]string{"API Key Location", cast.ToString(es.SecurityScheme.SecuritySchemeDetail.APIKeyLocation)})
+	}
+	if es.AkamaiSecurityRestrictions != nil {
+		table.Append([]string{"Max JSON XML Element", cast.ToString(es.AkamaiSecurityRestrictions.MaxJsonxmlElement)})
+		table.Append([]string{"Max Element Name Length", cast.ToString(es.AkamaiSecurityRestrictions.MaxElementNameLength)})
+		table.Append([]string{"Max Doc Depth", cast.ToString(es.AkamaiSecurityRestrictions.MaxDocDepth)})
+		table.Append([]string{"Positive Security Enabled", cast.ToString(es.AkamaiSecurityRestrictions.PositiveSecurityEnabled)})
+		table.Append([]string{"Max String Length", cast.ToString(es.AkamaiSecurityRestrictions.MaxStringLength)})
+		table.Append([]string{"Max Body Size", cast.ToString(es.AkamaiSecurityRestrictions.MaxBodySize)})
+		table.Append([]string{"Max Integer Value", cast.ToString(es.AkamaiSecurityRestrictions.MaxIntegerValue)})
+	}
+	return table
+}
+
 type CreateEndpointOptions struct {
 	ContractId string   `json:"contractId,omitempty"`
-	GroupId    string   `json:"groupId,omitempty"`
+	GroupId    int      `json:"groupId,omitempty"`
 	Name       string   `json:"apiEndPointName,omitempty"`
 	BasePath   string   `json:"basePath,omitempty"`
 	Hostnames  []string `json:"apiEndPointHosts,omitempty"`
@@ -79,7 +143,7 @@ type CreateEndpointFromFileOptions struct {
 	File       string
 	Format     string
 	ContractId string
-	GroupId    string
+	GroupId    int
 }
 
 func CreateEndpointFromFile(options *CreateEndpointFromFileOptions) (*Endpoint, error) {
@@ -89,7 +153,7 @@ func CreateEndpointFromFile(options *CreateEndpointFromFileOptions) (*Endpoint, 
 		options.File,
 		map[string]string{
 			"contractId":       options.ContractId,
-			"groupId":          options.GroupId,
+			"groupId":          strconv.Itoa(options.GroupId),
 			"importFileFormat": options.Format,
 		},
 	)
@@ -121,6 +185,35 @@ func UpdateEndpointFromFile(options *UpdateEndpointFromFileOptions) (*Endpoint, 
 	)
 
 	return call(req, err)
+}
+
+func (endpoint *Endpoint) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"ID",
+		"Name",
+		"Version",
+		"Base Path",
+		"# Resources",
+		"Private",
+		"Staging Status",
+		"Production Status",
+	})
+	l := 0
+	if endpoint.APIResourceBaseInfo != nil {
+		l = len(endpoint.APIResourceBaseInfo)
+	}
+	table.Append([]string{
+		cast.ToString(endpoint.APIEndPointID),
+		cast.ToString(endpoint.APIEndPointName),
+		cast.ToString(endpoint.VersionNumber),
+		cast.ToString(endpoint.BasePath),
+		cast.ToString(l),
+		cast.ToString(endpoint.ProtectedByAPIKey),
+		cast.ToString(endpoint.StagingStatus),
+		cast.ToString(endpoint.ProductionStatus),
+	})
+	return table
 }
 
 type ListEndpointOptions struct {
@@ -174,6 +267,27 @@ func (list *EndpointList) ListEndpoints(options *ListEndpointOptions) error {
 	}
 
 	return nil
+}
+
+func (list *EndpointList) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"ID", "Name", "Version", "Base Path", "# Resources", "Private"})
+
+	for _, endpoint := range list.APIEndPoints {
+		l := 0
+		if endpoint.APIResourceBaseInfo != nil {
+			l = len(endpoint.APIResourceBaseInfo)
+		}
+		table.Append([]string{
+			cast.ToString(endpoint.APIEndPointID),
+			cast.ToString(endpoint.APIEndPointName),
+			cast.ToString(endpoint.VersionNumber),
+			cast.ToString(endpoint.BasePath),
+			cast.ToString(l),
+			cast.ToString(endpoint.ProtectedByAPIKey),
+		})
+	}
+	return table
 }
 
 func RemoveEndpoint(endpointId int) (*Endpoint, error) {

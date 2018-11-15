@@ -1,9 +1,16 @@
 package apikeymanager
 
 import (
+	"errors"
 	"fmt"
+	"os"
+	"regexp"
+	"strconv"
+	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"github.com/olekukonko/tablewriter"
+	"github.com/spf13/cast"
 )
 
 type Collections []Collection
@@ -49,6 +56,30 @@ func ListCollections() (*Collections, error) {
 	}
 
 	return rep, nil
+}
+
+func (c *Collections) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"ID",
+		"Name",
+		"Granted ACL",
+		"Quota Enabled",
+		"Quota Value",
+		"Quota Interval",
+	})
+
+	for _, collection := range *c {
+		table.Append([]string{
+			cast.ToString(collection.Id),
+			cast.ToString(collection.Name),
+			cast.ToString(strings.Join(collection.GrantedACL[:], ",")),
+			cast.ToString(collection.Quota.Enabled),
+			cast.ToString(collection.Quota.Value),
+			cast.ToString(collection.Quota.Interval),
+		})
+	}
+	return table
 }
 
 type CreateCollectionOptions struct {
@@ -118,6 +149,89 @@ func GetCollection(collectionId int) (*Collection, error) {
 	return rep, nil
 }
 
+func (collection *Collection) ToTable() *tablewriter.Table {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{
+		"ID",
+		"Name",
+		"Granted ACL",
+		"Quota Enabled",
+		"Quota Value",
+		"Quota Interval",
+	})
+
+	table.Append([]string{
+		cast.ToString(collection.Id),
+		cast.ToString(collection.Name),
+		cast.ToString(strings.Join(collection.GrantedACL[:], ",")),
+		cast.ToString(collection.Quota.Enabled),
+		cast.ToString(collection.Quota.Value),
+		cast.ToString(collection.Quota.Interval),
+	})
+
+	return table
+}
+
+func GetCollectionMulti(collection string) (*Collections, error) {
+	id, err := strconv.Atoi(collection)
+	if err == nil {
+		req, err := client.NewJSONRequest(
+			Config,
+			"GET",
+			fmt.Sprintf("/apikey-manager-api/v1/collections/%d", id),
+			nil,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		res, err := client.Do(Config, req)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if client.IsError(res) {
+			return nil, client.NewAPIError(res)
+		}
+
+		rep := &Collection{}
+		if err = client.BodyJSON(res, rep); err != nil {
+			return nil, err
+		}
+
+		return &Collections{*rep}, nil
+	} else {
+		collections, err := ListCollections()
+		if err != nil {
+			return nil, err
+		}
+
+		if collection[len(collection):] == "*" {
+			collection = collection[:len(collection)-1] + ".*"
+		}
+
+		ret := Collections{}
+		for _, r := range *collections {
+			matched, err := regexp.MatchString(collection, r.Name)
+			if err != nil {
+				return nil, err
+			}
+
+			if matched {
+				ret = append(ret, r)
+			}
+		}
+
+		if len(ret) > 0 {
+			return &ret, nil
+		}
+
+		return nil, errors.New("Collection not found.")
+	}
+}
+
 func CollectionAclAllow(collectionId int, acl []string) (*Collection, error) {
 	collection, err := GetCollection(collectionId)
 	if err != nil {
@@ -161,12 +275,12 @@ func CollectionAclDeny(collectionId int, acl []string) (*Collection, error) {
 		return collection, err
 	}
 
-	for cIndex, currentAcl := range collection.GrantedACL {
+	for i := len(collection.GrantedACL) - 1; i >= 0; i-- {
 		for _, newAcl := range acl {
-			if newAcl == currentAcl {
+			if newAcl == collection.GrantedACL[i] {
 				collection.GrantedACL = append(
-					collection.GrantedACL[:cIndex],
-					collection.GrantedACL[cIndex+1:]...,
+					collection.GrantedACL[:i],
+					collection.GrantedACL[i+1:]...,
 				)
 			}
 		}
@@ -202,51 +316,64 @@ func CollectionAclDeny(collectionId int, acl []string) (*Collection, error) {
 }
 
 type Quota struct {
-	Enabled  bool   `json:"enabled,omitempty"`
-	Value    int    `json:"value,omitempty"`
-	Interval string `json:"interval,omitempty"`
+	Enabled  bool   `json:"enabled"`
+	Value    int    `json:"value"`
+	Interval string `json:"interval"`
 	Headers  struct {
-		DenyLimitHeaderShown      bool `json:"denyLimitHeaderShown,omitempty"`
-		DenyRemainingHeaderShown  bool `json:"denyRemainingHeaderShown,omitempty"`
-		DenyNextHeaderShown       bool `json:"denyNextHeaderShown,omitempty"`
-		AllowLimitHeaderShown     bool `json:"allowLimitHeaderShown,omitempty"`
-		AllowRemainingHeaderShown bool `json:"allowRemainingHeaderShown,omitempty"`
-		AllowResetHeaderShown     bool `json:"allowResetHeaderShown,omitempty"`
+		DenyLimitHeaderShown      bool `json:"denyLimitHeaderShown"`
+		DenyRemainingHeaderShown  bool `json:"denyRemainingHeaderShown"`
+		DenyNextHeaderShown       bool `json:"denyNextHeaderShown"`
+		AllowLimitHeaderShown     bool `json:"allowLimitHeaderShown"`
+		AllowRemainingHeaderShown bool `json:"allowRemainingHeaderShown"`
+		AllowResetHeaderShown     bool `json:"allowResetHeaderShown"`
 	} `json:"headers,omitempty"`
 }
 
-func CollectionSetQuota(collectionId int, value int) (*Collection, error) {
-	collection, err := GetCollection(collectionId)
-	if err != nil {
-		return collection, err
-	}
-
-	collection.Quota.Value = value
-	req, err := client.NewJSONRequest(
-		Config,
-		"PUT",
-		fmt.Sprintf("/apikey-manager-api/v1/collections/%d/quota", collectionId),
-		collection.Quota,
-	)
-
+func CollectionSetQuota(collection string, limit int, interval string) (*Collections, error) {
+	collections, err := GetCollectionMulti(collection)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := client.Do(Config, req)
+	rcollections := Collections{}
+	for _, collection := range *collections {
+		collection.Quota.Value = limit
+		collection.Quota.Interval = interval
+		collection.Quota.Enabled = true
+		collection.Quota.Headers.DenyLimitHeaderShown = true
+		collection.Quota.Headers.DenyRemainingHeaderShown = true
+		collection.Quota.Headers.DenyNextHeaderShown = true
+		collection.Quota.Headers.AllowLimitHeaderShown = true
+		collection.Quota.Headers.AllowRemainingHeaderShown = true
+		collection.Quota.Headers.AllowResetHeaderShown = true
+		req, err := client.NewJSONRequest(
+			Config,
+			"PUT",
+			fmt.Sprintf("/apikey-manager-api/v1/collections/%d/quota", collection.Id),
+			collection.Quota,
+		)
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+
+		res, err := client.Do(Config, req)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if client.IsError(res) {
+			return nil, client.NewAPIError(res)
+		}
+
+		rep := &Collection{}
+		if err = client.BodyJSON(res, rep); err != nil {
+			return nil, err
+		}
+
+		rcollections = append(rcollections, *rep)
 	}
 
-	if client.IsError(res) {
-		return nil, client.NewAPIError(res)
-	}
-
-	rep := &Collection{}
-	if err = client.BodyJSON(res, rep); err != nil {
-		return nil, err
-	}
-
-	return rep, nil
+	return &rcollections, nil
 }
