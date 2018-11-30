@@ -20,6 +20,23 @@ func TestNewRequest(t *testing.T) {
 	req, err := NewRequest(config, "GET", "/headers", nil)
 	assert.NotNil(t, req)
 	assert.NoError(t, err)
+	assert.Equal(t, "https://httpbin.org/headers", req.URL.String())
+	verifyResponseConfig(t, config, req)
+}
+
+func TestNewRequestWithSwitchedAccount(t *testing.T) {
+	config := edgegrid.Config{
+		Host:         "https://httpbin.org",
+		AccessToken:  "local-config",
+		ClientSecret: "local-config",
+		ClientToken:  "local-config",
+		AccountKey:   "ABC-DEF",
+	}
+
+	req, err := NewRequest(config, "GET", "/headers", nil)
+	assert.NotNil(t, req)
+	assert.NoError(t, err)
+	assert.Equal(t, "https://httpbin.org/headers?accountSwitchKey=ABC-DEF", req.URL.String())
 	verifyResponseConfig(t, config, req)
 }
 
@@ -34,6 +51,23 @@ func TestNewJSONRequest(t *testing.T) {
 	req, err := NewJSONRequest(config, "GET", "/headers", config)
 	assert.NotNil(t, req)
 	assert.NoError(t, err)
+	assert.Equal(t, "https://httpbin.org/headers", req.URL.String())
+	verifyResponseConfig(t, config, req)
+}
+
+func TestNewJSONRequestWithSwitchedAccount(t *testing.T) {
+	config := edgegrid.Config{
+		Host:         "https://httpbin.org",
+		AccessToken:  "local-config",
+		ClientSecret: "local-config",
+		ClientToken:  "local-config",
+		AccountKey:   "ABC-DEF",
+	}
+
+	req, err := NewJSONRequest(config, "GET", "/headers", config)
+	assert.NotNil(t, req)
+	assert.NoError(t, err)
+	assert.Equal(t, "https://httpbin.org/headers?accountSwitchKey=ABC-DEF", req.URL.String())
 	verifyResponseConfig(t, config, req)
 }
 
