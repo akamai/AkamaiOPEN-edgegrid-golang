@@ -1,18 +1,16 @@
-hash: 8058c220195675f0db141e26135c5d5f9134b59705f0686c9d7bb2bb2d247ec2
-updated: 2018-04-08T23:10:13.343820275-07:00
+hash: 280c224bfda441d5668f6b42db5a50c9cd79c0c4c6b6f80cf9651319f9725436
+updated: 2019-01-11T17:10:41.026604-08:00
 imports:
 - name: github.com/go-ini/ini
-  version: 5e9692864e22d02ac79e2fa499cffb00520b4fea
-- name: github.com/google/go-querystring
-  version: 53e6ce116135b80d037921a7fdd5138cf32d7a8a
-  subpackages:
-  - query
+  version: 6ed8d5f64cd79a498d1f3fab5880cc376ce41bbe
 - name: github.com/google/uuid
   version: 064e2069ce9c359c118179501254f67d7d37ba24
 - name: github.com/mitchellh/go-homedir
   version: b8bc1bf767474819792c23f32d8286a45736f1c6
 - name: github.com/sirupsen/logrus
-  version: c155da19408a8799da419ed3eeb0cb5db0ad5dbc
+  version: e1e72e9de974bd926e5c56f83753fba2df402ce5
+- name: github.com/spf13/cast
+  version: 8c9545af88b134710ab1cd196795e7f2388358d7
 - name: github.com/xeipuuv/gojsonpointer
   version: 4e3ac2762d5f479393488629ee9370b50873b3a6
 - name: github.com/xeipuuv/gojsonreference
@@ -34,12 +32,12 @@ testImports:
   subpackages:
   - spew
 - name: github.com/h2non/gock
-  version: 550b7ca3aa563b9974e2391274ea55a940d05ca9
+  version: a6029d17e101ac1594adafea9e63fd8c988a8701
 - name: github.com/pmezard/go-difflib
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
-  version: 12b6f73e6084dad08a7c6e575284b177ecafbc71
+  version: ffdc059bfe9ce6a4e144ba849dbedead332c6053
   subpackages:
   - assert
