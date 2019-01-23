@@ -786,21 +786,24 @@ func (zone *Zone) validateCnames() (bool, []name) {
 }
 
 func (zone *Zone) removeCnameName(host string) {
-	for i, v := range cnameNames {
-		if v.name == host {
-			r := cnameNames[:i]
-			cnameNames = append(r, cnameNames[i+1:]...)
+	var ncn []name
+	for _, v := range cnameNames {
+		if v.name != host {
+			ncn =append(ncn, v)
 		}
 	}
+	cnameNames = ncn
 }
 
+
 func (zone *Zone) removeNonCnameName(host string) {
-	for i, v := range nonCnameNames {
-		if v.name == host {
-			r := nonCnameNames[:i]
-			nonCnameNames = append(r, nonCnameNames[i+1:]...)
+	var ncn []name
+	for _, v := range nonCnameNames {
+		if v.name != host {
+			ncn =append(ncn, v)
 		}
 	}
+	nonCnameNames = ncn
 }
 
 func (zone *Zone) FindRecords(recordType string, options map[string]interface{}) []DNSRecord {

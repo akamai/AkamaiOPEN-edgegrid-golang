@@ -263,6 +263,49 @@ func TestZone_AddRecord(t *testing.T) {
 	assert.Equal(t, records, zone.Zone.A)
 }
 
+func Test_removeNonCnameName(t *testing.T) {
+	backup := nonCnameNames
+	defer func() {
+		nonCnameNames = backup
+	}()
+
+
+	names := []name{
+		{recordType: "TXT", name: "test.com"},
+		{recordType: "TXT", name: "foo.com"},
+		{recordType: "TXT", name: "bar.com"},
+		{recordType: "TXT", name: "test.com"},
+	}
+
+	for _, n := range names {
+		nonCnameNames = append(nonCnameNames,  n)
+	}
+
+	zone := Zone{}
+	zone.removeNonCnameName("test.com")
+}
+
+func Test_removeCnameName(t *testing.T) {
+	backup := cnameNames
+	defer func() {
+		cnameNames = backup
+	}()
+
+	names := []name{
+		{recordType: "TXT", name: "test.com"},
+		{recordType: "TXT", name: "foo.com"},
+		{recordType: "TXT", name: "bar.com"},
+		{recordType: "TXT", name: "test.com"},
+	}
+
+	for _, n := range names {
+		cnameNames = append(cnameNames,  n)
+	}
+
+	zone := Zone{}
+	zone.removeCnameName("test.com")
+}
+
 func testZone_AddRecord_Provider() []*ARecord {
 	return []*ARecord{
 		&ARecord{
