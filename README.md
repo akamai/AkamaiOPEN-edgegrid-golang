@@ -11,10 +11,10 @@ scheme. For more information visit the [Akamai OPEN Developer Community](https:/
 
 ## Installation
 
-This package uses [Glide](https://glide.sh) to manage to dependencies and installation. To install Glide, see the [Glide install documentation](https://github.com/Masterminds/glide#install)
+This package uses `dep` to manage to dependencies and installation. To install `dep`, see the [`dep` install documentation](https://github.com/golang/dep#installation)
 
 ```bash
-  $ glide get github.com/akamai/AkamaiOPEN-edgegrid-golang
+$ dep ensure -add github.com/akamai/AkamaiOPEN-edgegrid-golang
 ```
 
 ## Usage
@@ -182,6 +182,6 @@ Alternatively, your program can read it from config struct.
 
 ## Author
 
-[Nick Juettner](mailto:hello@juni.io) - Software Engineer @ [Zalando SE](https://tech.zalando.com/)  
 [Davey Shafik](mailto:dshafik@akamai.com) - Developer Evangelist @ [Akamai Technologies](https://developer.akamai.com)
+[Nick Juettner](mailto:hello@juni.io) - Software Engineer @ [Zalando SE](https://tech.zalando.com/)  
 
