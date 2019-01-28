@@ -246,11 +246,19 @@ func TestZone_JSON(t *testing.T) {
 }`)
 
 	zone := NewZone("example.com")
-	err := jsonhooks.Unmarshal(responseBody, &zone)
+	err := jsonhooks.Unmarshal(responseBody, zone)
 	assert.NoError(t, err)
+	assert.Equal(t, zone.Zone.Soa.Serial, zone.Zone.Soa.originalSerial)
 
 	_, err = jsonhooks.Marshal(zone)
 	assert.NoError(t, err)
+	assert.True(t, zone.Zone.Soa.Serial-zone.Zone.Soa.originalSerial == 1)
+
+	zone.Zone.Soa.Serial = uint(12345)
+	_, err = jsonhooks.Marshal(zone)
+	assert.NoError(t, err)
+	assert.Equal(t, zone.Zone.Soa.Serial, uint(12345))
+	assert.NotEqual(t, zone.Zone.Soa.originalSerial, uint(12345))
 }
 
 func TestZone_AddRecord(t *testing.T) {
