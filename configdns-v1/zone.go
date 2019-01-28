@@ -82,7 +82,7 @@ func GetZone(hostname string) (*Zone, error) {
 	} else if res.StatusCode == 404 {
 		return nil, &ZoneError{zoneName: hostname}
 	} else {
-		err = client.BodyJSON(res, &zone)
+		err = client.BodyJSON(res, zone)
 		if err != nil {
 			return nil, err
 		}
