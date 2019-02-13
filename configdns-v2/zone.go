@@ -1,13 +1,7 @@
 package dnsv2
 
 import (
-	//"errors"
-	//"fmt"
-	//"reflect"
-	//"strings"
 	"sync"
-	//"time"
-
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
@@ -39,8 +33,8 @@ var (
     "zone": "akamaideveloper.net"
 }
 
-
 */
+
 type ZoneQueryString struct {
   ContractId         string   `json:"contractid,omitempty"`
   Gid                string   `json:"lastactivationdate,omitempty"`
@@ -51,8 +45,6 @@ type ZoneCreate struct {
 	Type               string   `json:"type,omitempty"`
 	Masters            []string `json:"masters,omitempty"`
 	Comment            string   `json:"comment,omitempty"`
-//	ContractId         string   `json:"contractid,omitempty"`
-//	Gid                string   `json:"lastactivationdate,omitempty"`
 }
 
 
@@ -73,19 +65,16 @@ type ZoneResponse struct {
 // NewZone creates a new Zone
 //func NewZone(contractid string, hostname string) *Zone {
 func NewZone(params ZoneCreate) *ZoneCreate {
-	//zone := &Zone(ContractId: contractid, Zone: hostname}
 	zone := &ZoneCreate{Zone: params.Zone,Type: params.Type, Masters: params.Masters, Comment: params.Comment}
 	return zone
 }
 
 func NewZoneResponse(params ZoneCreate) *ZoneResponse {
-	//zone := &Zone(ContractId: contractid, Zone: hostname}
 	zone := &ZoneResponse{Zone: params.Zone}
 	return zone
 }
 
 func NewZoneQueryString(ContractId string, gid string) *ZoneQueryString {
-	//zone := &Zone(ContractId: contractid, Zone: hostname}
 	zonequerystring := &ZoneQueryString{ContractId: ContractId, Gid: gid }
 	return zonequerystring
 }
@@ -93,7 +82,6 @@ func NewZoneQueryString(ContractId string, gid string) *ZoneQueryString {
 // GetZone retrieves a DNS Zone for a given hostname
 //func GetZone(contractid string,hostname string) (*ZoneResponse, error) {
 func GetZone(params ZoneCreate) (*ZoneResponse, error) {
-	//zone := NewZone(contractid,hostname)
 	zone := NewZoneResponse(params)
 	req, err := client.NewRequest(
 		Config,
@@ -180,26 +168,5 @@ func (zone *ZoneCreate ) Save(zonequerystring ZoneQueryString) error {
 func (zone *ZoneCreate) Delete(zonequerystring ZoneQueryString) error {
 	// remove all the records except for SOA
 	// which is required and save the zone
-	/*zone.Zone.A = nil
-	zone.Zone.Aaaa = nil
-	zone.Zone.Afsdb = nil
-	zone.Zone.Cname = nil
-	zone.Zone.Dnskey = nil
-	zone.Zone.Ds = nil
-	zone.Zone.Hinfo = nil
-	zone.Zone.Loc = nil
-	zone.Zone.Mx = nil
-	zone.Zone.Naptr = nil
-	zone.Zone.Ns = nil
-	zone.Zone.Nsec3 = nil
-	zone.Zone.Nsec3param = nil
-	zone.Zone.Ptr = nil
-	zone.Zone.Rp = nil
-	zone.Zone.Rrsig = nil
-	zone.Zone.Spf = nil
-	zone.Zone.Srv = nil
-	zone.Zone.Sshfp = nil
-	zone.Zone.Txt = nil
-*/
 	return zone.Save(zonequerystring)
 }
