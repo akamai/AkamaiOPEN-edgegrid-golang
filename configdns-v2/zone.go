@@ -78,9 +78,9 @@ func NewZone(params ZoneCreate) *ZoneCreate {
 	return zone
 }
 
-func NewZoneResponse(params ZoneCreate, paramsquerystring ZoneQueryString) *ZoneResponse {
+func NewZoneResponse(params ZoneCreate) *ZoneResponse {
 	//zone := &Zone(ContractId: contractid, Zone: hostname}
-	zone := &ZoneResponse{ContractId: paramsquerystring.ContractId,Zone: params.Zone}
+	zone := &ZoneResponse{Zone: params.Zone}
 	return zone
 }
 
@@ -92,9 +92,9 @@ func NewZoneQueryString(ContractId string, gid string) *ZoneQueryString {
 
 // GetZone retrieves a DNS Zone for a given hostname
 //func GetZone(contractid string,hostname string) (*ZoneResponse, error) {
-func GetZone(params ZoneCreate, paramsquerystring ZoneQueryString) (*ZoneResponse, error) {
+func GetZone(params ZoneCreate) (*ZoneResponse, error) {
 	//zone := NewZone(contractid,hostname)
-	zone := NewZoneResponse(params,paramsquerystring)
+	zone := NewZoneResponse(params)
 	req, err := client.NewRequest(
 		Config,
 		"GET",
