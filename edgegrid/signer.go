@@ -35,7 +35,7 @@ func AddRequestHeader(config Config, req *http.Request) *http.Request {
 
 	_, AkamaiCliEnvOK := os.LookupEnv("AKAMAI_CLI")
 	AkamaiCliVersionEnv, AkamaiCliVersionEnvOK := os.LookupEnv("AKAMAI_CLI_VERSION")
-	AkamaiCliCommandEnv, AkamaiCliCommandEnvOK := os.LookupEnv("AKAMAI_CLI_COMMAND_VERSION")
+	AkamaiCliCommandEnv, AkamaiCliCommandEnvOK := os.LookupEnv("AKAMAI_CLI_COMMAND")
 	AkamaiCliCommandVersionEnv, AkamaiCliCommandVersionEnvOK := os.LookupEnv("AKAMAI_CLI_COMMAND_VERSION")
 
 	if AkamaiCliEnvOK && AkamaiCliVersionEnvOK {
