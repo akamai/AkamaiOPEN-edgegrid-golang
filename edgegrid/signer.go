@@ -42,14 +42,14 @@ func AddRequestHeader(config Config, req *http.Request) *http.Request {
 		if req.Header.Get("User-Agent") != "" {
 			req.Header.Set("User-Agent", req.Header.Get("User-Agent")+" AkamaiCLI/"+AkamaiCliVersionEnv)
 		} else {
-			req.Header.Set("User-Agent", " AkamaiCLI/"+AkamaiCliVersionEnv)
+			req.Header.Set("User-Agent", "AkamaiCLI/"+AkamaiCliVersionEnv)
 		}
 	}
 	if AkamaiCliCommandEnvOK && AkamaiCliCommandVersionEnvOK {
 		if req.Header.Get("User-Agent") != "" {
 			req.Header.Set("User-Agent", req.Header.Get("User-Agent")+" AkamaiCLI-"+AkamaiCliCommandEnv+"/"+AkamaiCliCommandVersionEnv)
 		} else {
-			req.Header.Set("User-Agent", " AkamaiCLI-"+AkamaiCliCommandEnv+"/"+AkamaiCliCommandVersionEnv)
+			req.Header.Set("User-Agent", "AkamaiCLI-"+AkamaiCliCommandEnv+"/"+AkamaiCliCommandVersionEnv)
 		}
 	}
 
