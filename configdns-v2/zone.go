@@ -2,6 +2,7 @@ package dnsv2
 
 import (
 	"sync"
+	"io/ioutil"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
@@ -45,6 +46,7 @@ type ZoneCreate struct {
 	Type               string   `json:"type,omitempty"`
 	Masters            []string `json:"masters,omitempty"`
 	Comment            string   `json:"comment,omitempty"`
+	SignAndServe       bool     `json:"signAndServe"`
 }
 
 
@@ -58,20 +60,33 @@ type ZoneResponse struct {
 	LastActivationDate string   `json:"lastactivationdate,omitempty"`
 	LastModifiedBy     string   `json:"lastmodifiedby,omitempty"`
 	LastModifiedDate   string   `json:"lastmodifieddate,omitempty"`
-	SignAndServe       bool   `json:"signandserve,omitempty"`
+	SignAndServe       bool     `json:"signandserve"`
 	VersionId          string   `json:"versionid,omitempty"`
+}
+
+type ChangeListResponse struct {
+  Zone               string   `json:"zone,omitempty"`
+	ChangeTag          string   `json:"changeTag,omitempty"`
+	ZoneVersionId      string   `json:"zoneVersionId,omitempty"`
+	LastModifiedDate   string   `json:"lastModifiedDate,omitempty"`
+	Stale              bool     `json:"stale,omitempty"`
 }
 
 // NewZone creates a new Zone
 //func NewZone(contractid string, hostname string) *Zone {
 func NewZone(params ZoneCreate) *ZoneCreate {
-	zone := &ZoneCreate{Zone: params.Zone,Type: params.Type, Masters: params.Masters, Comment: params.Comment}
+	zone := &ZoneCreate{Zone: params.Zone,Type: params.Type, Masters: params.Masters, Comment: params.Comment,SignAndServe: params.SignAndServe}
 	return zone
 }
 
 func NewZoneResponse(params ZoneCreate) *ZoneResponse {
 	zone := &ZoneResponse{Zone: params.Zone}
 	return zone
+}
+
+func NewChangeListResponse(zone string) *ChangeListResponse {
+	changelist := &ChangeListResponse{Zone: zone}
+	return changelist
 }
 
 func NewZoneQueryString(ContractId string, gid string) *ZoneQueryString {
@@ -112,6 +127,74 @@ func GetZone(params ZoneCreate) (*ZoneResponse, error) {
 	}
 }
 
+// GetZone retrieves a DNS Zone for a given hostname
+//func GetZone(contractid string,hostname string) (*ZoneResponse, error) {
+func GetChangeList(zone string) (*ChangeListResponse, error) {
+	changelist := NewChangeListResponse(zone)
+	req, err := client.NewRequest(
+		Config,
+		"GET",
+		"/config-dns/v2/changelists/"+zone,
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) && res.StatusCode != 404 {
+		return nil, client.NewAPIError(res)
+	} else if res.StatusCode == 404 {
+		return nil, &ZoneError{zoneName: zone}
+	} else {
+		err = client.BodyJSON(res, changelist)
+		if err != nil {
+			return nil, err
+		}
+
+		return changelist, nil
+	}
+}
+
+// GetZone retrieves a DNS Zone for a given hostname
+//func GetZone(contractid string,hostname string) (*ZoneResponse, error) {
+func GetMasterZoneFile(zone string) (string, error) {
+
+	req, err := client.NewRequest(
+		Config,
+		"GET",
+		"/config-dns/v2/zones/"+zone+"/zone-file",
+		nil,
+	)
+	if err != nil {
+		return "", err
+	}
+
+	res, err := client.Do(Config, req)
+	if err != nil {
+		return "", err
+	}
+
+	if client.IsError(res) && res.StatusCode != 404 {
+		return "", client.NewAPIError(res)
+	} else if res.StatusCode == 404 {
+		return "", &ZoneError{zoneName: zone}
+	} else {
+
+    bodyBytes , err2 :=  ioutil.ReadAll(res.Body)
+		if err2 != nil {
+			return "", err
+		}
+    masterZone := string(bodyBytes)
+		return masterZone, nil
+	}
+}
+
+
 // Save updates the Zone
 func (zone *ZoneCreate ) Save(zonequerystring ZoneQueryString) error {
 	// This lock will restrict the concurrency of API calls
@@ -119,8 +202,8 @@ func (zone *ZoneCreate ) Save(zonequerystring ZoneQueryString) error {
 	// is required to be incremented for every subsequent update to a zone
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
-	zoneWriteLock.Lock()
-	defer zoneWriteLock.Unlock()
+	//zoneWriteLock.Lock()
+	//defer zoneWriteLock.Unlock()
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -149,18 +232,124 @@ func (zone *ZoneCreate ) Save(zonequerystring ZoneQueryString) error {
 		return &ZoneError{zoneName: zone.Zone, apiErrorMessage: err.Detail, err: err}
 	}
 
-	/*for {
-		updatedZone, err := GetZone(zone.ContractId,zone.Zone)
-		if err != nil {
-			return err
-		}
+	return nil
+}
 
-		if updatedZone.VersionId != zone.VersionId {
-			*zone = *updatedZone
-			break
+// Save changelist for the Zone to create default NS SOA records
+func (zone *ZoneCreate ) SaveChangelist() error {
+	// This lock will restrict the concurrency of API calls
+	// to 1 save request at a time. This is needed for the Soa.Serial value which
+	// is required to be incremented for every subsequent update to a zone
+	// so we have to save just one request at a time to ensure this is always
+	// incremented properly
+	//zoneWriteLock.Lock()
+	//defer zoneWriteLock.Unlock()
+
+	req, err := client.NewJSONRequest(
+		Config,
+		"POST",
+		"/config-dns/v2/changelists/?zone="+zone.Zone,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	res, err := client.Do(Config, req)
+
+	// Network error
+	if err != nil {
+		return &ZoneError{
+			zoneName:         zone.Zone,
+			httpErrorMessage: err.Error(),
+			err:              err,
 		}
-		time.Sleep(time.Second)
-	}*/
+	}
+
+	// API error
+	if client.IsError(res) {
+		err := client.NewAPIError(res)
+		return &ZoneError{zoneName: zone.Zone, apiErrorMessage: err.Detail, err: err}
+	}
+
+	return nil
+}
+
+// Save changelist for the Zone to create default NS SOA records
+func (zone *ZoneCreate ) SubmitChangelist() error {
+	// This lock will restrict the concurrency of API calls
+	// to 1 save request at a time. This is needed for the Soa.Serial value which
+	// is required to be incremented for every subsequent update to a zone
+	// so we have to save just one request at a time to ensure this is always
+	// incremented properly
+	//zoneWriteLock.Lock()
+	//defer zoneWriteLock.Unlock()
+
+	req, err := client.NewJSONRequest(
+		Config,
+		"POST",
+		"/config-dns/v2/changelists/"+zone.Zone+"/submit",
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	res, err := client.Do(Config, req)
+
+	// Network error
+	if err != nil {
+		return &ZoneError{
+			zoneName:         zone.Zone,
+			httpErrorMessage: err.Error(),
+			err:              err,
+		}
+	}
+
+	// API error
+	if client.IsError(res) {
+		err := client.NewAPIError(res)
+		return &ZoneError{zoneName: zone.Zone, apiErrorMessage: err.Detail, err: err}
+	}
+
+	return nil
+}
+
+
+// Save updates the Zone
+func (zone *ZoneCreate ) Update(zonequerystring ZoneQueryString) error {
+	// This lock will restrict the concurrency of API calls
+	// to 1 save request at a time. This is needed for the Soa.Serial value which
+	// is required to be incremented for every subsequent update to a zone
+	// so we have to save just one request at a time to ensure this is always
+	// incremented properly
+
+	req, err := client.NewJSONRequest(
+		Config,
+		"PUT",
+		"/config-dns/v2/zones/"+zone.Zone,
+		zone,
+	)
+	if err != nil {
+		return err
+	}
+
+	res, err := client.Do(Config, req)
+
+	// Network error
+	if err != nil {
+		return &ZoneError{
+			zoneName:         zone.Zone,
+			httpErrorMessage: err.Error(),
+			err:              err,
+		}
+	}
+
+	// API error
+	if client.IsError(res) {
+		err := client.NewAPIError(res)
+		return &ZoneError{zoneName: zone.Zone, apiErrorMessage: err.Detail, err: err}
+	}
 
 	return nil
 }
@@ -168,5 +357,35 @@ func (zone *ZoneCreate ) Save(zonequerystring ZoneQueryString) error {
 func (zone *ZoneCreate) Delete(zonequerystring ZoneQueryString) error {
 	// remove all the records except for SOA
 	// which is required and save the zone
-	return zone.Save(zonequerystring)
+	//return zone.Save(zonequerystring)
+
+	req, err := client.NewJSONRequest(
+		Config,
+		"DELETE",
+		"/config-dns/v2/zones/"+zone.Zone,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	res, err := client.Do(Config, req)
+
+	// Network error
+	if err != nil {
+		return &ZoneError{
+			zoneName:         zone.Zone,
+			httpErrorMessage: err.Error(),
+			err:              err,
+		}
+	}
+
+	// API error
+	if client.IsError(res) {
+		err := client.NewAPIError(res)
+		return &ZoneError{zoneName: zone.Zone, apiErrorMessage: err.Detail, err: err}
+	}
+
+	return nil
+
 }
