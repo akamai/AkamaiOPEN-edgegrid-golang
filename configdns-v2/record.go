@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-	"log"
 )
 
 // All record types (below) must implement the DNSRecord interface
@@ -12,18 +11,8 @@ import (
 //
 // The record types implemented and their fields are as defined here
 // https://developer.akamai.com/api/luna/config-dns/data.html
-/*type DNSRecord interface {
-	// Get the list of allowed fields for this type
-	GetAllowedFields() []string
-	// Set a field on the struct, which check for valid fields
-	SetField(name string, value interface{}) error
-	// Translate struct properties to a map
-	ToMap() map[string]interface{}
-}
-*/
 
 type RecordBody struct {
-	//fieldMap []string `json:"-"`
 	Name     string   `json:"name,omitempty"`
 	RecordType     string   `json:"type,omitempty"`
 	TTL      int      `json:"ttl,omitempty"`
@@ -72,8 +61,6 @@ func NewRecordBody(params RecordBody) *RecordBody {
 
 func (record *RecordBody ) Save(zone string) error {
 
-log.Printf("[INFO] [Akamai FastDNS] Create record save %v", record)
-
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
@@ -83,7 +70,6 @@ log.Printf("[INFO] [Akamai FastDNS] Create record save %v", record)
 	if err != nil {
 		return err
 	}
-log.Printf("[INFO] [Akamai FastDNS] Create records req = %v", req)
 	res, err := client.Do(Config, req)
 
 	// Network error
@@ -107,7 +93,6 @@ log.Printf("[INFO] [Akamai FastDNS] Create records req = %v", req)
 
 func (record *RecordBody ) Delete(zone string) error {
 
-log.Printf("[INFO] [Akamai FastDNS] Delete record  %v", record)
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -118,7 +103,6 @@ log.Printf("[INFO] [Akamai FastDNS] Delete record  %v", record)
 	if err != nil {
 		return err
 	}
-log.Printf("[INFO] [Akamai FastDNS] Delete records req = %v", req)
 	res, err := client.Do(Config, req)
 
 	// Network error

@@ -73,14 +73,13 @@ type ChangeListResponse struct {
 }
 
 // NewZone creates a new Zone
-//func NewZone(contractid string, hostname string) *Zone {
 func NewZone(params ZoneCreate) *ZoneCreate {
 	zone := &ZoneCreate{Zone: params.Zone,Type: params.Type, Masters: params.Masters, Comment: params.Comment,SignAndServe: params.SignAndServe}
 	return zone
 }
 
-func NewZoneResponse(params ZoneCreate) *ZoneResponse {
-	zone := &ZoneResponse{Zone: params.Zone}
+func NewZoneResponse(zonename string) *ZoneResponse {
+		zone := &ZoneResponse{Zone: zonename}
 	return zone
 }
 
@@ -95,13 +94,13 @@ func NewZoneQueryString(ContractId string, gid string) *ZoneQueryString {
 }
 
 // GetZone retrieves a DNS Zone for a given hostname
-//func GetZone(contractid string,hostname string) (*ZoneResponse, error) {
-func GetZone(params ZoneCreate) (*ZoneResponse, error) {
-	zone := NewZoneResponse(params)
+func GetZone(zonename string) (*ZoneResponse, error) {
+  zone := NewZoneResponse(zonename)
 	req, err := client.NewRequest(
 		Config,
 		"GET",
-		"/config-dns/v2/zones/"+zone.Zone,
+		//"/config-dns/v2/zones/"+zone.Zone,
+		"/config-dns/v2/zones/"+zonename,
 		nil,
 	)
 	if err != nil {
@@ -116,7 +115,7 @@ func GetZone(params ZoneCreate) (*ZoneResponse, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &ZoneError{zoneName: params.Zone}
+		return nil, &ZoneError{zoneName: zonename}
 	} else {
 		err = client.BodyJSON(res, zone)
 		if err != nil {
@@ -128,7 +127,6 @@ func GetZone(params ZoneCreate) (*ZoneResponse, error) {
 }
 
 // GetZone retrieves a DNS Zone for a given hostname
-//func GetZone(contractid string,hostname string) (*ZoneResponse, error) {
 func GetChangeList(zone string) (*ChangeListResponse, error) {
 	changelist := NewChangeListResponse(zone)
 	req, err := client.NewRequest(
@@ -161,7 +159,6 @@ func GetChangeList(zone string) (*ChangeListResponse, error) {
 }
 
 // GetZone retrieves a DNS Zone for a given hostname
-//func GetZone(contractid string,hostname string) (*ZoneResponse, error) {
 func GetMasterZoneFile(zone string) (string, error) {
 
 	req, err := client.NewRequest(
@@ -202,8 +199,6 @@ func (zone *ZoneCreate ) Save(zonequerystring ZoneQueryString) error {
 	// is required to be incremented for every subsequent update to a zone
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
-	//zoneWriteLock.Lock()
-	//defer zoneWriteLock.Unlock()
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -242,8 +237,6 @@ func (zone *ZoneCreate ) SaveChangelist() error {
 	// is required to be incremented for every subsequent update to a zone
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
-	//zoneWriteLock.Lock()
-	//defer zoneWriteLock.Unlock()
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -282,8 +275,6 @@ func (zone *ZoneCreate ) SubmitChangelist() error {
 	// is required to be incremented for every subsequent update to a zone
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
-	//zoneWriteLock.Lock()
-	//defer zoneWriteLock.Unlock()
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -357,7 +348,6 @@ func (zone *ZoneCreate ) Update(zonequerystring ZoneQueryString) error {
 func (zone *ZoneCreate) Delete(zonequerystring ZoneQueryString) error {
 	// remove all the records except for SOA
 	// which is required and save the zone
-	//return zone.Save(zonequerystring)
 
 	req, err := client.NewJSONRequest(
 		Config,

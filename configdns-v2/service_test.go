@@ -22,52 +22,27 @@ var (
 func TestGetZoneSimple(t *testing.T) {
 	defer gock.Off()
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-dns/v1/zones/example.com")
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-dns/v2/zones/example.com")
 	mock.
-		Get("/config-dns/v1/zones/example.com").
+		Get("/config-dns/v2/zones/example.com").
 		HeaderPresent("Authorization").
 		Reply(200).
 		SetHeader("Content-Type", "application/json").
 		BodyString(`{
-			"token": "a184671d5307a388180fbf7f11dbdf46",
-			"zone": {
-				"name": "example.com",
-				"soa": {
-					"contact": "hostmaster.akamai.com.",
-					"expire": 604800,
-					"minimum": 180,
-					"originserver": "use4.akamai.com.",
-					"refresh": 900,
-					"retry": 300,
-					"serial": 1271354824,
-					"ttl": 900
-				},
-				"ns": [
-					{
-						"active": true,
-						"name": "",
-						"target": "use4.akam.net.",
-						"ttl": 3600
-					},
-					{
-						"active": true,
-						"name": "",
-						"target": "use3.akam.net.",
-						"ttl": 3600
-					}
-				],
-				"a": [
-					{
-						"active": true,
-						"name": "www",
-						"target": "1.2.3.4",
-						"ttl": 30
-					}
-				]
-			}
-		}`)
+                             "contractId": "C-1FRYVV3",
+                             "zone": "example.com",
+                             "type": "PRIMARY",
+                             "comment": "This is a test zone",
+                             "versionId": "5e311536-c4b7-4dec-b8a9-1fe3d6042406",
+                             "lastActivationDate": "2019-02-23T22:31:48Z",
+                             "lastModifiedDate": "2019-02-23T22:31:48Z",
+                             "lastModifiedBy": "davey.shafik",
+                             "activationState": "PENDING",
+                             "signAndServe": false
+                            }`)
 
 	Init(config)
+        
 	zone, err := GetZone("example.com")
 
 	assert.NoError(t, err)
@@ -117,7 +92,7 @@ func TestGetZone(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-dns/v1/zones/example.com")
 			mock.
-				Get("/config-dns/v1/zones/example.com").
+				Get("/config-dns/v2/zones/example.com").
 				HeaderPresent("Authorization").
 				Reply(200).
 				SetHeader("Content-Type", "application/json").

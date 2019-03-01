@@ -2,9 +2,7 @@ package dnsv2
 
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-
 )
-
 
 type RecordSetResponse struct {
 	Metadata struct {
@@ -18,14 +16,6 @@ type RecordSetResponse struct {
 		Rdata []string `json:"rdata"`
 	} `json:"recordsets"`
 }
-
-type RecordSetResponse1 struct {
-	Name     string   `json:"name,omitempty"`
-  Type     string   `json:"type,omitempty"`
-  TTL      int      `json:"ttl,omitempty"`
-	Rdata    []string `json:"rdata,omitempty"`
-}
-
 
 /*
 {
@@ -62,23 +52,10 @@ type RecordSetResponse1 struct {
 
 */
 
-func NewRecordSetResponse( name string) *RecordSetResponse {
-	//recordset := &RecordSetResponse{Name: name}
-  recordset := &RecordSetResponse{}
-  /*
-  recordset := RecordSetResponse{Recordsets: []struct {
-    Name  string
-		Type  string
-		TTL   int
-		Rdata []string
-  }{
-    {Name: name},
-  },
-}*/
+func NewRecordSetResponse(name string) *RecordSetResponse {
+	recordset := &RecordSetResponse{}
 	return recordset
 }
-
-
 
 func GetRecordList(zone string, name string, record_type string) (*RecordSetResponse, error) {
 	records := NewRecordSetResponse(name)
@@ -111,26 +88,26 @@ func GetRecordList(zone string, name string, record_type string) (*RecordSetResp
 }
 
 func GetRecordListIP(zone string, name string, record_type string) ([]string, error) {
-  records,err := GetRecordList(zone , name,  record_type)
-  if err != nil {
-    return nil, err
-  }
-
-  var arrLength int
-  for _, c := range records.Recordsets {
-    if (c.Name == name) {
-  	arrLength = len(c.Rdata)
-  }
-  }
-
-  ips := make([]string, 0 , arrLength)
-
-for _, r := range records.Recordsets {
-  if (r.Name == name) {
-  for _, i := range r.Rdata {
-  ips = append(ips,i)
-  }
-}
-}
-	 return ips, nil
+	records, err := GetRecordList(zone, name, record_type)
+	if err != nil {
+		return nil, err
 	}
+
+	var arrLength int
+	for _, c := range records.Recordsets {
+		if c.Name == name {
+			arrLength = len(c.Rdata)
+		}
+	}
+
+	ips := make([]string, 0, arrLength)
+
+	for _, r := range records.Recordsets {
+		if r.Name == name {
+			for _, i := range r.Rdata {
+				ips = append(ips, i)
+			}
+		}
+	}
+	return ips, nil
+}
