@@ -10,7 +10,7 @@ var (
 	Config edgegrid.Config
 )
 
-// Init sets the FastDNS edgegrid Config
+// Init sets the DNSv2 edgegrid Config
 func Init(config edgegrid.Config) {
 	Config = config
 }
