@@ -1,9 +1,10 @@
 package dnsv2
 
 import (
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"strings"
 	"time"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"sync"
 )
 
 // All record types (below) must implement the DNSRecord interface
@@ -13,53 +14,64 @@ import (
 // https://developer.akamai.com/api/luna/config-dns/data.html
 
 type RecordBody struct {
-	Name     string   `json:"name,omitempty"`
-	RecordType     string   `json:"type,omitempty"`
-	TTL      int      `json:"ttl,omitempty"`
-	Active   bool     `json:"active,omitempty"`
-	Target   []string   `json:"rdata,omitempty"`
-	Subtype  int      `json:"subtype,omitempty"` //AfsdbRecord
-	Flags     int      `json:"flags,omitempty"` //DnskeyRecord Nsec3paramRecord
-	Protocol  int      `json:"protocol,omitempty"` //DnskeyRecord
-	Algorithm int      `json:"algorithm,omitempty"` //DnskeyRecord DsRecord Nsec3paramRecord RrsigRecord SshfpRecord
-	Key       string   `json:"key,omitempty"` //DnskeyRecord
-  Keytag     int      `json:"keytag,omitempty"` //DsRecord RrsigRecord
-  DigestType int      `json:"digest_type,omitempty"` //DsRecord
-  Digest     string   `json:"digest,omitempty"` //DsRecord
-	Hardware string   `json:"hardware,omitempty"` //HinfoRecord
-	Software string   `json:"software,omitempty"` //HinfoRecord
-	Priority int      `json:"priority,omitempty"` //MxRecord SrvRecord
-	Order       uint16   `json:"order,omitempty"` //NaptrRecord
-	Preference  uint16   `json:"preference,omitempty"` //NaptrRecord
-	FlagsNaptr  string   `json:"flags,omitempty"` //NaptrRecord
-	Service     string   `json:"service,omitempty"` //NaptrRecord
-	Regexp      string   `json:"regexp,omitempty"` //NaptrRecord
-	Replacement string   `json:"replacement,omitempty"` //NaptrRecord
-	Iterations          int      `json:"iterations,omitempty"` //Nsec3Record Nsec3paramRecord
-	Salt                string   `json:"salt,omitempty"`  //Nsec3Record Nsec3paramRecord
+	Name                string   `json:"name,omitempty"`
+	RecordType          string   `json:"type,omitempty"`
+	TTL                 int      `json:"ttl,omitempty"`
+	Active              bool     `json:"active,omitempty"`
+	Target              []string `json:"rdata,omitempty"`
+	Subtype             int      `json:"subtype,omitempty"`                //AfsdbRecord
+	Flags               int      `json:"flags,omitempty"`                  //DnskeyRecord Nsec3paramRecord
+	Protocol            int      `json:"protocol,omitempty"`               //DnskeyRecord
+	Algorithm           int      `json:"algorithm,omitempty"`              //DnskeyRecord DsRecord Nsec3paramRecord RrsigRecord SshfpRecord
+	Key                 string   `json:"key,omitempty"`                    //DnskeyRecord
+	Keytag              int      `json:"keytag,omitempty"`                 //DsRecord RrsigRecord
+	DigestType          int      `json:"digest_type,omitempty"`            //DsRecord
+	Digest              string   `json:"digest,omitempty"`                 //DsRecord
+	Hardware            string   `json:"hardware,omitempty"`               //HinfoRecord
+	Software            string   `json:"software,omitempty"`               //HinfoRecord
+	Priority            int      `json:"priority,omitempty"`               //MxRecord SrvRecord
+	Order               uint16   `json:"order,omitempty"`                  //NaptrRecord
+	Preference          uint16   `json:"preference,omitempty"`             //NaptrRecord
+	FlagsNaptr          string   `json:"flags,omitempty"`                  //NaptrRecord
+	Service             string   `json:"service,omitempty"`                //NaptrRecord
+	Regexp              string   `json:"regexp,omitempty"`                 //NaptrRecord
+	Replacement         string   `json:"replacement,omitempty"`            //NaptrRecord
+	Iterations          int      `json:"iterations,omitempty"`             //Nsec3Record Nsec3paramRecord
+	Salt                string   `json:"salt,omitempty"`                   //Nsec3Record Nsec3paramRecord
 	NextHashedOwnerName string   `json:"next_hashed_owner_name,omitempty"` //Nsec3Record
-	TypeBitmaps         string   `json:"type_bitmaps,omitempty"` //Nsec3Record
-	Mailbox  string   `json:"mailbox,omitempty"` //RpRecord
-	Txt      string   `json:"txt,omitempty"` //RpRecord
-	TypeCovered string   `json:"type_covered,omitempty"` //RrsigRecord
-	OriginalTTL int      `json:"original_ttl,omitempty"` //RrsigRecord
-	Expiration  string   `json:"expiration,omitempty"` //RrsigRecord
-	Inception   string   `json:"inception,omitempty"` //RrsigRecord
-	Signer      string   `json:"signer,omitempty"` //RrsigRecord
-	Signature   string   `json:"signature,omitempty"` //RrsigRecord
-	Labels      int      `json:"labels,omitempty"` //RrsigRecord
-	Weight   uint16   `json:"weight,omitempty"` //SrvRecord
-	Port     uint16   `json:"port,omitempty"` //SrvRecord
-	FingerprintType int      `json:"fingerprint_type,omitempty"` //SshfpRecord
-	Fingerprint     string   `json:"fingerprint,omitempty"` //SshfpRecord
+	TypeBitmaps         string   `json:"type_bitmaps,omitempty"`           //Nsec3Record
+	Mailbox             string   `json:"mailbox,omitempty"`                //RpRecord
+	Txt                 string   `json:"txt,omitempty"`                    //RpRecord
+	TypeCovered         string   `json:"type_covered,omitempty"`           //RrsigRecord
+	OriginalTTL         int      `json:"original_ttl,omitempty"`           //RrsigRecord
+	Expiration          string   `json:"expiration,omitempty"`             //RrsigRecord
+	Inception           string   `json:"inception,omitempty"`              //RrsigRecord
+	Signer              string   `json:"signer,omitempty"`                 //RrsigRecord
+	Signature           string   `json:"signature,omitempty"`              //RrsigRecord
+	Labels              int      `json:"labels,omitempty"`                 //RrsigRecord
+	Weight              uint16   `json:"weight,omitempty"`                 //SrvRecord
+	Port                uint16   `json:"port,omitempty"`                   //SrvRecord
+	FingerprintType     int      `json:"fingerprint_type,omitempty"`       //SshfpRecord
+	Fingerprint         string   `json:"fingerprint,omitempty"`            //SshfpRecord
 }
 
+var (
+	zoneRecordWriteLock sync.Mutex
+)
+
 func NewRecordBody(params RecordBody) *RecordBody {
-	recordbody := &RecordBody{Name: params.Name }
+	recordbody := &RecordBody{Name: params.Name}
 	return recordbody
 }
 
-func (record *RecordBody ) Save(zone string) error {
+func (record *RecordBody) Save(zone string) error {
+	// This lock will restrict the concurrency of API calls
+	// to 1 save request at a time. This is needed for the Soa.Serial value which
+	// is required to be incremented for every subsequent update to a zone
+	// so we have to save just one request at a time to ensure this is always
+	// incremented properly
+	zoneRecordWriteLock.Lock()
+  defer zoneRecordWriteLock.Unlock()
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -90,9 +102,7 @@ func (record *RecordBody ) Save(zone string) error {
 	return nil
 }
 
-
-func (record *RecordBody ) Delete(zone string) error {
-
+func (record *RecordBody) Delete(zone string) error {
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -122,7 +132,6 @@ func (record *RecordBody ) Delete(zone string) error {
 
 	return nil
 }
-
 
 type SoaRecord struct {
 	fieldMap       []string `json:"-"`
@@ -226,7 +235,6 @@ func (record *SoaRecord) ToMap() map[string]interface{} {
 		"minimum":      record.Minimum,
 	}
 }
-
 
 func contains(fieldMap []string, field string) bool {
 	field = strings.ToLower(field)

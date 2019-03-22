@@ -1,11 +1,11 @@
 package dnsv2
 
 import (
-	"sync"
-	"io/ioutil"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"io/ioutil"
+	"log"
+	"sync"
 )
-
 
 var (
 	zoneWriteLock sync.Mutex
@@ -37,18 +37,17 @@ var (
 */
 
 type ZoneQueryString struct {
-  ContractId         string   `json:"contractid,omitempty"`
-  Gid                string   `json:"lastactivationdate,omitempty"`
+	ContractId string `json:"contractid,omitempty"`
+	Gid        string `json:"lastactivationdate,omitempty"`
 }
 
 type ZoneCreate struct {
-	Zone               string   `json:"zone,omitempty"`
-	Type               string   `json:"type,omitempty"`
-	Masters            []string `json:"masters,omitempty"`
-	Comment            string   `json:"comment,omitempty"`
-	SignAndServe       bool     `json:"signAndServe"`
+	Zone         string   `json:"zone,omitempty"`
+	Type         string   `json:"type,omitempty"`
+	Masters      []string `json:"masters,omitempty"`
+	Comment      string   `json:"comment,omitempty"`
+	SignAndServe bool     `json:"signAndServe"`
 }
-
 
 type ZoneResponse struct {
 	Zone               string   `json:"zone,omitempty"`
@@ -65,21 +64,22 @@ type ZoneResponse struct {
 }
 
 type ChangeListResponse struct {
-  Zone               string   `json:"zone,omitempty"`
-	ChangeTag          string   `json:"changeTag,omitempty"`
-	ZoneVersionId      string   `json:"zoneVersionId,omitempty"`
-	LastModifiedDate   string   `json:"lastModifiedDate,omitempty"`
-	Stale              bool     `json:"stale,omitempty"`
+	Zone             string `json:"zone,omitempty"`
+	ChangeTag        string `json:"changeTag,omitempty"`
+	ZoneVersionId    string `json:"zoneVersionId,omitempty"`
+	LastModifiedDate string `json:"lastModifiedDate,omitempty"`
+	Stale            bool   `json:"stale,omitempty"`
 }
+
 
 // NewZone creates a new Zone
 func NewZone(params ZoneCreate) *ZoneCreate {
-	zone := &ZoneCreate{Zone: params.Zone,Type: params.Type, Masters: params.Masters, Comment: params.Comment,SignAndServe: params.SignAndServe}
+	zone := &ZoneCreate{Zone: params.Zone, Type: params.Type, Masters: params.Masters, Comment: params.Comment, SignAndServe: params.SignAndServe}
 	return zone
 }
 
 func NewZoneResponse(zonename string) *ZoneResponse {
-		zone := &ZoneResponse{Zone: zonename}
+	zone := &ZoneResponse{Zone: zonename}
 	return zone
 }
 
@@ -89,13 +89,13 @@ func NewChangeListResponse(zone string) *ChangeListResponse {
 }
 
 func NewZoneQueryString(ContractId string, gid string) *ZoneQueryString {
-	zonequerystring := &ZoneQueryString{ContractId: ContractId, Gid: gid }
+	zonequerystring := &ZoneQueryString{ContractId: ContractId, Gid: gid}
 	return zonequerystring
 }
 
 // GetZone retrieves a DNS Zone for a given hostname
 func GetZone(zonename string) (*ZoneResponse, error) {
-  zone := NewZoneResponse(zonename)
+	zone := NewZoneResponse(zonename)
 	req, err := client.NewRequest(
 		Config,
 		"GET",
@@ -170,9 +170,10 @@ func GetMasterZoneFile(zone string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
+	req.Header.Add("Accept", "text/dns")
 	res, err := client.Do(Config, req)
 	if err != nil {
+		log.Printf("[DEBUG] [Akamai LIB] ZM %v %v", res, err)
 		return "", err
 	}
 
@@ -182,23 +183,24 @@ func GetMasterZoneFile(zone string) (string, error) {
 		return "", &ZoneError{zoneName: zone}
 	} else {
 
-    bodyBytes , err2 :=  ioutil.ReadAll(res.Body)
+		bodyBytes, err2 := ioutil.ReadAll(res.Body)
 		if err2 != nil {
 			return "", err
 		}
-    masterZone := string(bodyBytes)
+		masterZone := string(bodyBytes)
 		return masterZone, nil
 	}
 }
 
-
 // Save updates the Zone
-func (zone *ZoneCreate ) Save(zonequerystring ZoneQueryString) error {
+func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
+	zoneWriteLock.Lock()
+  defer zoneWriteLock.Unlock()
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -231,7 +233,7 @@ func (zone *ZoneCreate ) Save(zonequerystring ZoneQueryString) error {
 }
 
 // Save changelist for the Zone to create default NS SOA records
-func (zone *ZoneCreate ) SaveChangelist() error {
+func (zone *ZoneCreate) SaveChangelist() error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
@@ -269,7 +271,7 @@ func (zone *ZoneCreate ) SaveChangelist() error {
 }
 
 // Save changelist for the Zone to create default NS SOA records
-func (zone *ZoneCreate ) SubmitChangelist() error {
+func (zone *ZoneCreate) SubmitChangelist() error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
@@ -306,9 +308,8 @@ func (zone *ZoneCreate ) SubmitChangelist() error {
 	return nil
 }
 
-
 // Save updates the Zone
-func (zone *ZoneCreate ) Update(zonequerystring ZoneQueryString) error {
+func (zone *ZoneCreate) Update(zonequerystring ZoneQueryString) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone

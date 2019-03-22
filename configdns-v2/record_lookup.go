@@ -87,7 +87,7 @@ func GetRecordList(zone string, name string, record_type string) (*RecordSetResp
 	}
 }
 
-func GetRecordListIP(zone string, name string, record_type string) ([]string, error) {
+func GetRdata(zone string, name string, record_type string) ([]string, error) {
 	records, err := GetRecordList(zone, name, record_type)
 	if err != nil {
 		return nil, err
@@ -100,14 +100,14 @@ func GetRecordListIP(zone string, name string, record_type string) ([]string, er
 		}
 	}
 
-	ips := make([]string, 0, arrLength)
+	rdata := make([]string, 0, arrLength)
 
 	for _, r := range records.Recordsets {
 		if r.Name == name {
 			for _, i := range r.Rdata {
-				ips = append(ips, i)
+				rdata = append(rdata, i)
 			}
 		}
 	}
-	return ips, nil
+	return rdata, nil
 }

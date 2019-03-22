@@ -2,7 +2,6 @@ package dnsv2
 
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-
 )
 
 type AuthorityResponse struct {
@@ -12,11 +11,10 @@ type AuthorityResponse struct {
 	} `json:"contracts"`
 }
 
-func NewAuthorityResponse( contract string) *AuthorityResponse {
-  authorities := &AuthorityResponse{}
-  return authorities
+func NewAuthorityResponse(contract string) *AuthorityResponse {
+	authorities := &AuthorityResponse{}
+	return authorities
 }
-
 
 func GetAuthorities(contractId string) (*AuthorityResponse, error) {
 	authorities := NewAuthorityResponse(contractId)
@@ -52,23 +50,23 @@ func GetAuthorities(contractId string) (*AuthorityResponse, error) {
 
 func GetNameServerRecordList(contractId string) ([]string, error) {
 
-  NSrecords,err := GetAuthorities(contractId)
+	NSrecords, err := GetAuthorities(contractId)
 
 	if err != nil {
 		return nil, err
 	}
 
-var arrLength int
-for _, c := range NSrecords.Contracts {
-	arrLength = len(c.Authorities)
-}
-
-	ns := make([]string, 0 , arrLength)
-
-for _, r := range NSrecords.Contracts {
-	for _, n := range r.Authorities {
-  ns = append(ns,n)
- }
-}
-	 return ns, nil
+	var arrLength int
+	for _, c := range NSrecords.Contracts {
+		arrLength = len(c.Authorities)
 	}
+
+	ns := make([]string, 0, arrLength)
+
+	for _, r := range NSrecords.Contracts {
+		for _, n := range r.Authorities {
+			ns = append(ns, n)
+		}
+	}
+	return ns, nil
+}

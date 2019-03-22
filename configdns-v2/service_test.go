@@ -42,7 +42,7 @@ func TestGetZoneSimple(t *testing.T) {
                             }`)
 
 	Init(config)
-        
+
 	zone, err := GetZone("example.com")
 
 	assert.NoError(t, err)

@@ -10,7 +10,7 @@ type SearchKey string
 
 const (
 	SearchByPropertyName SearchKey = "propertyName"
-	SearchByHostname SearchKey = "hostname"
+	SearchByHostname     SearchKey = "hostname"
 	SearchByEdgeHostname SearchKey = "edgeHostname"
 )
 
@@ -53,7 +53,6 @@ func Search(searchBy SearchKey, propertyName string) (*SearchResult, error) {
 	if client.IsError(res) {
 		return nil, client.NewAPIError(res)
 	}
-
 
 	results := &SearchResult{}
 	if err = client.BodyJSON(res, results); err != nil {
