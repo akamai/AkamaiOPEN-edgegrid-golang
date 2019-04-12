@@ -3,8 +3,8 @@ package dnsv2
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"strings"
-	"time"
 	"sync"
+	"time"
 )
 
 // All record types (below) must implement the DNSRecord interface
@@ -71,7 +71,7 @@ func (record *RecordBody) Save(zone string) error {
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
 	zoneRecordWriteLock.Lock()
-  defer zoneRecordWriteLock.Unlock()
+	defer zoneRecordWriteLock.Unlock()
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -109,7 +109,7 @@ func (record *RecordBody) Update(zone string) error {
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
 	zoneRecordWriteLock.Lock()
-  defer zoneRecordWriteLock.Unlock()
+	defer zoneRecordWriteLock.Unlock()
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -147,7 +147,7 @@ func (record *RecordBody) Delete(zone string) error {
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
 	zoneRecordWriteLock.Lock()
-  defer zoneRecordWriteLock.Unlock()
+	defer zoneRecordWriteLock.Unlock()
 	req, err := client.NewJSONRequest(
 		Config,
 		"DELETE",

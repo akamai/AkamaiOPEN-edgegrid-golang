@@ -71,7 +71,6 @@ type ChangeListResponse struct {
 	Stale            bool   `json:"stale,omitempty"`
 }
 
-
 // NewZone creates a new Zone
 func NewZone(params ZoneCreate) *ZoneCreate {
 	zone := &ZoneCreate{Zone: params.Zone, Type: params.Type, Masters: params.Masters, Comment: params.Comment, SignAndServe: params.SignAndServe}
@@ -200,7 +199,7 @@ func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString) error {
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
 	zoneWriteLock.Lock()
-  defer zoneWriteLock.Unlock()
+	defer zoneWriteLock.Unlock()
 
 	req, err := client.NewJSONRequest(
 		Config,

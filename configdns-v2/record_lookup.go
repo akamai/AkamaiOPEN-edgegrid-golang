@@ -1,12 +1,12 @@
 package dnsv2
 
 import (
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-	"strings"
-	"net"
 	"encoding/hex"
 	"fmt"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"net"
 	"strconv"
+	"strings"
 )
 
 type RecordSetResponse struct {
@@ -70,11 +70,11 @@ func FullIPv6(ip net.IP) string {
 		string(dst[28:])
 }
 
-func padvalue(str string ) string {
-	v_str := strings.Replace(str,"m","",-1)
-	v_float,err := strconv.ParseFloat(v_str,32)
-	if (err != nil ) {
-	return "FAIL"
+func padvalue(str string) string {
+	v_str := strings.Replace(str, "m", "", -1)
+	v_float, err := strconv.ParseFloat(v_str, 32)
+	if err != nil {
+		return "FAIL"
 	}
 	v_result := fmt.Sprintf("%.2f", v_float)
 
@@ -85,8 +85,8 @@ func padvalue(str string ) string {
 func padCoordinates(str string) string {
 
 	s := strings.Split(str, " ")
-  lat_d, lat_m, lat_s, lat_dir, long_d, long_m, long_s, long_dir, altitude, size, horiz_precision, vert_precision  := s[0], s[1], s[2], s[3], s[4], s[5] ,s[6] ,s[7], s[8], s[9], s[10], s[11]
-  return lat_d+" "+lat_m+" "+lat_s+" "+lat_dir+" "+long_d+" "+long_m+" "+long_s+" "+long_dir+" "+padvalue(altitude)+"m "+padvalue(size)+"m "+padvalue(horiz_precision)+"m "+padvalue(vert_precision)+"m"
+	lat_d, lat_m, lat_s, lat_dir, long_d, long_m, long_s, long_dir, altitude, size, horiz_precision, vert_precision := s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11]
+	return lat_d + " " + lat_m + " " + lat_s + " " + lat_dir + " " + long_d + " " + long_m + " " + long_s + " " + long_dir + " " + padvalue(altitude) + "m " + padvalue(size) + "m " + padvalue(horiz_precision) + "m " + padvalue(vert_precision) + "m"
 
 }
 
@@ -143,12 +143,12 @@ func GetRdata(zone string, name string, record_type string) ([]string, error) {
 	for _, r := range records.Recordsets {
 		if r.Name == name {
 			for _, i := range r.Rdata {
-				str := strings.Replace(i,"\"","",-1)
+				str := strings.Replace(i, "\"", "", -1)
 
 				if record_type == "AAAA" {
 					addr := net.ParseIP(str)
 					result := FullIPv6(addr)
-					str =  result
+					str = result
 				} else if record_type == "LOC" {
 					str = padCoordinates(str)
 				}
