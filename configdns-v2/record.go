@@ -102,8 +102,52 @@ func (record *RecordBody) Save(zone string) error {
 	return nil
 }
 
-func (record *RecordBody) Delete(zone string) error {
+func (record *RecordBody) Update(zone string) error {
+	// This lock will restrict the concurrency of API calls
+	// to 1 save request at a time. This is needed for the Soa.Serial value which
+	// is required to be incremented for every subsequent update to a zone
+	// so we have to save just one request at a time to ensure this is always
+	// incremented properly
+	zoneRecordWriteLock.Lock()
+  defer zoneRecordWriteLock.Unlock()
 
+	req, err := client.NewJSONRequest(
+		Config,
+		"PUT",
+		"/config-dns/v2/zones/"+zone+"/names/"+record.Name+"/types/"+record.RecordType,
+		record,
+	)
+	if err != nil {
+		return err
+	}
+	res, err := client.Do(Config, req)
+
+	// Network error
+	if err != nil {
+		return &ZoneError{
+			zoneName:         zone,
+			httpErrorMessage: err.Error(),
+			err:              err,
+		}
+	}
+
+	// API error
+	if client.IsError(res) {
+		err := client.NewAPIError(res)
+		return &ZoneError{zoneName: zone, apiErrorMessage: err.Detail, err: err}
+	}
+
+	return nil
+}
+
+func (record *RecordBody) Delete(zone string) error {
+	// This lock will restrict the concurrency of API calls
+	// to 1 save request at a time. This is needed for the Soa.Serial value which
+	// is required to be incremented for every subsequent update to a zone
+	// so we have to save just one request at a time to ensure this is always
+	// incremented properly
+	zoneRecordWriteLock.Lock()
+  defer zoneRecordWriteLock.Unlock()
 	req, err := client.NewJSONRequest(
 		Config,
 		"DELETE",
