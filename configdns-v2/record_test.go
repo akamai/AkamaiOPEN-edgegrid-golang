@@ -20,30 +20,40 @@ func TestRecord_ContainsHelper(t *testing.T) {
 }
 
 func TestRecord_ARecord(t *testing.T) {
-	a := NewARecord()
-	f := []string{
-		"name",
-		"ttl",
-		"active",
-		"target",
-	}
-	assert.Equal(t, a.fieldMap, f)
-	assert.Equal(t, a.fieldMap, a.GetAllowedFields())
-	assert.Equal(t, a.SetField("name", "test1"), nil)
-	assert.Equal(t, a.SetField("doesntExist", "test1"), &RecordError{fieldName: "doesntExist"})
-	a.SetField("ttl", 900)
-	a.SetField("active", true)
-	a.SetField("target", "test2")
+
+	a := &RecordBody{Name: "test1", RecordType: "A"}
+
+	/*	a := NewARecord()
+		f := []string{
+			"name",
+			"ttl",
+			"active",
+			"target",
+		}*/
+
+	//	assert.Equal(t, a.fieldMap, f)
+	//	assert.Equal(t, a.fieldMap, a.GetAllowedFields())
+	//assert.Equal(t, a.SetField("name", "test1"), nil)
+	assert.Equal(t, "test1", a.Name)
+	//assert.Equal(t, a.SetField("doesntExist", "test1"), &RecordError{fieldName: "doesntExist"})
+	a.TTL = 900
+	//a.SetField("ttl", 900)
+	//a.SetField("active", true)
+	a.Active = true
+	//a.SetField("target", "test2")
+	records := make([]string, 0, 1)
+	records = append(records, "test2")
+	a.Target = records
 	assert.Equal(t, a.ToMap(), map[string]interface{}{
 		"name":   "test1",
 		"ttl":    900,
 		"active": true,
-		"target": "test2",
+		"target": []string{"test2"},
 	})
 }
 
 func TestRecord_AllRecords_WrongTypes(t *testing.T) {
-	a := NewARecord()
+	/*a := NewARecord()
 	e := a.SetField("name", 1)
 	assert.Equal(t, e, &RecordError{fieldName: "name"})
 
@@ -126,4 +136,5 @@ func TestRecord_AllRecords_WrongTypes(t *testing.T) {
 	a20 := NewTxtRecord()
 	e = a20.SetField("name", 1)
 	assert.Equal(t, e, &RecordError{fieldName: "name"})
+	*/
 }

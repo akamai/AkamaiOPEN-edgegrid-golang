@@ -9,6 +9,25 @@ import (
 	"strings"
 )
 
+type Recordset struct {
+	Name  string   `json:"name"`
+	Type  string   `json:"type"`
+	TTL   int      `json:"ttl"`
+	Rdata []string `json:"rdata"`
+} //`json:"recordsets"`
+
+type MetadataH struct {
+	ShowAll       bool `json:"showAll"`
+	TotalElements int  `json:"totalElements"`
+} //`json:"metadata"`
+
+type RecordSetResponse struct {
+	Metadata MetadataH `json:"metadata"`
+	Recordsets []Recordset `json:"recordsets"`
+}
+
+
+/*
 type RecordSetResponse struct {
 	Metadata struct {
 		ShowAll       bool `json:"showAll"`
@@ -21,6 +40,10 @@ type RecordSetResponse struct {
 		Rdata []string `json:"rdata"`
 	} `json:"recordsets"`
 }
+*/
+
+
+
 
 /*
 {

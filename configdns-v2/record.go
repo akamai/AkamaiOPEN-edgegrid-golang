@@ -2,14 +2,11 @@ package dnsv2
 
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-	"strings"
+
 	"sync"
-	"time"
+
 )
 
-// All record types (below) must implement the DNSRecord interface
-// This allows the record to be used dynamically in slices - see the Zone struct definition in zone.go
-//
 // The record types implemented and their fields are as defined here
 // https://developer.akamai.com/api/luna/config-dns/data.html
 
@@ -53,11 +50,21 @@ type RecordBody struct {
 	Port                uint16   `json:"port,omitempty"`                   //SrvRecord
 	FingerprintType     int      `json:"fingerprint_type,omitempty"`       //SshfpRecord
 	Fingerprint         string   `json:"fingerprint,omitempty"`            //SshfpRecord
+	PriorityIncrement   int      `json:"priority_increment,omitempty"`     //MX priority Increment
 }
 
 var (
 	zoneRecordWriteLock sync.Mutex
 )
+
+func (record *RecordBody) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"name":   record.Name,
+		"ttl":    record.TTL,
+		"active": record.Active,
+		"target": record.Target,
+	}
+}
 
 func NewRecordBody(params RecordBody) *RecordBody {
 	recordbody := &RecordBody{Name: params.Name}
@@ -175,119 +182,4 @@ func (record *RecordBody) Delete(zone string) error {
 	}
 
 	return nil
-}
-
-type SoaRecord struct {
-	fieldMap       []string `json:"-"`
-	originalSerial uint     `json:"-"`
-	TTL            int      `json:"ttl,omitempty"`
-	Originserver   string   `json:"originserver,omitempty"`
-	Contact        string   `json:"contact,omitempty"`
-	Serial         uint     `json:"serial,omitempty"`
-	Refresh        int      `json:"refresh,omitempty"`
-	Retry          int      `json:"retry,omitempty"`
-	Expire         int      `json:"expire,omitempty"`
-	Minimum        uint     `json:"minimum,omitempty"`
-}
-
-func NewSoaRecord() *SoaRecord {
-	r := &SoaRecord{
-		fieldMap: []string{
-			"ttl",
-			"originserver",
-			"contact",
-			"serial",
-			"refresh",
-			"retry",
-			"expire",
-			"minimum",
-		},
-	}
-	r.SetField("serial", int(time.Now().Unix()))
-	return r
-}
-
-func (record *SoaRecord) GetAllowedFields() []string {
-	return record.fieldMap
-}
-
-func (record *SoaRecord) SetField(name string, value interface{}) error {
-	if contains(record.fieldMap, name) {
-		switch name {
-		case "ttl":
-			v, ok := value.(int)
-			if ok {
-				record.TTL = v
-				return nil
-			}
-		case "originserver":
-			v, ok := value.(string)
-			if ok {
-				record.Originserver = v
-				return nil
-			}
-		case "contact":
-			v, ok := value.(string)
-			if ok {
-				record.Contact = v
-				return nil
-			}
-		case "serial":
-			v, ok := value.(uint)
-			if ok {
-				record.Serial = v
-				return nil
-			}
-		case "refresh":
-			v, ok := value.(int)
-			if ok {
-				record.Refresh = v
-				return nil
-			}
-		case "retry":
-			v, ok := value.(int)
-			if ok {
-				record.Retry = v
-				return nil
-			}
-		case "expire":
-			v, ok := value.(int)
-			if ok {
-				record.Expire = v
-				return nil
-			}
-		case "minimum":
-			v, ok := value.(uint)
-			if ok {
-				record.Minimum = v
-				return nil
-			}
-		}
-	}
-	return &RecordError{fieldName: name}
-}
-
-func (record *SoaRecord) ToMap() map[string]interface{} {
-	return map[string]interface{}{
-		"ttl":          record.TTL,
-		"originserver": record.Originserver,
-		"contact":      record.Contact,
-		"serial":       record.Serial,
-		"refresh":      record.Refresh,
-		"retry":        record.Retry,
-		"expire":       record.Expire,
-		"minimum":      record.Minimum,
-	}
-}
-
-func contains(fieldMap []string, field string) bool {
-	field = strings.ToLower(field)
-
-	for _, r := range fieldMap {
-		if r == field {
-			return true
-		}
-	}
-
-	return false
 }

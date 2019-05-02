@@ -15,12 +15,12 @@ func TestZone_JSON(t *testing.T) {
     "signAndServe": false
 }`)
 
-	zonecreate := dnsv2.ZoneCreate{"example.com", "PRIMARY", "", "This is a test zone", false}
+	zonecreate := ZoneCreate{"example.com", "PRIMARY", []string{""}, "This is a test zone", false}
 	zone := NewZone(zonecreate)
 	err := jsonhooks.Unmarshal(responseBody, zone)
 	assert.NoError(t, err)
-	assert.Equal(t, zone.zone, "example.com")
-	//  assert.Equal(t, zone.type, "PRIMARY")
-	assert.Equal(t, zone.comment, "This is a test zone")
-	assert.Equal(t, zone.signAndServe, false)
+	assert.Equal(t, zone.Zone, "example.com")
+	assert.Equal(t, zone.Type, "PRIMARY")
+	assert.Equal(t, zone.Comment, "This is a test zone")
+	assert.Equal(t, zone.SignAndServe, false)
 }
