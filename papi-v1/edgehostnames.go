@@ -148,6 +148,9 @@ type EdgeHostname struct {
 	ProductID              string      `json:"productId"`
 	DomainPrefix           string      `json:"domainPrefix"`
 	DomainSuffix           string      `json:"domainSuffix"`
+	CertEnrollmentId       int         `json:"certEnrollmentId,omitempty"`
+	SlotNumber             int         `json:"slotNumber,omitempty"`
+	SecureNetwork          string      `json:"secureNetwork,omitempty"`
 	Status                 StatusValue `json:"status,omitempty"`
 	Secure                 bool        `json:"secure,omitempty"`
 	IPVersionBehavior      string      `json:"ipVersionBehavior,omitempty"`
