@@ -277,7 +277,6 @@ func Test_removeNonCnameName(t *testing.T) {
 		nonCnameNames = backup
 	}()
 
-
 	names := []name{
 		{recordType: "TXT", name: "test.com"},
 		{recordType: "TXT", name: "foo.com"},
@@ -286,7 +285,7 @@ func Test_removeNonCnameName(t *testing.T) {
 	}
 
 	for _, n := range names {
-		nonCnameNames = append(nonCnameNames,  n)
+		nonCnameNames = append(nonCnameNames, n)
 	}
 
 	zone := Zone{}
@@ -307,7 +306,7 @@ func Test_removeCnameName(t *testing.T) {
 	}
 
 	for _, n := range names {
-		cnameNames = append(cnameNames,  n)
+		cnameNames = append(cnameNames, n)
 	}
 
 	zone := Zone{}

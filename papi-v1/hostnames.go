@@ -144,11 +144,12 @@ func (hostnames *Hostnames) Save() error {
 // Hostname represents a property hostname resource
 type Hostname struct {
 	client.Resource
-	parent         *Hostnames
-	CnameType      CnameTypeValue `json:"cnameType"`
-	EdgeHostnameID string         `json:"edgeHostnameId"`
-	CnameFrom      string         `json:"cnameFrom"`
-	CnameTo        string         `json:"cnameTo,omitempty"`
+	parent           *Hostnames
+	CnameType        CnameTypeValue `json:"cnameType"`
+	EdgeHostnameID   string         `json:"edgeHostnameId,omitempty"`
+	CnameFrom        string         `json:"cnameFrom"`
+	CnameTo          string         `json:"cnameTo,omitempty"`
+	CertEnrollmentId string         `json:"certEnrollmentId,omitempty"`
 }
 
 // NewHostname creates a new Hostname

@@ -110,6 +110,31 @@ err:
 	return group, nil
 }
 
+// FindGroup finds a specific group by ID
+func (groups *Groups) FindGroupId(name string) (*Group, error) {
+	var group *Group
+	var groupFound bool
+
+	if name == "" {
+		goto err
+	}
+
+	for _, group = range groups.Groups.Items {
+		if group.GroupName == name {
+			groupFound = true
+			break
+		}
+	}
+
+err:
+	if !groupFound {
+		return nil, fmt.Errorf("Unable to find group: \"%s\"", name)
+	}
+
+	return group, nil
+}
+
+
 // Group represents a group resource
 type Group struct {
 	client.Resource
