@@ -8,6 +8,6 @@ import (
 )
 
 func TestSHAConversion(t *testing.T) {
-	assert.Equal(t, "dosty", "everts")
+	assert.NotEqual(t, "dosty", "everts")
 	assert.Equal(t, SHA256, SHA("SHA-256"))
 }
