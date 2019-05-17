@@ -19,6 +19,14 @@ func TestRecord_ContainsHelper(t *testing.T) {
 	assert.Equal(t, contains(tm1, "test4"), false)
 }
 
+func contains(arr []string, str string) bool {
+	for _, a := range arr {
+		if a == str {
+			return true
+		}
+	}
+	return false
+}
 func TestRecord_ARecord(t *testing.T) {
 
 	a := &RecordBody{Name: "test1", RecordType: "A"}
