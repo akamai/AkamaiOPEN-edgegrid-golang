@@ -11,30 +11,6 @@ var (
 	zoneWriteLock sync.Mutex
 )
 
-// Zone represents a DNS zone
-/*{
-    "zone": "river.com",
-    "type": "secondary",
-    "masters": [
-        "1.2.3.4",
-        "1.2.3.5"
-    ],
-    "comment": "Adding bodies of water"
-}
-
-{
-    "activationState": "ACTIVE",
-    "contractId": "C-1FRYVV3",
-    "lastActivationDate": "2018-03-20T06:49:30Z",
-    "lastModifiedBy": "vwwuq65mjvsrbvcr",
-    "lastModifiedDate": "2019-01-28T12:05:13Z",
-    "signAndServe": false,
-    "type": "PRIMARY",
-    "versionId": "2e9aa959-5e99-405c-b233-360639449fa1",
-    "zone": "akamaideveloper.net"
-}
-
-*/
 
 type ZoneQueryString struct {
 	ContractId string `json:"contractid,omitempty"`

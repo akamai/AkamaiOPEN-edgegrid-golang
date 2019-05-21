@@ -26,60 +26,6 @@ type RecordSetResponse struct {
 	Recordsets []Recordset `json:"recordsets"`
 }
 
-
-/*
-type RecordSetResponse struct {
-	Metadata struct {
-		ShowAll       bool `json:"showAll"`
-		TotalElements int  `json:"totalElements"`
-	} `json:"metadata"`
-	Recordsets []struct {
-		Name  string   `json:"name"`
-		Type  string   `json:"type"`
-		TTL   int      `json:"ttl"`
-		Rdata []string `json:"rdata"`
-	} `json:"recordsets"`
-}
-*/
-
-
-
-
-/*
-{
-  "metadata": {
-    "zone": "example.com",
-    "types": [
-      "A"
-    ],
-    "page": 1,
-    "pageSize": 25,
-    "totalElements": 2
-  },
-  "recordsets": [
-    {
-      "name": "www.example.com",
-      "type": "A",
-      "ttl": 300,
-      "rdata": [
-        "10.0.0.2",
-        "10.0.0.3"
-      ]
-    },
-    {
-      "name": "mail.example.com",
-      "type": "A",
-      "ttl": 300,
-      "rdata": [
-        "192.168.0.1",
-        "192.168.0.2"
-      ]
-    }
-  ]
-}
-
-*/
-
 func FullIPv6(ip net.IP) string {
 	dst := make([]byte, hex.EncodedLen(len(ip)))
 	_ = hex.Encode(dst, ip)
