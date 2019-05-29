@@ -1,0 +1,101 @@
+package reportsgtm
+
+import (
+        "net/http"
+        "strconv"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/configgtm-v1"
+)
+
+//
+// Support gtm reports thru Edgegrid
+// Based on 1.0 Schema
+//
+
+// Datacenter Traffic Report Structs
+type DCTMeta struct {
+        Uri                             string            `json:uri"`
+        Domain                          string            `json:"domain"`
+        Interval                        string            `json:"interval,omitempty"`
+        DatacenterId                    int               `json:"datacenterId"`
+        DatacenterNickname              string            `json:"datacenterNickname"`
+        Start                           string            `json:"start"`
+        End                             string            `json:"end"`     
+}
+
+type DCTDRow struct {
+        Name                            string            `json:"name"`
+        Requests                        int64             `json:"requests"`
+        Status                          string            `json:"status"`
+}
+
+type DCTData struct {
+        Timestamp                       string            `json:"timestamp"`
+        Properties                      []*DCTDRow        `json:"properties"`
+}
+
+type DcTrafficResponse struct {
+        Metadata                        *DCTMeta           `json:"metadata"`
+        DataRows                        *[]DCTData         `json:"dataRows"`
+        DataSummary                     interface{}        `json:"dataSummary"`
+        Links                           []*configgtm.Link  `json:"links"`
+}
+
+// GetTrafficPerDatacenter retrieves Report Traffic per datacenter. Opt args - start, end      
+func GetTrafficPerDatacenter(domainname string, datacenterid int, optArgs map[string]string) (*DcTrafficResponse, error) {
+        stat := &DcTrafficResponse{}
+        hostUrl := "/gtm-api/v1/reports/traffic/domains/"+domainname+"/datacenters/"+strconv.Itoa(datacenterid)
+          
+        req, err := client.NewRequest(
+                Config,
+                "GET",
+                hostUrl,
+                nil,
+        )
+        if err != nil {
+                return nil, err
+        }
+
+        // Look for and process optional query params
+        q := req.URL.Query()
+        for k, v := range optArgs {
+                switch k {
+                case "start":
+                        fallthrough
+                case "end":
+                        q.Add(k, v)
+                }
+        }
+        if optArgs != nil {
+                req.URL.RawQuery = q.Encode()
+        }
+
+        // print/log the request if warranted
+        printHttpRequest(req, true)
+
+        res, err := client.Do(Config, req)
+        if err != nil {
+                return nil, err
+        }
+
+        // print/log the response if warranted
+        printHttpResponse(res, true)
+
+        if client.IsError(res) && res.StatusCode != 404 {
+                return nil, client.NewAPIError(res)
+        } else if res.StatusCode == 404 {
+                cErr := &configgtm.CommonError{}
+                cErr.SetItem("entityName", "Datacenter") 
+                cErr.SetItem("name", strconv.Itoa(datacenterid))
+                return nil, cErr
+        } else {
+                err = client.BodyJSON(res, stat)
+                if err != nil {
+                        return nil, err
+                }
+
+                return stat, nil
+        }
+}
+
