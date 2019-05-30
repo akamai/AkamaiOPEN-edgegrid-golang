@@ -48,10 +48,14 @@ func ListCidrMaps(domainname string) ([]*CidrMap, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
         if err != nil {
                 return nil, err
         }
+
+        printHttpResponse(res, true)
 
         if client.IsError(res) && res.StatusCode != 404 {
                 return nil, client.NewAPIError(res)
@@ -82,10 +86,14 @@ func GetCidrMap(cidrmapname, domainname string) (*CidrMap, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return nil, err
 	}
+
+        printHttpResponse(res, true)
 
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
@@ -152,7 +160,11 @@ func (cidr *CidrMap) save(domainname string) (*CidrMapResponse, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
+
+        printHttpResponse(res, true)
 
         // Network error
         if err != nil {
@@ -195,12 +207,14 @@ func (cidr *CidrMap) Delete(domainname string) (*ResponseStatus, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
         if err != nil {
                 return nil, err
         }
 
-        res, err = client.Do(Config, req)
+        printHttpResponse(res, true)
 
         // Network error
         if err != nil {

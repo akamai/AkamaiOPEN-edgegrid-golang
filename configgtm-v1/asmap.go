@@ -2,9 +2,6 @@ package configgtm
 
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
- 
-        "fmt"
-        "net/http/httputil"
 )
 
 //
@@ -46,10 +43,14 @@ func GetAsMap(asmapname, domainname string) (*AsMap, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return nil, err
 	}
+
+        printHttpResponse(res, true)
 
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
@@ -117,12 +118,11 @@ func (as *AsMap) save(domainname string) (*AsMapResponse, error) {
 
         SetHeader(req)
 
-        b, err := httputil.DumpRequestOut(req, true)
-        if err == nil {
-                fmt.Println(string(b))
-        }
+        printHttpRequest(req, true)
 
         res, err := client.Do(Config, req)
+
+        printHttpResponse(res, true)
 
         // Network error
         if err != nil {
@@ -165,12 +165,14 @@ func (as *AsMap) Delete(domainname string) (*ResponseStatus, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
         if err != nil {
                 return nil, err
         }
 
-        res, err = client.Do(Config, req)
+        printHttpResponse(res, true)
 
         // Network error
         if err != nil {

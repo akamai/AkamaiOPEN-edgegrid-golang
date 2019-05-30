@@ -101,10 +101,14 @@ func GetDomainStatus(domainname string) (*ResponseStatus, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
         if err != nil {
                 return nil, err
         }
+
+        printHttpResponse(res, true)
 
         if client.IsError(res) && res.StatusCode != 404 {
                 return nil, client.NewAPIError(res)
@@ -135,10 +139,14 @@ func ListDomains() ([]*DomainItem, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
         if err != nil {
                 return nil, err
         }
+
+        printHttpResponse(res, true)
 
         if client.IsError(res) && res.StatusCode != 404 {
                 return nil, client.NewAPIError(res)
@@ -169,10 +177,14 @@ func GetDomain(domainname string) (*Domain, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return nil, err
 	}
+
+        printHttpResponse(res, true)
 
         if client.IsError(res) && res.StatusCode != 404 {
                 return nil, client.NewAPIError(res)
@@ -189,11 +201,11 @@ func GetDomain(domainname string) (*Domain, error) {
 }
 
 // Save method; Create or Update
-func (domain *Domain) save(queryArgs map[string]string) (*DomainResponse, error) {
+func (domain *Domain) save(queryArgs map[string]string, operation string) (*DomainResponse, error) {
       
         req, err := client.NewJSONRequest(
                 Config,
-                "PUT",
+                operation,
                 "/config-gtm/v1/domains/"+domain.Name,
                 domain,
         )
@@ -215,7 +227,11 @@ func (domain *Domain) save(queryArgs map[string]string) (*DomainResponse, error)
                  req.URL.RawQuery = q.Encode()
         }
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
+
+        printHttpResponse(res, true)
 
         // Network error
         if err != nil {
@@ -247,26 +263,16 @@ func (domain *Domain) save(queryArgs map[string]string) (*DomainResponse, error)
 
 func (domain *Domain) Create(queryArgs map[string]string) (*DomainResponse, error) {
 
-        // Check if domain already exists
-        checkDom, err := GetDomain(domain.Name)
-        // Shouldn't be found
-        if checkDom == nil {
-                return domain.save(queryArgs)
-        }
+        op := "POST"
+        return domain.save(queryArgs, op)
 
-        // Either exists or API error. Caller needs check
-        if err != nil {
-                return nil, err
-        } else {
-                return nil, &CommonError{entityName: "Domain", name: domain.Name, apiErrorMessage: "Domain already exists"}
-        }
-      
 }
 
 func (domain *Domain) Update(queryArgs map[string]string) (*ResponseStatus, error) {
        
         // Any validation to do? 
-        stat, err := domain.save(queryArgs)
+        op := "PUT"
+        stat, err := domain.save(queryArgs, op)
         if err != nil {
                 return nil, err
         }
@@ -288,12 +294,14 @@ func (domain *Domain) Delete() (*ResponseStatus, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
         if err != nil {
                 return nil, err
         }
 
-        res, err = client.Do(Config, req)
+        printHttpResponse(res, true)
 
         // Network error
         if err != nil {

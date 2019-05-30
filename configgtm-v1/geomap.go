@@ -47,10 +47,14 @@ func ListGeoMaps(domainname string) ([]*GeoMap, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
         if err != nil {
                 return nil, err
         }
+
+        printHttpResponse(res, true)
 
         if client.IsError(res) && res.StatusCode != 404 {
                 return nil, client.NewAPIError(res)
@@ -82,10 +86,14 @@ func GetGeoMap(geomapname, domainname string) (*GeoMap, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return nil, err
 	}
+
+        printHttpResponse(res, true)
 
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
@@ -153,7 +161,11 @@ func (geo *GeoMap) save(domainname string) (*GeoMapResponse, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
+
+        printHttpResponse(res, true)
 
         // Network error
         if err != nil {
@@ -196,12 +208,14 @@ func (geo *GeoMap) Delete(domainname string) (*ResponseStatus, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
         if err != nil {
                 return nil, err
         }
 
-        res, err = client.Do(Config, req)
+        printHttpResponse(res, true)
 
         // Network error
         if err != nil {

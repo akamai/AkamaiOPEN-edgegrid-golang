@@ -135,10 +135,14 @@ func ListProperties(domainname string) ([]*Property, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
         if err != nil {
                 return nil, err
         }
+
+        printHttpResponse(res, true)
 
         if client.IsError(res) && res.StatusCode != 404 {
                 return nil, client.NewAPIError(res)
@@ -169,10 +173,14 @@ func GetProperty(propertyname, domainname string) (*Property, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return nil, err
 	}
+
+        printHttpResponse(res, true)
 
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
@@ -222,7 +230,11 @@ func (property *Property) save(domainname string)  (*PropertyResponse,error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
+
+        printHttpResponse(res, true)
 
 	// Network error
 	if err != nil {
@@ -265,10 +277,14 @@ func (property *Property) Delete(domainname string) (*ResponseStatus, error) {
 
         SetHeader(req)
 
+        printHttpRequest(req, true)
+
         res, err := client.Do(Config, req)
         if err != nil {
                 return nil, err
         }
+
+        printHttpResponse(res, true)
 
         // Network error
         if err != nil {
