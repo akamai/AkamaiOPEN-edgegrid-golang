@@ -1,9 +1,9 @@
 package dnsv2
 
 import (
-	"testing"
-  "fmt"
+	"fmt"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
+	"testing"
 
 	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
@@ -105,102 +105,102 @@ func TestGetZoneRecords(t *testing.T) {
 				BodyString(test.responseBody)
 
 			Init(config)
-			fmt.Println("Record Type "+test.recordType)
+			fmt.Println("Record Type " + test.recordType)
 			fmt.Println(test.expectedRecords.([]*RecordSetResponse)[0].Metadata.ShowAll)
 			fmt.Println(test.expectedRecords.([]*RecordSetResponse)[0].Recordsets[0].Name)
 			zone, err := GetZone("example.com")
-      records, err := GetRecordList("example.com", "example.com", test.recordType) // (*RecordSetResponse, error)
+			records, err := GetRecordList("example.com", "example.com", test.recordType) // (*RecordSetResponse, error)
 
 			assert.NoError(t, err)
 
 			assert.IsType(t, &RecordSetResponse{}, records)
 
-				if test.expectedRecords != nil {
-					switch test.recordType {
-					case "A":
-						fmt.Println(zone)
-						fmt.Println(records)
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "AAAA":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "AFSDB":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "CNAME":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "DNSKEY":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "DS":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "HINFO":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "LOC":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "MX":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "NAPTR":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "NS":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "NSEC3":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "NSEC3PARAM":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "PTR":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "RP":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "RRSIG":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "SPF":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "SRV":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "SSHFP":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					case "TXT":
-						assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
-						assert.ObjectsAreEqual(test.expectedRecords, records)
-						break
-					}
+			if test.expectedRecords != nil {
+				switch test.recordType {
+				case "A":
+					fmt.Println(zone)
+					fmt.Println(records)
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "AAAA":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "AFSDB":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "CNAME":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "DNSKEY":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "DS":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "HINFO":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "LOC":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "MX":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "NAPTR":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "NS":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "NSEC3":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "NSEC3PARAM":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "PTR":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "RP":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "RRSIG":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "SPF":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "SRV":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "SSHFP":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
+				case "TXT":
+					assert.Equal(t, len(test.expectedRecords.([]*RecordSetResponse)), len(records.Recordsets))
+					assert.ObjectsAreEqual(test.expectedRecords, records)
+					break
 				}
+			}
 		})
 	}
 }
@@ -241,21 +241,21 @@ func testGetZoneCompleteProvider() recordTests {
 			expectedRecords: []*RecordSetResponse{
 				&RecordSetResponse{
 					//Active: true,
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "arecord", Type: "A", TTL:    3600, Rdata: []string{"1.2.3.4","1.2.3.5"} }},
-				  //Recordset {Target: []string{"1.2.3.4","1.2.3.5"}},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "arecord", Type: "A", TTL: 3600, Rdata: []string{"1.2.3.4", "1.2.3.5"}}},
+					//Recordset {Target: []string{"1.2.3.4","1.2.3.5"}},
 					//Recordset {TTL:    3600},
 				},
-			/*	&RecordSetResponse{
-					//Active: true,
-					//Name:   "origin",
-					//Metadata {},
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "arecord", Type: "A", TTL:    3600, Rdata: []string{"1.2.3.9"} }},
-					//Recordsets {Name:   "origin"},
-					//Recordsets {Target: []string{"1.2.3.9"}},
-				 // Recordsets {	TTL:    3600},
-				},*/
+				/*	&RecordSetResponse{
+						//Active: true,
+						//Name:   "origin",
+						//Metadata {},
+						Metadata: MetadataH {ShowAll: true, TotalElements: 1},
+						Recordsets: []Recordset { Recordset{Name: "arecord", Type: "A", TTL:    3600, Rdata: []string{"1.2.3.9"} }},
+						//Recordsets {Name:   "origin"},
+						//Recordsets {Target: []string{"1.2.3.9"}},
+					 // Recordsets {	TTL:    3600},
+					},*/
 			},
 		},
 		{
@@ -284,8 +284,8 @@ func testGetZoneCompleteProvider() recordTests {
 					//Name:   "ipv6record",
 					//Target: []string{"2001:0db8::ff00:0042:8329"},
 					//TTL:    3600,
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "ipv6record.akavaiodeveloper.net", Type: "AAAA", TTL:    3600, Rdata: []string{"2001:db8:0:0:0:ff00:42:8329"} }},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "ipv6record.akavaiodeveloper.net", Type: "AAAA", TTL: 3600, Rdata: []string{"2001:db8:0:0:0:ff00:42:8329"}}},
 				},
 			},
 		},
@@ -316,8 +316,8 @@ func testGetZoneCompleteProvider() recordTests {
 					Subtype: 1,
 					Target:  []string{"example.com."},
 					TTL:     7200,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "afsdb.akavaiodeveloper.net", Type: "AFSDB", TTL:    3600, Rdata: []string{"4 example.com."} }},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "afsdb.akavaiodeveloper.net", Type: "AFSDB", TTL: 3600, Rdata: []string{"4 example.com."}}},
 				},
 			},
 		},
@@ -347,8 +347,8 @@ func testGetZoneCompleteProvider() recordTests {
 					Name:   "redirect",
 					Target: []string{"arecord.example.com."},
 					TTL:    3600,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "www.akavaiodeveloper.net", Type: "CNAME", TTL:    300, Rdata: []string{"api.akavaiodeveloper.net."} }},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "www.akavaiodeveloper.net", Type: "CNAME", TTL: 300, Rdata: []string{"api.akavaiodeveloper.net."}}},
 				},
 			},
 		},
@@ -374,15 +374,15 @@ func testGetZoneCompleteProvider() recordTests {
 			expectedType: []*RecordSetResponse{},
 			expectedRecords: []*RecordSetResponse{
 				&RecordSetResponse{
-				/*	Active:    true,
-					Algorithm: 3,
-					Flags:     257,
-					Key:       "Av//0/goGKPtaa28nQvPoUwVQ ... i/0hC+1CrmQkuuKtQt98WObuv7q8iQ==",
-					Name:      "dnskey",
-					Protocol:  7,
-					TTL:       7200,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "dnskey.akavaiodeveloper.net", Type: "DNSKEY", TTL:    7200, Rdata: []string{"257 7 3 Av//0/goGKPtaa28nQvPoUwVP++/i/0hC+1CrmQkuuKtQt98WObuv7q8iQ=="} }},
+					/*	Active:    true,
+						Algorithm: 3,
+						Flags:     257,
+						Key:       "Av//0/goGKPtaa28nQvPoUwVQ ... i/0hC+1CrmQkuuKtQt98WObuv7q8iQ==",
+						Name:      "dnskey",
+						Protocol:  7,
+						TTL:       7200,*/
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "dnskey.akavaiodeveloper.net", Type: "DNSKEY", TTL: 7200, Rdata: []string{"257 7 3 Av//0/goGKPtaa28nQvPoUwVP++/i/0hC+1CrmQkuuKtQt98WObuv7q8iQ=="}}},
 				},
 			},
 		},
@@ -408,15 +408,15 @@ func testGetZoneCompleteProvider() recordTests {
 			expectedType: []*RecordSetResponse{},
 			expectedRecords: []*RecordSetResponse{
 				&RecordSetResponse{
-				/*	Active:     true,
-					Algorithm:  7,
-					Digest:     "909FF0B4DD66F91F56524C4F968D13083BE42380",
-					DigestType: 1,
-					Keytag:     30336,
-					Name:       "ds",
-					TTL:        7200,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "ds.akavaiodeveloper.net", Type: "DS", TTL:    7200, Rdata: []string{"30336 1 7 909FF0B4DD66F91F56524C4F968D13083BE42380"} }},
+					/*	Active:     true,
+						Algorithm:  7,
+						Digest:     "909FF0B4DD66F91F56524C4F968D13083BE42380",
+						DigestType: 1,
+						Keytag:     30336,
+						Name:       "ds",
+						TTL:        7200,*/
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "ds.akavaiodeveloper.net", Type: "DS", TTL: 7200, Rdata: []string{"30336 1 7 909FF0B4DD66F91F56524C4F968D13083BE42380"}}},
 				},
 			},
 		},
@@ -447,8 +447,8 @@ func testGetZoneCompleteProvider() recordTests {
 					Name:     "hinfo",
 					Software: "UNIX",
 					TTL:      7200,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "hinfo.akavaiodeveloper.net", Type: "HINFO", TTL:    7200, Rdata: []string{"\"INTEL-386\" \"Unix\""} }},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "hinfo.akavaiodeveloper.net", Type: "HINFO", TTL: 7200, Rdata: []string{"\"INTEL-386\" \"Unix\""}}},
 				},
 			},
 		},
@@ -478,8 +478,8 @@ func testGetZoneCompleteProvider() recordTests {
 					Name:   "location",
 					Target: []string{"51 30 12.748 N 0 7 39.611 W 0.00m 0.00m 0.00m 0.00m"},
 					TTL:    7200,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "afsdb.akavaiodeveloper.net", Type: "LOC", TTL:    7200, Rdata: []string{"51 30 12.748 N 0 7 39.611 W 0m 0m 0m 0m"} }},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "afsdb.akavaiodeveloper.net", Type: "LOC", TTL: 7200, Rdata: []string{"51 30 12.748 N 0 7 39.611 W 0m 0m 0m 0m"}}},
 				},
 			},
 		},
@@ -512,8 +512,8 @@ func testGetZoneCompleteProvider() recordTests {
 					Priority: 10,
 					Target:   []string{"mx1.akamai.com."},
 					TTL:      7200,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "akavaiodeveloper.net", Type: "AFSDB", TTL:    300, Rdata: []string{"10 smtp-1.akavaiodeveloper.net.","20 smtp-3.akavaiodeveloper.net.","30 smtp-0.akavaiodeveloper.net."} }},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "akavaiodeveloper.net", Type: "AFSDB", TTL: 300, Rdata: []string{"10 smtp-1.akavaiodeveloper.net.", "20 smtp-3.akavaiodeveloper.net.", "30 smtp-0.akavaiodeveloper.net."}}},
 				},
 			},
 		},
@@ -539,17 +539,17 @@ func testGetZoneCompleteProvider() recordTests {
 			expectedType: []*RecordSetResponse{},
 			expectedRecords: []*RecordSetResponse{
 				&RecordSetResponse{
-				/*	Active:      true,
-					FlagsNaptr:  "S",
-					Name:        "naptrrecord",
-					Order:       0,
-					Preference:  10,
-					Regexp:      "!^.*$!sip:customer-service@example.com!",
-					Replacement: ".",
-					Service:     "SIP+D2U",
-					TTL:         3600,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "naptrrecord.akavaiodeveloper.net", Type: "NAPTR", TTL:    3600, Rdata: []string{"0 10 \"S\" \"!^.*$!sip:customer-service@example.com!\" \".\" SIP+D2U."} }},
+					/*	Active:      true,
+						FlagsNaptr:  "S",
+						Name:        "naptrrecord",
+						Order:       0,
+						Preference:  10,
+						Regexp:      "!^.*$!sip:customer-service@example.com!",
+						Replacement: ".",
+						Service:     "SIP+D2U",
+						TTL:         3600,*/
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "naptrrecord.akavaiodeveloper.net", Type: "NAPTR", TTL: 3600, Rdata: []string{"0 10 \"S\" \"!^.*$!sip:customer-service@example.com!\" \".\" SIP+D2U."}}},
 				},
 			},
 		},
@@ -588,22 +588,22 @@ func testGetZoneCompleteProvider() recordTests {
 			expectedType: []*RecordSetResponse{},
 			expectedRecords: []*RecordSetResponse{
 				&RecordSetResponse{
-			/*		Active: true,
-					Target: []string{"use4.akam.net."},
-					TTL:    3600,
-				},
-				&RecordBody{
-					Active: true,
-					Target: []string{"us34.akam.net."},
-					TTL:    3600,
-				},
-				&RecordBody{
-					Active: true,
-					Name:   "five",
-					Target: []string{"use4.akam.net."},
-					TTL:    172800,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "akavaiodeveloper.net", Type: "NS", TTL:    3600, Rdata: []string{"a1-49.akam.net.","a16-64.akam.net.","a22-65.akam.net.","a26-66.akam.net.","a7-67.akam.net.","a9-64.akam.net."} }},
+					/*		Active: true,
+								Target: []string{"use4.akam.net."},
+								TTL:    3600,
+							},
+							&RecordBody{
+								Active: true,
+								Target: []string{"us34.akam.net."},
+								TTL:    3600,
+							},
+							&RecordBody{
+								Active: true,
+								Name:   "five",
+								Target: []string{"use4.akam.net."},
+								TTL:    172800,*/
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "akavaiodeveloper.net", Type: "NS", TTL: 3600, Rdata: []string{"a1-49.akam.net.", "a16-64.akam.net.", "a22-65.akam.net.", "a26-66.akam.net.", "a7-67.akam.net.", "a9-64.akam.net."}}},
 				},
 			},
 		},
@@ -638,8 +638,8 @@ func testGetZoneCompleteProvider() recordTests {
 					Salt:                "EBD1E0942543A01B",
 					TTL:                 7200,
 					TypeBitmaps:         "CNAME RRSIG",*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "qdeo8lqu4l81uo67oolpo9h0nv9l13dh.akavaiodeveloper.net", Type: "NSEC3", TTL:    3600, Rdata: []string{"0 1 1 EBD1E0942543A01B R2NUSMGFSEUHT195P59KOU2AI30JR90 CNAME RRSIG"} }},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "qdeo8lqu4l81uo67oolpo9h0nv9l13dh.akavaiodeveloper.net", Type: "NSEC3", TTL: 3600, Rdata: []string{"0 1 1 EBD1E0942543A01B R2NUSMGFSEUHT195P59KOU2AI30JR90 CNAME RRSIG"}}},
 				},
 			},
 		},
@@ -665,15 +665,15 @@ func testGetZoneCompleteProvider() recordTests {
 			expectedType: []*RecordSetResponse{},
 			expectedRecords: []*RecordSetResponse{
 				&RecordSetResponse{
-				/*	Active:     true,
-					Algorithm:  1,
-					Flags:      0,
-					Iterations: 1,
-					Name:       "qnsec3param",
-					Salt:       "EBD1E0942543A01B",
-					TTL:        7200,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "qnsec3param.akavaiodeveloper.net", Type: "NSEC3PARAM", TTL:    3600, Rdata: []string{"0 1 1 EBD1E0942543A01B"} }},
+					/*	Active:     true,
+						Algorithm:  1,
+						Flags:      0,
+						Iterations: 1,
+						Name:       "qnsec3param",
+						Salt:       "EBD1E0942543A01B",
+						TTL:        7200,*/
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "qnsec3param.akavaiodeveloper.net", Type: "NSEC3PARAM", TTL: 3600, Rdata: []string{"0 1 1 EBD1E0942543A01B"}}},
 				},
 			},
 		},
@@ -711,8 +711,8 @@ func testGetZoneCompleteProvider() recordTests {
 					Name:   "ptr",
 					Target: []string{"ptr.example.com."},
 					TTL:    7200,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "ptr.akavaiodeveloper.net", Type: "PTR", TTL:    7200, Rdata: []string{"v=spf."} }},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "ptr.akavaiodeveloper.net", Type: "PTR", TTL: 7200, Rdata: []string{"v=spf."}}},
 				},
 			},
 		},
@@ -744,7 +744,7 @@ func testGetZoneCompleteProvider() recordTests {
 					TTL:     7200,
 					Txt:     "txt.example.com.",
 					Metadata: MetadataH {ShowAll: true, TotalElements: 1},*/
-					Recordsets: []Recordset { Recordset{Name: "rp.akavaiodeveloper.net", Type: "RP", TTL:    7200, Rdata: []string{"admin.example.com. txt.example.com."} }},
+					Recordsets: []Recordset{Recordset{Name: "rp.akavaiodeveloper.net", Type: "RP", TTL: 7200, Rdata: []string{"admin.example.com. txt.example.com."}}},
 				},
 			},
 		},
@@ -769,20 +769,20 @@ func testGetZoneCompleteProvider() recordTests {
 			expectedType: []*RecordSetResponse{},
 			expectedRecords: []*RecordSetResponse{
 				&RecordSetResponse{
-				/*	Active:      true,
-					Algorithm:   7,
-					Expiration:  "20120318104101",
-					Inception:   "20120315094101",
-					Keytag:      63761,
-					Labels:      3,
-					Name:        "arecord",
-					OriginalTTL: 3600,
-					Signature:   "toCy19QnAb86vRlQjf5 ... z1doJdHEr8PiI+Is9Eafxh+4Idcw8Ysv",
-					Signer:      "example.com.",
-					TTL:         7200,
-					TypeCovered: "A",*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "arecord", Type: "RRSIG", TTL:    7200, Rdata: []string{"A 7 3 3600 20120318104101 20120315094101 63761 3 toCy19QnAb86vRlQjf5 ... z1doJdHEr8PiI+Is9Eafxh+4Idcw8Ysv example.com."} }},
+					/*	Active:      true,
+						Algorithm:   7,
+						Expiration:  "20120318104101",
+						Inception:   "20120315094101",
+						Keytag:      63761,
+						Labels:      3,
+						Name:        "arecord",
+						OriginalTTL: 3600,
+						Signature:   "toCy19QnAb86vRlQjf5 ... z1doJdHEr8PiI+Is9Eafxh+4Idcw8Ysv",
+						Signer:      "example.com.",
+						TTL:         7200,
+						TypeCovered: "A",*/
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "arecord", Type: "RRSIG", TTL: 7200, Rdata: []string{"A 7 3 3600 20120318104101 20120315094101 63761 3 toCy19QnAb86vRlQjf5 ... z1doJdHEr8PiI+Is9Eafxh+4Idcw8Ysv example.com."}}},
 				},
 			},
 		},
@@ -808,12 +808,12 @@ func testGetZoneCompleteProvider() recordTests {
 			expectedType: []*RecordSetResponse{},
 			expectedRecords: []*RecordSetResponse{
 				&RecordSetResponse{
-				/*	Active: true,
-					Name:   "spf",
-					Target: []string{"v=spf a -all"},
-					TTL:    7200,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "afsdb.akavaiodeveloper.net", Type: "SPF", TTL:    7200, Rdata: []string{"\"v=spf.\""} }},
+					/*	Active: true,
+						Name:   "spf",
+						Target: []string{"v=spf a -all"},
+						TTL:    7200,*/
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "afsdb.akavaiodeveloper.net", Type: "SPF", TTL: 7200, Rdata: []string{"\"v=spf.\""}}},
 				},
 			},
 		},
@@ -839,14 +839,14 @@ func testGetZoneCompleteProvider() recordTests {
 			expectedType: []*RecordSetResponse{},
 			expectedRecords: []*RecordSetResponse{
 				&RecordSetResponse{
-				/*	Active:          true,
-					Algorithm:       2,
-					Fingerprint:     "123456789ABCDEF67890123456789ABCDEF67890",
-					FingerprintType: 1,
-					Name:            "host",
-					TTL:             3600,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "afsdb.akavaiodeveloper.net", Type: "SSHFP", TTL:    3600, Rdata: []string{"2 1 123456789ABCDEF67890123456789ABCDEF67890"} }},
+					/*	Active:          true,
+						Algorithm:       2,
+						Fingerprint:     "123456789ABCDEF67890123456789ABCDEF67890",
+						FingerprintType: 1,
+						Name:            "host",
+						TTL:             3600,*/
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "afsdb.akavaiodeveloper.net", Type: "SSHFP", TTL: 3600, Rdata: []string{"2 1 123456789ABCDEF67890123456789ABCDEF67890"}}},
 				},
 			},
 		},
@@ -879,8 +879,8 @@ func testGetZoneCompleteProvider() recordTests {
 					Target:   []string{"target.akamai.com."},
 					TTL:      7200,
 					Weight:   0,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "srv.akavaiodeveloper.net", Type: "SRV", TTL:    7200, Rdata: []string{"0 522 10 target.akavaiodeveloper.net."} }},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "srv.akavaiodeveloper.net", Type: "SRV", TTL: 7200, Rdata: []string{"0 522 10 target.akavaiodeveloper.net."}}},
 				},
 			},
 		},
@@ -910,11 +910,10 @@ func testGetZoneCompleteProvider() recordTests {
 					Name:   "text",
 					Target: []string{"Hello world!"},
 					TTL:    7200,*/
-					Metadata: MetadataH {ShowAll: true, TotalElements: 1},
-					Recordsets: []Recordset { Recordset{Name: "text.akavaiodeveloper.net", Type: "TXT", TTL:    7200, Rdata: []string{"Hello world!"} }},
+					Metadata:   MetadataH{ShowAll: true, TotalElements: 1},
+					Recordsets: []Recordset{Recordset{Name: "text.akavaiodeveloper.net", Type: "TXT", TTL: 7200, Rdata: []string{"Hello world!"}}},
 				},
 			},
-
 		},
 	}
 }
