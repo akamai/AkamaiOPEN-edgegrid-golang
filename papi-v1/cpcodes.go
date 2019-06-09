@@ -234,8 +234,8 @@ func (cpcode *CpCode) Save() error {
 		"POST",
 		fmt.Sprintf(
 			"/papi/v1/cpcodes?contractId=%s&groupId=%s",
-			cpcode.parent.Contract.ContractID,
-			cpcode.parent.Group.GroupID,
+			cpcode.parent.ContractID,
+			cpcode.parent.GroupID,
 		),
 		client.JSONBody{"productId": cpcode.ProductID, "cpcodeName": cpcode.CpcodeName},
 	)
