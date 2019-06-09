@@ -237,7 +237,7 @@ func (cpcode *CpCode) Save() error {
 			cpcode.parent.Contract.ContractID,
 			cpcode.parent.Group.GroupID,
 		),
-		client.JSONBody{"productId": cpcode.ProductID, "productIds": cpcode.ProductIDs, "cpcodeName": cpcode.CpcodeName},
+		client.JSONBody{"productId": cpcode.ProductID, "cpcodeName": cpcode.CpcodeName},
 	)
 	if err != nil {
 		return err
@@ -292,7 +292,6 @@ func (cpcode *CpCode) Save() error {
 
 	cpcode.CpcodeID = cpcodes.CpCodes.Items[0].CpcodeID
 	cpcode.CpcodeName = cpcodes.CpCodes.Items[0].CpcodeName
-	cpcode.ProductID = cpcodes.CpCodes.Items[0].ProductID
 	cpcode.ProductIDs = cpcodes.CpCodes.Items[0].ProductIDs
 	cpcode.CreatedDate = cpcodes.CpCodes.Items[0].CreatedDate
 
