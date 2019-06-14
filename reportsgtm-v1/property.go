@@ -33,6 +33,7 @@ type PropertyTData struct {
         Datacenters                     []*PropertyDRow   `json:"datacenters"`
 }
 
+// The Property Traffic Response structure returned by the Reports API
 type PropertyTrafficResponse struct {
         Metadata                        *PropertyTMeta    `json:"metadata"`
         DataRows                        []*PropertyTData  `json:"dataRows"`
@@ -43,6 +44,8 @@ type PropertyTrafficResponse struct {
 //
 // IP Status By Property Structs
 //
+
+// IP Availability Status Response structure returned by the Reports API. 
 type IPStatusPerProperty struct {
         Metadata                        *IpStatPerPropMeta    `json:"metadata"`
         DataRows                        []*IpStatPerPropData  `json:"dataRows"`
@@ -64,7 +67,7 @@ type IpStatPerPropMeta struct {
 
 type IpStatPerPropData struct {
         Timestamp                       string                `json:"timestamp"`
-        CutOff                          float32               `json:"cutOff"`   
+        CutOff                          float64               `json:"cutOff"`   
         Datacenters                     []*IpStatPerPropDRow  `json:"datacenters"`
 }
 
@@ -82,7 +85,7 @@ type IpStatIp struct {
         Alive         bool              `json:"alive"`
 }
 
-// GetIpStatusPerProperty retrieves current IP status for properties in the given domainname
+// GetIpStatusPerProperty retrieves current IP Availability Status for specified property in the given domainname.
 func GetIpStatusPerProperty(domainname string, propertyname string, optArgs map[string]string) (*IPStatusPerProperty, error) {
         stat := &IPStatusPerProperty{}
         hostUrl := "/gtm-api/v1/reports/ip-availability/domains/"+domainname+"/properties/"+propertyname
@@ -117,6 +120,9 @@ func GetIpStatusPerProperty(domainname string, propertyname string, optArgs map[
                 req.URL.RawQuery = q.Encode()
         }
 
+        // time stamps require urlencoded content header
+        setEncodedHeader(req)
+
         // print/log the request if warranted
         printHttpRequest(req, true)
 
@@ -145,7 +151,7 @@ func GetIpStatusPerProperty(domainname string, propertyname string, optArgs map[
         }
 }
 
-// GetTrafficPerProperty retrieves report traffic per property the given domainname and propertyname
+// GetTrafficPerProperty retrieves report traffic for the specified property in the specified domain.
 func GetTrafficPerProperty(domainname string, propertyname string, optArgs map[string]string) (*PropertyTrafficResponse, error) {
         stat := &PropertyTrafficResponse{}
         hostUrl := "/gtm-api/v1/reports/traffic/domains/"+domainname+"/properties/"+propertyname
@@ -173,6 +179,9 @@ func GetTrafficPerProperty(domainname string, propertyname string, optArgs map[s
         if optArgs != nil {
                 req.URL.RawQuery = q.Encode()
         }
+
+        // time stamps require urlencoded content header
+        setEncodedHeader(req)
 
         // print/log the request if warranted
         printHttpRequest(req, true)

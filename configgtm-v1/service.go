@@ -26,7 +26,7 @@ func Init(config edgegrid.Config) {
         }
 
         // used as trouble shooting hook til logging implemented.
-        debug = false
+        debug = true 
  
         log.Debugf("Log debug level set to  %v", config.Debug)
 

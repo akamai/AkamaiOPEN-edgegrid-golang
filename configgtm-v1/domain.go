@@ -10,7 +10,7 @@ import (
 // Based on 1.3 Schema
 //
 
-// Domain represents a GTM domain
+// The Domain data structure represents a GTM domain
 type Domain struct {
         Name                            string            `json:"name"`
         Type                            string            `json:"type"`
@@ -38,7 +38,7 @@ type Domain struct {
         Links                           []*Link           `json:"links,omitempty"`
         Properties                      []*Property       `json:"properties,omitempty"`
         MaxTestTimeout                  float64           `json:"maxTestTimeout,omitempty"`
-        CnameCoalescingEnabled          bool              `json:"cnameCoalescingEnabled"`
+        CnameCoalescingEnabled          bool              `json:"cnameCoalescingEnabled,omitempty"`
         DefaultHealthMultiplier         int               `json:"defaultHealthMultiplier,omitempty"`
         ServermonitorPool               string            `json:"servermonitorPool,omitempty"`
         LoadFeedback                    bool              `json:"loadFeedback,omitempty"`
@@ -78,7 +78,7 @@ func SetHeader(req *http.Request) {
 
 }
 
-// NewDomain creates a new Domain object
+// NewDomain is a utility function that creates a new Domain object.
 func NewDomain(domainname, domaintype string) *Domain {
 	domain := &Domain{}
         domain.Name = domainname
@@ -86,7 +86,7 @@ func NewDomain(domainname, domaintype string) *Domain {
         return domain
 }
 
-// GetStatus retrieves current status for the given domainname
+// GetStatus retrieves current status for the given domainname.
 func GetDomainStatus(domainname string) (*ResponseStatus, error) {
         stat := &ResponseStatus{} 
         req, err := client.NewRequest(
@@ -124,7 +124,7 @@ func GetDomainStatus(domainname string) (*ResponseStatus, error) {
         }
 }
 
-// ListDomains retreieves all Domains
+// ListDomains retrieves all Domains.
 func ListDomains() ([]*DomainItem, error) {
         domains := &DomainsList{}
         req, err := client.NewRequest(
@@ -162,7 +162,7 @@ func ListDomains() ([]*DomainItem, error) {
         } 
 }
 
-// GetDomain retrieves a Domain with the given domainname
+// GetDomain retrieves a Domain with the given domainname.
 func GetDomain(domainname string) (*Domain, error) {
 	domain := NewDomain(domainname, "basic")
 	req, err := client.NewRequest(
@@ -261,13 +261,15 @@ func (domain *Domain) save(queryArgs map[string]string, operation string) (*Doma
 
 }
 
+// Create is a method applied to a domain object resulting in creation.
 func (domain *Domain) Create(queryArgs map[string]string) (*DomainResponse, error) {
 
-        op := "POST"
+        op := "PUT" // "POST" was rumored to work ..
         return domain.save(queryArgs, op)
 
 }
 
+// Update is a method applied to a domain object resulting in an update.
 func (domain *Domain) Update(queryArgs map[string]string) (*ResponseStatus, error) {
        
         // Any validation to do? 
@@ -279,7 +281,7 @@ func (domain *Domain) Update(queryArgs map[string]string) (*ResponseStatus, erro
         return stat.Status, err
 }
 
-// Delete Domain method
+// Delete is a method applied to a domain object resulting in removal.
 func (domain *Domain) Delete() (*ResponseStatus, error) {
 
         req, err := client.NewRequest(

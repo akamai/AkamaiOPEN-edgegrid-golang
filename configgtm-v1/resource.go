@@ -37,20 +37,20 @@ type ResourceList struct {
         ResourceItems            []*Resource       `json:"items"`
 }
 
-// Create ResourceInstance instance 
+// NewResourceInstance instantiates a new ResourceInstance. 
 func (rsrc *Resource) NewResourceInstance(dcid int) *ResourceInstance {
  
         return &ResourceInstance{DatacenterId: dcid}  
 
 }
 
-// NewResource creates a new Resource object
+// NewResource creates a new Resource object.
 func NewResource(resourcename string) *Resource {
 	resource := &Resource{Name: resourcename}
         return resource
 }
 
-// ListResources retreieves all Resources
+// ListResources retreieves all Resources in the specified domain.
 func ListResources(domainname string) ([]*Resource, error) {
         rsrcs := &ResourceList{}
         req, err := client.NewRequest(
@@ -88,7 +88,7 @@ func ListResources(domainname string) ([]*Resource, error) {
          
 }
 
-// GetResource retrieves a Resource with the given name.                     
+// GetResource retrieves a Resource with the given name in the specified domain.
 func GetResource(resourcename, domainname string) (*Resource, error) {
 	rsc := NewResource(resourcename)
 	req, err := client.NewRequest(
@@ -127,7 +127,7 @@ func GetResource(resourcename, domainname string) (*Resource, error) {
 }
 
 
-// Create Resource in provided domain                        
+// Create the resource identified by the receiver argument in the specified domain.                        
 func (rsrc *Resource) Create(domainname string) (*ResourceResponse, error) {
 
         // Use common code. Any specific validation needed?
@@ -136,7 +136,7 @@ func (rsrc *Resource) Create(domainname string) (*ResourceResponse, error) {
 
 }
 
-// Update Resource in given domain
+// Update the resourceidentified in the receiver argument in the specified domain.
 func (rsrc *Resource) Update(domainname string) (*ResponseStatus, error) {
 
         // common code
@@ -197,7 +197,7 @@ func (rsrc *Resource) save(domainname string) (*ResourceResponse, error) {
 
 }
 
-// Delete Resource method
+// Delete the resource identified in the receiver argument from the specified domain. 
 func (rsrc *Resource) Delete(domainname string) (*ResponseStatus, error) {
 
         req, err := client.NewRequest(

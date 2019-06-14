@@ -1,9 +1,8 @@
 package reportsgtm
 
 import (
-        "net/http"
         "strconv"
-
+              
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
         "github.com/akamai/AkamaiOPEN-edgegrid-golang/configgtm-v1"
 )
@@ -35,14 +34,15 @@ type DCTData struct {
         Properties                      []*DCTDRow        `json:"properties"`
 }
 
+// Response structure returned by the Datacenter Traffic API
 type DcTrafficResponse struct {
         Metadata                        *DCTMeta           `json:"metadata"`
-        DataRows                        *[]DCTData         `json:"dataRows"`
+        DataRows                        []*DCTData         `json:"dataRows"`
         DataSummary                     interface{}        `json:"dataSummary"`
         Links                           []*configgtm.Link  `json:"links"`
 }
 
-// GetTrafficPerDatacenter retrieves Report Traffic per datacenter. Opt args - start, end      
+// GetTrafficPerDatacenter retrieves Report Traffic per datacenter. Opt args - start, end.      
 func GetTrafficPerDatacenter(domainname string, datacenterid int, optArgs map[string]string) (*DcTrafficResponse, error) {
         stat := &DcTrafficResponse{}
         hostUrl := "/gtm-api/v1/reports/traffic/domains/"+domainname+"/datacenters/"+strconv.Itoa(datacenterid)
@@ -68,6 +68,8 @@ func GetTrafficPerDatacenter(domainname string, datacenterid int, optArgs map[st
                 }
         }
         if optArgs != nil {
+                // time stamps require urlencoded content header
+                setEncodedHeader(req)
                 req.URL.RawQuery = q.Encode()
         }
 

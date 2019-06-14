@@ -126,7 +126,7 @@ func GetDatacenter(dcId int, domainname string) (*Datacenter, error) {
 }
 
 
-// Create datacenter in provided domain and Datacenter object
+// Create the datacenter identified by the receiver argument in the specified domain.
 func (dc *Datacenter) Create(domainname string) (*DatacenterResponse, error) {
 
         req, err := client.NewJSONRequest(
@@ -174,6 +174,7 @@ func (dc *Datacenter) Create(domainname string) (*DatacenterResponse, error) {
 
 }
 
+// Update the datacenter identified in the receiver argument in the provided domain.
 func (dc *Datacenter) Update(domainname string) (*ResponseStatus, error) {
 
         req, err := client.NewJSONRequest(
@@ -220,7 +221,7 @@ func (dc *Datacenter) Update(domainname string) (*ResponseStatus, error) {
         return responseBody.Status, nil
 }
 
-// Delete Datacenter method
+// Delete the datacenter identified by the receiver argument from the domain specified.
 func (dc *Datacenter) Delete(domainname string) (*ResponseStatus, error) {
 
         req, err := client.NewRequest(

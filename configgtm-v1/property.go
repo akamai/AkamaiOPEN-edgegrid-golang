@@ -93,34 +93,34 @@ type PropertyList struct {
         PropertyItems            []*Property       `json:"items"`
 }
 
-// Create TrafficTarget
+// NewTrafficTarget is a method applied to a property object that instantiates a TrafficTarget object.
 func (prop *Property) NewTrafficTarget() *TrafficTarget {
 
         return  &TrafficTarget{}
 
 }
 
-// Create MxRecord
+// NewMxRecord is a method applied to a property object that instantiates an MxRecord object.
 func (prop *Property) NewMxRecord() *MxRecord {
 
         return &MxRecord{}
 
 }
 
-// Create LivenessTest
+// NewLivenessTest is a method applied to a property object that instantiates a LivenessTest object.
 func (prop *Property) NewLivenessTest(livename string, objproto string, interval int, timeout float32) *LivenessTest{
 
         return &LivenessTest{Name: livename, TestInterval: interval, TestObjectProtocol: objproto, TestTimeout: timeout} 
 
 }
 
-// NewProperty creates a new Property
+// NewProperty creates a new Property object.
 func NewProperty(propertyname string) *Property {
 	property := &Property{Name: propertyname}
 	return property 
 }
 
-// ListProperties retreieves all Properties for the provided domainname
+// ListProperties retreieves all Properties for the provided domainname.
 func ListProperties(domainname string) ([]*Property, error) {
         properties := &PropertyList{}
         req, err := client.NewRequest(
@@ -158,7 +158,7 @@ func ListProperties(domainname string) ([]*Property, error) {
         }
 }
 
-// GetProperty retrieves a Property with the given propertyname
+// GetProperty retrieves a Property with the given propertyname.
 func GetProperty(propertyname, domainname string) (*Property, error) {
 	property := NewProperty(propertyname)
 	req, err := client.NewRequest(
@@ -196,14 +196,14 @@ func GetProperty(propertyname, domainname string) (*Property, error) {
 	}
 }
 
-// Create the property in the specified domain
+// Create the property in the receiver argument in the specified domain.
 func (property *Property) Create(domainname string) (*PropertyResponse, error) {
 
        // Need do any validation?
        return property.save(domainname)
 }
 
-// Update the property in the specified domain
+// Update the property in the receiver argument in the specified domain.
 func (property *Property) Update(domainname string) (*ResponseStatus, error) {
 
        // Need do any validation?
@@ -263,6 +263,7 @@ func (property *Property) save(domainname string)  (*PropertyResponse,error) {
 
 }
 
+// Delete the property identified by the receiver argument from the domain provided.
 func (property *Property) Delete(domainname string) (*ResponseStatus, error) {
 
         req, err := client.NewRequest(
