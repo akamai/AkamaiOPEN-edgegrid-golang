@@ -26,7 +26,7 @@ func Init(config edgegrid.Config) {
         }
 
         // used as trouble shooting hook til logging implemented.
-        debug = true 
+        debug = false
  
         log.Debugf("Log debug level set to  %v", config.Debug)
 
@@ -38,6 +38,7 @@ func printHttpRequest(req *http.Request, body bool) {
         if !debug {
                 return
         }
+        fmt.Println("Printing HTTP request")
         b, err := httputil.DumpRequestOut(req, body)
         if err == nil {
                  fmt.Println(string(b))

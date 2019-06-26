@@ -1,7 +1,9 @@
 package configgtm
 
 import (
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"github.com/edglynes/AkamaiOPEN-edgegrid-golang/client-v1"
+
+        "fmt"
 )
 
 //
@@ -152,15 +154,20 @@ func (rsrc *Resource) Update(domainname string) (*ResponseStatus, error) {
 // Save Resource in given domain. Common path for Create and Update.
 func (rsrc *Resource) save(domainname string) (*ResourceResponse, error) {
 
+        fmt.Println("Creating request!!!!")
         req, err := client.NewJSONRequest(
                 Config,
                 "PUT",
                 "/config-gtm/v1/domains/"+domainname+"/resources/"+rsrc.Name,
                 rsrc,
         )
+        fmt.Println("BACK!!!!!!!!!!!!!!!!")
+      
         if err != nil {
                 return nil, err
         }
+
+        fmt.Println("Setting header!!!")
 
         SetHeader(req)
 
@@ -248,26 +255,3 @@ func (rsrc *Resource) Delete(domainname string) (*ResponseStatus, error) {
 
 }
 
-// Add/Update Resource element
-func (rsrc *Resource) AddElement(element interface{}) error {
-
-        // Do we need?
-
-	return nil
-}
-
-// Remove Resourc element
-func (rsrc *Resource) RemoveElement(element interface{}) error {
-
-        // What does this mean?
-
-	return nil
-}
-
-// Retrieve a specific element
-func (rsrc *Resource) GetElement(element interface{}) interface{} {
-
-        // useful?
-        return nil
-
-}

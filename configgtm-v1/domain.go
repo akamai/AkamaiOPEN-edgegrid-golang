@@ -281,6 +281,8 @@ func (domain *Domain) Update(queryArgs map[string]string) (*ResponseStatus, erro
         return stat.Status, err
 }
 
+/* Future. Not currently defined endpoint
+
 // Delete is a method applied to a domain object resulting in removal.
 func (domain *Domain) Delete() (*ResponseStatus, error) {
 
@@ -331,27 +333,4 @@ func (domain *Domain) Delete() (*ResponseStatus, error) {
         return responseBody.Status, nil
 
 }
-
-// Add/Update domain element
-func (domain *Domain) AddElement(element interface{}) error {
-
-        // Do we need?
-
-	return nil
-}
-
-// Remove domain element
-func (domain *Domain) RemoveElement(element interface{}) error {
-
-        // What does this mean?
-
-	return nil
-}
-
-// Retrieve a specific element
-func (domain *Domain) GetElement(element interface{}) interface{} {
-
-        // useful?
-        return nil
-
-}
+*/

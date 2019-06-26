@@ -314,25 +314,3 @@ func (property *Property) Delete(domainname string) (*ResponseStatus, error) {
 
 }
 
-// Add element
-func (property *Property) AddElement(element interface{}) error {
-
-        // Use cases?
-	return nil
-}
-
-// Remove element
-func (property *Property) RemoveElement(element interface{}) error {
-
-        // What does this mean?
-
-	return nil
-}
-
-// Retrieve an element
-func (property *Property) GetElement(element interface{}) interface{} {
-
-        // Use cases?
-        return nil
-
-}

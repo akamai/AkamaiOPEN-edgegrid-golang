@@ -200,26 +200,3 @@ func (as *AsMap) Delete(domainname string) (*ResponseStatus, error) {
         return responseBody.Status, nil
 }
 
-// Add/Update AsMap element
-func (as *AsMap) AddElement(element interface{}) error {
-
-        // Do we need?
-
-	return nil
-}
-
-// Remove AsMap element
-func (as *AsMap) RemoveElement(element interface{}) error {
-
-        // What does this mean?
-
-	return nil
-}
-
-// Retrieve a specific element
-func (as *AsMap) GetElement(element interface{}) interface{} {
-
-        // useful?
-        return nil
-
-}

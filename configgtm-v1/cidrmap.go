@@ -243,26 +243,3 @@ func (cidr *CidrMap) Delete(domainname string) (*ResponseStatus, error) {
 
 }
 
-// Add/Update CidrMap element
-func (cidr *CidrMap) AddElement(element interface{}) error {
-
-        // Do we need?
-
-	return nil
-}
-
-// Remove CidrMap element
-func (cidr *CidrMap) RemoveElement(element interface{}) error {
-
-        // What does this mean?
-
-	return nil
-}
-
-// Retrieve a specific element
-func (cidr *CidrMap) GetElement(element interface{}) interface{} {
-
-        // useful?
-        return nil
-
-}

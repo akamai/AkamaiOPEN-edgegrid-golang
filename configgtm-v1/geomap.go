@@ -38,7 +38,7 @@ func ListGeoMaps(domainname string) ([]*GeoMap, error) {
         req, err := client.NewRequest(
                 Config,
                 "GET",
-                "/config-gtm/v1/domains/"+domainname+"/geo-maps",
+                "/config-gtm/v1/domains/"+domainname+"/geographic-maps",
                 nil,
         )
         if err != nil {
@@ -243,26 +243,3 @@ func (geo *GeoMap) Delete(domainname string) (*ResponseStatus, error) {
         return responseBody.Status, nil
 }
 
-// Add/Update GeoMap element
-func (geo *GeoMap) AddElement(element interface{}) error {
-
-        // Do we need?
-
-	return nil
-}
-
-// Remove GeoMap element
-func (geo *GeoMap) RemoveElement(element interface{}) error {
-
-        // What does this mean?
-
-	return nil
-}
-
-// Retrieve a specific element
-func (geo *GeoMap) GetElement(element interface{}) interface{} {
-
-        // useful?
-        return nil
-
-}
