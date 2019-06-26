@@ -271,26 +271,3 @@ func (dc *Datacenter) Delete(domainname string) (*ResponseStatus, error) {
         return responseBody.Status, nil
 }
 
-// Add/Update Datacenter element
-func (dc *Datacenter) AddElement(element interface{}) error {
-
-        // Do we need?
-
-	return nil
-}
-
-// Remove Datacenter element
-func (dc *Datacenter) RemoveElement(element interface{}) error {
-
-        // What does this mean?
-
-	return nil
-}
-
-// Retrieve a specific element
-func (dc *Datacenter) GetElement(element interface{}) interface{} {
-
-        // useful?
-        return nil
-
-}
