@@ -3,8 +3,8 @@ package ccu
 import (
 	"testing"
 
-	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestPurge_Invalidate(t *testing.T) {
