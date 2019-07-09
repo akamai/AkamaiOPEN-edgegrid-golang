@@ -19,7 +19,7 @@ var (
 // Init sets the GTM edgegrid Config
 func Init(config edgegrid.Config) {
 	Config = config
-        debug = true
+        debug = false
 }
 
 // Utility func to print http req
