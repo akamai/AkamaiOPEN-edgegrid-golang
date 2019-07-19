@@ -13,22 +13,22 @@ import (
 // TODO: Add tests for Opt args
 //
 
-// 
+//
 var GtmTestProperty = "testproperty"
 
 // Verify GetIpStatusPerProperty. Property and domain names hardcoded. Should pass, e.g. no API errors and property returned
 // Depends on CreateProperty
 func TestGetIpStatusProperty(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/gtm-api/v1/reports/ip-availability/domains/gtmtest.akadns.net/properties/"+GtmTestProperty)
-        mock.
-                Get("/gtm-api/v1/reports/ip-availability/domains/gtmtest.akadns.net/properties/"+GtmTestProperty).
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/json").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/gtm-api/v1/reports/ip-availability/domains/gtmtest.akadns.net/properties/" + GtmTestProperty)
+	mock.
+		Get("/gtm-api/v1/reports/ip-availability/domains/gtmtest.akadns.net/properties/"+GtmTestProperty).
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/json").
+		BodyString(`{
                         "metadata": {
                                 "domain": "gtmtest.akadns.net",
                                 "property": "testproperty",
@@ -102,17 +102,17 @@ func TestGetIpStatusProperty(t *testing.T) {
                                 } ]
                  }`)
 
-       Init(config)
+	Init(config)
 
-       optArgs := make(map[string]string)
-       optArgs["start"] = "2017-02-23T21:00:00Z" 
-       optArgs["end"] = "2017-03-23T22:00:00Z"
-       testPropertyIpStatus, err := GetIpStatusPerProperty(gtmTestDomain, GtmTestProperty, optArgs)
+	optArgs := make(map[string]string)
+	optArgs["start"] = "2017-02-23T21:00:00Z"
+	optArgs["end"] = "2017-03-23T22:00:00Z"
+	testPropertyIpStatus, err := GetIpStatusPerProperty(gtmTestDomain, GtmTestProperty, optArgs)
 
-       assert.NoError(t, err)
-       assert.Equal(t, testPropertyIpStatus.DataRows[0].Datacenters[0].DatacenterId, 3132)
-       assert.Equal(t, testPropertyIpStatus.Metadata.Domain, gtmTestDomain)
-       assert.Equal(t, testPropertyIpStatus.Metadata.Property, GtmTestProperty)
+	assert.NoError(t, err)
+	assert.Equal(t, testPropertyIpStatus.DataRows[0].Datacenters[0].DatacenterId, 3132)
+	assert.Equal(t, testPropertyIpStatus.Metadata.Domain, gtmTestDomain)
+	assert.Equal(t, testPropertyIpStatus.Metadata.Property, GtmTestProperty)
 
 }
 
@@ -152,15 +152,15 @@ func TestGetIpStatusPropertyRecent(t *testing.T) {
 
 func TestGetTrafficPerProperty(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/gtm-api/v1/reports/traffic/domains/gtmtest.akadns.net/properties/"+GtmTestProperty)
-        mock.
-                Get("/gtm-api/v1/reports/traffic/domains/gtmtest.akadns.net/properties/"+GtmTestProperty).
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/json").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/gtm-api/v1/reports/traffic/domains/gtmtest.akadns.net/properties/" + GtmTestProperty)
+	mock.
+		Get("/gtm-api/v1/reports/traffic/domains/gtmtest.akadns.net/properties/"+GtmTestProperty).
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/json").
+		BodyString(`{
                         "metadata": {
                                 "domain": "gtmtest.akadns.net",
                                 "property": "testproperty",
@@ -199,40 +199,40 @@ func TestGetTrafficPerProperty(t *testing.T) {
                                 } ]
                  }`)
 
-       Init(config)
+	Init(config)
 
-       optArgs := make(map[string]string)
-       optArgs["start"] = "2016-11-24T01:40:00Z"
-       optArgs["end"] = "2016-11-24T01:50:00Z"
+	optArgs := make(map[string]string)
+	optArgs["start"] = "2016-11-24T01:40:00Z"
+	optArgs["end"] = "2016-11-24T01:50:00Z"
 
-       testPropertyTraffic, err := GetTrafficPerProperty(gtmTestDomain, GtmTestProperty, optArgs)
-        
-       assert.NoError(t, err)
-       assert.Equal(t, testPropertyTraffic.DataRows[0].Datacenters[0].DatacenterId, 3130)
-       assert.Equal(t, testPropertyTraffic.Metadata.Domain, gtmTestDomain)
-       assert.Equal(t, testPropertyTraffic.Metadata.Property, GtmTestProperty)
+	testPropertyTraffic, err := GetTrafficPerProperty(gtmTestDomain, GtmTestProperty, optArgs)
+
+	assert.NoError(t, err)
+	assert.Equal(t, testPropertyTraffic.DataRows[0].Datacenters[0].DatacenterId, 3130)
+	assert.Equal(t, testPropertyTraffic.Metadata.Domain, gtmTestDomain)
+	assert.Equal(t, testPropertyTraffic.Metadata.Property, GtmTestProperty)
 
 }
 
 // Verify failed case for GetProperty. Should pass, e.g. no API errors and domain not found
 func TestGetBadTrafficPerProperty(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/gtm-api/v1/reports/traffic/domains/gtmtest.akadns.net/properties/badproperty")
-        mock.
-                Get("/gtm-api/v1/reports/traffic/domains/gtmtest.akadns.net/properties/badproperty").
-                HeaderPresent("Authorization").
-                Reply(404).
-                SetHeader("Content-Type", "application/json").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/gtm-api/v1/reports/traffic/domains/gtmtest.akadns.net/properties/badproperty")
+	mock.
+		Get("/gtm-api/v1/reports/traffic/domains/gtmtest.akadns.net/properties/badproperty").
+		HeaderPresent("Authorization").
+		Reply(404).
+		SetHeader("Content-Type", "application/json").
+		BodyString(`{
                 }`)
 
-       Init(config)
+	Init(config)
 
-       optArgs := make(map[string]string)
-       _, err := GetTrafficPerProperty(gtmTestDomain, "badproperty", optArgs)
+	optArgs := make(map[string]string)
+	_, err := GetTrafficPerProperty(gtmTestDomain, "badproperty", optArgs)
 
-       assert.Error(t, err)
+	assert.Error(t, err)
 
 }
