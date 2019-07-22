@@ -2,8 +2,7 @@ package reportsgtm
 
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
-
-	"fmt"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/http/httputil"
 )
@@ -12,36 +11,36 @@ var (
 	// Config contains the Akamai OPEN Edgegrid API credentials
 	// for automatic signing of requests
 	Config edgegrid.Config
-
-	debug bool
+        // Create a new instance of the logger.
+        GtmLog *logrus.Logger
 )
 
 // Init sets the GTM edgegrid Config
 func Init(config edgegrid.Config) {
-	Config = config
-	debug = false
+
+        Config = config
+        GtmLog = logrus.New()
+        edgegrid.SetupLogging(GtmLog)
+        if edgegrid.LogFile != nil {
+                defer edgegrid.LogFile.Close()
+        }
 }
 
 // Utility func to print http req
 func printHttpRequest(req *http.Request, body bool) {
 
-	if !debug {
-		return
-	}
-	b, err := httputil.DumpRequestOut(req, body)
-	if err == nil {
-		fmt.Println(string(b))
-	}
+        b, err := httputil.DumpRequestOut(req, body)
+        if err == nil {
+                edgegrid.LogMultiline(GtmLog.Traceln, string(b))
+        }
 }
 
 // Utility func to print http response
 func printHttpResponse(res *http.Response, body bool) {
 
-	if !debug {
-		return
-	}
-	b, err := httputil.DumpResponse(res, body)
-	if err == nil {
-		fmt.Println(string(b))
-	}
+        b, err := httputil.DumpResponse(res, body)
+        if err == nil {
+                edgegrid.LogMultiline(GtmLog.Traceln, string(b))
+        }
 }
+

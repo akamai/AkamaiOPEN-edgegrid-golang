@@ -113,16 +113,3 @@ type DatacenterBase struct {
 func NewDatacenterBase() *DatacenterBase {
 	return &DatacenterBase{}
 }
-
-// util method
-func logGtmSingleLineOutput(logLine string) error {
-
-	return nil
-
-}
-
-func logGtmMultiLineOutput(logLines string) error {
-
-	return nil
-
-}
