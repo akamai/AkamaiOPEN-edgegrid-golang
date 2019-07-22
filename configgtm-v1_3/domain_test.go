@@ -3,17 +3,16 @@ package configgtm
 import (
 	"testing"
 
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 
 	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
-
 )
 
 func instantiateDomain() *Domain {
 
-        domain := NewDomain(gtmTestDomain, "basic")
-        domainData := []byte(`{
+	domain := NewDomain(gtmTestDomain, "basic")
+	domainData := []byte(`{
                                 "cnameCoalescingEnabled" : false,
                                 "defaultErrorPenalty" : 75,
                                 "defaultHealthMax" : null,
@@ -157,24 +156,24 @@ func instantiateDomain() *Domain {
                                         "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/as-maps"
                                 } ]
                        }`)
-        jsonhooks.Unmarshal(domainData, domain)
+	jsonhooks.Unmarshal(domainData, domain)
 
-        return domain
+	return domain
 
 }
 
 // Verify GetListDomains. Sould pass, e.g. no API errors and non nil list.
 func TestListDomains(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains")
-        mock.
-                Get("/config-gtm/v1/domains").
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains")
+	mock.
+		Get("/config-gtm/v1/domains").
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
+		BodyString(`{
                         "items" : [ {
                                 "name" : "gtmdomtest.akadns.net",
                                 "status" : "Change Pending",
@@ -191,27 +190,27 @@ func TestListDomains(t *testing.T) {
                         } ]
                    }`)
 
-        Init(config)
+	Init(config)
 
-        domainsList, err := ListDomains()
-        assert.NoError(t, err)
-        assert.NotEqual(t, domainsList, nil)
-        assert.Equal(t, "gtmdomtest.akadns.net", domainsList[0].Name)        
+	domainsList, err := ListDomains()
+	assert.NoError(t, err)
+	assert.NotEqual(t, domainsList, nil)
+	assert.Equal(t, "gtmdomtest.akadns.net", domainsList[0].Name)
 
 }
 
 // Verify GetDomain. Name hardcoded. Should pass, e.g. no API errors and domain returned
 func TestGetDomain(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+gtmTestDomain)
-        mock.
-                Get("/config-gtm/v1/domains/"+gtmTestDomain).
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain)
+	mock.
+		Get("/config-gtm/v1/domains/"+gtmTestDomain).
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
+		BodyString(`{
                           "cidrMaps": [], 
                           "datacenters": [
                               {
@@ -428,51 +427,51 @@ func TestGetDomain(t *testing.T) {
                                "propagationStatusDate": "2019-04-25T14:54:00.000+00:00"
                           }, 
                           "type": "weighted"
-                }`)     
-                
-        Init(config)
+                }`)
 
-        testDomain, err := GetDomain(gtmTestDomain)
+	Init(config)
 
-        assert.NoError(t, err)
-        assert.Equal(t, gtmTestDomain, testDomain.Name)
+	testDomain, err := GetDomain(gtmTestDomain)
+
+	assert.NoError(t, err)
+	assert.Equal(t, gtmTestDomain, testDomain.Name)
 
 }
 
 // Verify failed case for GetDomain. Should pass, e.g. no API errors and domain not found
 func TestGetBadDomain(t *testing.T) {
 
-        baddomainname := "baddomainname.me"
-        defer gock.Off()
+	baddomainname := "baddomainname.me"
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+baddomainname)
-        mock.
-                Get("/config-gtm/v1/domains/"+baddomainname).
-                HeaderPresent("Authorization").
-                Reply(404).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + baddomainname)
+	mock.
+		Get("/config-gtm/v1/domains/"+baddomainname).
+		HeaderPresent("Authorization").
+		Reply(404).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
+		BodyString(`{
                 }`)
 
-        Init(config)
+	Init(config)
 
-        _, err := GetDomain(baddomainname)
-        assert.Error(t, err)
+	_, err := GetDomain(baddomainname)
+	assert.Error(t, err)
 
 }
 
 // Test Create domain. Name is hardcoded so this will effectively be an update. What happens to existing?
 func TestCreateDomain(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+gtmTestDomain)
-        mock.
-                Put("/config-gtm/v1/domains/"+gtmTestDomain).
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain)
+	mock.
+		Put("/config-gtm/v1/domains/"+gtmTestDomain).
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
+		BodyString(`{
                         "resource" : {
                                 "cnameCoalescingEnabled" : false,
                                 "defaultErrorPenalty" : 75,
@@ -561,28 +560,28 @@ func TestCreateDomain(t *testing.T) {
                         }
                 }`)
 
-        Init(config)
+	Init(config)
 
-        testDomain := NewDomain(gtmTestDomain, "basic")
-        qArgs := make(map[string]string)
+	testDomain := NewDomain(gtmTestDomain, "basic")
+	qArgs := make(map[string]string)
 
-        statResponse, err := testDomain.Create(qArgs)
-        assert.NoError(t, err)
-        assert.Equal(t, gtmTestDomain,statResponse.Resource.Name)
+	statResponse, err := testDomain.Create(qArgs)
+	assert.NoError(t, err)
+	assert.Equal(t, gtmTestDomain, statResponse.Resource.Name)
 
 }
 
 func TestUpdateDomain(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+gtmTestDomain)
-        mock.
-                Put("/config-gtm/v1/domains/"+gtmTestDomain).
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain)
+	mock.
+		Put("/config-gtm/v1/domains/"+gtmTestDomain).
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
+		BodyString(`{
                         "resource" : {
                                 "cnameCoalescingEnabled" : false,
                                 "defaultErrorPenalty" : 75,
@@ -740,18 +739,18 @@ func TestUpdateDomain(t *testing.T) {
                         }            
                 }`)
 
-        Init(config)
+	Init(config)
 
-        testDomain := instantiateDomain()
-        //testDomain.MaxResources = 9999
-        qArgs := make(map[string]string)
-        statResp, err := testDomain.Update(qArgs)
-        assert.NoError(t, err)
-        assert.Equal(t, statResp.ChangeId, "df6c04e4-6327-4e0f-8872-bfe9fb2693d2")
+	testDomain := instantiateDomain()
+	//testDomain.MaxResources = 9999
+	qArgs := make(map[string]string)
+	statResp, err := testDomain.Update(qArgs)
+	assert.NoError(t, err)
+	assert.Equal(t, statResp.ChangeId, "df6c04e4-6327-4e0f-8872-bfe9fb2693d2")
 
 }
 
-/* Future. Presently no domain Delete endpoint. 
+/* Future. Presently no domain Delete endpoint.
 func TestDeleteDomain(t *testing.T) {
 
         defer gock.Off()
@@ -772,7 +771,7 @@ func TestDeleteDomain(t *testing.T) {
                                           "rel": "self"
                                      }
                                ],
-                               "message": "Change Pending", 
+                               "message": "Change Pending",
                                "passingValidation": true,
                                "propagationStatus": "PENDING",
                                "propagationStatusDate": "2019-04-25T14:54:00.000+00:00"
@@ -785,6 +784,6 @@ func TestDeleteDomain(t *testing.T) {
 
         _, err := getDomain.Delete()
         assert.NoError(t, err)
-        
+
 }
 */

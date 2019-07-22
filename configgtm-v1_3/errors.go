@@ -18,43 +18,43 @@ func IsConfigGTMError(e error) bool {
 }
 
 type CommonError struct {
-        entityName         string
-        name               string
-        httpErrorMessage   string
-        apiErrorMessage    string
-        err                error
+	entityName       string
+	name             string
+	httpErrorMessage string
+	apiErrorMessage  string
+	err              error
 }
 
 func (e *CommonError) SetItem(itemName string, itemVal interface{}) {
-        switch itemName {
-        case "entityName":
-                e.entityName = itemVal.(string)
-        case "name":
-                e.name = itemVal.(string)
-        case "httpErrorMessage":
-                e.httpErrorMessage = itemVal.(string)
-        case "apiErrorMessage":
-              e.apiErrorMessage = itemVal.(string)
-        case "err":
-              e.err = itemVal.(error)
-        }
+	switch itemName {
+	case "entityName":
+		e.entityName = itemVal.(string)
+	case "name":
+		e.name = itemVal.(string)
+	case "httpErrorMessage":
+		e.httpErrorMessage = itemVal.(string)
+	case "apiErrorMessage":
+		e.apiErrorMessage = itemVal.(string)
+	case "err":
+		e.err = itemVal.(error)
+	}
 }
 
 func (e *CommonError) GetItem(itemName string) interface{} {
-        switch itemName {
-        case "entityName":
-              return e.entityName
-        case "name":
-              return e.name
-        case "httpErrorMessage":
-              return e.httpErrorMessage
-        case "apiErrorMessage":
-              return e.apiErrorMessage
-        case "err":
-              return e.err
-        }
-        
-        return nil
+	switch itemName {
+	case "entityName":
+		return e.entityName
+	case "name":
+		return e.name
+	case "httpErrorMessage":
+		return e.httpErrorMessage
+	case "apiErrorMessage":
+		return e.apiErrorMessage
+	case "err":
+		return e.err
+	}
+
+	return nil
 }
 
 func (e *CommonError) Network() bool {

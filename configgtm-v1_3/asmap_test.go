@@ -3,19 +3,18 @@ package configgtm
 import (
 	"testing"
 
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 
 	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
-
 )
 
 var GtmTestAsMap = "testAsMap"
 
 func instantiateAsMap() *AsMap {
 
-        asMap := NewAsMap(GtmTestAsMap)
-        asMapData := []byte(`{
+	asMap := NewAsMap(GtmTestAsMap)
+	asMapData := []byte(`{
                         "assignments": [ {
                                         "asNumbers": [ 12222, 16702, 17334 ],
                                         "datacenterId": 3134,
@@ -31,9 +30,9 @@ func instantiateAsMap() *AsMap {
                         },
                         "name": "testAsMap"
               }`)
-        jsonhooks.Unmarshal(asMapData, asMap)
+	jsonhooks.Unmarshal(asMapData, asMap)
 
-        return asMap
+	return asMap
 
 }
 
@@ -41,15 +40,15 @@ func instantiateAsMap() *AsMap {
 // Depends on CreateAsMap
 func TestGetAsMap(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap)
-        mock.
-                Get("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/as-maps/" + GtmTestAsMap)
+	mock.
+		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
+		BodyString(`{
                         "assignments": [ {
                                         "asNumbers": [ 12222, 16702, 17334 ],
                                         "datacenterId": 3134,
@@ -70,49 +69,49 @@ func TestGetAsMap(t *testing.T) {
                         "name": "testAsMap"
                }`)
 
-       Init(config)
+	Init(config)
 
-       testAsMap, err := GetAsMap(GtmTestAsMap, gtmTestDomain)
-       assert.NoError(t, err)
-       assert.IsType(t, &AsMap{}, testAsMap)
-       assert.Equal(t, GtmTestAsMap, testAsMap.Name)
+	testAsMap, err := GetAsMap(GtmTestAsMap, gtmTestDomain)
+	assert.NoError(t, err)
+	assert.IsType(t, &AsMap{}, testAsMap)
+	assert.Equal(t, GtmTestAsMap, testAsMap.Name)
 
 }
 
 // Verify failed case for GetAsMap. Should pass, e.g. no API errors and domain not found
 func TestGetBadAsMap(t *testing.T) {
 
-        badName := "somebadname"
-        defer gock.Off()
+	badName := "somebadname"
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+badName)
-        mock.
-                Get("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+badName).
-                HeaderPresent("Authorization").
-                Reply(404).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/as-maps/" + badName)
+	mock.
+		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+badName).
+		HeaderPresent("Authorization").
+		Reply(404).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
+		BodyString(`{
                 }`)
 
-       Init(config)
+	Init(config)
 
-       _, err := GetAsMap(badName, gtmTestDomain)
-       assert.Error(t, err)
+	_, err := GetAsMap(badName, gtmTestDomain)
+	assert.Error(t, err)
 
 }
 
-// Test Create AsMap. 
+// Test Create AsMap.
 func TestCreateAsMap(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap)
-        mock.
-                Put("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/as-maps/" + GtmTestAsMap)
+	mock.
+		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
+		BodyString(`{
                     "resource" : {
                         "assignments": [ {
                                         "asNumbers": [ 12222, 16702, 17334 ],
@@ -148,28 +147,28 @@ func TestCreateAsMap(t *testing.T) {
                     }
                }`)
 
-       Init(config)
+	Init(config)
 
-       testAsMap := instantiateAsMap()
-       statresp, err := testAsMap.Create(gtmTestDomain)
-       assert.NoError(t, err)
+	testAsMap := instantiateAsMap()
+	statresp, err := testAsMap.Create(gtmTestDomain)
+	assert.NoError(t, err)
 
-       assert.IsType(t, &AsMap{}, statresp.Resource)
-       assert.Equal(t, GtmTestAsMap, statresp.Resource.Name)
+	assert.IsType(t, &AsMap{}, statresp.Resource)
+	assert.Equal(t, GtmTestAsMap, statresp.Resource.Name)
 
 }
 
 func TestUpdateAsMap(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap)
-        mock.
-                Put("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/as-maps/" + GtmTestAsMap)
+	mock.
+		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
+		BodyString(`{
                     "resource" : {
                         "assignments": [ {
                                         "asNumbers": [ 12222, 16702, 17334 ],
@@ -205,25 +204,25 @@ func TestUpdateAsMap(t *testing.T) {
                     }
                }`)
 
-       Init(config)
+	Init(config)
 
-       testAsMap := instantiateAsMap()
-       _, err := testAsMap.Update(gtmTestDomain)
-       assert.NoError(t, err)
+	testAsMap := instantiateAsMap()
+	_, err := testAsMap.Update(gtmTestDomain)
+	assert.NoError(t, err)
 
 }
 
 func TestDeleteAsMap(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap)
-        mock.
-                Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/as-maps/" + GtmTestAsMap)
+	mock.
+		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.3+json;charset=UTF-8").
+		BodyString(`{
                     "resource" : {
                     },
                     "status" : {
@@ -241,11 +240,11 @@ func TestDeleteAsMap(t *testing.T) {
                     }
                }`)
 
-       Init(config)
+	Init(config)
 
-       getAsMap := instantiateAsMap()
-       stat, err := getAsMap.Delete(gtmTestDomain)
-       assert.NoError(t, err)
-       assert.Equal(t, "93a48b86-4fc3-4a5f-9ca2-036835034cc6", stat.ChangeId)
+	getAsMap := instantiateAsMap()
+	stat, err := getAsMap.Delete(gtmTestDomain)
+	assert.NoError(t, err)
+	assert.Equal(t, "93a48b86-4fc3-4a5f-9ca2-036835034cc6", stat.ChangeId)
 
 }
