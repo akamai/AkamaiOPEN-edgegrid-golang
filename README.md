@@ -24,26 +24,25 @@ GET Example:
 ```go
   package main
 
-  import (
-    "fmt"
-    "io/ioutil"
-    "net/http"
-    
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
-  )
+import (
+	"fmt"
+	"io/ioutil"
 
-  func main() {
-    config, _ := edgegrid.Init("~/.edgerc", "default")
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
+)
 
-    // Retrieve all locations for diagnostic tools
-    req, _ := client.NewRequest(config, "GET", "/diagnostic-tools/v1/locations", nil)
-    resp, _ := client.Do(config, req)
+func main() {
+	config, _ := edgegrid.Init("~/.edgerc", "default")
 
-    defer resp.Body.Close()
-    byt, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println(string(byt))
-  }
+	// Retrieve all locations for diagnostic tools
+	req, _ := client.NewRequest(config, "GET", "/diagnostic-tools/v2/ghost-locations/available", nil)
+	resp, _ := client.Do(config, req)
+
+	defer resp.Body.Close()
+	byt, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(byt))
+}
 ```
 
 Parameter Example:
@@ -51,33 +50,31 @@ Parameter Example:
 ```go
   package main
 
-  import (
-    "fmt"
-    "io/ioutil"
-    "net/http"
-    
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
-  )
+import (
+	"fmt"
+	"io/ioutil"
 
-  func main() {
-    config, _ := edgegrid.Init("~/.edgerc", "default")
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
+)
 
-    // Retrieve dig information for specified location
-    req, _ := client.NewRequest(config, "GET", "/diagnostic-tools/v1/dig", nil)
+func main() {
+	config, _ := edgegrid.Init("~/.edgerc", "default")
 
-    q := req.URL.Query()
-    q.Add("hostname", "developer.akamai.com")
-    q.Add("queryType", "A")
-    q.Add("location", "Auckland, New Zealand")
+	// Retrieve dig information for specified location
+	req, _ := client.NewRequest(config, "GET", "/diagnostic-tools/v2/ghost-locations/zurich-switzerland/dig-info", nil)
 
-    req.URL.RawQuery = q.Encode()
-    resp, _ := client.Do(config, req)
+	q := req.URL.Query()
+	q.Add("hostName", "developer.akamai.com")
+	q.Add("queryType", "A")
 
-    defer resp.Body.Close()
-    byt, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println(string(byt))
-  }
+	req.URL.RawQuery = q.Encode()
+	resp, _ := client.Do(config, req)
+
+	defer resp.Body.Close()
+	byt, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(byt))
+}
 ```
 
 POST Example:
@@ -165,14 +162,14 @@ Alternatively, your program can read it from config struct.
       Debug:        false,
     }
     
-    // Retrieve all locations for diagnostic tools
-    req, _ := client.NewRequest(config, "GET", fmt.Sprintf("https://%s/diagnostic-tools/v1/locations", config.Host), nil)
-    resp, _ := client.Do(config, req)
+   // Retrieve all locations for diagnostic tools
+	req, _ := client.NewRequest(config, "GET", fmt.Sprintf("https://%s/diagnostic-tools/v2/ghost-locations/available",config.Host), nil)
+	resp, _ := client.Do(config, req)
 
-    defer resp.Body.Close()
-    byt, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println(string(byt))
-  }
+	defer resp.Body.Close()
+	byt, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(byt))
+}
 ```
 
 ## Contribute
