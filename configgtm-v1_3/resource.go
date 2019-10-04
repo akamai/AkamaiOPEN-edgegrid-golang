@@ -14,7 +14,7 @@ import (
 // ResourceInstance
 type ResourceInstance struct {
 	DatacenterId         int  `json:"datacenterId"`
-	UseDefaultLoadObject bool `json:"seDefaultLoadObject,omitempty"`
+	UseDefaultLoadObject bool `json:"useDefaultLoadObject,omitempty"`
 	LoadObject
 }
 

@@ -31,7 +31,7 @@ type Datacenter struct {
 	ServermonitorLivenessCount int         `json:"servermonitorLivenessCount,omitempty"`
 	ServermonitorLoadCount     int         `json:"servermonitorLoadCount,omitempty"`
 	ServermonitorPool          string      `json:"servermonitorPool,omitempty"`
-	SstateOrProvince           string      `json:"stateOrProvince,omitempty"`
+	StateOrProvince            string      `json:"stateOrProvince,omitempty"`
 	Virtual                    bool        `json:"virtual,omitempty"`
 }
 
