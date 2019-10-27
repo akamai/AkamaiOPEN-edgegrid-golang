@@ -103,6 +103,83 @@ POST Example:
     fmt.Println(string(byt))
   }
 ```
+POST Example with body:
+
+```go
+  package main
+
+  import (
+    "fmt"
+    "io/ioutil"
+    "net/http"
+    
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
+  )
+
+  //Create a stream
+  func main() {
+    config, _ := edgegrid.Init("~/.edgerc", "default")
+    
+    strm := &stream{
+    			Name:              "TestName123",
+    			ContractId:        "P-1234567",
+    			Format:            "HLS",
+    			Cpcode:            987654,
+    			IngestAccelerated: false,
+    			AllowedIps:        []string{"1.2.3.4"},
+    			EncoderZone:       "US_EAST",
+    			BackupEncoderZone: "AUSTRALIA",
+    			Origin: origin{
+    				HostName: "testhost9124",
+    			},
+    			AdditionalEmailIds:          []string{"xyz@akamai1.com"},
+    			IsDedicatedOrigin:           false,
+    			ActiveArchiveDurationInDays: 1,
+    		}
+    
+    		req, _ := client.NewJSONRequest(config, "POST", "/config-media-live/v2/msl-origin/streams", *strm)
+    	
+    		resp, _ := client.Do(config, req)
+    	
+    		defer resp.Body.Close()
+
+    		for k, v := range resp.Header {
+    			fmt.Print(k)
+    			fmt.Print(" : ")
+    			fmt.Println(v)
+    		}
+  }
+
+
+type stream struct {
+	Id                          int      `json:"id,omitempty"`
+	Name                        string   `json:"name,omitempty"`
+	ContractId                  string   `json:"contractId,omitempty"`
+	Format                      string   `json:"format,omitempty"`
+	Type                        string   `json:"type,omitempty"`
+	Cpcode                      int      `json:"cpcode,omitempty"`
+	IngestAccelerated           bool     `json:"ingestAccelerated"`
+	AllowedIps                  []string `json:"allowedIps,omitempty"`
+	EncoderZone                 string   `json:"encoderZone,omitempty"`
+	BackupEncoderZone           string   `json:"backupEncoderZone,omitempty"`
+	Origin                      origin   `json:"origin,omitempty"`
+	PrimaryPublishingUrl        string   `json:"primaryPublishingUrl,omitempty"`
+	BackupPublishingUrl         string   `json:"backupPublishingUrl,omitempty"`
+	AdditionalEmailIds          []string `json:"additionalEmailIds,omitempty"`
+	IsDedicatedOrigin           bool     `json:"isDedicatedOrigin"`
+	ActiveArchiveDurationInDays int      `json:"activeArchiveDurationInDays,omitempty"`
+}
+
+
+type origin struct {
+	Id          int    `json:"id,omitempty"`
+	Cpcode      int    `json:"cpcode,omitempty"`
+	HostName    string `json:"hostName,omitempty"`
+	EncoderZone string `json:"encoderZone,omitempty"`
+	ContractId  string `json:"contractId,omitempty"`
+}
+```
 
 PUT Example:
 
