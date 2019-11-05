@@ -10,9 +10,10 @@ go:
   - tip
 env:
   # Install dependencies based on the glide.lock
-  - DEPS=''
+  #- DEPS=''
   # Upgrade to the latest dependencies
-  - DEPS='-update'
+  #- DEPS='-update'
+  - GO111MODULE=on
 matrix:
   fast_finish: true
   allow_failures:
