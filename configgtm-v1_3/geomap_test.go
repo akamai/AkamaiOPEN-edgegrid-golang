@@ -5,7 +5,7 @@ import (
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 
-	"gopkg.in/h2non/gock.v1"
+	"github.com/golang/mock/mockgen"
 	"github.com/stretchr/testify/assert"
 )
 

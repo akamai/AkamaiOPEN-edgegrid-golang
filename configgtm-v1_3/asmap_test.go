@@ -4,9 +4,8 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
-
+	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/h2non/gock.v1"
 )
 
 var GtmTestAsMap = "testAsMap"
