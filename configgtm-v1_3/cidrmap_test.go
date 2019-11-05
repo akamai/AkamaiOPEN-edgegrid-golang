@@ -10,7 +10,6 @@ import (
 )
 
 var GtmTestCidrMap = "testCidrMap"
-var gtmTestDomain = ""
 
 func instantiateCidrMap() *CidrMap {
 
