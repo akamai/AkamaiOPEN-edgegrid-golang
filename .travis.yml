@@ -28,9 +28,6 @@ before_install:
   - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/akamai/AkamaiOPEN-edgegrid-golang/
   - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/akamai/AkamaiOPEN-edgegrid-golang
   - cd $HOME/gopath/src/github.com/akamai/AkamaiOPEN-edgegrid-golang
-install:
-  #- dep ensure $DEPS
-  - go build
 script:
   - ls -d */ | grep -vE '(examples|testdata|vendor)' | xargs -I {package} go test -v ./{package}
 notifications:

@@ -5,8 +5,8 @@ import (
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 
-	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/h2non/gock.v1"
 
 	"fmt"
 )
@@ -150,7 +150,7 @@ func TestGetBadResource(t *testing.T) {
 	Init(config)
 
 	_, err := GetResource("somebadname", gtmTestDomain)
-        // Shouldn't have found
+	// Shouldn't have found
 	assert.Error(t, err)
 
 }
