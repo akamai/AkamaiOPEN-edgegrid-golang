@@ -150,7 +150,7 @@ func TestGetBadResource(t *testing.T) {
 	Init(config)
 
 	_, err := GetResource("somebadname", gtmTestDomain)
-        // Shouldn't have found
+	// Shouldn't have found
 	assert.Error(t, err)
 
 }

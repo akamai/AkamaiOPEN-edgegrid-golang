@@ -6,18 +6,21 @@ go:
   - 1.8
   - 1.9
   - "1.10"
-  - "1.11"
+  - "1.11.x"
   - tip
 env:
   # Install dependencies based on the glide.lock
-  - DEPS=''
+  #- DEPS=''
   # Upgrade to the latest dependencies
-  - DEPS='-update'
+  #- DEPS='-update'
+  - GO111MODULE=on
 matrix:
   fast_finish: true
   allow_failures:
   # Allow Go 1.6, and tip to fail, as well as whenever we use upgraded dependencies
   - go: 1.6
+  - go: 1.7
+  - go: 1.8
   - go: tip
   - env: DEPS='-update'
 before_install:
@@ -27,8 +30,6 @@ before_install:
   - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/akamai/AkamaiOPEN-edgegrid-golang/
   - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/akamai/AkamaiOPEN-edgegrid-golang
   - cd $HOME/gopath/src/github.com/akamai/AkamaiOPEN-edgegrid-golang
-install:
-  - dep ensure $DEPS
 script:
   - ls -d */ | grep -vE '(examples|testdata|vendor)' | xargs -I {package} go test -v ./{package}
 notifications:

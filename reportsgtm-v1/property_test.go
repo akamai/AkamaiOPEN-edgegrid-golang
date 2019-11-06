@@ -3,7 +3,7 @@ package reportsgtm
 import (
 	"testing"
 
-	"github.com/h2non/gock"
+	"gopkg.in/h2non/gock.v1"
 	"github.com/stretchr/testify/assert"
 )
 

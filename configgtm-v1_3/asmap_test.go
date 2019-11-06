@@ -3,13 +3,25 @@ package configgtm
 import (
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
-
 	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	config = edgegrid.Config{
+		Host:         "akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/",
+		AccessToken:  "akab-access-token-xxx-xxxxxxxxxxxxxxxx",
+		ClientToken:  "akab-client-token-xxx-xxxxxxxxxxxxxxxx",
+		ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
+		MaxBody:      2048,
+		Debug:        false,
+	}
+)
+
 var GtmTestAsMap = "testAsMap"
+var gtmTestDomain = "gtmdomtest.akadns.net"
 
 func instantiateAsMap() *AsMap {
 
