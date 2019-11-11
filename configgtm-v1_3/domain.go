@@ -255,7 +255,7 @@ func (domain *Domain) save(queryArgs map[string]string, operation string) (*Doma
 // Create is a method applied to a domain object resulting in creation.
 func (domain *Domain) Create(queryArgs map[string]string) (*DomainResponse, error) {
 
-	op := "PUT" // "POST" was rumored to work ..
+	op := "POST" // was rumored to work ..
 	return domain.save(queryArgs, op)
 
 }
@@ -271,8 +271,6 @@ func (domain *Domain) Update(queryArgs map[string]string) (*ResponseStatus, erro
 	}
 	return stat.Status, err
 }
-
-/* Future. Not currently defined endpoint
 
 // Delete is a method applied to a domain object resulting in removal.
 func (domain *Domain) Delete() (*ResponseStatus, error) {
@@ -324,4 +322,3 @@ func (domain *Domain) Delete() (*ResponseStatus, error) {
         return responseBody.Status, nil
 
 }
-*/
