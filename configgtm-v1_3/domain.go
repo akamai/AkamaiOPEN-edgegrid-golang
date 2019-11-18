@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"net/http"
+	"strings"
 )
 
 //
@@ -103,7 +104,7 @@ func GetDomainStatus(domainName string) (*ResponseStatus, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Domain", name: domainName}
+		return nil, CommonError{entityName: "Domain", name: domainName}
 	} else {
 		err = client.BodyJSON(res, stat)
 		if err != nil {
@@ -141,7 +142,7 @@ func ListDomains() ([]*DomainItem, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Domain"}
+		return nil, CommonError{entityName: "Domain"}
 	} else {
 		err = client.BodyJSON(res, domains)
 		if err != nil {
@@ -179,7 +180,7 @@ func GetDomain(domainName string) (*Domain, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Domain", name: domainName}
+		return nil, CommonError{entityName: "Domain", name: domainName}
 	} else {
 		err = client.BodyJSON(res, domain)
 		if err != nil {
@@ -200,10 +201,10 @@ func (domain *Domain) save(queryArgs map[string]string, req *http.Request) (*Dom
 	if len(queryArgs) > 0 {
 		q := req.URL.Query()
 		if val, ok := queryArgs["contractId"]; ok {
-			q.Add("contractId", val)
+        		q.Add("contractId", strings.TrimPrefix(val, "ctr_"))
 		}
 		if val, ok := queryArgs["gid"]; ok {
-			q.Add("gid", val)
+			q.Add("gid", strings.TrimPrefix(val, "grp_"))
 		}
 		req.URL.RawQuery = q.Encode()
 	}
@@ -216,7 +217,7 @@ func (domain *Domain) save(queryArgs map[string]string, req *http.Request) (*Dom
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "Domain",
 			name:             domain.Name,
 			httpErrorMessage: err.Error(),
@@ -227,7 +228,7 @@ func (domain *Domain) save(queryArgs map[string]string, req *http.Request) (*Dom
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "Domain", name: domain.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Domain", name: domain.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	// TODO: What validation can we do? E.g. if not equivalent there was a concurrent change...
@@ -306,7 +307,7 @@ func (domain *Domain) Delete() (*ResponseStatus, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "Domain",
 			name:             domain.Name,
 			httpErrorMessage: err.Error(),
@@ -317,7 +318,7 @@ func (domain *Domain) Delete() (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "Domain", name: domain.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Domain", name: domain.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &ResponseBody{}

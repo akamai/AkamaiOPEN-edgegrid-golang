@@ -29,7 +29,7 @@ type Resource struct {
 	ResourceInstances           []*ResourceInstance `json:"resourceInstances,omitempty"`
 	AggregationType             string              `json:"aggregationType"`
 	Links                       []*Link             `json:"links,omitempty"`
-	LoadImbalancePercent        float64             `json:"loadImbalancePercent,omitempty"`
+	LoadImbalancePercentage     float64             `json:"loadImbalancePercentage,omitempty"`
 	UpperBound                  int                 `json:"upperBound,omitempty"`
 	Name                        string              `json:"name"`
 	MaxUMultiplicativeIncrement float64             `json:"maxUMultiplicativeIncrement,omitempty"`
@@ -81,7 +81,7 @@ func ListResources(domainName string) ([]*Resource, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Resources"}
+		return nil, CommonError{entityName: "Resources"}
 	}
 	err = client.BodyJSON(res, rsrcs)
 	if err != nil {
@@ -119,7 +119,7 @@ func GetResource(name, domainName string) (*Resource, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Resource", name: name}
+		return nil, CommonError{entityName: "Resource", name: name}
 	} else {
 		err = client.BodyJSON(res, rsc)
 		if err != nil {
@@ -177,7 +177,7 @@ func (rsrc *Resource) save(domainName string) (*ResourceResponse, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "Resource",
 			name:             rsrc.Name,
 			httpErrorMessage: err.Error(),
@@ -188,7 +188,7 @@ func (rsrc *Resource) save(domainName string) (*ResourceResponse, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "Resource", name: rsrc.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Resource", name: rsrc.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &ResourceResponse{}
@@ -228,7 +228,7 @@ func (rsrc *Resource) Delete(domainName string) (*ResponseStatus, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "Resource",
 			name:             rsrc.Name,
 			httpErrorMessage: err.Error(),
@@ -239,7 +239,7 @@ func (rsrc *Resource) Delete(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "Resource", name: rsrc.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Resource", name: rsrc.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &ResponseBody{}

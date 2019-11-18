@@ -98,14 +98,14 @@ func getWindowCore(hostURL string) (*WindowResponse, error) {
 				stat.Start = availStart.(string)
 			}
 			if stat.End == "" || stat.Start == "" {
-                		cErr := &configgtm.CommonError{}
+                		cErr := configgtm.CommonError{}
                 		cErr.SetItem("entityName", "Window")
                 		cErr.SetItem("name", "Data Window")
 				cErr.SetItem("apiErrorMessage", "No available data window")
                 		return nil, cErr	
 			}	
 		} else if res.StatusCode == 404 {
-			cErr := &configgtm.CommonError{}
+			cErr := configgtm.CommonError{}
 			cErr.SetItem("entityName", "Window")
 			cErr.SetItem("name", "Data Window")
 			return nil, cErr

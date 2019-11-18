@@ -63,7 +63,7 @@ func ListGeoMaps(domainName string) ([]*GeoMap, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "geoMap"}
+		return nil, CommonError{entityName: "geoMap"}
 	}
 	err = client.BodyJSON(res, geos)
 	if err != nil {
@@ -102,7 +102,7 @@ func GetGeoMap(name, domainName string) (*GeoMap, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "GeographicMap", name: name}
+		return nil, CommonError{entityName: "GeographicMap", name: name}
 	} else {
 		err = client.BodyJSON(res, geo)
 		if err != nil {
@@ -173,7 +173,7 @@ func (geo *GeoMap) save(domainName string) (*GeoMapResponse, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "geographicMap",
 			name:             geo.Name,
 			httpErrorMessage: err.Error(),
@@ -184,7 +184,7 @@ func (geo *GeoMap) save(domainName string) (*GeoMapResponse, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "geographicMap", name: geo.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "geographicMap", name: geo.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &GeoMapResponse{}
@@ -223,7 +223,7 @@ func (geo *GeoMap) Delete(domainName string) (*ResponseStatus, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "geographicMap",
 			name:             geo.Name,
 			httpErrorMessage: err.Error(),
@@ -234,7 +234,7 @@ func (geo *GeoMap) Delete(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "geographicMap", name: geo.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "geographicMap", name: geo.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &ResponseBody{}

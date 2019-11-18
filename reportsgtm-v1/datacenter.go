@@ -89,7 +89,7 @@ func GetTrafficPerDatacenter(domainName string, datacenterID int, optArgs map[st
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		cErr := &configgtm.CommonError{}
+		cErr := configgtm.CommonError{}
 		cErr.SetItem("entityName", "Datacenter")
 		cErr.SetItem("name", strconv.Itoa(datacenterID))
 		return nil, cErr

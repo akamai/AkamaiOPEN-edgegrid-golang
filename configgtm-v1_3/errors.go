@@ -25,7 +25,7 @@ type CommonError struct {
 	err              error
 }
 
-func (e *CommonError) SetItem(itemName string, itemVal interface{}) {
+func (e CommonError) SetItem(itemName string, itemVal interface{}) {
 	switch itemName {
 	case "entityName":
 		e.entityName = itemVal.(string)
@@ -40,7 +40,7 @@ func (e *CommonError) SetItem(itemName string, itemVal interface{}) {
 	}
 }
 
-func (e *CommonError) GetItem(itemName string) interface{} {
+func (e CommonError) GetItem(itemName string) interface{} {
 	switch itemName {
 	case "entityName":
 		return e.entityName
@@ -57,32 +57,32 @@ func (e *CommonError) GetItem(itemName string) interface{} {
 	return nil
 }
 
-func (e *CommonError) Network() bool {
+func (e CommonError) Network() bool {
 	if e.httpErrorMessage != "" {
 		return true
 	}
 	return false
 }
 
-func (e *CommonError) NotFound() bool {
+func (e CommonError) NotFound() bool {
 	if e.err == nil && e.httpErrorMessage == "" && e.apiErrorMessage == "" {
 		return true
 	}
 	return false
 }
 
-func (*CommonError) FailedToSave() bool {
+func (CommonError) FailedToSave() bool {
 	return false
 }
 
-func (e *CommonError) ValidationFailed() bool {
+func (e CommonError) ValidationFailed() bool {
 	if e.apiErrorMessage != "" {
 		return true
 	}
 	return false
 }
 
-func (e *CommonError) Error() string {
+func (e CommonError) Error() string {
 
 	if e.Network() {
 		return fmt.Sprintf("%s \"%s\" network error: [%s]", e.entityName, e.name, e.httpErrorMessage)

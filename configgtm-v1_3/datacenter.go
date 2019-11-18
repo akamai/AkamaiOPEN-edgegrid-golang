@@ -78,7 +78,7 @@ func ListDatacenters(domainName string) ([]*Datacenter, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Datacenter"}
+		return nil, CommonError{entityName: "Datacenter"}
 	} else {
 		err = client.BodyJSON(res, dcs)
 		if err != nil {
@@ -117,7 +117,7 @@ func GetDatacenter(dcID int, domainName string) (*Datacenter, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Datacenter", name: strconv.Itoa(dcID)}
+		return nil, CommonError{entityName: "Datacenter", name: strconv.Itoa(dcID)}
 	} else {
 		err = client.BodyJSON(res, dc)
 		if err != nil {
@@ -151,7 +151,7 @@ func (dc *Datacenter) Create(domainName string) (*DatacenterResponse, error) {
 
 	// Network
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "Domain",
 			name:             domainName,
 			httpErrorMessage: err.Error(),
@@ -162,7 +162,7 @@ func (dc *Datacenter) Create(domainName string) (*DatacenterResponse, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "Domain", name: domainName, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Domain", name: domainName, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := NewDatacenterResponse()
@@ -199,7 +199,7 @@ func (dc *Datacenter) Update(domainName string) (*ResponseStatus, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "Datacenter",
 			name:             strconv.Itoa(dc.DatacenterId),
 			httpErrorMessage: err.Error(),
@@ -210,7 +210,7 @@ func (dc *Datacenter) Update(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "Datacenter", name: string(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Datacenter", name: string(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := NewDatacenterResponse()
@@ -249,7 +249,7 @@ func (dc *Datacenter) Delete(domainName string) (*ResponseStatus, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "Datacenter",
 			name:             strconv.Itoa(dc.DatacenterId),
 			httpErrorMessage: err.Error(),
@@ -260,7 +260,7 @@ func (dc *Datacenter) Delete(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "Datacenter", name: string(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Datacenter", name: string(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := NewDatacenterResponse()
