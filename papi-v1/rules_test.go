@@ -100,6 +100,12 @@ func TestRule_AddBehavior(t *testing.T) {
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
+							"existingkey": "existingvalue",
+						},
+					},
+					&Behavior{
+						Name: "existing",
+						Options: OptionValue{
 							"bar": "baz",
 						},
 					},
@@ -200,7 +206,12 @@ func TestRule_MergeBehavior(t *testing.T) {
 						Name: "existing",
 						Options: OptionValue{
 							"existingkey": "existingvalue",
-							"bar":         "baz",
+						},
+					},
+					&Behavior{
+						Name: "existing",
+						Options: OptionValue{
+							"bar": "baz",
 						},
 					},
 				},
@@ -230,8 +241,14 @@ func TestRule_MergeBehavior(t *testing.T) {
 					&Behavior{
 						Name: "existing",
 						Options: OptionValue{
-							"existingkey": "newvalue",
+							"existingkey": "existingvalue",
 							"otherkey":    "won't change",
+						},
+					},
+					&Behavior{
+						Name: "existing",
+						Options: OptionValue{
+							"existingkey": "newvalue",
 							"bar":         "baz",
 						},
 					},
@@ -328,6 +345,12 @@ func TestRule_AddCriteria(t *testing.T) {
 			},
 			Expected: Rule{
 				Criteria: []*Criteria{
+					&Criteria{
+						Name: "existing",
+						Options: OptionValue{
+							"existingkey": "existingvalue",
+						},
+					},
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
@@ -431,7 +454,12 @@ func TestRule_MergeCriteria(t *testing.T) {
 						Name: "existing",
 						Options: OptionValue{
 							"existingkey": "existingvalue",
-							"bar":         "baz",
+						},
+					},
+					&Criteria{
+						Name: "existing",
+						Options: OptionValue{
+							"bar": "baz",
 						},
 					},
 				},
@@ -461,8 +489,14 @@ func TestRule_MergeCriteria(t *testing.T) {
 					&Criteria{
 						Name: "existing",
 						Options: OptionValue{
-							"existingkey": "newvalue",
+							"existingkey": "existingvalue",
 							"otherkey":    "won't change",
+						},
+					},
+					&Criteria{
+						Name: "existing",
+						Options: OptionValue{
+							"existingkey": "newvalue",
 							"bar":         "baz",
 						},
 					},
@@ -702,6 +736,9 @@ func TestRule_AddChildRule(t *testing.T) {
 			Expected: Rule{
 				Name: "Parent Rule",
 				Children: []*Rule{
+					&Rule{
+						Name: "Existing Rule",
+					},
 					&Rule{
 						Name: "Existing Rule",
 						Children: []*Rule{
