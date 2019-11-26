@@ -32,7 +32,7 @@ type LivenessTest struct {
 	ErrorPenalty                  int     `json:"errorPenalty,omitempty"`
 	PeerCertificateVerification   bool    `json:"peerCertificateVerification,omitempty"`
 	TestInterval                  int     `json:"testInterval"`
-	TestObject                    string  `json:"testObject,omitempty"`
+	TestObject                    string  `json:"testObject"`
 	Links                         []*Link `json:"links,omitempty"`
 	RequestString                 string  `json:"requestString,omitempty"`
 	ResponseString                string  `json:"responseString,omitempty"`
