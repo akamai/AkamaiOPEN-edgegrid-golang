@@ -201,7 +201,7 @@ func (domain *Domain) save(queryArgs map[string]string, req *http.Request) (*Dom
 	if len(queryArgs) > 0 {
 		q := req.URL.Query()
 		if val, ok := queryArgs["contractId"]; ok {
-        		q.Add("contractId", strings.TrimPrefix(val, "ctr_"))
+			q.Add("contractId", strings.TrimPrefix(val, "ctr_"))
 		}
 		if val, ok := queryArgs["gid"]; ok {
 			q.Add("gid", strings.TrimPrefix(val, "grp_"))
