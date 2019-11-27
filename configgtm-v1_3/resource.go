@@ -155,7 +155,6 @@ func (rsrc *Resource) Update(domainName string) (*ResponseStatus, error) {
 // Save Resource in given domain. Common path for Create and Update.
 func (rsrc *Resource) save(domainName string) (*ResourceResponse, error) {
 
-	fmt.Println("Creating request!!!!")
 	req, err := client.NewJSONRequest(
 		Config,
 		"PUT",
