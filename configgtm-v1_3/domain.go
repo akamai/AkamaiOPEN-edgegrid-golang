@@ -1,9 +1,10 @@
 package configgtm
 
 import (
+	"fmt"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-
-        "fmt"
+	"net/http"
+	"strings"
 )
 
 //
@@ -59,7 +60,7 @@ type DomainsList struct {
 	DomainItems []*DomainItem `json:"items"`
 }
 
-// DomainItem is a DomainsList item 
+// DomainItem is a DomainsList item
 type DomainItem struct {
 	AcgId        string  `json:"acgId"`
 	LastModified string  `json:"lastModified"`
@@ -103,7 +104,7 @@ func GetDomainStatus(domainName string) (*ResponseStatus, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Domain", name: domainName}
+		return nil, CommonError{entityName: "Domain", name: domainName}
 	} else {
 		err = client.BodyJSON(res, stat)
 		if err != nil {
@@ -141,7 +142,7 @@ func ListDomains() ([]*DomainItem, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Domain"}
+		return nil, CommonError{entityName: "Domain"}
 	} else {
 		err = client.BodyJSON(res, domains)
 		if err != nil {
@@ -179,7 +180,7 @@ func GetDomain(domainName string) (*Domain, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Domain", name: domainName}
+		return nil, CommonError{entityName: "Domain", name: domainName}
 	} else {
 		err = client.BodyJSON(res, domain)
 		if err != nil {
@@ -191,17 +192,7 @@ func GetDomain(domainName string) (*Domain, error) {
 }
 
 // Save method; Create or Update
-func (domain *Domain) save(queryArgs map[string]string, operation string) (*DomainResponse, error) {
-
-	req, err := client.NewJSONRequest(
-		Config,
-		operation,
-		fmt.Sprintf("/config-gtm/v1/domains/%s", domain.Name),
-		domain,
-	)
-	if err != nil {
-		return nil, err
-	}
+func (domain *Domain) save(queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
 
 	// set schema version
 	setVersionHeader(req, schemaVersion)
@@ -210,10 +201,10 @@ func (domain *Domain) save(queryArgs map[string]string, operation string) (*Doma
 	if len(queryArgs) > 0 {
 		q := req.URL.Query()
 		if val, ok := queryArgs["contractId"]; ok {
-			q.Add("contractId", val)
+			q.Add("contractId", strings.TrimPrefix(val, "ctr_"))
 		}
 		if val, ok := queryArgs["gid"]; ok {
-			q.Add("gid", val)
+			q.Add("gid", strings.TrimPrefix(val, "grp_"))
 		}
 		req.URL.RawQuery = q.Encode()
 	}
@@ -226,7 +217,7 @@ func (domain *Domain) save(queryArgs map[string]string, operation string) (*Doma
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "Domain",
 			name:             domain.Name,
 			httpErrorMessage: err.Error(),
@@ -237,7 +228,7 @@ func (domain *Domain) save(queryArgs map[string]string, operation string) (*Doma
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "Domain", name: domain.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Domain", name: domain.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	// TODO: What validation can we do? E.g. if not equivalent there was a concurrent change...
@@ -255,8 +246,17 @@ func (domain *Domain) save(queryArgs map[string]string, operation string) (*Doma
 // Create is a method applied to a domain object resulting in creation.
 func (domain *Domain) Create(queryArgs map[string]string) (*DomainResponse, error) {
 
-	op := "PUT" // "POST" was rumored to work ..
-	return domain.save(queryArgs, op)
+	req, err := client.NewJSONRequest(
+		Config,
+		"POST",
+		fmt.Sprintf("/config-gtm/v1/domains/"),
+		domain,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return domain.save(queryArgs, req)
 
 }
 
@@ -264,64 +264,70 @@ func (domain *Domain) Create(queryArgs map[string]string) (*DomainResponse, erro
 func (domain *Domain) Update(queryArgs map[string]string) (*ResponseStatus, error) {
 
 	// Any validation to do?
-	op := "PUT"
-	stat, err := domain.save(queryArgs, op)
+	req, err := client.NewJSONRequest(
+		Config,
+		"PUT",
+		fmt.Sprintf("/config-gtm/v1/domains/%s", domain.Name),
+		domain,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	stat, err := domain.save(queryArgs, req)
 	if err != nil {
 		return nil, err
 	}
 	return stat.Status, err
 }
 
-/* Future. Not currently defined endpoint
-
 // Delete is a method applied to a domain object resulting in removal.
 func (domain *Domain) Delete() (*ResponseStatus, error) {
 
-        req, err := client.NewRequest(
-                Config,
-                "DELETE",
-                fmt.Sprintf("/config-gtm/v1/domains/%s", domain.Name),
-                nil,
-        )
-        if err != nil {
-                return nil, err
-        }
+	req, err := client.NewRequest(
+		Config,
+		"DELETE",
+		fmt.Sprintf("/config-gtm/v1/domains/%s", domain.Name),
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
 
-        setVersionHeader(req, schemaVersion)
+	setVersionHeader(req, schemaVersion)
 
-        printHttpRequest(req, true)
+	printHttpRequest(req, true)
 
-        res, err := client.Do(Config, req)
-        if err != nil {
-                return nil, err
-        }
+	res, err := client.Do(Config, req)
+	if err != nil {
+		return nil, err
+	}
 
-        printHttpResponse(res, true)
+	printHttpResponse(res, true)
 
-        // Network error
-        if err != nil {
-                return nil, &CommonError{
-                        entityName:       "Domain",
-                        name:             domain.Name,
-                        httpErrorMessage: err.Error(),
-                        err:              err,
-                }
-        }
+	// Network error
+	if err != nil {
+		return nil, CommonError{
+			entityName:       "Domain",
+			name:             domain.Name,
+			httpErrorMessage: err.Error(),
+			err:              err,
+		}
+	}
 
-        // API error
-        if client.IsError(res) {
-                err := client.NewAPIError(res)
-                return nil, &CommonError{entityName: "Domain", name: domain.Name, apiErrorMessage: err.Detail, err: err}
-        }
+	// API error
+	if client.IsError(res) {
+		err := client.NewAPIError(res)
+		return nil, CommonError{entityName: "Domain", name: domain.Name, apiErrorMessage: err.Detail, err: err}
+	}
 
-        responseBody := &ResponseBody{}
-        // Unmarshall whole response body in case want status
-        err = client.BodyJSON(res, responseBody)
-        if err != nil {
-                return nil, err
-        }
+	responseBody := &ResponseBody{}
+	// Unmarshall whole response body in case want status
+	err = client.BodyJSON(res, responseBody)
+	if err != nil {
+		return nil, err
+	}
 
-        return responseBody.Status, nil
+	return responseBody.Status, nil
 
 }
-*/

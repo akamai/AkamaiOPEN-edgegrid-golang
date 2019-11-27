@@ -3,7 +3,7 @@ package configgtm
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 
-        "fmt"
+	"fmt"
 )
 
 //
@@ -58,7 +58,7 @@ func GetAsMap(name, domainName string) (*AsMap, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "asMap", name: name}
+		return nil, CommonError{entityName: "asMap", name: name}
 	} else {
 		err = client.BodyJSON(res, as)
 		if err != nil {
@@ -129,7 +129,7 @@ func (as *AsMap) save(domainName string) (*AsMapResponse, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "asMap",
 			name:             as.Name,
 			httpErrorMessage: err.Error(),
@@ -140,7 +140,7 @@ func (as *AsMap) save(domainName string) (*AsMapResponse, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "asMap", name: as.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "asMap", name: as.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &AsMapResponse{}
@@ -179,7 +179,7 @@ func (as *AsMap) Delete(domainName string) (*ResponseStatus, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "asMap",
 			name:             as.Name,
 			httpErrorMessage: err.Error(),
@@ -190,7 +190,7 @@ func (as *AsMap) Delete(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "asMap", name: as.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "asMap", name: as.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &ResponseBody{}

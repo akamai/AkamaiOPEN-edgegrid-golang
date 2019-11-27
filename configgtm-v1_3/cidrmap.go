@@ -3,7 +3,7 @@ package configgtm
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 
-        "fmt"
+	"fmt"
 )
 
 //
@@ -63,7 +63,7 @@ func ListCidrMaps(domainName string) ([]*CidrMap, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "cidrMap"}
+		return nil, CommonError{entityName: "cidrMap"}
 	}
 	err = client.BodyJSON(res, cidrs)
 	if err != nil {
@@ -101,7 +101,7 @@ func GetCidrMap(name, domainName string) (*CidrMap, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "cidrMap", name: name}
+		return nil, CommonError{entityName: "cidrMap", name: name}
 	} else {
 		err = client.BodyJSON(res, cidr)
 		if err != nil {
@@ -171,7 +171,7 @@ func (cidr *CidrMap) save(domainName string) (*CidrMapResponse, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "cidrMap",
 			name:             cidr.Name,
 			httpErrorMessage: err.Error(),
@@ -182,7 +182,7 @@ func (cidr *CidrMap) save(domainName string) (*CidrMapResponse, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "cidrMap", name: cidr.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "cidrMap", name: cidr.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &CidrMapResponse{}
@@ -221,7 +221,7 @@ func (cidr *CidrMap) Delete(domainName string) (*ResponseStatus, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "cidrMap",
 			name:             cidr.Name,
 			httpErrorMessage: err.Error(),
@@ -232,7 +232,7 @@ func (cidr *CidrMap) Delete(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "cidrMap", name: cidr.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "cidrMap", name: cidr.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &ResponseBody{}

@@ -82,24 +82,47 @@ func getWindowCore(hostURL string) (*WindowResponse, error) {
 
 	printHttpResponse(res, true)
 
-	if client.IsError(res) && res.StatusCode != 404 {
-		return nil, client.NewAPIError(res)
-	} else if res.StatusCode == 404 {
-		cErr := &configgtm.CommonError{}
-		cErr.SetItem("entityName", "Window")
-		cErr.SetItem("name", "datacenters")
-		return nil, cErr
+	if client.IsError(res) {
+		if res.StatusCode == 400 {
+                	// Get the body. Could be bad dates.
+                	var windRespErrBody map[string]interface{}
+                	err = client.BodyJSON(res, windRespErrBody)
+			if err != nil {
+				return nil, err
+			}
+			// are available dates present?
+			if availEnd, ok := windRespErrBody["availableEndDate"]; ok {
+				stat.End = availEnd.(string)
+			}
+                	if availStart, ok := windRespErrBody["availableStartDate"]; ok {
+				stat.Start = availStart.(string)
+			}
+			if stat.End == "" || stat.Start == "" {
+                		cErr := configgtm.CommonError{}
+                		cErr.SetItem("entityName", "Window")
+                		cErr.SetItem("name", "Data Window")
+				cErr.SetItem("apiErrorMessage", "No available data window")
+                		return nil, cErr	
+			}	
+		} else if res.StatusCode == 404 {
+			cErr := configgtm.CommonError{}
+			cErr.SetItem("entityName", "Window")
+			cErr.SetItem("name", "Data Window")
+			return nil, cErr
+		} else {
+			return nil, client.NewAPIError(res)
+		}
 	} else {
 		err = client.BodyJSON(res, stat)
 		if err != nil {
 			return nil, err
 		}
-		timeWindow, err := createTimeWindow(stat)
-		if err != nil {
-			return nil, err
-		}
-		return timeWindow, nil
 	}
+	timeWindow, err := createTimeWindow(stat)
+	if err != nil {
+		return nil, err
+	}
+	return timeWindow, nil
 }
 
 // GetDemandWindow is a utility function that retrieves the data window for Demand category of Report APIs

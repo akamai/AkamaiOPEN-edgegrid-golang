@@ -1,14 +1,28 @@
 package configgtm
 
 import (
-        "fmt"
-        "net/http"
+	"fmt"
+	"net/http"
 )
 
 //
 // Common data types and methods
 // Based on 1.3 schemas
 //
+
+// Append url args to req
+func appendReqArgs(req *http.Request, queryArgs map[string]string) {
+
+	// Look for optional args
+	if len(queryArgs) > 0 {
+		q := req.URL.Query()
+		for argName, argVal := range queryArgs {
+			q.Add(argName, argVal)
+		}
+		req.URL.RawQuery = q.Encode()
+	}
+
+}
 
 // default schema version
 // TODO: retrieve from environment or elsewhere in Service Init
@@ -17,13 +31,13 @@ var schemaVersion string = "1.3"
 // internal method to set version. passed in as string
 func setVersionHeader(req *http.Request, version string) {
 
-        req.Header.Set("Accept", fmt.Sprintf("application/vnd.config-gtm.v%s+json", version))
+	req.Header.Set("Accept", fmt.Sprintf("application/vnd.config-gtm.v%s+json", version))
 
-        if req.Method != "GET" {
-                req.Header.Set("Content-Type", fmt.Sprintf("application/vnd.config-gtm.v%s+json", version))
-        }
+	if req.Method != "GET" {
+		req.Header.Set("Content-Type", fmt.Sprintf("application/vnd.config-gtm.v%s+json", version))
+	}
 
-        return
+	return
 
 }
 

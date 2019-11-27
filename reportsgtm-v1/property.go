@@ -138,7 +138,7 @@ func GetIpStatusPerProperty(domainName string, propertyName string, optArgs map[
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		cErr := &configgtm.CommonError{}
+		cErr := configgtm.CommonError{}
 		cErr.SetItem("entityName", "Property")
 		cErr.SetItem("name", propertyName)
 		return nil, cErr
@@ -198,7 +198,7 @@ func GetTrafficPerProperty(domainName string, propertyName string, optArgs map[s
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		cErr := &configgtm.CommonError{}
+		cErr := configgtm.CommonError{}
 		cErr.SetItem("entityName", "Property")
 		cErr.SetItem("name", propertyName)
 		return nil, cErr

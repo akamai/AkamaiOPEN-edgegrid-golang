@@ -20,8 +20,8 @@ func Init(config edgegrid.Config) {
 
 	Config = config
 	GtmLog = logrus.New()
-        edgegrid.SetupLogging(GtmLog)
-        if edgegrid.LogFile != nil {
+	edgegrid.SetupLogging(GtmLog)
+	if edgegrid.LogFile != nil {
 		defer edgegrid.LogFile.Close()
 	}
 }

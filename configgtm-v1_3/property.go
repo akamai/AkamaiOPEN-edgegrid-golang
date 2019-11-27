@@ -3,7 +3,7 @@ package configgtm
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 
-        "fmt"
+	"fmt"
 )
 
 //
@@ -32,7 +32,7 @@ type LivenessTest struct {
 	ErrorPenalty                  int     `json:"errorPenalty,omitempty"`
 	PeerCertificateVerification   bool    `json:"peerCertificateVerification,omitempty"`
 	TestInterval                  int     `json:"testInterval"`
-	TestObject                    string  `json:"testObject,omitempty"`
+	TestObject                    string  `json:"testObject"`
 	Links                         []*Link `json:"links,omitempty"`
 	RequestString                 string  `json:"requestString,omitempty"`
 	ResponseString                string  `json:"responseString,omitempty"`
@@ -149,7 +149,7 @@ func ListProperties(domainName string) ([]*Property, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Domain", name: domainName}
+		return nil, CommonError{entityName: "Domain", name: domainName}
 	} else {
 		err = client.BodyJSON(res, properties)
 		if err != nil {
@@ -187,7 +187,7 @@ func GetProperty(name, domainName string) (*Property, error) {
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &CommonError{entityName: "Property", name: name}
+		return nil, CommonError{entityName: "Property", name: name}
 	} else {
 		err = client.BodyJSON(res, property)
 		if err != nil {
@@ -240,7 +240,7 @@ func (property *Property) save(domainName string) (*PropertyResponse, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "Property",
 			name:             property.Name,
 			httpErrorMessage: err.Error(),
@@ -251,7 +251,7 @@ func (property *Property) save(domainName string) (*PropertyResponse, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "Property", name: property.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Property", name: property.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &PropertyResponse{}
@@ -291,7 +291,7 @@ func (property *Property) Delete(domainName string) (*ResponseStatus, error) {
 
 	// Network error
 	if err != nil {
-		return nil, &CommonError{
+		return nil, CommonError{
 			entityName:       "Property",
 			name:             property.Name,
 			httpErrorMessage: err.Error(),
@@ -302,7 +302,7 @@ func (property *Property) Delete(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, &CommonError{entityName: "Property", name: property.Name, apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Property", name: property.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := &ResponseBody{}
