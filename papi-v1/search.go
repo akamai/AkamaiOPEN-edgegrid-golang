@@ -49,6 +49,10 @@ func Search(searchBy SearchKey, propertyName string) (*SearchResult, error) {
 	}
 
 	res, err := client.Do(Config, req)
+	
+	if err != nil {
+		return nil, err
+	}
 
 	if client.IsError(res) {
 		return nil, client.NewAPIError(res)
