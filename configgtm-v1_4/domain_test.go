@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
+	"github.com/stretchr/testify/require"
 
 	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
@@ -566,7 +567,7 @@ func TestCreateDomain(t *testing.T) {
 	qArgs := make(map[string]string)
 
 	statResponse, err := testDomain.Create(qArgs)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, gtmTestDomain, statResponse.Resource.Name)
 
 }
@@ -745,7 +746,7 @@ func TestUpdateDomain(t *testing.T) {
 	//testDomain.MaxResources = 9999
 	qArgs := make(map[string]string)
 	statResp, err := testDomain.Update(qArgs)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, statResp.ChangeId, "df6c04e4-6327-4e0f-8872-bfe9fb2693d2")
 
 }
