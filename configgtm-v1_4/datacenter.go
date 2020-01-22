@@ -148,8 +148,6 @@ func (dc *Datacenter) Create(domainName string) (*DatacenterResponse, error) {
 
 	res, err := client.Do(Config, req)
 
-	printHttpResponse(res, true)
-
 	// Network
 	if err != nil {
 		return nil, CommonError{
@@ -159,6 +157,8 @@ func (dc *Datacenter) Create(domainName string) (*DatacenterResponse, error) {
 			err:              err,
 		}
 	}
+
+	printHttpResponse(res, true)
 
 	// API error
 	if client.IsError(res) {
@@ -196,8 +196,6 @@ func (dc *Datacenter) Update(domainName string) (*ResponseStatus, error) {
 
 	res, err := client.Do(Config, req)
 
-	printHttpResponse(res, true)
-
 	// Network error
 	if err != nil {
 		return nil, CommonError{
@@ -207,6 +205,8 @@ func (dc *Datacenter) Update(domainName string) (*ResponseStatus, error) {
 			err:              err,
 		}
 	}
+
+	printHttpResponse(res, true)
 
 	// API error
 	if client.IsError(res) {
@@ -246,8 +246,6 @@ func (dc *Datacenter) Delete(domainName string) (*ResponseStatus, error) {
 		return nil, err
 	}
 
-	printHttpResponse(res, true)
-
 	// Network error
 	if err != nil {
 		return nil, CommonError{
@@ -257,6 +255,8 @@ func (dc *Datacenter) Delete(domainName string) (*ResponseStatus, error) {
 			err:              err,
 		}
 	}
+
+	printHttpResponse(res, true)
 
 	// API error
 	if client.IsError(res) {
