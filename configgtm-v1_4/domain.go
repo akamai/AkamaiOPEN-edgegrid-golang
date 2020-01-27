@@ -454,10 +454,8 @@ func processObjectList(objectList []interface{}) map[string]NullPerObjectAttribu
 					}
 				}
 			case "[]interface {}":
-				//_, ok := objd.([]interface{})
-				//if !ok {
 				iSlice := objd.([]interface{})
-				if len(iSlice) > 0 && reflect.TypeOf(iSlice[0]).Kind() != reflect.String && reflect.TypeOf(iSlice[0]).Kind() != reflect.Int64 {
+				if len(iSlice) > 0 && reflect.TypeOf(iSlice[0]).Kind() != reflect.String && reflect.TypeOf(iSlice[0]).Kind() != reflect.Int64 && reflect.TypeOf(iSlice[0]).Kind() != reflect.Float64 && reflect.TypeOf(iSlice[0]).Kind() != reflect.Int32 {
 					objectChildList[makeFirstCharUpperCase(objf)] = processObjectList(objd.([]interface{}))
 				}
 			default:
