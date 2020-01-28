@@ -85,7 +85,7 @@ type Property struct {
 	CName                   string           `json:"cname,omitempty"`
 	WeightedHashBitsForIPv4 int              `json:"weightedHashBitsForIPv4,omitempty"`
 	WeightedHashBitsForIPv6 int              `json:"weightedHashBitsForIPv6,omitempty"`
-	TrafficTargets          []*TrafficTarget `json:"trafficTargets, omitempty"`
+	TrafficTargets          []*TrafficTarget `json:"trafficTargets,omitempty"`
 	MxRecords               []*MxRecord      `json:"mxRecords,omitempty"`
 	Links                   []*Link          `json:"links,omitempty"`
 	LivenessTests           []*LivenessTest  `json:"livenessTests,omitempty"`
