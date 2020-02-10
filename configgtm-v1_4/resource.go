@@ -1,9 +1,8 @@
 package configgtm
 
 import (
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-
 	"fmt"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
 //
@@ -14,26 +13,26 @@ import (
 // ResourceInstance
 type ResourceInstance struct {
 	DatacenterId         int  `json:"datacenterId"`
-	UseDefaultLoadObject bool `json:"useDefaultLoadObject,omitempty"`
+	UseDefaultLoadObject bool `json:"useDefaultLoadObject"`
 	LoadObject
 }
 
 // Resource represents a GTM resource
 type Resource struct {
 	Type                        string              `json:"type"`
-	HostHeader                  string              `json:"hostHeader,omitempty"`
-	LeastSquaresDecay           int                 `json:"leastSquaresDecay,omitempty"`
-	Description                 string              `json:"description,omitempty"`
-	LeaderString                string              `json:"leaderString,omitempty"`
-	ConstrainedProperty         string              `json:"constrainedProperty,omitempty"`
-	ResourceInstances           []*ResourceInstance `json:"resourceInstances,omitempty"`
+	HostHeader                  string              `json:"hostHeader"`
+	LeastSquaresDecay           int                 `json:"leastSquaresDecay"`
+	Description                 string              `json:"description"`
+	LeaderString                string              `json:"leaderString"`
+	ConstrainedProperty         string              `json:"constrainedProperty"`
+	ResourceInstances           []*ResourceInstance `json:"resourceInstances"`
 	AggregationType             string              `json:"aggregationType"`
-	Links                       []*Link             `json:"links,omitempty"`
-	LoadImbalancePercentage     float64             `json:"loadImbalancePercentage,omitempty"`
-	UpperBound                  int                 `json:"upperBound,omitempty"`
+	Links                       []*Link             `json:"links"`
+	LoadImbalancePercentage     float64             `json:"loadImbalancePercentage"`
+	UpperBound                  int                 `json:"upperBound"`
 	Name                        string              `json:"name"`
-	MaxUMultiplicativeIncrement float64             `json:"maxUMultiplicativeIncrement,omitempty"`
-	DecayRate                   float64             `json:"decayRate,omitempty"`
+	MaxUMultiplicativeIncrement float64             `json:"maxUMultiplicativeIncrement"`
+	DecayRate                   float64             `json:"decayRate"`
 }
 
 // ResourceList is the structure returned by List Resources

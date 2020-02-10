@@ -20,9 +20,9 @@ type AsAssignment struct {
 // AsMap  represents a GTM AsMap
 type AsMap struct {
 	DefaultDatacenter *DatacenterBase `json:"defaultDatacenter"`
-	Assignments       []*AsAssignment `json:"assignments,omitempty"`
-	Name              string          `json:"name,omitempty"`
-	Links             []*Link         `json:"links,omitempty"`
+	Assignments       []*AsAssignment `json:"assignments"`
+	Name              string          `json:"name"`
+	Links             []*Link         `json:"links"`
 }
 
 // NewAsMap creates a new asMap
