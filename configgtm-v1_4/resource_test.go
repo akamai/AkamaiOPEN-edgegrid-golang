@@ -4,7 +4,8 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
-
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
 
@@ -132,6 +133,70 @@ func TestGetResource(t *testing.T) {
 	assert.Equal(t, GtmTestResource, testResource.Name)
 
 }
+
+func TestGetSpaceResource(t *testing.T) {
+
+        config, _  = edgegrid.Init("/home/elynes/.edgerc", "default")
+        Init(config)
+
+        _, err := GetResource("TF-resource 3", "gtm_terra_testdomain.akadns.net")
+        //testResource, err := GetResource("tfexample_resource_1", "gtm_terra_testdomain.akadns.net")
+
+	assert.NoError(t, err)
+
+}
+
+/*
+func TestGetSpaceResourceDD(t *testing.T) {
+
+        config, _  = edgegrid.Init("/home/elynes/.edgerc", "default")
+        Init(config)
+
+        req, err := client.NewRequest(
+                Config,
+                "GET",
+                fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", "gtm_terra_testdomain.akadns.net", "TF-resource 3"),
+                nil,
+        )
+
+        assert.NoError(t, err)
+
+        setVersionHeader(req, schemaVersion)
+
+        printHttpRequest(req, true)
+
+        _, err = GetResourceDirect(req)
+        assert.NoError(t, err)
+
+}
+*/
+
+func TestGetSpaceResourceDirect(t *testing.T) {
+
+        config, _  = edgegrid.Init("/home/elynes/.edgerc", "default")
+        Init(config)
+
+        req, err := client.NewRequest(
+                Config,
+                "GET",
+                fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", "gtm_terra_testdomain.akadns.net", "TF-resource 3"),
+                nil,
+        )
+
+        assert.NoError(t, err)
+
+        setVersionHeader(req, schemaVersion)
+
+        printHttpRequest(req, true)
+
+        res, err := client.Do(Config, req)
+
+        assert.NoError(t, err)
+
+        printHttpResponse(res, true)
+
+}
+
 
 // Verify failed case for GetResource. Should pass, e.g. no API errors and domain not found
 func TestGetBadResource(t *testing.T) {
