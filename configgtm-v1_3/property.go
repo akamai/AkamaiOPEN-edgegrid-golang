@@ -13,82 +13,82 @@ import (
 
 // TrafficTarget struc
 type TrafficTarget struct {
-	DatacenterId int      `json:"datacenterId,omitempty"`
-	Enabled      bool     `json:"enabled,omitempty"`
-	Weight       float64  `json:"weight,omitempty"`
-	Servers      []string `json:"servers,omitempty"`
-	Name         string   `json:"name,omitempty"`
-	HandoutCName string   `json:"handoutCName,omitempty"`
+	DatacenterId int      `json:"datacenterId"`
+	Enabled      bool     `json:"enabled"`
+	Weight       float64  `json:"weight"`
+	Servers      []string `json:"servers"`
+	Name         string   `json:"name"`
+	HandoutCName string   `json:"handoutCName"`
 }
 
 // MxRecord struc
 type MxRecord struct {
-	Exchange   string `json:"exchange,omitempty"`
-	Preference int    `json:"preference,omitempty"`
+	Exchange   string `json:"exchange"`
+	Preference int    `json:"preference"`
 }
 
 type LivenessTest struct {
 	Name                          string  `json:"name"`
-	ErrorPenalty                  int     `json:"errorPenalty,omitempty"`
-	PeerCertificateVerification   bool    `json:"peerCertificateVerification,omitempty"`
+	ErrorPenalty                  int     `json:"errorPenalty"`
+	PeerCertificateVerification   bool    `json:"peerCertificateVerification"`
 	TestInterval                  int     `json:"testInterval"`
 	TestObject                    string  `json:"testObject"`
-	Links                         []*Link `json:"links,omitempty"`
-	RequestString                 string  `json:"requestString,omitempty"`
-	ResponseString                string  `json:"responseString,omitempty"`
-	HttpError3xx                  bool    `json:"httpError3xx,omitempty"`
-	HttpError4xx                  bool    `json:"httpError4xx,omitempty"`
-	HttpError5xx                  bool    `json:"httpError5xx,omitempty"`
+	Links                         []*Link `json:"links"`
+	RequestString                 string  `json:"requestString"`
+	ResponseString                string  `json:"responseString"`
+	HttpError3xx                  bool    `json:"httpError3xx"`
+	HttpError4xx                  bool    `json:"httpError4xx"`
+	HttpError5xx                  bool    `json:"httpError5xx"`
 	TestObjectProtocol            string  `json:"testObjectProtocol"`
-	TestObjectPassword            string  `json:"testObjectPassword,omitempty"`
-	TestObjectPort                int     `json:"testObjectPort,omitempty"`
-	SslClientPrivateKey           string  `json:"sslClientPrivateKey,omitempty"`
-	SslClientCertificate          string  `json:"sslClientCertificate,omitempty"`
-	DisableNonstandardPortWarning bool    `json:"disableNonstandardPortWarning,omitempty"`
-	HostHeader                    string  `json:"hostHeader,omitempty"`
-	TestObjectUsername            string  `json:"testObjectUsername,omitempty"`
+	TestObjectPassword            string  `json:"testObjectPassword"`
+	TestObjectPort                int     `json:"testObjectPort"`
+	SslClientPrivateKey           string  `json:"sslClientPrivateKey"`
+	SslClientCertificate          string  `json:"sslClientCertificate"`
+	DisableNonstandardPortWarning bool    `json:"disableNonstandardPortWarning"`
+	HostHeader                    string  `json:"hostHeader"`
+	TestObjectUsername            string  `json:"testObjectUsername"`
 	TestTimeout                   float32 `json:"testTimeout"`
-	TimeoutPenalty                int     `json:"timeoutPenalty,omitempty"`
-	AnswerRequired                bool    `json:"answerRequired,omitempty"`
-	ResourceType                  string  `json:"resourceType,omitempty"`
-	RecursionRequested            bool    `json:"recursionRequested,omitempty"`
+	TimeoutPenalty                int     `json:"timeoutPenalty"`
+	AnswerRequired                bool    `json:"answerRequired"`
+	ResourceType                  string  `json:"resourceType"`
+	RecursionRequested            bool    `json:"recursionRequested"`
 }
 
 // Property represents a GTM property
 type Property struct {
 	Name                    string           `json:"name"`
 	Type                    string           `json:"type"`
-	Ipv6                    bool             `json:"ipv6,omitempty"`
+	Ipv6                    bool             `json:"ipv6"`
 	ScoreAggregationType    string           `json:"scoreAggregationType"`
-	StickinessBonusPercent  int              `json:"stickinessBonusPercentage,omitempty"`
-	StickinessBonusConstant int              `json:"stickinessBonusConstant,omitempty"`
-	HealthThreshold         int              `json:"healthThreshold,omitempty"`
-	UseComputedTargets      bool             `json:"useComputedTargets,omitempty"`
-	BackupIp                string           `json:"backupIp,omitempty"`
-	BalanceByDownloadScore  bool             `json:"balanceByDownloadScore,omitempty"`
-	StaticTTL               int              `json:"staticTTL,omitempty"`
-	LastModified            string           `json:"lastModified,omitempty"`
-	UnreachableThreshold    int              `json:"unreachableThreshold,omitempty"`
-	HealthMultiplier        int              `json:"healthMultiplier,omitempty"`
-	DynamicTTL              int              `json:"dynamicTTL,omitempty"`
-	MaxUnreachablePenalty   int              `json:"maxUnreachablePenalty,omitempty"`
-	MapName                 string           `json:"mapName,omitempty"`
+	StickinessBonusPercent  int              `json:"stickinessBonusPercentage"`
+	StickinessBonusConstant int              `json:"stickinessBonusConstant"`
+	HealthThreshold         int              `json:"healthThreshold"`
+	UseComputedTargets      bool             `json:"useComputedTargets"`
+	BackupIp                string           `json:"backupIp"`
+	BalanceByDownloadScore  bool             `json:"balanceByDownloadScore"`
+	StaticTTL               int              `json:"staticTTL"`
+	LastModified            string           `json:"lastModified"`
+	UnreachableThreshold    int              `json:"unreachableThreshold"`
+	HealthMultiplier        int              `json:"healthMultiplier"`
+	DynamicTTL              int              `json:"dynamicTTL"`
+	MaxUnreachablePenalty   int              `json:"maxUnreachablePenalty"`
+	MapName                 string           `json:"mapName"`
 	HandoutLimit            int              `json:"handoutLimit"`
 	HandoutMode             string           `json:"handoutMode"`
-	FailoverDelay           int              `json:"failoverDelay,omitempty"`
-	BackupCName             string           `json:"backupCName,omitempty"`
-	FailbackDelay           int              `json:"failbackDelay,omitempty"`
-	LoadImbalancePercentage float64          `json:"loadImbalancePercentage,omitempty"`
-	HealthMax               int              `json:"healthMax,omitempty"`
-	GhostDemandReporting    bool             `json:"ghostDemandReporting,omitempty"`
-	Comments                string           `json:"comments,omitempty"`
-	CName                   string           `json:"cname,omitempty"`
-	WeightedHashBitsForIPv4 int              `json:"weightedHashBitsForIPv4,omitempty"`
-	WeightedHashBitsForIPv6 int              `json:"weightedHashBitsForIPv6,omitempty"`
-	TrafficTargets          []*TrafficTarget `json:"trafficTargets, omitempty"`
-	MxRecords               []*MxRecord      `json:"mxRecords,omitempty"`
-	Links                   []*Link          `json:"links,omitempty"`
-	LivenessTests           []*LivenessTest  `json:"livenessTests,omitempty"`
+	FailoverDelay           int              `json:"failoverDelay"`
+	BackupCName             string           `json:"backupCName"`
+	FailbackDelay           int              `json:"failbackDelay"`
+	LoadImbalancePercentage float64          `json:"loadImbalancePercentage"`
+	HealthMax               int              `json:"healthMax"`
+	GhostDemandReporting    bool             `json:"ghostDemandReporting"`
+	Comments                string           `json:"comments"`
+	CName                   string           `json:"cname"`
+	WeightedHashBitsForIPv4 int              `json:"weightedHashBitsForIPv4"`
+	WeightedHashBitsForIPv6 int              `json:"weightedHashBitsForIPv6"`
+	TrafficTargets          []*TrafficTarget `json:"trafficTargets"`
+	MxRecords               []*MxRecord      `json:"mxRecords"`
+	Links                   []*Link          `json:"links"`
+	LivenessTests           []*LivenessTest  `json:"livenessTests"`
 }
 
 type PropertyList struct {

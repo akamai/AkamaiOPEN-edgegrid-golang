@@ -108,9 +108,9 @@ type Link struct {
 
 //
 type LoadObject struct {
-	LoadObject     string   `json:"loadObject, omitempty"`
-	LoadObjectPort int      `json:"loadObjectPort, omitempty"`
-	LoadServers    []string `json:"loadServers, omitempty"`
+	LoadObject     string   `json:"loadObject"`
+	LoadObjectPort int      `json:"loadObjectPort"`
+	LoadServers    []string `json:"loadServers"`
 }
 
 // NewLoadObject returns a new LoadObject structure

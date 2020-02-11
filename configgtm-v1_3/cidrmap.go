@@ -20,9 +20,9 @@ type CidrAssignment struct {
 // CidrMap  represents a GTM cidrMap element
 type CidrMap struct {
 	DefaultDatacenter *DatacenterBase   `json:"defaultDatacenter"`
-	Assignments       []*CidrAssignment `json:"assignments,omitempty"`
+	Assignments       []*CidrAssignment `json:"assignments"`
 	Name              string            `json:"name"`
-	Links             []*Link           `json:"links, omitempty"`
+	Links             []*Link           `json:"links"`
 }
 
 // CidrMapList represents a GTM returned cidrmap list body

@@ -7,8 +7,6 @@ import (
 
 	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
-
-	"fmt"
 )
 
 var GtmTestResource = "testResource"
@@ -218,9 +216,7 @@ func TestCreateResource(t *testing.T) {
 
 	// do the create
 
-	fmt.Println("Calling Create!!!")
 	statresp, err := testResource.Create(gtmTestDomain)
-	fmt.Println("Returned")
 	assert.NoError(t, err)
 
 	assert.IsType(t, &Resource{}, statresp.Resource)
