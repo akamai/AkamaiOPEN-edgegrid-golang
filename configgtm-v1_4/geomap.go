@@ -14,15 +14,15 @@ import (
 // GeoAssigment represents a GTM geo assignment element
 type GeoAssignment struct {
 	DatacenterBase
-	Countries []string `json:"countries"`
+	Countries []string `json:"countries,omitempty"`
 }
 
 // GeoMap  represents a GTM GeoMap
 type GeoMap struct {
 	DefaultDatacenter *DatacenterBase  `json:"defaultDatacenter"`
-	Assignments       []*GeoAssignment `json:"assignments"`
+	Assignments       []*GeoAssignment `json:"assignments,omitempty"`
 	Name              string           `json:"name"`
-	Links             []*Link          `json:"links"`
+	Links             []*Link          `json:"links,omitempty"`
 }
 
 // GeoMapList represents the returned GTM GeoMap List body

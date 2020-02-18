@@ -14,15 +14,15 @@ import (
 // AsAssignment represents a GTM asmap assignment structure
 type AsAssignment struct {
 	DatacenterBase
-	AsNumbers []int64 `json:"asNumbers"`
+	AsNumbers []int64 `json:"asNumbers,omitempty"`
 }
 
 // AsMap  represents a GTM AsMap
 type AsMap struct {
 	DefaultDatacenter *DatacenterBase `json:"defaultDatacenter"`
-	Assignments       []*AsAssignment `json:"assignments"`
+	Assignments       []*AsAssignment `json:"assignments,omitempty"`
 	Name              string          `json:"name"`
-	Links             []*Link         `json:"links"`
+	Links             []*Link         `json:"links,omitempty"`
 }
 
 // NewAsMap creates a new asMap

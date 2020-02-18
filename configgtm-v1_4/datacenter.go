@@ -14,25 +14,25 @@ import (
 
 // Datacenter represents a GTM datacenter
 type Datacenter struct {
-	City                          string      `json:"city"`
-	CloneOf                       int         `json:"cloneOf"`
+	City                          string      `json:"city,omitempty"`
+	CloneOf                       int         `json:"cloneOf,omitempty"`
 	CloudServerHostHeaderOverride bool        `json:"cloudServerHostHeaderOverride"`
 	CloudServerTargeting          bool        `json:"cloudServerTargeting"`
-	Continent                     string      `json:"continent"`
-	Country                       string      `json:"country"`
-	DefaultLoadObject             *LoadObject `json:"defaultLoadObject"`
-	Latitude                      float64     `json:"latitude"`
-	Links                         []*Link     `json:"links"`
-	Longitude                     float64     `json:"longitude"`
-	Nickname                      string      `json:"nickname"`
-	PingInterval                  int         `json:"pingInterval"`
-	PingPacketSize                int         `json:"pingPacketSize"`
+	Continent                     string      `json:"continent,omitempty"`
+	Country                       string      `json:"country,omitempty"`
+	DefaultLoadObject             *LoadObject `json:"defaultLoadObject,omitempty"`
+	Latitude                      float64     `json:"latitude,omitempty"`
+	Links                         []*Link     `json:"links,omitempty"`
+	Longitude                     float64     `json:"longitude,omitempty"`
+	Nickname                      string      `json:"nickname,omitempty"`
+	PingInterval                  int         `json:"pingInterval,omitempty"`
+	PingPacketSize                int         `json:"pingPacketSize,omitempty"`
 	DatacenterId                  int         `json:"datacenterId"`
-	ScorePenalty                  int         `json:"scorePenalty"`
-	ServermonitorLivenessCount    int         `json:"servermonitorLivenessCount"`
-	ServermonitorLoadCount        int         `json:"servermonitorLoadCount"`
-	ServermonitorPool             string      `json:"servermonitorPool"`
-	StateOrProvince               string      `json:"stateOrProvince"`
+	ScorePenalty                  int         `json:"scorePenalty,omitempty"`
+	ServermonitorLivenessCount    int         `json:"servermonitorLivenessCount,omitempty"`
+	ServermonitorLoadCount        int         `json:"servermonitorLoadCount,omitempty"`
+	ServermonitorPool             string      `json:"servermonitorPool,omitempty"`
+	StateOrProvince               string      `json:"stateOrProvince,omitempty"`
 	Virtual                       bool        `json:"virtual"`
 }
 

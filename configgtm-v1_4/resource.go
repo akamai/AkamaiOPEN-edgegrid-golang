@@ -20,19 +20,19 @@ type ResourceInstance struct {
 // Resource represents a GTM resource
 type Resource struct {
 	Type                        string              `json:"type"`
-	HostHeader                  string              `json:"hostHeader"`
-	LeastSquaresDecay           int                 `json:"leastSquaresDecay"`
-	Description                 string              `json:"description"`
-	LeaderString                string              `json:"leaderString"`
-	ConstrainedProperty         string              `json:"constrainedProperty"`
-	ResourceInstances           []*ResourceInstance `json:"resourceInstances"`
-	AggregationType             string              `json:"aggregationType"`
-	Links                       []*Link             `json:"links"`
-	LoadImbalancePercentage     float64             `json:"loadImbalancePercentage"`
-	UpperBound                  int                 `json:"upperBound"`
+	HostHeader                  string              `json:"hostHeader,omitempty"`
+	LeastSquaresDecay           float64             `json:"leastSquaresDecay,omitempty"`
+	Description                 string              `json:"description,omitempty"`
+	LeaderString                string              `json:"leaderString,omitempty"`
+	ConstrainedProperty         string              `json:"constrainedProperty,omitempty"`
+	ResourceInstances           []*ResourceInstance `json:"resourceInstances,omitempty"`
+	AggregationType             string              `json:"aggregationType,omitempty"`
+	Links                       []*Link             `json:"links,omitempty"`
+	LoadImbalancePercentage     float64             `json:"loadImbalancePercentage,omitempty"`
+	UpperBound                  int                 `json:"upperBound,omitempty"`
 	Name                        string              `json:"name"`
-	MaxUMultiplicativeIncrement float64             `json:"maxUMultiplicativeIncrement"`
-	DecayRate                   float64             `json:"decayRate"`
+	MaxUMultiplicativeIncrement float64             `json:"maxUMultiplicativeIncrement,omitempty"`
+	DecayRate                   float64             `json:"decayRate,omitempty"`
 }
 
 // ResourceList is the structure returned by List Resources
