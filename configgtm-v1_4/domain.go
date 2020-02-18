@@ -18,44 +18,44 @@ import (
 type Domain struct {
 	Name                         string          `json:"name"`
 	Type                         string          `json:"type"`
-	AsMaps                       []*AsMap        `json:"asMaps"`
-	Resources                    []*Resource     `json:"resources"`
-	DefaultUnreachableThreshold  float32         `json:"defaultUnreachableThreshold"`
-	EmailNotificationList        []string        `json:"emailNotificationList"`
-	MinPingableRegionFraction    float32         `json:"minPingableRegionFraction"`
-	DefaultTimeoutPenalty        int             `json:"defaultTimeoutPenalty"`
-	Datacenters                  []*Datacenter   `json:"datacenters"`
-	ServermonitorLivenessCount   int             `json:"servermonitorLivenessCount"`
-	RoundRobinPrefix             string          `json:"roundRobinPrefix"`
-	ServermonitorLoadCount       int             `json:"servermonitorLoadCount"`
-	PingInterval                 int             `json:"pingInterval"`
-	MaxTTL                       int64           `json:"maxTTL"`
-	LoadImbalancePercentage      float64         `json:"loadImbalancePercentage"`
-	DefaultHealthMax             int             `json:"defaultHealthMax"`
-	LastModified                 string          `json:"lastModified"`
-	Status                       *ResponseStatus `json:"status"`
-	MapUpdateInterval            int             `json:"mapUpdateInterval"`
-	MaxProperties                int             `json:"maxProperties"`
-	MaxResources                 int             `json:"maxResources"`
-	DefaultSslClientPrivateKey   string          `json:"defaultSslClientPrivateKey"`
-	DefaultErrorPenalty          int             `json:"defaultErrorPenalty"`
-	Links                        []*Link         `json:"links"`
-	Properties                   []*Property     `json:"properties"`
-	MaxTestTimeout               float64         `json:"maxTestTimeout"`
+	AsMaps                       []*AsMap        `json:"asMaps,omitempty"`
+	Resources                    []*Resource     `json:"resources,omitempty"`
+	DefaultUnreachableThreshold  float32         `json:"defaultUnreachableThreshold,omitempty"`
+	EmailNotificationList        []string        `json:"emailNotificationList,omitempty"`
+	MinPingableRegionFraction    float32         `json:"minPingableRegionFraction,omitempty"`
+	DefaultTimeoutPenalty        int             `json:"defaultTimeoutPenalty,omitempty"`
+	Datacenters                  []*Datacenter   `json:"datacenters,omitempty"`
+	ServermonitorLivenessCount   int             `json:"servermonitorLivenessCount,omitempty"`
+	RoundRobinPrefix             string          `json:"roundRobinPrefix,omitempty"`
+	ServermonitorLoadCount       int             `json:"servermonitorLoadCount,omitempty"`
+	PingInterval                 int             `json:"pingInterval,omitempty"`
+	MaxTTL                       int64           `json:"maxTTL,omitempty"`
+	LoadImbalancePercentage      float64         `json:"loadImbalancePercentage,omitempty"`
+	DefaultHealthMax             float64         `json:"defaultHealthMax,omitempty"`
+	LastModified                 string          `json:"lastModified,omitempty"`
+	Status                       *ResponseStatus `json:"status,omitempty"`
+	MapUpdateInterval            int             `json:"mapUpdateInterval,omitempty"`
+	MaxProperties                int             `json:"maxProperties,omitempty"`
+	MaxResources                 int             `json:"maxResources,omitempty"`
+	DefaultSslClientPrivateKey   string          `json:"defaultSslClientPrivateKey,omitempty"`
+	DefaultErrorPenalty          int             `json:"defaultErrorPenalty,omitempty"`
+	Links                        []*Link         `json:"links,omitempty"`
+	Properties                   []*Property     `json:"properties,omitempty"`
+	MaxTestTimeout               float64         `json:"maxTestTimeout,omitempty"`
 	CnameCoalescingEnabled       bool            `json:"cnameCoalescingEnabled"`
-	DefaultHealthMultiplier      int             `json:"defaultHealthMultiplier"`
-	ServermonitorPool            string          `json:"servermonitorPool"`
+	DefaultHealthMultiplier      float64         `json:"defaultHealthMultiplier,omitempty"`
+	ServermonitorPool            string          `json:"servermonitorPool,omitempty"`
 	LoadFeedback                 bool            `json:"loadFeedback"`
-	MinTTL                       int64           `json:"minTTL"`
-	GeographicMaps               []*GeoMap       `json:"geographicMaps"`
-	CidrMaps                     []*CidrMap      `json:"cidrMaps"`
+	MinTTL                       int64           `json:"minTTL,omitempty"`
+	GeographicMaps               []*GeoMap       `json:"geographicMaps,omitempty"`
+	CidrMaps                     []*CidrMap      `json:"cidrMaps,omitempty"`
 	DefaultMaxUnreachablePenalty int             `json:"defaultMaxUnreachablePenalty"`
-	DefaultHealthThreshold       int             `json:"defaultHealthThreshold"`
-	LastModifiedBy               string          `json:"lastModifiedBy"`
-	ModificationComments         string          `json:"modificationComments"`
-	MinTestInterval              int             `json:"minTestInterval"`
-	PingPacketSize               int             `json:"pingPacketSize"`
-	DefaultSslClientCertificate  string          `json:"defaultSslClientCertificate"`
+	DefaultHealthThreshold       float64         `json:"defaultHealthThreshold,omitempty"`
+	LastModifiedBy               string          `json:"lastModifiedBy,omitempty"`
+	ModificationComments         string          `json:"modificationComments,omitempty"`
+	MinTestInterval              int             `json:"minTestInterval,omitempty"`
+	PingPacketSize               int             `json:"pingPacketSize,omitempty"`
+	DefaultSslClientCertificate  string          `json:"defaultSslClientCertificate,omitempty"`
 	EndUserMappingEnabled        bool            `json:"endUserMappingEnabled"`
 }
 
@@ -265,7 +265,7 @@ func (domain *Domain) Create(queryArgs map[string]string) (*DomainResponse, erro
 
 // Update is a method applied to a domain object resulting in an update.
 func (domain *Domain) Update(queryArgs map[string]string) (*ResponseStatus, error) {
-
+	
 	// Any validation to do?
 	req, err := client.NewJSONRequest(
 		Config,

@@ -15,10 +15,10 @@ import (
 type TrafficTarget struct {
 	DatacenterId int      `json:"datacenterId"`
 	Enabled      bool     `json:"enabled"`
-	Weight       float64  `json:"weight"`
-	Servers      []string `json:"servers"`
-	Name         string   `json:"name"`
-	HandoutCName string   `json:"handoutCName"`
+	Weight       float64  `json:"weight,omitempty"`
+	Servers      []string `json:"servers,omitempty"`
+	Name         string   `json:"name,omitempty"`
+	HandoutCName string   `json:"handoutCName,omitempty"`
 }
 
 // HttpHeader struc
@@ -29,29 +29,29 @@ type HttpHeader struct {
 
 type LivenessTest struct {
 	Name                          string        `json:"name"`
-	ErrorPenalty                  int           `json:"errorPenalty"`
+	ErrorPenalty                  float64       `json:"errorPenalty,omitempty"`
 	PeerCertificateVerification   bool          `json:"peerCertificateVerification"`
-	TestInterval                  int           `json:"testInterval"`
-	TestObject                    string        `json:"testObject"`
-	Links                         []*Link       `json:"links"`
-	RequestString                 string        `json:"requestString"`
-	ResponseString                string        `json:"responseString"`
+	TestInterval                  int           `json:"testInterval,omitempty"`
+	TestObject                    string        `json:"testObject,omitempty"`
+	Links                         []*Link       `json:"links,omitempty"`
+	RequestString                 string        `json:"requestString,omitempty"`
+	ResponseString                string        `json:"responseString,omitempty"`
 	HttpError3xx                  bool          `json:"httpError3xx"`
 	HttpError4xx                  bool          `json:"httpError4xx"`
 	HttpError5xx                  bool          `json:"httpError5xx"`
 	Disabled                      bool          `json:"disabled"`
-	TestObjectProtocol            string        `json:"testObjectProtocol"`
-	TestObjectPassword            string        `json:"testObjectPassword"`
-	TestObjectPort                int           `json:"testObjectPort"`
-	SslClientPrivateKey           string        `json:"sslClientPrivateKey"`
-	SslClientCertificate          string        `json:"sslClientCertificate"`
+	TestObjectProtocol            string        `json:"testObjectProtocol,omitempty"`
+	TestObjectPassword            string        `json:"testObjectPassword,omitempty"`
+	TestObjectPort                int           `json:"testObjectPort,omitempty"`
+	SslClientPrivateKey           string        `json:"sslClientPrivateKey,omitempty"`
+	SslClientCertificate          string        `json:"sslClientCertificate,omitempty"`
 	DisableNonstandardPortWarning bool          `json:"disableNonstandardPortWarning"`
-	HttpHeaders                   []*HttpHeader `json:"httpHeaders,opmitempty"`
-	TestObjectUsername            string        `json:"testObjectUsername"`
-	TestTimeout                   float32       `json:"testTimeout"`
-	TimeoutPenalty                int           `json:"timeoutPenalty"`
-	AnswerRequired                bool          `json:"answerRequired"`
-	ResourceType                  string        `json:"resourceType"`
+	HttpHeaders                   []*HttpHeader `json:"httpHeaders,omitempty"`
+	TestObjectUsername            string        `json:"testObjectUsername,omitempty"`
+	TestTimeout                   float32       `json:"testTimeout,omitempty"`
+	TimeoutPenalty                float64       `json:"timeoutPenalty,omitempty"`
+	AnswersRequired                bool         `json:"answersRequired"`
+	ResourceType                  string        `json:"resourceType,omitempty"`
 	RecursionRequested            bool          `json:"recursionRequested"`
 }
 
@@ -68,36 +68,36 @@ type Property struct {
 	Type                      string           `json:"type"`
 	Ipv6                      bool             `json:"ipv6"`
 	ScoreAggregationType      string           `json:"scoreAggregationType"`
-	StickinessBonusPercentage int              `json:"stickinessBonusPercentage"`
-	StickinessBonusConstant   int              `json:"stickinessBonusConstant"`
-	HealthThreshold           int              `json:"healthThreshold"`
+	StickinessBonusPercentage int              `json:"stickinessBonusPercentage,omitempty"`
+	StickinessBonusConstant   int              `json:"stickinessBonusConstant,omitempty"`
+	HealthThreshold           float64          `json:"healthThreshold,omitempty"`
 	UseComputedTargets        bool             `json:"useComputedTargets"`
-	BackupIp                  string           `json:"backupIp"`
+	BackupIp                  string           `json:"backupIp,omitempty"`
 	BalanceByDownloadScore    bool             `json:"balanceByDownloadScore"`
-	StaticTTL                 int              `json:"staticTTL"`
-	StaticRRSets              []*StaticRRSet   `json:"staticRRSets"`
+	StaticTTL                 int              `json:"staticTTL,omitempty"`
+	StaticRRSets              []*StaticRRSet   `json:"staticRRSets,omitempty"`
 	LastModified              string           `json:"lastModified"`
-	UnreachableThreshold      int              `json:"unreachableThreshold"`
-	MinLiveFraction           float64          `json:"minLiveFraction"`
-	HealthMultiplier          int              `json:"healthMultiplier"`
-	DynamicTTL                int              `json:"dynamicTTL"`
-	MaxUnreachablePenalty     int              `json:"maxUnreachablePenalty"`
-	MapName                   string           `json:"mapName"`
+	UnreachableThreshold      float64          `json:"unreachableThreshold,omitempty"`
+	MinLiveFraction           float64          `json:"minLiveFraction,omitempty"`
+	HealthMultiplier          float64          `json:"healthMultiplier,omitempty"`
+	DynamicTTL                int              `json:"dynamicTTL,omitempty"`
+	MaxUnreachablePenalty     int              `json:"maxUnreachablePenalty,omitempty"`
+	MapName                   string           `json:"mapName,omitempty"`
 	HandoutLimit              int              `json:"handoutLimit"`
 	HandoutMode               string           `json:"handoutMode"`
-	FailoverDelay             int              `json:"failoverDelay"`
-	BackupCName               string           `json:"backupCName"`
-	FailbackDelay             int              `json:"failbackDelay"`
-	LoadImbalancePercentage   float64          `json:"loadImbalancePercentage"`
-	HealthMax                 int              `json:"healthMax"`
+	FailoverDelay             int              `json:"failoverDelay,omitempty"`
+	BackupCName               string           `json:"backupCName,omitempty"`
+	FailbackDelay             int              `json:"failbackDelay,omitempty"`
+	LoadImbalancePercentage   float64          `json:"loadImbalancePercentage,omitempty"`
+	HealthMax                 float64          `json:"healthMax,omitempty"`
 	GhostDemandReporting      bool             `json:"ghostDemandReporting"`
-	Comments                  string           `json:"comments"`
-	CName                     string           `json:"cname"`
-	WeightedHashBitsForIPv4   int              `json:"weightedHashBitsForIPv4"`
-	WeightedHashBitsForIPv6   int              `json:"weightedHashBitsForIPv6"`
-	TrafficTargets            []*TrafficTarget `json:"trafficTargets"`
-	Links                     []*Link          `json:"links"`
-	LivenessTests             []*LivenessTest  `json:"livenessTests"`
+	Comments                  string           `json:"comments,omitempty"`
+	CName                     string           `json:"cname,omitempty"`
+	WeightedHashBitsForIPv4   int              `json:"weightedHashBitsForIPv4,omitempty"`
+	WeightedHashBitsForIPv6   int              `json:"weightedHashBitsForIPv6,omitempty"`
+	TrafficTargets            []*TrafficTarget `json:"trafficTargets,omitempty"`
+	Links                     []*Link          `json:"links,omitempty"`
+	LivenessTests             []*LivenessTest  `json:"livenessTests,omitempty"`
 }
 
 type PropertyList struct {
