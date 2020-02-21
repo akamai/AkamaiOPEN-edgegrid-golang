@@ -110,7 +110,9 @@ err:
 	return group, nil
 }
 
-// FindGroup finds a specific group by ID
+// FindGroupId finds a specific group by name
+// Deprecated: When there are multiple groups with same name,
+// the first one is returned. Please use FindGroupsByName instead.
 func (groups *Groups) FindGroupId(name string) (*Group, error) {
 	var group *Group
 	var groupFound bool
@@ -132,6 +134,31 @@ err:
 	}
 
 	return group, nil
+}
+
+// FindGroupsByName finds groups by name
+func (groups *Groups) FindGroupsByName(name string) ([]*Group, error) {
+	var group *Group
+	var foundGroups []*Group
+	var groupFound bool
+
+	if name == "" {
+		goto err
+	}
+
+	for _, group = range groups.Groups.Items {
+		if group.GroupName == name {
+			foundGroups = append(foundGroups, group)
+			groupFound = true
+		}
+	}
+
+err:
+	if !groupFound {
+		return nil, fmt.Errorf("Unable to find group: \"%s\"", name)
+	}
+
+	return foundGroups, nil
 }
 
 // Group represents a group resource
