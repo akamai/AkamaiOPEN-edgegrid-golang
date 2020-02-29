@@ -50,8 +50,6 @@ func (contracts *Contracts) GetContracts() error {
 
 	cachecontracts, found := Profilecache.Get("contracts")
 	if found {
-
-		//contracts = cachecontracts.(*Contracts)
 		json.Unmarshal(cachecontracts.([]byte), contracts)
 		return nil
 	} else {
@@ -86,8 +84,6 @@ func (contracts *Contracts) GetContracts() error {
 		Profilecache.Set("contracts", byt, cache.DefaultExpiration)
 		return nil
 	}
-
-	//return nil
 }
 
 // FindContract finds a specific contract by ID

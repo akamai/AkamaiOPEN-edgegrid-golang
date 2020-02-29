@@ -77,7 +77,6 @@ func (groups *Groups) GetGroups() error {
 		Profilecache.Set("groups", byt, cache.DefaultExpiration)
 		return nil
 	}
-	//return nil
 }
 
 // AddGroup adds a group to a Groups collection
