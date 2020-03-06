@@ -42,25 +42,35 @@ type ZoneQueryString struct {
 }
 
 type ZoneCreate struct {
-	Zone         string   `json:"zone,omitempty"`
-	Type         string   `json:"type,omitempty"`
-	Masters      []string `json:"masters,omitempty"`
-	Comment      string   `json:"comment,omitempty"`
-	SignAndServe bool     `json:"signAndServe"`
+	Zone        	 	string   `json:"zone,omitempty"`
+	Type         		string   `json:"type,omitempty"`
+	Masters      		[]string `json:"masters,omitempty"`
+        Comment                 string   `json:"comment,omitempty"`
+        SignAndServe            bool     `json:"signAndServe"`
+        SignAndServeAlgorithm   string   `json:"signAndServeAlgorithm,omitempty"`
+	TsigKey	     		TSIGKey  `json:"tsigKey,omitempty"`
+	Target			string	 `json:"target,omitempty"`
+        EndCustomerId           string   `json:"endCustomerId,omitempty"`
+        ContractId              string   `json:"contractid,omitempty"`
 }
 
 type ZoneResponse struct {
-	Zone               string   `json:"zone,omitempty"`
-	Type               string   `json:"type,omitempty"`
-	Masters            []string `json:"masters,omitempty"`
-	Comment            string   `json:"comment,omitempty"`
-	ActivationState    string   `json:"activationstate,omitempty"`
-	ContractId         string   `json:"contractid,omitempty"`
-	LastActivationDate string   `json:"lastactivationdate,omitempty"`
-	LastModifiedBy     string   `json:"lastmodifiedby,omitempty"`
-	LastModifiedDate   string   `json:"lastmodifieddate,omitempty"`
-	SignAndServe       bool     `json:"signandserve"`
-	VersionId          string   `json:"versionid,omitempty"`
+        Zone                    string   `json:"zone,omitempty"`
+        Type                    string   `json:"type,omitempty"`
+        Masters                 []string `json:"masters,omitempty"`
+        Comment                 string   `json:"comment,omitempty"`
+        SignAndServe            bool     `json:"signAndServe"`
+        SignAndServeAlgorithm   string   `json:"signAndServeAlgorithm,omitempty"`
+        TsigKey                 TSIGKey  `json:"tsigKey,omitempty"`
+        Target                  string   `json:"target,omitempty"`
+        EndCustomerId           string   `json:"endCustomerId,omitempty"`
+        ContractId              string   `json:"contractid,omitempty"`
+	AliasCount		int64	 `json:"aliasCount,omitempty"`
+	ActivationState    	string   `json:"activationstate,omitempty"`
+	LastActivationDate 	string   `json:"lastactivationdate,omitempty"`
+	LastModifiedBy     	string   `json:"lastmodifiedby,omitempty"`
+	LastModifiedDate   	string   `json:"lastmodifieddate,omitempty"`
+	VersionId          	string   `json:"versionid,omitempty"`
 }
 
 type ChangeListResponse struct {
@@ -71,9 +81,23 @@ type ChangeListResponse struct {
 	Stale            bool   `json:"stale,omitempty"`
 }
 
-// NewZone creates a new Zone
+type ZoneNameListResponse struct {
+	Zones	[]string	`json:"zones"`
+}
+
+
+// NewZone creates a new Zone. Supports subset of fields
 func NewZone(params ZoneCreate) *ZoneCreate {
-	zone := &ZoneCreate{Zone: params.Zone, Type: params.Type, Masters: params.Masters, Comment: params.Comment, SignAndServe: params.SignAndServe}
+	zone := &ZoneCreate{Zone: params.Zone, 
+				Type: params.Type, 
+				Masters: params.Masters,
+				TsigKey: params.TsigKey,
+				Target:  params.Target,
+				EndCustomerId: params.EndCustomerId,
+				ContractId: params.ContractId, 
+				Comment: params.Comment, 
+				SignAndServe: params.SignAndServe,
+				SignAndServeAlgorithm: params.SignAndServeAlgorithm}
 	return zone
 }
 
