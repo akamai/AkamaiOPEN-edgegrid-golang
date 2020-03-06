@@ -1,9 +1,11 @@
 package papi
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"github.com/patrickmn/go-cache"
 )
 
 // Groups represents a collection of PAPI groups
@@ -44,30 +46,37 @@ func (groups *Groups) PostUnmarshalJSON() error {
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listgroups
 // Endpoint: GET /papi/v1/groups/
 func (groups *Groups) GetGroups() error {
-	req, err := client.NewRequest(
-		Config,
-		"GET",
-		"/papi/v1/groups",
-		nil,
-	)
-	if err != nil {
-		return err
-	}
+	cachegroups, found := Profilecache.Get("groups")
+	if found {
+		json.Unmarshal(cachegroups.([]byte), groups)
+		return nil
+	} else {
+		req, err := client.NewRequest(
+			Config,
+			"GET",
+			"/papi/v1/groups",
+			nil,
+		)
+		if err != nil {
+			return err
+		}
 
-	res, err := client.Do(Config, req)
-	if err != nil {
-		return err
-	}
+		res, err := client.Do(Config, req)
+		if err != nil {
+			return err
+		}
 
-	if client.IsError(res) {
-		return client.NewAPIError(res)
-	}
+		if client.IsError(res) {
+			return client.NewAPIError(res)
+		}
 
-	if err = client.BodyJSON(res, groups); err != nil {
-		return err
+		if err = client.BodyJSON(res, groups); err != nil {
+			return err
+		}
+		byt, _ := json.Marshal(groups)
+		Profilecache.Set("groups", byt, cache.DefaultExpiration)
+		return nil
 	}
-
-	return nil
 }
 
 // AddGroup adds a group to a Groups collection
