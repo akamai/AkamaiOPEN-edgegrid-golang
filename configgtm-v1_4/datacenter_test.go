@@ -319,22 +319,22 @@ func TestDeleteDatacenter(t *testing.T) {
 
 func TestCreateMapsDefaultDatacenter(t *testing.T) {
 
-        defer gock.Off()
+	defer gock.Off()
 
-        mock1 := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/5400")
-        mock1.
-                Get("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/5400").
-                HeaderPresent("Authorization").
-                Reply(404).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8")
+	mock1 := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/5400")
+	mock1.
+		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/5400").
+		HeaderPresent("Authorization").
+		Reply(404).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8")
 
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/default-datacenter-for-maps")
-        mock.
-                Post("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/default-datacenter-for-maps").
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-                BodyString(`{
+	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/default-datacenter-for-maps")
+	mock.
+		Post("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/default-datacenter-for-maps").
+		HeaderPresent("Authorization").
+		Reply(200).
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		BodyString(`{
                         "resource" : {
                                 "datacenterId" : 5400,
                                 "nickname" : "Default Datacenter",

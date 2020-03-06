@@ -30,5 +30,5 @@ func printHttpRequest(req *http.Request, body bool) {
 func printHttpResponse(res *http.Response, body bool) {
 
 	edgegrid.PrintHttpResponse(res, body)
-	
+
 }
