@@ -144,17 +144,19 @@ func GetEnrollment(location string) (*Enrollment, error) {
 }
 
 func ListEnrollments(params ListEnrollmentsQueryParams) ([]Enrollment, error) {
-	var enrollments []Enrollment
+	// params are not required but chose not to change function signature
+	var enrollments struct {
+		All []Enrollment `json:"enrollments"`
+	}
 
 	req, err := client.NewRequest(
 		Config,
 		"GET",
-		fmt.Sprintf(
-			"/cps/v2/enrollments?contractId={%s}",
-			params.ContractID,
-		),
+		"/cps/v2/enrollments",
 		nil,
 	)
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollments.v7+json")
+
 	if err != nil {
 		return nil, err
 	}
@@ -168,11 +170,11 @@ func ListEnrollments(params ListEnrollmentsQueryParams) ([]Enrollment, error) {
 		return nil, client.NewAPIError(res)
 	}
 
-	if err = client.BodyJSON(res, enrollments); err != nil {
+	if err = client.BodyJSON(res, &enrollments); err != nil {
 		return nil, err
 	}
 
-	return enrollments, nil
+	return enrollments.All, nil
 }
 
 func (enrollment *Enrollment) Exists(enrollments []Enrollment) bool {
