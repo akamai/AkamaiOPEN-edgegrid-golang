@@ -30,11 +30,10 @@ var EdgegridLog *log.Logger
 
 func SetupLogging() {
 
-	/*
 	if EdgegridLog != nil {
 		return			// already configured
 	}
-	*/
+	
         EdgegridLog = log.New()
 	EdgegridLog.SetFormatter(&log.TextFormatter{
 		DisableLevelTruncation:    true,

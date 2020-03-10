@@ -2,6 +2,7 @@ package dnsv2
 
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"io/ioutil"
 	"log"
 	"sync"
@@ -42,35 +43,35 @@ type ZoneQueryString struct {
 }
 
 type ZoneCreate struct {
-	Zone        	 	string   `json:"zone,omitempty"`
-	Type         		string   `json:"type,omitempty"`
-	Masters      		[]string `json:"masters,omitempty"`
-        Comment                 string   `json:"comment,omitempty"`
-        SignAndServe            bool     `json:"signAndServe"`
-        SignAndServeAlgorithm   string   `json:"signAndServeAlgorithm,omitempty"`
-	TsigKey	     		TSIGKey  `json:"tsigKey,omitempty"`
-	Target			string	 `json:"target,omitempty"`
-        EndCustomerId           string   `json:"endCustomerId,omitempty"`
-        ContractId              string   `json:"contractid,omitempty"`
+	Zone                  string   `json:"zone,omitempty"`
+	Type                  string   `json:"type,omitempty"`
+	Masters               []string `json:"masters,omitempty"`
+	Comment               string   `json:"comment,omitempty"`
+	SignAndServe          bool     `json:"signAndServe"`
+	SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
+	TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
+	Target                string   `json:"target,omitempty"`
+	EndCustomerId         string   `json:"endCustomerId,omitempty"`
+	ContractId            string   `json:"contractid,omitempty"`
 }
 
 type ZoneResponse struct {
-        Zone                    string   `json:"zone,omitempty"`
-        Type                    string   `json:"type,omitempty"`
-        Masters                 []string `json:"masters,omitempty"`
-        Comment                 string   `json:"comment,omitempty"`
-        SignAndServe            bool     `json:"signAndServe"`
-        SignAndServeAlgorithm   string   `json:"signAndServeAlgorithm,omitempty"`
-        TsigKey                 TSIGKey  `json:"tsigKey,omitempty"`
-        Target                  string   `json:"target,omitempty"`
-        EndCustomerId           string   `json:"endCustomerId,omitempty"`
-        ContractId              string   `json:"contractid,omitempty"`
-	AliasCount		int64	 `json:"aliasCount,omitempty"`
-	ActivationState    	string   `json:"activationstate,omitempty"`
-	LastActivationDate 	string   `json:"lastactivationdate,omitempty"`
-	LastModifiedBy     	string   `json:"lastmodifiedby,omitempty"`
-	LastModifiedDate   	string   `json:"lastmodifieddate,omitempty"`
-	VersionId          	string   `json:"versionid,omitempty"`
+	Zone                  string   `json:"zone,omitempty"`
+	Type                  string   `json:"type,omitempty"`
+	Masters               []string `json:"masters,omitempty"`
+	Comment               string   `json:"comment,omitempty"`
+	SignAndServe          bool     `json:"signAndServe"`
+	SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
+	TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
+	Target                string   `json:"target,omitempty"`
+	EndCustomerId         string   `json:"endCustomerId,omitempty"`
+	ContractId            string   `json:"contractid,omitempty"`
+	AliasCount            int64    `json:"aliasCount,omitempty"`
+	ActivationState       string   `json:"activationstate,omitempty"`
+	LastActivationDate    string   `json:"lastactivationdate,omitempty"`
+	LastModifiedBy        string   `json:"lastmodifiedby,omitempty"`
+	LastModifiedDate      string   `json:"lastmodifieddate,omitempty"`
+	VersionId             string   `json:"versionid,omitempty"`
 }
 
 type ChangeListResponse struct {
@@ -82,22 +83,21 @@ type ChangeListResponse struct {
 }
 
 type ZoneNameListResponse struct {
-	Zones	[]string	`json:"zones"`
+	Zones []string `json:"zones"`
 }
-
 
 // NewZone creates a new Zone. Supports subset of fields
 func NewZone(params ZoneCreate) *ZoneCreate {
-	zone := &ZoneCreate{Zone: params.Zone, 
-				Type: params.Type, 
-				Masters: params.Masters,
-				TsigKey: params.TsigKey,
-				Target:  params.Target,
-				EndCustomerId: params.EndCustomerId,
-				ContractId: params.ContractId, 
-				Comment: params.Comment, 
-				SignAndServe: params.SignAndServe,
-				SignAndServeAlgorithm: params.SignAndServeAlgorithm}
+	zone := &ZoneCreate{Zone: params.Zone,
+		Type:                  params.Type,
+		Masters:               params.Masters,
+		TsigKey:               params.TsigKey,
+		Target:                params.Target,
+		EndCustomerId:         params.EndCustomerId,
+		ContractId:            params.ContractId,
+		Comment:               params.Comment,
+		SignAndServe:          params.SignAndServe,
+		SignAndServeAlgorithm: params.SignAndServeAlgorithm}
 	return zone
 }
 
@@ -130,10 +130,14 @@ func GetZone(zonename string) (*ZoneResponse, error) {
 		return nil, err
 	}
 
+	edge.PrintHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return nil, err
 	}
+
+	edge.PrintHttpResponse(res, true)
 
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
@@ -162,10 +166,14 @@ func GetChangeList(zone string) (*ChangeListResponse, error) {
 		return nil, err
 	}
 
+	edge.PrintHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return nil, err
 	}
+
+	edge.PrintHttpResponse(res, true)
 
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
@@ -194,11 +202,16 @@ func GetMasterZoneFile(zone string) (string, error) {
 		return "", err
 	}
 	req.Header.Add("Accept", "text/dns")
+
+	edge.PrintHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		log.Printf("[DEBUG] [Akamai LIB] ZM %v %v", res, err)
 		return "", err
 	}
+
+	edge.PrintHttpResponse(res, true)
 
 	if client.IsError(res) && res.StatusCode != 404 {
 		return "", client.NewAPIError(res)
@@ -215,7 +228,7 @@ func GetMasterZoneFile(zone string) (string, error) {
 	}
 }
 
-// Save updates the Zone
+// Create a Zone
 func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
@@ -235,6 +248,8 @@ func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString) error {
 		return err
 	}
 
+	edge.PrintHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 
 	// Network error
@@ -246,6 +261,8 @@ func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString) error {
 		}
 	}
 
+	edge.PrintHttpResponse(res, true)
+
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
@@ -255,7 +272,7 @@ func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString) error {
 	return nil
 }
 
-// Save changelist for the Zone to create default NS SOA records
+// Create changelist for the Zone. Side effect is to create default NS SOA records
 func (zone *ZoneCreate) SaveChangelist() error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
@@ -273,6 +290,8 @@ func (zone *ZoneCreate) SaveChangelist() error {
 		return err
 	}
 
+	edge.PrintHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 
 	// Network error
@@ -283,6 +302,8 @@ func (zone *ZoneCreate) SaveChangelist() error {
 			err:              err,
 		}
 	}
+
+	edge.PrintHttpResponse(res, true)
 
 	// API error
 	if client.IsError(res) {
@@ -311,6 +332,8 @@ func (zone *ZoneCreate) SubmitChangelist() error {
 		return err
 	}
 
+	edge.PrintHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 
 	// Network error
@@ -321,6 +344,8 @@ func (zone *ZoneCreate) SubmitChangelist() error {
 			err:              err,
 		}
 	}
+
+	edge.PrintHttpResponse(res, true)
 
 	// API error
 	if client.IsError(res) {
@@ -349,6 +374,8 @@ func (zone *ZoneCreate) Update(zonequerystring ZoneQueryString) error {
 		return err
 	}
 
+	edge.PrintHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 
 	// Network error
@@ -359,6 +386,8 @@ func (zone *ZoneCreate) Update(zonequerystring ZoneQueryString) error {
 			err:              err,
 		}
 	}
+
+	edge.PrintHttpResponse(res, true)
 
 	// API error
 	if client.IsError(res) {
@@ -383,6 +412,8 @@ func (zone *ZoneCreate) Delete(zonequerystring ZoneQueryString) error {
 		return err
 	}
 
+	edge.PrintHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
 
 	// Network error
@@ -393,6 +424,8 @@ func (zone *ZoneCreate) Delete(zonequerystring ZoneQueryString) error {
 			err:              err,
 		}
 	}
+
+	edge.PrintHttpResponse(res, true)
 
 	// API error
 	if client.IsError(res) {
