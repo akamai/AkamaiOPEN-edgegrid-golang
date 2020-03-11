@@ -43,11 +43,11 @@ type ZoneQueryString struct {
 }
 
 type ZoneCreate struct {
-	Zone                  string   `json:"zone,omitempty"`
-	Type                  string   `json:"type,omitempty"`
+	Zone                  string   `json:"zone"`
+	Type                  string   `json:"type"`
 	Masters               []string `json:"masters,omitempty"`
 	Comment               string   `json:"comment,omitempty"`
-	SignAndServe          bool     `json:"signAndServe"`
+	SignAndServe          bool     `json:"signAndServe,omitempty"`
 	SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
 	TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
 	Target                string   `json:"target,omitempty"`
