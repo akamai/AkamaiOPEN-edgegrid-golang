@@ -91,11 +91,11 @@ type NetworkConfiguration struct {
 	DomainNameSettings    *DomainNameSettings `json:"dnsNameSettings"`
 	Geography             string              `json:"geography"`
 	MustHaveCiphers       AkamaiCipher        `json:"mustHaveCiphers"`
-	// NetworkType           *NetworkType        `json:"networkType"`
 	OCSPStapling     *OCSPSetting `json:"ocspStapling"`
 	PreferredCiphers AkamaiCipher `json:"preferredCiphers"`
 	QUICEnabled      bool         `json:"quicEnabled"`
 	SecureNetwork    TLSType      `json:"secureNetwork"`
+	// NetworkType           *NetworkType        `json:"networkType"`
 	// ServerNameIndication  *DomainNameSettings `json:"sni"`
 	SNIOnly bool `json:"sniOnly"`
 }

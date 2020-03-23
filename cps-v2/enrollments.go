@@ -3,6 +3,8 @@ package cps
 import (
 	"encoding/json"
 	"fmt"
+	"errors"
+	"bytes"
 	"time"
 
 	client "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
@@ -38,6 +40,10 @@ type CreateEnrollmentQueryParams struct {
 	DeployNotBefore *string
 }
 
+type Acknowledgement struct {
+	Acknowledgement string `json:"acknowledgement"`
+}
+
 type ListEnrollmentsQueryParams struct {
 	ContractID string
 }
@@ -47,8 +53,54 @@ type CreateEnrollmentResponse struct {
 	Changes  []string `json:"changes"`
 }
 
+type StatusResponse struct {
+	StatusInfo struct {
+		Status             string `json:"status"`
+		State              string `json:"state"`
+		Description        string `json:"description"`
+		DeploymentSchedule struct {
+			NotBefore interface{} `json:"notBefore"`
+			NotAfter  interface{} `json:"notAfter"`
+		} `json:"deploymentSchedule"`
+		Error interface{} `json:"error"`
+	} `json:"statusInfo"`
+	AllowedInput []struct {
+		Type              string `json:"type"`
+		RequiredToProceed bool   `json:"requiredToProceed"`
+		Info              string `json:"info"`
+		Update            string `json:"update"`
+	} `json:"allowedInput"`
+}
+
+type DomainValidations struct {
+	Dv []struct {
+		Domain             string      `json:"domain"`
+		Status             string      `json:"status"`
+		Error              interface{} `json:"error"`
+		ValidationStatus   string      `json:"validationStatus"`
+		RequestTimestamp   time.Time   `json:"requestTimestamp"`
+		ValidatedTimestamp interface{} `json:"validatedTimestamp"`
+		Expires            time.Time   `json:"expires"`
+		Challenges         []struct {
+			Type              string        `json:"type"`
+			Status            string        `json:"status"`
+			Error             interface{}   `json:"error"`
+			Token             string        `json:"token"`
+			ResponseBody      string        `json:"responseBody"`
+			FullPath          string        `json:"fullPath"`
+			RedirectFullPath  string        `json:"redirectFullPath"`
+			ValidationRecords []interface{} `json:"validationRecords"`
+		} `json:"challenges"`
+	} `json:"dv"`
+}
+
 func formatTime(t time.Time) string {
 	return fmt.Sprintf("%d-%02d-%02d", t.Year(), t.Month(), t.Day())
+}
+
+func GetLocation(enrollmentid string) (*string) {
+	location := fmt.Sprintf("/cps/v2/enrollments/%s", enrollmentid)
+	return &location
 }
 
 // Create an Enrollment on CPS
@@ -106,6 +158,38 @@ func (enrollment *Enrollment) Create(params CreateEnrollmentQueryParams) (*Creat
 	return &response, nil
 }
 
+func (enrollment *Enrollment) GetEnrollment() error {
+
+	req, err := client.NewRequest(
+		Config,
+		"GET",
+		*enrollment.Location,
+		nil,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment.v7+json")
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return err
+	}
+
+	if client.IsError(res) {
+		return client.NewAPIError(res)
+	}
+
+	if err = client.BodyJSON(res, &enrollment); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Get an enrollment by location
 //
 //
@@ -123,7 +207,7 @@ func GetEnrollment(location string) (*Enrollment, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Accept", "application/vnd.akamai.cps.enrollment.v7+json")
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment.v7+json")
 
 	res, err := client.Do(Config, req)
 
@@ -139,6 +223,167 @@ func GetEnrollment(location string) (*Enrollment, error) {
 	if err = client.BodyJSON(res, &response); err != nil {
 		return nil, err
 	}
+
+	return &response, nil
+}
+
+func (enrollment *Enrollment) GetStatus(enrollmentresponse CreateEnrollmentResponse) (*StatusResponse, error) {
+
+	if len(enrollmentresponse.Changes) == 0 {
+		return nil, errors.New("No change id detected")
+	}
+
+        req, err := client.NewRequest(
+                Config,
+                "GET",
+                enrollmentresponse.Changes[0],
+                nil,
+        )
+
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Accept", "application/vnd.akamai.cps.change.v2+json")
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+        var response StatusResponse
+        if err = client.BodyJSON(res, &response); err != nil {
+                return nil, err
+        }
+
+	return &response, nil
+}
+
+func getAcknowledgement() (Acknowledgement) {
+	var acknowledgement Acknowledgement
+	acknowledgement.Acknowledgement = "acknowledge"
+	return acknowledgement
+}
+
+func (enrollment *Enrollment) AcknowledgeDVChallenges(statusresponse StatusResponse) error {
+
+	if statusresponse.AllowedInput[0].Type != "lets-encrypt-challenges" {
+		return errors.New("No Let's Encrypt challenge detected")
+	}
+
+	acknowledgement := getAcknowledgement()
+
+        s, err := json.Marshal(acknowledgement)
+	if err != nil {
+		return err
+	}
+
+        req, err := client.NewRequest(
+                Config,
+                "POST",
+                statusresponse.AllowedInput[0].Update,
+                bytes.NewReader(s),
+        )
+
+	if err != nil {
+		return err
+	}
+
+        req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
+        req.Header.Set("Content-Type", "application/vnd.akamai.cps.acknowledgement.v1+json")
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return err
+	}
+
+	if client.IsError(res) {
+		return client.NewAPIError(res)
+	}
+
+	return nil
+
+}
+
+func (enrollment *Enrollment) GetDVChallenges(statusresponse StatusResponse) (*DomainValidations, error) {
+
+	if statusresponse.AllowedInput[0].Type != "lets-encrypt-challenges" {
+		return nil, errors.New("No Let's Encrypt challenge detected")
+	}
+
+        req, err := client.NewRequest(
+                Config,
+                "GET",
+                statusresponse.AllowedInput[0].Info,
+                nil,
+        )
+
+	if err != nil {
+		return nil, err
+	}
+
+        req.Header.Set("Accept", "application/vnd.akamai.cps.dv-challenges.v2+json")
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+        var response DomainValidations
+        if err = client.BodyJSON(res, &response); err != nil {
+                return nil, err
+        }
+
+	return &response, nil
+
+}
+
+func (enrollment *Enrollment) Update() (*CreateEnrollmentResponse, error) {
+
+        s, err := json.Marshal(enrollment)
+	if err != nil {
+		return nil, err
+	}
+
+        req, err := client.NewRequest(
+                Config,
+                "PUT",
+                *enrollment.Location,
+                bytes.NewReader(s),
+        )
+
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v7+json")
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+        var response CreateEnrollmentResponse
+        if err = client.BodyJSON(res, &response); err != nil {
+                return nil, err
+        }
 
 	return &response, nil
 }
