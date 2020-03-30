@@ -37,11 +37,11 @@ func createTestTsigKey() *TSIGKey {
 func TestListTsigKeys(t *testing.T) {
 
 	/*
-		// for live testing
-	        config, err := edge.Init("","")
-	        if err != nil {
-	                t.Fatalf("TestListTsigKeys failed initializing: %s", err.Error())
-	        }
+			// for live testing
+		        config, err := edge.Init("","")
+		        if err != nil {
+		                t.Fatalf("TestListTsigKeys failed initializing: %s", err.Error())
+		        }
 	*/
 
 	defer gock.Off()
@@ -93,10 +93,10 @@ func TestUpdateZoneKey(t *testing.T) {
 	err := testKey.Update(dnsTestZone)
 	assert.NoError(t, err)
 	/*
-		// live testing ...
-		zoneResp, err := GetZone("xxxxxxxxxxxxx.com")
-	        assert.NoError(t, err)
-		assert.Equal(t, testKey.Name, zoneResp.TsigKey.Name)
+			// live testing ...
+			zoneResp, err := GetZone("xxxxxxxxxxxxx.com")
+		        assert.NoError(t, err)
+			assert.Equal(t, testKey.Name, zoneResp.TsigKey.Name)
 	*/
 
 }
