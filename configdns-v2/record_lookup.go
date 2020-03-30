@@ -153,7 +153,7 @@ func GetRecordsets(zone string, queryArgs ...RecordsetQueryArgs) (*RecordSetResp
 			getURL += fmt.Sprintf("search=%s", queryArgs[0].Search)
 			getURL += "&"
 		}
-		getURL := fmt.Sprintf("showAll=%b", queryArgs[0].ShowAll)
+		getURL := fmt.Sprintf("showAll=%t", queryArgs[0].ShowAll)
 		getURL += "&"
 		if queryArgs[0].SortBy != "" {
 			getURL += fmt.Sprintf("sortBy=%s", queryArgs[0].SortBy)
