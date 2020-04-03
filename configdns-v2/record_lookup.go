@@ -140,33 +140,6 @@ func GetRecordsets(zone string, queryArgs ...RecordsetQueryArgs) (*RecordSetResp
 	if len(queryArgs) > 1 {
 		return nil, errors.New("GetRecordsets QueryArgs invalid.")
 	}
-	if len(queryArgs) > 0 {
-		getURL += "?"
-		if queryArgs[0].Page > 0 {
-			getURL += fmt.Sprintf("page=%d", queryArgs[0].Page)
-			getURL += "&"
-		}
-		if queryArgs[0].PageSize > 0 {
-			getURL += fmt.Sprintf("pageSize=%d", queryArgs[0].PageSize)
-			getURL += "&"
-		}
-		if queryArgs[0].Search != "" {
-			getURL += fmt.Sprintf("search=%s", queryArgs[0].Search)
-			getURL += "&"
-		}
-		getURL := fmt.Sprintf("showAll=%t", queryArgs[0].ShowAll)
-		getURL += "&"
-		if queryArgs[0].SortBy != "" {
-			getURL += fmt.Sprintf("sortBy=%s", queryArgs[0].SortBy)
-			getURL += "&"
-		}
-		if queryArgs[0].Types != "" {
-			getURL += fmt.Sprintf("types=%s", queryArgs[0].Types)
-			getURL += "&"
-		}
-		getURL = strings.TrimRight(getURL, "&")
-		getURL = strings.TrimRight(getURL, "?")
-	}
 
 	req, err := client.NewRequest(
 		Config,
@@ -176,6 +149,27 @@ func GetRecordsets(zone string, queryArgs ...RecordsetQueryArgs) (*RecordSetResp
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	q := req.URL.Query()
+	if len(queryArgs) > 0 {
+		if queryArgs[0].Page > 0 {
+			q.Add("page", strconv.Itoa(queryArgs[0].Page))
+		}
+		if queryArgs[0].PageSize > 0 {
+			q.Add("pageSize", strconv.Itoa(queryArgs[0].PageSize))
+		}
+		if queryArgs[0].Search != "" {
+			q.Add("search", queryArgs[0].Search)
+		}
+		q.Add("showAll", strconv.FormatBool(queryArgs[0].ShowAll))
+		if queryArgs[0].SortBy != "" {
+			q.Add("sortBy", queryArgs[0].SortBy)
+		}
+		if queryArgs[0].Types != "" {
+			q.Add("types", queryArgs[0].Types)
+		}
+		req.URL.RawQuery = q.Encode()
 	}
 
 	edge.PrintHttpRequest(req, true)
