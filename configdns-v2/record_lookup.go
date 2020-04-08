@@ -7,6 +7,7 @@ import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"net"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -139,33 +140,6 @@ func GetRecordsets(zone string, queryArgs ...RecordsetQueryArgs) (*RecordSetResp
 	if len(queryArgs) > 1 {
 		return nil, errors.New("GetRecordsets QueryArgs invalid.")
 	}
-	if len(queryArgs) > 0 {
-		getURL += "?"
-		if queryArgs[0].Page > 0 {
-			getURL += fmt.Sprintf("page=%d", queryArgs[0].Page)
-			getURL += "&"
-		}
-		if queryArgs[0].PageSize > 0 {
-			getURL += fmt.Sprintf("pageSize=%d", queryArgs[0].PageSize)
-			getURL += "&"
-		}
-		if queryArgs[0].Search != "" {
-			getURL += fmt.Sprintf("search=%s", queryArgs[0].Search)
-			getURL += "&"
-		}
-		getURL := fmt.Sprintf("showAll=%t", queryArgs[0].ShowAll)
-		getURL += "&"
-		if queryArgs[0].SortBy != "" {
-			getURL += fmt.Sprintf("sortBy=%s", queryArgs[0].SortBy)
-			getURL += "&"
-		}
-		if queryArgs[0].Types != "" {
-			getURL += fmt.Sprintf("types=%s", queryArgs[0].Types)
-			getURL += "&"
-		}
-		getURL = strings.TrimRight(getURL, "&")
-		getURL = strings.TrimRight(getURL, "?")
-	}
 
 	req, err := client.NewRequest(
 		Config,
@@ -175,6 +149,27 @@ func GetRecordsets(zone string, queryArgs ...RecordsetQueryArgs) (*RecordSetResp
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	q := req.URL.Query()
+	if len(queryArgs) > 0 {
+		if queryArgs[0].Page > 0 {
+			q.Add("page", strconv.Itoa(queryArgs[0].Page))
+		}
+		if queryArgs[0].PageSize > 0 {
+			q.Add("pageSize", strconv.Itoa(queryArgs[0].PageSize))
+		}
+		if queryArgs[0].Search != "" {
+			q.Add("search", queryArgs[0].Search)
+		}
+		q.Add("showAll", strconv.FormatBool(queryArgs[0].ShowAll))
+		if queryArgs[0].SortBy != "" {
+			q.Add("sortBy", queryArgs[0].SortBy)
+		}
+		if queryArgs[0].Types != "" {
+			q.Add("types", queryArgs[0].Types)
+		}
+		req.URL.RawQuery = q.Encode()
 	}
 
 	edge.PrintHttpRequest(req, true)
@@ -304,4 +299,218 @@ func GetRdata(zone string, name string, record_type string) ([]string, error) {
 		}
 	}
 	return rdata, nil
+}
+
+// Utility method to parse RData in context of type. Return map of fields and values
+func ParseRData(rtype string, rdata []string) map[string]interface{} {
+
+	fieldMap := make(map[string]interface{}, 0)
+	if len(rdata) == 0 {
+		return fieldMap
+	}
+	newrdata := make([]string, 0, len(rdata))
+
+	switch rtype {
+	case "AFSDB":
+		parts := strings.Split(rdata[0], " ")
+		fieldMap["subtype"], _ = strconv.Atoi(parts[0])
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			newrdata = append(newrdata, parts[1])
+		}
+		fieldMap["target"] = newrdata
+
+	case "DNSKEY":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["flags"], _ = strconv.Atoi(parts[0])
+			fieldMap["protocol"], _ = strconv.Atoi(parts[1])
+			fieldMap["algorithm"], _ = strconv.Atoi(parts[2])
+			key := parts[3]
+			// key can have whitespace
+			if len(parts) > 4 {
+				i := 4
+				for i < len(parts) {
+					key += " " + parts[i]
+				}
+			}
+			fieldMap["key"] = key
+			break
+		}
+
+	case "DS":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["keytag"], _ = strconv.Atoi(parts[0])
+			fieldMap["digest_type"], _ = strconv.Atoi(parts[2])
+			fieldMap["algorithm"], _ = strconv.Atoi(parts[1])
+			dig := parts[3]
+			// digest can have whitespace
+			if len(parts) > 4 {
+				i := 4
+				for i < len(parts) {
+					dig += " " + parts[i]
+				}
+			}
+			fieldMap["digest"] = dig
+			break
+		}
+
+	case "HINFO":
+		for _, rcontent := range rdata {
+			rcontent = strings.ReplaceAll(rcontent, "\"", "\\\"")
+			parts := strings.Split(rcontent, " ")
+			fieldMap["hardware"] = parts[0]
+			fieldMap["software"] = parts[1]
+			break
+		}
+
+	case "MX":
+		sort.Strings(rdata)
+		parts := strings.Split(rdata[0], " ")
+		fieldMap["priority"], _ = strconv.Atoi(parts[0])
+		if len(rdata) > 1 {
+			parts = strings.Split(rdata[1], " ")
+			tpri, _ := strconv.Atoi(parts[0])
+			fieldMap["priority_increment"] = tpri - fieldMap["priority"].(int)
+		}
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			newrdata = append(newrdata, parts[1])
+		}
+		sort.Strings(newrdata)
+		fieldMap["target"] = newrdata
+
+	case "NAPTR":
+		for _, rcontent := range rdata {
+			rcontent = strings.ReplaceAll(rcontent, "\"", "\\\"")
+			parts := strings.Split(rcontent, " ")
+			fieldMap["order"], _ = strconv.Atoi(parts[0])
+			fieldMap["preference"], _ = strconv.Atoi(parts[1])
+			fieldMap["flagsnaptr"] = parts[2]
+			fieldMap["service"] = parts[3]
+			fieldMap["regexp"] = parts[4]
+			fieldMap["replacement"] = parts[5]
+			break
+		}
+
+	case "NSEC3":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["flags"], _ = strconv.Atoi(parts[1])
+			fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
+			fieldMap["iterations"], _ = strconv.Atoi(parts[2])
+			fieldMap["salt"] = parts[3]
+			fieldMap["next_hashed_owner_name"] = parts[4]
+			fieldMap["type_bitmaps"] = parts[5]
+			break
+		}
+
+	case "NSEC3PARAM":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["flags"], _ = strconv.Atoi(parts[1])
+			fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
+			fieldMap["iterations"], _ = strconv.Atoi(parts[2])
+			fieldMap["salt"] = parts[3]
+			break
+		}
+
+	case "RP":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["mailbox"] = parts[0]
+			fieldMap["txt"] = parts[1]
+			break
+		}
+
+	case "RRSIG":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["type_covered"] = parts[0]
+			fieldMap["algorithm"], _ = strconv.Atoi(parts[1])
+			fieldMap["labels"], _ = strconv.Atoi(parts[2])
+			fieldMap["original_ttl"], _ = strconv.Atoi(parts[3])
+			fieldMap["expiration"] = parts[4]
+			fieldMap["inception"] = parts[5]
+			fieldMap["signer"] = parts[7]
+			fieldMap["keytag"], _ = strconv.Atoi(parts[6])
+			sig := parts[8]
+			// sig can have whitespace
+			if len(parts) > 9 {
+				i := 9
+				for i < len(parts) {
+					sig += " " + parts[i]
+				}
+			}
+			fieldMap["signature"] = sig
+			break
+		}
+
+	case "SRV":
+		// pull out some fields
+		parts := strings.Split(rdata[0], " ")
+		fieldMap["priority"], _ = strconv.Atoi(parts[0])
+		fieldMap["weight"], _ = strconv.Atoi(parts[1])
+		fieldMap["port"], _ = strconv.Atoi(parts[2])
+		// populate target
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			newrdata = append(newrdata, parts[3])
+		}
+		fieldMap["target"] = newrdata
+
+	case "SSHFP":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
+			fieldMap["fingerprint_type"], _ = strconv.Atoi(parts[1])
+			fieldMap["fingerprint"] = parts[2]
+			break
+		}
+
+	case "SOA":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["name_server"] = parts[0]
+			fieldMap["email_address"] = parts[1]
+			fieldMap["serial"], _ = strconv.Atoi(parts[2])
+			fieldMap["refresh"], _ = strconv.Atoi(parts[3])
+			fieldMap["retry"], _ = strconv.Atoi(parts[4])
+			fieldMap["expiry"], _ = strconv.Atoi(parts[5])
+			fieldMap["nxdomain_ttl"], _ = strconv.Atoi(parts[6])
+			break
+		}
+
+	case "AKAMAICDN":
+		fieldMap["edge_hostname"] = rdata[0]
+
+	case "AKAMAITLC":
+		parts := strings.Split(rdata[0], " ")
+		fieldMap["answer_type"] = parts[0]
+		fieldMap["dns_name"] = parts[1]
+
+	case "SPF":
+		for _, rcontent := range rdata {
+			rcontent = strings.ReplaceAll(rcontent, "\"", "\\\"")
+			newrdata = append(newrdata, rcontent)
+		}
+		fieldMap["target"] = newrdata
+
+	case "TXT":
+		for _, rcontent := range rdata {
+			rcontent = strings.ReplaceAll(rcontent, "\"", "\\\"")
+			newrdata = append(newrdata, rcontent)
+		}
+		fieldMap["target"] = newrdata
+
+	default:
+		for _, rcontent := range rdata {
+			newrdata = append(newrdata, rcontent)
+		}
+		fieldMap["target"] = newrdata
+	}
+
+	return fieldMap
+
 }
