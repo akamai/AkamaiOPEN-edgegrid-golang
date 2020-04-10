@@ -301,6 +301,24 @@ func GetRdata(zone string, name string, record_type string) ([]string, error) {
 	return rdata, nil
 }
 
+func ProcessRdata(rdata []string, rtype string) []string {
+
+	newrdata := make([]string, 0, len(rdata))
+	for _, i := range rdata {
+		str := i
+		if rtype == "AAAA" {
+			addr := net.ParseIP(str)
+			result := FullIPv6(addr)
+			str = result
+		} else if rtype == "LOC" {
+			str = PadCoordinates(str)
+		}
+		rdata = append(rdata, str)
+	}
+	return newrdata
+
+}
+
 // Utility method to parse RData in context of type. Return map of fields and values
 func ParseRData(rtype string, rdata []string) map[string]interface{} {
 
@@ -309,6 +327,7 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 		return fieldMap
 	}
 	newrdata := make([]string, 0, len(rdata))
+	fieldMap["target"] = newrdata
 
 	switch rtype {
 	case "AFSDB":
@@ -358,7 +377,7 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 
 	case "HINFO":
 		for _, rcontent := range rdata {
-			rcontent = strings.ReplaceAll(rcontent, "\"", "\\\"")
+			//rcontent = strings.ReplaceAll(rcontent, "\"", "\\\"")
 			parts := strings.Split(rcontent, " ")
 			fieldMap["hardware"] = parts[0]
 			fieldMap["software"] = parts[1]
@@ -383,12 +402,14 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 
 	case "NAPTR":
 		for _, rcontent := range rdata {
-			rcontent = strings.ReplaceAll(rcontent, "\"", "\\\"")
 			parts := strings.Split(rcontent, " ")
 			fieldMap["order"], _ = strconv.Atoi(parts[0])
 			fieldMap["preference"], _ = strconv.Atoi(parts[1])
+			//fieldMap["flagsnaptr"] = strings.Trim(parts[2], "\"")
 			fieldMap["flagsnaptr"] = parts[2]
+			//fieldMap["service"] = strings.Trim(parts[3], "\"")
 			fieldMap["service"] = parts[3]
+			//fieldMap["regexp"] = strings.Trim(parts[4], "\"")
 			fieldMap["regexp"] = parts[4]
 			fieldMap["replacement"] = parts[5]
 			break
@@ -492,15 +513,34 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 
 	case "SPF":
 		for _, rcontent := range rdata {
-			rcontent = strings.ReplaceAll(rcontent, "\"", "\\\"")
+			//newrdata = append(newrdata, strings.Trim(rcontent, "\""))
 			newrdata = append(newrdata, rcontent)
 		}
 		fieldMap["target"] = newrdata
 
 	case "TXT":
 		for _, rcontent := range rdata {
-			rcontent = strings.ReplaceAll(rcontent, "\"", "\\\"")
+			//rcontent = strings.Trim(rcontent, "\"")
+			//rcontent = strings.ReplaceAll(rcontent, "\"", "\\\"")
 			newrdata = append(newrdata, rcontent)
+		}
+		fieldMap["target"] = newrdata
+
+	case "AAAA":
+		for _, i := range rdata {
+			str := i
+			addr := net.ParseIP(str)
+			result := FullIPv6(addr)
+			str = result
+			newrdata = append(newrdata, str)
+		}
+		fieldMap["target"] = newrdata
+
+	case "LOC":
+		for _, i := range rdata {
+			str := i
+			str = PadCoordinates(str)
+			newrdata = append(newrdata, str)
 		}
 		fieldMap["target"] = newrdata
 
