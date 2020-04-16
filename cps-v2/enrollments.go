@@ -143,14 +143,21 @@ func GetEnrollment(location string) (*Enrollment, error) {
 	return &response, nil
 }
 
+// ListEnrollments lists the names of each enrollment for the given contractID.
+//
+// API Docs: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getenrollments
+// Endpoint: GET /cps/v2/enrollments{contractId}
 func ListEnrollments(params ListEnrollmentsQueryParams) ([]Enrollment, error) {
-	var enrollments []Enrollment
+	// the returned JSON is a list in the enrollments parameter
+	enrollmentsResponse := struct {
+		Enrollments []Enrollment `json:"enrollments"`
+	}{}
 
 	req, err := client.NewRequest(
 		Config,
 		"GET",
 		fmt.Sprintf(
-			"/cps/v2/enrollments?contractId={%s}",
+			"/cps/v2/enrollments?contractId=%s",
 			params.ContractID,
 		),
 		nil,
@@ -158,6 +165,7 @@ func ListEnrollments(params ListEnrollmentsQueryParams) ([]Enrollment, error) {
 	if err != nil {
 		return nil, err
 	}
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollments.v7+json")
 
 	res, err := client.Do(Config, req)
 	if err != nil {
@@ -168,11 +176,11 @@ func ListEnrollments(params ListEnrollmentsQueryParams) ([]Enrollment, error) {
 		return nil, client.NewAPIError(res)
 	}
 
-	if err = client.BodyJSON(res, enrollments); err != nil {
+	if err = client.BodyJSON(res, &enrollmentsResponse); err != nil {
 		return nil, err
 	}
 
-	return enrollments, nil
+	return enrollmentsResponse.Enrollments, nil
 }
 
 func (enrollment *Enrollment) Exists(enrollments []Enrollment) bool {
