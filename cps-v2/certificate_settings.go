@@ -10,7 +10,7 @@ type SHA string
 type ValidationType string
 
 const (
-	LetsEncryptRA          RegistrationAuthority = "letsencrypt"
+	LetsEncryptRA          RegistrationAuthority = "lets-encrypt"
 	SymantecRA             RegistrationAuthority = "symantec"
 	ThirdPartyRA           RegistrationAuthority = "third-party"
 	SanCertificate         CertificateType       = "san"
@@ -96,7 +96,7 @@ type NetworkConfiguration struct {
 	QUICEnabled      bool         `json:"quicEnabled"`
 	SecureNetwork    TLSType      `json:"secureNetwork"`
 	// NetworkType           *NetworkType        `json:"networkType"`
-	// ServerNameIndication  *DomainNameSettings `json:"sni"`
+	//ServerNameIndication  *DomainNameSettings `json:"sni"`
 	SNIOnly bool `json:"sniOnly"`
 }
 

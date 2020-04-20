@@ -44,6 +44,10 @@ type Acknowledgement struct {
 	Acknowledgement string `json:"acknowledgement"`
 }
 
+type AcknowledgementResponse struct {
+	Change string `json:"change"`
+}
+
 type ListEnrollmentsQueryParams struct {
 	ContractID string
 }
@@ -62,7 +66,11 @@ type StatusResponse struct {
 			NotBefore interface{} `json:"notBefore"`
 			NotAfter  interface{} `json:"notAfter"`
 		} `json:"deploymentSchedule"`
-		Error interface{} `json:"error"`
+		Error struct {
+			Timestamp	string `json:"timestamp"`
+			Code		string `json:"code"`
+			Description	string `json:"description"`
+		} `json:"error"`
 	} `json:"statusInfo"`
 	AllowedInput []struct {
 		Type              string `json:"type"`
@@ -227,16 +235,26 @@ func GetEnrollment(location string) (*Enrollment, error) {
 	return &response, nil
 }
 
-func (enrollment *Enrollment) GetStatus(enrollmentresponse CreateEnrollmentResponse) (*StatusResponse, error) {
+func (enrollment *Enrollment) GetChangeStatus() (*StatusResponse, error) {
 
-	if len(enrollmentresponse.Changes) == 0 {
-		return nil, errors.New("No change id detected")
+	if enrollment.Location == nil {
+		return nil, errors.New("No location set")
 	}
+
+	enrollment.GetEnrollment()
+
+	currentchangelist := *enrollment.PendingChanges
+        if len(currentchangelist) == 0 {
+		return nil, nil
+	}
+
+        changeurl := currentchangelist[0]
+
 
         req, err := client.NewRequest(
                 Config,
                 "GET",
-                enrollmentresponse.Changes[0],
+                changeurl,
                 nil,
         )
 
@@ -264,23 +282,28 @@ func (enrollment *Enrollment) GetStatus(enrollmentresponse CreateEnrollmentRespo
 	return &response, nil
 }
 
-func getAcknowledgement() (Acknowledgement) {
-	var acknowledgement Acknowledgement
-	acknowledgement.Acknowledgement = "acknowledge"
-	return acknowledgement
-}
+func (enrollment *Enrollment) AcknowledgeDVChallenges() (*AcknowledgementResponse, error) {
 
-func (enrollment *Enrollment) AcknowledgeDVChallenges(statusresponse StatusResponse) error {
+	statusresponse, err := enrollment.GetChangeStatus()
 
-	if statusresponse.AllowedInput[0].Type != "lets-encrypt-challenges" {
-		return errors.New("No Let's Encrypt challenge detected")
+	if err != nil {
+		return nil, err
 	}
 
-	acknowledgement := getAcknowledgement()
+	if statusresponse == nil {
+		return nil, nil
+	}
+
+	if len(statusresponse.AllowedInput) == 0 {
+		return nil, nil
+	}
+
+	var acknowledgement Acknowledgement
+	acknowledgement.Acknowledgement = "acknowledge"
 
         s, err := json.Marshal(acknowledgement)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
         req, err := client.NewRequest(
@@ -291,7 +314,7 @@ func (enrollment *Enrollment) AcknowledgeDVChallenges(statusresponse StatusRespo
         )
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
         req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
@@ -300,21 +323,44 @@ func (enrollment *Enrollment) AcknowledgeDVChallenges(statusresponse StatusRespo
 	res, err := client.Do(Config, req)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if client.IsError(res) {
-		return client.NewAPIError(res)
+		return nil, client.NewAPIError(res)
 	}
 
-	return nil
+	if res.StatusCode == 200 {
+		var response AcknowledgementResponse
+		if err = client.BodyJSON(res, &response); err != nil {
+			return nil, err
+		}
+
+		return &response, nil
+	}
+
+	return nil, nil
 
 }
 
-func (enrollment *Enrollment) GetDVChallenges(statusresponse StatusResponse) (*DomainValidations, error) {
+func (enrollment *Enrollment) GetDVChallenges() (*DomainValidations, error) {
+
+	statusresponse, err := enrollment.GetChangeStatus()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if statusresponse == nil {
+		return nil, nil
+	}
+
+	if len(statusresponse.AllowedInput) == 0 {
+		return nil, nil
+	}
 
 	if statusresponse.AllowedInput[0].Type != "lets-encrypt-challenges" {
-		return nil, errors.New("No Let's Encrypt challenge detected")
+		return nil, nil
 	}
 
         req, err := client.NewRequest(
@@ -368,6 +414,39 @@ func (enrollment *Enrollment) Update() (*CreateEnrollmentResponse, error) {
 	}
 
 	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v7+json")
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+        var response CreateEnrollmentResponse
+        if err = client.BodyJSON(res, &response); err != nil {
+                return nil, err
+        }
+
+	return &response, nil
+}
+
+func (enrollment *Enrollment) Delete() (*CreateEnrollmentResponse, error) {
+
+        req, err := client.NewRequest(
+                Config,
+                "DELETE",
+		fmt.Sprintf("%s?allow-cancel-pending-changes=true", *enrollment.Location),
+                nil,
+        )
+
+	if err != nil {
+		return nil, err
+	}
+
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
 
 	res, err := client.Do(Config, req)
