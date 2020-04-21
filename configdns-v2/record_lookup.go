@@ -396,7 +396,6 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 			parts := strings.Split(rcontent, " ")
 			newrdata = append(newrdata, parts[1])
 		}
-		sort.Strings(newrdata)
 		fieldMap["target"] = newrdata
 
 	case "NAPTR":
