@@ -84,6 +84,11 @@ type ThirdPartyCSR struct {
 	Csr string `json:"csr"`
 }
 
+type ThirdPartyCert struct {
+	Certificate string `json:"certificate"`
+	TrustChain  string `json:"trustchain"`
+}
+
 type DomainValidations struct {
 	Dv []struct {
 		Domain             string      `json:"domain"`
@@ -289,7 +294,6 @@ func (enrollment *Enrollment) GetChangeStatus() (*StatusResponse, error) {
 func (enrollment *Enrollment) AcknowledgeDVChallenges() (*AcknowledgementResponse, error) {
 
 	statusresponse, err := enrollment.GetChangeStatus()
-
 	if err != nil {
 		return nil, err
 	}
@@ -299,6 +303,10 @@ func (enrollment *Enrollment) AcknowledgeDVChallenges() (*AcknowledgementRespons
 	}
 
 	if len(statusresponse.AllowedInput) == 0 {
+		return nil, nil
+	}
+
+	if statusresponse.AllowedInput[0].Type != "lets-encrypt-challenges" {
 		return nil, nil
 	}
 
@@ -345,6 +353,66 @@ func (enrollment *Enrollment) AcknowledgeDVChallenges() (*AcknowledgementRespons
 
 	return nil, nil
 
+}
+
+func (enrollment *Enrollment) SubmitThirdPartyCert(thirdpartycert ThirdPartyCert) (*AcknowledgementResponse, error) {
+
+	statusresponse, err := enrollment.GetChangeStatus()
+	if err != nil {
+		return nil, err
+	}
+
+	if statusresponse == nil {
+		return nil, nil
+	}
+
+	if len(statusresponse.AllowedInput) == 0 {
+		return nil, nil
+	}
+
+	if statusresponse.AllowedInput[0].Type != "third-party-csr" {
+		return nil, nil
+	}
+
+        s, err := json.Marshal(thirdpartycert)
+	if err != nil {
+		return nil, err
+	}
+
+        req, err := client.NewRequest(
+                Config,
+                "POST",
+                statusresponse.AllowedInput[0].Update,
+                bytes.NewReader(s),
+        )
+
+	if err != nil {
+		return nil, err
+	}
+
+        req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
+        req.Header.Set("Content-Type", "application/vnd.akamai.cps.certificate-and-trust-chain.v1+json")
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	if res.StatusCode == 200 {
+		var response AcknowledgementResponse
+		if err = client.BodyJSON(res, &response); err != nil {
+			return nil, err
+		}
+
+		return &response, nil
+	}
+
+	return nil, nil
 }
 
 func (enrollment *Enrollment) GetThirdPartyCSR() (*ThirdPartyCSR, error) {
@@ -401,7 +469,6 @@ func (enrollment *Enrollment) GetThirdPartyCSR() (*ThirdPartyCSR, error) {
 func (enrollment *Enrollment) GetDVChallenges() (*DomainValidations, error) {
 
 	statusresponse, err := enrollment.GetChangeStatus()
-
 	if err != nil {
 		return nil, err
 	}
