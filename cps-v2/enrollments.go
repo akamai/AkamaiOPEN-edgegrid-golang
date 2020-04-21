@@ -80,6 +80,10 @@ type StatusResponse struct {
 	} `json:"allowedInput"`
 }
 
+type ThirdPartyCSR struct {
+	Csr string `json:"csr"`
+}
+
 type DomainValidations struct {
 	Dv []struct {
 		Domain             string      `json:"domain"`
@@ -343,6 +347,57 @@ func (enrollment *Enrollment) AcknowledgeDVChallenges() (*AcknowledgementRespons
 
 }
 
+func (enrollment *Enrollment) GetThirdPartyCSR() (*ThirdPartyCSR, error) {
+
+	statusresponse, err := enrollment.GetChangeStatus()
+
+	if err != nil {
+		return nil, err
+	}
+
+	if statusresponse == nil {
+		return nil, nil
+	}
+
+	if len(statusresponse.AllowedInput) == 0 {
+		return nil, nil
+	}
+
+	if statusresponse.AllowedInput[0].Type != "third-party-csr" {
+		return nil, nil
+	}
+
+        req, err := client.NewRequest(
+                Config,
+                "GET",
+                statusresponse.AllowedInput[0].Info,
+                nil,
+        )
+
+	if err != nil {
+		return nil, err
+	}
+
+        req.Header.Set("Accept", "application/vnd.akamai.cps.csr.v1+json")
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+        var response ThirdPartyCSR
+        if err = client.BodyJSON(res, &response); err != nil {
+                return nil, err
+        }
+
+	return &response, nil
+}
+
 func (enrollment *Enrollment) GetDVChallenges() (*DomainValidations, error) {
 
 	statusresponse, err := enrollment.GetChangeStatus()
@@ -392,7 +447,6 @@ func (enrollment *Enrollment) GetDVChallenges() (*DomainValidations, error) {
         }
 
 	return &response, nil
-
 }
 
 func (enrollment *Enrollment) Update() (*CreateEnrollmentResponse, error) {
