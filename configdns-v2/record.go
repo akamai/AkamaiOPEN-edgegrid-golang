@@ -73,14 +73,29 @@ func NewRecordBody(params RecordBody) *RecordBody {
 	return recordbody
 }
 
-func (record *RecordBody) Save(zone string) error {
+// Eval option lock arg passed into writable endpoints. Default is true, e.g. lock
+func localLock(lockArg []bool) bool {
+
+	for _, lock := range lockArg {
+		// should only be one entry
+		return lock
+	}
+
+	return true
+
+}
+
+func (record *RecordBody) Save(zone string, recLock ...bool) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
-	zoneRecordWriteLock.Lock()
-	defer zoneRecordWriteLock.Unlock()
+
+	if localLock(recLock) {
+		zoneRecordWriteLock.Lock()
+		defer zoneRecordWriteLock.Unlock()
+	}
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -116,14 +131,17 @@ func (record *RecordBody) Save(zone string) error {
 	return nil
 }
 
-func (record *RecordBody) Update(zone string) error {
+func (record *RecordBody) Update(zone string, recLock ...bool) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
-	zoneRecordWriteLock.Lock()
-	defer zoneRecordWriteLock.Unlock()
+
+	if localLock(recLock) {
+		zoneRecordWriteLock.Lock()
+		defer zoneRecordWriteLock.Unlock()
+	}
 
 	req, err := client.NewJSONRequest(
 		Config,
@@ -159,14 +177,18 @@ func (record *RecordBody) Update(zone string) error {
 	return nil
 }
 
-func (record *RecordBody) Delete(zone string) error {
+func (record *RecordBody) Delete(zone string, recLock ...bool) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
-	zoneRecordWriteLock.Lock()
-	defer zoneRecordWriteLock.Unlock()
+
+	if localLock(recLock) {
+		zoneRecordWriteLock.Lock()
+		defer zoneRecordWriteLock.Unlock()
+	}
+
 	req, err := client.NewJSONRequest(
 		Config,
 		"DELETE",
