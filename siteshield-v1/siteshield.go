@@ -1,8 +1,8 @@
 package siteshield
 
 import (
-        "fmt"
-        client "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"fmt"
+	client "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
 type SiteShieldMapResponse struct {
@@ -25,62 +25,61 @@ type SiteShieldMapResponse struct {
 }
 
 func GetMap(id string) (*SiteShieldMapResponse, error) {
-        req, err := client.NewRequest(
-                Config,
-                "GET",
-                fmt.Sprintf("/siteshield/v1/maps/%s", id),
-                nil,
-        )
+	req, err := client.NewRequest(
+		Config,
+		"GET",
+		fmt.Sprintf("/siteshield/v1/maps/%s", id),
+		nil,
+	)
 
-        if err != nil {
-                return nil, err
-        }
+	if err != nil {
+		return nil, err
+	}
 
-        res, err := client.Do(Config, req)
+	res, err := client.Do(Config, req)
 
-        if err != nil {
-                return nil, err
-        }
+	if err != nil {
+		return nil, err
+	}
 
-        if client.IsError(res) {
-                return nil, client.NewAPIError(res)
-        }
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
 
-        var response SiteShieldMapResponse
-        if err = client.BodyJSON(res, &response); err != nil {
-                return nil, err
-        }
+	var response SiteShieldMapResponse
+	if err = client.BodyJSON(res, &response); err != nil {
+		return nil, err
+	}
 
-        return &response, nil
+	return &response, nil
 }
 
 func Acknowledge(id string) (*SiteShieldMapResponse, error) {
-        req, err := client.NewRequest(
-                Config,
-                "POST",
-                fmt.Sprintf("/siteshield/v1/maps/%s/acknowledge", id),
-                nil,
-        )
+	req, err := client.NewRequest(
+		Config,
+		"POST",
+		fmt.Sprintf("/siteshield/v1/maps/%s/acknowledge", id),
+		nil,
+	)
 
-        if err != nil {
-                return nil, err
-        }
+	if err != nil {
+		return nil, err
+	}
 
-        res, err := client.Do(Config, req)
+	res, err := client.Do(Config, req)
 
-        if err != nil {
-                return nil, err
-        }
+	if err != nil {
+		return nil, err
+	}
 
-        if client.IsError(res) {
-                return nil, client.NewAPIError(res)
-        }
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
 
-        var response SiteShieldMapResponse
-        if err = client.BodyJSON(res, &response); err != nil {
-                return nil, err
-        }
+	var response SiteShieldMapResponse
+	if err = client.BodyJSON(res, &response); err != nil {
+		return nil, err
+	}
 
-        return &response, nil
+	return &response, nil
 }
-
