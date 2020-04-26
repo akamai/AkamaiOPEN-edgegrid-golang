@@ -12,7 +12,7 @@ type ListServicesResponse []struct {
 	Description string `json:"description"`
 }
 
-type Subscriptions struct {
+type Subscription struct {
 	ServiceID   int    `json:"serviceId"`
 	ServiceName string `json:"serviceName"`
 	Email       string `json:"email"`
@@ -20,7 +20,7 @@ type Subscriptions struct {
 } 
 
 type ListSubscriptionsResponse struct {
-	Subscriptions []Subscriptions `json:"subscriptions"`
+	Subscriptions []Subscription `json:"subscriptions"`
 }
 	
 type ListCidrBlocksResponse []struct {
@@ -39,11 +39,11 @@ type ListCidrBlocksResponse []struct {
 }
 
 type UpdateSubscriptionsRequest struct {
-	Subscriptions []Subscriptions `json:"subscriptions"`
+	Subscriptions []Subscription `json:"subscriptions"`
 }
 
 type UpdateSubscriptionsResponse struct {
-	Subscriptions []Subscriptions `json:"subscriptions"`
+	Subscriptions []Subscription `json:"subscriptions"`
 }
 
 func ListSubscriptions() (*ListSubscriptionsResponse, error) {
