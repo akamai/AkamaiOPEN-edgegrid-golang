@@ -14,4 +14,3 @@ var (
 func Init(config edgegrid.Config) {
 	Config = config
 }
-

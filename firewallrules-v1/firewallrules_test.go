@@ -166,14 +166,13 @@ func TestUpdateSubscriptions(t *testing.T) {
 	subscription.SignupDate = "2020-04-24"
 
 	// Add it to the list of subscriptions
-	var subscriptions = make([]Subscription,0)
+	var subscriptions = make([]Subscription, 0)
 	subscriptions = append(subscriptions, subscription)
 
 	// Wrap it in a request
 	var request UpdateSubscriptionsRequest
 	request.Subscriptions = subscriptions
-	
-	
+
 	response, err := UpdateSubscriptions(request)
 	assert.NoError(t, err)
 	assert.Equal(t, assert.IsType(t, &UpdateSubscriptionsResponse{}, response), true)
