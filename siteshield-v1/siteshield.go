@@ -1,4 +1,4 @@
-package siteshieldv1
+package siteshield
 
 import (
         "fmt"

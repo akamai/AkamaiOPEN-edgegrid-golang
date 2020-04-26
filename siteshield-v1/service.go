@@ -1,4 +1,4 @@
-package siteshieldv1
+package siteshield
 
 import (
         "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
