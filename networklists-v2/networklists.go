@@ -100,7 +100,7 @@ func CreateNetworkList(networklist NetworkList) (*NetworkList, error) {
 	req, err := client.NewRequest(
 		Config,
 		"POST",
-		"/network-list/v2/network-lists"
+		"/network-list/v2/network-lists",
 		nil,
 	)
 
