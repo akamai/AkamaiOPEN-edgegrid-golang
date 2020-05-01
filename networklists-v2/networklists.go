@@ -2,48 +2,14 @@ package networklists
 
 import (
 	"fmt"
+	"encoding/json"
+	"bytes"
+	"errors"
 	client "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
 type ListNetworkListsResponse struct {
-	NetworkLists []struct {
-		NetworkListType    string `json:"networkListType"`
-		AccessControlGroup string `json:"accessControlGroup,omitempty"`
-		Name               string `json:"name"`
-		ElementCount       int    `json:"elementCount"`
-		ReadOnly           bool   `json:"readOnly"`
-		Shared             bool   `json:"shared"`
-		SyncPoint          int    `json:"syncPoint"`
-		Type               string `json:"type"`
-		UniqueID           string `json:"uniqueId"`
-		Links              struct {
-			ActivateInProduction struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"activateInProduction"`
-			ActivateInStaging struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"activateInStaging"`
-			AppendItems struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"appendItems"`
-			Retrieve struct {
-				Href string `json:"href"`
-			} `json:"retrieve"`
-			StatusInProduction struct {
-				Href string `json:"href"`
-			} `json:"statusInProduction"`
-			StatusInStaging struct {
-				Href string `json:"href"`
-			} `json:"statusInStaging"`
-			Update struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"update"`
-		} `json:"links"`
-	} `json:"networkLists"`
+	NetworkLists []NetworkList `json:"networkLists"`
 }
 
 type NetworkList struct {
@@ -52,6 +18,7 @@ type NetworkList struct {
 	SyncPoint       int      `json:"syncPoint"`
 	Type            string   `json:"type"`
 	NetworkListType string   `json:"networkListType"`
+	Description	string   `json:"description"`
 	ElementCount    int      `json:"elementCount"`
 	ReadOnly        bool     `json:"readOnly"`
 	Shared          bool     `json:"shared"`
@@ -64,13 +31,36 @@ type Message struct {
 	SyncPoint int    `json:"syncPoint"`
 }
 
+type ActivationRequest struct {
+	UniqueID string
+	Network Network
+	Comments               string   `json:"comments"`
+	NotificationRecipients []string `json:"notificationRecipients"`
+}
+
+type ActivationStatus struct {
+	ActivationID       int    `json:"activationId"`
+	ActivationComments string `json:"activationComments"`
+	ActivationStatus   string `json:"activationStatus"`
+	SyncPoint          int    `json:"syncPoint"`
+	UniqueID           string `json:"uniqueId"`
+	Fast               bool   `json:"fast"`
+	DispatchCount      int    `json:"dispatchCount"`
+}
+
+type Network string
+const (
+	Staging Network = "STAGING"
+	Production Network = "PRODUCTION"
+)
+
 
 
 func ListNetworkLists() (*ListNetworkListsResponse, error) {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
-		"/network-list/v2/network-lists?extended=true&includeElements=false",
+		"/network-list/v2/network-lists?includeElements=false",
 		nil,
 	)
 
@@ -126,11 +116,17 @@ func CreateNetworkList(networklist NetworkList) (*NetworkList, error) {
 	return &response, nil
 }
 
-func UpdateNetworkList(id string, networklist NetworkList) (*NetworkList, error) {
+func UpdateNetworkList(networklist NetworkList) (*NetworkList, error) {
+
+	id := networklist.UniqueID
+	if id == "" {
+		return nil, errors.New("Error: no UniqueID in NetworkList")
+	}
+
 	req, err := client.NewRequest(
 		Config,
 		"PUT",
-		fmt.Sprintf("/network-list/v2/network-lists/%s?extended=true&includeElements=false", id),
+		fmt.Sprintf("/network-list/v2/network-lists/%s?includeElements=false", id),
 		nil,
 	)
 
@@ -160,7 +156,7 @@ func GetNetworkList(id string) (*NetworkList, error) {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
-		fmt.Sprintf("/network-list/v2/network-lists/%s?extended=true&includeElements=false", id),
+		fmt.Sprintf("/network-list/v2/network-lists/%s?includeElements=false", id),
 		nil,
 	)
 
@@ -216,3 +212,85 @@ func DeleteNetworkList(id string) (*Message, error) {
 	return &response, nil
 }
 
+func ActivateNetworkList(activationrequest ActivationRequest) (*ActivationStatus, error) {
+	id := activationrequest.UniqueID
+	if id == "" {
+		return nil, errors.New("Error: no UniqueID in ActivationRequest")
+	}
+
+	network := activationrequest.Network
+	if network == "" {
+		return nil, errors.New("Error: no Network in ActivationRequest")
+	}
+
+        r, err := json.Marshal(activationrequest)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := client.NewRequest(
+		Config,
+		"POST",
+		fmt.Sprintf("/network-list/v2/network-lists/%s/environments/%s/activate", id, network),
+		bytes.NewReader(r),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	var response ActivationStatus
+	if err = client.BodyJSON(res, &response); err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
+func GetActivationStatus(id string, network Network) (*ActivationStatus, error) {
+	if id == "" {
+		return nil, errors.New("Error: no UniqueID in ActivationRequest")
+	}
+
+	if network == "" {
+		return nil, errors.New("Error: no Network in ActivationRequest")
+	}
+
+	req, err := client.NewRequest(
+		Config,
+		"GET",
+		fmt.Sprintf("/network-list/v2/network-lists/%s/environments/%s/status", id, network),
+		nil,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	}
+
+	var response ActivationStatus
+	if err = client.BodyJSON(res, &response); err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
