@@ -87,11 +87,17 @@ func ListNetworkLists() (*ListNetworkListsResponse, error) {
 }
 
 func CreateNetworkList(networklist NetworkList) (*NetworkList, error) {
+
+        r, err := json.Marshal(networklist)
+	if err != nil {
+		return nil, err
+	}
+
 	req, err := client.NewRequest(
 		Config,
 		"POST",
 		"/network-list/v2/network-lists",
-		nil,
+		bytes.NewReader(r),
 	)
 
 	if err != nil {
@@ -123,11 +129,16 @@ func UpdateNetworkList(networklist NetworkList) (*NetworkList, error) {
 		return nil, errors.New("Error: no UniqueID in NetworkList")
 	}
 
+        r, err := json.Marshal(networklist)
+	if err != nil {
+		return nil, err
+	}
+
 	req, err := client.NewRequest(
 		Config,
 		"PUT",
 		fmt.Sprintf("/network-list/v2/network-lists/%s?includeElements=false", id),
-		nil,
+		bytes.NewReader(r),
 	)
 
 	if err != nil {
@@ -156,7 +167,7 @@ func GetNetworkList(id string) (*NetworkList, error) {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
-		fmt.Sprintf("/network-list/v2/network-lists/%s?includeElements=false", id),
+		fmt.Sprintf("/network-list/v2/network-lists/%s", id),
 		nil,
 	)
 
