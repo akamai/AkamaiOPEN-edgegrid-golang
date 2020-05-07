@@ -14,4 +14,3 @@ var (
 		Debug:        false,
 	}
 )
-

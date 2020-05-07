@@ -1,43 +1,43 @@
 package appsec
 
 import (
-	"fmt"
-	"encoding/json"
 	"bytes"
-	"time"
+	"encoding/json"
+	"fmt"
 	client "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	"time"
 )
 
 type ActivationConfig struct {
-	ConfigID      int `json:"configId"`
-	ConfigName    string `json:"configName"`
-	ConfigVersion int `json:"configVersion"`
+	ConfigID              int    `json:"configId"`
+	ConfigName            string `json:"configName"`
+	ConfigVersion         int    `json:"configVersion"`
 	PreviousConfigVersion int    `json:"previousConfigVersion"`
 }
 
 type Activation struct {
-	Action             string   `json:"action"`
-	Network            string   `json:"network"`
-	Note               string   `json:"note"`
-	NotificationEmails []string `json:"notificationEmails"`
+	Action             string             `json:"action"`
+	Network            string             `json:"network"`
+	Note               string             `json:"note"`
+	NotificationEmails []string           `json:"notificationEmails"`
 	ActivationConfigs  []ActivationConfig `json:"activationConfigs"`
 }
 
 type ActivationResponse struct {
-	ResponseCode int
-	ActivationStatus ActivationStatus
+	ResponseCode            int
+	ActivationStatus        ActivationStatus
 	ActivationRequestStatus ActivationRequestStatusCreated
 }
 
 type ActivationStatus struct {
-	DispatchCount     int       `json:"dispatchCount"`
-	ActivationID      int       `json:"activationId"`
-	Action            string    `json:"action"`
-	Status            string    `json:"status"`
-	Network           string    `json:"network"`
-	Estimate          string    `json:"estimate"`
-	CreatedBy         string    `json:"createdBy"`
-	CreateDate        time.Time `json:"createDate"`
+	DispatchCount     int                `json:"dispatchCount"`
+	ActivationID      int                `json:"activationId"`
+	Action            string             `json:"action"`
+	Status            string             `json:"status"`
+	Network           string             `json:"network"`
+	Estimate          string             `json:"estimate"`
+	CreatedBy         string             `json:"createdBy"`
+	CreateDate        time.Time          `json:"createDate"`
 	ActivationConfigs []ActivationConfig `json:"activationConfigs"`
 }
 
@@ -52,9 +52,9 @@ type ActivationRequestStatusCreated struct {
 }
 
 type ActivationRequestStatusResponse struct {
-	ResponseCode int
+	ResponseCode                      int
 	ActivationRequestStatusInProgress ActivationRequestStatusInProgress
-	ActivationRequestStatusComplete ActivationRequestStatusComplete
+	ActivationRequestStatusComplete   ActivationRequestStatusComplete
 }
 
 type ActivationRequestStatusInProgress struct {
@@ -73,7 +73,7 @@ type ConfigurationClone struct {
 
 type HostnameList struct {
 	Hostname string `json:"hostname"`
-} 
+}
 
 type SelectedHostnames struct {
 	HostnameList []HostnameList `json:"hostnameList"`
@@ -141,9 +141,9 @@ func ListConfigurationVersions(configid int) (*VersionList, error) {
 	return &response, nil
 }
 
-func CloneConfigurationVersion(configid int, configurationclone ConfigurationClone ) (*Version, error) {
+func CloneConfigurationVersion(configid int, configurationclone ConfigurationClone) (*Version, error) {
 
-        r, err := json.Marshal(configurationclone)
+	r, err := json.Marshal(configurationclone)
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func CloneConfigurationVersion(configid int, configurationclone ConfigurationClo
 
 func ActivateConfigurationVersion(activation Activation) (*ActivationResponse, error) {
 
-        r, err := json.Marshal(activation)
+	r, err := json.Marshal(activation)
 	if err != nil {
 		return nil, err
 	}
@@ -206,8 +206,8 @@ func ActivateConfigurationVersion(activation Activation) (*ActivationResponse, e
 	}
 
 	var response ActivationResponse
-        var activationresponse ActivationStatus
-        var activationrequeststatus ActivationRequestStatusCreated
+	var activationresponse ActivationStatus
+	var activationrequeststatus ActivationRequestStatusCreated
 
 	// This pesky API call can return different responses!
 	if res.StatusCode == 200 {
@@ -215,9 +215,9 @@ func ActivateConfigurationVersion(activation Activation) (*ActivationResponse, e
 			return nil, err
 		}
 	} else if res.StatusCode == 202 {
-                if err = client.BodyJSON(res, &activationrequeststatus); err != nil {
-                        return nil, err
-                }
+		if err = client.BodyJSON(res, &activationrequeststatus); err != nil {
+			return nil, err
+		}
 	}
 
 	response.ResponseCode = res.StatusCode
@@ -251,8 +251,8 @@ func GetActivationRequestStatus(statusid string) (*ActivationRequestStatusRespon
 	}
 
 	var response ActivationRequestStatusResponse
-        var activationrequeststatusinprogress ActivationRequestStatusInProgress
-        var activationrequeststatuscomplete ActivationRequestStatusComplete
+	var activationrequeststatusinprogress ActivationRequestStatusInProgress
+	var activationrequeststatuscomplete ActivationRequestStatusComplete
 
 	// This pesky API call can return different responses!
 	if res.StatusCode == 200 {
@@ -260,9 +260,9 @@ func GetActivationRequestStatus(statusid string) (*ActivationRequestStatusRespon
 			return nil, err
 		}
 	} else if res.StatusCode == 303 {
-                if err = client.BodyJSON(res, &activationrequeststatuscomplete); err != nil {
-                        return nil, err
-                }
+		if err = client.BodyJSON(res, &activationrequeststatuscomplete); err != nil {
+			return nil, err
+		}
 	}
 
 	response.ResponseCode = res.StatusCode
@@ -367,7 +367,7 @@ func ListSelectedHostnames(configid int, version int) (*SelectedHostnames, error
 
 func UpdateSelectedHostnames(configid int, version int, selectedhostnames SelectedHostnames) (*SelectedHostnames, error) {
 
-        r, err := json.Marshal(selectedhostnames)
+	r, err := json.Marshal(selectedhostnames)
 	if err != nil {
 		return nil, err
 	}
@@ -375,7 +375,7 @@ func UpdateSelectedHostnames(configid int, version int, selectedhostnames Select
 	req, err := client.NewRequest(
 		Config,
 		"PUT",
-                fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/selected-hostnames", configid, version),
+		fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/selected-hostnames", configid, version),
 		bytes.NewReader(r),
 	)
 
