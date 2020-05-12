@@ -216,8 +216,10 @@ func (record *RecordBody) Delete(zone string, recLock ...bool) error {
 
 	// API error
 	if client.IsError(res) {
-		err := client.NewAPIError(res)
-		return &RecordError{fieldName: record.Name, apiErrorMessage: err.Detail, err: err}
+		if res.StatusCode != 404 {
+			err := client.NewAPIError(res)
+			return &RecordError{fieldName: record.Name, apiErrorMessage: err.Detail, err: err}
+		}
 	}
 
 	return nil

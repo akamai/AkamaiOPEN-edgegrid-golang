@@ -11,6 +11,7 @@ type ConfigDNSError interface {
 	NotFound() bool
 	FailedToSave() bool
 	ValidationFailed() bool
+	ConcurrencyConflict() bool
 }
 
 func IsConfigDNSError(e error) bool {
@@ -35,7 +36,12 @@ func (e *ZoneError) Network() bool {
 func (e *ZoneError) NotFound() bool {
 	if e.err == nil && e.httpErrorMessage == "" && e.apiErrorMessage == "" {
 		return true
-	}
+        } else if e.err != nil {
+                _, ok := e.err.(client.APIError)
+                if ok && e.err.(client.APIError).Response.StatusCode == 404 {
+                        return true
+                }
+        }
 	return false
 }
 
@@ -50,6 +56,15 @@ func (e *ZoneError) ValidationFailed() bool {
 	return false
 }
 
+func (e *ZoneError) ConcurrencyConflict() bool {
+        _, ok := e.err.(client.APIError)
+        if ok && e.err.(client.APIError).Response.StatusCode == 409 {
+                return true
+        }
+        return false
+}
+
+
 func (e *ZoneError) Error() string {
 	if e.Network() {
 		return fmt.Sprintf("Zone \"%s\" network error: [%s]", e.zoneName, e.httpErrorMessage)
@@ -58,6 +73,10 @@ func (e *ZoneError) Error() string {
 	if e.NotFound() {
 		return fmt.Sprintf("Zone \"%s\" not found.", e.zoneName)
 	}
+
+        if e.ConcurrencyConflict() {
+                return fmt.Sprintf("Modification Confict: [%s]", e.apiErrorMessage)
+        }
 
 	if e.FailedToSave() {
 		return fmt.Sprintf("Zone \"%s\" failed to save: [%s]", e.zoneName, e.err.Error())
@@ -91,6 +110,11 @@ func (e *RecordError) Network() bool {
 func (e *RecordError) NotFound() bool {
 	if e.err == nil && e.httpErrorMessage == "" && e.apiErrorMessage == "" {
 		return true
+	} else if e.err != nil {
+		_, ok := e.err.(client.APIError)
+		if ok && e.err.(client.APIError).Response.StatusCode == 404 {
+			return true
+		}
 	}
 	return false
 }
@@ -111,7 +135,7 @@ func (e *RecordError) ValidationFailed() bool {
 
 func (e *RecordError) ConcurrencyConflict() bool {
 	_, ok := e.err.(client.APIError)
-	if ok && e.err.(client.APIError).Status == 409 {
+	if ok && e.err.(client.APIError).Response.StatusCode == 409 {
 		return true
 	}
 	return false
