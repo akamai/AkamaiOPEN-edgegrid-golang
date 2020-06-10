@@ -56,7 +56,7 @@ type ZoneCreate struct {
 	TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
 	Target                string   `json:"target,omitempty"`
 	EndCustomerId         string   `json:"endCustomerId,omitempty"`
-	ContractId            string   `json:"contractid,omitempty"`
+	ContractId            string   `json:"contractId,omitempty"`
 }
 
 var zoneStructMap map[string]string = map[string]string{
@@ -69,7 +69,7 @@ var zoneStructMap map[string]string = map[string]string{
 	"TsigKey":               "tsigKey",
 	"Target":                "target",
 	"EndCustomerId":         "endCustomerId",
-	"ContractId":            "contractid"}
+	"ContractId":            "contractId"}
 
 type ZoneResponse struct {
 	Zone                  string   `json:"zone,omitempty"`
@@ -81,13 +81,13 @@ type ZoneResponse struct {
 	TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
 	Target                string   `json:"target,omitempty"`
 	EndCustomerId         string   `json:"endCustomerId,omitempty"`
-	ContractId            string   `json:"contractid,omitempty"`
+	ContractId            string   `json:"contractId,omitempty"`
 	AliasCount            int64    `json:"aliasCount,omitempty"`
-	ActivationState       string   `json:"activationstate,omitempty"`
-	LastActivationDate    string   `json:"lastactivationdate,omitempty"`
-	LastModifiedBy        string   `json:"lastmodifiedby,omitempty"`
-	LastModifiedDate      string   `json:"lastmodifieddate,omitempty"`
-	VersionId             string   `json:"versionid,omitempty"`
+	ActivationState       string   `json:"activationState,omitempty"`
+	LastActivationDate    string   `json:"lastActivationDate,omitempty"`
+	LastModifiedBy        string   `json:"lastModifiedBy,omitempty"`
+	LastModifiedDate      string   `json:"lastModifiedDate,omitempty"`
+	VersionId             string   `json:"versionId,omitempty"`
 }
 
 // Zone List Query args struct
