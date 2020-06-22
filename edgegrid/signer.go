@@ -23,6 +23,11 @@ const defaultSection = "DEFAULT"
 
 // AddRequestHeader sets the Authorization header to use Akamai Open API
 func AddRequestHeader(config Config, req *http.Request) *http.Request {
+
+	if EdgegridLog != nil && config.Debug {
+		log.SetOutput(LogFile) // If app is using logging, outut to same location
+	}
+
 	if config.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
