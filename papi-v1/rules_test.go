@@ -1091,8 +1091,6 @@ func TestRule_AddChildRule(t *testing.T) {
 					&Rule{
 						Name: "Child Rule",
 					},
-					
-					
 				},
 			},
 		},
@@ -1746,7 +1744,7 @@ func TestRules_GetRules_Locked(t *testing.T) {
 	property.PropertyID = "prp_123"
 	property.LatestVersion = 1
 
-	rules, err := property.GetRules()
+	rules, err := property.GetRules("")
 
 	assert.NoError(t, err)
 	assert.Equal(t, "44b00323-df7a-4e6b-8ed7-2a49c92f6e44", rules.Rule.Children[0].UUID)
@@ -1789,7 +1787,7 @@ func TestRules_GetRules_CustomOverrides(t *testing.T) {
 	property.PropertyID = "prp_123"
 	property.LatestVersion = 1
 
-	rules, err := property.GetRules()
+	rules, err := property.GetRules("")
 
 	assert.NoError(t, err)
 	assert.Equal(t, "cbo_12345", rules.Rule.CustomOverride.OverrideID)
@@ -1833,7 +1831,7 @@ func TestRules_GetRules_Variables(t *testing.T) {
 	property.PropertyID = "prp_123"
 	property.LatestVersion = 1
 
-	rules, err := property.GetRules()
+	rules, err := property.GetRules("")
 
 	assert.NoError(t, err)
 	assert.Len(t, rules.Rule.Variables, 1)
