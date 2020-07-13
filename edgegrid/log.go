@@ -104,7 +104,6 @@ func PrintHttpRequest(req *http.Request, body bool) {
 	b, err := httputil.DumpRequestOut(req, body)
 	if err == nil {
 		LogMultiline(EdgegridLog.Traceln, string(b))
-		logstd.Printf("[DEBUG]  REQUEST  %s\n", string(b))
 	}
 }
 
@@ -116,7 +115,6 @@ func PrintHttpRequestCorrelation(req *http.Request, body bool, correlationid str
 	b, err := httputil.DumpRequestOut(req, body)
 	if err == nil {
 		LogMultiline(EdgegridLog.Traceln, string(b))
-		logstd.Printf("[DEBUG]%v REQUEST  %s\n", correlationid, string(b))
 	}
 }
 
