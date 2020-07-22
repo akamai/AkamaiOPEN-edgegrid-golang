@@ -87,7 +87,7 @@ func GetRecord(zone string, name string, record_type string) (*RecordBody, error
 	req, err := client.NewRequest(
 		Config,
 		"GET",
-		fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types/%s", zone, name, record_type),
+		fmt.Sprintf("config-dns/v2/zones/%s/names/%s/types/%s", zone, name, record_type),
 		nil,
 	)
 	if err != nil {
@@ -123,7 +123,7 @@ func GetRecordList(zone string, name string, record_type string) (*RecordSetResp
 	req, err := client.NewRequest(
 		Config,
 		"GET",
-		"/config-dns/v2/zones/"+zone+"/recordsets?types="+record_type+"&showAll=true",
+		"config-dns/v2/zones/"+zone+"/recordsets?types="+record_type+"&showAll=true",
 		nil,
 	)
 	if err != nil {
