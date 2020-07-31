@@ -1,3 +1,16 @@
+# go dependencies
 vendor/
-.idea
+
+# testing and custom build code
+*.log
+
+# eclipse
+.classpath
+.project
+.settings
+
+# IntelliJ
+/.idea/
+*.ipr
+*.iws
 *.iml
