@@ -2,7 +2,6 @@ package configgtm
 
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-
 	"errors"
 	"fmt"
 	"strconv"
@@ -29,7 +28,7 @@ type Datacenter struct {
 	Nickname                      string      `json:"nickname,omitempty"`
 	PingInterval                  int         `json:"pingInterval,omitempty"`
 	PingPacketSize                int         `json:"pingPacketSize,omitempty"`
-	DatacenterId                  int         `json:"datacenterId"`
+	DatacenterId                  int         `json:"datacenterId,omitempty"`
 	ScorePenalty                  int         `json:"scorePenalty,omitempty"`
 	ServermonitorLivenessCount    int         `json:"servermonitorLivenessCount,omitempty"`
 	ServermonitorLoadCount        int         `json:"servermonitorLoadCount,omitempty"`
