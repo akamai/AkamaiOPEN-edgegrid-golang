@@ -2,6 +2,7 @@ package dnsv2
 
 import (
 	"fmt"
+	client "github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
 type ConfigDNSError interface {
@@ -10,6 +11,7 @@ type ConfigDNSError interface {
 	NotFound() bool
 	FailedToSave() bool
 	ValidationFailed() bool
+	ConcurrencyConflict() bool
 }
 
 func IsConfigDNSError(e error) bool {
@@ -34,6 +36,11 @@ func (e *ZoneError) Network() bool {
 func (e *ZoneError) NotFound() bool {
 	if e.err == nil && e.httpErrorMessage == "" && e.apiErrorMessage == "" {
 		return true
+	} else if e.err != nil {
+		_, ok := e.err.(client.APIError)
+		if ok && e.err.(client.APIError).Response.StatusCode == 404 {
+			return true
+		}
 	}
 	return false
 }
@@ -49,6 +56,14 @@ func (e *ZoneError) ValidationFailed() bool {
 	return false
 }
 
+func (e *ZoneError) ConcurrencyConflict() bool {
+	_, ok := e.err.(client.APIError)
+	if ok && e.err.(client.APIError).Response.StatusCode == 409 {
+		return true
+	}
+	return false
+}
+
 func (e *ZoneError) Error() string {
 	if e.Network() {
 		return fmt.Sprintf("Zone \"%s\" network error: [%s]", e.zoneName, e.httpErrorMessage)
@@ -56,6 +71,10 @@ func (e *ZoneError) Error() string {
 
 	if e.NotFound() {
 		return fmt.Sprintf("Zone \"%s\" not found.", e.zoneName)
+	}
+
+	if e.ConcurrencyConflict() {
+		return fmt.Sprintf("Modification Confict: [%s]", e.apiErrorMessage)
 	}
 
 	if e.FailedToSave() {
@@ -76,6 +95,7 @@ func (e *ZoneError) Error() string {
 type RecordError struct {
 	fieldName        string
 	httpErrorMessage string
+	apiErrorMessage  string
 	err              error
 }
 
@@ -87,6 +107,14 @@ func (e *RecordError) Network() bool {
 }
 
 func (e *RecordError) NotFound() bool {
+	if e.err == nil && e.httpErrorMessage == "" && e.apiErrorMessage == "" {
+		return true
+	} else if e.err != nil {
+		_, ok := e.err.(client.APIError)
+		if ok && e.err.(client.APIError).Response.StatusCode == 404 {
+			return true
+		}
+	}
 	return false
 }
 
@@ -98,7 +126,23 @@ func (e *RecordError) FailedToSave() bool {
 }
 
 func (e *RecordError) ValidationFailed() bool {
-	if e.fieldName != "" {
+	if e.fieldName != "" && e.err == nil {
+		return true
+	}
+	return false
+}
+
+func (e *RecordError) ConcurrencyConflict() bool {
+	_, ok := e.err.(client.APIError)
+	if ok && e.err.(client.APIError).Response.StatusCode == 409 {
+		return true
+	}
+	return false
+}
+
+func (e *RecordError) BadRequest() bool {
+	_, ok := e.err.(client.APIError)
+	if ok && e.err.(client.APIError).Status == 400 {
 		return true
 	}
 	return false
@@ -107,6 +151,14 @@ func (e *RecordError) ValidationFailed() bool {
 func (e *RecordError) Error() string {
 	if e.Network() {
 		return fmt.Sprintf("Record network error: [%s]", e.httpErrorMessage)
+	}
+
+	if e.ConcurrencyConflict() {
+		return fmt.Sprintf("Modification Confict: [%s]", e.apiErrorMessage)
+	}
+
+	if e.BadRequest() {
+		return fmt.Sprintf("Invalid Operation: [%s]", e.apiErrorMessage)
 	}
 
 	if e.NotFound() {
@@ -119,6 +171,10 @@ func (e *RecordError) Error() string {
 
 	if e.ValidationFailed() {
 		return fmt.Sprintf("Record validation failed for field [%s]", e.fieldName)
+	}
+
+	if e.err != nil {
+		return fmt.Sprintf("%s", e.err.Error())
 	}
 
 	return "<nil>"

@@ -88,6 +88,7 @@ func TestCreateAuthHeader(t *testing.T) {
 				req.Header.Set(k, v)
 			}
 		}
+		SetupLogging()
 		actual := createAuthHeader(config, req, timestamp, nonce)
 		if assert.Equal(t, edge.ExpectedAuthorization, actual, fmt.Sprintf("Fail: %s", edge.Name)) {
 			t.Logf("Pass: %s\n", edge.Name)

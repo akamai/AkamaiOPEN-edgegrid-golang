@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -60,7 +61,7 @@ func (edgeHostnames *EdgeHostnames) NewEdgeHostname() *EdgeHostname {
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listedgehostnames
 // Endpoint: GET /papi/v1/edgehostnames/{?contractId,groupId,options}
-func (edgeHostnames *EdgeHostnames) GetEdgeHostnames(contract *Contract, group *Group, options string) error {
+func (edgeHostnames *EdgeHostnames) GetEdgeHostnames(contract *Contract, group *Group, options string, correlationid string) error {
 
 	if contract == nil && group == nil {
 		return errors.New("function requires at least \"group\" argument")
@@ -96,10 +97,14 @@ func (edgeHostnames *EdgeHostnames) GetEdgeHostnames(contract *Contract, group *
 			return err
 		}
 
+		edge.PrintHttpRequestCorrelation(req, true, correlationid)
+
 		res, err := client.Do(Config, req)
 		if err != nil {
 			return err
 		}
+
+		edge.PrintHttpResponseCorrelation(res, true, correlationid)
 
 		if client.IsError(res) {
 			return client.NewAPIError(res)
@@ -189,7 +194,7 @@ func (edgeHostname *EdgeHostname) Init() {
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getanedgehostname
 // Endpoint: GET /papi/v1/edgehostnames/{edgeHostnameId}{?contractId,groupId,options}
-func (edgeHostname *EdgeHostname) GetEdgeHostname(options string) error {
+func (edgeHostname *EdgeHostname) GetEdgeHostname(options string, correlationid string) error {
 	if options != "" {
 		options = "&options=" + options
 	}
@@ -210,10 +215,14 @@ func (edgeHostname *EdgeHostname) GetEdgeHostname(options string) error {
 		return err
 	}
 
+	edge.PrintHttpRequestCorrelation(req, true, correlationid)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return err
 	}
+
+	edge.PrintHttpResponseCorrelation(res, true, correlationid)
 
 	if client.IsError(res) {
 		if res.StatusCode == 404 {
@@ -223,7 +232,7 @@ func (edgeHostname *EdgeHostname) GetEdgeHostname(options string) error {
 			group := NewGroup(NewGroups())
 			group.GroupID = edgeHostname.parent.GroupID
 
-			edgeHostname.parent.GetEdgeHostnames(contract, group, "")
+			edgeHostname.parent.GetEdgeHostnames(contract, group, "", correlationid)
 			newEdgeHostname, err := edgeHostname.parent.FindEdgeHostname(edgeHostname)
 			if err != nil || newEdgeHostname == nil {
 				return client.NewAPIError(res)
@@ -271,7 +280,7 @@ func (edgeHostname *EdgeHostname) GetEdgeHostname(options string) error {
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#createanewedgehostname
 // Endpoint: POST /papi/v1/edgehostnames/{?contractId,groupId,options}
-func (edgeHostname *EdgeHostname) Save(options string) error {
+func (edgeHostname *EdgeHostname) Save(options string, correlationid string) error {
 	if options != "" {
 		options = "&options=" + options
 	}
@@ -290,10 +299,14 @@ func (edgeHostname *EdgeHostname) Save(options string) error {
 		return err
 	}
 
+	edge.PrintHttpRequestCorrelation(req, true, correlationid)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return err
 	}
+
+	edge.PrintHttpResponseCorrelation(res, true, correlationid)
 
 	if client.IsError(res) {
 		return client.NewAPIError(res)
@@ -338,7 +351,7 @@ func (edgeHostname *EdgeHostname) Save(options string) error {
 //	if edgeHostname.Status == edgegrid.StatusActive {
 //		// EdgeHostname activated successfully
 //	}
-func (edgeHostname *EdgeHostname) PollStatus(options string) bool {
+func (edgeHostname *EdgeHostname) PollStatus(options string, correlationid string) bool {
 	currentStatus := edgeHostname.Status
 	var retry time.Duration = 0
 	for currentStatus != StatusActive {
@@ -349,7 +362,7 @@ func (edgeHostname *EdgeHostname) PollStatus(options string) bool {
 
 		retry -= time.Minute
 
-		err := edgeHostname.GetEdgeHostname(options)
+		err := edgeHostname.GetEdgeHostname(options, correlationid)
 		if err != nil {
 			edgeHostname.StatusChange <- false
 			return false

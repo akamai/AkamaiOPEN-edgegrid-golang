@@ -2,60 +2,14 @@ package dnsv2
 
 import (
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"net"
-	"sort"
+	//"sort"
 	"strconv"
 	"strings"
 )
-
-// Recordset Query args struct
-type RecordsetQueryArgs struct {
-	Page     int
-	PageSize int
-	Search   string
-	ShowAll  bool
-	SortBy   string
-	Types    string
-}
-
-type Recordset struct {
-	Name  string   `json:"name"`
-	Type  string   `json:"type"`
-	TTL   int      `json:"ttl"`
-	Rdata []string `json:"rdata"`
-} //`json:"recordsets"`
-
-type MetadataH struct {
-	LastPage      int  `json:"lastPage"`
-	Page          int  `json:"page"`
-	PageSize      int  `json:"pageSize"`
-	ShowAll       bool `json:"showAll"`
-	TotalElements int  `json:"totalElements"`
-} //`json:"metadata"`
-
-type RecordSetResponse struct {
-	Metadata   MetadataH   `json:"metadata"`
-	Recordsets []Recordset `json:"recordsets"`
-}
-
-/*
-type RecordSetResponse struct {
-	Metadata struct {
-		ShowAll       bool `json:"showAll"`
-		TotalElements int  `json:"totalElements"`
-	} `json:"metadata"`
-	Recordsets []struct {
-		Name  string   `json:"name"`
-		Type  string   `json:"type"`
-		TTL   int      `json:"ttl"`
-		Rdata []string `json:"rdata"`
-	} `json:"recordsets"`
-}
-*/
 
 /*
 {
@@ -125,75 +79,6 @@ func PadCoordinates(str string) string {
 
 }
 
-func NewRecordSetResponse(name string) *RecordSetResponse {
-	recordset := &RecordSetResponse{}
-	return recordset
-}
-
-// Get RecordSets with Query Args. No formatting of arg values!
-func GetRecordsets(zone string, queryArgs ...RecordsetQueryArgs) (*RecordSetResponse, error) {
-
-	recordsetResp := NewRecordSetResponse("")
-
-	// construct GET url
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets", zone)
-	if len(queryArgs) > 1 {
-		return nil, errors.New("GetRecordsets QueryArgs invalid.")
-	}
-
-	req, err := client.NewRequest(
-		Config,
-		"GET",
-		getURL,
-		nil,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	q := req.URL.Query()
-	if len(queryArgs) > 0 {
-		if queryArgs[0].Page > 0 {
-			q.Add("page", strconv.Itoa(queryArgs[0].Page))
-		}
-		if queryArgs[0].PageSize > 0 {
-			q.Add("pageSize", strconv.Itoa(queryArgs[0].PageSize))
-		}
-		if queryArgs[0].Search != "" {
-			q.Add("search", queryArgs[0].Search)
-		}
-		q.Add("showAll", strconv.FormatBool(queryArgs[0].ShowAll))
-		if queryArgs[0].SortBy != "" {
-			q.Add("sortBy", queryArgs[0].SortBy)
-		}
-		if queryArgs[0].Types != "" {
-			q.Add("types", queryArgs[0].Types)
-		}
-		req.URL.RawQuery = q.Encode()
-	}
-
-	edge.PrintHttpRequest(req, true)
-
-	res, err := client.Do(Config, req)
-	if err != nil {
-		return nil, err
-	}
-
-	edge.PrintHttpResponse(res, true)
-
-	if client.IsError(res) && res.StatusCode != 404 {
-		return nil, client.NewAPIError(res)
-	} else if res.StatusCode == 404 {
-		return nil, &ZoneError{zoneName: zone}
-	} else {
-		err = client.BodyJSON(res, recordsetResp)
-		if err != nil {
-			return nil, err
-		}
-		return recordsetResp, nil
-	}
-}
-
 // Get single Recordset. Following convention for other single record CRUD operations, return a RecordBody.
 func GetRecord(zone string, name string, record_type string) (*RecordBody, error) {
 
@@ -221,7 +106,7 @@ func GetRecord(zone string, name string, record_type string) (*RecordBody, error
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &ZoneError{zoneName: zone}
+		return nil, &RecordError{fieldName: name}
 	} else {
 		err = client.BodyJSON(res, record)
 		if err != nil {
@@ -257,7 +142,7 @@ func GetRecordList(zone string, name string, record_type string) (*RecordSetResp
 	if client.IsError(res) && res.StatusCode != 404 {
 		return nil, client.NewAPIError(res)
 	} else if res.StatusCode == 404 {
-		return nil, &ZoneError{zoneName: name}
+		return nil, &RecordError{fieldName: name}
 	} else {
 		err = client.BodyJSON(res, records)
 		if err != nil {
@@ -382,21 +267,23 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 			fieldMap["software"] = parts[1]
 			break
 		}
-
-	case "MX":
-		sort.Strings(rdata)
-		parts := strings.Split(rdata[0], " ")
-		fieldMap["priority"], _ = strconv.Atoi(parts[0])
-		if len(rdata) > 1 {
-			parts = strings.Split(rdata[1], " ")
-			tpri, _ := strconv.Atoi(parts[0])
-			fieldMap["priority_increment"] = tpri - fieldMap["priority"].(int)
-		}
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			newrdata = append(newrdata, parts[1])
-		}
-		fieldMap["target"] = newrdata
+	/*
+		// too many variations to calculate pri and increment
+		case "MX":
+			sort.Strings(rdata)
+			parts := strings.Split(rdata[0], " ")
+			fieldMap["priority"], _ = strconv.Atoi(parts[0])
+			if len(rdata) > 1 {
+				parts = strings.Split(rdata[1], " ")
+				tpri, _ := strconv.Atoi(parts[0])
+				fieldMap["priority_increment"] = tpri - fieldMap["priority"].(int)
+			}
+			for _, rcontent := range rdata {
+				parts := strings.Split(rcontent, " ")
+				newrdata = append(newrdata, parts[1])
+			}
+			fieldMap["target"] = newrdata
+	*/
 
 	case "NAPTR":
 		for _, rcontent := range rdata {
@@ -498,9 +385,6 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 			break
 		}
 
-	case "AKAMAICDN":
-		fieldMap["edge_hostname"] = rdata[0]
-
 	case "AKAMAITLC":
 		parts := strings.Split(rdata[0], " ")
 		fieldMap["answer_type"] = parts[0]
@@ -535,6 +419,31 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 			newrdata = append(newrdata, str)
 		}
 		fieldMap["target"] = newrdata
+
+	case "CERT":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			val, err := strconv.Atoi(parts[0])
+			if err == nil {
+				fieldMap["type_value"] = val
+			} else {
+				fieldMap["type_mnemonic"] = parts[0]
+			}
+			fieldMap["keytag"], _ = strconv.Atoi(parts[1])
+			fieldMap["algorithm"], _ = strconv.Atoi(parts[2])
+			fieldMap["certificate"] = parts[3]
+			break
+		}
+
+	case "TLSA":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["usage"], _ = strconv.Atoi(parts[0])
+			fieldMap["selector"], _ = strconv.Atoi(parts[1])
+			fieldMap["match_type"], _ = strconv.Atoi(parts[2])
+			fieldMap["certificate"] = parts[3]
+			break
+		}
 
 	default:
 		for _, rcontent := range rdata {

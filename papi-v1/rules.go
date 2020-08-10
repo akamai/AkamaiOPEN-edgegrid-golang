@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 )
 
 // Rules is a collection of property rules
@@ -44,7 +45,7 @@ func (rules *Rules) PreMarshalJSON() error {
 // See: Property.GetRules
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getaruletree
 // Endpoint: GET /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
-func (rules *Rules) GetRules(property *Property) error {
+func (rules *Rules) GetRules(property *Property, correlationid string) error {
 	req, err := client.NewRequest(
 		Config,
 		"GET",
@@ -59,10 +60,14 @@ func (rules *Rules) GetRules(property *Property) error {
 		return err
 	}
 
+	edge.PrintHttpRequestCorrelation(req, true, correlationid)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return err
 	}
+
+	edge.PrintHttpResponseCorrelation(res, true, correlationid)
 
 	if client.IsError(res) {
 		return client.NewAPIError(res)
@@ -80,7 +85,7 @@ func (rules *Rules) GetRules(property *Property) error {
 // See: Property.GetRulesDigest()
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#getaruletreesdigest
 // Endpoint: HEAD /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules/{?contractId,groupId}
-func (rules *Rules) GetRulesDigest(property *Property) (string, error) {
+func (rules *Rules) GetRulesDigest(property *Property, correlationid string) (string, error) {
 	req, err := client.NewRequest(
 		Config,
 		"HEAD",
@@ -95,10 +100,14 @@ func (rules *Rules) GetRulesDigest(property *Property) (string, error) {
 		return "", err
 	}
 
+	edge.PrintHttpRequestCorrelation(req, true, correlationid)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return "", err
 	}
+
+	edge.PrintHttpResponseCorrelation(res, true, correlationid)
 
 	if client.IsError(res) {
 		return "", client.NewAPIError(res)
@@ -111,7 +120,7 @@ func (rules *Rules) GetRulesDigest(property *Property) (string, error) {
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#putpropertyversionrules
 // Endpoint: PUT /papi/v1/properties/{propertyId}/versions/{propertyVersion}/rules{?contractId,groupId}
-func (rules *Rules) Save() error {
+func (rules *Rules) Save(correlationid string) error {
 	rules.Errors = []*RuleErrors{}
 
 	req, err := client.NewJSONRequest(
@@ -128,10 +137,14 @@ func (rules *Rules) Save() error {
 		return err
 	}
 
+	edge.PrintHttpRequestCorrelation(req, true, correlationid)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return err
 	}
+
+	edge.PrintHttpResponseCorrelation(res, true, correlationid)
 
 	if client.IsError(res) {
 		return client.NewAPIError(res)
@@ -166,12 +179,16 @@ func (rules *Rules) Freeze(format string) error {
 		return err
 	}
 
+	edge.PrintHttpRequest(req, true)
+
 	req.Header.Set("Content-Type", fmt.Sprintf("application/vnd.akamai.papirules.%s+json", format))
 
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return err
 	}
+
+	edge.PrintHttpResponse(res, true)
 
 	if client.IsError(res) {
 		return client.NewAPIError(res)

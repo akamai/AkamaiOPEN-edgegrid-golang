@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -72,7 +73,7 @@ func (cpcodes *CpCodes) PostUnmarshalJSON() error {
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listcpcodes
 // Endpoint: GET /papi/v1/cpcodes/{?contractId,groupId}
-func (cpcodes *CpCodes) GetCpCodes() error {
+func (cpcodes *CpCodes) GetCpCodes(correlationid string) error {
 	cachecpcodes, found := Profilecache.Get("cpcodes")
 	if found {
 		json.Unmarshal(cachecpcodes.([]byte), cpcodes)
@@ -97,10 +98,14 @@ func (cpcodes *CpCodes) GetCpCodes() error {
 			return err
 		}
 
+		edge.PrintHttpRequestCorrelation(req, true, correlationid)
+
 		res, err := client.Do(Config, req)
 		if err != nil {
 			return err
 		}
+
+		edge.PrintHttpResponseCorrelation(res, true, correlationid)
 
 		if client.IsError(res) {
 			return client.NewAPIError(res)
@@ -115,9 +120,9 @@ func (cpcodes *CpCodes) GetCpCodes() error {
 	}
 }
 
-func (cpcodes *CpCodes) FindCpCode(nameOrId string) (*CpCode, error) {
+func (cpcodes *CpCodes) FindCpCode(nameOrId string, correlationid string) (*CpCode, error) {
 	if len(cpcodes.CpCodes.Items) == 0 {
-		err := cpcodes.GetCpCodes()
+		err := cpcodes.GetCpCodes(correlationid)
 		if err != nil {
 			return nil, err
 		}
@@ -195,7 +200,15 @@ func (cpcode *CpCode) GetCpCode() error {
 		return err
 	}
 
+	edge.PrintHttpRequest(req, true)
+
 	res, err := client.Do(Config, req)
+
+	if err != nil {
+		return err
+	}
+
+	edge.PrintHttpResponse(res, true)
 
 	if client.IsError(res) {
 		return client.NewAPIError(res)
@@ -237,7 +250,7 @@ func (cpcode *CpCode) ID() int {
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#createanewcpcode
 // Endpoint: POST /papi/v1/cpcodes/{?contractId,groupId}
-func (cpcode *CpCode) Save() error {
+func (cpcode *CpCode) Save(correlationid string) error {
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
@@ -252,10 +265,14 @@ func (cpcode *CpCode) Save() error {
 		return err
 	}
 
+	edge.PrintHttpRequestCorrelation(req, true, correlationid)
+
 	res, err := client.Do(Config, req)
 	if err != nil {
 		return err
 	}
+
+	edge.PrintHttpResponseCorrelation(res, true, correlationid)
 
 	if client.IsError(res) {
 		return client.NewAPIError(res)
@@ -276,10 +293,14 @@ func (cpcode *CpCode) Save() error {
 		return err
 	}
 
+	edge.PrintHttpRequest(req, true)
+
 	res, err = client.Do(Config, req)
 	if err != nil {
 		return err
 	}
+
+	edge.PrintHttpResponse(res, true)
 
 	if client.IsError(res) {
 		return client.NewAPIError(res)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -45,7 +46,7 @@ func (groups *Groups) PostUnmarshalJSON() error {
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listgroups
 // Endpoint: GET /papi/v1/groups/
-func (groups *Groups) GetGroups() error {
+func (groups *Groups) GetGroups(correlationid string) error {
 	cachegroups, found := Profilecache.Get("groups")
 	if found {
 		json.Unmarshal(cachegroups.([]byte), groups)
@@ -61,10 +62,14 @@ func (groups *Groups) GetGroups() error {
 			return err
 		}
 
+		edge.PrintHttpRequestCorrelation(req, true, correlationid)
+
 		res, err := client.Do(Config, req)
 		if err != nil {
 			return err
 		}
+
+		edge.PrintHttpResponseCorrelation(res, true, correlationid)
 
 		if client.IsError(res) {
 			return client.NewAPIError(res)
@@ -221,7 +226,7 @@ func (group *Group) GetCpCodes(contract *Contract) (*CpCodes, error) {
 }
 
 // GetEdgeHostnames retrieves all Edge hostnames associated with a given group/contract
-func (group *Group) GetEdgeHostnames(contract *Contract, options string) (*EdgeHostnames, error) {
+func (group *Group) GetEdgeHostnames(contract *Contract, options string, correlationid string) (*EdgeHostnames, error) {
 	return GetEdgeHostnames(contract, group, options)
 }
 

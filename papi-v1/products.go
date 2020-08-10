@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -46,7 +47,7 @@ func (products *Products) PostUnmarshalJSON() error {
 //
 // API Docs: https://developer.akamai.com/api/luna/papi/resources.html#listproducts
 // Endpoint: GET /papi/v1/products/{?contractId}
-func (products *Products) GetProducts(contract *Contract) error {
+func (products *Products) GetProducts(contract *Contract, correlationid string) error {
 	cacheproducts, found := Profilecache.Get("products")
 	if found {
 		json.Unmarshal(cacheproducts.([]byte), products)
@@ -65,10 +66,14 @@ func (products *Products) GetProducts(contract *Contract) error {
 			return err
 		}
 
+		edge.PrintHttpRequestCorrelation(req, true, correlationid)
+
 		res, err := client.Do(Config, req)
 		if err != nil {
 			return err
 		}
+
+		edge.PrintHttpResponseCorrelation(res, true, correlationid)
 
 		if client.IsError(res) {
 			return client.NewAPIError(res)

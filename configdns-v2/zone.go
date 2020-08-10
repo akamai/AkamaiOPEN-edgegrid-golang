@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"reflect"
+	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -40,8 +42,8 @@ var (
 */
 
 type ZoneQueryString struct {
-	Contract string `json:"contractid,omitempty"`
-	Group    string `json:"lastactivationdate,omitempty"`
+	Contract string
+	Group    string
 }
 
 type ZoneCreate struct {
@@ -54,7 +56,7 @@ type ZoneCreate struct {
 	TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
 	Target                string   `json:"target,omitempty"`
 	EndCustomerId         string   `json:"endCustomerId,omitempty"`
-	ContractId            string   `json:"contractid,omitempty"`
+	ContractId            string   `json:"contractId,omitempty"`
 }
 
 var zoneStructMap map[string]string = map[string]string{
@@ -67,7 +69,7 @@ var zoneStructMap map[string]string = map[string]string{
 	"TsigKey":               "tsigKey",
 	"Target":                "target",
 	"EndCustomerId":         "endCustomerId",
-	"ContractId":            "contractid"}
+	"ContractId":            "contractId"}
 
 type ZoneResponse struct {
 	Zone                  string   `json:"zone,omitempty"`
@@ -79,13 +81,37 @@ type ZoneResponse struct {
 	TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
 	Target                string   `json:"target,omitempty"`
 	EndCustomerId         string   `json:"endCustomerId,omitempty"`
-	ContractId            string   `json:"contractid,omitempty"`
+	ContractId            string   `json:"contractId,omitempty"`
 	AliasCount            int64    `json:"aliasCount,omitempty"`
-	ActivationState       string   `json:"activationstate,omitempty"`
-	LastActivationDate    string   `json:"lastactivationdate,omitempty"`
-	LastModifiedBy        string   `json:"lastmodifiedby,omitempty"`
-	LastModifiedDate      string   `json:"lastmodifieddate,omitempty"`
-	VersionId             string   `json:"versionid,omitempty"`
+	ActivationState       string   `json:"activationState,omitempty"`
+	LastActivationDate    string   `json:"lastActivationDate,omitempty"`
+	LastModifiedBy        string   `json:"lastModifiedBy,omitempty"`
+	LastModifiedDate      string   `json:"lastModifiedDate,omitempty"`
+	VersionId             string   `json:"versionId,omitempty"`
+}
+
+// Zone List Query args struct
+type ZoneListQueryArgs struct {
+	ContractIds string
+	Page        int
+	PageSize    int
+	Search      string
+	ShowAll     bool
+	SortBy      string
+	Types       string
+}
+
+type ListMetadata struct {
+	ContractIds   []string `json:"contractIds"`
+	Page          int      `json:"page"`
+	PageSize      int      `json:"pageSize"`
+	ShowAll       bool     `json:"showAll"`
+	TotalElements int      `json:"totalElements"`
+} //`json:"metadata"`
+
+type ZoneListResponse struct {
+	Metadata *ListMetadata   `json:"metadata,omitempty"`
+	Zones    []*ZoneResponse `json:"zones,omitempty"`
 }
 
 type ChangeListResponse struct {
@@ -125,6 +151,71 @@ type ZoneNamesResponse struct {
 // Recordset Types for Zone|Name Response
 type ZoneNameTypesResponse struct {
 	Types []string `json:"types"`
+}
+
+// List Zones
+func ListZones(queryArgs ...ZoneListQueryArgs) (*ZoneListResponse, error) {
+
+	zoneListResp := &ZoneListResponse{}
+
+	// construct GET url
+	getURL := fmt.Sprintf("/config-dns/v2/zones")
+	if len(queryArgs) > 1 {
+		return nil, fmt.Errorf("ListZones QueryArgs invalid.")
+	}
+
+	req, err := client.NewRequest(
+		Config,
+		"GET",
+		getURL,
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	if len(queryArgs) > 0 {
+		if queryArgs[0].Page > 0 {
+			q.Add("page", strconv.Itoa(queryArgs[0].Page))
+		}
+		if queryArgs[0].PageSize > 0 {
+			q.Add("pageSize", strconv.Itoa(queryArgs[0].PageSize))
+		}
+		if queryArgs[0].Search != "" {
+			q.Add("search", queryArgs[0].Search)
+		}
+		q.Add("showAll", strconv.FormatBool(queryArgs[0].ShowAll))
+		if queryArgs[0].SortBy != "" {
+			q.Add("sortBy", queryArgs[0].SortBy)
+		}
+		if queryArgs[0].Types != "" {
+			q.Add("types", queryArgs[0].Types)
+		}
+		if queryArgs[0].ContractIds != "" {
+			q.Add("contractIds", queryArgs[0].ContractIds)
+		}
+		req.URL.RawQuery = q.Encode()
+	}
+
+	edge.PrintHttpRequest(req, true)
+
+	res, err := client.Do(Config, req)
+	if err != nil {
+		return nil, err
+	}
+
+	edge.PrintHttpResponse(res, true)
+
+	if client.IsError(res) {
+		return nil, client.NewAPIError(res)
+	} else {
+		err = client.BodyJSON(res, zoneListResp)
+		if err != nil {
+			return nil, err
+		}
+		return zoneListResp, nil
+	}
 }
 
 // NewZone creates a new Zone. Supports subset of fields
@@ -270,7 +361,7 @@ func GetMasterZoneFile(zone string) (string, error) {
 }
 
 // Create a Zone
-func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString) error {
+func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString, clearConn ...bool) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
@@ -280,10 +371,14 @@ func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString) error {
 	defer zoneWriteLock.Unlock()
 
 	zoneMap := filterZoneCreate(zone)
+	zoneurl := "/config-dns/v2/zones/?contractId=" + zonequerystring.Contract
+	if len(zonequerystring.Group) > 0 {
+		zoneurl += "&gid=" + zonequerystring.Group
+	}
 	req, err := client.NewJSONRequest(
 		Config,
 		"POST",
-		"/config-dns/v2/zones/?contractId="+zonequerystring.Contract+"&gid="+zonequerystring.Group,
+		zoneurl,
 		zoneMap,
 	)
 	if err != nil {
@@ -309,6 +404,17 @@ func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString) error {
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
 		return &ZoneError{zoneName: zone.Zone, apiErrorMessage: err.Detail, err: err}
+	}
+
+	if strings.ToUpper(zone.Type) == "PRIMARY" {
+		// Timing issue with Create immediately followed by SaveChangelist
+		for _, clear := range clearConn {
+			// should only be one entry
+			if clear {
+				edge.LogMultiline(edge.EdgegridLog.Traceln, "Clearing Idle Connections")
+				client.Client.CloseIdleConnections()
+			}
+		}
 	}
 
 	return nil
@@ -472,8 +578,10 @@ func (zone *ZoneCreate) Delete(zonequerystring ZoneQueryString) error {
 
 	// API error
 	if client.IsError(res) {
-		err := client.NewAPIError(res)
-		return &ZoneError{zoneName: zone.Zone, apiErrorMessage: err.Detail, err: err}
+		if res.StatusCode != 404 {
+			err := client.NewAPIError(res)
+			return &ZoneError{zoneName: zone.Zone, apiErrorMessage: err.Detail, err: err}
+		}
 	}
 
 	return nil
@@ -482,6 +590,7 @@ func (zone *ZoneCreate) Delete(zonequerystring ZoneQueryString) error {
 
 func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 
+	zoneType := strings.ToUpper(zone.Type)
 	filteredZone := make(map[string]interface{})
 	zoneElems := reflect.ValueOf(zone).Elem()
 	for i := 0; i < zoneElems.NumField(); i++ {
@@ -490,23 +599,23 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 		varValue := zoneElems.Field(i).Interface()
 		switch varName {
 		case "Target":
-			if zone.Type == "ALIAS" {
+			if zoneType == "ALIAS" {
 				filteredZone[varLower] = varValue
 			}
 		case "TsigKey":
-			if zone.Type == "SECONDARY" {
+			if zoneType == "SECONDARY" {
 				filteredZone[varLower] = varValue
 			}
 		case "Masters":
-			if zone.Type == "SECONDARY" {
+			if zoneType == "SECONDARY" {
 				filteredZone[varLower] = varValue
 			}
 		case "SignAndServe":
-			if zone.Type != "ALIAS" {
+			if zoneType != "ALIAS" {
 				filteredZone[varLower] = varValue
 			}
 		case "SignAndServeAlgorithm":
-			if zone.Type != "ALIAS" {
+			if zoneType != "ALIAS" {
 				filteredZone[varLower] = varValue
 			}
 		default:
@@ -515,6 +624,46 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 	}
 
 	return filteredZone
+
+}
+
+// Validate ZoneCreate Object
+func ValidateZone(zone *ZoneCreate) error {
+
+	if len(zone.Zone) == 0 {
+		return fmt.Errorf("Zone name is required")
+	}
+	ztype := strings.ToUpper(zone.Type)
+	if ztype != "PRIMARY" && ztype != "SECONDARY" && ztype != "ALIAS" {
+		return fmt.Errorf("Invalid zone type")
+	}
+	if ztype != "SECONDARY" && zone.TsigKey != nil {
+		return fmt.Errorf("TsigKey is invalid for %s zone type", ztype)
+	}
+	if ztype == "ALIAS" {
+		if len(zone.Target) == 0 {
+			return fmt.Errorf("Target is required for Alias zone type")
+		}
+		if zone.Masters != nil && len(zone.Masters) > 0 {
+			return fmt.Errorf("Masters is invalid for Alias zone type")
+		}
+		if zone.SignAndServe {
+			return fmt.Errorf("SignAndServe is invalid for Alias zone type")
+		}
+		if len(zone.SignAndServeAlgorithm) > 0 {
+			return fmt.Errorf("SignAndServeAlgorithm is invalid for Alias zone type")
+		}
+		return nil
+	}
+	// Primary or Secondary
+	if len(zone.Target) > 0 {
+		return fmt.Errorf("Target is invalid for %s zone type", ztype)
+	}
+	if zone.Masters != nil && len(zone.Masters) > 0 && ztype == "PRIMARY" {
+		return fmt.Errorf("Masters is invalid for Primary zone type")
+	}
+
+	return nil
 
 }
 

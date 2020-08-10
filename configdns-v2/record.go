@@ -113,8 +113,8 @@ func (record *RecordBody) Save(zone string, recLock ...bool) error {
 
 	// Network error
 	if err != nil {
-		return &ZoneError{
-			zoneName:         zone,
+		return &RecordError{
+			fieldName:        record.Name,
 			httpErrorMessage: err.Error(),
 			err:              err,
 		}
@@ -125,7 +125,7 @@ func (record *RecordBody) Save(zone string, recLock ...bool) error {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return &ZoneError{zoneName: zone, apiErrorMessage: err.Detail, err: err}
+		return &RecordError{fieldName: record.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	return nil
@@ -159,8 +159,8 @@ func (record *RecordBody) Update(zone string, recLock ...bool) error {
 
 	// Network error
 	if err != nil {
-		return &ZoneError{
-			zoneName:         zone,
+		return &RecordError{
+			fieldName:        record.Name,
 			httpErrorMessage: err.Error(),
 			err:              err,
 		}
@@ -171,7 +171,7 @@ func (record *RecordBody) Update(zone string, recLock ...bool) error {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return &ZoneError{zoneName: zone, apiErrorMessage: err.Detail, err: err}
+		return &RecordError{fieldName: record.Name, apiErrorMessage: err.Detail, err: err}
 	}
 
 	return nil
@@ -193,7 +193,7 @@ func (record *RecordBody) Delete(zone string, recLock ...bool) error {
 		Config,
 		"DELETE",
 		"/config-dns/v2/zones/"+zone+"/names/"+record.Name+"/types/"+record.RecordType,
-		record,
+		nil,
 	)
 	if err != nil {
 		return err
@@ -205,8 +205,8 @@ func (record *RecordBody) Delete(zone string, recLock ...bool) error {
 
 	// Network error
 	if err != nil {
-		return &ZoneError{
-			zoneName:         zone,
+		return &RecordError{
+			fieldName:        record.Name,
 			httpErrorMessage: err.Error(),
 			err:              err,
 		}
@@ -216,8 +216,10 @@ func (record *RecordBody) Delete(zone string, recLock ...bool) error {
 
 	// API error
 	if client.IsError(res) {
-		err := client.NewAPIError(res)
-		return &ZoneError{zoneName: zone, apiErrorMessage: err.Detail, err: err}
+		if res.StatusCode != 404 {
+			err := client.NewAPIError(res)
+			return &RecordError{fieldName: record.Name, apiErrorMessage: err.Detail, err: err}
+		}
 	}
 
 	return nil
