@@ -127,7 +127,7 @@ func (cpcodes *CpCodes) FindCpCode(nameOrId string, correlationid string) (*CpCo
 			return nil, err
 		}
 		if len(cpcodes.CpCodes.Items) == 0 {
-			return nil, fmt.Errorf("unable to fetch CP codes for group/contract")
+			return nil, nil
 		}
 	}
 
