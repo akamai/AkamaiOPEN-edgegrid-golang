@@ -2,7 +2,7 @@ package papi
 
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-        edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
+	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 )
 
 // ClientSettings represents the PAPI client settings resource

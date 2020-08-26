@@ -7,8 +7,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
-        edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
-
+	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 )
 
 // Activations is a collection of property activations
@@ -319,7 +318,6 @@ func (activation *Activation) Save(property *Property, acknowledgeWarnings bool)
 	if err != nil {
 		return err
 	}
-
 
 	edge.PrintHttpResponse(res, true)
 

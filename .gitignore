@@ -1,8 +1,13 @@
-# go dependencies
-vendor/
-
 # testing and custom build code
 *.log
+
+# local files
+.DS_Store
+/dist
+
+# vscode
+.vscode/
+_debug_bin
 
 # eclipse
 .classpath
@@ -14,3 +19,6 @@ vendor/
 *.ipr
 *.iws
 *.iml
+
+# go dependencies
+vendor/
