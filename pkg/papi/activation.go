@@ -45,7 +45,7 @@ type (
 		PropertyID string
 		ContractID string
 		GroupID    string
-		Activation *Activation
+		Activation Activation
 	}
 
 	// CreateActivationResponse is the response for a new activation or deactivation
@@ -131,6 +131,11 @@ func (p *papi) CreateActivation(ctx context.Context, r CreateActivationRequest) 
 	var rval CreateActivationResponse
 
 	p.Log(ctx).Debug("CreateActivation")
+
+	// explicitly set the activation type
+	if r.Activation.ActivationType == "" {
+		r.Activation.ActivationType = ActivationTypeActivate
+	}
 
 	uri := fmt.Sprintf("/papi/v1/properties/%s/activations?contractId=%s&groupId=%s", r.PropertyID, r.ContractID, r.GroupID)
 
