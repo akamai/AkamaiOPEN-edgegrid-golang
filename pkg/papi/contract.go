@@ -24,22 +24,24 @@ type (
 	}
 )
 
-func (p *papi) GetContracts(ctx context.Context) (GetContractResponse, error) {
+func (p *papi) GetContracts(ctx context.Context) (*GetContractResponse, error) {
 	var contracts GetContractResponse
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/groups", nil)
+	p.Log(ctx).Debug("GetContracts")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/contracts", nil)
 	if err != nil {
-		return contracts, fmt.Errorf("failed to create getcontracts request: %w", err)
+		return nil, fmt.Errorf("failed to create getcontracts request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &contracts)
 	if err != nil {
-		return contracts, fmt.Errorf("getcontracts request failed: %w", err)
+		return nil, fmt.Errorf("getcontracts request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return contracts, fmt.Errorf("getcontracts request failed with status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("getcontracts request failed with status code: %d", resp.StatusCode)
 	}
 
-	return contracts, nil
+	return &contracts, nil
 }

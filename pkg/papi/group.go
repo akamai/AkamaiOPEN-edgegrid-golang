@@ -29,24 +29,24 @@ type (
 	}
 )
 
-func (p *papi) GetGroups(ctx context.Context) (GetGroupsResponse, error) {
+func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 	var groups GetGroupsResponse
 
 	p.Log(ctx).Debug("GetGroups")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/groups", nil)
 	if err != nil {
-		return groups, fmt.Errorf("failed to create getgroups request: %w", err)
+		return nil, fmt.Errorf("failed to create getgroups request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &groups)
 	if err != nil {
-		return groups, fmt.Errorf("getgroups request failed: %w", err)
+		return nil, fmt.Errorf("getgroups request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return groups, fmt.Errorf("getgroups request failed with status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("getgroups request failed with status code: %d", resp.StatusCode)
 	}
 
-	return groups, nil
+	return &groups, nil
 }

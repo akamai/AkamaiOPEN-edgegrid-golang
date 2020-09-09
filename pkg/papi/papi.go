@@ -12,11 +12,11 @@ type (
 	PAPI interface {
 		// GetGroups provides a read-only list of groups, which may contain properties.
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getgroups
-		GetGroups(context.Context) (GetGroupsResponse, error)
+		GetGroups(context.Context) (*GetGroupsResponse, error)
 
 		// GetContract provides a read-only list of contract names and identifiers
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcontracts
-		GetContracts(context.Context) (GetContractResponse, error)
+		GetContracts(context.Context) (*GetContractResponse, error)
 	}
 
 	papi struct {
