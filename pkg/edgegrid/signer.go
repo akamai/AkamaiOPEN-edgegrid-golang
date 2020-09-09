@@ -49,7 +49,7 @@ func (c Config) SignRequest(r *http.Request) error {
 
 	key := createSignature(timestamp, c.ClientSecret)
 
-	r.Header.Set("Authorization", fmt.Sprintf("%s=%s", authHeader, createSignature(msg, key)))
+	r.Header.Set("Authorization", fmt.Sprintf("%ssignature=%s", authHeader, createSignature(msg, key)))
 
 	return nil
 }

@@ -45,15 +45,15 @@ type (
 )
 
 // New returns new configuration with the specified options
-func New(opts ...Option) (Config, error) {
-	c := Config{
+func New(opts ...Option) (*Config, error) {
+	c := &Config{
 		file:    DefaultConfigFile,
 		section: DefaultSection,
 		env:     false,
 	}
 
 	for _, opt := range opts {
-		opt(&c)
+		opt(c)
 	}
 
 	if c.env {
@@ -62,11 +62,11 @@ func New(opts ...Option) (Config, error) {
 		}
 	}
 
-	if err := c.FromFile(c.file, c.section); err == nil {
-		return c, nil
+	if err := c.FromFile(c.file, c.section); err != nil {
+		return c, fmt.Errorf("Unable to load config from environment or .edgerc file: %w", err)
 	}
 
-	return c, fmt.Errorf("Unable to load config from environment or .edgerc file")
+	return c, nil
 }
 
 // WithFile sets the config file path
@@ -83,7 +83,8 @@ func WithSection(section string) Option {
 	}
 }
 
-// WithEnv sets the option to use the environment vars to populate the config
+// WithEnv sets the option to try to the environment vars to populate the config
+// If loading from the env fails, will fallback to .edgerc
 func WithEnv(env bool) Option {
 	return func(c *Config) {
 		c.env = env

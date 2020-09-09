@@ -14,3 +14,7 @@ vendor/
 *.ipr
 *.iws
 *.iml
+
+# vscode
+.vscode/
+__debug_bin
