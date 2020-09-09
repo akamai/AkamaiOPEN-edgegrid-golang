@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/spf13/cast"
 )
 
 type (
@@ -15,17 +17,17 @@ type (
 		ContractIDs   []string `json:"contractIds"`
 	}
 
-	// GroupItems represents sub-compent of the group response
-	GroupItems struct {
+	// GroupsItems represents sub-compent of the group response
+	GroupsItems struct {
 		Items []*Group `json:"items"`
 	}
 
 	// GetGroupsResponse represents a collection of groups
 	// This is the reponse to the /papi/v1/groups request
 	GetGroupsResponse struct {
-		AccountID   string     `json:"accountId"`
-		AccountName string     `json:"accountName"`
-		Groups      GroupItems `json:"groups"`
+		AccountID   string      `json:"accountId"`
+		AccountName string      `json:"accountName"`
+		Groups      GroupsItems `json:"groups"`
 	}
 )
 
@@ -38,6 +40,8 @@ func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getgroups request: %w", err)
 	}
+
+	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(UsePrefixes))
 
 	resp, err := p.Exec(req, &groups)
 	if err != nil {

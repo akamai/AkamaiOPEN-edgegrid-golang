@@ -17,11 +17,24 @@ type (
 		// GetContract provides a read-only list of contract names and identifiers
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcontracts
 		GetContracts(context.Context) (*GetContractResponse, error)
+
+		// CreateActivation creates a new activation or deactivation request
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyactivations
+		CreateActivation(ctx context.Context, req CreateActivationRequest) (*CreateActivationResponse, error)
+
+		// GetActivation gets details about an activation
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivation
+		GetActivation(ctx context.Context, req *GetActivationRequest) (*GetActivationResponse, error)
 	}
 
 	papi struct {
 		session.Session
 	}
+)
+
+var (
+	// UsePrefixes is set to tell the PAPI api to accept and return prefixed object idenfiers
+	UsePrefixes = true
 )
 
 // API returns a new papi API instance with the specified controller

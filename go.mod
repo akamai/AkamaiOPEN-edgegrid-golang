@@ -10,6 +10,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/sirupsen/logrus v1.4.2
+	github.com/spf13/cast v1.3.1 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/xeipuuv/gojsonschema v1.2.0
 	gopkg.in/h2non/gock.v1 v1.0.15
