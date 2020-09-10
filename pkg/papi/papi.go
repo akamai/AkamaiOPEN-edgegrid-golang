@@ -20,11 +20,11 @@ type (
 
 		// CreateActivation creates a new activation or deactivation request
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyactivations
-		CreateActivation(ctx context.Context, req CreateActivationRequest) (*CreateActivationResponse, error)
+		CreateActivation(context.Context, *CreateActivationRequest) (*CreateActivationResponse, error)
 
 		// GetActivation gets details about an activation
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivation
-		GetActivation(ctx context.Context, req *GetActivationRequest) (*GetActivationResponse, error)
+		GetActivation(context.Context, *GetActivationRequest) (*GetActivationResponse, error)
 	}
 
 	papi struct {

@@ -127,7 +127,7 @@ const (
 	ActivationNetworkProduction ActivationNetwork = "PRODUCTION"
 )
 
-func (p *papi) CreateActivation(ctx context.Context, r CreateActivationRequest) (*CreateActivationResponse, error) {
+func (p *papi) CreateActivation(ctx context.Context, r *CreateActivationRequest) (*CreateActivationResponse, error) {
 	var rval CreateActivationResponse
 
 	p.Log(ctx).Debug("CreateActivation")
