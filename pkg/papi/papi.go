@@ -20,11 +20,11 @@ type (
 
 		// CreateActivation creates a new activation or deactivation request
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyactivations
-		CreateActivation(context.Context, *CreateActivationRequest) (*CreateActivationResponse, error)
+		CreateActivation(context.Context, CreateActivationRequest) (*CreateActivationResponse, error)
 
 		// GetActivation gets details about an activation
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivation
-		GetActivation(context.Context, *GetActivationRequest) (*GetActivationResponse, error)
+		GetActivation(context.Context, GetActivationRequest) (*GetActivationResponse, error)
 
 		// GetCPCodes lists all available CP codes
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcpcodes

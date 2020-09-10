@@ -50,6 +50,7 @@ type (
 
 	// CreateActivationResponse is the response for a new activation or deactivation
 	CreateActivationResponse struct {
+		ActivationID   string
 		ActivationLink string `json:"activationLink"`
 	}
 
@@ -127,7 +128,7 @@ const (
 	ActivationNetworkProduction ActivationNetwork = "PRODUCTION"
 )
 
-func (p *papi) CreateActivation(ctx context.Context, r *CreateActivationRequest) (*CreateActivationResponse, error) {
+func (p *papi) CreateActivation(ctx context.Context, r CreateActivationRequest) (*CreateActivationResponse, error) {
 	var rval CreateActivationResponse
 
 	p.Log(ctx).Debug("CreateActivation")
@@ -144,7 +145,7 @@ func (p *papi) CreateActivation(ctx context.Context, r *CreateActivationRequest)
 		return nil, fmt.Errorf("failed to create createactivation request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(UsePrefixes))
+	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
 	resp, err := p.Exec(req, &rval, r.Activation)
 	if err != nil {
@@ -158,7 +159,7 @@ func (p *papi) CreateActivation(ctx context.Context, r *CreateActivationRequest)
 	return &rval, nil
 }
 
-func (p *papi) GetActivation(ctx context.Context, r *GetActivationRequest) (*GetActivationResponse, error) {
+func (p *papi) GetActivation(ctx context.Context, r GetActivationRequest) (*GetActivationResponse, error) {
 	var rval GetActivationResponse
 
 	p.Log(ctx).Debug("GetActivation")
@@ -170,7 +171,7 @@ func (p *papi) GetActivation(ctx context.Context, r *GetActivationRequest) (*Get
 		return nil, fmt.Errorf("failed to create getactivation request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(UsePrefixes))
+	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {

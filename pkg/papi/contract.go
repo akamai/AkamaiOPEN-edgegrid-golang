@@ -36,7 +36,7 @@ func (p *papi) GetContracts(ctx context.Context) (*GetContractResponse, error) {
 		return nil, fmt.Errorf("failed to create getcontracts request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(UsePrefixes))
+	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
 	resp, err := p.Exec(req, &contracts)
 	if err != nil {

@@ -41,7 +41,7 @@ func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 		return nil, fmt.Errorf("failed to create getgroups request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(UsePrefixes))
+	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
 	resp, err := p.Exec(req, &groups)
 	if err != nil {
