@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	"github.com/spf13/cast"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/spf13/cast"
 )
 
 type (
@@ -34,14 +35,15 @@ type (
 		CPCodes    CPCodeItems `json:"cpcodes"`
 	}
 
-	// CreateCPCode contains data required to create CP code (both request body and group/contract infromation
-	CreateCPCode struct {
-		CPCodeParams
-		CreateCPCodeRequest
+	// CreateCPCodeRequest contains data required to create CP code (both request body and group/contract infromation
+	CreateCPCodeRequest struct {
+		ContractID string
+		GroupID    string
+		CPCode     CreateCPCode
 	}
 
-	// CreateCPCodeRequest contains the request body for CP code creation
-	CreateCPCodeRequest struct {
+	// CreateCPCode contains the request body for CP code creation
+	CreateCPCode struct {
 		ProductID  string `json:"productId"`
 		CPCodeName string `json:"cpcodeName"`
 	}
@@ -52,12 +54,19 @@ type (
 		CPCodeID   string `json:"-"`
 	}
 
-	// CPCodeParams contains parameters require to list/create CP codes
-	// GroupID and ContractID are required as part of every CP code operation, ID is required only for operating on specific CP code
-	CPCodeParams struct {
-		ID         string
+	// GetCPCodeRequest gets details about a CP code.
+	GetCPCodeRequest struct {
+		CPCodeID   string
 		ContractID string
 		GroupID    string
+	}
+
+	// GetCPCodesRequest contains parameters require to list/create CP codes
+	// GroupID and ContractID are required as part of every CP code operation, ID is required only for operating on specific CP code
+	GetCPCodesRequest struct {
+		ContractID string
+		GroupID    string
+		Options    []string
 	}
 )
 
@@ -73,7 +82,7 @@ var (
 )
 
 // GetCPCodes is used to list all available CP codes for given group and contract
-func (p *papi) GetCPCodes(ctx context.Context, params CPCodeParams) (*GetCPCodesResponse, error) {
+func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCPCodesResponse, error) {
 	if params.ContractID == "" {
 		return nil, ErrContractEmpty
 	}
@@ -84,13 +93,18 @@ func (p *papi) GetCPCodes(ctx context.Context, params CPCodeParams) (*GetCPCodes
 	logger := p.Log(ctx)
 	logger.Debug("GetCPCodes")
 
-	getURL := fmt.Sprintf("/papi/v1/cpcodes?contractId=%s&groupId=%s", params.ContractID, params.GroupID)
+	getURL := fmt.Sprintf(
+		"/papi/v1/cpcodes?contractId=%s&groupId=%s&options=%s",
+		params.ContractID,
+		params.GroupID,
+		strings.Join(params.Options, ","),
+	)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getcpcodes request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(UsePrefixes))
+	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var cpCodes GetCPCodesResponse
 	resp, err := p.Exec(req, &cpCodes)
 	if err != nil {
@@ -108,27 +122,27 @@ func (p *papi) GetCPCodes(ctx context.Context, params CPCodeParams) (*GetCPCodes
 }
 
 // GetCPCodes is used to fetch a CP code with provided ID
-func (p *papi) GetCPCode(ctx context.Context, params CPCodeParams) (*GetCPCodesResponse, error) {
+func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCodesResponse, error) {
 	if params.ContractID == "" {
 		return nil, ErrContractEmpty
 	}
 	if params.GroupID == "" {
 		return nil, ErrGroupEmpty
 	}
-	if params.ID == "" {
+	if params.CPCodeID == "" {
 		return nil, ErrIDEmpty
 	}
 
 	logger := p.Log(ctx)
 	logger.Debug("GetCPCode")
 
-	createURL := fmt.Sprintf("/papi/v1/cpcodes/%s?contractId=%s&groupId=%s", params.ID, params.ContractID, params.GroupID)
+	createURL := fmt.Sprintf("/papi/v1/cpcodes/%s?contractId=%s&groupId=%s", params.CPCodeID, params.ContractID, params.GroupID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, createURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getcpcode request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(UsePrefixes))
+	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var cpCodes GetCPCodesResponse
 	resp, err := p.Exec(req, &cpCodes)
 	if err != nil {
@@ -146,26 +160,26 @@ func (p *papi) GetCPCode(ctx context.Context, params CPCodeParams) (*GetCPCodesR
 }
 
 // CreateCPCode creates a new CP code with provided CreateCPCodeRequest data
-func (p *papi) CreateCPCode(ctx context.Context, cpCode CreateCPCode) (*CreateCPCodeResponse, error) {
-	if cpCode.ContractID == "" {
+func (p *papi) CreateCPCode(ctx context.Context, r CreateCPCodeRequest) (*CreateCPCodeResponse, error) {
+	if r.ContractID == "" {
 		return nil, ErrContractEmpty
 	}
-	if cpCode.GroupID == "" {
+	if r.GroupID == "" {
 		return nil, ErrGroupEmpty
 	}
 
 	logger := p.Log(ctx)
 	logger.Debug("CreateCPCode")
 
-	createURL := fmt.Sprintf("/papi/v1/cpcodes?contractId=%s&groupId=%s", cpCode.ContractID, cpCode.GroupID)
+	createURL := fmt.Sprintf("/papi/v1/cpcodes?contractId=%s&groupId=%s", r.ContractID, r.GroupID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, createURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create createcpcode request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(UsePrefixes))
+	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var createResponse CreateCPCodeResponse
-	resp, err := p.Exec(req, &createResponse, cpCode.CreateCPCodeRequest)
+	resp, err := p.Exec(req, &createResponse, r.CPCode)
 	if err != nil {
 		return nil, fmt.Errorf("getcpcode request failed: %w", err)
 	}

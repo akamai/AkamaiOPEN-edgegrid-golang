@@ -5,19 +5,20 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPapi_GetCPCodes(t *testing.T) {
 	tests := map[string]struct {
-		params           CPCodeParams
+		params           GetCPCodesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -25,7 +26,7 @@ func TestPapi_GetCPCodes(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			params: CPCodeParams{
+			params: GetCPCodesRequest{
 				ContractID: "contract",
 				GroupID:    "group",
 			},
@@ -64,7 +65,7 @@ func TestPapi_GetCPCodes(t *testing.T) {
 			},
 		},
 		"404 Not found": {
-			params: CPCodeParams{
+			params: GetCPCodesRequest{
 				ContractID: "contract",
 				GroupID:    "group",
 			},
@@ -80,7 +81,7 @@ func TestPapi_GetCPCodes(t *testing.T) {
 			withError:    session.ErrNotFound,
 		},
 		"500 internal server error": {
-			params: CPCodeParams{
+			params: GetCPCodesRequest{
 				ContractID: "contract",
 				GroupID:    "group",
 			},
@@ -101,14 +102,14 @@ func TestPapi_GetCPCodes(t *testing.T) {
 			},
 		},
 		"empty group ID": {
-			params: CPCodeParams{
+			params: GetCPCodesRequest{
 				ContractID: "contract",
 				GroupID:    "",
 			},
 			withError: ErrGroupEmpty,
 		},
 		"empty contract ID": {
-			params: CPCodeParams{
+			params: GetCPCodesRequest{
 				ContractID: "",
 				GroupID:    "group",
 			},
@@ -139,7 +140,7 @@ func TestPapi_GetCPCodes(t *testing.T) {
 
 func TestPapi_GetCPCode(t *testing.T) {
 	tests := map[string]struct {
-		params           CPCodeParams
+		params           GetCPCodeRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -147,10 +148,10 @@ func TestPapi_GetCPCode(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			params: CPCodeParams{
+			params: GetCPCodeRequest{
 				ContractID: "contract",
 				GroupID:    "group",
-				ID:         "cpcodeID",
+				CPCodeID:   "cpcodeID",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -187,10 +188,10 @@ func TestPapi_GetCPCode(t *testing.T) {
 			},
 		},
 		"404 Not found": {
-			params: CPCodeParams{
+			params: GetCPCodeRequest{
 				ContractID: "contract",
 				GroupID:    "group",
-				ID:         "not_found",
+				CPCodeID:   "not_found",
 			},
 			responseStatus: http.StatusNotFound,
 			responseBody: `
@@ -204,10 +205,10 @@ func TestPapi_GetCPCode(t *testing.T) {
 			withError:    session.ErrNotFound,
 		},
 		"500 internal server error": {
-			params: CPCodeParams{
+			params: GetCPCodeRequest{
 				ContractID: "contract",
 				GroupID:    "group",
-				ID:         "cpcodeID",
+				CPCodeID:   "cpcodeID",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -226,7 +227,7 @@ func TestPapi_GetCPCode(t *testing.T) {
 			},
 		},
 		"empty cpcode ID": {
-			params: CPCodeParams{
+			params: GetCPCodeRequest{
 				ContractID: "contract",
 				GroupID:    "group",
 				ID:         "",
@@ -234,18 +235,18 @@ func TestPapi_GetCPCode(t *testing.T) {
 			withError: ErrIDEmpty,
 		},
 		"empty group ID": {
-			params: CPCodeParams{
+			params: GetCPCodeRequest{
 				ContractID: "contract",
 				GroupID:    "",
-				ID:         "cpcodeID",
+				CPCodeID:   "cpcodeID",
 			},
 			withError: ErrGroupEmpty,
 		},
 		"empty contract ID": {
-			params: CPCodeParams{
+			params: GetCPCodeRequest{
 				ContractID: "",
 				GroupID:    "group",
-				ID:         "cpcodeID",
+				CPCodeID:   "cpcodeID",
 			},
 			withError: ErrContractEmpty,
 		},
@@ -274,8 +275,7 @@ func TestPapi_GetCPCode(t *testing.T) {
 
 func TestPapi_CreateCPCode(t *testing.T) {
 	tests := map[string]struct {
-		params         CPCodeParams
-		request        CreateCPCodeRequest
+		params         CreateCPCodeRequest
 		responseStatus int
 		responseBody   string
 		expectedPath   string
@@ -283,13 +283,13 @@ func TestPapi_CreateCPCode(t *testing.T) {
 		withError      error
 	}{
 		"201 Created": {
-			params: CPCodeParams{
+			params: CreateCPCodeRequest{
 				ContractID: "contract",
 				GroupID:    "group",
-			},
-			request: CreateCPCodeRequest{
-				ProductID:  "productID",
-				CPCodeName: "cpcodeName",
+				CPCode: CreateCPCode{
+					ProductID:  "productID",
+					CPCodeName: "cpcodeName",
+				},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody: `
@@ -303,13 +303,13 @@ func TestPapi_CreateCPCode(t *testing.T) {
 			},
 		},
 		"500 Internal Server Error": {
-			params: CPCodeParams{
+			params: CreateCPCodeRequest{
 				ContractID: "contract",
 				GroupID:    "group",
-			},
-			request: CreateCPCodeRequest{
-				ProductID:  "productID",
-				CPCodeName: "cpcodeName",
+				CPCode: CreateCPCode{
+					ProductID:  "productID",
+					CPCodeName: "cpcodeName",
+				},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -328,27 +328,27 @@ func TestPapi_CreateCPCode(t *testing.T) {
 			},
 		},
 		"empty group ID": {
-			params: CPCodeParams{
+			params: CreateCPCodeRequest{
 				ContractID: "contract",
 				GroupID:    "",
 			},
 			withError: ErrGroupEmpty,
 		},
 		"empty contract ID": {
-			params: CPCodeParams{
+			params: CreateCPCodeRequest{
 				ContractID: "",
 				GroupID:    "group",
 			},
 			withError: ErrContractEmpty,
 		},
 		"invalid response location": {
-			params: CPCodeParams{
+			params: CreateCPCodeRequest{
 				ContractID: "contract",
 				GroupID:    "group",
-			},
-			request: CreateCPCodeRequest{
-				ProductID:  "productID",
-				CPCodeName: "cpcodeName",
+				CPCode: CreateCPCode{
+					ProductID:  "productID",
+					CPCodeName: "cpcodeName",
+				},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody: `
@@ -370,7 +370,7 @@ func TestPapi_CreateCPCode(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateCPCode(context.Background(), CreateCPCode{test.params, test.request})
+			result, err := client.CreateCPCode(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
