@@ -25,6 +25,9 @@ type (
 		// GetActivation gets details about an activation
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivation
 		GetActivation(context.Context, *GetActivationRequest) (*GetActivationResponse, error)
+
+		GetCPCodes(context.Context, string, string) (*GetCPCodesResponse, error)
+		GetCPCode(context.Context, string, string, string) (*GetCPCodesResponse, error)
 	}
 
 	papi struct {
