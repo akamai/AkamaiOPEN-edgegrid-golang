@@ -67,6 +67,7 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 
 	if out != nil {
 		data, err := ioutil.ReadAll(resp.Body)
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 		if err != nil {
 			return nil, err
 		}

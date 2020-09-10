@@ -159,17 +159,16 @@ func (c *Config) FromEnv(section string) error {
 		val, ok := os.LookupEnv(optKey)
 		if !ok {
 			return fmt.Errorf("required option %q is missing from env", optKey)
-		} else {
-			switch {
-			case opt == "HOST":
-				c.Host = val
-			case opt == "CLIENT_TOKEN":
-				c.ClientToken = val
-			case opt == "CLIENT_SECRET":
-				c.ClientSecret = val
-			case opt == "ACCESS_TOKEN":
-				c.AccessToken = val
-			}
+		}
+		switch {
+		case opt == "HOST":
+			c.Host = val
+		case opt == "CLIENT_TOKEN":
+			c.ClientToken = val
+		case opt == "CLIENT_SECRET":
+			c.ClientSecret = val
+		case opt == "ACCESS_TOKEN":
+			c.AccessToken = val
 		}
 	}
 

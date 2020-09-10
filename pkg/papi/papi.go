@@ -25,6 +25,18 @@ type (
 		// GetActivation gets details about an activation
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivation
 		GetActivation(context.Context, *GetActivationRequest) (*GetActivationResponse, error)
+
+		// GetCPCodes lists all available CP codes
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcpcodes
+		GetCPCodes(context.Context, CPCodeParams) (*GetCPCodesResponse, error)
+
+		// GetCPCode gets CP code with provided ID
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcpcode
+		GetCPCode(context.Context, CPCodeParams) (*GetCPCodesResponse, error)
+
+		// CreateCPCode creates a new CP code
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postcpcodes
+		CreateCPCode(context.Context, CreateCPCode) (*CreateCPCodeResponse, error)
 	}
 
 	papi struct {
