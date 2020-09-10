@@ -17,17 +17,17 @@ type (
 		ContractIDs   []string `json:"contractIds"`
 	}
 
-	// GroupsItems represents sub-compent of the group response
-	GroupsItems struct {
+	// GroupItems represents sub-compent of the group response
+	GroupItems struct {
 		Items []*Group `json:"items"`
 	}
 
 	// GetGroupsResponse represents a collection of groups
 	// This is the reponse to the /papi/v1/groups request
 	GetGroupsResponse struct {
-		AccountID   string      `json:"accountId"`
-		AccountName string      `json:"accountName"`
-		Groups      GroupsItems `json:"groups"`
+		AccountID   string     `json:"accountId"`
+		AccountName string     `json:"accountName"`
+		Groups      GroupItems `json:"groups"`
 	}
 )
 

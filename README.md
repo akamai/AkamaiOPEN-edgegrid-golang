@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	sess := session.Must(session.New())
+  sess := session.Must(session.New())
 
   groupResp, err := papi.API(sess).GetGroups(context.Background())
   if err != nil {

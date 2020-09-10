@@ -37,8 +37,8 @@ var (
 	UsePrefixes = true
 )
 
-// API returns a new papi API instance with the specified controller
-func API(sess session.Session) PAPI {
+// New returns a new papi New instance with the specified controller
+func New(sess session.Session) PAPI {
 	return &papi{
 		sess,
 	}
