@@ -29,17 +29,30 @@ type (
 
 	papi struct {
 		session.Session
+		usePrefixes bool
 	}
-)
 
-var (
-	// UsePrefixes is set to tell the PAPI api to accept and return prefixed object idenfiers
-	UsePrefixes = true
+	// Option defines a PAPI option
+	Option func(*papi)
 )
 
 // New returns a new papi New instance with the specified controller
-func New(sess session.Session) PAPI {
-	return &papi{
-		sess,
+func New(sess session.Session, opts ...Option) PAPI {
+	p := &papi{
+		Session:     sess,
+		usePrefixes: true,
+	}
+
+	for _, opt := range opts {
+		opt(p)
+	}
+	return p
+}
+
+// WithUsePrefixes sets the `PAPI-Use-Prefixes` header on requests
+// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#prefixes
+func WithUsePrefixes(usePrefixes bool) Option {
+	return func(p *papi) {
+		p.usePrefixes = usePrefixes
 	}
 }
