@@ -230,7 +230,7 @@ func TestPapi_GetCPCode(t *testing.T) {
 			params: GetCPCodeRequest{
 				ContractID: "contract",
 				GroupID:    "group",
-				ID:         "",
+				CPCodeID:   "",
 			},
 			withError: ErrIDEmpty,
 		},
