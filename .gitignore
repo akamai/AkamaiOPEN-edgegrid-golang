@@ -3,6 +3,7 @@ vendor/
 
 # testing and custom build code
 *.log
+coverage.out
 
 # eclipse
 .classpath
