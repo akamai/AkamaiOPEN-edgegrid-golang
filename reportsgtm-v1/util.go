@@ -84,9 +84,9 @@ func getWindowCore(hostURL string) (*WindowResponse, error) {
 
 	if client.IsError(res) {
 		if res.StatusCode == 400 {
-                	// Get the body. Could be bad dates.
-                	var windRespErrBody map[string]interface{}
-                	err = client.BodyJSON(res, windRespErrBody)
+			// Get the body. Could be bad dates.
+			var windRespErrBody map[string]interface{}
+			err = client.BodyJSON(res, windRespErrBody)
 			if err != nil {
 				return nil, err
 			}
@@ -94,16 +94,16 @@ func getWindowCore(hostURL string) (*WindowResponse, error) {
 			if availEnd, ok := windRespErrBody["availableEndDate"]; ok {
 				stat.End = availEnd.(string)
 			}
-                	if availStart, ok := windRespErrBody["availableStartDate"]; ok {
+			if availStart, ok := windRespErrBody["availableStartDate"]; ok {
 				stat.Start = availStart.(string)
 			}
 			if stat.End == "" || stat.Start == "" {
-                		cErr := configgtm.CommonError{}
-                		cErr.SetItem("entityName", "Window")
-                		cErr.SetItem("name", "Data Window")
+				cErr := configgtm.CommonError{}
+				cErr.SetItem("entityName", "Window")
+				cErr.SetItem("name", "Data Window")
 				cErr.SetItem("apiErrorMessage", "No available data window")
-                		return nil, cErr	
-			}	
+				return nil, cErr
+			}
 		} else if res.StatusCode == 404 {
 			cErr := configgtm.CommonError{}
 			cErr.SetItem("entityName", "Window")

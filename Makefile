@@ -20,9 +20,9 @@ lint:
 	golint -set_exit_status ./...
 
 .PHONY: vet
-lint:
+vet:
 	go vet ./...
 
 .PHONY: fmt
-lint:
+fmt:
 	go fmt ./...

@@ -13,13 +13,13 @@ type (
 	Property struct {
 		AccountID         string             `json:"accountId"`
 		AssetID           string             `json:"assetId"`
-		CloneFrom         *PropertyCloneFrom `json:"cloneFrom,omitempty`
+		CloneFrom         *PropertyCloneFrom `json:"cloneFrom,omitempty"`
 		ContactID         string             `json:"contractId"`
 		GroupID           string             `json:"groupId"`
 		LatestVersion     int                `json:"latestVersion"`
 		Note              string             `json:"note"`
 		ProductID         string             `json:"productId"`
-		ProductionVersion *int               `json:"productionVersion,omitempty`
+		ProductionVersion *int               `json:"productionVersion,omitempty"`
 		PropertyID        string             `json:"propertyId"`
 		PropertyName      string             `json:"propertyName"`
 		RuleFormat        string             `json:"ruleFormat"`
