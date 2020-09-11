@@ -2,14 +2,12 @@ package papi
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
-	"net/http"
-	"strings"
-
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/spf13/cast"
+	"net/http"
 )
 
 type (
@@ -69,24 +67,44 @@ type (
 	}
 )
 
-var (
-	// ErrGroupEmpty is returned when a required 'groupId' param is missing from the request
-	ErrGroupEmpty = errors.New("provided group ID cannot be empty")
-	// ErrContractEmpty is returned when a required 'contractId' param is missing from the request
-	ErrContractEmpty = errors.New("provided contract ID cannot be empty")
-	// ErrIDEmpty is returned when a required resource ID param is missing from the request
-	ErrIDEmpty = errors.New("provided CP code ID cannot be empty")
-	// ErrInvalidLocation is returned when there was an error while fetching ID from location response object
-	ErrInvalidLocation = errors.New("response location URL is invalid")
-)
+// Validate validates GetCPCodesRequest
+func (cp GetCPCodesRequest) Validate() error {
+	return validation.Errors{
+		"ContractID": validation.Validate(cp.ContractID, validation.Required),
+		"GroupID":    validation.Validate(cp.GroupID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates GetCPCodeRequest
+func (cp GetCPCodeRequest) Validate() error {
+	return validation.Errors{
+		"ContractID": validation.Validate(cp.ContractID, validation.Required),
+		"GroupID":    validation.Validate(cp.GroupID, validation.Required),
+		"CPCodeID":   validation.Validate(cp.CPCodeID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates CreateCPCodeRequest
+func (cp CreateCPCodeRequest) Validate() error {
+	return validation.Errors{
+		"ContractID": validation.Validate(cp.ContractID, validation.Required),
+		"GroupID":    validation.Validate(cp.GroupID, validation.Required),
+		"CPCode":     validation.Validate(cp.CPCode, validation.Required),
+	}.Filter()
+}
+
+// Validate validates CreateCPCode
+func (cp CreateCPCode) Validate() error {
+	return validation.Errors{
+		"ProductID":  validation.Validate(cp.ProductID, validation.Required),
+		"CPCodeName": validation.Validate(cp.CPCodeName, validation.Required),
+	}.Filter()
+}
 
 // GetCPCodes is used to list all available CP codes for given group and contract
 func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCPCodesResponse, error) {
-	if params.ContractID == "" {
-		return nil, ErrContractEmpty
-	}
-	if params.GroupID == "" {
-		return nil, ErrGroupEmpty
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
@@ -97,9 +115,6 @@ func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCP
 		params.ContractID,
 		params.GroupID,
 	)
-	if len(params.Options) > 0 {
-		getURL = fmt.Sprintf("%s&options=%s", getURL, strings.Join(params.Options, ","))
-	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getcpcodes request: %w", err)
@@ -124,14 +139,8 @@ func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCP
 
 // GetCPCodes is used to fetch a CP code with provided ID
 func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCodesResponse, error) {
-	if params.ContractID == "" {
-		return nil, ErrContractEmpty
-	}
-	if params.GroupID == "" {
-		return nil, ErrGroupEmpty
-	}
-	if params.CPCodeID == "" {
-		return nil, ErrIDEmpty
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
@@ -162,11 +171,8 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 
 // CreateCPCode creates a new CP code with provided CreateCPCodeRequest data
 func (p *papi) CreateCPCode(ctx context.Context, r CreateCPCodeRequest) (*CreateCPCodeResponse, error) {
-	if r.ContractID == "" {
-		return nil, ErrContractEmpty
-	}
-	if r.GroupID == "" {
-		return nil, ErrGroupEmpty
+	if err := r.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %v", ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -189,7 +195,7 @@ func (p *papi) CreateCPCode(ctx context.Context, r CreateCPCodeRequest) (*Create
 	}
 	id, err := tools.FetchIDFromLocation(createResponse.CPCodeLink)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidLocation, err.Error())
+		return nil, fmt.Errorf("%w: %s", tools.ErrInvalidLocation, err.Error())
 	}
 	createResponse.CPCodeID = id
 	return &createResponse, nil

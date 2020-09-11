@@ -12,12 +12,14 @@ import (
 )
 
 type (
+	// GetEdgeHostnamesRequest contains query params used for listing edge hostnames
 	GetEdgeHostnamesRequest struct {
 		ContractID string
 		GroupID    string
 		Options    []string
 	}
 
+	// GetEdgeHostnameRequest contains path and query params used to fetch specific edge hostname
 	GetEdgeHostnameRequest struct {
 		EdgeHostnameID string
 		ContractID     string
@@ -25,6 +27,7 @@ type (
 		Options        []string
 	}
 
+	// GetEdgeHostnamesResponse contains data received by calling GetEdgeHostnames or GetEdgeHostname
 	GetEdgeHostnamesResponse struct {
 		AccountID     string            `json:"accountId"`
 		ContractID    string            `json:"contractId"`
@@ -32,10 +35,12 @@ type (
 		EdgeHostnames EdgeHostnameItems `json:"edgeHostnames"`
 	}
 
+	// EdgeHostnameItems contains a list of EdgeHostnames
 	EdgeHostnameItems struct {
 		Items []EdgeHostnameGetItem `json:"items"`
 	}
 
+	// EdgeHostnameGetItem contains GET details for edge hostname
 	EdgeHostnameGetItem struct {
 		ID                string    `json:"edgeHostnameId"`
 		Domain            string    `json:"edgeHostnameDomain"`
@@ -48,12 +53,14 @@ type (
 		UseCases          []UseCase `json:"useCases,omitempty"`
 	}
 
+	// UseCase contains UseCase data
 	UseCase struct {
 		Option  string `json:"option"`
 		Type    string `json:"type"`
 		UseCase string `json:"useCase"`
 	}
 
+	// CreateEdgeHostnameRequest contains query params and body required for creation of new edge hostname
 	CreateEdgeHostnameRequest struct {
 		ContractID   string
 		GroupID      string
@@ -61,6 +68,7 @@ type (
 		EdgeHostname EdgeHostnameCreate
 	}
 
+	// EdgeHostnameCreate contains body of edge hostname POST request
 	EdgeHostnameCreate struct {
 		ProductID         string    `json:"productId"`
 		DomainPrefix      string    `json:"domainPrefix"`
@@ -73,6 +81,7 @@ type (
 		UseCases          []UseCase `json:"useCases,omitempty"`
 	}
 
+	// CreateEdgeHostnameResponse contains a link returned after creating new edge hostname and DI of this hostname
 	CreateEdgeHostnameResponse struct {
 		EdgeHostnameLink string `json:"edgeHostnameLink"`
 		EdgeHostnameID   string `json:"-"`
@@ -80,56 +89,75 @@ type (
 )
 
 const (
+	// EHSecureNetworkStandardTLS constant
 	EHSecureNetworkStandardTLS = "STANDARD_TLS"
-	EHSecureNetworkSharedCert  = "SHARED_CERT"
+	// EHSecureNetworkSharedCert constant
+	EHSecureNetworkSharedCert = "SHARED_CERT"
+	// EHSecureNetworkEnhancedTLS constant
 	EHSecureNetworkEnhancedTLS = "ENHANCED_TLS"
-	EHIPVersionV4              = "IPV4"
-	EHIPVersionV6Compliance    = "IPV4"
 
+	// EHIPVersionV4 constant
+	EHIPVersionV4 = "IPV4"
+	// EHIPVersionV6Compliance constant
+	EHIPVersionV6Compliance = "IPV4"
+
+	// UseCaseGlobal constant
 	UseCaseGlobal = "GLOBAL"
 )
 
+// Validate validates CreateEdgeHostnameRequest
 func (eh CreateEdgeHostnameRequest) Validate() error {
-	return validation.ValidateStruct(&eh,
-		validation.Field(&eh.ContractID, validation.Required),
-		validation.Field(&eh.GroupID, validation.Required),
-		validation.Field(&eh.EdgeHostname.DomainPrefix, validation.Required),
-		validation.Field(&eh.EdgeHostname.DomainSuffix, validation.Required,
-			validation.When(eh.EdgeHostname.SecureNetwork == EHSecureNetworkStandardTLS, validation.In("edgesuite.net")),
-			validation.When(eh.EdgeHostname.SecureNetwork == EHSecureNetworkSharedCert, validation.In("akamaized.net")),
-			validation.When(eh.EdgeHostname.SecureNetwork == EHSecureNetworkEnhancedTLS, validation.In("edgekey.net")),
+	return validation.Errors{
+		"ContractID":   validation.Validate(eh.ContractID, validation.Required),
+		"GroupID":      validation.Validate(eh.GroupID, validation.Required),
+		"EdgeHostname": validation.Validate(eh.EdgeHostname),
+	}.Filter()
+}
+
+// Validate validates EdgeHostnameCreate
+func (eh EdgeHostnameCreate) Validate() error {
+	return validation.Errors{
+		"DomainPrefix": validation.Validate(eh.DomainPrefix, validation.Required),
+		"DomainSuffix": validation.Validate(eh.DomainSuffix, validation.Required,
+			validation.When(eh.SecureNetwork == EHSecureNetworkStandardTLS, validation.In("edgesuite.net")),
+			validation.When(eh.SecureNetwork == EHSecureNetworkSharedCert, validation.In("akamaized.net")),
+			validation.When(eh.SecureNetwork == EHSecureNetworkEnhancedTLS, validation.In("edgekey.net")),
 		),
-		validation.Field(&eh.EdgeHostname.ProductID, validation.Required),
-		validation.Field(&eh.EdgeHostname.CertEnrollmentID, validation.Required.When(eh.EdgeHostname.SecureNetwork == EHSecureNetworkEnhancedTLS)),
-		validation.Field(&eh.EdgeHostname.IPVersionBehavior, validation.Required, validation.In(EHIPVersionV4, EHIPVersionV6Compliance)),
-		validation.Field(&eh.EdgeHostname.SecureNetwork, validation.In(EHSecureNetworkStandardTLS, EHSecureNetworkSharedCert, EHSecureNetworkEnhancedTLS)),
-		validation.Field(&eh.EdgeHostname.UseCases),
-	)
+		"ProductID":         validation.Validate(eh.ProductID, validation.Required),
+		"CertEnrollmentID":  validation.Validate(eh.CertEnrollmentID, validation.Required.When(eh.SecureNetwork == EHSecureNetworkEnhancedTLS)),
+		"IPVersionBehavior": validation.Validate(eh.IPVersionBehavior, validation.Required, validation.In(EHIPVersionV4, EHIPVersionV6Compliance)),
+		"SecureNetwork":     validation.Validate(eh.SecureNetwork, validation.In(EHSecureNetworkStandardTLS, EHSecureNetworkSharedCert, EHSecureNetworkEnhancedTLS)),
+		"UseCases":          validation.Validate(eh.UseCases),
+	}.Filter()
 }
 
+// Validate validates UseCase
 func (uc UseCase) Validate() error {
-	return validation.ValidateStruct(&uc,
-		validation.Field(&uc.Option, validation.Required),
-		validation.Field(&uc.Type, validation.Required, validation.In(UseCaseGlobal)),
-		validation.Field(&uc.UseCase, validation.Required),
-	)
+	return validation.Errors{
+		"Option":  validation.Validate(uc.Option, validation.Required),
+		"Type":    validation.Validate(uc.Type, validation.Required, validation.In(UseCaseGlobal)),
+		"UseCase": validation.Validate(uc.UseCase, validation.Required),
+	}.Filter()
 }
 
+// Validate validates GetEdgeHostnamesRequest
 func (eh GetEdgeHostnamesRequest) Validate() error {
-	return validation.ValidateStruct(&eh,
-		validation.Field(&eh.ContractID, validation.Required),
-		validation.Field(&eh.GroupID, validation.Required),
-	)
+	return validation.Errors{
+		"ContractID": validation.Validate(eh.ContractID, validation.Required),
+		"GroupID":    validation.Validate(eh.GroupID, validation.Required),
+	}.Filter()
 }
 
+// Validate validates GetEdgeHostnameRequest
 func (eh GetEdgeHostnameRequest) Validate() error {
-	return validation.ValidateStruct(&eh,
-		validation.Field(&eh.EdgeHostnameID, validation.Required),
-		validation.Field(&eh.ContractID, validation.Required),
-		validation.Field(&eh.GroupID, validation.Required),
-	)
+	return validation.Errors{
+		"EdgeHostnameID": validation.Validate(eh.EdgeHostnameID, validation.Required),
+		"ContractID":     validation.Validate(eh.ContractID, validation.Required),
+		"GroupID":        validation.Validate(eh.GroupID, validation.Required),
+	}.Filter()
 }
 
+// GetEdgeHostnames id used to list edge hostnames for provided group and contract IDs
 func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequest) (*GetEdgeHostnamesResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -168,6 +196,7 @@ func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequ
 	return &edgeHostnames, nil
 }
 
+// GetEdgeHostname id used to fetch edge hostname with given ID for provided group and contract IDs
 func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameRequest) (*GetEdgeHostnamesResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -207,6 +236,7 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 	return &edgeHostname, nil
 }
 
+// CreateEdgeHostname id used to create new edge hostname for provided group and contract IDs
 func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameRequest) (*CreateEdgeHostnameResponse, error) {
 	if err := r.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -239,7 +269,7 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameReque
 	}
 	id, err := tools.FetchIDFromLocation(createResponse.EdgeHostnameLink)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidLocation, err.Error())
+		return nil, fmt.Errorf("%w: %s", tools.ErrInvalidLocation, err.Error())
 	}
 	createResponse.EdgeHostnameID = id
 	return &createResponse, nil
