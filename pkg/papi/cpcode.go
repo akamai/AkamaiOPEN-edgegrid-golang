@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
@@ -137,8 +137,8 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 	logger := p.Log(ctx)
 	logger.Debug("GetCPCode")
 
-	createURL := fmt.Sprintf("/papi/v1/cpcodes/%s?contractId=%s&groupId=%s", params.CPCodeID, params.ContractID, params.GroupID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, createURL, nil)
+	getURL := fmt.Sprintf("/papi/v1/cpcodes/%s?contractId=%s&groupId=%s", params.CPCodeID, params.ContractID, params.GroupID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getcpcode request: %w", err)
 	}
@@ -151,7 +151,7 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 	}
 
 	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, createURL)
+		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
@@ -187,19 +187,10 @@ func (p *papi) CreateCPCode(ctx context.Context, r CreateCPCodeRequest) (*Create
 	if resp.StatusCode != http.StatusCreated {
 		return nil, session.NewAPIError(resp, logger)
 	}
-	id, err := fetchIDFromLocation(createResponse.CPCodeLink)
+	id, err := tools.FetchIDFromLocation(createResponse.CPCodeLink)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrInvalidLocation, err.Error())
 	}
 	createResponse.CPCodeID = id
 	return &createResponse, nil
-}
-
-func fetchIDFromLocation(loc string) (string, error) {
-	locURL, err := url.Parse(loc)
-	if err != nil {
-		return "", err
-	}
-	pathSplit := strings.Split(locURL.Path, "/")
-	return pathSplit[len(pathSplit)-1], nil
 }

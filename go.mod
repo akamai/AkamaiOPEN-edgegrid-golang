@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/akamai/AkamaiOPEN-edgegrid-golang v0.9.18
 	github.com/apex/log v1.9.0
+	github.com/go-ozzo/ozzo-validation/v4 v4.2.2 // indirect
 	github.com/google/go-querystring v1.0.0
 	github.com/google/uuid v1.1.1
 	github.com/mitchellh/go-homedir v1.1.0

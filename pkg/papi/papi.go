@@ -3,8 +3,13 @@ package papi
 
 import (
 	"context"
+	"errors"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+)
+
+var (
+	ErrStructValidation = errors.New("struct validation")
 )
 
 type (
