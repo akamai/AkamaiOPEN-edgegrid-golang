@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/spf13/cast"
 )
 
@@ -12,12 +13,12 @@ type (
 	// ActivationFallbackInfo encapsulates information about fast fallback, which may allow you to fallback to a previous activation when
 	// POSTing an activation with useFastFallback enabled.
 	ActivationFallbackInfo struct {
-		FastFallbackAttempted      bool   `json:"fastFallbackAttempted"`
-		FallbackVersion            int    `json:"fallbackVersion"`
-		CanFastFallback            bool   `json:"canFastFallback"`
-		SteadyStateTime            int    `json:"steadyStateTime"`
-		FastFallbackExpirationTime int    `json:"fastFallbackExpirationTime"`
-		FastFallbackRecoveryState  string `json:"fastFallbackRecoveryState,omitempty"`
+		FastFallbackAttempted      bool    `json:"fastFallbackAttempted"`
+		FallbackVersion            int     `json:"fallbackVersion"`
+		CanFastFallback            bool    `json:"canFastFallback"`
+		SteadyStateTime            int     `json:"steadyStateTime"`
+		FastFallbackExpirationTime int     `json:"fastFallbackExpirationTime"`
+		FastFallbackRecoveryState  *string `json:"fastFallbackRecoveryState,omitempty"`
 	}
 
 	// Activation represents a property activation resource
@@ -28,6 +29,7 @@ type (
 		AcknowledgeWarnings    []string                `json:"acknowledgeWarnings,omitempty"`
 		AcknowledgeAllWarnings bool                    `json:"acknowledgeAllWarnings"`
 		FastPush               bool                    `json:"fastPush,omitempty"`
+		FMAActivationState     string                  `json:"fmaActivationState,omitempty"`
 		IgnoreHTTPErrors       bool                    `json:"ignoreHttpErrors,omitempty"`
 		PropertyName           string                  `json:"propertyName,omitempty"`
 		PropertyID             string                  `json:"propertyId,omitempty"`
@@ -62,15 +64,18 @@ type (
 		ActivationID string
 	}
 
+	// ActivationsItems are the activation items array from a response
+	ActivationsItems struct {
+		Items []*Activation `json:"items"`
+	}
+
 	// GetActivationResponse is the get activation response
 	GetActivationResponse struct {
 		AccountID  string `json:"accountId"`
 		ContractID string `json:"contractId"`
 		GroupID    string `json:"groupId"`
 
-		Activations struct {
-			Items []*Activation `json:"items"`
-		} `json:"contracts"`
+		Activations ActivationsItems `json:"activations"`
 
 		// RetryAfter is the value of the Retry-After header.
 		//  For activations whose status is PENDING, a Retry-After header provides an estimate for when it’s likely to change.
@@ -162,7 +167,8 @@ func (p *papi) CreateActivation(ctx context.Context, r CreateActivationRequest) 
 func (p *papi) GetActivation(ctx context.Context, r GetActivationRequest) (*GetActivationResponse, error) {
 	var rval GetActivationResponse
 
-	p.Log(ctx).Debug("GetActivation")
+	logger := p.Log(ctx)
+	logger.Debug("GetActivation")
 
 	uri := fmt.Sprintf("/papi/v1/properties/%s/activations/%s?contractId=%s&groupId=%s", r.PropertyID, r.ActivationID, r.ContractID, r.GroupID)
 
@@ -179,7 +185,7 @@ func (p *papi) GetActivation(ctx context.Context, r GetActivationRequest) (*GetA
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("getactivation request failed with status code: %d", resp.StatusCode)
+		return nil, session.NewAPIError(resp, logger)
 	}
 
 	// Get the Retry-After header to return the caller

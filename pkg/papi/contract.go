@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/spf13/cast"
 )
 
@@ -15,21 +16,24 @@ type (
 		ContractTypeName string `json:"contractTypeName"`
 	}
 
-	// GetContractResponse represents a collection of property manager contracts
-	// This is the reponse to the /papi/v1/contracts request
-	GetContractResponse struct {
-		AccountID string `json:"accountId"`
+	// ContractsItems is the response items array
+	ContractsItems struct {
+		Items []*Contract `json:"items"`
+	}
 
-		Contracts struct {
-			Items []*Contract `json:"items"`
-		} `json:"contracts"`
+	// GetContractsResponse represents a collection of property manager contracts
+	// This is the reponse to the /papi/v1/contracts request
+	GetContractsResponse struct {
+		AccountID string         `json:"accountId"`
+		Contracts ContractsItems `json:"contracts"`
 	}
 )
 
-func (p *papi) GetContracts(ctx context.Context) (*GetContractResponse, error) {
-	var contracts GetContractResponse
+func (p *papi) GetContracts(ctx context.Context) (*GetContractsResponse, error) {
+	var contracts GetContractsResponse
 
-	p.Log(ctx).Debug("GetContracts")
+	logger := p.Log(ctx)
+	logger.Debug("GetContracts")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/contracts", nil)
 	if err != nil {
@@ -44,7 +48,7 @@ func (p *papi) GetContracts(ctx context.Context) (*GetContractResponse, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("getcontracts request failed with status code: %d", resp.StatusCode)
+		return nil, session.NewAPIError(resp, logger)
 	}
 
 	return &contracts, nil

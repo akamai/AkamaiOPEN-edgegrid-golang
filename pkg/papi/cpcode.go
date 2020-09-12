@@ -66,7 +66,6 @@ type (
 	GetCPCodesRequest struct {
 		ContractID string
 		GroupID    string
-		Options    []string
 	}
 )
 
@@ -94,10 +93,9 @@ func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCP
 	logger.Debug("GetCPCodes")
 
 	getURL := fmt.Sprintf(
-		"/papi/v1/cpcodes?contractId=%s&groupId=%s&options=%s",
+		"/papi/v1/cpcodes?contractId=%s&groupId=%s",
 		params.ContractID,
 		params.GroupID,
-		strings.Join(params.Options, ","),
 	)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
