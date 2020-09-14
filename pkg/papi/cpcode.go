@@ -66,7 +66,6 @@ type (
 	GetCPCodesRequest struct {
 		ContractID string
 		GroupID    string
-		Options    []string
 	}
 )
 

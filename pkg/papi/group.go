@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/spf13/cast"
 )
 
@@ -34,7 +35,8 @@ type (
 func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 	var groups GetGroupsResponse
 
-	p.Log(ctx).Debug("GetGroups")
+	logger := p.Log(ctx)
+	logger.Debug("GetGroups")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/groups", nil)
 	if err != nil {
@@ -49,7 +51,7 @@ func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("getgroups request failed with status code: %d", resp.StatusCode)
+		return nil, session.NewAPIError(resp, logger)
 	}
 
 	return &groups, nil

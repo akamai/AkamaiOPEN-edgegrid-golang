@@ -16,7 +16,7 @@ type (
 
 		// GetContract provides a read-only list of contract names and identifiers
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcontracts
-		GetContracts(context.Context) (*GetContractResponse, error)
+		GetContracts(context.Context) (*GetContractsResponse, error)
 
 		// CreateActivation creates a new activation or deactivation request
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyactivations
@@ -25,6 +25,10 @@ type (
 		// GetActivation gets details about an activation
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivation
 		GetActivation(context.Context, GetActivationRequest) (*GetActivationResponse, error)
+
+		// CancelActivation allows for canceling an activation while it is still PENDING
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#deletepropertyactivation
+		CancelActivation(context.Context, CancelActivationRequest) (*CancelActivationResponse, error)
 
 		// GetCPCodes lists all available CP codes
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcpcodes
