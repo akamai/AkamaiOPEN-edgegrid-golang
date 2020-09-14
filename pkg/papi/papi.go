@@ -41,6 +41,10 @@ type (
 		// CreateCPCode creates a new CP code
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postcpcodes
 		CreateCPCode(context.Context, CreateCPCodeRequest) (*CreateCPCodeResponse, error)
+
+		// GetProperties operation lists properties available for the current contract and group.
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getproperties
+		GetProperties(context.Context, GetPropertiesRequest) (*GetPropertiesResponse, error)
 	}
 
 	papi struct {
