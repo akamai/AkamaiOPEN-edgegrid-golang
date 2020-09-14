@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/spf13/cast"
 )
@@ -25,6 +26,7 @@ type (
 	Activation struct {
 		ActivationID           string                  `json:"activationId,omitempty"`
 		ActivationType         ActivationType          `json:"activationType,omitempty"`
+		UseFastFallback        bool                    `json:"useFastFallback"`
 		FallbackInfo           *ActivationFallbackInfo `json:"fallbackInfo,omitempty"`
 		AcknowledgeWarnings    []string                `json:"acknowledgeWarnings,omitempty"`
 		AcknowledgeAllWarnings bool                    `json:"acknowledgeAllWarnings"`
@@ -82,6 +84,19 @@ type (
 		RetryAfter int `json:"-"`
 	}
 
+	// CancelActivationRequest is used to delete a PENDING activation
+	CancelActivationRequest struct {
+		PropertyID   string `json:"propertyId"`
+		ActivationID string `json:"activationId"`
+		ContractID   string `json:"contractId"`
+		GroupID      string `json:"groupId"`
+	}
+
+	// CancelActivationResponse is a response from deleting a PENDING activation
+	CancelActivationResponse struct {
+		Activations ActivationsItems `json:"activations"`
+	}
+
 	// ActivationType is an activation type value
 	ActivationType string
 
@@ -111,6 +126,9 @@ const (
 	// ActivationStatusPending is the pending status
 	ActivationStatusPending ActivationStatus = "PENDING"
 
+	// ActivationStatusAborted is returned when a PENDING activation is successfully canceled
+	ActivationStatusAborted ActivationStatus = "ABORTED"
+
 	// ActivationStatusZone1 is not yet active
 	ActivationStatusZone1 ActivationStatus = "ZONE_1"
 
@@ -136,7 +154,8 @@ const (
 func (p *papi) CreateActivation(ctx context.Context, r CreateActivationRequest) (*CreateActivationResponse, error) {
 	var rval CreateActivationResponse
 
-	p.Log(ctx).Debug("CreateActivation")
+	logger := p.Log(ctx)
+	logger.Debug("CreateActivation")
 
 	// explicitly set the activation type
 	if r.Activation.ActivationType == "" {
@@ -158,8 +177,13 @@ func (p *papi) CreateActivation(ctx context.Context, r CreateActivationRequest) 
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("createactivation request failed with status code: %d", resp.StatusCode)
+		return nil, session.NewAPIError(resp, logger)
 	}
+	id, err := tools.FetchIDFromLocation(rval.ActivationLink)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %s", tools.ErrInvalidLocation, err.Error())
+	}
+	rval.ActivationID = id
 
 	return &rval, nil
 }
@@ -191,6 +215,33 @@ func (p *papi) GetActivation(ctx context.Context, r GetActivationRequest) (*GetA
 	// Get the Retry-After header to return the caller
 	if retryAfter := resp.Header.Get("Retry-After"); retryAfter != "" {
 		rval.RetryAfter = cast.ToInt(retryAfter)
+	}
+
+	return &rval, nil
+}
+
+func (p *papi) CancelActivation(ctx context.Context, r CancelActivationRequest) (*CancelActivationResponse, error) {
+	var rval CancelActivationResponse
+
+	logger := p.Log(ctx)
+	logger.Debug("GetActivation")
+
+	uri := fmt.Sprintf("/papi/v1/properties/%s/activations/%s?contractId=%s&groupId=%s", r.PropertyID, r.ActivationID, r.ContractID, r.GroupID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create getactivation request: %w", err)
+	}
+
+	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
+
+	resp, err := p.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("getactivation request failed: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, session.NewAPIError(resp, logger)
 	}
 
 	return &rval, nil
