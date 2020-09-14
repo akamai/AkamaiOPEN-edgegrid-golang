@@ -59,6 +59,18 @@ type (
 		// CreateEdgeHostname creates a new edge hostname
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postedgehostnames
 		CreateEdgeHostname(context.Context, CreateEdgeHostnameRequest) (*CreateEdgeHostnameResponse, error)
+
+		// GetPropertyVersions creates a new CP code
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversions
+		GetPropertyVersions(context.Context, GetPropertyVersionsRequest) (*GetPropertyVersionsResponse, error)
+
+		// GetPropertyVersion creates a new CP code
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversion
+		GetPropertyVersion(context.Context, GetPropertyVersionRequest) (*GetPropertyVersionsResponse, error)
+
+		// CreatePropertyVersion creates a new CP code
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyversions
+		CreatePropertyVersion(context.Context, CreatePropertyVersionRequest) (*CreatePropertyVersionResponse, error)
 	}
 
 	papi struct {
