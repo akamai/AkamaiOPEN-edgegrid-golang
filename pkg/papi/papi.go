@@ -71,6 +71,8 @@ type (
 		// CreatePropertyVersion creates a new CP code
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyversions
 		CreatePropertyVersion(context.Context, CreatePropertyVersionRequest) (*CreatePropertyVersionResponse, error)
+
+		GetLatestVersion(context.Context, GetLatestVersionRequest) (*GetPropertyVersionsResponse, error)
 	}
 
 	papi struct {

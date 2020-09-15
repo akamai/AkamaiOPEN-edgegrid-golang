@@ -77,6 +77,18 @@ type (
 		VersionLink     string `json:"versionLink"`
 		PropertyVersion int
 	}
+
+	GetLatestVersionRequest struct {
+		PropertyID  string
+		ActivatedOn string
+		ContractID  string
+		GroupID     string
+	}
+)
+
+const (
+	VersionProduction = "PRODUCTION"
+	VersionStaging    = "STAGING"
 )
 
 // Validate validates GetPropertyVersionsRequest
@@ -106,6 +118,13 @@ func (v CreatePropertyVersionRequest) Validate() error {
 func (v PropertyVersionCreate) Validate() error {
 	return validation.Errors{
 		"CreateFromVersion": validation.Validate(v.CreateFromVersion, validation.Required),
+	}.Filter()
+}
+
+func (v GetLatestVersionRequest) Validate() error {
+	return validation.Errors{
+		"PropertyID":  validation.Validate(v.PropertyID, validation.Required),
+		"ActivatedOn": validation.Validate(v.ActivatedOn, validation.In(VersionProduction, VersionStaging)),
 	}.Filter()
 }
 
@@ -150,6 +169,45 @@ func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersio
 	}
 
 	return &versions, nil
+}
+
+// GetLatestVersion returns either the latest property version overall, or the latest ACTIVE version on production or staging network
+func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequest) (*GetPropertyVersionsResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	logger := p.Log(ctx)
+	logger.Debug("GetLatestVersion")
+
+	getURL := fmt.Sprintf(
+		"/papi/v1/properties/%s/versions/latest?contractId=%s&groupId=%s",
+		params.PropertyID,
+		params.ContractID,
+		params.GroupID,
+	)
+	if params.ActivatedOn != "" {
+		getURL += fmt.Sprintf("&activatedOn=%s", params.ActivatedOn)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create getlatestversion request: %w", err)
+	}
+
+	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
+	var version GetPropertyVersionsResponse
+	resp, err := p.Exec(req, &version)
+	if err != nil {
+		return nil, fmt.Errorf("getlatestversion request failed: %w", err)
+	}
+
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, session.NewAPIError(resp, logger)
+	}
+	return &version, nil
 }
 
 // GetPropertyVersion returns property version with provided version number
@@ -226,7 +284,7 @@ func (p *papi) CreatePropertyVersion(ctx context.Context, request CreateProperty
 	}
 	versionNumber, err := strconv.Atoi(propertyVersion)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %s: %s", tools.ErrInvalidLocation, "version should be a number", propertyVersion)
 	}
 	version.PropertyVersion = versionNumber
 	return &version, nil

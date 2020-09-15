@@ -336,9 +336,9 @@ func TestPapi_CreatePropertyVersion(t *testing.T) {
 			},
 			responseStatus: http.StatusCreated,
 			responseBody: `
-{
-    "versionLink": "/papi/v1/properties/propertyID/versions/2?contractId=contract&groupId=group"
-}`,
+		{
+		   "versionLink": "/papi/v1/properties/propertyID/versions/2?contractId=contract&groupId=group"
+		}`,
 			expectedPath: "/papi/v1/properties/propertyID/versions?contractId=contract&groupId=group",
 			expectedResponse: &CreatePropertyVersionResponse{
 				VersionLink:     "/papi/v1/properties/propertyID/versions/2?contractId=contract&groupId=group",
@@ -356,12 +356,12 @@ func TestPapi_CreatePropertyVersion(t *testing.T) {
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
-{
-	"type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating property version",
-    "status": 500
-}`,
+		{
+			"type": "internal_error",
+		   "title": "Internal Server Error",
+		   "detail": "Error creating property version",
+		   "status": 500
+		}`,
 			expectedPath: "/papi/v1/properties/propertyID/versions?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
 				want := session.APIError{
@@ -434,6 +434,142 @@ func TestPapi_CreatePropertyVersion(t *testing.T) {
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreatePropertyVersion(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestPapi_GetLatestVersion(t *testing.T) {
+	tests := map[string]struct {
+		params           GetLatestVersionRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *GetPropertyVersionsResponse
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			params: GetLatestVersionRequest{
+				PropertyID:  "propertyID",
+				ActivatedOn: "STAGING",
+				ContractID:  "contract",
+				GroupID:     "group",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/latest?contractId=contract&groupId=group&activatedOn=STAGING",
+			responseBody: `
+{
+    "propertyId": "propertyID",
+    "propertyName": "property_name",
+    "accountId": "accountID",
+    "contractId": "contract",
+    "groupId": "group",
+    "assetId": "assetID",
+    "versions": {
+        "items": [
+            {
+                "propertyVersion": 2,
+                "updatedByUser": "user",
+                "updatedDate": "2020-09-14T19:06:13Z",
+                "productionStatus": "INACTIVE",
+                "stagingStatus": "ACTIVE",
+                "etag": "etag",
+                "productId": "productID",
+                "note": "version note"
+            }
+        ]
+    }
+}`,
+			expectedResponse: &GetPropertyVersionsResponse{
+				PropertyID:   "propertyID",
+				PropertyName: "property_name",
+				AccountID:    "accountID",
+				ContractID:   "contract",
+				GroupID:      "group",
+				AssetID:      "assetID",
+				Versions: PropertyVersionItems{
+					Items: []PropertyVersionGetItem{
+						{
+							Etag:             "etag",
+							Note:             "version note",
+							ProductID:        "productID",
+							ProductionStatus: "INACTIVE",
+							PropertyVersion:  2,
+							StagingStatus:    "ACTIVE",
+							UpdatedByUser:    "user",
+							UpdatedDate:      "2020-09-14T19:06:13Z",
+						}}},
+			},
+		},
+		"500 Internal Server Error": {
+			params: GetLatestVersionRequest{
+				PropertyID: "propertyID",
+				ContractID: "contract",
+				GroupID:    "group",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+  "title": "Internal Server Error",
+  "detail": "Error fetching latest version",
+  "status": 500
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/latest?contractId=contract&groupId=group",
+			withError: func(t *testing.T, err error) {
+				want := session.APIError{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error fetching latest version",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"empty property ID": {
+			params: GetLatestVersionRequest{
+				PropertyID:  "",
+				ActivatedOn: "STAGING",
+				ContractID:  "contract",
+				GroupID:     "group",
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "PropertyID")
+			},
+		},
+		"invalid ActivatedOn": {
+			params: GetLatestVersionRequest{
+				PropertyID:  "propertyID",
+				ActivatedOn: "test",
+				ContractID:  "contract",
+				GroupID:     "group",
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "ActivatedOn")
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetLatestVersion(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
