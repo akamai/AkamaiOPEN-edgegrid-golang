@@ -3,8 +3,14 @@ package papi
 
 import (
 	"context"
+	"errors"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+)
+
+var (
+	// ErrStructValidation is returned returned when given struct validation failed
+	ErrStructValidation = errors.New("struct validation")
 )
 
 type (
@@ -41,6 +47,18 @@ type (
 		// CreateCPCode creates a new CP code
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postcpcodes
 		CreateCPCode(context.Context, CreateCPCodeRequest) (*CreateCPCodeResponse, error)
+
+		// GetEdgeHostnames fetches a list of edge hostnames
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getedgehostnames
+		GetEdgeHostnames(context.Context, GetEdgeHostnamesRequest) (*GetEdgeHostnamesResponse, error)
+
+		// GetEdgeHostname fetches edge hostname with given ID
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getedgehostname
+		GetEdgeHostname(context.Context, GetEdgeHostnameRequest) (*GetEdgeHostnamesResponse, error)
+
+		// CreateEdgeHostname creates a new edge hostname
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postedgehostnames
+		CreateEdgeHostname(context.Context, CreateEdgeHostnameRequest) (*CreateEdgeHostnameResponse, error)
 	}
 
 	papi struct {
