@@ -421,6 +421,26 @@ func TestPapi_CreatePropertyVersion(t *testing.T) {
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
+		"invalid version format": {
+			params: CreatePropertyVersionRequest{
+				PropertyID: "propertyID",
+				ContractID: "contract",
+				GroupID:    "group",
+				Version: PropertyVersionCreate{
+					CreateFromVersion: 1,
+				},
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+    "versionLink": "/papi/v1/properties/propertyID/versions/abc?contractId=contract&groupId=group"
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions?contractId=contract&groupId=group",
+			withError: func(t *testing.T, err error) {
+				want := tools.ErrInvalidLocation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
 	}
 
 	for name, test := range tests {
@@ -506,6 +526,26 @@ func TestPapi_GetLatestVersion(t *testing.T) {
 						}}},
 			},
 		},
+		"404 Not Found": {
+			params: GetLatestVersionRequest{
+				PropertyID: "propertyID",
+				ContractID: "contract",
+				GroupID:    "group",
+			},
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+{
+	"type": "not_found",
+    "title": "Not Found",
+    "detail": "Could not find latest version",
+    "status": 404
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/latest?contractId=contract&groupId=group",
+			withError: func(t *testing.T, err error) {
+				want := session.ErrNotFound
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
 		"500 Internal Server Error": {
 			params: GetLatestVersionRequest{
 				PropertyID: "propertyID",
@@ -570,6 +610,288 @@ func TestPapi_GetLatestVersion(t *testing.T) {
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetLatestVersion(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestPapi_GetAvailableBehaviors(t *testing.T) {
+	tests := map[string]struct {
+		params           GetFeaturesRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *GetFeaturesCriteriaResponse
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			params: GetFeaturesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/2/available-behaviors?contractId=contract&groupId=group",
+			responseBody: `
+{
+    "contractId": "contract",
+    "groupId": "group",
+    "productId": "productID",
+    "ruleFormat": "v2020-09-15",
+    "availableBehaviors": {
+        "items": [
+            {
+                "name": "cpCode",
+                "schemaLink": "/papi/v1/schemas/products/prd_Alta/latest#/definitions/catalog/behaviors/cpCode"
+            }
+        ]
+    }
+}`,
+			expectedResponse: &GetFeaturesCriteriaResponse{
+				ContractID: "contract",
+				GroupID:    "group",
+				ProductID:  "productID",
+				RuleFormat: "v2020-09-15",
+				AvailableBehaviors: AvailableFeatureItems{Items: []AvailableFeature{
+					{
+						Name:       "cpCode",
+						SchemaLink: "/papi/v1/schemas/products/prd_Alta/latest#/definitions/catalog/behaviors/cpCode",
+					},
+				}},
+			},
+		},
+		"404 Not Found": {
+			params: GetFeaturesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+{
+	"type": "not_found",
+    "title": "Not Found",
+    "detail": "Could not find available behaviors",
+    "status": 404
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-behaviors?contractId=contract&groupId=group",
+			withError: func(t *testing.T, err error) {
+				want := session.ErrNotFound
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"500 Internal Server Error": {
+			params: GetFeaturesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+  "type": "internal_error",
+  "title": "Internal Server Error",
+  "detail": "Error fetching available behaviors",
+  "status": 500
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-behaviors?contractId=contract&groupId=group",
+			withError: func(t *testing.T, err error) {
+				want := session.APIError{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error fetching available behaviors",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"empty property ID": {
+			params: GetFeaturesRequest{
+				PropertyID:      "",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "PropertyID")
+			},
+		},
+		"empty property version": {
+			params: GetFeaturesRequest{
+				PropertyID: "propertyID",
+				ContractID: "contract",
+				GroupID:    "group",
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "PropertyVersion")
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetAvailableBehaviors(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestPapi_GetAvailableCriteria(t *testing.T) {
+	tests := map[string]struct {
+		params           GetFeaturesRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *GetFeaturesCriteriaResponse
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			params: GetFeaturesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/2/available-criteria?contractId=contract&groupId=group",
+			responseBody: `
+{
+    "contractId": "contract",
+    "groupId": "group",
+    "productId": "productID",
+    "ruleFormat": "v2020-09-15",
+    "availableBehaviors": {
+        "items": [
+            {
+                "name": "cpCode",
+                "schemaLink": "/papi/v1/schemas/products/prd_Alta/latest#/definitions/catalog/behaviors/cpCode"
+            }
+        ]
+    }
+}`,
+			expectedResponse: &GetFeaturesCriteriaResponse{
+				ContractID: "contract",
+				GroupID:    "group",
+				ProductID:  "productID",
+				RuleFormat: "v2020-09-15",
+				AvailableBehaviors: AvailableFeatureItems{Items: []AvailableFeature{
+					{
+						Name:       "cpCode",
+						SchemaLink: "/papi/v1/schemas/products/prd_Alta/latest#/definitions/catalog/behaviors/cpCode",
+					},
+				}},
+			},
+		},
+		"404 Not Found": {
+			params: GetFeaturesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+{
+	"type": "not_found",
+    "title": "Not Found",
+    "detail": "Could not find available criteria",
+    "status": 404
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-criteria?contractId=contract&groupId=group",
+			withError: func(t *testing.T, err error) {
+				want := session.ErrNotFound
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"500 Internal Server Error": {
+			params: GetFeaturesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+  "type": "internal_error",
+  "title": "Internal Server Error",
+  "detail": "Error fetching available behaviors",
+  "status": 500
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-criteria?contractId=contract&groupId=group",
+			withError: func(t *testing.T, err error) {
+				want := session.APIError{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error fetching available behaviors",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"empty property ID": {
+			params: GetFeaturesRequest{
+				PropertyID:      "",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "PropertyID")
+			},
+		},
+		"empty property version": {
+			params: GetFeaturesRequest{
+				PropertyID: "propertyID",
+				ContractID: "contract",
+				GroupID:    "group",
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "PropertyVersion")
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetAvailableCriteria(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return

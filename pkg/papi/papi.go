@@ -60,19 +60,29 @@ type (
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postedgehostnames
 		CreateEdgeHostname(context.Context, CreateEdgeHostnameRequest) (*CreateEdgeHostnameResponse, error)
 
-		// GetPropertyVersions creates a new CP code
+		// GetPropertyVersions fetches available property versions
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversions
 		GetPropertyVersions(context.Context, GetPropertyVersionsRequest) (*GetPropertyVersionsResponse, error)
 
-		// GetPropertyVersion creates a new CP code
+		// GetPropertyVersion fetches specific property version
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversion
 		GetPropertyVersion(context.Context, GetPropertyVersionRequest) (*GetPropertyVersionsResponse, error)
 
-		// CreatePropertyVersion creates a new CP code
+		// CreatePropertyVersion creates a new property version
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyversions
 		CreatePropertyVersion(context.Context, CreatePropertyVersionRequest) (*CreatePropertyVersionResponse, error)
 
+		// GetLatestVersion fetches latest property version
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getlatestversion
 		GetLatestVersion(context.Context, GetLatestVersionRequest) (*GetPropertyVersionsResponse, error)
+
+		// GetAvailableBehaviors fetches a list of behaviors applied to property version
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getavailablebehaviors
+		GetAvailableBehaviors(context.Context, GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error)
+
+		// GetAvailableCriteria fetches a list of criteria applied to property version
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getavailablecriteria
+		GetAvailableCriteria(context.Context, GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error)
 	}
 
 	papi struct {
