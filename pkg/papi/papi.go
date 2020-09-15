@@ -20,6 +20,7 @@ type (
 		Activations
 		CPCodes
 		PropertyVersions
+		EdgeHostnames
 	}
 
 	papi struct {
