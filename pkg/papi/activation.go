@@ -7,6 +7,7 @@ import (
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/spf13/cast"
 )
 
@@ -40,6 +41,7 @@ type (
 
 	// Activation represents a property activation resource
 	Activation struct {
+		AccountID              string                  `json:"accountId,omitempty"`
 		ActivationID           string                  `json:"activationId,omitempty"`
 		ActivationType         ActivationType          `json:"activationType,omitempty"`
 		UseFastFallback        bool                    `json:"useFastFallback"`
@@ -48,6 +50,7 @@ type (
 		AcknowledgeAllWarnings bool                    `json:"acknowledgeAllWarnings"`
 		FastPush               bool                    `json:"fastPush,omitempty"`
 		FMAActivationState     string                  `json:"fmaActivationState,omitempty"`
+		GroupID                string                  `json:"groupId,omitempty"`
 		IgnoreHTTPErrors       bool                    `json:"ignoreHttpErrors,omitempty"`
 		PropertyName           string                  `json:"propertyName,omitempty"`
 		PropertyID             string                  `json:"propertyId,omitempty"`
@@ -102,10 +105,10 @@ type (
 
 	// CancelActivationRequest is used to delete a PENDING activation
 	CancelActivationRequest struct {
-		PropertyID   string `json:"propertyId"`
-		ActivationID string `json:"activationId"`
-		ContractID   string `json:"contractId"`
-		GroupID      string `json:"groupId"`
+		PropertyID   string
+		ActivationID string
+		ContractID   string
+		GroupID      string
 	}
 
 	// CancelActivationResponse is a response from deleting a PENDING activation
@@ -167,18 +170,65 @@ const (
 	ActivationNetworkProduction ActivationNetwork = "PRODUCTION"
 )
 
-func (p *papi) CreateActivation(ctx context.Context, r CreateActivationRequest) (*CreateActivationResponse, error) {
-	var rval CreateActivationResponse
+// Validate validates CreateActivationRequest
+func (v CreateActivationRequest) Validate() error {
+	return validation.Errors{
+		"PropertyID":                    validation.Validate(v.PropertyID, validation.Required),
+		"ContractID":                    validation.Validate(v.ContractID, validation.Required),
+		"GroupID":                       validation.Validate(v.GroupID, validation.Required),
+		"Activation.AccountID":          validation.Validate(v.Activation.AccountID, validation.Empty),
+		"Activation.ActivationID":       validation.Validate(v.Activation.ActivationID, validation.Empty),
+		"Activation.FallbackInfo":       validation.Validate(v.Activation.FallbackInfo, validation.Nil),
+		"Activation.FMAActivationState": validation.Validate(v.Activation.FMAActivationState, validation.Empty),
+		"Activation.GroupID":            validation.Validate(v.Activation.GroupID, validation.Empty),
+		"Activation.Network":            validation.Validate(v.Activation.Network, validation.Required),
+		"Activation.NotifyEmails":       validation.Validate(v.Activation.NotifyEmails, validation.Length(1, 0)),
+		"Activation.PropertyID":         validation.Validate(v.Activation.PropertyID, validation.Empty),
+		"Activation.PropertyName":       validation.Validate(v.Activation.PropertyName, validation.Empty),
+		"Activation.Status":             validation.Validate(v.Activation.Status, validation.Empty),
+		"Activation.SubmitDate":         validation.Validate(v.Activation.SubmitDate, validation.Empty),
+		"Activation.UpdateDate":         validation.Validate(v.Activation.UpdateDate, validation.Empty),
+	}.Filter()
+}
+
+// Validate validates GetActivationRequest
+func (v GetActivationRequest) Validate() error {
+	return validation.Errors{
+		"PropertyID":   validation.Validate(v.PropertyID, validation.Required),
+		"ContractID":   validation.Validate(v.ContractID, validation.Required),
+		"GroupID":      validation.Validate(v.GroupID, validation.Required),
+		"ActivationID": validation.Validate(v.ActivationID, validation.Required),
+	}.Filter()
+}
+
+// Validate validate CancelActivationRequest
+func (v CancelActivationRequest) Validate() error {
+	return validation.Errors{
+		"PropertyID":   validation.Validate(v.PropertyID, validation.Required),
+		"ContractID":   validation.Validate(v.ContractID, validation.Required),
+		"GroupID":      validation.Validate(v.GroupID, validation.Required),
+		"ActivationID": validation.Validate(v.ActivationID, validation.Required),
+	}.Filter()
+}
+
+func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequest) (*CreateActivationResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
 
 	logger := p.Log(ctx)
 	logger.Debug("CreateActivation")
 
 	// explicitly set the activation type
-	if r.Activation.ActivationType == "" {
-		r.Activation.ActivationType = ActivationTypeActivate
+	if params.Activation.ActivationType == "" {
+		params.Activation.ActivationType = ActivationTypeActivate
 	}
 
-	uri := fmt.Sprintf("/papi/v1/properties/%s/activations?contractId=%s&groupId=%s", r.PropertyID, r.ContractID, r.GroupID)
+	uri := fmt.Sprintf(
+		"/papi/v1/properties/%s/activations?contractId=%s&groupId=%s",
+		params.PropertyID,
+		params.ContractID,
+		params.GroupID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
@@ -187,7 +237,9 @@ func (p *papi) CreateActivation(ctx context.Context, r CreateActivationRequest) 
 
 	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
-	resp, err := p.Exec(req, &rval, r.Activation)
+	var rval CreateActivationResponse
+
+	resp, err := p.Exec(req, &rval, params.Activation)
 	if err != nil {
 		return nil, fmt.Errorf("createactivation request failed: %w", err)
 	}
@@ -195,6 +247,7 @@ func (p *papi) CreateActivation(ctx context.Context, r CreateActivationRequest) 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, session.NewAPIError(resp, logger)
 	}
+
 	id, err := tools.FetchIDFromLocation(rval.ActivationLink)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", tools.ErrInvalidLocation, err.Error())
@@ -204,13 +257,20 @@ func (p *papi) CreateActivation(ctx context.Context, r CreateActivationRequest) 
 	return &rval, nil
 }
 
-func (p *papi) GetActivation(ctx context.Context, r GetActivationRequest) (*GetActivationResponse, error) {
-	var rval GetActivationResponse
+func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
 
 	logger := p.Log(ctx)
 	logger.Debug("GetActivation")
 
-	uri := fmt.Sprintf("/papi/v1/properties/%s/activations/%s?contractId=%s&groupId=%s", r.PropertyID, r.ActivationID, r.ContractID, r.GroupID)
+	uri := fmt.Sprintf(
+		"/papi/v1/properties/%s/activations/%s?contractId=%s&groupId=%s",
+		params.PropertyID,
+		params.ActivationID,
+		params.ContractID,
+		params.GroupID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -218,6 +278,8 @@ func (p *papi) GetActivation(ctx context.Context, r GetActivationRequest) (*GetA
 	}
 
 	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
+
+	var rval GetActivationResponse
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
@@ -236,13 +298,20 @@ func (p *papi) GetActivation(ctx context.Context, r GetActivationRequest) (*GetA
 	return &rval, nil
 }
 
-func (p *papi) CancelActivation(ctx context.Context, r CancelActivationRequest) (*CancelActivationResponse, error) {
-	var rval CancelActivationResponse
+func (p *papi) CancelActivation(ctx context.Context, params CancelActivationRequest) (*CancelActivationResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
 
 	logger := p.Log(ctx)
 	logger.Debug("GetActivation")
 
-	uri := fmt.Sprintf("/papi/v1/properties/%s/activations/%s?contractId=%s&groupId=%s", r.PropertyID, r.ActivationID, r.ContractID, r.GroupID)
+	uri := fmt.Sprintf(
+		"/papi/v1/properties/%s/activations/%s?contractId=%s&groupId=%s",
+		params.PropertyID,
+		params.ActivationID,
+		params.ContractID,
+		params.GroupID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
@@ -250,6 +319,8 @@ func (p *papi) CancelActivation(ctx context.Context, r CancelActivationRequest) 
 	}
 
 	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
+
+	var rval CancelActivationResponse
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {

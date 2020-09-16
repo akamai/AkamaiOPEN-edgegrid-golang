@@ -6,10 +6,17 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/spf13/cast"
 )
 
 type (
+	// Properties contains operations available on Property resource
+	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#propertiesgroup
+	Properties interface {
+		GetProperties(ctx context.Context, r GetPropertiesRequest) (*GetPropertiesResponse, error)
+	}
+
 	// PropertyCloneFrom optionally identifies another property instance to clone when making a POST request to create a new property
 	PropertyCloneFrom struct {
 		CloneFromVersionEtag string `json:"cloneFromVersionEtag"`
@@ -42,15 +49,30 @@ type (
 
 	// GetPropertiesRequest is the argument for GetProperties
 	GetPropertiesRequest struct {
-		ContractID string `json:"contractId"`
-		GroupID    string `json:"groupId"`
+		ContractID string
+		GroupID    string
 	}
 
 	// GetPropertiesResponse is the response for GetProperties
 	GetPropertiesResponse struct {
 		Properties PropertiesItems `json:"properties"`
 	}
+
+	// CreatePropertyRequest is passed to CreateProperty
+	CreatePropertyRequest struct {
+		ContractID string
+		GroupID    string
+		Property   Property
+	}
 )
+
+// Validate validates GetPropertiesRequest
+func (v GetPropertiesRequest) Validate() error {
+	return validation.Errors{
+		"ContractID": validation.Validate(v.ContractID, validation.Required),
+		"GroupID":    validation.Validate(v.GroupID, validation.Required),
+	}.Filter()
+}
 
 func (p *papi) GetProperties(ctx context.Context, r GetPropertiesRequest) (*GetPropertiesResponse, error) {
 	var rval GetPropertiesResponse

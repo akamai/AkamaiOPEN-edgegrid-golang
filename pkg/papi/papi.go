@@ -19,6 +19,7 @@ type (
 		Contracts
 		Activations
 		CPCodes
+		Properties
 		PropertyVersions
 		EdgeHostnames
 	}
@@ -30,10 +31,13 @@ type (
 
 	// Option defines a PAPI option
 	Option func(*papi)
+
+	// ClientFunc is a papi client new method, this can used for mocking
+	ClientFunc func(sess session.Session, opts ...Option) PAPI
 )
 
-// New returns a new papi New instance with the specified controller
-func New(sess session.Session, opts ...Option) PAPI {
+// Client returns a new papi Client instance with the specified controller
+func Client(sess session.Session, opts ...Option) PAPI {
 	p := &papi{
 		Session:     sess,
 		usePrefixes: true,
