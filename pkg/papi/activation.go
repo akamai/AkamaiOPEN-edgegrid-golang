@@ -11,6 +11,22 @@ import (
 )
 
 type (
+	// Activations contains operations available on Activation resource
+	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#propertyactivationsgroup
+	Activations interface {
+		// CreateActivation creates a new activation or deactivation request
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyactivations
+		CreateActivation(context.Context, CreateActivationRequest) (*CreateActivationResponse, error)
+
+		// GetActivation gets details about an activation
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivation
+		GetActivation(context.Context, GetActivationRequest) (*GetActivationResponse, error)
+
+		// CancelActivation allows for canceling an activation while it is still PENDING
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#deletepropertyactivation
+		CancelActivation(context.Context, CancelActivationRequest) (*CancelActivationResponse, error)
+	}
+
 	// ActivationFallbackInfo encapsulates information about fast fallback, which may allow you to fallback to a previous activation when
 	// POSTing an activation with useFastFallback enabled.
 	ActivationFallbackInfo struct {

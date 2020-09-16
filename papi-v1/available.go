@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-        edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
+	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"github.com/xeipuuv/gojsonschema"
 )
 
