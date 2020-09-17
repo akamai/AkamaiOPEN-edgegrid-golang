@@ -166,7 +166,7 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 				GroupID:         "grp_15225",
 				ContractID:      "ctr_1-1TJZH5",
 				Hostnames: HostnameRequestItems{
-					Items: []Hostname{
+					[]Hostname{
 						{
 							CnameType: "EDGE_HOSTNAME",
 							CnameFrom: "m.example.com",
@@ -311,7 +311,7 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 		"validation error PropertyID missing": {
 			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyVersion: 3,
-				Hostnames:       HostnameRequestItems{Items: []Hostname{{}}},
+				Hostnames:       HostnameRequestItems{[]Hostname{{}}},
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -322,7 +322,7 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 		"validation error PropertyVersion missing": {
 			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID: "prp_175780",
-				Hostnames:  HostnameRequestItems{Items: []Hostname{{}}},
+				Hostnames:  HostnameRequestItems{[]Hostname{{}}},
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -357,7 +357,7 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
-				Hostnames:       HostnameRequestItems{Items: []Hostname{}},
+				Hostnames:       HostnameRequestItems{[]Hostname{}},
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -369,7 +369,7 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
-				Hostnames:       HostnameRequestItems{Items: []Hostname{{}}},
+				Hostnames:       HostnameRequestItems{[]Hostname{{}}},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
