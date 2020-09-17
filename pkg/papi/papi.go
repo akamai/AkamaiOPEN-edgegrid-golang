@@ -60,9 +60,13 @@ type (
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postedgehostnames
 		CreateEdgeHostname(context.Context, CreateEdgeHostnameRequest) (*CreateEdgeHostnameResponse, error)
 
-		// GetPropertyHostnames lists all the hostnames assigned to a property version
+		// GetHostnames lists all the hostnames assigned to a property version
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversionhostnames
-		GetPropertyHostnames(ctx context.Context, params GetPropertyHostnamesRequest) (*GetPropertyHostnamesResponse, error)
+		GetHostnames(context.Context, GetHostnamesRequest) (*GetHostnamesResponse, error)
+
+		// CreateHostnames lists all the hostnames assigned to a property version
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#putpropertyversionhostnames
+		CreateHostnames(context.Context, CreateHostnamesRequest) (*CreateHostnamesResponse, error)
 	}
 
 	papi struct {
