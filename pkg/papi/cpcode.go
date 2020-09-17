@@ -12,6 +12,22 @@ import (
 )
 
 type (
+	// CPCodes contains operations available on CPCode resource
+	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#cpcodesgroup
+	CPCodes interface {
+		// GetCPCodes lists all available CP codes
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcpcodes
+		GetCPCodes(context.Context, GetCPCodesRequest) (*GetCPCodesResponse, error)
+
+		// GetCPCode gets CP code with provided ID
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcpcode
+		GetCPCode(context.Context, GetCPCodeRequest) (*GetCPCodesResponse, error)
+
+		// CreateCPCode creates a new CP code
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postcpcodes
+		CreateCPCode(context.Context, CreateCPCodeRequest) (*CreateCPCodeResponse, error)
+	}
+
 	// CPCode contains CP code resource data
 	CPCode struct {
 		ID          string   `json:"cpcodeId"`

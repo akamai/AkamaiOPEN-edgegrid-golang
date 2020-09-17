@@ -11,7 +11,19 @@ import (
 )
 
 type (
-	GetHostnamesRequest struct {
+	// PropertyVersionHostnames contains operations available on PropertyVersionHostnames resource
+	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#propertyversionhostnamesgroup
+	PropertyVersionHostnames interface {
+		// GetPropertyVersionHostnames lists all the hostnames assigned to a property version
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversionhostnames
+		GetPropertyVersionHostnames(context.Context, GetPropertyVersionHostnamesRequest) (*GetPropertyVersionHostnamesResponse, error)
+
+		// CreatePropertyVersionHostnames lists all the hostnames assigned to a property version
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#putpropertyversionhostnames
+		CreatePropertyVersionHostnames(context.Context, CreatePropertyVersionHostnamesRequest) (*CreatePropertyVersionHostnamesResponse, error)
+	}
+
+	GetPropertyVersionHostnamesRequest struct {
 		PropertyID        string
 		PropertyVersion   int
 		ContractID        string
@@ -19,7 +31,7 @@ type (
 		ValidateHostnames bool
 	}
 
-	GetHostnamesResponse struct {
+	GetPropertyVersionHostnamesResponse struct {
 		AccountID       string        `json:"accountId"`
 		ContractID      string        `json:"contractId"`
 		GroupID         string        `json:"groupId"`
@@ -40,7 +52,7 @@ type (
 		CnameTo        string `json:"cnameTo"`
 	}
 
-	CreateHostnamesRequest struct {
+	CreatePropertyVersionHostnamesRequest struct {
 		PropertyID        string
 		PropertyVersion   int
 		ContractID        string
@@ -48,7 +60,7 @@ type (
 		ValidateHostnames bool
 	}
 
-	CreateHostnamesResponse struct {
+	CreatePropertyVersionHostnamesResponse struct {
 		AccountID       string        `json:"accountId"`
 		ContractID      string        `json:"contractId"`
 		GroupID         string        `json:"groupId"`
@@ -59,21 +71,21 @@ type (
 	}
 )
 
-// Validate validates GetHostnamesRequest
-func (ph GetHostnamesRequest) Validate() error {
+// Validate validates GetPropertyVersionHostnamesRequest
+func (ph GetPropertyVersionHostnamesRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":      validation.Validate(ph.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(ph.PropertyVersion, validation.Required),
 	}.Filter()
 }
 
-func (p *papi) GetHostnames(ctx context.Context, params GetHostnamesRequest) (*GetHostnamesResponse, error) {
+func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetPropertyVersionHostnamesRequest) (*GetPropertyVersionHostnamesResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("GetHostnames")
+	logger.Debug("GetPropertyVersionHostnames")
 
 	getURL := fmt.Sprintf(
 		"/papi/v1/properties/%s/versions/%d/hostnames?contractId=%s&groupId=%s&validateHostnames=%v",
@@ -85,15 +97,15 @@ func (p *papi) GetHostnames(ctx context.Context, params GetHostnamesRequest) (*G
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get the GetHostnames request: %v", err.Error())
+		return nil, fmt.Errorf("failed to get the GetPropertyVersionHostnames request: %v", err.Error())
 	}
 
 	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
-	var hostnames GetHostnamesResponse
+	var hostnames GetPropertyVersionHostnamesResponse
 	resp, err := p.Exec(req, &hostnames)
 	if err != nil {
-		return nil, fmt.Errorf("GetHostnames request failed: %v", err.Error())
+		return nil, fmt.Errorf("GetPropertyVersionHostnames request failed: %v", err.Error())
 	}
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, fmt.Errorf("%w, %s", session.ErrNotFound, getURL)
@@ -105,21 +117,21 @@ func (p *papi) GetHostnames(ctx context.Context, params GetHostnamesRequest) (*G
 	return &hostnames, nil
 }
 
-// Validate validates CreateHostnamesRequest
-func (ch CreateHostnamesRequest) Validate() error {
+// Validate validates CreatePropertyVersionHostnamesRequest
+func (ch CreatePropertyVersionHostnamesRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":      validation.Validate(ch.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(ch.PropertyVersion, validation.Required),
 	}.Filter()
 }
 
-func (p *papi) CreateHostnames(ctx context.Context, params CreateHostnamesRequest) (*CreateHostnamesResponse, error) {
+func (p *papi) CreatePropertyVersionHostnames(ctx context.Context, params CreatePropertyVersionHostnamesRequest) (*CreatePropertyVersionHostnamesResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("CreateHostnames")
+	logger.Debug("CreatePropertyVersionHostnames")
 
 	putURL := fmt.Sprintf(
 		"/papi/v1/properties/%s/versions/%v/hostnames?contractId=%s&groupId=%s&validateHostnames=%v",
@@ -132,14 +144,14 @@ func (p *papi) CreateHostnames(ctx context.Context, params CreateHostnamesReques
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create createhostnames request: %w", err)
+		return nil, fmt.Errorf("failed to create createpropertyversionhostnames request: %w", err)
 	}
 
 	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
-	var hostnames CreateHostnamesResponse
+	var hostnames CreatePropertyVersionHostnamesResponse
 	resp, err := p.Exec(req, &hostnames)
 	if err != nil {
-		return nil, fmt.Errorf("createhostnames request failed: %w", err)
+		return nil, fmt.Errorf("createpropertyversionhostnames request failed: %w", err)
 	}
 
 	if resp.StatusCode == http.StatusNotFound {

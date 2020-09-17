@@ -13,17 +13,17 @@ import (
 	"github.com/tj/assert"
 )
 
-func TestPapi_GetHostnames(t *testing.T) {
+func TestPapi_GetPropertyVersionHostnames(t *testing.T) {
 	tests := map[string]struct {
-		params           GetHostnamesRequest
+		params           GetPropertyVersionHostnamesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetHostnamesResponse
+		expectedResponse *GetPropertyVersionHostnamesResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
-			params: GetHostnamesRequest{
+			params: GetPropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 				GroupId:         "grp_15225",
@@ -58,7 +58,7 @@ func TestPapi_GetHostnames(t *testing.T) {
 
 `,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
-			expectedResponse: &GetHostnamesResponse{
+			expectedResponse: &GetPropertyVersionHostnamesResponse{
 				AccountID:       "act_1-1TJZFB",
 				ContractID:      "ctr_1-1TJZH5",
 				GroupID:         "grp_15225",
@@ -84,7 +84,7 @@ func TestPapi_GetHostnames(t *testing.T) {
 			},
 		},
 		"validation error PropertyID missing": {
-			params: GetHostnamesRequest{
+			params: GetPropertyVersionHostnamesRequest{
 				PropertyVersion: 3,
 			},
 			withError: func(t *testing.T, err error) {
@@ -94,7 +94,7 @@ func TestPapi_GetHostnames(t *testing.T) {
 			},
 		},
 		"validation error PropertyVersion missing": {
-			params: GetHostnamesRequest{
+			params: GetPropertyVersionHostnamesRequest{
 				PropertyID: "prp_175780",
 			},
 			withError: func(t *testing.T, err error) {
@@ -104,7 +104,7 @@ func TestPapi_GetHostnames(t *testing.T) {
 			},
 		},
 		"500 internal server status error": {
-			params: GetHostnamesRequest{
+			params: GetPropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 			},
@@ -139,7 +139,7 @@ func TestPapi_GetHostnames(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetHostnames(context.Background(), test.params)
+			result, err := client.GetPropertyVersionHostnames(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
@@ -150,17 +150,17 @@ func TestPapi_GetHostnames(t *testing.T) {
 	}
 }
 
-func TestPapi_CreateHostnames(t *testing.T) {
+func TestPapi_CreatePropertyVersionHostnames(t *testing.T) {
 	tests := map[string]struct {
-		params           CreateHostnamesRequest
+		params           CreatePropertyVersionHostnamesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *CreateHostnamesResponse
+		expectedResponse *CreatePropertyVersionHostnamesResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
-			params: CreateHostnamesRequest{
+			params: CreatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 				GroupID:         "grp_15225",
@@ -195,7 +195,7 @@ func TestPapi_CreateHostnames(t *testing.T) {
 
 `,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
-			expectedResponse: &CreateHostnamesResponse{
+			expectedResponse: &CreatePropertyVersionHostnamesResponse{
 				AccountID:       "act_1-1TJZFB",
 				ContractID:      "ctr_1-1TJZH5",
 				GroupID:         "grp_15225",
@@ -221,7 +221,7 @@ func TestPapi_CreateHostnames(t *testing.T) {
 			},
 		},
 		"200 empty hostnames": {
-			params: CreateHostnamesRequest{
+			params: CreatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 				GroupID:         "grp_15225",
@@ -243,7 +243,7 @@ func TestPapi_CreateHostnames(t *testing.T) {
 
 `,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
-			expectedResponse: &CreateHostnamesResponse{
+			expectedResponse: &CreatePropertyVersionHostnamesResponse{
 				AccountID:       "act_1-1TJZFB",
 				ContractID:      "ctr_1-1TJZH5",
 				GroupID:         "grp_15225",
@@ -256,7 +256,7 @@ func TestPapi_CreateHostnames(t *testing.T) {
 			},
 		},
 		"200 VerifyHostnames true empty hostnames": {
-			params: CreateHostnamesRequest{
+			params: CreatePropertyVersionHostnamesRequest{
 				PropertyID:        "prp_175780",
 				PropertyVersion:   3,
 				GroupID:           "grp_15225",
@@ -280,7 +280,7 @@ func TestPapi_CreateHostnames(t *testing.T) {
 
 `,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=true",
-			expectedResponse: &CreateHostnamesResponse{
+			expectedResponse: &CreatePropertyVersionHostnamesResponse{
 				AccountID:       "act_1-1TJZFB",
 				ContractID:      "ctr_1-1TJZH5",
 				GroupID:         "grp_15225",
@@ -293,7 +293,7 @@ func TestPapi_CreateHostnames(t *testing.T) {
 			},
 		},
 		"validation error PropertyID missing": {
-			params: CreateHostnamesRequest{
+			params: CreatePropertyVersionHostnamesRequest{
 				PropertyVersion: 3,
 			},
 			withError: func(t *testing.T, err error) {
@@ -303,7 +303,7 @@ func TestPapi_CreateHostnames(t *testing.T) {
 			},
 		},
 		"validation error PropertyVersion missing": {
-			params: CreateHostnamesRequest{
+			params: CreatePropertyVersionHostnamesRequest{
 				PropertyID: "prp_175780",
 			},
 			withError: func(t *testing.T, err error) {
@@ -313,7 +313,7 @@ func TestPapi_CreateHostnames(t *testing.T) {
 			},
 		},
 		"500 internal server status error": {
-			params: CreateHostnamesRequest{
+			params: CreatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 			},
@@ -348,7 +348,7 @@ func TestPapi_CreateHostnames(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateHostnames(context.Background(), test.params)
+			result, err := client.CreatePropertyVersionHostnames(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
