@@ -134,6 +134,8 @@ func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":      validation.Validate(ch.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(ch.PropertyVersion, validation.Required),
+		"Hostnames":       validation.Validate(ch.Hostnames, validation.Required),
+		"Hostnames items": validation.Validate(ch.Hostnames.Items, validation.Required),
 	}.Filter()
 }
 
