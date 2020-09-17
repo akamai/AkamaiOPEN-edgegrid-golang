@@ -414,6 +414,7 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
+				Hostnames:       HostnameRequestItems{[]Hostname{{}}},
 			},
 			responseStatus: http.StatusNotFound,
 			responseBody: `
