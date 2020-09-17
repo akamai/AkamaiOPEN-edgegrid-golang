@@ -3,6 +3,7 @@ package papi
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -125,6 +126,25 @@ func TestPapi_GetPropertyVersionHostnames(t *testing.T) {
 					StatusCode: http.StatusInternalServerError,
 				}
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"404 hostnames not found": {
+			params: GetPropertyVersionHostnamesRequest{
+				PropertyID:      "prp_175780",
+				PropertyVersion: 3,
+			},
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+{
+	"type": "not_found",
+    "title": "Not found",
+    "detail": "Hostnames not found",
+    "status": 404
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=&groupId=&validateHostnames=false",
+			withError: func(t *testing.T, err error) {
+				getUrl := "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=&groupId=&validateHostnames=false"
+				assert.True(t, err.Error() == fmt.Sprintf("resource not found, %s", getUrl))
 			},
 		},
 	}
@@ -388,6 +408,25 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 					StatusCode: http.StatusInternalServerError,
 				}
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"404 hostnames not found": {
+			params: UpdatePropertyVersionHostnamesRequest{
+				PropertyID:      "prp_175780",
+				PropertyVersion: 3,
+			},
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+{
+	"type": "not_found",
+    "title": "Not found",
+    "detail": "Hostnames not found",
+    "status": 404
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=&groupId=&validateHostnames=false",
+			withError: func(t *testing.T, err error) {
+				getUrl := "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=&groupId=&validateHostnames=false"
+				assert.True(t, err.Error() == fmt.Sprintf("resource not found, %s", getUrl))
 			},
 		},
 	}
