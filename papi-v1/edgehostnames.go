@@ -133,7 +133,7 @@ func (edgeHostnames *EdgeHostnames) FindEdgeHostname(edgeHostname *EdgeHostname)
 	}
 
 	if len(edgeHostnames.EdgeHostnames.Items) == 0 {
-		return nil, errors.New("no hostnames found, did you call GetPropertyVersionHostnames()?")
+		return nil, errors.New("no hostnames found, did you call GetHostnames()?")
 	}
 
 	for _, eHn := range edgeHostnames.EdgeHostnames.Items {
