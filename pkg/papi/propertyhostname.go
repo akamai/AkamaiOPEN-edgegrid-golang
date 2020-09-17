@@ -20,39 +20,11 @@ type (
 
 		// CreatePropertyVersionHostnames lists all the hostnames assigned to a property version
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#putpropertyversionhostnames
-		CreatePropertyVersionHostnames(context.Context, CreatePropertyVersionHostnamesRequest) (*CreatePropertyVersionHostnamesResponse, error)
+		UpdatePropertyVersionHostnames(context.Context, UpdatePropertyVersionHostnamesRequest) (*UpdatePropertyVersionHostnamesResponse, error)
 	}
 
+	// GetPropertyVersionHostnamesRequest contains parameters required to list property version hostnames
 	GetPropertyVersionHostnamesRequest struct {
-		PropertyID        string
-		PropertyVersion   int
-		ContractID        string
-		GroupId           string
-		ValidateHostnames bool
-	}
-
-	GetPropertyVersionHostnamesResponse struct {
-		AccountID       string        `json:"accountId"`
-		ContractID      string        `json:"contractId"`
-		GroupID         string        `json:"groupId"`
-		PropertyID      string        `json:"propertyId"`
-		PropertyVersion int           `json:"propertyVersion"`
-		Etag            string        `json:"etag"`
-		Hostnames       HostnameItems `json:"hostnames"`
-	}
-
-	HostnameItems struct {
-		Items []HostnameItem `json:"items"`
-	}
-
-	HostnameItem struct {
-		CnameType      string `json:"cnameType"`
-		EdgeHostnameID string `json:"edgeHostnameId"`
-		CnameFrom      string `json:"cnameFrom"`
-		CnameTo        string `json:"cnameTo"`
-	}
-
-	CreatePropertyVersionHostnamesRequest struct {
 		PropertyID        string
 		PropertyVersion   int
 		ContractID        string
@@ -60,14 +32,54 @@ type (
 		ValidateHostnames bool
 	}
 
-	CreatePropertyVersionHostnamesResponse struct {
-		AccountID       string        `json:"accountId"`
-		ContractID      string        `json:"contractId"`
-		GroupID         string        `json:"groupId"`
-		PropertyID      string        `json:"propertyId"`
-		PropertyVersion int           `json:"propertyVersion"`
-		Etag            string        `json:"etag"`
-		Hostnames       HostnameItems `json:"hostnames"`
+	// GetPropertyVersionHostnamesResponse contains the response from property version hostnames creation, along with the ID of the created resource
+	GetPropertyVersionHostnamesResponse struct {
+		AccountID       string                `json:"accountId"`
+		ContractID      string                `json:"contractId"`
+		GroupID         string                `json:"groupId"`
+		PropertyID      string                `json:"propertyId"`
+		PropertyVersion int                   `json:"propertyVersion"`
+		Etag            string                `json:"etag"`
+		Hostnames       HostnameResponseItems `json:"hostnames"`
+	}
+
+	// HostnameResponseItems contains the response body for GetPropertyVersionHostnamesResponse
+	HostnameResponseItems struct {
+		Items []Hostname `json:"items"`
+	}
+
+	// Hostname contains information about each of the HostnameResponseItems
+	Hostname struct {
+		CnameType      string `json:"cnameType"`
+		EdgeHostnameID string `json:"edgeHostnameId"`
+		CnameFrom      string `json:"cnameFrom"`
+		CnameTo        string `json:"cnameTo"`
+	}
+
+	// UpdatePropertyVersionHostnamesRequest contains parameters required to update the set of hostname entries for a property version
+	UpdatePropertyVersionHostnamesRequest struct {
+		PropertyID        string
+		PropertyVersion   int
+		ContractID        string
+		GroupID           string
+		ValidateHostnames bool
+		Hostnames         HostnameRequestItems
+	}
+
+	// HostnameRequestItems contains the request body for UpdatePropertyVersionHostnamesRequest
+	HostnameRequestItems struct {
+		Items []Hostname
+	}
+
+	// UpdatePropertyVersionHostnamesResponse contains information about each of the HostnameRequestItems
+	UpdatePropertyVersionHostnamesResponse struct {
+		AccountID       string                `json:"accountId"`
+		ContractID      string                `json:"contractId"`
+		GroupID         string                `json:"groupId"`
+		PropertyID      string                `json:"propertyId"`
+		PropertyVersion int                   `json:"propertyVersion"`
+		Etag            string                `json:"etag"`
+		Hostnames       HostnameResponseItems `json:"hostnames"`
 	}
 )
 
@@ -88,11 +100,11 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 	logger.Debug("GetPropertyVersionHostnames")
 
 	getURL := fmt.Sprintf(
-		"/papi/v1/properties/%s/versions/%d/hostnames?contractId=%s&groupId=%s&validateHostnames=%v",
+		"/papi/v1/properties/%s/versions/%d/hostnames?contractId=%s&groupId=%s&validateHostnames=%t",
 		params.PropertyID,
 		params.PropertyVersion,
 		params.ContractID,
-		params.GroupId,
+		params.GroupID,
 		params.ValidateHostnames)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
@@ -117,24 +129,24 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 	return &hostnames, nil
 }
 
-// Validate validates CreatePropertyVersionHostnamesRequest
-func (ch CreatePropertyVersionHostnamesRequest) Validate() error {
+// Validate validates UpdatePropertyVersionHostnamesRequest
+func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":      validation.Validate(ch.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(ch.PropertyVersion, validation.Required),
 	}.Filter()
 }
 
-func (p *papi) CreatePropertyVersionHostnames(ctx context.Context, params CreatePropertyVersionHostnamesRequest) (*CreatePropertyVersionHostnamesResponse, error) {
+func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params UpdatePropertyVersionHostnamesRequest) (*UpdatePropertyVersionHostnamesResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("CreatePropertyVersionHostnames")
+	logger.Debug("UpdatePropertyVersionHostnames")
 
 	putURL := fmt.Sprintf(
-		"/papi/v1/properties/%s/versions/%v/hostnames?contractId=%s&groupId=%s&validateHostnames=%v",
+		"/papi/v1/properties/%s/versions/%v/hostnames?contractId=%s&groupId=%s&validateHostnames=%t",
 		params.PropertyID,
 		params.PropertyVersion,
 		params.ContractID,
@@ -148,8 +160,8 @@ func (p *papi) CreatePropertyVersionHostnames(ctx context.Context, params Create
 	}
 
 	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
-	var hostnames CreatePropertyVersionHostnamesResponse
-	resp, err := p.Exec(req, &hostnames)
+	var hostnames UpdatePropertyVersionHostnamesResponse
+	resp, err := p.Exec(req, &hostnames, params.Hostnames)
 	if err != nil {
 		return nil, fmt.Errorf("createpropertyversionhostnames request failed: %w", err)
 	}

@@ -26,7 +26,7 @@ func TestPapi_GetPropertyVersionHostnames(t *testing.T) {
 			params: GetPropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
-				GroupId:         "grp_15225",
+				GroupID:         "grp_15225",
 				ContractID:      "ctr_1-1TJZH5",
 			},
 			responseStatus: http.StatusOK,
@@ -65,8 +65,8 @@ func TestPapi_GetPropertyVersionHostnames(t *testing.T) {
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 				Etag:            "6aed418629b4e5c0",
-				Hostnames: HostnameItems{
-					Items: []HostnameItem{
+				Hostnames: HostnameResponseItems{
+					Items: []Hostname{
 						{
 							CnameType:      "EDGE_HOSTNAME",
 							EdgeHostnameID: "ehn_895822",
@@ -150,21 +150,35 @@ func TestPapi_GetPropertyVersionHostnames(t *testing.T) {
 	}
 }
 
-func TestPapi_CreatePropertyVersionHostnames(t *testing.T) {
+func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 	tests := map[string]struct {
-		params           CreatePropertyVersionHostnamesRequest
+		params           UpdatePropertyVersionHostnamesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *CreatePropertyVersionHostnamesResponse
+		expectedResponse *UpdatePropertyVersionHostnamesResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
-			params: CreatePropertyVersionHostnamesRequest{
+			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 				GroupID:         "grp_15225",
 				ContractID:      "ctr_1-1TJZH5",
+				Hostnames: HostnameRequestItems{
+					Items: []Hostname{
+						{
+							CnameType: "EDGE_HOSTNAME",
+							CnameFrom: "m.example.com",
+							CnameTo:   "example.com.edgesuite.net",
+						},
+						{
+							CnameType:      "EDGE_HOSTNAME",
+							EdgeHostnameID: "ehn_895824",
+							CnameFrom:      "example3.com",
+						},
+					},
+				},
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -195,15 +209,15 @@ func TestPapi_CreatePropertyVersionHostnames(t *testing.T) {
 
 `,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
-			expectedResponse: &CreatePropertyVersionHostnamesResponse{
+			expectedResponse: &UpdatePropertyVersionHostnamesResponse{
 				AccountID:       "act_1-1TJZFB",
 				ContractID:      "ctr_1-1TJZH5",
 				GroupID:         "grp_15225",
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 				Etag:            "6aed418629b4e5c0",
-				Hostnames: HostnameItems{
-					Items: []HostnameItem{
+				Hostnames: HostnameResponseItems{
+					Items: []Hostname{
 						{
 							CnameType:      "EDGE_HOSTNAME",
 							EdgeHostnameID: "ehn_895822",
@@ -221,7 +235,7 @@ func TestPapi_CreatePropertyVersionHostnames(t *testing.T) {
 			},
 		},
 		"200 empty hostnames": {
-			params: CreatePropertyVersionHostnamesRequest{
+			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 				GroupID:         "grp_15225",
@@ -243,20 +257,20 @@ func TestPapi_CreatePropertyVersionHostnames(t *testing.T) {
 
 `,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
-			expectedResponse: &CreatePropertyVersionHostnamesResponse{
+			expectedResponse: &UpdatePropertyVersionHostnamesResponse{
 				AccountID:       "act_1-1TJZFB",
 				ContractID:      "ctr_1-1TJZH5",
 				GroupID:         "grp_15225",
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 				Etag:            "6aed418629b4e5c0",
-				Hostnames: HostnameItems{
-					Items: []HostnameItem{},
+				Hostnames: HostnameResponseItems{
+					Items: []Hostname{},
 				},
 			},
 		},
 		"200 VerifyHostnames true empty hostnames": {
-			params: CreatePropertyVersionHostnamesRequest{
+			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:        "prp_175780",
 				PropertyVersion:   3,
 				GroupID:           "grp_15225",
@@ -280,20 +294,20 @@ func TestPapi_CreatePropertyVersionHostnames(t *testing.T) {
 
 `,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=true",
-			expectedResponse: &CreatePropertyVersionHostnamesResponse{
+			expectedResponse: &UpdatePropertyVersionHostnamesResponse{
 				AccountID:       "act_1-1TJZFB",
 				ContractID:      "ctr_1-1TJZH5",
 				GroupID:         "grp_15225",
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 				Etag:            "6aed418629b4e5c0",
-				Hostnames: HostnameItems{
-					Items: []HostnameItem{},
+				Hostnames: HostnameResponseItems{
+					Items: []Hostname{},
 				},
 			},
 		},
 		"validation error PropertyID missing": {
-			params: CreatePropertyVersionHostnamesRequest{
+			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyVersion: 3,
 			},
 			withError: func(t *testing.T, err error) {
@@ -303,7 +317,7 @@ func TestPapi_CreatePropertyVersionHostnames(t *testing.T) {
 			},
 		},
 		"validation error PropertyVersion missing": {
-			params: CreatePropertyVersionHostnamesRequest{
+			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID: "prp_175780",
 			},
 			withError: func(t *testing.T, err error) {
@@ -313,7 +327,7 @@ func TestPapi_CreatePropertyVersionHostnames(t *testing.T) {
 			},
 		},
 		"500 internal server status error": {
-			params: CreatePropertyVersionHostnamesRequest{
+			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
 			},
@@ -348,7 +362,7 @@ func TestPapi_CreatePropertyVersionHostnames(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreatePropertyVersionHostnames(context.Background(), test.params)
+			result, err := client.UpdatePropertyVersionHostnames(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
