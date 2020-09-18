@@ -3,12 +3,13 @@ package papi
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/spf13/cast"
-	"net/http"
-	"strings"
 )
 
 type (
@@ -91,7 +92,7 @@ type (
 		DomainSuffix      string    `json:"domainSuffix"`
 		Secure            bool      `json:"secure,omitempty"`
 		SecureNetwork     string    `json:"secureNetwork,omitempty"`
-		SlotNumber        int       `json:"slotNumber,omitEmpty"`
+		SlotNumber        int       `json:"slotNumber,omitempty"`
 		IPVersionBehavior string    `json:"ipVersionBehavior"`
 		CertEnrollmentID  int       `json:"certEnrollmentId,omitempty"`
 		UseCases          []UseCase `json:"useCases,omitempty"`
