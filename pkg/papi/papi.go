@@ -21,7 +21,7 @@ type (
 		CPCodes
 		PropertyVersions
 		EdgeHostnames
-		Product
+		Products
 	}
 
 	papi struct {

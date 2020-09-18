@@ -11,36 +11,46 @@ import (
 )
 
 type (
-	Product interface {
+	// Products contains operations available on Products resource
+	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#productsgroup
+	Products interface {
+		// GetProducts lists all available Products
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#productsgroup
 		GetProducts(context.Context, GetProductsRequest) (*GetProductsResponse, error)
 	}
 
-	Products struct {
-		Items []ProductItem `json:"items"`
-	}
-
-	ProductItem struct {
-		ProductName string `json:"productName"`
-		ProductID   string `json:"productId"`
-	}
-
+	// GetProductsRequest contains data required to list products associated to a contract
 	GetProductsRequest struct {
 		ContractID string
 	}
 
+	// GetProductsResponse contains details about all products associated to a contract
 	GetProductsResponse struct {
-		AccountID  string     `json:"accountId"`
-		ContractID string     `json:"contractId"`
-		Products   []Products `json:"products"`
+		AccountID  string        `json:"accountId"`
+		ContractID string        `json:"contractId"`
+		Products   ProductsItems `json:"products"`
+	}
+
+	// ProductsItems contains a list of ProductItem
+	ProductsItems struct {
+		Items []ProductItem `json:"items"`
+	}
+
+	// ProductItem contains product resource data
+	ProductItem struct {
+		ProductName string `json:"productName"`
+		ProductID   string `json:"productId"`
 	}
 )
 
+// Validate validates GetProductsRequest
 func (pr GetProductsRequest) Validate() error {
 	return validation.Errors{
 		"ContractID": validation.Validate(pr.ContractID, validation.Required),
-	}
+	}.Filter()
 }
 
+// GetProducts is used to list all products for a given contract
 func (p *papi) GetProducts(ctx context.Context, params GetProductsRequest) (*GetProductsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
