@@ -32,7 +32,7 @@ type (
 		ValidateHostnames bool
 	}
 
-	// GetPropertyVersionHostnamesResponse contains the response from property version hostnames creation, along with the ID of the created resource
+	// GetPropertyVersionHostnamesResponse contains all property version hostnames associated to the given parameters
 	GetPropertyVersionHostnamesResponse struct {
 		AccountID       string                `json:"accountId"`
 		ContractID      string                `json:"contractId"`
