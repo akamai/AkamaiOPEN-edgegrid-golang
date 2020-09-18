@@ -21,6 +21,7 @@ type (
 		CPCodes
 		PropertyVersions
 		EdgeHostnames
+		ClientSettings
 	}
 
 	papi struct {
