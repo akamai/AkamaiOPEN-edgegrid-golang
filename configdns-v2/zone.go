@@ -432,7 +432,7 @@ func (zone *ZoneCreate) SaveChangelist() error {
 		Config,
 		"POST",
 		"/config-dns/v2/changelists/?zone="+zone.Zone,
-		nil,
+		"",
 	)
 	if err != nil {
 		return err
@@ -474,7 +474,7 @@ func (zone *ZoneCreate) SubmitChangelist() error {
 		Config,
 		"POST",
 		"/config-dns/v2/changelists/"+zone.Zone+"/submit",
-		nil,
+		"",
 	)
 	if err != nil {
 		return err
