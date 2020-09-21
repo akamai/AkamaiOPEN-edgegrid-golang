@@ -69,6 +69,14 @@ func New(opts ...Option) (*Config, error) {
 	return c, nil
 }
 
+// Must will panic if the new method returns an error
+func Must(config *Config, err error) *Config {
+	if err != nil {
+		panic(err)
+	}
+	return config
+}
+
 // WithFile sets the config file path
 func WithFile(file string) Option {
 	return func(c *Config) {
