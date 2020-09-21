@@ -92,7 +92,7 @@ type (
 		DomainSuffix      string    `json:"domainSuffix"`
 		Secure            bool      `json:"secure,omitempty"`
 		SecureNetwork     string    `json:"secureNetwork,omitempty"`
-		SlotNumber        int       `json:"slotNumber,omitEmpty"`
+		SlotNumber        int       `json:"slotNumber,omitempty"`
 		IPVersionBehavior string    `json:"ipVersionBehavior"`
 		CertEnrollmentID  int       `json:"certEnrollmentId,omitempty"`
 		UseCases          []UseCase `json:"useCases,omitempty"`
