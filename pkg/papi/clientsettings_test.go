@@ -53,6 +53,27 @@ func TestPapi_GetClientSettings(t *testing.T) {
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
+		"500 server error": {
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching client settings",
+    "status": 500
+}
+`,
+			expectedPath: "/papi/v1/client-settings",
+			withError: func(t *testing.T, err error) {
+				want := session.APIError{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error fetching client settings",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
 	}
 
 	for name, test := range tests {
