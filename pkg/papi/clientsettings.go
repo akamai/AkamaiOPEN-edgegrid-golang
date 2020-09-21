@@ -50,5 +50,27 @@ func (p *papi) GetClientSettings(ctx context.Context) (*ClientSettingsBody, erro
 // UpdateClientSettings is used to update the client settings
 // fixme body structure
 func (p *papi) UpdateClientSettings(ctx context.Context, params ClientSettingsBody) (*ClientSettingsBody, error) {
-	return nil, nil
+	logger := p.Log(ctx)
+	logger.Debug("UpdateClientSettings")
+
+	putURL := "/papi/v1/client-settings"
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create updateclientsettings request: %w", err)
+	}
+
+	var clientSettings ClientSettingsBody
+	resp, err := p.Exec(req, &clientSettings, params)
+	if err != nil {
+		return nil, fmt.Errorf("updateclientsettings request failed: %s", err)
+	}
+
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, putURL)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, session.NewAPIError(resp, logger)
+	}
+
+	return &clientSettings, nil
 }
