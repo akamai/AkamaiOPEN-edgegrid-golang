@@ -281,7 +281,7 @@ func TestPapi_GetPropertyVersion(t *testing.T) {
 				assert.Contains(t, err.Error(), "PropertyID")
 			},
 		},
-		"empty property version version": {
+		"empty property version": {
 			params: GetPropertyVersionRequest{
 				PropertyID: "propertyID",
 				ContractID: "contract",
