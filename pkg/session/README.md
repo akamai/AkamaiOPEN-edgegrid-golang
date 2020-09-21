@@ -39,3 +39,43 @@ func main() {
 }
         
 ```
+
+## Library Logging
+The session package supports the structured logging interface from `github.com/apex`. These can be applied globally to the session or to the request context.
+
+### Adding a logger to the session
+
+```
+    s, err := session.New(
+         session.WithConfig(edgerc),
+         session.WithLog(log.Log),
+     )
+     if err != nil {
+         panic(err)
+     }
+```
+
+### Request logging
+The logger can be overidden for a specific request like this
+
+```
+    req, _ := http.NewRequest(http.MethodGet, "/papi/v1/contracts", nil)
+
+    req = req.WithContext(
+        session.ContextWithOptions(request.Context(),
+            session.WithContextLog(otherlog),
+        )
+```
+
+## Custom request headers
+The context can also be updated to pass special http headers when necessary
+
+```
+    customHeader := make(http.Header)
+    customHeader.Set("X-Custom-Header", "some custom value")
+
+    req = req.WithContext(
+        session.ContextWithOptions(request.Context(),
+            session.WithContextHeaders(customHeader),
+        )
+```

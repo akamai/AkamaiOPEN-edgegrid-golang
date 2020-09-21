@@ -42,14 +42,22 @@ type (
 		userAgent string
 	}
 
+	contextOptions struct {
+		log    log.Interface
+		header http.Header
+	}
+
 	// Option defines a client option
 	Option func(*session)
 
 	contextKey string
+
+	// ContextOption are options on the context
+	ContextOption func(*contextOptions)
 )
 
 var (
-	contextLog = contextKey("logger")
+	contextOptionKey = contextKey("sessionContext")
 )
 
 const (
@@ -133,9 +141,9 @@ func WithHTTPTracing(trace bool) Option {
 
 // Log will return the context logger, or the session log
 func (s *session) Log(ctx context.Context) log.Interface {
-	l := ctx.Value(contextLog)
-	if l != nil {
-		return l.(log.Interface)
+	o := ctx.Value(contextOptionKey)
+	if o != nil {
+		return o.(*contextOptions).log
 	}
 	if s.log != nil {
 		return s.log
@@ -151,8 +159,27 @@ func (s *session) Client() *http.Client {
 	return s.client
 }
 
-// ContextWithLog add a log.Interface to the context to be used in an akamai api request
+// ContextWithOptions adds request specific options to the context
 // This log will debug the request only using the provided log
-func ContextWithLog(ctx context.Context, log log.Interface) context.Context {
-	return context.WithValue(ctx, contextLog, log)
+func ContextWithOptions(ctx context.Context, opts ...ContextOption) context.Context {
+	o := new(contextOptions)
+	for _, opt := range opts {
+		opt(o)
+	}
+
+	return context.WithValue(ctx, contextOptionKey, o)
+}
+
+// WithContextLog provides a context specific logger
+func WithContextLog(l log.Interface) ContextOption {
+	return func(o *contextOptions) {
+		o.log = l
+	}
+}
+
+// WithContextHeaders sets the context headers
+func WithContextHeaders(h http.Header) ContextOption {
+	return func(o *contextOptions) {
+		o.header = h
+	}
 }
