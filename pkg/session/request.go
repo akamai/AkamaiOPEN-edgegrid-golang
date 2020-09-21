@@ -29,10 +29,6 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 		r.URL.Host = s.config.Host
 	}
 
-	if err := s.Sign(r); err != nil {
-		return nil, err
-	}
-
 	if len(in) > 0 {
 		data, err := json.Marshal(in[0])
 		if err != nil {
@@ -40,6 +36,10 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 		}
 
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(data))
+	}
+
+	if err := s.Sign(r); err != nil {
+		return nil, err
 	}
 
 	if s.trace {
