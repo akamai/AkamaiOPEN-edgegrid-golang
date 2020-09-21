@@ -2,9 +2,12 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 
 	"github.com/stretchr/testify/require"
 
@@ -45,10 +48,10 @@ func TestPapi_GetClientSettings(t *testing.T) {
 }
 `,
 			expectedPath: "/papi/v1/client-settings",
-			/*expectedResponse: &ClientSettingsBody{
-				RuleFormat:  "v2015-08-08",
-				UsePrefixes: true,
-			},*/
+			withError: func(t *testing.T, err error) {
+				want := session.ErrNotFound
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
 		},
 	}
 
