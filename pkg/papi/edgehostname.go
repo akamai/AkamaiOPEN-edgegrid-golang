@@ -3,12 +3,13 @@ package papi
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/spf13/cast"
-	"net/http"
-	"strings"
 )
 
 type (

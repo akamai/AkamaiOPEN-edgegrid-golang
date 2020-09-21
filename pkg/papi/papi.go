@@ -22,6 +22,7 @@ type (
 		Properties
 		PropertyVersions
 		EdgeHostnames
+		PropertyVersionHostnames
 		ClientSettings
 		PropertyRules
 	}
