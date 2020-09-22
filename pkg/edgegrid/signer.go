@@ -14,21 +14,32 @@ import (
 	"github.com/google/uuid"
 )
 
+type authHeader struct {
+	authType    string
+	clientToken string
+	accessToken string
+	timestamp   string
+	nonce       string
+	signature   string
+}
+
+const authType = "EG1-HMAC-SHA256"
+
 // SignRequest adds a signed authorization header to the http request
-func (c Config) SignRequest(r *http.Request) error {
+func (c Config) SignRequest(r *http.Request) {
+	r.Header.Set("Authorization", c.createAuthHeader(r).String())
+}
+
+func (c Config) createAuthHeader(r *http.Request) authHeader {
 	timestamp := Timestamp(time.Now())
 
-	nonce, err := uuid.NewRandom()
-	if err != nil {
-		return err
+	auth := authHeader{
+		authType:    authType,
+		clientToken: c.ClientToken,
+		accessToken: c.AccessToken,
+		timestamp:   timestamp,
+		nonce:       uuid.New().String(),
 	}
-
-	authHeader := fmt.Sprintf("EG1-HMAC-SHA256 client_token=%s;access_token=%s;timestamp=%s;nonce=%s;",
-		c.ClientToken,
-		c.AccessToken,
-		timestamp,
-		nonce,
-	)
 
 	msgPath := r.URL.EscapedPath()
 	if r.URL.RawQuery != "" {
@@ -41,30 +52,28 @@ func (c Config) SignRequest(r *http.Request) error {
 		r.URL.Scheme,
 		r.URL.Host,
 		msgPath,
-		c.canonicalizeHeaders(r),
-		c.createContentHash(r),
-		authHeader,
+		canonicalizeHeaders(r.Header, c.HeaderToSign),
+		createContentHash(r, c.MaxBody),
+		auth.String(),
 	}
 	msg := strings.Join(msgData, "\t")
 
 	key := createSignature(timestamp, c.ClientSecret)
-
-	r.Header.Set("Authorization", fmt.Sprintf("%ssignature=%s", authHeader, createSignature(msg, key)))
-
-	return nil
+	auth.signature = createSignature(msg, key)
+	return auth
 }
 
-func (c Config) canonicalizeHeaders(r *http.Request) string {
+func canonicalizeHeaders(requestHeaders http.Header, headersToSign []string) string {
 	var unsortedHeader []string
 	var sortedHeader []string
-	for k := range r.Header {
+	for k := range requestHeaders {
 		unsortedHeader = append(unsortedHeader, k)
 	}
 	sort.Strings(unsortedHeader)
 	for _, k := range unsortedHeader {
-		for _, sign := range c.HeaderToSign {
+		for _, sign := range headersToSign {
 			if sign == k {
-				v := strings.TrimSpace(r.Header.Get(k))
+				v := strings.TrimSpace(requestHeaders.Get(k))
 				sortedHeader = append(sortedHeader, fmt.Sprintf("%s:%s", strings.ToLower(k), strings.ToLower(stringMinifier(v))))
 			}
 		}
@@ -77,7 +86,7 @@ func (c Config) canonicalizeHeaders(r *http.Request) string {
 // The size of the POST body must be less than or equal to the value specified by the service.
 // Any request that does not meet this criteria SHOULD be rejected during the signing process,
 // as the request will be rejected by EdgeGrid.
-func (c Config) createContentHash(r *http.Request) string {
+func createContentHash(r *http.Request, maxBody int) string {
 	var (
 		contentHash  string
 		preparedBody string
@@ -90,9 +99,9 @@ func (c Config) createContentHash(r *http.Request) string {
 		preparedBody = string(bodyBytes)
 	}
 
-	if r.Method == "POST" && len(preparedBody) > 0 {
-		if len(preparedBody) > c.MaxBody {
-			preparedBody = preparedBody[0:c.MaxBody]
+	if r.Method == http.MethodPost && len(preparedBody) > 0 {
+		if len(preparedBody) > maxBody {
+			preparedBody = preparedBody[0:maxBody]
 		}
 
 		sum := sha256.Sum256([]byte(preparedBody))
@@ -101,4 +110,17 @@ func (c Config) createContentHash(r *http.Request) string {
 	}
 
 	return contentHash
+}
+
+func (a authHeader) String() string {
+	auth := fmt.Sprintf("%s client_token=%s;access_token=%s;timestamp=%s;nonce=%s;",
+		a.authType,
+		a.clientToken,
+		a.accessToken,
+		a.timestamp,
+		a.nonce)
+	if a.signature != "" {
+		auth += fmt.Sprintf("signature=%s", a.signature)
+	}
+	return auth
 }

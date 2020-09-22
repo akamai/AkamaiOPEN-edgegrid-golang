@@ -65,8 +65,8 @@ const (
 	Version = "2.0.0"
 )
 
-// New returns a new client
-func New(opts ...Option) (Session, error) {
+// New returns a new session
+func New(opts ...Option) (*session, error) {
 	var (
 		defaultUserAgent = "Akamai-Open-Edgegrid-golang/" + Version + " golang/" + strings.TrimPrefix(runtime.Version(), "go")
 	)

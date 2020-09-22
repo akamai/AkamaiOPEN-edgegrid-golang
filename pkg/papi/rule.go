@@ -256,7 +256,7 @@ func (p *papi) UpdateRuleTree(ctx context.Context, request UpdateRulesRequest) (
 
 	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var versions UpdateRulesResponse
-	resp, err := p.Exec(req, &versions, request.Rules, request.Rules)
+	resp, err := p.Exec(req, &versions, request.Rules)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateRuleTree request failed: %w", err)
 	}
