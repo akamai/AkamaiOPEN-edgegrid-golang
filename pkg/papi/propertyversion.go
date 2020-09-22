@@ -3,12 +3,12 @@ package papi
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/spf13/cast"
-	"net/http"
-	"strconv"
 )
 
 type (
@@ -222,7 +222,6 @@ func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersio
 		return nil, fmt.Errorf("failed to create getpropertyversions request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var versions GetPropertyVersionsResponse
 	resp, err := p.Exec(req, &versions)
 	if err != nil {
@@ -262,7 +261,6 @@ func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequ
 		return nil, fmt.Errorf("failed to create getlatestversion request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var version GetPropertyVersionsResponse
 	resp, err := p.Exec(req, &version)
 	if err != nil {
@@ -299,7 +297,6 @@ func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersion
 		return nil, fmt.Errorf("failed to create getpropertyversion request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var versions GetPropertyVersionsResponse
 	resp, err := p.Exec(req, &versions)
 	if err != nil {
@@ -336,7 +333,6 @@ func (p *papi) CreatePropertyVersion(ctx context.Context, request CreateProperty
 		return nil, fmt.Errorf("failed to create createpropertyversion request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var version CreatePropertyVersionResponse
 	resp, err := p.Exec(req, &version)
 	if err != nil {
@@ -379,7 +375,6 @@ func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetFeaturesRequ
 		return nil, fmt.Errorf("failed to create getavailablebehaviors request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var versions GetFeaturesCriteriaResponse
 	resp, err := p.Exec(req, &versions)
 	if err != nil {
@@ -417,7 +412,6 @@ func (p *papi) GetAvailableCriteria(ctx context.Context, params GetFeaturesReque
 		return nil, fmt.Errorf("failed to create getavailablecriteria request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var versions GetFeaturesCriteriaResponse
 	resp, err := p.Exec(req, &versions)
 	if err != nil {

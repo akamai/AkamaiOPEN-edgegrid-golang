@@ -3,8 +3,10 @@ package papi
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/spf13/cast"
 )
 
 var (
@@ -61,4 +63,12 @@ func WithUsePrefixes(usePrefixes bool) Option {
 	return func(p *papi) {
 		p.usePrefixes = usePrefixes
 	}
+}
+
+// Exec overrides the session.Exec to add papi options
+func (p *papi) Exec(r *http.Request, out interface{}, in ...interface{}) (*http.Response, error) {
+	// explicitly add the PAPI-Use-Prefixes header
+	r.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
+
+	return p.Session.Exec(r, out, in...)
 }

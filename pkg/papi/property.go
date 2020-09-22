@@ -8,7 +8,6 @@ import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/spf13/cast"
 )
 
 type (
@@ -164,8 +163,6 @@ func (p *papi) GetProperties(ctx context.Context, params GetPropertiesRequest) (
 		return nil, fmt.Errorf("failed to create getproperties request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
-
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
 		return nil, fmt.Errorf("getproperties request failed: %w", err)
@@ -195,8 +192,6 @@ func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create createproperty request: %w", err)
 	}
-
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
 	var rval CreatePropertyResponse
 
@@ -239,8 +234,6 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 		return nil, fmt.Errorf("failed to create getproperty request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
-
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
 		return nil, fmt.Errorf("getproperty request failed: %w", err)
@@ -273,8 +266,6 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create delproperty request: %w", err)
 	}
-
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {

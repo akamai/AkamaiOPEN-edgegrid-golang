@@ -235,8 +235,6 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 		return nil, fmt.Errorf("failed to create createactivation request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
-
 	var rval CreateActivationResponse
 
 	resp, err := p.Exec(req, &rval, params.Activation)
@@ -277,8 +275,6 @@ func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (
 		return nil, fmt.Errorf("failed to create getactivation request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
-
 	var rval GetActivationResponse
 
 	resp, err := p.Exec(req, &rval)
@@ -317,8 +313,6 @@ func (p *papi) CancelActivation(ctx context.Context, params CancelActivationRequ
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getactivation request: %w", err)
 	}
-
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
 	var rval CancelActivationResponse
 

@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	"github.com/spf13/cast"
 )
 
 type (
@@ -50,8 +49,6 @@ func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getgroups request: %w", err)
 	}
-
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
 	resp, err := p.Exec(req, &groups)
 	if err != nil {

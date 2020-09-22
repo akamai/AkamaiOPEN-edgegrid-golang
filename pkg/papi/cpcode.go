@@ -8,7 +8,6 @@ import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/spf13/cast"
 )
 
 type (
@@ -137,7 +136,6 @@ func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCP
 		return nil, fmt.Errorf("failed to create getcpcodes request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var cpCodes GetCPCodesResponse
 	resp, err := p.Exec(req, &cpCodes)
 	if err != nil {
@@ -169,7 +167,6 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 		return nil, fmt.Errorf("failed to create getcpcode request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var cpCodes GetCPCodesResponse
 	resp, err := p.Exec(req, &cpCodes)
 	if err != nil {
@@ -201,7 +198,6 @@ func (p *papi) CreateCPCode(ctx context.Context, r CreateCPCodeRequest) (*Create
 		return nil, fmt.Errorf("failed to create createcpcode request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var createResponse CreateCPCodeResponse
 	resp, err := p.Exec(req, &createResponse, r.CPCode)
 	if err != nil {

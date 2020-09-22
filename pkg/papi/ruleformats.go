@@ -3,9 +3,9 @@ package papi
 import (
 	"context"
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	"github.com/spf13/cast"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
 
 type (
@@ -32,8 +32,6 @@ func (p *papi) GetRuleFormats(ctx context.Context) (*GetRuleFormatsResponse, err
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetRuleFormats request: %w", err)
 	}
-
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
 	resp, err := p.Exec(req, &ruleFormats)
 	if err != nil {
