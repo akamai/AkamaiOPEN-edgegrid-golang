@@ -13,6 +13,13 @@ import (
 func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*http.Response, error) {
 	log := s.Log(r.Context())
 
+	// Apply any context header overrides
+	if o, ok := r.Context().Value(contextOptionKey).(*contextOptions); ok {
+		for k, v := range o.header {
+			r.Header[k] = v
+		}
+	}
+
 	if r.UserAgent() == "" {
 		r.Header.Set("User-Agent", s.userAgent)
 	}
