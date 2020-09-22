@@ -68,25 +68,6 @@ func TestPapi_GetEdgeHostnames(t *testing.T) {
 				}},
 			},
 		},
-		"404 Not Found": {
-			params: GetEdgeHostnamesRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find edge hostnames",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-			},
-		},
 		"500 internal server error": {
 			params: GetEdgeHostnamesRequest{
 				ContractID: "contract",
@@ -211,26 +192,6 @@ func TestPapi_GetEdgeHostname(t *testing.T) {
 						UseCases:          nil,
 					},
 				}},
-			},
-		},
-		"404 Not Found": {
-			params: GetEdgeHostnameRequest{
-				EdgeHostnameID: "ehID",
-				ContractID:     "contract",
-				GroupID:        "group",
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find edge hostnames",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
 		"500 internal server error": {

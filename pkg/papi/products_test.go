@@ -53,24 +53,6 @@ func TestPapi_GetProducts(t *testing.T) {
 				},
 			},
 		},
-		"404 not found": {
-			params: GetProductsRequest{
-				ContractID: "ctr_1-1TJZFW",
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find products",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/products?contractId=ctr_1-1TJZFW",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-			},
-		},
 		"500 internal server error": {
 			params: GetProductsRequest{
 				ContractID: "ctr_1-1TJZFW",

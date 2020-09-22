@@ -75,28 +75,6 @@ func TestPapi_GetPropertyVersions(t *testing.T) {
 						}}},
 			},
 		},
-		"404 Not Found": {
-			params: GetPropertyVersionsRequest{
-				PropertyID: "propertyID",
-				ContractID: "contract",
-				GroupID:    "group",
-				Limit:      5,
-				Offset:     6,
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find property versions",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/properties/propertyID/versions?contractId=contract&groupId=group&limit=5&offset=6",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-			},
-		},
 		"500 Internal Server Error": {
 			params: GetPropertyVersionsRequest{
 				PropertyID: "propertyID",
@@ -219,27 +197,6 @@ func TestPapi_GetPropertyVersion(t *testing.T) {
 							UpdatedByUser:    "user",
 							UpdatedDate:      "2020-09-14T19:06:13Z",
 						}}},
-			},
-		},
-		"404 Not Found": {
-			params: GetPropertyVersionRequest{
-				PropertyID:      "propertyID",
-				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find property version",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/properties/propertyID/versions/2?contractId=contract&groupId=group",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
 		"500 Internal Server Error": {
@@ -526,26 +483,6 @@ func TestPapi_GetLatestVersion(t *testing.T) {
 						}}},
 			},
 		},
-		"404 Not Found": {
-			params: GetLatestVersionRequest{
-				PropertyID: "propertyID",
-				ContractID: "contract",
-				GroupID:    "group",
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find latest version",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/properties/propertyID/versions/latest?contractId=contract&groupId=group",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-			},
-		},
 		"500 Internal Server Error": {
 			params: GetLatestVersionRequest{
 				PropertyID: "propertyID",
@@ -666,27 +603,6 @@ func TestPapi_GetAvailableBehaviors(t *testing.T) {
 				}},
 			},
 		},
-		"404 Not Found": {
-			params: GetFeaturesRequest{
-				PropertyID:      "propertyID",
-				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find available behaviors",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-behaviors?contractId=contract&groupId=group",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-			},
-		},
 		"500 Internal Server Error": {
 			params: GetFeaturesRequest{
 				PropertyID:      "propertyID",
@@ -805,27 +721,6 @@ func TestPapi_GetAvailableCriteria(t *testing.T) {
 						SchemaLink: "/papi/v1/schemas/products/prd_Alta/latest#/definitions/catalog/behaviors/cpCode",
 					},
 				}},
-			},
-		},
-		"404 Not Found": {
-			params: GetFeaturesRequest{
-				PropertyID:      "propertyID",
-				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find available criteria",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-criteria?contractId=contract&groupId=group",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
 		"500 Internal Server Error": {

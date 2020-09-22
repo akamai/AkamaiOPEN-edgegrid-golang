@@ -142,9 +142,6 @@ func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCP
 		return nil, fmt.Errorf("getcpcodes request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
@@ -173,9 +170,6 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 		return nil, fmt.Errorf("getcpcode request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}

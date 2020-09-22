@@ -116,9 +116,6 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 	if err != nil {
 		return nil, fmt.Errorf("GetPropertyVersionHostnames request failed: %v", err.Error())
 	}
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w, %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
@@ -164,9 +161,6 @@ func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params Update
 		return nil, fmt.Errorf("createpropertyversionhostnames request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, putURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}

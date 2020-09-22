@@ -70,9 +70,6 @@ func (p *papi) GetProducts(ctx context.Context, params GetProductsRequest) (*Get
 		return nil, fmt.Errorf("getproducts request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}

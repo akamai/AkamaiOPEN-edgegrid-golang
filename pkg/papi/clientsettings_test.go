@@ -36,22 +36,6 @@ func TestPapi_GetClientSettings(t *testing.T) {
 				UsePrefixes: true,
 			},
 		},
-		"404 not found": {
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-    "type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find client settings",
-    "status": 404
-}
-`,
-			expectedPath: "/papi/v1/client-settings",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-			},
-		},
 		"500 server error": {
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -145,26 +129,6 @@ func TestPapi_UpdateClientSettings(t *testing.T) {
 					Detail:     "Error fetching client settings",
 					StatusCode: http.StatusInternalServerError,
 				}
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-			},
-		},
-		"404 OK": {
-			params: ClientSettingsBody{
-				RuleFormat:  "v2015-08-08",
-				UsePrefixes: true,
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-    "type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find client settings",
-    "status": 404
-}
-`,
-			expectedPath: "/papi/v1/client-settings",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},

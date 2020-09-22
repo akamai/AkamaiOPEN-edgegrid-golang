@@ -92,9 +92,6 @@ func (p *papi) SearchProperties(ctx context.Context, request SearchRequest) (*Se
 		return nil, fmt.Errorf("SearchProperties request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, searchURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}

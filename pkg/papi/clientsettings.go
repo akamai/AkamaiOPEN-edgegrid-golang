@@ -37,9 +37,6 @@ func (p *papi) GetClientSettings(ctx context.Context) (*ClientSettingsBody, erro
 		return nil, fmt.Errorf("getclientsettings request failed: %s", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
@@ -65,9 +62,6 @@ func (p *papi) UpdateClientSettings(ctx context.Context, params ClientSettingsBo
 		return nil, fmt.Errorf("updateclientsettings request failed: %s", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, putURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}

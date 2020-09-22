@@ -228,9 +228,6 @@ func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersio
 		return nil, fmt.Errorf("getpropertyversions request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
@@ -267,9 +264,6 @@ func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequ
 		return nil, fmt.Errorf("getlatestversion request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
@@ -303,9 +297,6 @@ func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersion
 		return nil, fmt.Errorf("getpropertyversion request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
@@ -381,9 +372,6 @@ func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetFeaturesRequ
 		return nil, fmt.Errorf("getavailablebehaviors request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
@@ -418,9 +406,6 @@ func (p *papi) GetAvailableCriteria(ctx context.Context, params GetFeaturesReque
 		return nil, fmt.Errorf("getavailablecriteria request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}

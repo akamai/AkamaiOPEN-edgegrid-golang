@@ -201,9 +201,6 @@ func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequ
 		return nil, fmt.Errorf("getedgehostnames request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
@@ -240,9 +237,6 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 		return nil, fmt.Errorf("getedgehostname request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}

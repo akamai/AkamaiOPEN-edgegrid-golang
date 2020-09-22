@@ -61,25 +61,6 @@ func TestPapi_GetCPCodes(t *testing.T) {
 				}},
 			},
 		},
-		"404 Not found": {
-			params: GetCPCodesRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find cp codes",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/cpcodes?contractId=contract&groupId=group",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-			},
-		},
 		"500 internal server error": {
 			params: GetCPCodesRequest{
 				ContractID: "contract",
@@ -196,26 +177,6 @@ func TestPapi_GetCPCode(t *testing.T) {
 						ProductIDs:  []string{"prd_Web_App_Accel"},
 					},
 				}},
-			},
-		},
-		"404 Not found": {
-			params: GetCPCodeRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-				CPCodeID:   "not_found",
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find cp code",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/cpcodes/not_found?contractId=contract&groupId=group",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
 		"500 internal server error": {

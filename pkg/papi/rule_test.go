@@ -186,29 +186,6 @@ func TestPapi_GetRuleTree(t *testing.T) {
 				},
 			},
 		},
-		"404 Not Found": {
-			params: GetRuleTreeRequest{
-				PropertyID:      "propertyID",
-				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
-				ValidateMode:    "fast",
-				ValidateRules:   false,
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-	"type": "not_found",
-    "title": "Not Found",
-    "detail": "Could not find rule tree",
-    "status": 404
-}`,
-			expectedPath: "/papi/v1/properties/propertyID/versions/2/rules?contractId=contract&groupId=group&validateMode=fast&validateRules=false",
-			withError: func(t *testing.T, err error) {
-				want := session.ErrNotFound
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-			},
-		},
 		"500 Internal Server Error": {
 			params: GetRuleTreeRequest{
 				PropertyID:      "propertyID",

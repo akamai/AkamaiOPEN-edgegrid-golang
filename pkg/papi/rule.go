@@ -214,9 +214,6 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 		return nil, fmt.Errorf("getruletree request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%w: %s", session.ErrNotFound, getURL)
-	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
