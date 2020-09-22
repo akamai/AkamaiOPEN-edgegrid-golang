@@ -1,0 +1,28 @@
+[test]
+host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net
+client_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+access_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+
+[missing-host]
+client_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+access_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+
+
+[missing-client-secret]
+host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net
+client_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+access_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+
+
+[missing-client-token]
+host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net
+client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+access_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+
+
+[missing-access-token]
+host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net
+client_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=

@@ -1,6 +1,7 @@
 package edgegrid
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -20,6 +21,13 @@ const (
 
 	// MaxBodySize is the max payload size for client requests
 	MaxBodySize = 131072
+)
+
+var (
+	ErrRequiredOptionEnv    = errors.New("required option is missing from env")
+	ErrRequiredOptionEdgerc = errors.New("required option is missing from edgerc")
+	ErrLoadingFile          = errors.New("loading config file")
+	ErrSectionDoesNotExist  = errors.New("provided config section does not exist")
 )
 
 type (
@@ -57,13 +65,14 @@ func New(opts ...Option) (*Config, error) {
 	}
 
 	if c.env {
-		if err := c.FromEnv(c.section); err == nil {
-			return c, nil
+		if err := c.FromEnv(c.section); err != nil {
+			return c, err
 		}
+		return c, nil
 	}
 
 	if err := c.FromFile(c.file, c.section); err != nil {
-		return c, fmt.Errorf("Unable to load config from environment or .edgerc file: %w", err)
+		return c, fmt.Errorf("unable to load config from environment or .edgerc file: %w", err)
 	}
 
 	return c, nil
@@ -112,12 +121,12 @@ func (c *Config) FromFile(file string, section string) error {
 
 	edgerc, err := ini.Load(path)
 	if err != nil {
-		return fmt.Errorf("could not load config file: %w", err)
+		return fmt.Errorf("%w: %s", ErrLoadingFile, err)
 	}
 
 	sec, err := edgerc.GetSection(section)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrSectionDoesNotExist, err)
 	}
 
 	err = sec.MapTo(&c)
@@ -127,7 +136,7 @@ func (c *Config) FromFile(file string, section string) error {
 
 	for _, opt := range requiredOptions {
 		if !(edgerc.Section(section).HasKey(opt)) {
-			return fmt.Errorf("required option %q is missing from edgerc", opt)
+			return fmt.Errorf("%w: %q", ErrRequiredOptionEdgerc, opt)
 		}
 	}
 
@@ -153,8 +162,6 @@ func (c *Config) FromEnv(section string) error {
 		prefix          string
 	)
 
-	section = strings.ToUpper(section)
-
 	prefix = "AKAMAI"
 
 	if section != DefaultSection {
@@ -166,7 +173,7 @@ func (c *Config) FromEnv(section string) error {
 
 		val, ok := os.LookupEnv(optKey)
 		if !ok {
-			return fmt.Errorf("required option %q is missing from env", optKey)
+			return fmt.Errorf("%w: %q", ErrRequiredOptionEnv, optKey)
 		}
 		switch {
 		case opt == "HOST":
@@ -198,6 +205,5 @@ func (c *Config) FromEnv(section string) error {
 func Timestamp(t time.Time) string {
 	local := time.FixedZone("GMT", 0)
 	t = t.In(local)
-	return fmt.Sprintf("%d%02d%02dT%02d:%02d:%02d+0000",
-		t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
+	return t.Format("20060102T15:04:05-0700")
 }

@@ -427,7 +427,7 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=&groupId=&validateHostnames=false",
 			withError: func(t *testing.T, err error) {
 				getUrl := "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=&groupId=&validateHostnames=false"
-				assert.True(t, err.Error() == fmt.Sprintf("resource not found, %s", getUrl))
+				assert.True(t, err.Error() == fmt.Sprintf("resource not found: %s", getUrl))
 			},
 		},
 	}
