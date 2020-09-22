@@ -9,11 +9,18 @@ import (
 )
 
 type (
+	// ClientSettings contains operations available on ClientSettings resource
+	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#clientsettingsgroup
 	ClientSettings interface {
+		// GetClientSettings returns client's settings.
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getclientsettings
 		GetClientSettings(context.Context) (*ClientSettingsBody, error)
+		// UpdateClientSettings updates client's settings.
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#putclientsettings
 		UpdateClientSettings(context.Context, ClientSettingsBody) (*ClientSettingsBody, error)
 	}
 
+	// ClientSettingsBody represents both the request and response bodies for operating on client settings resource
 	ClientSettingsBody struct {
 		RuleFormat  string `json:"ruleFormat"`
 		UsePrefixes bool   `json:"usePrefixes"`

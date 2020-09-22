@@ -24,10 +24,14 @@ const (
 )
 
 var (
-	ErrRequiredOptionEnv    = errors.New("required option is missing from env")
+	// ErrRequiredOptionEnv is returned when a required ENV variable is not found
+	ErrRequiredOptionEnv = errors.New("required option is missing from env")
+	// ErrRequiredOptionEdgerc is returned when a required value is not found in edgerc file
 	ErrRequiredOptionEdgerc = errors.New("required option is missing from edgerc")
-	ErrLoadingFile          = errors.New("loading config file")
-	ErrSectionDoesNotExist  = errors.New("provided config section does not exist")
+	// ErrLoadingFile indicates problem with loading configuration file
+	ErrLoadingFile = errors.New("loading config file")
+	// ErrSectionDoesNotExist is returned when a section with provided name does not exist in edgerc
+	ErrSectionDoesNotExist = errors.New("provided config section does not exist")
 )
 
 type (

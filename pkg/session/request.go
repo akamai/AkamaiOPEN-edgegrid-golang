@@ -11,9 +11,12 @@ import (
 )
 
 var (
+	// ErrInvalidArgument is returned when invalid number of arguments were supplied to a function
 	ErrInvalidArgument = errors.New("invalid arguments provided")
-	ErrMarshaling      = errors.New("marshaling input")
-	ErrUnmarshaling    = errors.New("unmarshaling output")
+	// ErrMarshaling represents marshaling error
+	ErrMarshaling = errors.New("marshaling input")
+	// ErrUnmarshaling represents unmarshaling error
+	ErrUnmarshaling = errors.New("unmarshaling output")
 )
 
 // Exec will sign and execute the request using the client edgegrid.Config
