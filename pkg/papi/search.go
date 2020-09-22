@@ -3,10 +3,10 @@ package papi
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/spf13/cast"
-	"net/http"
 )
 
 type (
@@ -86,7 +86,6 @@ func (p *papi) SearchProperties(ctx context.Context, request SearchRequest) (*Se
 		return nil, fmt.Errorf("failed to create SearchProperties request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var search SearchResponse
 	resp, err := p.Exec(req, &search, map[string]string{request.key: request.value})
 	if err != nil {

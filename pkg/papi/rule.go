@@ -3,10 +3,10 @@ package papi
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/spf13/cast"
-	"net/http"
 )
 
 type (
@@ -208,7 +208,6 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 		return nil, fmt.Errorf("failed to create getruletree request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var versions GetRuleTreeResponse
 	resp, err := p.Exec(req, &versions)
 	if err != nil {
@@ -254,7 +253,6 @@ func (p *papi) UpdateRuleTree(ctx context.Context, request UpdateRulesRequest) (
 		return nil, fmt.Errorf("failed to create UpdateRuleTree request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var versions UpdateRulesResponse
 	resp, err := p.Exec(req, &versions, request.Rules)
 	if err != nil {

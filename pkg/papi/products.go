@@ -7,7 +7,6 @@ import (
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/spf13/cast"
 )
 
 type (
@@ -64,8 +63,6 @@ func (p *papi) GetProducts(ctx context.Context, params GetProductsRequest) (*Get
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getproducts request: %w", err)
 	}
-
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 
 	var products GetProductsResponse
 	resp, err := p.Exec(req, &products)

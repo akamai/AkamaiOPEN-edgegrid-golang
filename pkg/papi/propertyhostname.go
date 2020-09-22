@@ -7,7 +7,6 @@ import (
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/spf13/cast"
 )
 
 type (
@@ -112,8 +111,6 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 		return nil, fmt.Errorf("failed to get the GetPropertyVersionHostnames request: %v", err.Error())
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
-
 	var hostnames GetPropertyVersionHostnamesResponse
 	resp, err := p.Exec(req, &hostnames)
 	if err != nil {
@@ -161,7 +158,6 @@ func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params Update
 		return nil, fmt.Errorf("failed to create createpropertyversionhostnames request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var hostnames UpdatePropertyVersionHostnamesResponse
 	resp, err := p.Exec(req, &hostnames, params.Hostnames)
 	if err != nil {

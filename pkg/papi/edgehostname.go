@@ -9,7 +9,6 @@ import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/spf13/cast"
 )
 
 type (
@@ -196,7 +195,6 @@ func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequ
 		return nil, fmt.Errorf("failed to create getedgehostnames request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var edgeHostnames GetEdgeHostnamesResponse
 	resp, err := p.Exec(req, &edgeHostnames)
 	if err != nil {
@@ -236,7 +234,6 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 		return nil, fmt.Errorf("failed to create getedgehostname request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var edgeHostname GetEdgeHostnamesResponse
 	resp, err := p.Exec(req, &edgeHostname)
 	if err != nil {
@@ -275,7 +272,6 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameReque
 		return nil, fmt.Errorf("failed to create createedgehostname request: %w", err)
 	}
 
-	req.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
 	var createResponse CreateEdgeHostnameResponse
 	resp, err := p.Exec(req, &createResponse, r.EdgeHostname)
 	if err != nil {
