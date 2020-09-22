@@ -27,6 +27,7 @@ type (
 		PropertyVersionHostnames
 		ClientSettings
 		PropertyRules
+		RuleFormats
 	}
 
 	papi struct {
