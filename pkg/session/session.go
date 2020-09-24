@@ -36,7 +36,7 @@ type (
 	// session is the base akamai http client
 	session struct {
 		client    *http.Client
-		config    *edgegrid.Config
+		signer    edgegrid.Signer
 		log       log.Interface
 		trace     bool
 		userAgent string
@@ -82,12 +82,12 @@ func New(opts ...Option) (Session, error) {
 		opt(s)
 	}
 
-	if s.config == nil {
+	if s.signer == nil {
 		config, err := edgegrid.New()
 		if err != nil {
 			return nil, err
 		}
-		s.config = config
+		s.signer = config
 	}
 
 	return s, nil
@@ -125,10 +125,10 @@ func WithUserAgent(u string) Option {
 	}
 }
 
-// WithConfig sets the config for the client
-func WithConfig(config *edgegrid.Config) Option {
+// WithSigner sets the request signer for the session
+func WithSigner(signer edgegrid.Signer) Option {
 	return func(s *session) {
-		s.config = config
+		s.signer = signer
 	}
 }
 

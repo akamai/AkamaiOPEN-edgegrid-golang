@@ -2,15 +2,16 @@ package session
 
 import (
 	"context"
+	"net/http"
+	"runtime"
+	"strings"
+	"testing"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegrid"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/discard"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
-	"net/http"
-	"runtime"
-	"strings"
-	"testing"
 )
 
 func TestNew(t *testing.T) {
@@ -24,7 +25,7 @@ func TestNew(t *testing.T) {
 		"no options provided, return default session": {
 			expected: &session{
 				client:    http.DefaultClient,
-				config:    &edgegrid.Config{},
+				signer:    &edgegrid.Config{},
 				log:       log.Log,
 				trace:     false,
 				userAgent: "Akamai-Open-Edgegrid-golang/2.0.0 golang/" + strings.TrimPrefix(runtime.Version(), "go"),
@@ -41,7 +42,7 @@ func TestNew(t *testing.T) {
 				client: &http.Client{
 					Timeout: 500,
 				},
-				config:    &edgegrid.Config{},
+				signer:    &edgegrid.Config{},
 				log:       log.Log,
 				trace:     true,
 				userAgent: "test user agent",
@@ -52,7 +53,7 @@ func TestNew(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			cfg := &edgegrid.Config{}
-			options := []Option{WithConfig(cfg)}
+			options := []Option{WithSigner(cfg)}
 			if test.client != nil {
 				options = append(options, WithClient(test.client))
 			}

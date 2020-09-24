@@ -14,19 +14,32 @@ import (
 	"github.com/google/uuid"
 )
 
-type authHeader struct {
-	authType    string
-	clientToken string
-	accessToken string
-	timestamp   string
-	nonce       string
-	signature   string
-}
+type (
+	// Signer is the request signer interface
+	Signer interface {
+		SignRequest(r *http.Request)
+	}
 
-const authType = "EG1-HMAC-SHA256"
+	authHeader struct {
+		authType    string
+		clientToken string
+		accessToken string
+		timestamp   string
+		nonce       string
+		signature   string
+	}
+)
+
+const (
+	authType = "EG1-HMAC-SHA256"
+)
 
 // SignRequest adds a signed authorization header to the http request
 func (c Config) SignRequest(r *http.Request) {
+	if r.URL.Host == "" {
+		r.URL.Host = c.Host
+	}
+
 	r.Header.Set("Authorization", c.createAuthHeader(r).String())
 }
 

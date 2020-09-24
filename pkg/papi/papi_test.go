@@ -26,7 +26,7 @@ func mockAPIClient(t *testing.T, mockServer *httptest.Server) PAPI {
 			},
 		},
 	}
-	s, err := session.New(session.WithClient(httpClient), session.WithConfig(&edgegrid.Config{Host: serverURL.Host}))
+	s, err := session.New(session.WithClient(httpClient), session.WithSigner(&edgegrid.Config{Host: serverURL.Host}))
 	assert.NoError(t, err)
 	return Client(s)
 }

@@ -102,6 +102,6 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 
 // Sign will only sign a request
 func (s *session) Sign(r *http.Request) error {
-	s.config.SignRequest(r)
+	s.signer.SignRequest(r)
 	return nil
 }

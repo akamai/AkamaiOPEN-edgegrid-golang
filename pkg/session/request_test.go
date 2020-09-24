@@ -4,13 +4,14 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegrid"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegrid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type testStruct struct {
@@ -166,7 +167,7 @@ func TestSession_Exec(t *testing.T) {
 			}
 			serverURL, err := url.Parse(mockServer.URL)
 			require.NoError(t, err)
-			s, err := New(WithConfig(&edgegrid.Config{
+			s, err := New(WithSigner(&edgegrid.Config{
 				Host: serverURL.Host,
 			}), WithClient(httpClient), WithUserAgent("test user agent"), WithHTTPTracing(true))
 			require.NoError(t, err)
