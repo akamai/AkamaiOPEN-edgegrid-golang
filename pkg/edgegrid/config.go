@@ -69,10 +69,11 @@ func New(opts ...Option) (*Config, error) {
 	}
 
 	if c.env {
-		if err := c.FromEnv(c.section); err != nil {
-			return c, err
+		if err := c.FromEnv(c.section); err == nil {
+			return c, nil
+		} else if !errors.Is(err, ErrRequiredOptionEnv) {
+			return c, nil
 		}
-		return c, nil
 	}
 
 	if err := c.FromFile(c.file, c.section); err != nil {
