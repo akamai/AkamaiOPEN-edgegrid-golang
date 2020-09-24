@@ -59,7 +59,6 @@ type (
 // New returns new configuration with the specified options
 func New(opts ...Option) (*Config, error) {
 	c := &Config{
-		file:    DefaultConfigFile,
 		section: DefaultSection,
 		env:     false,
 	}
@@ -76,8 +75,10 @@ func New(opts ...Option) (*Config, error) {
 		}
 	}
 
-	if err := c.FromFile(c.file, c.section); err != nil {
-		return c, fmt.Errorf("unable to load config from environment or .edgerc file: %w", err)
+	if c.file != "" {
+		if err := c.FromFile(c.file, c.section); err != nil {
+			return c, fmt.Errorf("unable to load config from environment or .edgerc file: %w", err)
+		}
 	}
 
 	return c, nil
