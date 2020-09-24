@@ -45,10 +45,6 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 		r.URL.Scheme = "https"
 	}
 
-	if r.URL.Host == "" {
-		r.URL.Host = s.config.Host
-	}
-
 	if len(in) > 0 {
 		data, err := json.Marshal(in[0])
 		if err != nil {
