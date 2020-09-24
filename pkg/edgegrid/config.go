@@ -72,7 +72,7 @@ func New(opts ...Option) (*Config, error) {
 		if err := c.FromEnv(c.section); err == nil {
 			return c, nil
 		} else if !errors.Is(err, ErrRequiredOptionEnv) {
-			return c, nil
+			return nil, err
 		}
 	}
 
