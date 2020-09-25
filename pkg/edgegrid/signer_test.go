@@ -2,14 +2,33 @@ package edgegrid
 
 import (
 	"encoding/base64"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 	"net/http"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
+	"github.com/tj/assert"
 )
+
+type Interface interface {
+	WithFields(Fielder) *Entry
+	WithField(string, interface{}) *Entry
+	WithDuration(time.Duration) *Entry
+	WithError(error) *Entry
+	Debug(string)
+	Info(string)
+	Warn(string)
+	Error(string)
+	Fatal(string)
+	Debugf(string, ...interface{})
+	Infof(string, ...interface{})
+	Warnf(string, ...interface{})
+	Errorf(string, ...interface{})
+	Fatalf(string, ...interface{})
+	Trace(string) *Entry
+}
 
 func TestConfig_createAuthHeader(t *testing.T) {
 	tests := map[string]struct {

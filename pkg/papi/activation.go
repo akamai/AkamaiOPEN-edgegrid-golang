@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/spf13/cast"
@@ -246,9 +245,9 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 		return nil, session.NewAPIError(resp, logger)
 	}
 
-	id, err := tools.FetchIDFromLocation(rval.ActivationLink)
+	id, err := ResponseLinkParse(rval.ActivationLink)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", tools.ErrInvalidLocation, err.Error())
+		return nil, fmt.Errorf("%w: %s", ErrInvalidResponseLink, err.Error())
 	}
 	rval.ActivationID = id
 

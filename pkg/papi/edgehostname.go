@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -274,9 +273,9 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameReque
 	if resp.StatusCode != http.StatusCreated {
 		return nil, session.NewAPIError(resp, logger)
 	}
-	id, err := tools.FetchIDFromLocation(createResponse.EdgeHostnameLink)
+	id, err := ResponseLinkParse(createResponse.EdgeHostnameLink)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", tools.ErrInvalidLocation, err.Error())
+		return nil, fmt.Errorf("%w: %s", ErrInvalidResponseLink, err.Error())
 	}
 	createResponse.EdgeHostnameID = id
 	return &createResponse, nil

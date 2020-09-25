@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -333,13 +332,13 @@ func (p *papi) CreatePropertyVersion(ctx context.Context, request CreateProperty
 	if resp.StatusCode != http.StatusCreated {
 		return nil, session.NewAPIError(resp, logger)
 	}
-	propertyVersion, err := tools.FetchIDFromLocation(version.VersionLink)
+	propertyVersion, err := ResponseLinkParse(version.VersionLink)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", tools.ErrInvalidLocation, err.Error())
+		return nil, fmt.Errorf("%w: %s", ErrInvalidResponseLink, err.Error())
 	}
 	versionNumber, err := strconv.Atoi(propertyVersion)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s: %s", tools.ErrInvalidLocation, "version should be a number", propertyVersion)
+		return nil, fmt.Errorf("%w: %s: %s", ErrInvalidResponseLink, "version should be a number", propertyVersion)
 	}
 	version.PropertyVersion = versionNumber
 	return &version, nil

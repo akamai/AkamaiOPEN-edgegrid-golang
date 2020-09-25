@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -204,9 +203,9 @@ func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest)
 		return nil, session.NewAPIError(resp, logger)
 	}
 
-	id, err := tools.FetchIDFromLocation(rval.PropertyLink)
+	id, err := ResponseLinkParse(rval.PropertyLink)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", tools.ErrInvalidLocation, err.Error())
+		return nil, fmt.Errorf("%w: %s", ErrInvalidResponseLink, err.Error())
 	}
 	rval.PropertyID = id
 

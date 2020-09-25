@@ -3,7 +3,6 @@ package papi
 import (
 	"context"
 	"errors"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -396,7 +395,7 @@ func TestPapi_CreateCPCode(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/cpcodes?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := tools.ErrInvalidLocation
+				want := ErrInvalidResponseLink
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
