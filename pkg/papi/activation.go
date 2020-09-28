@@ -19,6 +19,8 @@ type (
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyactivations
 		CreateActivation(context.Context, CreateActivationRequest) (*CreateActivationResponse, error)
 
+		// GetActivations returns a list of the property activations
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivations
 		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
 
 		// GetActivation gets details about an activation
