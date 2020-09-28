@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -173,8 +174,6 @@ const (
 func (v CreateActivationRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":                    validation.Validate(v.PropertyID, validation.Required),
-		"ContractID":                    validation.Validate(v.ContractID, validation.Required),
-		"GroupID":                       validation.Validate(v.GroupID, validation.Required),
 		"Activation.AccountID":          validation.Validate(v.Activation.AccountID, validation.Empty),
 		"Activation.ActivationID":       validation.Validate(v.Activation.ActivationID, validation.Empty),
 		"Activation.FallbackInfo":       validation.Validate(v.Activation.FallbackInfo, validation.Nil),
@@ -223,13 +222,23 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 		params.Activation.ActivationType = ActivationTypeActivate
 	}
 
-	uri := fmt.Sprintf(
-		"/papi/v1/properties/%s/activations?contractId=%s&groupId=%s",
-		params.PropertyID,
-		params.ContractID,
-		params.GroupID)
+	uri, err := url.Parse(fmt.Sprintf(
+		"/papi/v1/properties/%s/activations",
+		params.PropertyID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to getproperty parse url: %w", err)
+	}
+	q := uri.Query()
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create createactivation request: %w", err)
 	}

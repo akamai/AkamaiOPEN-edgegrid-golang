@@ -220,7 +220,7 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 	logger.Debug("GetProperty")
 
 	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s?contractId=%s&groupId=%s",
+		"/papi/v1/properties/%s",
 		params.PropertyID),
 	)
 	if err != nil {
@@ -263,7 +263,7 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 	logger.Debug("RemoveProperty")
 
 	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s?contractId=%s&groupId=%s",
+		"/papi/v1/properties/%s",
 		params.PropertyID),
 	)
 	if err != nil {
