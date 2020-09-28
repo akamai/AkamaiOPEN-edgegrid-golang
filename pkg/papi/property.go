@@ -127,8 +127,6 @@ func (v CreatePropertyRequest) Validate() error {
 // Validate validates GetPropertyRequest
 func (v GetPropertyRequest) Validate() error {
 	return validation.Errors{
-		"ContractID": validation.Validate(v.ContractID, validation.Required),
-		"GroupID":    validation.Validate(v.GroupID, validation.Required),
 		"PropertyID": validation.Validate(v.PropertyID, validation.Required),
 	}.Filter()
 }
@@ -136,8 +134,6 @@ func (v GetPropertyRequest) Validate() error {
 // Validate validates RemovePropertyRequest
 func (v RemovePropertyRequest) Validate() error {
 	return validation.Errors{
-		"ContractID": validation.Validate(v.ContractID, validation.Required),
-		"GroupID":    validation.Validate(v.GroupID, validation.Required),
 		"PropertyID": validation.Validate(v.PropertyID, validation.Required),
 	}.Filter()
 }
