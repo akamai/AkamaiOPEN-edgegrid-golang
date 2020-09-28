@@ -227,7 +227,7 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 		params.PropertyID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to getproperty parse url: %w", err)
+		return nil, fmt.Errorf("failed to parse url: %w", err)
 	}
 	q := uri.Query()
 	if params.GroupID != "" {

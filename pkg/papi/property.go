@@ -224,7 +224,7 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 		params.PropertyID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to getproperty parse url: %w", err)
+		return nil, fmt.Errorf("failed to parse url: %w", err)
 	}
 	q := uri.Query()
 	if params.GroupID != "" {
@@ -267,7 +267,7 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 		params.PropertyID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to getproperty parse url: %w", err)
+		return nil, fmt.Errorf("failed parse url: %w", err)
 	}
 	q := uri.Query()
 	if params.GroupID != "" {
