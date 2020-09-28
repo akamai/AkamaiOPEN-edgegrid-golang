@@ -84,6 +84,7 @@ type (
 	// GetPropertyResponse is the response for GetProperty
 	GetPropertyResponse struct {
 		Properties PropertiesItems `json:"properties"`
+		Property   *Property       `json:"-"`
 	}
 
 	// RemovePropertyRequest is the argument for RemoveProperty
@@ -249,6 +250,8 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 		return nil, session.NewAPIError(resp, logger)
 	}
 
+	rval.Property = rval.Properties.Items[0]
+
 	return &rval, nil
 }
 
@@ -278,7 +281,7 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 	}
 	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create delproperty request: %w", err)
 	}
