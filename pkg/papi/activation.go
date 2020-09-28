@@ -204,6 +204,7 @@ func (v CreateActivationRequest) Validate() error {
 		"Activation.Status":             validation.Validate(v.Activation.Status, validation.Empty),
 		"Activation.SubmitDate":         validation.Validate(v.Activation.SubmitDate, validation.Empty),
 		"Activation.UpdateDate":         validation.Validate(v.Activation.UpdateDate, validation.Empty),
+		"Activation.Type":               validation.Validate(v.Activation.ActivationType, validation.In(ActivationTypeActivate, ActivationTypeDeactivate)),
 	}.Filter()
 }
 
