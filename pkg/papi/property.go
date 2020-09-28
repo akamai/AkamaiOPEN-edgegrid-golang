@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -216,15 +217,25 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 	var rval GetPropertyResponse
 
 	logger := p.Log(ctx)
-	logger.Debug("GetProperties")
+	logger.Debug("GetProperty")
 
-	uri := fmt.Sprintf(
+	uri, err := url.Parse(fmt.Sprintf(
 		"/papi/v1/properties/%s?contractId=%s&groupId=%s",
-		params.PropertyID,
-		params.ContractID,
-		params.GroupID)
+		params.PropertyID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to getproperty parse url: %w", err)
+	}
+	q := uri.Query()
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getproperty request: %w", err)
 	}
@@ -249,13 +260,23 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 	var rval RemovePropertyResponse
 
 	logger := p.Log(ctx)
-	logger.Debug("GetProperties")
+	logger.Debug("RemoveProperty")
 
-	uri := fmt.Sprintf(
+	uri, err := url.Parse(fmt.Sprintf(
 		"/papi/v1/properties/%s?contractId=%s&groupId=%s",
-		params.PropertyID,
-		params.ContractID,
-		params.GroupID)
+		params.PropertyID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to getproperty parse url: %w", err)
+	}
+	q := uri.Query()
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	uri.RawQuery = q.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
