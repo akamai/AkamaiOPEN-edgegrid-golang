@@ -325,7 +325,7 @@ func (p *papi) CreatePropertyVersion(ctx context.Context, request CreateProperty
 	}
 
 	var version CreatePropertyVersionResponse
-	resp, err := p.Exec(req, &version)
+	resp, err := p.Exec(req, &version, request.Version)
 	if err != nil {
 		return nil, fmt.Errorf("createpropertyversion request failed: %w", err)
 	}

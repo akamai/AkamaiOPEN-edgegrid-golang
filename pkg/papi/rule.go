@@ -46,25 +46,25 @@ type (
 
 	// Rules contains Rule object
 	Rules struct {
-		AdvancedOverride string              `json:"advancedOverride"`
-		Behaviors        []RuleBehavior      `json:"behaviors"`
-		Children         []Rules             `json:"children"`
-		Comment          string              `json:"comment"`
-		Criteria         []RuleBehavior      `json:"criteria"`
-		CriteriaLocked   bool                `json:"criteriaLocked"`
-		CustomOverride   *RuleCustomOverride `json:"customOverride"`
+		AdvancedOverride string              `json:"advancedOverride,omitempty"`
+		Behaviors        []RuleBehavior      `json:"behaviors,omitempty"`
+		Children         []Rules             `json:"children,omitempty"`
+		Comment          string              `json:"comment,omitempty"`
+		Criteria         []RuleBehavior      `json:"criteria,omitempty"`
+		CriteriaLocked   bool                `json:"criteriaLocked,omitempty"`
+		CustomOverride   *RuleCustomOverride `json:"customOverride,omitempty"`
 		Name             string              `json:"name"`
-		Options          *RuleOptions        `json:"options"`
-		UUID             string              `json:"uuid"`
-		Variables        []RuleVariable      `json:"variables"`
+		Options          *RuleOptions        `json:"options,omitempty"`
+		UUID             string              `json:"uuid,omitempty"`
+		Variables        []RuleVariable      `json:"variables,omitempty"`
 	}
 
 	// RuleBehavior contains data for both rule behaviors and rule criteria
 	RuleBehavior struct {
-		Locked  string `json:"locked"`
-		Name    string `json:"name"`
-		Options map[string]interface{}
-		UUID    string `json:"uuid"`
+		Locked  string                 `json:"locked,omitempty"`
+		Name    string                 `json:"name"`
+		Options map[string]interface{} `json:"options"`
+		UUID    string                 `json:"uuid,omitempty"`
 	}
 
 	// RuleCustomOverride represents customOverride field from Rule resource
@@ -75,16 +75,16 @@ type (
 
 	// RuleOptions represents options field from Rule resource
 	RuleOptions struct {
-		IsSecure bool `json:"is_secure"`
+		IsSecure bool `json:"is_secure,omitempty"`
 	}
 
 	// RuleVariable represents and entry in variables field from Rule resource
 	RuleVariable struct {
-		Description string `json:"description"`
+		Description string `json:"description,omitempty"`
 		Hidden      bool   `json:"hidden"`
 		Name        string `json:"name"`
 		Sensitive   bool   `json:"sensitive"`
-		Value       string `json:"value"`
+		Value       string `json:"value,omitempty"`
 	}
 
 	// UpdateRulesRequest contains path and query params, as well as request body necessary to perform PUT /rules request
