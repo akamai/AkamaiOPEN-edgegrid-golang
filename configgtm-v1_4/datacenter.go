@@ -231,7 +231,7 @@ func createDefaultDC(defaultID int, domainName string) (*Datacenter, error) {
 		Config,
 		"POST",
 		defaultURL,
-		nil,
+		"",
 	)
 	if err != nil {
 		return nil, err
