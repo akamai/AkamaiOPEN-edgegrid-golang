@@ -2,13 +2,14 @@ package edgegrid
 
 import (
 	"encoding/base64"
-	"github.com/google/uuid"
-	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 	"net/http"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
+	"github.com/tj/assert"
 )
 
 func TestConfig_createAuthHeader(t *testing.T) {

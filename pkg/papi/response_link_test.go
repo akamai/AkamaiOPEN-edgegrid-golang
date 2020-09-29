@@ -1,12 +1,13 @@
-package tools
+package papi
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
-	"testing"
 )
 
-func TestFetchIDFromLocation(t *testing.T) {
+func TestResponseLinkParse(t *testing.T) {
 	tests := map[string]struct {
 		given     string
 		expected  string
@@ -23,7 +24,7 @@ func TestFetchIDFromLocation(t *testing.T) {
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			res, err := FetchIDFromLocation(test.given)
+			res, err := ResponseLinkParse(test.given)
 			if test.withError {
 				assert.Error(t, err)
 				return

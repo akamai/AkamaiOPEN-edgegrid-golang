@@ -3,13 +3,13 @@ package papi
 import (
 	"context"
 	"errors"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPapi_GetPropertyVersions(t *testing.T) {
@@ -374,7 +374,7 @@ func TestPapi_CreatePropertyVersion(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/propertyID/versions?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := tools.ErrInvalidLocation
+				want := ErrInvalidResponseLink
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
@@ -394,7 +394,7 @@ func TestPapi_CreatePropertyVersion(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/propertyID/versions?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := tools.ErrInvalidLocation
+				want := ErrInvalidResponseLink
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
