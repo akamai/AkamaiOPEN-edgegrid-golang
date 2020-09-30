@@ -156,9 +156,11 @@ func TestPapi_GetActivations(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780/activations?contractId=ctr_1-1TJZFW&groupId=grp_15166",
 			expectedResponse: &GetActivationsResponse{
-				AccountID:  "act_1-1TJZFB",
-				ContractID: "ctr_1-1TJZFW",
-				GroupID:    "grp_15166",
+				Response: Response{
+					AccountID:  "act_1-1TJZFB",
+					ContractID: "ctr_1-1TJZFW",
+					GroupID:    "grp_15166",
+				},
 				Activations: ActivationsItems{Items: []*Activation{{
 					ActivationID:       "atv_1696985",
 					PropertyName:       "example.com",
@@ -287,9 +289,11 @@ func TestPapi_GetActivation(t *testing.T) {
 			expectedPath: "/papi/v1/properties/prp_175780/activations/atv_1696855?contractId=ctr_1-1TJZFW&groupId=grp_15166",
 			expectedResponse: &GetActivationResponse{
 				GetActivationsResponse: GetActivationsResponse{
-					AccountID:  "act_1-1TJZFB",
-					ContractID: "ctr_1-1TJZFW",
-					GroupID:    "grp_15166",
+					Response: Response{
+						AccountID:  "act_1-1TJZFB",
+						ContractID: "ctr_1-1TJZFW",
+						GroupID:    "grp_15166",
+					},
 					Activations: ActivationsItems{Items: []*Activation{{
 						ActivationID:       "atv_1696985",
 						PropertyName:       "example.com",

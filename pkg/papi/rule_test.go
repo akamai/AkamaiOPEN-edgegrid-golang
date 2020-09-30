@@ -3,12 +3,13 @@ package papi
 import (
 	"context"
 	"errors"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPapi_GetRuleTree(t *testing.T) {
@@ -111,9 +112,11 @@ func TestPapi_GetRuleTree(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/propertyID/versions/2/rules?contractId=contract&groupId=group&validateMode=fast&validateRules=false",
 			expectedResponse: &GetRuleTreeResponse{
-				AccountID:       "accountID",
-				ContractID:      "contract",
-				GroupID:         "group",
+				Response: Response{
+					AccountID:  "accountID",
+					ContractID: "contract",
+					GroupID:    "group",
+				},
 				PropertyID:      "propertyID",
 				PropertyVersion: 2,
 				Etag:            "etag",
