@@ -61,10 +61,10 @@ type (
 
 	// RuleBehavior contains data for both rule behaviors and rule criteria
 	RuleBehavior struct {
-		Locked  string                 `json:"locked,omitempty"`
-		Name    string                 `json:"name"`
-		Options map[string]interface{} `json:"options"`
-		UUID    string                 `json:"uuid,omitempty"`
+		Locked  string          `json:"locked,omitempty"`
+		Name    string          `json:"name"`
+		Options *RuleOptionsMap `json:"options"`
+		UUID    string          `json:"uuid,omitempty"`
 	}
 
 	// RuleCustomOverride represents customOverride field from Rule resource
@@ -119,6 +119,8 @@ type (
 		Instance     string `json:"instance"`
 		BehaviorName string `json:"behaviorName"`
 	}
+
+	RuleOptionsMap map[string]interface{}
 )
 
 const (
