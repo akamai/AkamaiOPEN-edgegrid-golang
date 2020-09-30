@@ -48,8 +48,8 @@ type (
 	// SearchRequest contains key-value pair for search request
 	// Key must have one of three values: "edgeHostname", "hostname" or "propertyName"
 	SearchRequest struct {
-		key   string
-		value string
+		Key   string
+		Value string
 	}
 )
 
@@ -65,10 +65,10 @@ const (
 // Validate validate SearchRequest struct
 func (s SearchRequest) Validate() error {
 	return validation.Errors{
-		"SearchKey": validation.Validate(s.key,
+		"SearchKey": validation.Validate(s.Key,
 			validation.Required,
 			validation.In(SearchKeyEdgeHostname, SearchKeyHostname, SearchKeyPropertyName)),
-		"SearchValue": validation.Validate(s.value, validation.Required),
+		"SearchValue": validation.Validate(s.Value, validation.Required),
 	}.Filter()
 }
 
@@ -87,7 +87,7 @@ func (p *papi) SearchProperties(ctx context.Context, request SearchRequest) (*Se
 	}
 
 	var search SearchResponse
-	resp, err := p.Exec(req, &search, map[string]string{request.key: request.value})
+	resp, err := p.Exec(req, &search, map[string]string{request.Key: request.Value})
 	if err != nil {
 		return nil, fmt.Errorf("SearchProperties request failed: %w", err)
 	}

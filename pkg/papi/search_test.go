@@ -26,8 +26,8 @@ func TestPapi_SearchProperties(t *testing.T) {
 	}{
 		"200 OK": {
 			params: SearchRequest{
-				key:   "edgeHostname",
-				value: "edgesuite.net",
+				Key:   "edgeHostname",
+				Value: "edgesuite.net",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -103,8 +103,8 @@ func TestPapi_SearchProperties(t *testing.T) {
 		},
 		"500 Internal Server Error": {
 			params: SearchRequest{
-				key:   "edgeHostname",
-				value: "edgesuite.net",
+				Key:   "edgeHostname",
+				Value: "edgesuite.net",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -131,8 +131,8 @@ func TestPapi_SearchProperties(t *testing.T) {
 		},
 		"invalid key": {
 			params: SearchRequest{
-				key:   "test",
-				value: "edgesuite.net",
+				Key:   "test",
+				Value: "edgesuite.net",
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -142,8 +142,8 @@ func TestPapi_SearchProperties(t *testing.T) {
 		},
 		"empty key": {
 			params: SearchRequest{
-				key:   "",
-				value: "edgesuite.net",
+				Key:   "",
+				Value: "edgesuite.net",
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -153,8 +153,8 @@ func TestPapi_SearchProperties(t *testing.T) {
 		},
 		"empty value": {
 			params: SearchRequest{
-				key:   "edgeHostname",
-				value: "",
+				Key:   "edgeHostname",
+				Value: "",
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation

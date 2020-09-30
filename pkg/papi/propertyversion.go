@@ -66,15 +66,15 @@ type (
 
 	// PropertyVersionGetItem contains detailed information about specific property version returned in GET
 	PropertyVersionGetItem struct {
-		Etag             string `json:"etag"`
-		Note             string `json:"note"`
-		ProductID        string `json:"productId"`
-		ProductionStatus string `json:"productionStatus"`
-		PropertyVersion  int    `json:"propertyVersion"`
-		RuleFormat       string `json:"ruleFormat"`
-		StagingStatus    string `json:"stagingStatus"`
-		UpdatedByUser    string `json:"updatedByUser"`
-		UpdatedDate      string `json:"updatedDate"`
+		Etag             string        `json:"etag"`
+		Note             string        `json:"note"`
+		ProductID        string        `json:"productId"`
+		ProductionStatus VersionStatus `json:"productionStatus"`
+		PropertyVersion  int           `json:"propertyVersion"`
+		RuleFormat       string        `json:"ruleFormat"`
+		StagingStatus    VersionStatus `json:"stagingStatus"`
+		UpdatedByUser    string        `json:"updatedByUser"`
+		UpdatedDate      string        `json:"updatedDate"`
 	}
 
 	// GetPropertyVersionRequest contains path and query params used for fetching specific property version
@@ -140,9 +140,18 @@ type (
 	AvailableFeatureItems struct {
 		Items []AvailableFeature `json:"items"`
 	}
+
+	// VersionStatus represents ProductionVersion and StagingVersion of a Version struct
+	VersionStatus string
 )
 
 const (
+	// VersionStatusActive const
+	VersionStatusActive VersionStatus = "ACTIVE"
+	// VersionStatusInactive const
+	VersionStatusInactive VersionStatus = "INACTIVE"
+	// VersionStatusPending const
+	VersionStatusPending VersionStatus = "PENDING"
 	// VersionProduction const
 	VersionProduction = "PRODUCTION"
 	// VersionStaging const
