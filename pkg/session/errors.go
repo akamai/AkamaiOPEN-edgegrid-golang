@@ -3,17 +3,20 @@ package session
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/apex/log"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/apex/log"
 )
 
 // APIError contains detailed data on API error returned to the client
 type APIError struct {
-	Type       string `json:"type"`
-	Title      string `json:"title"`
-	Detail     string `json:"detail"`
-	StatusCode int    `json:"-"`
+	Type         string `json:"type"`
+	Title        string `json:"title"`
+	Detail       string `json:"detail"`
+	Instance     string `json:"instance,omitempty"`
+	BehaviorName string `json:"behaviorName,omitempty"`
+	StatusCode   int    `json:"-"`
 }
 
 // NewAPIError returns new APIError object containing data from the error response

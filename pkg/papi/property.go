@@ -77,6 +77,7 @@ type (
 
 	// CreatePropertyResponse is returned by CreateProperty
 	CreatePropertyResponse struct {
+		Response
 		PropertyID   string
 		PropertyLink string `json:"propertyLink"`
 	}
@@ -90,6 +91,7 @@ type (
 
 	// GetPropertyResponse is the response for GetProperty
 	GetPropertyResponse struct {
+		Response
 		Properties PropertiesItems `json:"properties"`
 		Property   *Property       `json:"-"`
 	}

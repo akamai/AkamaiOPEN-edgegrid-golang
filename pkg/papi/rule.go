@@ -34,9 +34,7 @@ type (
 
 	// GetRuleTreeResponse contains data returned by performing GET /rules request
 	GetRuleTreeResponse struct {
-		AccountID       string `json:"accountId"`
-		ContractID      string `json:"contractId"`
-		GroupID         string `json:"groupId"`
+		Response
 		PropertyID      string `json:"propertyId"`
 		PropertyVersion int    `json:"propertyVersion"`
 		Etag            string `json:"etag"`

@@ -42,6 +42,15 @@ type (
 
 	// ClientFunc is a papi client new method, this can used for mocking
 	ClientFunc func(sess session.Session, opts ...Option) PAPI
+
+	// Response is a base PAPI Response type
+	Response struct {
+		AccountID  string              `json:"accountId,omitempty"`
+		ContractID string              `json:"contractId,omitempty"`
+		GroupID    string              `json:"groupId,omitempty"`
+		Etag       string              `json:"etag,omitempty"`
+		Errors     []*session.APIError `json:"errors,omitempty"`
+	}
 )
 
 // Client returns a new papi Client instance with the specified controller

@@ -69,9 +69,7 @@ type (
 
 	// CreateActivationRequest is the request parameters for a new activation or deactivation request
 	CreateActivationRequest struct {
-		PropertyID string
-		ContractID string
-		GroupID    string
+		Response
 		Activation Activation
 	}
 
@@ -82,9 +80,7 @@ type (
 
 	// GetActivationsResponse is the get activation response
 	GetActivationsResponse struct {
-		AccountID  string `json:"accountId"`
-		ContractID string `json:"contractId"`
-		GroupID    string `json:"groupId"`
+		Response
 
 		Activations ActivationsItems `json:"activations"`
 
@@ -95,6 +91,7 @@ type (
 
 	// CreateActivationResponse is the response for a new activation or deactivation
 	CreateActivationResponse struct {
+		Response
 		ActivationID   string
 		ActivationLink string `json:"activationLink"`
 	}
@@ -131,6 +128,7 @@ type (
 
 	// CancelActivationResponse is a response from deleting a PENDING activation
 	CancelActivationResponse struct {
+		Response
 		Activations ActivationsItems `json:"activations"`
 	}
 
