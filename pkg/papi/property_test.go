@@ -224,7 +224,7 @@ func TestPapi_CreateProperty(t *testing.T) {
 			request: CreatePropertyRequest{
 				ContractID: "ctr_1-1TJZFW",
 				GroupID:    "grp_15166",
-				Property: Property{
+				Property: PropertyCreate{
 					ProductID:    "prd_Alta",
 					PropertyName: "my.new.property.com",
 				},
@@ -244,7 +244,7 @@ func TestPapi_CreateProperty(t *testing.T) {
 			request: CreatePropertyRequest{
 				ContractID: "ctr_1-1TJZFW",
 				GroupID:    "grp_15166",
-				Property: Property{
+				Property: PropertyCreate{
 					ProductID:    "prd_Alta",
 					PropertyName: "my.new.property.com",
 				},

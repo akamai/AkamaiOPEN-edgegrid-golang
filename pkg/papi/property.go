@@ -21,27 +21,26 @@ type (
 
 	// PropertyCloneFrom optionally identifies another property instance to clone when making a POST request to create a new property
 	PropertyCloneFrom struct {
-		CloneFromVersionEtag string `json:"cloneFromVersionEtag"`
-		CopyHostnames        bool   `json:"copyHostnames"`
+		CloneFromVersionEtag string `json:"cloneFromVersionEtag,omitempty"`
+		CopyHostnames        bool   `json:"copyHostnames,omitempty"`
 		PropertyID           string `json:"propertyId"`
 		Version              int    `json:"version"`
 	}
 
 	// Property contains configuration data to apply to edge content.
 	Property struct {
-		AccountID         string             `json:"accountId"`
-		AssetID           string             `json:"assetId"`
-		CloneFrom         *PropertyCloneFrom `json:"cloneFrom,omitempty"`
-		ContractID        string             `json:"contractId"`
-		GroupID           string             `json:"groupId"`
-		LatestVersion     int                `json:"latestVersion"`
-		Note              string             `json:"note"`
-		ProductID         string             `json:"productId"`
-		ProductionVersion *int               `json:"productionVersion,omitempty"`
-		PropertyID        string             `json:"propertyId"`
-		PropertyName      string             `json:"propertyName"`
-		RuleFormat        string             `json:"ruleFormat"`
-		StagingVersion    *int               `json:"stagingVersion,omitempty"`
+		AccountID         string `json:"accountId"`
+		AssetID           string `json:"assetId"`
+		ContractID        string `json:"contractId"`
+		GroupID           string `json:"groupId"`
+		LatestVersion     int    `json:"latestVersion"`
+		Note              string `json:"note"`
+		ProductID         string `json:"productId"`
+		ProductionVersion *int   `json:"productionVersion,omitempty"`
+		PropertyID        string `json:"propertyId"`
+		PropertyName      string `json:"propertyName"`
+		RuleFormat        string `json:"ruleFormat"`
+		StagingVersion    *int   `json:"stagingVersion,omitempty"`
 	}
 
 	// PropertiesItems is an array of properties
@@ -64,7 +63,15 @@ type (
 	CreatePropertyRequest struct {
 		ContractID string
 		GroupID    string
-		Property   Property
+		Property   PropertyCreate
+	}
+
+	// PropertyCreate represents a POST /property request body
+	PropertyCreate struct {
+		CloneFrom    *PropertyCloneFrom `json:"cloneFrom,omitempty"`
+		ProductID    string             `json:"productId"`
+		PropertyName string             `json:"propertyName"`
+		RuleFormat   string             `json:"ruleFormat,omitempty"`
 	}
 
 	// CreatePropertyResponse is returned by CreateProperty
@@ -109,18 +116,26 @@ func (v GetPropertiesRequest) Validate() error {
 // Validate validates CreatePropertyRequest
 func (v CreatePropertyRequest) Validate() error {
 	return validation.Errors{
-		"ContractID":                 validation.Validate(v.ContractID, validation.Required),
-		"GroupID":                    validation.Validate(v.GroupID, validation.Required),
-		"Property.AccountID":         validation.Validate(v.Property.AccountID, validation.Empty),
-		"Property.AssetID":           validation.Validate(v.Property.AssetID, validation.Empty),
-		"Property.ContractID":        validation.Validate(v.Property.ContractID, validation.Empty),
-		"Property.GroupID":           validation.Validate(v.Property.GroupID, validation.Empty),
-		"Property.LatestVersion":     validation.Validate(v.Property.LatestVersion, validation.Empty),
-		"Property.ProductID":         validation.Validate(v.Property.ProductID, validation.Required),
-		"Property.ProductionVersion": validation.Validate(v.Property.ProductionVersion, validation.Empty),
-		"Property.StagingVersion":    validation.Validate(v.Property.StagingVersion, validation.Empty),
-		"Property.PropertyID":        validation.Validate(v.Property.PropertyID, validation.Empty),
-		"Property.PropertyName":      validation.Validate(v.Property.PropertyName, validation.Required),
+		"ContractID": validation.Validate(v.ContractID, validation.Required),
+		"GroupID":    validation.Validate(v.GroupID, validation.Required),
+		"Property":   validation.Validate(v.Property),
+	}.Filter()
+}
+
+// Validate validates PropertyCreate
+func (p PropertyCreate) Validate() error {
+	return validation.Errors{
+		"ProductID":    validation.Validate(p.ProductID, validation.Required),
+		"PropertyName": validation.Validate(p.PropertyName, validation.Required),
+		"CloneFrom":    validation.Validate(p.CloneFrom),
+	}.Filter()
+}
+
+// Validate validates PropertyCloneFrom
+func (c PropertyCloneFrom) Validate() error {
+	return validation.Errors{
+		"PropertyID": validation.Validate(c.PropertyID),
+		"Version":    validation.Validate(c.Version),
 	}.Filter()
 }
 
