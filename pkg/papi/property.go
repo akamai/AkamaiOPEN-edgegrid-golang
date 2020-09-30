@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -90,6 +91,7 @@ type (
 	// GetPropertyResponse is the response for GetProperty
 	GetPropertyResponse struct {
 		Properties PropertiesItems `json:"properties"`
+		Property   *Property       `json:"-"`
 	}
 
 	// RemovePropertyRequest is the argument for RemoveProperty
@@ -142,8 +144,6 @@ func (c PropertyCloneFrom) Validate() error {
 // Validate validates GetPropertyRequest
 func (v GetPropertyRequest) Validate() error {
 	return validation.Errors{
-		"ContractID": validation.Validate(v.ContractID, validation.Required),
-		"GroupID":    validation.Validate(v.GroupID, validation.Required),
 		"PropertyID": validation.Validate(v.PropertyID, validation.Required),
 	}.Filter()
 }
@@ -151,8 +151,6 @@ func (v GetPropertyRequest) Validate() error {
 // Validate validates RemovePropertyRequest
 func (v RemovePropertyRequest) Validate() error {
 	return validation.Errors{
-		"ContractID": validation.Validate(v.ContractID, validation.Required),
-		"GroupID":    validation.Validate(v.GroupID, validation.Required),
 		"PropertyID": validation.Validate(v.PropertyID, validation.Required),
 	}.Filter()
 }
@@ -235,15 +233,25 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 	var rval GetPropertyResponse
 
 	logger := p.Log(ctx)
-	logger.Debug("GetProperties")
+	logger.Debug("GetProperty")
 
-	uri := fmt.Sprintf(
-		"/papi/v1/properties/%s?contractId=%s&groupId=%s",
-		params.PropertyID,
-		params.ContractID,
-		params.GroupID)
+	uri, err := url.Parse(fmt.Sprintf(
+		"/papi/v1/properties/%s",
+		params.PropertyID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse url: %w", err)
+	}
+	q := uri.Query()
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getproperty request: %w", err)
 	}
@@ -257,6 +265,8 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 		return nil, session.NewAPIError(resp, logger)
 	}
 
+	rval.Property = rval.Properties.Items[0]
+
 	return &rval, nil
 }
 
@@ -268,15 +278,25 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 	var rval RemovePropertyResponse
 
 	logger := p.Log(ctx)
-	logger.Debug("GetProperties")
+	logger.Debug("RemoveProperty")
 
-	uri := fmt.Sprintf(
-		"/papi/v1/properties/%s?contractId=%s&groupId=%s",
-		params.PropertyID,
-		params.ContractID,
-		params.GroupID)
+	uri, err := url.Parse(fmt.Sprintf(
+		"/papi/v1/properties/%s",
+		params.PropertyID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed parse url: %w", err)
+	}
+	q := uri.Query()
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create delproperty request: %w", err)
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -17,6 +18,10 @@ type (
 		// CreateActivation creates a new activation or deactivation request
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyactivations
 		CreateActivation(context.Context, CreateActivationRequest) (*CreateActivationResponse, error)
+
+		// GetActivations returns a list of the property activations
+		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivations
+		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
 
 		// GetActivation gets details about an activation
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivation
@@ -70,10 +75,35 @@ type (
 		Activation Activation
 	}
 
+	// ActivationsItems are the activation items array from a response
+	ActivationsItems struct {
+		Items []*Activation `json:"items"`
+	}
+
+	// GetActivationsResponse is the get activation response
+	GetActivationsResponse struct {
+		AccountID  string `json:"accountId"`
+		ContractID string `json:"contractId"`
+		GroupID    string `json:"groupId"`
+
+		Activations ActivationsItems `json:"activations"`
+
+		// RetryAfter is the value of the Retry-After header.
+		//  For activations whose status is PENDING, a Retry-After header provides an estimate for when it’s likely to change.
+		RetryAfter int `json:"-"`
+	}
+
 	// CreateActivationResponse is the response for a new activation or deactivation
 	CreateActivationResponse struct {
 		ActivationID   string
 		ActivationLink string `json:"activationLink"`
+	}
+
+	// GetActivationsRequest is the get activation request
+	GetActivationsRequest struct {
+		PropertyID string
+		ContractID string
+		GroupID    string
 	}
 
 	// GetActivationRequest is the get activation request
@@ -84,22 +114,11 @@ type (
 		ActivationID string
 	}
 
-	// ActivationsItems are the activation items array from a response
-	ActivationsItems struct {
-		Items []*Activation `json:"items"`
-	}
-
 	// GetActivationResponse is the get activation response
 	GetActivationResponse struct {
-		AccountID  string `json:"accountId"`
-		ContractID string `json:"contractId"`
-		GroupID    string `json:"groupId"`
+		GetActivationsResponse
 
-		Activations ActivationsItems `json:"activations"`
-
-		// RetryAfter is the value of the Retry-After header.
-		//  For activations whose status is PENDING, a Retry-After header provides an estimate for when it’s likely to change.
-		RetryAfter int `json:"-"`
+		Activation *Activation `json:"-"`
 	}
 
 	// CancelActivationRequest is used to delete a PENDING activation
@@ -173,20 +192,26 @@ const (
 func (v CreateActivationRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":                    validation.Validate(v.PropertyID, validation.Required),
-		"ContractID":                    validation.Validate(v.ContractID, validation.Required),
-		"GroupID":                       validation.Validate(v.GroupID, validation.Required),
 		"Activation.AccountID":          validation.Validate(v.Activation.AccountID, validation.Empty),
 		"Activation.ActivationID":       validation.Validate(v.Activation.ActivationID, validation.Empty),
 		"Activation.FallbackInfo":       validation.Validate(v.Activation.FallbackInfo, validation.Nil),
 		"Activation.FMAActivationState": validation.Validate(v.Activation.FMAActivationState, validation.Empty),
 		"Activation.GroupID":            validation.Validate(v.Activation.GroupID, validation.Empty),
-		"Activation.Network":            validation.Validate(v.Activation.Network, validation.Required),
+		"Activation.Network":            validation.Validate(v.Activation.Network, validation.In(ActivationNetworkStaging, ActivationNetworkProduction)),
 		"Activation.NotifyEmails":       validation.Validate(v.Activation.NotifyEmails, validation.Length(1, 0)),
 		"Activation.PropertyID":         validation.Validate(v.Activation.PropertyID, validation.Empty),
 		"Activation.PropertyName":       validation.Validate(v.Activation.PropertyName, validation.Empty),
 		"Activation.Status":             validation.Validate(v.Activation.Status, validation.Empty),
 		"Activation.SubmitDate":         validation.Validate(v.Activation.SubmitDate, validation.Empty),
 		"Activation.UpdateDate":         validation.Validate(v.Activation.UpdateDate, validation.Empty),
+		"Activation.Type":               validation.Validate(v.Activation.ActivationType, validation.In(ActivationTypeActivate, ActivationTypeDeactivate)),
+	}.Filter()
+}
+
+// Validate validates GetActivationsRequest
+func (v GetActivationsRequest) Validate() error {
+	return validation.Errors{
+		"PropertyID": validation.Validate(v.PropertyID, validation.Required),
 	}.Filter()
 }
 
@@ -194,8 +219,6 @@ func (v CreateActivationRequest) Validate() error {
 func (v GetActivationRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":   validation.Validate(v.PropertyID, validation.Required),
-		"ContractID":   validation.Validate(v.ContractID, validation.Required),
-		"GroupID":      validation.Validate(v.GroupID, validation.Required),
 		"ActivationID": validation.Validate(v.ActivationID, validation.Required),
 	}.Filter()
 }
@@ -204,8 +227,6 @@ func (v GetActivationRequest) Validate() error {
 func (v CancelActivationRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":   validation.Validate(v.PropertyID, validation.Required),
-		"ContractID":   validation.Validate(v.ContractID, validation.Required),
-		"GroupID":      validation.Validate(v.GroupID, validation.Required),
 		"ActivationID": validation.Validate(v.ActivationID, validation.Required),
 	}.Filter()
 }
@@ -223,13 +244,23 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 		params.Activation.ActivationType = ActivationTypeActivate
 	}
 
-	uri := fmt.Sprintf(
-		"/papi/v1/properties/%s/activations?contractId=%s&groupId=%s",
-		params.PropertyID,
-		params.ContractID,
-		params.GroupID)
+	uri, err := url.Parse(fmt.Sprintf(
+		"/papi/v1/properties/%s/activations",
+		params.PropertyID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse url: %w", err)
+	}
+	q := uri.Query()
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create createactivation request: %w", err)
 	}
@@ -250,6 +281,49 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 		return nil, fmt.Errorf("%w: %s", ErrInvalidResponseLink, err.Error())
 	}
 	rval.ActivationID = id
+
+	return &rval, nil
+}
+
+func (p *papi) GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	logger := p.Log(ctx)
+	logger.Debug("GetActivation")
+
+	uri, err := url.Parse(fmt.Sprintf(
+		"/papi/v1/properties/%s/activations",
+		params.PropertyID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse url: %w", err)
+	}
+	q := uri.Query()
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create getactivation request: %w", err)
+	}
+
+	var rval GetActivationsResponse
+
+	resp, err := p.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("getactivation request failed: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, session.NewAPIError(resp, logger)
+	}
 
 	return &rval, nil
 }
@@ -289,6 +363,8 @@ func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (
 	if retryAfter := resp.Header.Get("Retry-After"); retryAfter != "" {
 		rval.RetryAfter = cast.ToInt(retryAfter)
 	}
+
+	rval.Activation = rval.Activations.Items[0]
 
 	return &rval, nil
 }
