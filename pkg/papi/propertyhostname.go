@@ -90,6 +90,16 @@ func (ph GetPropertyVersionHostnamesRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate validates UpdatePropertyVersionHostnamesRequest
+func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
+	return validation.Errors{
+		"PropertyID":      validation.Validate(ch.PropertyID, validation.Required),
+		"PropertyVersion": validation.Validate(ch.PropertyVersion, validation.Required),
+		"Hostnames":       validation.Validate(ch.Hostnames, validation.Required),
+		"Hostnames items": validation.Validate(ch.Hostnames.Items, validation.Required),
+	}.Filter()
+}
+
 func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetPropertyVersionHostnamesRequest) (*GetPropertyVersionHostnamesResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -121,16 +131,6 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 	}
 
 	return &hostnames, nil
-}
-
-// Validate validates UpdatePropertyVersionHostnamesRequest
-func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
-	return validation.Errors{
-		"PropertyID":      validation.Validate(ch.PropertyID, validation.Required),
-		"PropertyVersion": validation.Validate(ch.PropertyVersion, validation.Required),
-		"Hostnames":       validation.Validate(ch.Hostnames, validation.Required),
-		"Hostnames items": validation.Validate(ch.Hostnames.Items, validation.Required),
-	}.Filter()
 }
 
 func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params UpdatePropertyVersionHostnamesRequest) (*UpdatePropertyVersionHostnamesResponse, error) {

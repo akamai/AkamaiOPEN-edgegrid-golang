@@ -208,8 +208,8 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 		return nil, fmt.Errorf("failed to create getruletree request: %w", err)
 	}
 
-	var versions GetRuleTreeResponse
-	resp, err := p.Exec(req, &versions)
+	var rules GetRuleTreeResponse
+	resp, err := p.Exec(req, &rules)
 	if err != nil {
 		return nil, fmt.Errorf("getruletree request failed: %w", err)
 	}
@@ -218,7 +218,7 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 		return nil, session.NewAPIError(resp, logger)
 	}
 
-	return &versions, nil
+	return &rules, nil
 }
 
 func (p *papi) UpdateRuleTree(ctx context.Context, request UpdateRulesRequest) (*UpdateRulesResponse, error) {

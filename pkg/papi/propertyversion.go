@@ -57,6 +57,7 @@ type (
 		GroupID      string               `json:"groupId"`
 		AssetID      string               `json:"assetId"`
 		Versions     PropertyVersionItems `json:"versions"`
+		Version      PropertyVersionGetItem
 	}
 
 	// PropertyVersionItems contains collection of property version details
@@ -275,6 +276,10 @@ func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequ
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
+	if len(version.Versions.Items) == 0 {
+		return nil, fmt.Errorf("%w: latest version for PropertyID: %s", ErrNotFound, params.PropertyID)
+	}
+	version.Version = version.Versions.Items[0]
 	return &version, nil
 }
 
@@ -308,7 +313,10 @@ func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersion
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
-
+	if len(versions.Versions.Items) == 0 {
+		return nil, fmt.Errorf("%w: Version %d for PropertyID: %s", ErrNotFound, params.PropertyVersion, params.PropertyID)
+	}
+	versions.Version = versions.Versions.Items[0]
 	return &versions, nil
 }
 

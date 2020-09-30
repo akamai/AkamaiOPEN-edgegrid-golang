@@ -117,7 +117,6 @@ type (
 	// GetActivationResponse is the get activation response
 	GetActivationResponse struct {
 		GetActivationsResponse
-
 		Activation *Activation `json:"-"`
 	}
 
@@ -364,6 +363,9 @@ func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (
 		rval.RetryAfter = cast.ToInt(retryAfter)
 	}
 
+	if len(rval.Activations.Items) == 0 {
+		return nil, fmt.Errorf("%w: ActivationID: %s", ErrNotFound, params.ActivationID)
+	}
 	rval.Activation = rval.Activations.Items[0]
 
 	return &rval, nil

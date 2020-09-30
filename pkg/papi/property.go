@@ -265,6 +265,9 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 		return nil, session.NewAPIError(resp, logger)
 	}
 
+	if len(rval.Properties.Items) == 0 {
+		return nil, fmt.Errorf("%w: PropertyID: %s", ErrNotFound, params.PropertyID)
+	}
 	rval.Property = rval.Properties.Items[0]
 
 	return &rval, nil

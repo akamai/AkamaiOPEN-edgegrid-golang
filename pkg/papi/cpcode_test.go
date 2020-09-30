@@ -176,6 +176,34 @@ func TestPapi_GetCPCode(t *testing.T) {
 						ProductIDs:  []string{"prd_Web_App_Accel"},
 					},
 				}},
+				CPCode: CPCode{
+					ID:          "cpcodeID",
+					Name:        "cpcode_name",
+					CreatedDate: "2020-09-10T15:06:13Z",
+					ProductIDs:  []string{"prd_Web_App_Accel"},
+				},
+			},
+		},
+		"CP Code not found": {
+			params: GetCPCodeRequest{
+				ContractID: "contract",
+				GroupID:    "group",
+				CPCodeID:   "cpcodeID",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "accountId": "acc",
+    "contractId": "contract",
+    "groupId": "group",
+    "cpcodes": {
+        "items": [
+        ]
+    }
+}`,
+			expectedPath: "/papi/v1/cpcodes/cpcodeID?contractId=contract&groupId=group",
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrNotFound), "want: %v; got: %v", ErrNotFound, err)
 			},
 		},
 		"500 internal server error": {

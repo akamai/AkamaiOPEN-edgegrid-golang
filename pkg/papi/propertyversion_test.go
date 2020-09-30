@@ -197,6 +197,43 @@ func TestPapi_GetPropertyVersion(t *testing.T) {
 							UpdatedByUser:    "user",
 							UpdatedDate:      "2020-09-14T19:06:13Z",
 						}}},
+				Version: PropertyVersionGetItem{
+
+					Etag:             "etag",
+					Note:             "version note",
+					ProductID:        "productID",
+					ProductionStatus: "INACTIVE",
+					PropertyVersion:  2,
+					StagingStatus:    "ACTIVE",
+					UpdatedByUser:    "user",
+					UpdatedDate:      "2020-09-14T19:06:13Z",
+				},
+			},
+		},
+		"version not found": {
+			params: GetPropertyVersionRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "propertyId": "propertyID",
+    "propertyName": "property_name",
+    "accountId": "accountID",
+    "contractId": "contract",
+    "groupId": "group",
+    "assetId": "assetID",
+    "versions": {
+        "items": [
+        ]
+    }
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2?contractId=contract&groupId=group",
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrNotFound), "want: %s; got: %s", ErrNotFound, err)
 			},
 		},
 		"500 Internal Server Error": {
@@ -480,7 +517,45 @@ func TestPapi_GetLatestVersion(t *testing.T) {
 							StagingStatus:    "ACTIVE",
 							UpdatedByUser:    "user",
 							UpdatedDate:      "2020-09-14T19:06:13Z",
-						}}},
+						},
+					},
+				},
+				Version: PropertyVersionGetItem{
+					Etag:             "etag",
+					Note:             "version note",
+					ProductID:        "productID",
+					ProductionStatus: "INACTIVE",
+					PropertyVersion:  2,
+					StagingStatus:    "ACTIVE",
+					UpdatedByUser:    "user",
+					UpdatedDate:      "2020-09-14T19:06:13Z",
+				},
+			},
+		},
+		"Version not found": {
+			params: GetLatestVersionRequest{
+				PropertyID:  "propertyID",
+				ActivatedOn: "STAGING",
+				ContractID:  "contract",
+				GroupID:     "group",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/latest?contractId=contract&groupId=group&activatedOn=STAGING",
+			responseBody: `
+{
+    "propertyId": "propertyID",
+    "propertyName": "property_name",
+    "accountId": "accountID",
+    "contractId": "contract",
+    "groupId": "group",
+    "assetId": "assetID",
+    "versions": {
+        "items": [
+        ]
+    }
+}`,
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrNotFound), "want: %v; got: %v", ErrNotFound, err)
 			},
 		},
 		"500 Internal Server Error": {

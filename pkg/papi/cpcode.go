@@ -46,6 +46,7 @@ type (
 		ContractID string      `json:"contractId"`
 		GroupID    string      `json:"groupId"`
 		CPCodes    CPCodeItems `json:"cpcodes"`
+		CPCode     CPCode
 	}
 
 	// CreateCPCodeRequest contains data required to create CP code (both request body and group/contract infromation
@@ -172,6 +173,10 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
+	if len(cpCodes.CPCodes.Items) == 0 {
+		return nil, fmt.Errorf("%w: CPCodeID: %s", ErrNotFound, params.CPCodeID)
+	}
+	cpCodes.CPCode = cpCodes.CPCodes.Items[0]
 
 	return &cpCodes, nil
 }
