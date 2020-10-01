@@ -11,12 +11,13 @@ import (
 
 // APIError contains detailed data on API error returned to the client
 type APIError struct {
-	Type         string `json:"type"`
-	Title        string `json:"title"`
-	Detail       string `json:"detail"`
-	Instance     string `json:"instance,omitempty"`
-	BehaviorName string `json:"behaviorName,omitempty"`
-	StatusCode   int    `json:"-"`
+	Type          string `json:"type"`
+	Title         string `json:"title"`
+	Detail        string `json:"detail"`
+	Instance      string `json:"instance,omitempty"`
+	BehaviorName  string `json:"behaviorName,omitempty"`
+	ErrorLocation string `json:"errorLocation,omitempty"`
+	StatusCode    int    `json:"-"`
 }
 
 // NewAPIError returns new APIError object containing data from the error response
