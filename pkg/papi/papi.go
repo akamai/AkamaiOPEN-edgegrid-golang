@@ -50,6 +50,15 @@ type (
 		GroupID    string              `json:"groupId,omitempty"`
 		Etag       string              `json:"etag,omitempty"`
 		Errors     []*session.APIError `json:"errors,omitempty"`
+		Warnings   []*Warning          `json"warnings,omitempty"`
+	}
+
+	// Warning define warnings in a chosen set of behaviors
+	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#jsonproblems
+	Warning struct {
+		Type          string `json:"type"`
+		ErrorLocation string `json:"errorLocation"`
+		Detail        string `json:"detail"`
 	}
 )
 
