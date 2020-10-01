@@ -122,7 +122,7 @@ func TestPapi_GetRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -134,7 +134,7 @@ func TestPapi_GetRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -147,7 +147,7 @@ func TestPapi_GetRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -156,7 +156,7 @@ func TestPapi_GetRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -303,7 +303,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -315,7 +315,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -328,7 +328,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -337,7 +337,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -468,7 +468,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -480,7 +480,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -493,7 +493,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -502,7 +502,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -554,7 +554,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -566,7 +566,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -579,7 +579,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -588,7 +588,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -649,7 +649,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -661,7 +661,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -674,7 +674,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -683,7 +683,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -730,7 +730,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -742,7 +742,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -755,7 +755,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -764,7 +764,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -812,7 +812,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -824,7 +824,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -837,7 +837,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -846,7 +846,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -897,7 +897,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -906,7 +906,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -954,7 +954,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -966,7 +966,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -979,7 +979,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -988,7 +988,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -1036,7 +1036,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -1052,7 +1052,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -1061,7 +1061,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -1117,7 +1117,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -1126,7 +1126,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -1174,7 +1174,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -1186,7 +1186,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -1199,7 +1199,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -1208,7 +1208,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -1256,7 +1256,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -1268,7 +1268,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -1281,7 +1281,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -1290,7 +1290,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,
@@ -1338,7 +1338,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"httpPort":           float64(80),
 								"enableTrueClientIp": false,
 								"compress":           true,
@@ -1350,7 +1350,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						{
 							Name: "cpCode",
-							Options: &RuleOptionsMap{
+							Options: RuleOptionsMap{
 								"value": map[string]interface{}{
 									"id":   float64(12345),
 									"name": "my CP code",
@@ -1363,7 +1363,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							Behaviors: []RuleBehavior{
 								{
 									Name: "gzipResponse",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"behavior": "ALWAYS",
 									},
 								},
@@ -1372,7 +1372,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								{
 									Locked: "",
 									Name:   "contentType",
-									Options: &RuleOptionsMap{
+									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
 										"matchWildcard":      true,
 										"matchCaseSensitive": false,

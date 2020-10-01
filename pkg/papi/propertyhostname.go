@@ -49,10 +49,10 @@ type (
 
 	// Hostname contains information about each of the HostnameResponseItems
 	Hostname struct {
-		CnameType      string `json:"cnameType"`
-		EdgeHostnameID string `json:"edgeHostnameId"`
-		CnameFrom      string `json:"cnameFrom"`
-		CnameTo        string `json:"cnameTo"`
+		CnameType      HostnameCnameType `json:"cnameType"`
+		EdgeHostnameID string            `json:"edgeHostnameId"`
+		CnameFrom      string            `json:"cnameFrom"`
+		CnameTo        string            `json:"cnameTo"`
 	}
 
 	// UpdatePropertyVersionHostnamesRequest contains parameters required to update the set of hostname entries for a property version
@@ -80,6 +80,14 @@ type (
 		Etag            string                `json:"etag"`
 		Hostnames       HostnameResponseItems `json:"hostnames"`
 	}
+
+	// HostnameCnameType represents HostnameCnameType enum
+	HostnameCnameType string
+)
+
+const (
+	// HostnameCnameTypeEdgeHostname const
+	HostnameCnameTypeEdgeHostname HostnameCnameType = "EDGE_HOSTNAME"
 )
 
 // Validate validates GetPropertyVersionHostnamesRequest

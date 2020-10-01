@@ -13,7 +13,7 @@ var (
 	// ErrStructValidation is returned returned when given struct validation failed
 	ErrStructValidation = errors.New("struct validation")
 
-	//
+	// ErrNotFound is returned when requested resource was not found
 	ErrNotFound = errors.New("resource not found")
 )
 

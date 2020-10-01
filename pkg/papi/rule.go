@@ -46,25 +46,26 @@ type (
 
 	// Rules contains Rule object
 	Rules struct {
-		AdvancedOverride string              `json:"advancedOverride,omitempty"`
-		Behaviors        []RuleBehavior      `json:"behaviors,omitempty"`
-		Children         []Rules             `json:"children,omitempty"`
-		Comment          string              `json:"comment,omitempty"`
-		Criteria         []RuleBehavior      `json:"criteria,omitempty"`
-		CriteriaLocked   bool                `json:"criteriaLocked,omitempty"`
-		CustomOverride   *RuleCustomOverride `json:"customOverride,omitempty"`
-		Name             string              `json:"name"`
-		Options          *RuleOptions        `json:"options,omitempty"`
-		UUID             string              `json:"uuid,omitempty"`
-		Variables        []RuleVariable      `json:"variables,omitempty"`
+		AdvancedOverride    string                  `json:"advancedOverride,omitempty"`
+		Behaviors           []RuleBehavior          `json:"behaviors,omitempty"`
+		Children            []Rules                 `json:"children,omitempty"`
+		Comment             string                  `json:"comment,omitempty"`
+		Criteria            []RuleBehavior          `json:"criteria,omitempty"`
+		CriteriaLocked      bool                    `json:"criteriaLocked,omitempty"`
+		CustomOverride      *RuleCustomOverride     `json:"customOverride,omitempty"`
+		Name                string                  `json:"name"`
+		Options             *RuleOptions            `json:"options,omitempty"`
+		UUID                string                  `json:"uuid,omitempty"`
+		Variables           []RuleVariable          `json:"variables,omitempty"`
+		CriteriaMustSatisfy RuleCriteriaMustSatisfy `json:"criteriaMustSatisfy"`
 	}
 
 	// RuleBehavior contains data for both rule behaviors and rule criteria
 	RuleBehavior struct {
-		Locked  string          `json:"locked,omitempty"`
-		Name    string          `json:"name"`
-		Options *RuleOptionsMap `json:"options"`
-		UUID    string          `json:"uuid,omitempty"`
+		Locked  string         `json:"locked,omitempty"`
+		Name    string         `json:"name"`
+		Options RuleOptionsMap `json:"options"`
+		UUID    string         `json:"uuid,omitempty"`
 	}
 
 	// RuleCustomOverride represents customOverride field from Rule resource
@@ -120,7 +121,11 @@ type (
 		BehaviorName string `json:"behaviorName"`
 	}
 
+	// RuleOptionsMap is a type wrapping map[string]interface{} used for adding rule options
 	RuleOptionsMap map[string]interface{}
+
+	// RuleCriteriaMustSatisfy represents criteriaMustSatisfy field values
+	RuleCriteriaMustSatisfy string
 )
 
 const (
@@ -128,6 +133,11 @@ const (
 	RuleValidateModeFast = "fast"
 	// RuleValidateModeFull const
 	RuleValidateModeFull = "full"
+
+	// RuleCriteriaMustSatisfyAll const
+	RuleCriteriaMustSatisfyAll RuleCriteriaMustSatisfy = "all"
+	//RuleCriteriaMustSatisfyAny const
+	RuleCriteriaMustSatisfyAny RuleCriteriaMustSatisfy = "any"
 )
 
 // Validate validates GetRuleTreeRequest struct
