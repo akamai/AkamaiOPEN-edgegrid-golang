@@ -44,25 +44,26 @@ type (
 
 	// Rules contains Rule object
 	Rules struct {
-		AdvancedOverride string              `json:"advancedOverride,omitempty"`
-		Behaviors        []RuleBehavior      `json:"behaviors,omitempty"`
-		Children         []Rules             `json:"children,omitempty"`
-		Comment          string              `json:"comment,omitempty"`
-		Criteria         []RuleBehavior      `json:"criteria,omitempty"`
-		CriteriaLocked   bool                `json:"criteriaLocked,omitempty"`
-		CustomOverride   *RuleCustomOverride `json:"customOverride,omitempty"`
-		Name             string              `json:"name"`
-		Options          *RuleOptions        `json:"options,omitempty"`
-		UUID             string              `json:"uuid,omitempty"`
-		Variables        []RuleVariable      `json:"variables,omitempty"`
+		AdvancedOverride    string                  `json:"advancedOverride,omitempty"`
+		Behaviors           []RuleBehavior          `json:"behaviors,omitempty"`
+		Children            []Rules                 `json:"children,omitempty"`
+		Comment             string                  `json:"comment,omitempty"`
+		Criteria            []RuleBehavior          `json:"criteria,omitempty"`
+		CriteriaLocked      bool                    `json:"criteriaLocked,omitempty"`
+		CustomOverride      *RuleCustomOverride     `json:"customOverride,omitempty"`
+		Name                string                  `json:"name"`
+		Options             *RuleOptions            `json:"options,omitempty"`
+		UUID                string                  `json:"uuid,omitempty"`
+		Variables           []RuleVariable          `json:"variables,omitempty"`
+		CriteriaMustSatisfy RuleCriteriaMustSatisfy `json:"criteriaMustSatisfy"`
 	}
 
 	// RuleBehavior contains data for both rule behaviors and rule criteria
 	RuleBehavior struct {
-		Locked  string                 `json:"locked,omitempty"`
-		Name    string                 `json:"name"`
-		Options map[string]interface{} `json:"options"`
-		UUID    string                 `json:"uuid,omitempty"`
+		Locked  string         `json:"locked,omitempty"`
+		Name    string         `json:"name"`
+		Options RuleOptionsMap `json:"options"`
+		UUID    string         `json:"uuid,omitempty"`
 	}
 
 	// RuleCustomOverride represents customOverride field from Rule resource
@@ -117,6 +118,12 @@ type (
 		Instance     string `json:"instance"`
 		BehaviorName string `json:"behaviorName"`
 	}
+
+	// RuleOptionsMap is a type wrapping map[string]interface{} used for adding rule options
+	RuleOptionsMap map[string]interface{}
+
+	// RuleCriteriaMustSatisfy represents criteriaMustSatisfy field values
+	RuleCriteriaMustSatisfy string
 )
 
 const (
@@ -124,6 +131,11 @@ const (
 	RuleValidateModeFast = "fast"
 	// RuleValidateModeFull const
 	RuleValidateModeFull = "full"
+
+	// RuleCriteriaMustSatisfyAll const
+	RuleCriteriaMustSatisfyAll RuleCriteriaMustSatisfy = "all"
+	//RuleCriteriaMustSatisfyAny const
+	RuleCriteriaMustSatisfyAny RuleCriteriaMustSatisfy = "any"
 )
 
 // Validate validates GetRuleTreeRequest struct
@@ -206,8 +218,8 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 		return nil, fmt.Errorf("failed to create getruletree request: %w", err)
 	}
 
-	var versions GetRuleTreeResponse
-	resp, err := p.Exec(req, &versions)
+	var rules GetRuleTreeResponse
+	resp, err := p.Exec(req, &rules)
 	if err != nil {
 		return nil, fmt.Errorf("getruletree request failed: %w", err)
 	}
@@ -216,7 +228,7 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 		return nil, session.NewAPIError(resp, logger)
 	}
 
-	return &versions, nil
+	return &rules, nil
 }
 
 func (p *papi) UpdateRuleTree(ctx context.Context, request UpdateRulesRequest) (*UpdateRulesResponse, error) {

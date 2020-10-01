@@ -80,6 +80,23 @@ func TestPapi_CreateActivation(t *testing.T) {
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
+		"validation error - missing property ID": {
+			request: CreateActivationRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Activation: Activation{
+					PropertyVersion: 1,
+					Network:         ActivationNetworkStaging,
+					UseFastFallback: false,
+					NotifyEmails: []string{
+						"you@example.com",
+						"them@example.com",
+					},
+					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
+				},
+			},
+			withError: ErrStructValidation,
+		},
 	}
 
 	for name, test := range tests {
@@ -211,6 +228,13 @@ func TestPapi_GetActivations(t *testing.T) {
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
+		"validation error": {
+			request: GetActivationsRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+			},
+			withError: ErrStructValidation,
+		},
 	}
 
 	for name, test := range tests {
@@ -321,7 +345,53 @@ func TestPapi_GetActivation(t *testing.T) {
 					}},
 					},
 				},
+				Activation: &Activation{
+					ActivationID:       "atv_1696985",
+					PropertyName:       "example.com",
+					PropertyID:         "prp_173136",
+					PropertyVersion:    1,
+					Network:            ActivationNetworkStaging,
+					ActivationType:     ActivationTypeActivate,
+					Status:             ActivationStatusPending,
+					SubmitDate:         "2014-03-02T02:22:12Z",
+					UpdateDate:         "2014-03-01T21:12:57Z",
+					Note:               "Sample activation",
+					FMAActivationState: "steady",
+					NotifyEmails: []string{
+						"you@example.com",
+						"them@example.com",
+					},
+					FallbackInfo: &ActivationFallbackInfo{
+						FastFallbackAttempted:      false,
+						FallbackVersion:            10,
+						CanFastFallback:            true,
+						SteadyStateTime:            1506448172,
+						FastFallbackExpirationTime: 1506451772,
+						FastFallbackRecoveryState:  nil,
+					},
+				},
 			},
+		},
+		"activation not found": {
+			request: GetActivationRequest{
+				PropertyID:   "prp_175780",
+				ActivationID: "atv_1696855",
+				ContractID:   "ctr_1-1TJZFW",
+				GroupID:      "grp_15166",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+	"accountId": "act_1-1TJZFB",
+	"contractId": "ctr_1-1TJZFW",
+	"groupId": "grp_15166",
+	"activations": {
+		"items": [
+		]
+	}
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/activations/atv_1696855?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			withError:    ErrNotFound,
 		},
 		"500 internal server error": {
 			request: GetActivationRequest{
@@ -345,6 +415,14 @@ func TestPapi_GetActivation(t *testing.T) {
 				Detail:     "Error fetching activation",
 				StatusCode: http.StatusInternalServerError,
 			},
+		},
+		"validation error": {
+			request: GetActivationRequest{
+				ActivationID: "atv_1696855",
+				ContractID:   "ctr_1-1TJZFW",
+				GroupID:      "grp_15166",
+			},
+			withError: ErrStructValidation,
 		},
 	}
 
@@ -470,6 +548,14 @@ func TestPapi_CancelActivation(t *testing.T) {
 				Detail:     "Error deleting activation",
 				StatusCode: http.StatusInternalServerError,
 			},
+		},
+		"validation error": {
+			request: CancelActivationRequest{
+				ActivationID: "atv_1696855",
+				ContractID:   "ctr_1-1TJZFW",
+				GroupID:      "grp_15166",
+			},
+			withError: ErrStructValidation,
 		},
 	}
 

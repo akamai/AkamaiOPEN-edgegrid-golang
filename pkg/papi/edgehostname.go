@@ -48,6 +48,7 @@ type (
 		ContractID    string            `json:"contractId"`
 		GroupID       string            `json:"groupId"`
 		EdgeHostnames EdgeHostnameItems `json:"edgeHostnames"`
+		EdgeHostname  EdgeHostnameGetItem
 	}
 
 	// EdgeHostnameItems contains a list of EdgeHostnames
@@ -239,6 +240,10 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 	if resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
+	if len(edgeHostname.EdgeHostnames.Items) == 0 {
+		return nil, fmt.Errorf("%w: EdgeHostnameID: %s", ErrNotFound, params.EdgeHostnameID)
+	}
+	edgeHostname.EdgeHostname = edgeHostname.EdgeHostnames.Items[0]
 
 	return &edgeHostname, nil
 }

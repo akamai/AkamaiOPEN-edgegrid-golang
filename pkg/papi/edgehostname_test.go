@@ -192,6 +192,40 @@ func TestPapi_GetEdgeHostname(t *testing.T) {
 						UseCases:          nil,
 					},
 				}},
+				EdgeHostname: EdgeHostnameGetItem{
+					ID:                "ehID",
+					Domain:            "example.com.edgekey.net",
+					ProductID:         "prdID",
+					DomainPrefix:      "example.com",
+					DomainSuffix:      "edgekey.net",
+					Status:            "PENDING",
+					Secure:            true,
+					IPVersionBehavior: "IPV4",
+					UseCases:          nil,
+				},
+			},
+		},
+		"Edge hostname not found": {
+			params: GetEdgeHostnameRequest{
+				EdgeHostnameID: "ehID",
+				ContractID:     "contract",
+				GroupID:        "group",
+				Options:        []string{"opt1", "opt2"},
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "accountId": "acc",
+    "contractId": "contract",
+    "groupId": "group",
+    "edgeHostnames": {
+        "items": [
+        ]
+    }
+}`,
+			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group&options=opt1,opt2",
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrNotFound), "want: %v; got: %v", ErrNotFound, err)
 			},
 		},
 		"500 internal server error": {
