@@ -57,6 +57,10 @@ func (e *Error) Is(target error) bool {
 		return false
 	}
 
+	if e == t {
+		return true
+	}
+
 	if e.StatusCode != t.StatusCode {
 		return false
 	}
