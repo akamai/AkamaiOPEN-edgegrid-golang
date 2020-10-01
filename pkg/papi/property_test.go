@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -81,7 +80,7 @@ func TestPapi_GetProperties(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching properties",
@@ -218,7 +217,7 @@ func TestPapi_GetProperty(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching properties",
@@ -306,7 +305,7 @@ func TestPapi_CreateProperty(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error creating property",
@@ -386,7 +385,7 @@ func TestPapi_RemoveProperty(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error removing property",

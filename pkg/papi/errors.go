@@ -49,3 +49,17 @@ func (p *papi) Error(r *http.Response) error {
 func (e *Error) Error() string {
 	return fmt.Sprintf("Title: %s; Type: %s; Detail: %s", e.Title, e.Type, e.Detail)
 }
+
+// Is handles error comparisons
+func (e *Error) Is(target error) bool {
+	t, ok := target.(*Error)
+	if !ok {
+		return false
+	}
+
+	if e.StatusCode != t.StatusCode {
+		return false
+	}
+
+	return e.Error() == t.Error()
+}

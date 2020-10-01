@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -73,7 +72,7 @@ func TestPapi_CreateActivation(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780/activations?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error creating activation",
@@ -221,7 +220,7 @@ func TestPapi_GetActivations(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780/activations?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching activation",
@@ -409,7 +408,7 @@ func TestPapi_GetActivation(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780/activations/atv_1696855?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching activation",
@@ -542,7 +541,7 @@ func TestPapi_CancelActivation(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780/activations/atv_1696855?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error deleting activation",

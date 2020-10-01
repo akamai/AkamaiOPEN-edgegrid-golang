@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -75,7 +74,7 @@ func TestPapi_GetCPCodes(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/cpcodes?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching cp codes",
@@ -222,7 +221,7 @@ func TestPapi_GetCPCode(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/cpcodes/cpcodeID?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching cp codes",
@@ -338,7 +337,7 @@ func TestPapi_CreateCPCode(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/cpcodes?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching cp codes",

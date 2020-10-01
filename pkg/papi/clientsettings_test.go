@@ -7,11 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-
-	"github.com/stretchr/testify/require"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPapi_GetClientSettings(t *testing.T) {
@@ -48,7 +45,7 @@ func TestPapi_GetClientSettings(t *testing.T) {
 `,
 			expectedPath: "/papi/v1/client-settings",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching client settings",
@@ -123,7 +120,7 @@ func TestPapi_UpdateClientSettings(t *testing.T) {
 `,
 			expectedPath: "/papi/v1/client-settings",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching client settings",

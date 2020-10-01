@@ -5,13 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+	"github.com/tj/assert"
 )
 
 func TestPapi_SearchProperties(t *testing.T) {
@@ -120,7 +120,7 @@ func TestPapi_SearchProperties(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/search/find-by-value",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error searching for property",

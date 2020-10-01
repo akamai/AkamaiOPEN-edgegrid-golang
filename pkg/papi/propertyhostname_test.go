@@ -7,8 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -118,7 +116,7 @@ func TestPapi_GetPropertyVersionHostnames(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=&groupId=&validateHostnames=false",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching hostnames",
@@ -381,7 +379,7 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=&groupId=&validateHostnames=false",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error updating hostnames",
