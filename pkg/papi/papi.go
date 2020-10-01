@@ -50,7 +50,7 @@ type (
 		GroupID    string              `json:"groupId,omitempty"`
 		Etag       string              `json:"etag,omitempty"`
 		Errors     []*session.APIError `json:"errors,omitempty"`
-		Warnings   []*Warning          `json"warnings,omitempty"`
+		Warnings   []*Warning          `json:"warnings,omitempty"`
 	}
 
 	// Warning define warnings in a chosen set of behaviors
