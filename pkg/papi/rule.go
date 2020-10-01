@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -225,7 +224,7 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rules, nil
@@ -266,7 +265,7 @@ func (p *papi) UpdateRuleTree(ctx context.Context, request UpdateRulesRequest) (
 		return nil, fmt.Errorf("UpdateRuleTree request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &versions, nil

@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
 
 type (
@@ -56,7 +54,7 @@ func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &groups, nil

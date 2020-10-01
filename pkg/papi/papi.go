@@ -48,12 +48,12 @@ type (
 
 	// Response is a base PAPI Response type
 	Response struct {
-		AccountID  string              `json:"accountId,omitempty"`
-		ContractID string              `json:"contractId,omitempty"`
-		GroupID    string              `json:"groupId,omitempty"`
-		Etag       string              `json:"etag,omitempty"`
-		Errors     []*session.APIError `json:"errors,omitempty"`
-		Warnings   []*session.APIError `json:"warnings,omitempty"`
+		AccountID  string   `json:"accountId,omitempty"`
+		ContractID string   `json:"contractId,omitempty"`
+		GroupID    string   `json:"groupId,omitempty"`
+		Etag       string   `json:"etag,omitempty"`
+		Errors     []*Error `json:"errors,omitempty"`
+		Warnings   []*Error `json:"warnings,omitempty"`
 	}
 )
 

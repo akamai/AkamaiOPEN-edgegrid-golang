@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/spf13/cast"
 )
@@ -271,7 +270,7 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	id, err := ResponseLinkParse(rval.ActivationLink)
@@ -320,7 +319,7 @@ func (p *papi) GetActivations(ctx context.Context, params GetActivationsRequest)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -354,7 +353,7 @@ func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	// Get the Retry-After header to return the caller
@@ -398,7 +397,7 @@ func (p *papi) CancelActivation(ctx context.Context, params CancelActivationRequ
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil

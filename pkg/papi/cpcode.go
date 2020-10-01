@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -143,7 +142,7 @@ func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCP
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &cpCodes, nil
@@ -171,7 +170,7 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 	if len(cpCodes.CPCodes.Items) == 0 {
 		return nil, fmt.Errorf("%w: CPCodeID: %s", ErrNotFound, params.CPCodeID)
@@ -202,7 +201,7 @@ func (p *papi) CreateCPCode(ctx context.Context, r CreateCPCodeRequest) (*Create
 		return nil, fmt.Errorf("getcpcode request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 	id, err := ResponseLinkParse(createResponse.CPCodeLink)
 	if err != nil {

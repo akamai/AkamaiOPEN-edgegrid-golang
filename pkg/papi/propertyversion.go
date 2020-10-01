@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -238,7 +237,7 @@ func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersio
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &versions, nil
@@ -274,7 +273,7 @@ func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequ
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 	if len(version.Versions.Items) == 0 {
 		return nil, fmt.Errorf("%w: latest version for PropertyID: %s", ErrNotFound, params.PropertyID)
@@ -311,7 +310,7 @@ func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersion
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 	if len(versions.Versions.Items) == 0 {
 		return nil, fmt.Errorf("%w: Version %d for PropertyID: %s", ErrNotFound, params.PropertyVersion, params.PropertyID)
@@ -347,7 +346,7 @@ func (p *papi) CreatePropertyVersion(ctx context.Context, request CreateProperty
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 	propertyVersion, err := ResponseLinkParse(version.VersionLink)
 	if err != nil {
@@ -389,7 +388,7 @@ func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetFeaturesRequ
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &versions, nil
@@ -423,7 +422,7 @@ func (p *papi) GetAvailableCriteria(ctx context.Context, params GetFeaturesReque
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &versions, nil
