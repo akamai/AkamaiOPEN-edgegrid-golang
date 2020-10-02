@@ -2,6 +2,7 @@ package papi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -52,8 +53,8 @@ func (e *Error) Error() string {
 
 // Is handles error comparisons
 func (e *Error) Is(target error) bool {
-	t, ok := target.(*Error)
-	if !ok {
+	var t *Error
+	if !errors.As(target, &t) {
 		return false
 	}
 
