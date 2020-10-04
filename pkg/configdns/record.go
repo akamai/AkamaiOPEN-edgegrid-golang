@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"net"
 	"sync"
@@ -102,12 +101,21 @@ var (
 
 // Validate validates RecordBody
 func (rec *RecordBody) Validate() error {
-	return validation.Errors{
-		"Name":       validation.Validate(rec.Name, validation.Required),
-		"RecordType": validation.Validate(rec.RecordType, validation.Required),
-		"TTL":        validation.Validate(rec.TTL, validation.Required),
-		"Target":     validation.Validate(rec.Target, validation.Required),
-	}.Filter()
+
+	if len(rec.Name) < 1 {
+		return fmt.Errorf("Record body is missing Name")
+	}
+	if len(rec.RecordType) < 1 {
+		return fmt.Errorf("Record body is missing RecordType")
+	}
+	if rec.TTL == 0 {
+		return fmt.Errorf("Record body is missing TTL")
+	}
+	if rec.Target == nil || len(rec.Target) < 1 {
+		return fmt.Errorf("Record body is missing Target")
+	}
+
+	return nil
 }
 
 func (p *dns) RecordToMap(ctx context.Context, record *RecordBody) map[string]interface{} {
@@ -115,7 +123,7 @@ func (p *dns) RecordToMap(ctx context.Context, record *RecordBody) map[string]in
 	logger := p.Log(ctx)
 	logger.Debug("RecordToMap")
 
-	if err := record.Validate; err != nil {
+	if err := record.Validate(); err != nil {
 		logger.Errorf("Record to map failed. %w", err)
 		return nil
 	}
@@ -165,10 +173,10 @@ func (p *dns) CreateRecord(ctx context.Context, record *RecordBody, zone string,
 
 	logger := p.Log(ctx)
 	logger.Debug("CreateRecord")
-
-	if err := record.Validate; err != nil {
+	logger.Debugf("DNS Lib Create Record: [%v]", record)
+	if err := record.Validate(); err != nil {
 		logger.Errorf("Record content not vaiid: %w", err)
-		return nil
+		return fmt.Errorf("Record content not vaiid. [%w]", err)
 	}
 
 	reqbody, err := convertStructToReqBody(record)
@@ -209,10 +217,10 @@ func (p *dns) UpdateRecord(ctx context.Context, record *RecordBody, zone string,
 
 	logger := p.Log(ctx)
 	logger.Debug("UpdateRecord")
-
-	if err := record.Validate; err != nil {
-		logger.Errorf("Record content not vaiid: %w", err)
-		return nil
+	logger.Debugf("DNS Lib Update Record: [%v]", record)
+	if err := record.Validate(); err != nil {
+		logger.Errorf("Record content not vaiid: %s", err.Error())
+		return fmt.Errorf("Record content not vaiid. [%w]", err)
 	}
 
 	reqbody, err := convertStructToReqBody(record)
@@ -254,19 +262,19 @@ func (p *dns) DeleteRecord(ctx context.Context, record *RecordBody, zone string,
 	logger := p.Log(ctx)
 	logger.Debug("DeleteRecord")
 
-	if err := record.Validate; err != nil {
+	if err := record.Validate(); err != nil {
 		logger.Errorf("Record content not vaiid: %w", err)
-		return nil
+		return fmt.Errorf("Record content not vaiid. [%w]", err)
 	}
 
-	var mtbody string
+	//var mtbody string
 	deleteURL := fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types/%s", zone, record.Name, record.RecordType)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, deleteURL, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create DeleteRecord request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &mtbody)
+	resp, err := p.Exec(req, nil) //, &mtbody)
 	if err != nil {
 		return fmt.Errorf("DeleteRecord request failed: %w", err)
 	}
