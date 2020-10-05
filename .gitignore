@@ -1,6 +1,10 @@
 # go dependencies
 vendor/
 
+# local files
+.DS_Store
+/dist
+
 # testing and custom build code
 *.log
 coverage.out
