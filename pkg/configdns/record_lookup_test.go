@@ -301,3 +301,15 @@ func TestDns_GetRdata(t *testing.T) {
 		})
 	}
 }
+
+func TestDns_TestRdata(t *testing.T) {
+	client := Client(session.Must(session.New()))
+
+	out := client.ProcessRdata(context.Background(), []string{"2001:0db8:85a3:0000:0000:8a2e:0370:7334"}, "AAAA")
+
+	assert.Equal(t, []string{"2001:0db8:85a3:0000:0000:8a2e:0370:7334"}, out)
+
+	out = client.ProcessRdata(context.Background(), []string{"52 22 23.000 N 4 53 32.000 E -2.00m 0.00m 10000.00m 10.00m"}, "LOC")
+
+	assert.Equal(t, []string{"52 22 23.000 N 4 53 32.000 E -2.00m 0.00m 10000.00m 10.00m"}, out)
+}

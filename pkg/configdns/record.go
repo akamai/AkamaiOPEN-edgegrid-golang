@@ -175,8 +175,8 @@ func (p *dns) CreateRecord(ctx context.Context, record *RecordBody, zone string,
 	logger.Debug("CreateRecord")
 	logger.Debugf("DNS Lib Create Record: [%v]", record)
 	if err := record.Validate(); err != nil {
-		logger.Errorf("Record content not vaiid: %w", err)
-		return fmt.Errorf("Record content not vaiid. [%w]", err)
+		logger.Errorf("Record content not valid: %w", err)
+		return fmt.Errorf("Record content not valid. [%w]", err)
 	}
 
 	reqbody, err := convertStructToReqBody(record)
