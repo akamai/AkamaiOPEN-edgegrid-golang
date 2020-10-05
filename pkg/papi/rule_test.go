@@ -172,7 +172,7 @@ func TestPapi_GetRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -353,7 +353,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -518,7 +518,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -604,7 +604,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -699,7 +699,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -780,7 +780,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -862,7 +862,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -922,7 +922,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -1004,7 +1004,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -1077,7 +1077,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -1142,7 +1142,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
@@ -1224,7 +1224,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "",
@@ -1306,7 +1306,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "",
 						Name:       "mdc",
@@ -1388,7 +1388,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					},
 					Criteria: []RuleBehavior{},
 					Name:     "default",
-					Options:  &RuleOptions{IsSecure: false},
+					Options:  RuleOptions{IsSecure: false},
 					CustomOverride: &RuleCustomOverride{
 						OverrideID: "cbo_12345",
 						Name:       "mdc",

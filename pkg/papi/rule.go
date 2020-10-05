@@ -52,7 +52,7 @@ type (
 		CriteriaLocked      bool                    `json:"criteriaLocked,omitempty"`
 		CustomOverride      *RuleCustomOverride     `json:"customOverride,omitempty"`
 		Name                string                  `json:"name"`
-		Options             *RuleOptions            `json:"options,omitempty"`
+		Options             RuleOptions             `json:"options,omitempty"`
 		UUID                string                  `json:"uuid,omitempty"`
 		Variables           []RuleVariable          `json:"variables,omitempty"`
 		CriteriaMustSatisfy RuleCriteriaMustSatisfy `json:"criteriaMustSatisfy"`
