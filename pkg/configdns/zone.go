@@ -8,11 +8,12 @@ import (
 
 	"bytes"
 	"encoding/json"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"reflect"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
 
 var (
@@ -359,7 +360,7 @@ func (p *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error
 	logger := p.Log(ctx)
 	logger.Debug("GetMasterZoneFile")
 
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone, nil)
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return "", fmt.Errorf("failed to create GetMasterZoneFile request: %w", err)

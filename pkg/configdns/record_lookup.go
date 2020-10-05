@@ -113,13 +113,13 @@ func (p *dns) GetRecord(ctx context.Context, zone string, name string, record_ty
 	return &rec, nil
 }
 
-func (p *dns) GetRecordList(ctx context.Context, zone string, name string, record_type string) (*RecordSetResponse, error) {
+func (p *dns) GetRecordList(ctx context.Context, zone string, name string, recordType string) (*RecordSetResponse, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetRecordList")
 
 	var records RecordSetResponse
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets?types=%s&showAll=true", zone, record_type)
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets?types=%s&showAll=true", zone, recordType)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetRecordList request: %w", err)
@@ -137,12 +137,12 @@ func (p *dns) GetRecordList(ctx context.Context, zone string, name string, recor
 	return &records, nil
 }
 
-func (p *dns) GetRdata(ctx context.Context, zone string, name string, record_type string) ([]string, error) {
+func (p *dns) GetRdata(ctx context.Context, zone string, name string, recordType string) ([]string, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetRdata")
 
-	records, err := p.GetRecordList(ctx, zone, name, record_type)
+	records, err := p.GetRecordList(ctx, zone, name, recordType)
 	if err != nil {
 		return nil, err
 	}
@@ -161,11 +161,11 @@ func (p *dns) GetRdata(ctx context.Context, zone string, name string, record_typ
 			for _, i := range r.Rdata {
 				str := i
 
-				if record_type == "AAAA" {
+				if recordType == "AAAA" {
 					addr := net.ParseIP(str)
 					result := p.FullIPv6(ctx, addr)
 					str = result
-				} else if record_type == "LOC" {
+				} else if recordType == "LOC" {
 					str = p.PadCoordinates(ctx, str)
 				}
 				rdata = append(rdata, str)

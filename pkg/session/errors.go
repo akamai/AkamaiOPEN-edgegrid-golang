@@ -2,10 +2,12 @@ package session
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/apex/log"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/apex/log"
 )
 
 // APIError contains detailed data on API error returned to the client
@@ -36,4 +38,22 @@ func NewAPIError(r *http.Response, logger log.Interface) APIError {
 
 func (e APIError) Error() string {
 	return fmt.Sprintf("Title: %s; Type: %s; Details: %s", e.Title, e.Type, e.Detail)
+}
+
+// Is handles error comparisons
+func (e *APIError) Is(target error) bool {
+	var t *APIError
+	if !errors.As(target, &t) {
+		return false
+	}
+
+	if e == t {
+		return true
+	}
+
+	if e.StatusCode != t.StatusCode {
+		return false
+	}
+
+	return e.Error() == t.Error()
 }
