@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 )
 
 func TestDns_GetRecordsets(t *testing.T) {
@@ -184,6 +184,89 @@ func TestDns_CreateRecordsets(t *testing.T) {
 			}))
 			client := mockAPIClient(t, mockServer)
 			err := client.CreateRecordsets(context.Background(), test.sets, test.zone)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestDns_UpdateRecordsets(t *testing.T) {
+	tests := map[string]struct {
+		zone             string
+		sets             *Recordsets
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *RecordSetResponse
+		withError        error
+	}{
+		"200 OK": {
+			zone: "example.com",
+			sets: &Recordsets{
+				[]Recordset{
+					{
+						Name: "www.example.com",
+						Type: "A",
+						TTL:  300,
+						Rdata: []string{
+							"10.0.0.2",
+							"10.0.0.3",
+						},
+					},
+				},
+			},
+			responseStatus: http.StatusNoContent,
+			expectedPath:   "/config-dns/v2/zones/example.com/recordsets",
+		},
+		"500 internal server error": {
+			zone: "example.com",
+			sets: &Recordsets{
+				[]Recordset{
+					{
+						Name: "www.example.com",
+						Type: "A",
+						TTL:  300,
+						Rdata: []string{
+							"10.0.0.2",
+							"10.0.0.3",
+						},
+					},
+				},
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching authorities",
+    "status": 500
+}`,
+			expectedPath: "/config-dns/v2/zones/example.com/recordsets",
+			withError: session.APIError{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching authorities",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				if len(test.responseBody) > 0 {
+					_, err := w.Write([]byte(test.responseBody))
+					assert.NoError(t, err)
+				}
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.UpdateRecordsets(context.Background(), test.sets, test.zone)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

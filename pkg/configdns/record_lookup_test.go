@@ -313,3 +313,28 @@ func TestDns_TestRdata(t *testing.T) {
 
 	assert.Equal(t, []string{"52 22 23.000 N 4 53 32.000 E -2.00m 0.00m 10000.00m 10.00m"}, out)
 }
+
+func TestDns_ParseRData(t *testing.T) {
+	client := Client(session.Must(session.New()))
+
+	tests := map[string]struct {
+		rdata  []string
+		expect map[string]interface{}
+	}{
+		"AFSDB": {
+			rdata: []string{"1 bar.com"},
+			expect: map[string]interface{}{
+				"subtype": 1,
+				"target":  []string{"bar.com"},
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			out := client.ParseRData(context.Background(), name, test.rdata)
+
+			assert.Equal(t, test.expect, out)
+		})
+	}
+}

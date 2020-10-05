@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 )
 
 func TestDns_CreateRecord(t *testing.T) {
@@ -94,7 +94,7 @@ func TestDns_UpdateRecord(t *testing.T) {
 		expectedPath   string
 		withError      error
 	}{
-		"200 OK": {
+		"204 No Content": {
 			responseStatus: http.StatusOK,
 			body: RecordBody{
 				Name:       "www.example.com",
@@ -168,7 +168,7 @@ func TestDns_DeleteRecord(t *testing.T) {
 		expectedPath   string
 		withError      error
 	}{
-		"200 OK": {
+		"204 No Content": {
 			responseStatus: http.StatusNoContent,
 			body: RecordBody{
 				Name:       "www.example.com",

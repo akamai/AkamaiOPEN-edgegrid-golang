@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 
 	"bytes"
@@ -122,7 +123,7 @@ type (
 		TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
 		Target                string   `json:"target,omitempty"`
 		EndCustomerId         string   `json:"endCustomerId,omitempty"`
-		ContractId            string   `json:"contractId,omitempty"`
+		ContractID            string   `json:"contractId,omitempty"`
 		AliasCount            int64    `json:"aliasCount,omitempty"`
 		ActivationState       string   `json:"activationState,omitempty"`
 		LastActivationDate    string   `json:"lastActivationDate,omitempty"`
@@ -143,7 +144,7 @@ type (
 	}
 
 	ListMetadata struct {
-		ContractIds   []string `json:"contractIds"`
+		ContractIDs   []string `json:"contractIds"`
 		Page          int      `json:"page"`
 		PageSize      int      `json:"pageSize"`
 		ShowAll       bool     `json:"showAll"`
@@ -165,7 +166,8 @@ type (
 
 	// Zones List Response
 	ZoneNameListResponse struct {
-		Zones []string `json:"zones"`
+		Zones   []string `json:"zones"`
+		Aliases []string `json:"aliases"`
 	}
 
 	// returned list of Zone Names
@@ -366,8 +368,8 @@ func (p *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error
 		return "", fmt.Errorf("failed to create GetMasterZoneFile request: %w", err)
 	}
 	req.Header.Add("Accept", "text/dns")
-	var masterfile string
-	resp, err := p.Exec(req, &masterfile)
+
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return "", fmt.Errorf("GetMasterZoneFile request failed: %w", err)
 	}
@@ -376,7 +378,12 @@ func (p *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error
 		return "", session.NewAPIError(resp, logger)
 	}
 
-	return masterfile, nil
+	masterfile, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("GetMasterZoneFile request failed: %w", err)
+	}
+
+	return string(masterfile), nil
 }
 
 // Create a Zone
@@ -462,13 +469,13 @@ func (p *dns) SaveChangelist(ctx context.Context, zone *ZoneCreate) error {
 	if err != nil {
 		return fmt.Errorf("failed to create SaveChangeList request: %w", err)
 	}
-	var mtresp string
-	resp, err := p.Exec(req, &mtresp)
+
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("SaveChangeList request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusNoContent {
+	if resp.StatusCode != http.StatusCreated {
 		return session.NewAPIError(resp, logger)
 	}
 
@@ -499,8 +506,8 @@ func (p *dns) SubmitChangelist(ctx context.Context, zone *ZoneCreate) error {
 	if err != nil {
 		return fmt.Errorf("failed to create SubmitChangeList request: %w", err)
 	}
-	var mtresp string
-	resp, err := p.Exec(req, &mtresp)
+
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("SubmitChangeList request failed: %w", err)
 	}
@@ -576,8 +583,8 @@ func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	if err != nil {
 		return fmt.Errorf("failed to create Zone Delete request: %w", err)
 	}
-	var mtResp = ""
-	resp, err := p.Exec(req, &mtResp)
+
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("Zone Delete request failed: %w", err)
 	}
@@ -585,6 +592,7 @@ func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	if resp.StatusCode == http.StatusNotFound {
 		return nil
 	}
+
 	if resp.StatusCode != http.StatusNoContent {
 		return session.NewAPIError(resp, logger)
 	}
@@ -671,7 +679,6 @@ func (p *dns) ValidateZone(ctx context.Context, zone *ZoneCreate) error {
 	}
 
 	return nil
-
 }
 
 // Get Zone's Names

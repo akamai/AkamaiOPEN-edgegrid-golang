@@ -210,14 +210,13 @@ func (p *dns) UpdateRecordsets(ctx context.Context, recordsets *Recordsets, zone
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
-	var mtbody string
 	putURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets", zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, reqbody)
 	if err != nil {
 		return fmt.Errorf("failed to create UpdateRecordsets request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &mtbody)
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("UpdateRecordsets request failed: %w", err)
 	}
