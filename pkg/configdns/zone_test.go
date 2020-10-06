@@ -24,7 +24,7 @@ func TestDns_ListZones(t *testing.T) {
 		"200 OK": {
 			args: []ZoneListQueryArgs{
 				{
-					ContractIds: "1-1ACYUM",
+					ContractIDs: "1-1ACYUM",
 					Search:      "org",
 					SortBy:      "-contractId,zone",
 					Types:       "primary,alias",
@@ -87,7 +87,7 @@ func TestDns_ListZones(t *testing.T) {
 		"500 internal server error": {
 			args: []ZoneListQueryArgs{
 				{
-					ContractIds: "1-1ACYUM",
+					ContractIDs: "1-1ACYUM",
 					Search:      "org",
 					SortBy:      "-contractId,zone",
 					Types:       "primary,alias",
@@ -278,7 +278,7 @@ func TestDns_GetChangeList(t *testing.T) {
 			expectedResponse: &ChangeListResponse{
 				Zone:             "example.com",
 				ChangeTag:        "476754f4-d605-479f-853b-db854d7254fa",
-				ZoneVersionId:    "1d9c887c-49bb-4382-87a6-d1bf690aa58f",
+				ZoneVersionID:    "1d9c887c-49bb-4382-87a6-d1bf690aa58f",
 				LastModifiedDate: "2017-02-01T12:00:12.524Z",
 				Stale:            false,
 			},
@@ -409,7 +409,7 @@ func TestDns_CreateZone(t *testing.T) {
 		"201 Created": {
 			zone: ZoneCreate{
 				Zone:       "example.com",
-				ContractId: "1-2ABCDE",
+				ContractID: "1-2ABCDE",
 				Type:       "primary",
 			},
 			responseStatus: http.StatusCreated,
@@ -441,7 +441,7 @@ func TestDns_CreateZone(t *testing.T) {
 		"500 internal server error": {
 			zone: ZoneCreate{
 				Zone:       "example.com",
-				ContractId: "1-2ABCDE",
+				ContractID: "1-2ABCDE",
 				Type:       "secondary",
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -494,7 +494,7 @@ func TestDns_SaveChangelist(t *testing.T) {
 		"201 Created": {
 			zone: ZoneCreate{
 				Zone:       "example.com",
-				ContractId: "1-2ABCDE",
+				ContractID: "1-2ABCDE",
 				Type:       "primary",
 			},
 			responseStatus: http.StatusCreated,
@@ -503,7 +503,7 @@ func TestDns_SaveChangelist(t *testing.T) {
 		"500 internal server error": {
 			zone: ZoneCreate{
 				Zone:       "example.com",
-				ContractId: "1-2ABCDE",
+				ContractID: "1-2ABCDE",
 				Type:       "secondary",
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -556,7 +556,7 @@ func TestDns_SubmitChangelist(t *testing.T) {
 		"204 No Content": {
 			zone: ZoneCreate{
 				Zone:       "example.com",
-				ContractId: "1-2ABCDE",
+				ContractID: "1-2ABCDE",
 				Type:       "primary",
 			},
 			responseStatus: http.StatusNoContent,
@@ -565,7 +565,7 @@ func TestDns_SubmitChangelist(t *testing.T) {
 		"500 internal server error": {
 			zone: ZoneCreate{
 				Zone:       "example.com",
-				ContractId: "1-2ABCDE",
+				ContractID: "1-2ABCDE",
 				Type:       "secondary",
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -619,7 +619,7 @@ func TestDns_UpdateZone(t *testing.T) {
 		"200 OK": {
 			zone: ZoneCreate{
 				Zone:       "example.com",
-				ContractId: "1-2ABCDE",
+				ContractID: "1-2ABCDE",
 				Type:       "primary",
 			},
 			responseStatus: http.StatusOK,
@@ -651,7 +651,7 @@ func TestDns_UpdateZone(t *testing.T) {
 		"500 internal server error": {
 			zone: ZoneCreate{
 				Zone:       "example.com",
-				ContractId: "1-2ABCDE",
+				ContractID: "1-2ABCDE",
 				Type:       "secondary",
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -705,7 +705,7 @@ func TestDns_DeleteZone(t *testing.T) {
 		"204 No Content": {
 			zone: ZoneCreate{
 				Zone:       "example.com",
-				ContractId: "1-2ABCDE",
+				ContractID: "1-2ABCDE",
 				Type:       "primary",
 			},
 			responseStatus: http.StatusNoContent,
@@ -714,7 +714,7 @@ func TestDns_DeleteZone(t *testing.T) {
 		"500 internal server error": {
 			zone: ZoneCreate{
 				Zone:       "example.com",
-				ContractId: "1-2ABCDE",
+				ContractID: "1-2ABCDE",
 				Type:       "secondary",
 			},
 			responseStatus: http.StatusInternalServerError,
