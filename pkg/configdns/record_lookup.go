@@ -5,48 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-
 	"encoding/hex"
 	"net"
 	"strconv"
 	"strings"
 )
-
-/*
-{
-  "metadata": {
-    "zone": "example.com",
-    "types": [
-      "A"
-    ],
-    "page": 1,
-    "pageSize": 25,
-    "totalElements": 2
-  },
-  "recordsets": [
-    {
-      "name": "www.example.com",
-      "type": "A",
-      "ttl": 300,
-      "rdata": [
-        "10.0.0.2",
-        "10.0.0.3"
-      ]
-    },
-    {
-      "name": "mail.example.com",
-      "type": "A",
-      "ttl": 300,
-      "rdata": [
-        "192.168.0.1",
-        "192.168.0.2"
-      ]
-    }
-  ]
-}
-
-*/
 
 func (p *dns) FullIPv6(ctx context.Context, ip net.IP) string {
 
@@ -66,14 +29,13 @@ func (p *dns) FullIPv6(ctx context.Context, ip net.IP) string {
 }
 
 func padvalue(str string) string {
-	v_str := strings.Replace(str, "m", "", -1)
-	v_float, err := strconv.ParseFloat(v_str, 32)
+	vstr := strings.Replace(str, "m", "", -1)
+	vfloat, err := strconv.ParseFloat(vstr, 32)
 	if err != nil {
 		return "FAIL"
 	}
-	v_result := fmt.Sprintf("%.2f", v_float)
 
-	return v_result
+	return fmt.Sprintf("%.2f", vfloat)
 }
 
 // Used to pad coordinates to x.xxm format
@@ -83,19 +45,24 @@ func (p *dns) PadCoordinates(ctx context.Context, str string) string {
 	logger.Debug("PadCoordinates")
 
 	s := strings.Split(str, " ")
-	lat_d, lat_m, lat_s, lat_dir, long_d, long_m, long_s, long_dir, altitude, size, horiz_precision, vert_precision := s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11]
-	return lat_d + " " + lat_m + " " + lat_s + " " + lat_dir + " " + long_d + " " + long_m + " " + long_s + " " + long_dir + " " + padvalue(altitude) + "m " + padvalue(size) + "m " + padvalue(horiz_precision) + "m " + padvalue(vert_precision) + "m"
+	if len(s) < 12 {
+		return ""
+	}
+
+	latd, latm, lats, latDir, longd, longm, longs, longDir, altitude, size, horizPrecision, vertPrecision := s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11]
+
+	return latd + " " + latm + " " + lats + " " + latDir + " " + longd + " " + longm + " " + longs + " " + longDir + " " + padvalue(altitude) + "m " + padvalue(size) + "m " + padvalue(horizPrecision) + "m " + padvalue(vertPrecision) + "m"
 
 }
 
 // Get single Recordset. Following convention for other single record CRUD operations, return a RecordBody.
-func (p *dns) GetRecord(ctx context.Context, zone string, name string, record_type string) (*RecordBody, error) {
+func (p *dns) GetRecord(ctx context.Context, zone string, name string, recordType string) (*RecordBody, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetRecord")
 
 	var rec RecordBody
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types/%s", zone, name, record_type)
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types/%s", zone, name, recordType)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetRecord request: %w", err)
@@ -107,19 +74,19 @@ func (p *dns) GetRecord(ctx context.Context, zone string, name string, record_ty
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rec, nil
 }
 
-func (p *dns) GetRecordList(ctx context.Context, zone string, name string, record_type string) (*RecordSetResponse, error) {
+func (p *dns) GetRecordList(ctx context.Context, zone string, name string, recordType string) (*RecordSetResponse, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetRecordList")
 
 	var records RecordSetResponse
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets?types=%s&showAll=true", zone, record_type)
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets?types=%s&showAll=true", zone, recordType)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetRecordList request: %w", err)
@@ -131,18 +98,18 @@ func (p *dns) GetRecordList(ctx context.Context, zone string, name string, recor
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &records, nil
 }
 
-func (p *dns) GetRdata(ctx context.Context, zone string, name string, record_type string) ([]string, error) {
+func (p *dns) GetRdata(ctx context.Context, zone string, name string, recordType string) ([]string, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetRdata")
 
-	records, err := p.GetRecordList(ctx, zone, name, record_type)
+	records, err := p.GetRecordList(ctx, zone, name, recordType)
 	if err != nil {
 		return nil, err
 	}
@@ -161,11 +128,11 @@ func (p *dns) GetRdata(ctx context.Context, zone string, name string, record_typ
 			for _, i := range r.Rdata {
 				str := i
 
-				if record_type == "AAAA" {
+				if recordType == "AAAA" {
 					addr := net.ParseIP(str)
 					result := p.FullIPv6(ctx, addr)
 					str = result
-				} else if record_type == "LOC" {
+				} else if recordType == "LOC" {
 					str = p.PadCoordinates(ctx, str)
 				}
 				rdata = append(rdata, str)
@@ -448,5 +415,4 @@ func (p *dns) ParseRData(ctx context.Context, rtype string, rdata []string) map[
 	}
 
 	return fieldMap
-
 }

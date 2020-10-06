@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"reflect"
@@ -63,7 +62,7 @@ type (
 
 	TSIGKeyResponse struct {
 		TSIGKey
-		ZoneCount int64 `json:"zoneCount,omitempty"`
+		ZoneCount int64 `json:"zonesCount,omitempty"`
 	}
 
 	TSIGKeyBulkPost struct {
@@ -173,9 +172,8 @@ func constructTsigQueryString(tsigquerystring *TSIGQueryString) string {
 	queryString = strings.TrimRight(queryString, "&")
 	if len(queryString) > 0 {
 		return "?" + queryString
-	} else {
-		return ""
 	}
+	return ""
 }
 
 // List TSIG Keys
@@ -197,7 +195,7 @@ func (p *dns) ListTsigKeys(ctx context.Context, tsigquerystring *TSIGQueryString
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &tsigList, nil
@@ -232,7 +230,7 @@ func (p *dns) GetTsigKeyZones(ctx context.Context, tsigKey *TSIGKey) (*ZoneNameL
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zonesList, nil
@@ -262,7 +260,7 @@ func (p *dns) GetTsigKeyAliases(ctx context.Context, zone string) (*ZoneNameList
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zonesList, nil
@@ -283,20 +281,19 @@ func (p *dns) TsigKeyBulkUpdate(ctx context.Context, tsigBulk *TSIGKeyBulkPost) 
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
-	var mtbody string
 	postURL := "/config-dns/v2/keys/bulk-update"
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, reqbody)
 	if err != nil {
 		return fmt.Errorf("failed to create TsigKeyBulkUpdate request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &mtbody)
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("TsigKeyBulkUpdate request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -321,7 +318,7 @@ func (p *dns) GetTsigKey(ctx context.Context, zone string) (*TSIGKeyResponse, er
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zonekey, nil
@@ -333,24 +330,19 @@ func (p *dns) DeleteTsigKey(ctx context.Context, zone string) error {
 	logger := p.Log(ctx)
 	logger.Debug("DeleteTsigKey")
 
-	var mtbody string
 	delURL := fmt.Sprintf("/config-dns/v2/zones/%s/key", zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, delURL, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create DeleteTsigKey request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &mtbody)
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("DeleteTsigKey request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusNotFound {
-		return nil
-	}
-
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -371,24 +363,19 @@ func (p *dns) UpdateTsigKey(ctx context.Context, tsigKey *TSIGKey, zone string) 
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
-	var mtbody string
 	putURL := fmt.Sprintf("/config-dns/v2/zones/%s/key", zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, reqbody)
 	if err != nil {
 		return fmt.Errorf("failed to create UpdateTsigKey request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &mtbody)
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("UpdateTsigKey request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusNotFound {
-		return nil
-	}
-
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil

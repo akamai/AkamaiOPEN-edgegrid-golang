@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"strconv"
@@ -99,7 +98,7 @@ func (p *dns) GetRecordsets(ctx context.Context, zone string, queryArgs ...Recor
 	logger.Debug("GetRecordsets")
 
 	if len(queryArgs) > 1 {
-		return nil, fmt.Errorf("GetRecordsets QueryArgs invalid.")
+		return nil, fmt.Errorf("invalid arguments GetRecordsets QueryArgs")
 	}
 
 	var recordsetResp RecordSetResponse
@@ -137,7 +136,7 @@ func (p *dns) GetRecordsets(ctx context.Context, zone string, queryArgs ...Recor
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &recordsetResp, nil
@@ -168,20 +167,19 @@ func (p *dns) CreateRecordsets(ctx context.Context, recordsets *Recordsets, zone
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
-	var mtbody string
 	postURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets", zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, reqbody)
 	if err != nil {
 		return fmt.Errorf("failed to create CreateRecordsets request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &mtbody)
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("CreateRecordsets request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -211,20 +209,19 @@ func (p *dns) UpdateRecordsets(ctx context.Context, recordsets *Recordsets, zone
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
-	var mtbody string
 	putURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets", zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, reqbody)
 	if err != nil {
 		return fmt.Errorf("failed to create UpdateRecordsets request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &mtbody)
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("UpdateRecordsets request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil

@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
 
 type (
@@ -22,11 +20,13 @@ type (
 		NewAuthorityResponse(context.Context, string) *AuthorityResponse
 	}
 
+	Contract struct {
+		ContractID  string   `json:"contractId"`
+		Authorities []string `json:"authorities"`
+	}
+
 	AuthorityResponse struct {
-		Contracts []struct {
-			ContractID  string   `json:"contractId"`
-			Authorities []string `json:"authorities"`
-		} `json:"contracts"`
+		Contracts []Contract `json:"contracts"`
 	}
 )
 
@@ -39,16 +39,16 @@ func (p *dns) NewAuthorityResponse(ctx context.Context, contract string) *Author
 	return authorities
 }
 
-func (p *dns) GetAuthorities(ctx context.Context, contractId string) (*AuthorityResponse, error) {
+func (p *dns) GetAuthorities(ctx context.Context, contractID string) (*AuthorityResponse, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetAuthorities")
 
-	if contractId == "" {
-		return nil, fmt.Errorf("GetAuthorities reqs valid contractId")
+	if contractID == "" {
+		return nil, fmt.Errorf("%w: GetAuthorities reqs valid contractId", ErrBadRequest)
 	}
 
-	getURL := fmt.Sprintf("/config-dns/v2/data/authorities?contractIds=%s", contractId)
+	getURL := fmt.Sprintf("/config-dns/v2/data/authorities?contractIds=%s", contractID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -62,22 +62,22 @@ func (p *dns) GetAuthorities(ctx context.Context, contractId string) (*Authority
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
-	} else {
-		return &authNames, nil
+		return nil, p.Error(resp)
 	}
+
+	return &authNames, nil
 }
 
-func (p *dns) GetNameServerRecordList(ctx context.Context, contractId string) ([]string, error) {
+func (p *dns) GetNameServerRecordList(ctx context.Context, contractID string) ([]string, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetNameServerRecordList")
 
-	if contractId == "" {
-		return nil, fmt.Errorf("GetAuthorities reqs valid contractId")
+	if contractID == "" {
+		return nil, fmt.Errorf("%w: GetAuthorities reqs valid contractId", ErrBadRequest)
 	}
 
-	NSrecords, err := p.GetAuthorities(ctx, contractId)
+	NSrecords, err := p.GetAuthorities(ctx, contractID)
 
 	if err != nil {
 		return nil, err

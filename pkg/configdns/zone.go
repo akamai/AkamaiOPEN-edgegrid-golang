@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 
 	"bytes"
 	"encoding/json"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"reflect"
 	"strconv"
 	"strings"
@@ -18,31 +18,6 @@ import (
 var (
 	zoneWriteLock sync.Mutex
 )
-
-// Zone represents a DNS zone
-/*{
-    "zone": "river.com",
-    "type": "secondary",
-    "masters": [
-        "1.2.3.4",
-        "1.2.3.5"
-    ],
-    "comment": "Adding bodies of water"
-}
-
-{
-    "activationState": "ACTIVE",
-    "contractId": "C-1FRYVV3",
-    "lastActivationDate": "2018-03-20T06:49:30Z",
-    "lastModifiedBy": "vwwuq65mjvsrbvcr",
-    "lastModifiedDate": "2019-01-28T12:05:13Z",
-    "signAndServe": false,
-    "type": "PRIMARY",
-    "versionId": "2e9aa959-5e99-405c-b233-360639449fa1",
-    "zone": "akamaideveloper.net"
-}
-
-*/
 
 type (
 	// Zones contains operations available on Zone resources
@@ -107,8 +82,8 @@ type (
 		SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
 		TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
 		Target                string   `json:"target,omitempty"`
-		EndCustomerId         string   `json:"endCustomerId,omitempty"`
-		ContractId            string   `json:"contractId,omitempty"`
+		EndCustomerID         string   `json:"endCustomerId,omitempty"`
+		ContractID            string   `json:"contractId,omitempty"`
 	}
 
 	ZoneResponse struct {
@@ -120,8 +95,8 @@ type (
 		SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
 		TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
 		Target                string   `json:"target,omitempty"`
-		EndCustomerId         string   `json:"endCustomerId,omitempty"`
-		ContractId            string   `json:"contractId,omitempty"`
+		EndCustomerID         string   `json:"endCustomerId,omitempty"`
+		ContractID            string   `json:"contractId,omitempty"`
 		AliasCount            int64    `json:"aliasCount,omitempty"`
 		ActivationState       string   `json:"activationState,omitempty"`
 		LastActivationDate    string   `json:"lastActivationDate,omitempty"`
@@ -132,7 +107,7 @@ type (
 
 	// Zone List Query args struct
 	ZoneListQueryArgs struct {
-		ContractIds string
+		ContractIDs string
 		Page        int
 		PageSize    int
 		Search      string
@@ -142,7 +117,7 @@ type (
 	}
 
 	ListMetadata struct {
-		ContractIds   []string `json:"contractIds"`
+		ContractIDs   []string `json:"contractIds"`
 		Page          int      `json:"page"`
 		PageSize      int      `json:"pageSize"`
 		ShowAll       bool     `json:"showAll"`
@@ -157,14 +132,15 @@ type (
 	ChangeListResponse struct {
 		Zone             string `json:"zone,omitempty"`
 		ChangeTag        string `json:"changeTag,omitempty"`
-		ZoneVersionId    string `json:"zoneVersionId,omitempty"`
+		ZoneVersionID    string `json:"zoneVersionId,omitempty"`
 		LastModifiedDate string `json:"lastModifiedDate,omitempty"`
 		Stale            bool   `json:"stale,omitempty"`
 	}
 
 	// Zones List Response
 	ZoneNameListResponse struct {
-		Zones []string `json:"zones"`
+		Zones   []string `json:"zones"`
+		Aliases []string `json:"aliases"`
 	}
 
 	// returned list of Zone Names
@@ -235,8 +211,8 @@ func (p *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*Z
 		if queryArgs[0].Types != "" {
 			q.Add("types", queryArgs[0].Types)
 		}
-		if queryArgs[0].ContractIds != "" {
-			q.Add("contractIds", queryArgs[0].ContractIds)
+		if queryArgs[0].ContractIDs != "" {
+			q.Add("contractIds", queryArgs[0].ContractIDs)
 		}
 		req.URL.RawQuery = q.Encode()
 	}
@@ -248,7 +224,7 @@ func (p *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*Z
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zonelist, nil
@@ -265,8 +241,8 @@ func (p *dns) NewZone(ctx context.Context, params ZoneCreate) *ZoneCreate {
 		Masters:               params.Masters,
 		TsigKey:               params.TsigKey,
 		Target:                params.Target,
-		EndCustomerId:         params.EndCustomerId,
-		ContractId:            params.ContractId,
+		EndCustomerID:         params.EndCustomerID,
+		ContractID:            params.ContractID,
 		Comment:               params.Comment,
 		SignAndServe:          params.SignAndServe,
 		SignAndServeAlgorithm: params.SignAndServeAlgorithm}
@@ -322,7 +298,7 @@ func (p *dns) GetZone(ctx context.Context, zonename string) (*ZoneResponse, erro
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zone, nil
@@ -347,7 +323,7 @@ func (p *dns) GetChangeList(ctx context.Context, zone string) (*ChangeListRespon
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &changelist, nil
@@ -359,23 +335,28 @@ func (p *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error
 	logger := p.Log(ctx)
 	logger.Debug("GetMasterZoneFile")
 
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone, nil)
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return "", fmt.Errorf("failed to create GetMasterZoneFile request: %w", err)
 	}
 	req.Header.Add("Accept", "text/dns")
-	var masterfile string
-	resp, err := p.Exec(req, &masterfile)
+
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return "", fmt.Errorf("GetMasterZoneFile request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return "", session.NewAPIError(resp, logger)
+		return "", p.Error(resp)
 	}
 
-	return masterfile, nil
+	masterfile, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("GetMasterZoneFile request failed: %w", err)
+	}
+
+	return string(masterfile), nil
 }
 
 // Create a Zone
@@ -420,7 +401,7 @@ func (p *dns) CreateZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	if strings.ToUpper(zone.Type) == "PRIMARY" {
@@ -461,14 +442,14 @@ func (p *dns) SaveChangelist(ctx context.Context, zone *ZoneCreate) error {
 	if err != nil {
 		return fmt.Errorf("failed to create SaveChangeList request: %w", err)
 	}
-	var mtresp string
-	resp, err := p.Exec(req, &mtresp)
+
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("SaveChangeList request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+	if resp.StatusCode != http.StatusCreated {
+		return p.Error(resp)
 	}
 
 	return nil
@@ -498,14 +479,14 @@ func (p *dns) SubmitChangelist(ctx context.Context, zone *ZoneCreate) error {
 	if err != nil {
 		return fmt.Errorf("failed to create SubmitChangeList request: %w", err)
 	}
-	var mtresp string
-	resp, err := p.Exec(req, &mtresp)
+
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("SubmitChangeList request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -548,7 +529,7 @@ func (p *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -575,8 +556,8 @@ func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	if err != nil {
 		return fmt.Errorf("failed to create Zone Delete request: %w", err)
 	}
-	var mtResp = ""
-	resp, err := p.Exec(req, &mtResp)
+
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("Zone Delete request failed: %w", err)
 	}
@@ -584,8 +565,9 @@ func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	if resp.StatusCode == http.StatusNotFound {
 		return nil
 	}
+
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -670,7 +652,6 @@ func (p *dns) ValidateZone(ctx context.Context, zone *ZoneCreate) error {
 	}
 
 	return nil
-
 }
 
 // Get Zone's Names
@@ -692,7 +673,7 @@ func (p *dns) GetZoneNames(ctx context.Context, zone string) (*ZoneNamesResponse
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &znresponse, nil
@@ -717,7 +698,7 @@ func (p *dns) GetZoneNameTypes(ctx context.Context, zname string, zone string) (
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zntypes, nil
