@@ -37,7 +37,7 @@ type Resources interface {
 
 // ResourceInstance
 type ResourceInstance struct {
-	ResourceId           int  `json:"datacenterId"`
+	DatacenterId         int  `json:"datacenterId"`
 	UseDefaultLoadObject bool `json:"useDefaultLoadObject"`
 	LoadObject
 }
@@ -84,7 +84,7 @@ func (p *gtm) NewResourceInstance(ctx context.Context, rsrc *Resource, dcID int)
 	logger := p.Log(ctx)
 	logger.Debug("NewResourceInstance")
 
-	return &ResourceInstance{ResourceId: dcID}
+	return &ResourceInstance{DatacenterId: dcID}
 
 }
 
