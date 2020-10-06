@@ -1,4 +1,4 @@
-package configgtm
+package gtm
 
 import (
 	"context"
@@ -17,7 +17,7 @@ import (
 // Based on 1.4 Schema
 //
 
-// Records contains operations available on a Record resource
+// Domains contains operations available on a Domain resource
 // See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html
 type Domains interface {
 	// Retrieve map of null fields
@@ -33,7 +33,7 @@ type Domains interface {
 	// GetDomain retrieves a Domain with the given domainname.
 	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getdomain
 	GetDomain(context.Context, string) (*Domain, error)
-	// CreateRecord creates recordset
+	// CreateDomain creates domain
 	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#postdomains
 	CreateDomain(context.Context, *Domain, map[string]string) (*DomainResponse, error)
 	// Delete is a method applied to a domain object resulting in removal.
@@ -203,7 +203,7 @@ func (p *gtm) GetDomain(domainName string) (*Domain, error) {
 }
 
 // Save method; Create or Update
-func save(ctx context.Context, domain *Domain, queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
+func (domain *Domain) save(ctx context.Context, queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
 
 	// set schema version
 	setVersionHeader(req, schemaVersion)
@@ -226,7 +226,7 @@ func save(ctx context.Context, domain *Domain, queryArgs map[string]string, req 
 		return nil, fmt.Errorf("Domain request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, session.NewAPIError(resp, logger)
 	}
 
@@ -251,7 +251,7 @@ func (p *gtm) CreateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 		return nil, fmt.Errorf("failed to create CreateDomain request: %w", err)
 	}
 
-	return domain.save(ctx, domain, queryArgs, req)
+	return domain.save(ctx, queryArgs, req)
 
 }
 
@@ -267,12 +267,12 @@ func (p *gtm) UpdateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 	}
 
 	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s", domain.Name)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPutt, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateDomain request: %w", err)
 	}
 
-	stat, err := domain.save(ctx, domain, queryArgs, req)
+	stat, err := domain.save(ctx, queryArgs, req)
 	if err != nil {
 		return nil, err
 	}
