@@ -19,31 +19,6 @@ var (
 	zoneWriteLock sync.Mutex
 )
 
-// Zone represents a DNS zone
-/*{
-    "zone": "river.com",
-    "type": "secondary",
-    "masters": [
-        "1.2.3.4",
-        "1.2.3.5"
-    ],
-    "comment": "Adding bodies of water"
-}
-
-{
-    "activationState": "ACTIVE",
-    "contractId": "C-1FRYVV3",
-    "lastActivationDate": "2018-03-20T06:49:30Z",
-    "lastModifiedBy": "vwwuq65mjvsrbvcr",
-    "lastModifiedDate": "2019-01-28T12:05:13Z",
-    "signAndServe": false,
-    "type": "PRIMARY",
-    "versionId": "2e9aa959-5e99-405c-b233-360639449fa1",
-    "zone": "akamaideveloper.net"
-}
-
-*/
-
 type (
 	// Zones contains operations available on Zone resources
 	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html
@@ -107,8 +82,8 @@ type (
 		SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
 		TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
 		Target                string   `json:"target,omitempty"`
-		EndCustomerId         string   `json:"endCustomerId,omitempty"`
-		ContractId            string   `json:"contractId,omitempty"`
+		EndCustomerID         string   `json:"endCustomerId,omitempty"`
+		ContractID            string   `json:"contractId,omitempty"`
 	}
 
 	ZoneResponse struct {
@@ -120,7 +95,7 @@ type (
 		SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
 		TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
 		Target                string   `json:"target,omitempty"`
-		EndCustomerId         string   `json:"endCustomerId,omitempty"`
+		EndCustomerID         string   `json:"endCustomerId,omitempty"`
 		ContractID            string   `json:"contractId,omitempty"`
 		AliasCount            int64    `json:"aliasCount,omitempty"`
 		ActivationState       string   `json:"activationState,omitempty"`
@@ -132,7 +107,7 @@ type (
 
 	// Zone List Query args struct
 	ZoneListQueryArgs struct {
-		ContractIds string
+		ContractIDs string
 		Page        int
 		PageSize    int
 		Search      string
@@ -157,7 +132,7 @@ type (
 	ChangeListResponse struct {
 		Zone             string `json:"zone,omitempty"`
 		ChangeTag        string `json:"changeTag,omitempty"`
-		ZoneVersionId    string `json:"zoneVersionId,omitempty"`
+		ZoneVersionID    string `json:"zoneVersionId,omitempty"`
 		LastModifiedDate string `json:"lastModifiedDate,omitempty"`
 		Stale            bool   `json:"stale,omitempty"`
 	}
@@ -236,8 +211,8 @@ func (p *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*Z
 		if queryArgs[0].Types != "" {
 			q.Add("types", queryArgs[0].Types)
 		}
-		if queryArgs[0].ContractIds != "" {
-			q.Add("contractIds", queryArgs[0].ContractIds)
+		if queryArgs[0].ContractIDs != "" {
+			q.Add("contractIds", queryArgs[0].ContractIDs)
 		}
 		req.URL.RawQuery = q.Encode()
 	}
@@ -266,8 +241,8 @@ func (p *dns) NewZone(ctx context.Context, params ZoneCreate) *ZoneCreate {
 		Masters:               params.Masters,
 		TsigKey:               params.TsigKey,
 		Target:                params.Target,
-		EndCustomerId:         params.EndCustomerId,
-		ContractId:            params.ContractId,
+		EndCustomerID:         params.EndCustomerID,
+		ContractID:            params.ContractID,
 		Comment:               params.Comment,
 		SignAndServe:          params.SignAndServe,
 		SignAndServeAlgorithm: params.SignAndServeAlgorithm}

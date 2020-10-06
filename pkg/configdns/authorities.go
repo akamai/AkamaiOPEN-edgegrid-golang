@@ -63,9 +63,9 @@ func (p *dns) GetAuthorities(ctx context.Context, contractID string) (*Authority
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
-	} else {
-		return &authNames, nil
 	}
+
+	return &authNames, nil
 }
 
 func (p *dns) GetNameServerRecordList(ctx context.Context, contractID string) ([]string, error) {

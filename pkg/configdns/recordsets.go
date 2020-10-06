@@ -98,7 +98,7 @@ func (p *dns) GetRecordsets(ctx context.Context, zone string, queryArgs ...Recor
 	logger.Debug("GetRecordsets")
 
 	if len(queryArgs) > 1 {
-		return nil, fmt.Errorf("GetRecordsets QueryArgs invalid.")
+		return nil, fmt.Errorf("invalid arguments GetRecordsets QueryArgs")
 	}
 
 	var recordsetResp RecordSetResponse

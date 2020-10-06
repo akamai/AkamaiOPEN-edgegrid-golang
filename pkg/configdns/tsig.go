@@ -172,9 +172,8 @@ func constructTsigQueryString(tsigquerystring *TSIGQueryString) string {
 	queryString = strings.TrimRight(queryString, "&")
 	if len(queryString) > 0 {
 		return "?" + queryString
-	} else {
-		return ""
 	}
+	return ""
 }
 
 // List TSIG Keys
