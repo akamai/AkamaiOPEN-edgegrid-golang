@@ -41,6 +41,11 @@ func setVersionHeader(req *http.Request, version string) {
 
 }
 
+// Instantiate new Default Datacenter Struct
+func (p *gtm) NewDefaultDatacenter(dcid int) *DatacenterBase {
+	return &DatacenterBase{DatacenterId: dcid}
+}
+
 // response Status is returned on Create, Update or Delete operations for all entity types
 type ResponseStatus struct {
 	ChangeId              string  `json:"changeId,omitempty"`

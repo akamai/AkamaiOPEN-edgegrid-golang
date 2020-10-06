@@ -30,7 +30,7 @@ type (
 	}
 
 	// Option defines a GTM option
-	Option func(*dns)
+	Option func(*gtm)
 
 	// ClientFunc is a gtm client new method, this can used for mocking
 	ClientFunc func(sess session.Session, opts ...Option) GTM

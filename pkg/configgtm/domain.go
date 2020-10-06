@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-
 	"reflect"
 	"strings"
 	"unicode"
@@ -146,7 +144,7 @@ func (p *gtm) GetDomainStatus(ctx context.Context, domainName string) (*Response
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &stat, nil
@@ -171,7 +169,7 @@ func (p *gtm) ListDomains(ctx context.Context) ([]*DomainItem, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return domains.DomainItems, nil
@@ -196,7 +194,7 @@ func (p *gtm) GetDomain(domainName string) (*Domain, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &domain, nil
@@ -227,7 +225,7 @@ func (domain *Domain) save(ctx context.Context, queryArgs map[string]string, req
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &dresp, nil
@@ -300,7 +298,7 @@ func (p *gtm) DeleteDomain(ctx context.Context, domain *Domain) (*ResponseStatus
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return responseBody.Status, nil
@@ -341,7 +339,6 @@ func (p *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapSt
 	domainMap := make(map[string]string)
 	var objMap ObjectMap
 
-	var domain Domain
 	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s", domain.Name)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -354,7 +351,7 @@ func (p *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapSt
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	for i, d := range objMap {

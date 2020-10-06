@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-
 	"strconv"
 	"strings"
 )
@@ -113,7 +111,7 @@ func (p *gtm) ListDatacenters(ctx context.Context, domainName string) ([]*Datace
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return dcs.DatacenterItems, nil
@@ -138,7 +136,7 @@ func (p *gtm) GetDatacenter(ctx context.Context, dcID int, domainName string) (*
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &dc, nil
@@ -163,7 +161,7 @@ func (p *gtm) CreateDatacenter(ctx context.Context, dc *Datacenter, domainName s
 		return nil, fmt.Errorf("Datacenter request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &dcresp, nil
@@ -237,7 +235,7 @@ func createDefaultDC(ctx context.Context, defaultID int, domainName string) (*Da
 		return nil, fmt.Errorf("Default Datacenter request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return dcresp.Resource, nil
@@ -263,7 +261,7 @@ func (p *gtm) UpdateDatacenter(ctx context.Context, dc *Datacenter, domainName s
 		return nil, fmt.Errorf("Datacenter request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &dcresp.Status, nil
@@ -288,7 +286,7 @@ func (p *gtm) DeleteDatacenter(ctx context.Context, dc *Datacenter, domainName s
 		return nil, fmt.Errorf("Datacenter request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &dcresp.Status, nil

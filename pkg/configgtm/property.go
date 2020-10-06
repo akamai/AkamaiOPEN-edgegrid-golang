@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
 
 //
@@ -223,7 +221,7 @@ func (p *gtm) ListProperties(ctx context.Context, domainName string) ([]*Propert
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return properties.PropertyItems, nil
@@ -248,7 +246,7 @@ func (p *gtm) GetProperty(ctx context.Context, name, domainName string) (*Proper
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return property, nil
@@ -261,7 +259,7 @@ func (p *gtm) CreateProperty(ctx context.Context, property *Property, domainName
 	logger.Debug("CreateProperty")
 
 	// Need do any validation?
-	return property.save(ctx, domainName)
+	return property.save(ctx, p, domainName)
 }
 
 // Update the property in the receiver argument in the specified domain.
@@ -271,7 +269,7 @@ func (p *gtm) UpdateProperty(ctx context.Context, property *Property, domainName
 	logger.Debug("UpdateProperty")
 
 	// Need do any validation?
-	stat, err := property.save(ctx, domainName)
+	stat, err := property.save(ctx, p, domainName)
 	if err != nil {
 		return nil, err
 	}
@@ -280,11 +278,10 @@ func (p *gtm) UpdateProperty(ctx context.Context, property *Property, domainName
 }
 
 // Save Property updates method
-func (property *Property) save(ctx context.Context, domainName string) (*PropertyResponse, error) {
+func (property *Property) save(ctx context.Context, p *gtm, domainName string) (*PropertyResponse, error) {
 
 	if err := property.Validate(); err != nil {
-		logger.Errorf("Property validation failed. %w", err)
-		return nil
+		return nil, fmt.Errorf("Property validation failed. %w", err)
 	}
 
 	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/properties/%s", domainName, property.Name)
@@ -301,7 +298,7 @@ func (property *Property) save(ctx context.Context, domainName string) (*Propert
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &presp, nil
@@ -315,7 +312,7 @@ func (p *gtm) DeleteProperty(ctx context.Context, property *Property, domainName
 
 	if err := property.Validate(); err != nil {
 		logger.Errorf("Property validation failed. %w", err)
-		return nil
+		return nil, fmt.Errorf("Property validation failed. %w", err)
 	}
 
 	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/properties/%s", domainName, property.Name)
@@ -332,7 +329,7 @@ func (p *gtm) DeleteProperty(ctx context.Context, property *Property, domainName
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return presp.Status, nil

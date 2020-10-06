@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
 
 //
@@ -17,7 +15,7 @@ import (
 // See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html
 type Resources interface {
 	// NewResourceInstance instantiates a new ResourceInstance.
-	NewResourceInstance(ctx.Context, *Resource, int) *ResourceInstance
+	NewResourceInstance(context.Context, *Resource, int) *ResourceInstance
 	// NewResource creates a new Resource object.
 	NewResource(context.Context, string) *Resource
 	// ListResources retreieves all Resources
@@ -119,7 +117,7 @@ func (p *gtm) ListResources(ctx context.Context, domainName string) ([]*Resource
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return rsrcs.ResourceItems, nil
@@ -144,7 +142,7 @@ func (p *gtm) GetResource(ctx context.Context, name, domainName string) (*Resour
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rsc, nil
@@ -157,7 +155,7 @@ func (p *gtm) CreateResource(ctx context.Context, rsrc *Resource, domainName str
 	logger.Debug("CreateResource")
 
 	// Use common code. Any specific validation needed?
-	return rsrc.save(ctx, domainName)
+	return rsrc.save(ctx, p, domainName)
 
 }
 
@@ -168,7 +166,7 @@ func (p *gtm) UpdateResource(ctx context.Context, rsrc *Resource, domainName str
 	logger.Debug("UpdateResource")
 
 	// common code
-	stat, err := rsrc.save(ctx, domainName)
+	stat, err := rsrc.save(ctx, p, domainName)
 	if err != nil {
 		return nil, err
 	}
@@ -177,11 +175,10 @@ func (p *gtm) UpdateResource(ctx context.Context, rsrc *Resource, domainName str
 }
 
 // Save Resource in given domain. Common path for Create and Update.
-func (rsrc *Resource) save(ctx context.Context, domainName string) (*ResourceResponse, error) {
+func (rsrc *Resource) save(ctx context.Context, p *gtm, domainName string) (*ResourceResponse, error) {
 
 	if err := rsrc.Validate(); err != nil {
-		logger.Errorf("Resource validation failed. %w", err)
-		return nil
+		return nil, Errorf("Resource validation failed. %w", err)
 	}
 
 	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", domainName, rsrc.Name)
@@ -198,7 +195,7 @@ func (rsrc *Resource) save(ctx context.Context, domainName string) (*ResourceRes
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rscresp, nil
@@ -213,7 +210,7 @@ func (p *gtm) DeleteResource(ctx context.Context, rsrc *Resource, omainName stri
 
 	if err := rsrc.Validate(); err != nil {
 		logger.Errorf("Resource validation failed. %w", err)
-		return nil
+		return nil, fmt.Errorf("Resource validation failed. %w", err)
 	}
 
 	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", domainName, rsrc.Name)
@@ -230,7 +227,7 @@ func (p *gtm) DeleteResource(ctx context.Context, rsrc *Resource, omainName stri
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return rscresp.Status, nil
