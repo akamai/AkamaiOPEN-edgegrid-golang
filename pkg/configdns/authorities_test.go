@@ -75,7 +75,7 @@ func TestDns_GetAuthorities(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/data/authorities?contractIds=9-9XXXXX",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",

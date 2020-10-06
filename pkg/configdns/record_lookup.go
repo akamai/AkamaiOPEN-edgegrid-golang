@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-
 	"encoding/hex"
 	"net"
 	"strconv"
@@ -107,7 +105,7 @@ func (p *dns) GetRecord(ctx context.Context, zone string, name string, record_ty
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rec, nil
@@ -131,7 +129,7 @@ func (p *dns) GetRecordList(ctx context.Context, zone string, name string, recor
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &records, nil

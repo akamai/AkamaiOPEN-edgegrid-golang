@@ -60,7 +60,7 @@ func TestDns_GetRecord(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -159,7 +159,7 @@ func TestDns_GetRecordList(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/recordsets?types=A&showAll=true",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -272,7 +272,7 @@ func TestDns_GetRdata(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/recordsets?types=A&showAll=true",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",

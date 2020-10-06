@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"strconv"
@@ -137,7 +136,7 @@ func (p *dns) GetRecordsets(ctx context.Context, zone string, queryArgs ...Recor
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &recordsetResp, nil
@@ -180,7 +179,7 @@ func (p *dns) CreateRecordsets(ctx context.Context, recordsets *Recordsets, zone
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -222,7 +221,7 @@ func (p *dns) UpdateRecordsets(ctx context.Context, recordsets *Recordsets, zone
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil

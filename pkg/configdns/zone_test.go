@@ -104,7 +104,7 @@ func TestDns_ListZones(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones?contractIds=1-1ACYUM&search=org&sortBy=-contractId%2Czone&types=primary%2Calias&page=1&pageSize=25&showAll=false",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -224,7 +224,7 @@ func TestDns_GetZone(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -294,7 +294,7 @@ func TestDns_GetChangeList(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -365,7 +365,7 @@ func TestDns_GetMasterZoneFile(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/zone-file",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching master zone file",
@@ -453,7 +453,7 @@ func TestDns_CreateZone(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error creating zone",
@@ -515,7 +515,7 @@ func TestDns_SaveChangelist(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/changelists?zone=example.com",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error creating zone",
@@ -577,7 +577,7 @@ func TestDns_SubmitChangelist(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/changelists?zone=example.com",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error creating zone",
@@ -663,7 +663,7 @@ func TestDns_UpdateZone(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error creating zone",
@@ -726,7 +726,7 @@ func TestDns_DeleteZone(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error creating zone",
@@ -794,7 +794,7 @@ func TestDns_GetZoneNames(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/names",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -863,7 +863,7 @@ func TestDns_GetZoneNameTypes(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",

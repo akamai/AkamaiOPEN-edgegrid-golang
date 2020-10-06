@@ -56,7 +56,7 @@ func TestDns_CreateRecord(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -130,7 +130,7 @@ func TestDns_UpdateRecord(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -195,7 +195,7 @@ func TestDns_DeleteRecord(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",

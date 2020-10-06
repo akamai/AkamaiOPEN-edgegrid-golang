@@ -78,7 +78,7 @@ func TestDns_ListTsigKeys(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/keys?contractIds=1-1ABCD",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -151,7 +151,7 @@ func TestDns_GetTsigKeyZones(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/keys/used-by",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -218,7 +218,7 @@ func TestDns_GetTsigKeyAliases(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/key/used-by",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -290,7 +290,7 @@ func TestDns_TsigKeyBulkUpdate(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/keys/bulk-update",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -361,7 +361,7 @@ func TestDns_GetTsigKey(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/key",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -416,7 +416,7 @@ func TestDns_DeleteTsigKey(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/key",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error Deleting TSig Key",
@@ -483,7 +483,7 @@ func TestDns_UpdateTsigKey(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/key",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",

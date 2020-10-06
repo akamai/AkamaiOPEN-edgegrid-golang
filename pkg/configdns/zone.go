@@ -13,8 +13,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
 
 var (
@@ -251,7 +249,7 @@ func (p *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*Z
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zonelist, nil
@@ -325,7 +323,7 @@ func (p *dns) GetZone(ctx context.Context, zonename string) (*ZoneResponse, erro
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zone, nil
@@ -350,7 +348,7 @@ func (p *dns) GetChangeList(ctx context.Context, zone string) (*ChangeListRespon
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &changelist, nil
@@ -375,7 +373,7 @@ func (p *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return "", session.NewAPIError(resp, logger)
+		return "", p.Error(resp)
 	}
 
 	masterfile, err := ioutil.ReadAll(resp.Body)
@@ -428,7 +426,7 @@ func (p *dns) CreateZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	if strings.ToUpper(zone.Type) == "PRIMARY" {
@@ -476,7 +474,7 @@ func (p *dns) SaveChangelist(ctx context.Context, zone *ZoneCreate) error {
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -513,7 +511,7 @@ func (p *dns) SubmitChangelist(ctx context.Context, zone *ZoneCreate) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -556,7 +554,7 @@ func (p *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -594,7 +592,7 @@ func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -700,7 +698,7 @@ func (p *dns) GetZoneNames(ctx context.Context, zone string) (*ZoneNamesResponse
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &znresponse, nil
@@ -725,7 +723,7 @@ func (p *dns) GetZoneNameTypes(ctx context.Context, zname string, zone string) (
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zntypes, nil

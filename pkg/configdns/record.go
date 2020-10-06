@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-
 	"net"
 	"sync"
 )
@@ -197,7 +195,7 @@ func (p *dns) CreateRecord(ctx context.Context, record *RecordBody, zone string,
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -241,7 +239,7 @@ func (p *dns) UpdateRecord(ctx context.Context, record *RecordBody, zone string,
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -280,7 +278,7 @@ func (p *dns) DeleteRecord(ctx context.Context, record *RecordBody, zone string,
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil

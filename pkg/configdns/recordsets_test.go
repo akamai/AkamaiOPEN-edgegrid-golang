@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -80,7 +79,7 @@ func TestDns_GetRecordsets(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/recordsets",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -162,7 +161,7 @@ func TestDns_CreateRecordsets(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/recordsets",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",
@@ -245,7 +244,7 @@ func TestDns_UpdateRecordsets(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/recordsets",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching authorities",

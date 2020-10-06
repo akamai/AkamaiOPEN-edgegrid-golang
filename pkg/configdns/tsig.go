@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"reflect"
@@ -197,7 +196,7 @@ func (p *dns) ListTsigKeys(ctx context.Context, tsigquerystring *TSIGQueryString
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &tsigList, nil
@@ -232,7 +231,7 @@ func (p *dns) GetTsigKeyZones(ctx context.Context, tsigKey *TSIGKey) (*ZoneNameL
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zonesList, nil
@@ -262,7 +261,7 @@ func (p *dns) GetTsigKeyAliases(ctx context.Context, zone string) (*ZoneNameList
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zonesList, nil
@@ -295,7 +294,7 @@ func (p *dns) TsigKeyBulkUpdate(ctx context.Context, tsigBulk *TSIGKeyBulkPost) 
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -320,7 +319,7 @@ func (p *dns) GetTsigKey(ctx context.Context, zone string) (*TSIGKeyResponse, er
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &zonekey, nil
@@ -344,7 +343,7 @@ func (p *dns) DeleteTsigKey(ctx context.Context, zone string) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
@@ -377,7 +376,7 @@ func (p *dns) UpdateTsigKey(ctx context.Context, tsigKey *TSIGKey, zone string) 
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return session.NewAPIError(resp, logger)
+		return p.Error(resp)
 	}
 
 	return nil
