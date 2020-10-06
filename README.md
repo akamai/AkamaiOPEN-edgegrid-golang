@@ -1,4 +1,4 @@
-# Akamai OPEN EdgeGrid for GoLang
+# Akamai OPEN EdgeGrid for GoLang v1
 
 [![Build Status](https://travis-ci.org/akamai/AkamaiOPEN-edgegrid-golang.svg?branch=master)](https://travis-ci.org/akamai/AkamaiOPEN-edgegrid-golang)
 [![GoDoc](https://godoc.org/github.com/akamai/AkamaiOPEN-edgegrid-golang?status.svg)](https://godoc.org/github.com/akamai/AkamaiOPEN-edgegrid-golang)
@@ -7,9 +7,23 @@
 
 This library implements an Authentication handler for [net/http](https://golang.org/pkg/net/http/)
 that provides the [Akamai OPEN Edgegrid Authentication](https://developer.akamai.com/introduction/Client_Auth.html) 
-scheme. For more information visit the [Akamai OPEN Developer Community](https://developer.akamai.com).
+scheme. For more information visit the [Akamai OPEN Developer Community](https://developer.akamai.com).  This library 
+has been released as a v1 library though future development will be on the v2 branch
 
-## Usage
+## Announcing Akamai OPEN EdgeGrid for GoLang v2 (release v2.0.0)
+
+The v2 branch of this module is under active development and provides a subset of Akamai APIs for use in the 
+Akamai Terraform Provider. The v2 branch **does not yet** implement the full set of Akamai endpoints supported by the 
+0.x and 1.x releases.  
+
+New users are encouraged to adopt v2 branch it is a simpler API wrapper with little to no business logic.
+
+Current direct users of this v0.9 library are recommended to continue to use the the v1 version as initialization 
+and class organization has significantly changed in v2 and will require substantial work to migrate existing 
+applications. Non-backwards compatible changes were made to improve the code quality and make the project more 
+maintainable. 
+
+## Usage of the v1 library
 
 GET Example:
 
