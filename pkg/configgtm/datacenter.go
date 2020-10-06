@@ -20,7 +20,7 @@ type Datacenters interface {
 	// NewDatacenterResponse instantiates a new DatacenterResponse structure
 	NewDatacenterResponse(context.Context) *DatacenterResponse
 	// NewDatacenter creates a new Datacenter object.
-	NewDatacenter(context.Context, string) *Datacenter
+	NewDatacenter(context.Context) *Datacenter
 	// ListDatacenters retreieves all Datacenters
 	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getdatacenters
 	ListDatacenters(context.Context, string) ([]*Datacenter, error)
@@ -177,7 +177,7 @@ func (p *gtm) CreateMapsDefaultDatacenter(ctx context.Context, domainName string
 	logger := p.Log(ctx)
 	logger.Debug("CreateMapsDefaultDatacenter")
 
-	return createDefaultDC(ctx, MapDefaultDC, domainName)
+	return createDefaultDC(ctx, p, MapDefaultDC, domainName)
 }
 
 // Create Default Datacenter for IPv4 Selector
@@ -186,7 +186,7 @@ func (p *gtm) CreateIPv4DefaultDatacenter(ctx context.Context, domainName string
 	logger := p.Log(ctx)
 	logger.Debug("CreateIPv4DefaultDatacenter")
 
-	return createDefaultDC(ctx, Ipv4DefaultDC, domainName)
+	return createDefaultDC(ctx, p, Ipv4DefaultDC, domainName)
 }
 
 // Create Default Datacenter for IPv6 Selector
@@ -195,11 +195,11 @@ func (p *gtm) CreateIPv6DefaultDatacenter(ctx context.Context, domainName string
 	logger := p.Log(ctx)
 	logger.Debug("CreateIPv6DefaultDatacenter")
 
-	return createDefaultDC(ctx, Ipv6DefaultDC, domainName)
+	return createDefaultDC(ctx, p, Ipv6DefaultDC, domainName)
 }
 
 // Worker function to create Default Datacenter identified id in the specified domain.
-func createDefaultDC(ctx context.Context, defaultID int, domainName string) (*Datacenter, error) {
+func createDefaultDC(ctx context.Context, p *gtm, defaultID int, domainName string) (*Datacenter, error) {
 
 	if defaultID != MapDefaultDC && defaultID != Ipv4DefaultDC && defaultID != Ipv6DefaultDC {
 		return nil, fmt.Errorf("Invalid default datacenter id provided for creation")
@@ -264,7 +264,7 @@ func (p *gtm) UpdateDatacenter(ctx context.Context, dc *Datacenter, domainName s
 		return nil, p.Error(resp)
 	}
 
-	return &dcresp.Status, nil
+	return dcresp.Status, nil
 }
 
 // Delete the datacenter identified by the receiver argument from the domain specified.
@@ -289,5 +289,5 @@ func (p *gtm) DeleteDatacenter(ctx context.Context, dc *Datacenter, domainName s
 		return nil, p.Error(resp)
 	}
 
-	return &dcresp.Status, nil
+	return dcresp.Status, nil
 }

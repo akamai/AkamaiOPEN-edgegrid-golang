@@ -1,4 +1,4 @@
-// Package dns provides access to the Akamai GTM V1_4 APIs
+// Package gtm provides access to the Akamai GTM V1_4 APIs
 package gtm
 
 import (
