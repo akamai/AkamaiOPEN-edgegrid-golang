@@ -249,7 +249,7 @@ func (p *gtm) GetProperty(ctx context.Context, name, domainName string) (*Proper
 		return nil, p.Error(resp)
 	}
 
-	return property, nil
+	return &property, nil
 }
 
 // Create the property in the receiver argument in the specified domain.

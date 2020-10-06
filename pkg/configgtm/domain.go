@@ -103,7 +103,7 @@ type DomainItem struct {
 // Validate validates Domain
 func (dom *Domain) Validate() error {
 
-	if len(dm.Name) < 1 {
+	if len(dom.Name) < 1 {
 		return fmt.Errorf("Domain is missing Name")
 	}
 	if len(dom.Type) < 1 {
@@ -176,7 +176,7 @@ func (p *gtm) ListDomains(ctx context.Context) ([]*DomainItem, error) {
 }
 
 // GetDomain retrieves a Domain with the given domainname.
-func (p *gtm) GetDomain(domainName string) (*Domain, error) {
+func (p *gtm) GetDomain(ctx context.Context, domainName string) (*Domain, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetDomain")
@@ -201,7 +201,7 @@ func (p *gtm) GetDomain(domainName string) (*Domain, error) {
 }
 
 // Save method; Create or Update
-func (domain *Domain) save(ctx context.Context, queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
+func (domain *Domain) save(ctx context.Context, p *gtm, queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
 
 	// set schema version
 	setVersionHeader(req, schemaVersion)
@@ -240,7 +240,7 @@ func (p *gtm) CreateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 
 	if err := domain.Validate(); err != nil {
 		logger.Errorf("Domain validation failed. %w", err)
-		return nil
+		return nil, fmt.Errorf("Domain validation failed. %w", err)
 	}
 
 	postURL := fmt.Sprintf("/config-gtm/v1/domains/")
@@ -249,7 +249,7 @@ func (p *gtm) CreateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 		return nil, fmt.Errorf("failed to create CreateDomain request: %w", err)
 	}
 
-	return domain.save(ctx, queryArgs, req)
+	return domain.save(ctx, p, queryArgs, req)
 
 }
 
@@ -261,7 +261,7 @@ func (p *gtm) UpdateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 
 	if err := domain.Validate(); err != nil {
 		logger.Errorf("Domain validation failed. %w", err)
-		return nil
+		return nil, fmt.Errorf("Domain validation failed. %w", err)
 	}
 
 	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s", domain.Name)
@@ -270,7 +270,7 @@ func (p *gtm) UpdateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 		return nil, fmt.Errorf("failed to create UpdateDomain request: %w", err)
 	}
 
-	stat, err := domain.save(ctx, queryArgs, req)
+	stat, err := domain.save(ctx, p, queryArgs, req)
 	if err != nil {
 		return nil, err
 	}
@@ -331,7 +331,7 @@ func (p *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapSt
 
 	if err := domain.Validate(); err != nil {
 		logger.Errorf("Domain validation failed. %w", err)
-		return nil
+		return nil, fmt.Errorf("Domain validation failed. %w", err)
 	}
 
 	var nullFieldMap = &NullFieldMapStruct{}

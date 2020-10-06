@@ -178,7 +178,7 @@ func (p *gtm) UpdateResource(ctx context.Context, rsrc *Resource, domainName str
 func (rsrc *Resource) save(ctx context.Context, p *gtm, domainName string) (*ResourceResponse, error) {
 
 	if err := rsrc.Validate(); err != nil {
-		return nil, Errorf("Resource validation failed. %w", err)
+		return nil, fmt.Errorf("Resource validation failed. %w", err)
 	}
 
 	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", domainName, rsrc.Name)
@@ -203,7 +203,7 @@ func (rsrc *Resource) save(ctx context.Context, p *gtm, domainName string) (*Res
 }
 
 // Delete the resource identified in the receiver argument from the specified domain.
-func (p *gtm) DeleteResource(ctx context.Context, rsrc *Resource, omainName string) (*ResponseStatus, error) {
+func (p *gtm) DeleteResource(ctx context.Context, rsrc *Resource, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("DeleteResource")
