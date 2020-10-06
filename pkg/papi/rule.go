@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -34,9 +33,7 @@ type (
 
 	// GetRuleTreeResponse contains data returned by performing GET /rules request
 	GetRuleTreeResponse struct {
-		AccountID       string `json:"accountId"`
-		ContractID      string `json:"contractId"`
-		GroupID         string `json:"groupId"`
+		Response
 		PropertyID      string `json:"propertyId"`
 		PropertyVersion int    `json:"propertyVersion"`
 		Etag            string `json:"etag"`
@@ -46,25 +43,26 @@ type (
 
 	// Rules contains Rule object
 	Rules struct {
-		AdvancedOverride string              `json:"advancedOverride"`
-		Behaviors        []RuleBehavior      `json:"behaviors"`
-		Children         []Rules             `json:"children"`
-		Comment          string              `json:"comment"`
-		Criteria         []RuleBehavior      `json:"criteria"`
-		CriteriaLocked   bool                `json:"criteriaLocked"`
-		CustomOverride   *RuleCustomOverride `json:"customOverride"`
-		Name             string              `json:"name"`
-		Options          *RuleOptions        `json:"options"`
-		UUID             string              `json:"uuid"`
-		Variables        []RuleVariable      `json:"variables"`
+		AdvancedOverride    string                  `json:"advancedOverride,omitempty"`
+		Behaviors           []RuleBehavior          `json:"behaviors,omitempty"`
+		Children            []Rules                 `json:"children,omitempty"`
+		Comment             string                  `json:"comment,omitempty"`
+		Criteria            []RuleBehavior          `json:"criteria,omitempty"`
+		CriteriaLocked      bool                    `json:"criteriaLocked,omitempty"`
+		CustomOverride      *RuleCustomOverride     `json:"customOverride,omitempty"`
+		Name                string                  `json:"name"`
+		Options             RuleOptions             `json:"options,omitempty"`
+		UUID                string                  `json:"uuid,omitempty"`
+		Variables           []RuleVariable          `json:"variables,omitempty"`
+		CriteriaMustSatisfy RuleCriteriaMustSatisfy `json:"criteriaMustSatisfy"`
 	}
 
 	// RuleBehavior contains data for both rule behaviors and rule criteria
 	RuleBehavior struct {
-		Locked  string `json:"locked"`
-		Name    string `json:"name"`
-		Options map[string]interface{}
-		UUID    string `json:"uuid"`
+		Locked  string         `json:"locked,omitempty"`
+		Name    string         `json:"name"`
+		Options RuleOptionsMap `json:"options"`
+		UUID    string         `json:"uuid,omitempty"`
 	}
 
 	// RuleCustomOverride represents customOverride field from Rule resource
@@ -75,16 +73,16 @@ type (
 
 	// RuleOptions represents options field from Rule resource
 	RuleOptions struct {
-		IsSecure bool `json:"is_secure"`
+		IsSecure bool `json:"is_secure,omitempty"`
 	}
 
 	// RuleVariable represents and entry in variables field from Rule resource
 	RuleVariable struct {
-		Description string `json:"description"`
+		Description string `json:"description,omitempty"`
 		Hidden      bool   `json:"hidden"`
 		Name        string `json:"name"`
 		Sensitive   bool   `json:"sensitive"`
-		Value       string `json:"value"`
+		Value       string `json:"value,omitempty"`
 	}
 
 	// UpdateRulesRequest contains path and query params, as well as request body necessary to perform PUT /rules request
@@ -119,6 +117,12 @@ type (
 		Instance     string `json:"instance"`
 		BehaviorName string `json:"behaviorName"`
 	}
+
+	// RuleOptionsMap is a type wrapping map[string]interface{} used for adding rule options
+	RuleOptionsMap map[string]interface{}
+
+	// RuleCriteriaMustSatisfy represents criteriaMustSatisfy field values
+	RuleCriteriaMustSatisfy string
 )
 
 const (
@@ -126,6 +130,11 @@ const (
 	RuleValidateModeFast = "fast"
 	// RuleValidateModeFull const
 	RuleValidateModeFull = "full"
+
+	// RuleCriteriaMustSatisfyAll const
+	RuleCriteriaMustSatisfyAll RuleCriteriaMustSatisfy = "all"
+	//RuleCriteriaMustSatisfyAny const
+	RuleCriteriaMustSatisfyAny RuleCriteriaMustSatisfy = "any"
 )
 
 // Validate validates GetRuleTreeRequest struct
@@ -208,17 +217,17 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 		return nil, fmt.Errorf("failed to create getruletree request: %w", err)
 	}
 
-	var versions GetRuleTreeResponse
-	resp, err := p.Exec(req, &versions)
+	var rules GetRuleTreeResponse
+	resp, err := p.Exec(req, &rules)
 	if err != nil {
 		return nil, fmt.Errorf("getruletree request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
-	return &versions, nil
+	return &rules, nil
 }
 
 func (p *papi) UpdateRuleTree(ctx context.Context, request UpdateRulesRequest) (*UpdateRulesResponse, error) {
@@ -256,7 +265,7 @@ func (p *papi) UpdateRuleTree(ctx context.Context, request UpdateRulesRequest) (
 		return nil, fmt.Errorf("UpdateRuleTree request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &versions, nil

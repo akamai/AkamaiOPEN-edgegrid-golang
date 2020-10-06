@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -83,7 +82,7 @@ func TestPapi_GetEdgeHostnames(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching edge hostnames",
@@ -192,6 +191,40 @@ func TestPapi_GetEdgeHostname(t *testing.T) {
 						UseCases:          nil,
 					},
 				}},
+				EdgeHostname: EdgeHostnameGetItem{
+					ID:                "ehID",
+					Domain:            "example.com.edgekey.net",
+					ProductID:         "prdID",
+					DomainPrefix:      "example.com",
+					DomainSuffix:      "edgekey.net",
+					Status:            "PENDING",
+					Secure:            true,
+					IPVersionBehavior: "IPV4",
+					UseCases:          nil,
+				},
+			},
+		},
+		"Edge hostname not found": {
+			params: GetEdgeHostnameRequest{
+				EdgeHostnameID: "ehID",
+				ContractID:     "contract",
+				GroupID:        "group",
+				Options:        []string{"opt1", "opt2"},
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "accountId": "acc",
+    "contractId": "contract",
+    "groupId": "group",
+    "edgeHostnames": {
+        "items": [
+        ]
+    }
+}`,
+			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group&options=opt1,opt2",
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrNotFound), "want: %v; got: %v", ErrNotFound, err)
 			},
 		},
 		"500 internal server error": {
@@ -210,7 +243,7 @@ func TestPapi_GetEdgeHostname(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching edge hostnames",
@@ -419,7 +452,7 @@ func TestPapi_CreateEdgeHostname(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1,opt2",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error creating edge hostname",

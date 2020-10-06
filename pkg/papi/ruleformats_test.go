@@ -3,12 +3,12 @@ package papi
 import (
 	"context"
 	"errors"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPapi_GetRuleFormats(t *testing.T) {
@@ -45,7 +45,7 @@ func TestPapi_GetRuleFormats(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/rule-formats",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching rule formats",

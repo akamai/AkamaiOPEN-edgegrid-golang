@@ -7,8 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -68,7 +66,7 @@ func TestPapi_GetProducts(t *testing.T) {
 `,
 			expectedPath: "/papi/v1/products?contractId=ctr_1-1TJZFW",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching products",

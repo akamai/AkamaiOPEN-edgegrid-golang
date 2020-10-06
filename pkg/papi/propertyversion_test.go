@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -93,7 +92,7 @@ func TestPapi_GetPropertyVersions(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/propertyID/versions?contractId=contract&groupId=group&limit=5&offset=6",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching property versions",
@@ -197,6 +196,43 @@ func TestPapi_GetPropertyVersion(t *testing.T) {
 							UpdatedByUser:    "user",
 							UpdatedDate:      "2020-09-14T19:06:13Z",
 						}}},
+				Version: PropertyVersionGetItem{
+
+					Etag:             "etag",
+					Note:             "version note",
+					ProductID:        "productID",
+					ProductionStatus: "INACTIVE",
+					PropertyVersion:  2,
+					StagingStatus:    "ACTIVE",
+					UpdatedByUser:    "user",
+					UpdatedDate:      "2020-09-14T19:06:13Z",
+				},
+			},
+		},
+		"version not found": {
+			params: GetPropertyVersionRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "propertyId": "propertyID",
+    "propertyName": "property_name",
+    "accountId": "accountID",
+    "contractId": "contract",
+    "groupId": "group",
+    "assetId": "assetID",
+    "versions": {
+        "items": [
+        ]
+    }
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2?contractId=contract&groupId=group",
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrNotFound), "want: %s; got: %s", ErrNotFound, err)
 			},
 		},
 		"500 Internal Server Error": {
@@ -216,7 +252,7 @@ func TestPapi_GetPropertyVersion(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/propertyID/versions/2?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching property version",
@@ -321,7 +357,7 @@ func TestPapi_CreatePropertyVersion(t *testing.T) {
 		}`,
 			expectedPath: "/papi/v1/properties/propertyID/versions?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error creating property version",
@@ -480,7 +516,45 @@ func TestPapi_GetLatestVersion(t *testing.T) {
 							StagingStatus:    "ACTIVE",
 							UpdatedByUser:    "user",
 							UpdatedDate:      "2020-09-14T19:06:13Z",
-						}}},
+						},
+					},
+				},
+				Version: PropertyVersionGetItem{
+					Etag:             "etag",
+					Note:             "version note",
+					ProductID:        "productID",
+					ProductionStatus: "INACTIVE",
+					PropertyVersion:  2,
+					StagingStatus:    "ACTIVE",
+					UpdatedByUser:    "user",
+					UpdatedDate:      "2020-09-14T19:06:13Z",
+				},
+			},
+		},
+		"Version not found": {
+			params: GetLatestVersionRequest{
+				PropertyID:  "propertyID",
+				ActivatedOn: "STAGING",
+				ContractID:  "contract",
+				GroupID:     "group",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/latest?contractId=contract&groupId=group&activatedOn=STAGING",
+			responseBody: `
+{
+    "propertyId": "propertyID",
+    "propertyName": "property_name",
+    "accountId": "accountID",
+    "contractId": "contract",
+    "groupId": "group",
+    "assetId": "assetID",
+    "versions": {
+        "items": [
+        ]
+    }
+}`,
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrNotFound), "want: %v; got: %v", ErrNotFound, err)
 			},
 		},
 		"500 Internal Server Error": {
@@ -499,7 +573,7 @@ func TestPapi_GetLatestVersion(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/propertyID/versions/latest?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching latest version",
@@ -620,7 +694,7 @@ func TestPapi_GetAvailableBehaviors(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-behaviors?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching available behaviors",
@@ -740,7 +814,7 @@ func TestPapi_GetAvailableCriteria(t *testing.T) {
 }`,
 			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-criteria?contractId=contract&groupId=group",
 			withError: func(t *testing.T, err error) {
-				want := session.APIError{
+				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
 					Detail:     "Error fetching available behaviors",

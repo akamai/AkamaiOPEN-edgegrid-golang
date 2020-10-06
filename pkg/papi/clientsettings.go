@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
 
 type (
@@ -45,7 +43,7 @@ func (p *papi) GetClientSettings(ctx context.Context) (*ClientSettingsBody, erro
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &clientSettings, nil
@@ -70,7 +68,7 @@ func (p *papi) UpdateClientSettings(ctx context.Context, params ClientSettingsBo
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &clientSettings, nil

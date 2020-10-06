@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -21,27 +21,26 @@ type (
 
 	// PropertyCloneFrom optionally identifies another property instance to clone when making a POST request to create a new property
 	PropertyCloneFrom struct {
-		CloneFromVersionEtag string `json:"cloneFromVersionEtag"`
-		CopyHostnames        bool   `json:"copyHostnames"`
+		CloneFromVersionEtag string `json:"cloneFromVersionEtag,omitempty"`
+		CopyHostnames        bool   `json:"copyHostnames,omitempty"`
 		PropertyID           string `json:"propertyId"`
 		Version              int    `json:"version"`
 	}
 
 	// Property contains configuration data to apply to edge content.
 	Property struct {
-		AccountID         string             `json:"accountId"`
-		AssetID           string             `json:"assetId"`
-		CloneFrom         *PropertyCloneFrom `json:"cloneFrom,omitempty"`
-		ContractID        string             `json:"contractId"`
-		GroupID           string             `json:"groupId"`
-		LatestVersion     int                `json:"latestVersion"`
-		Note              string             `json:"note"`
-		ProductID         string             `json:"productId"`
-		ProductionVersion *int               `json:"productionVersion,omitempty"`
-		PropertyID        string             `json:"propertyId"`
-		PropertyName      string             `json:"propertyName"`
-		RuleFormat        string             `json:"ruleFormat"`
-		StagingVersion    *int               `json:"stagingVersion,omitempty"`
+		AccountID         string `json:"accountId"`
+		AssetID           string `json:"assetId"`
+		ContractID        string `json:"contractId"`
+		GroupID           string `json:"groupId"`
+		LatestVersion     int    `json:"latestVersion"`
+		Note              string `json:"note"`
+		ProductID         string `json:"productId"`
+		ProductionVersion *int   `json:"productionVersion,omitempty"`
+		PropertyID        string `json:"propertyId"`
+		PropertyName      string `json:"propertyName"`
+		RuleFormat        string `json:"ruleFormat"`
+		StagingVersion    *int   `json:"stagingVersion,omitempty"`
 	}
 
 	// PropertiesItems is an array of properties
@@ -64,11 +63,20 @@ type (
 	CreatePropertyRequest struct {
 		ContractID string
 		GroupID    string
-		Property   Property
+		Property   PropertyCreate
+	}
+
+	// PropertyCreate represents a POST /property request body
+	PropertyCreate struct {
+		CloneFrom    *PropertyCloneFrom `json:"cloneFrom,omitempty"`
+		ProductID    string             `json:"productId"`
+		PropertyName string             `json:"propertyName"`
+		RuleFormat   string             `json:"ruleFormat,omitempty"`
 	}
 
 	// CreatePropertyResponse is returned by CreateProperty
 	CreatePropertyResponse struct {
+		Response
 		PropertyID   string
 		PropertyLink string `json:"propertyLink"`
 	}
@@ -82,7 +90,9 @@ type (
 
 	// GetPropertyResponse is the response for GetProperty
 	GetPropertyResponse struct {
+		Response
 		Properties PropertiesItems `json:"properties"`
+		Property   *Property       `json:"-"`
 	}
 
 	// RemovePropertyRequest is the argument for RemoveProperty
@@ -109,26 +119,32 @@ func (v GetPropertiesRequest) Validate() error {
 // Validate validates CreatePropertyRequest
 func (v CreatePropertyRequest) Validate() error {
 	return validation.Errors{
-		"ContractID":                 validation.Validate(v.ContractID, validation.Required),
-		"GroupID":                    validation.Validate(v.GroupID, validation.Required),
-		"Property.AccountID":         validation.Validate(v.Property.AccountID, validation.Empty),
-		"Property.AssetID":           validation.Validate(v.Property.AssetID, validation.Empty),
-		"Property.ContractID":        validation.Validate(v.Property.ContractID, validation.Empty),
-		"Property.GroupID":           validation.Validate(v.Property.GroupID, validation.Empty),
-		"Property.LatestVersion":     validation.Validate(v.Property.LatestVersion, validation.Empty),
-		"Property.ProductID":         validation.Validate(v.Property.ProductID, validation.Required),
-		"Property.ProductionVersion": validation.Validate(v.Property.ProductionVersion, validation.Empty),
-		"Property.StagingVersion":    validation.Validate(v.Property.StagingVersion, validation.Empty),
-		"Property.PropertyID":        validation.Validate(v.Property.PropertyID, validation.Empty),
-		"Property.PropertyName":      validation.Validate(v.Property.PropertyName, validation.Required),
+		"ContractID": validation.Validate(v.ContractID, validation.Required),
+		"GroupID":    validation.Validate(v.GroupID, validation.Required),
+		"Property":   validation.Validate(v.Property),
+	}.Filter()
+}
+
+// Validate validates PropertyCreate
+func (p PropertyCreate) Validate() error {
+	return validation.Errors{
+		"ProductID":    validation.Validate(p.ProductID, validation.Required),
+		"PropertyName": validation.Validate(p.PropertyName, validation.Required),
+		"CloneFrom":    validation.Validate(p.CloneFrom),
+	}.Filter()
+}
+
+// Validate validates PropertyCloneFrom
+func (c PropertyCloneFrom) Validate() error {
+	return validation.Errors{
+		"PropertyID": validation.Validate(c.PropertyID),
+		"Version":    validation.Validate(c.Version),
 	}.Filter()
 }
 
 // Validate validates GetPropertyRequest
 func (v GetPropertyRequest) Validate() error {
 	return validation.Errors{
-		"ContractID": validation.Validate(v.ContractID, validation.Required),
-		"GroupID":    validation.Validate(v.GroupID, validation.Required),
 		"PropertyID": validation.Validate(v.PropertyID, validation.Required),
 	}.Filter()
 }
@@ -136,8 +152,6 @@ func (v GetPropertyRequest) Validate() error {
 // Validate validates RemovePropertyRequest
 func (v RemovePropertyRequest) Validate() error {
 	return validation.Errors{
-		"ContractID": validation.Validate(v.ContractID, validation.Required),
-		"GroupID":    validation.Validate(v.GroupID, validation.Required),
 		"PropertyID": validation.Validate(v.PropertyID, validation.Required),
 	}.Filter()
 }
@@ -168,7 +182,7 @@ func (p *papi) GetProperties(ctx context.Context, params GetPropertiesRequest) (
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -200,7 +214,7 @@ func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	id, err := ResponseLinkParse(rval.PropertyLink)
@@ -220,15 +234,25 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 	var rval GetPropertyResponse
 
 	logger := p.Log(ctx)
-	logger.Debug("GetProperties")
+	logger.Debug("GetProperty")
 
-	uri := fmt.Sprintf(
-		"/papi/v1/properties/%s?contractId=%s&groupId=%s",
-		params.PropertyID,
-		params.ContractID,
-		params.GroupID)
+	uri, err := url.Parse(fmt.Sprintf(
+		"/papi/v1/properties/%s",
+		params.PropertyID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse url: %w", err)
+	}
+	q := uri.Query()
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getproperty request: %w", err)
 	}
@@ -239,8 +263,13 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
+
+	if len(rval.Properties.Items) == 0 {
+		return nil, fmt.Errorf("%w: PropertyID: %s", ErrNotFound, params.PropertyID)
+	}
+	rval.Property = rval.Properties.Items[0]
 
 	return &rval, nil
 }
@@ -253,15 +282,25 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 	var rval RemovePropertyResponse
 
 	logger := p.Log(ctx)
-	logger.Debug("GetProperties")
+	logger.Debug("RemoveProperty")
 
-	uri := fmt.Sprintf(
-		"/papi/v1/properties/%s?contractId=%s&groupId=%s",
-		params.PropertyID,
-		params.ContractID,
-		params.GroupID)
+	uri, err := url.Parse(fmt.Sprintf(
+		"/papi/v1/properties/%s",
+		params.PropertyID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed parse url: %w", err)
+	}
+	q := uri.Query()
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create delproperty request: %w", err)
 	}
@@ -272,7 +311,7 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil

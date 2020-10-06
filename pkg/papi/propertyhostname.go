@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -49,10 +48,10 @@ type (
 
 	// Hostname contains information about each of the HostnameResponseItems
 	Hostname struct {
-		CnameType      string `json:"cnameType"`
-		EdgeHostnameID string `json:"edgeHostnameId"`
-		CnameFrom      string `json:"cnameFrom"`
-		CnameTo        string `json:"cnameTo"`
+		CnameType      HostnameCnameType `json:"cnameType"`
+		EdgeHostnameID string            `json:"edgeHostnameId"`
+		CnameFrom      string            `json:"cnameFrom"`
+		CnameTo        string            `json:"cnameTo"`
 	}
 
 	// UpdatePropertyVersionHostnamesRequest contains parameters required to update the set of hostname entries for a property version
@@ -80,6 +79,14 @@ type (
 		Etag            string                `json:"etag"`
 		Hostnames       HostnameResponseItems `json:"hostnames"`
 	}
+
+	// HostnameCnameType represents HostnameCnameType enum
+	HostnameCnameType string
+)
+
+const (
+	// HostnameCnameTypeEdgeHostname const
+	HostnameCnameTypeEdgeHostname HostnameCnameType = "EDGE_HOSTNAME"
 )
 
 // Validate validates GetPropertyVersionHostnamesRequest
@@ -87,6 +94,16 @@ func (ph GetPropertyVersionHostnamesRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":      validation.Validate(ph.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(ph.PropertyVersion, validation.Required),
+	}.Filter()
+}
+
+// Validate validates UpdatePropertyVersionHostnamesRequest
+func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
+	return validation.Errors{
+		"PropertyID":      validation.Validate(ch.PropertyID, validation.Required),
+		"PropertyVersion": validation.Validate(ch.PropertyVersion, validation.Required),
+		"Hostnames":       validation.Validate(ch.Hostnames, validation.Required),
+		"Hostnames items": validation.Validate(ch.Hostnames.Items, validation.Required),
 	}.Filter()
 }
 
@@ -117,20 +134,10 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 		return nil, fmt.Errorf("GetPropertyVersionHostnames request failed: %v", err.Error())
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &hostnames, nil
-}
-
-// Validate validates UpdatePropertyVersionHostnamesRequest
-func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
-	return validation.Errors{
-		"PropertyID":      validation.Validate(ch.PropertyID, validation.Required),
-		"PropertyVersion": validation.Validate(ch.PropertyVersion, validation.Required),
-		"Hostnames":       validation.Validate(ch.Hostnames, validation.Required),
-		"Hostnames items": validation.Validate(ch.Hostnames.Items, validation.Required),
-	}.Filter()
 }
 
 func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params UpdatePropertyVersionHostnamesRequest) (*UpdatePropertyVersionHostnamesResponse, error) {
@@ -162,7 +169,7 @@ func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params Update
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &hostnames, nil

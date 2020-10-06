@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/papi/tools"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -81,12 +80,19 @@ func TestPapi_GetProperties(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching properties",
 				StatusCode: http.StatusInternalServerError,
 			},
+		},
+		"validation error": {
+			request: GetPropertiesRequest{
+				GroupID: "grp_15166",
+			},
+			responseStatus: http.StatusInternalServerError,
+			withError:      ErrStructValidation,
 		},
 	}
 
@@ -164,7 +170,37 @@ func TestPapi_GetProperty(t *testing.T) {
 						Note:              "Notes about example.com",
 					},
 				}},
+				Property: &Property{
+
+					AccountID:         "act_1-1TJZFB",
+					ContractID:        "ctr_1-1TJZH5",
+					GroupID:           "grp_15166",
+					PropertyID:        "prp_175780",
+					ProductID:         "prp_175780",
+					PropertyName:      "example.com",
+					LatestVersion:     2,
+					StagingVersion:    tools.IntPtr(1),
+					ProductionVersion: nil,
+					AssetID:           "aid_101",
+					Note:              "Notes about example.com",
+				}},
+		},
+		"Property not found": {
+			request: GetPropertyRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				PropertyID: "prp_175780",
 			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+	"properties": {
+		"items": [
+		]
+	}
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			withError:    ErrNotFound,
 		},
 		"500 internal server error": {
 			request: GetPropertyRequest{
@@ -181,12 +217,19 @@ func TestPapi_GetProperty(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching properties",
 				StatusCode: http.StatusInternalServerError,
 			},
+		},
+		"validation error": {
+			request: GetPropertyRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+			},
+			withError: ErrStructValidation,
 		},
 	}
 
@@ -224,9 +267,13 @@ func TestPapi_CreateProperty(t *testing.T) {
 			request: CreatePropertyRequest{
 				ContractID: "ctr_1-1TJZFW",
 				GroupID:    "grp_15166",
-				Property: Property{
+				Property: PropertyCreate{
 					ProductID:    "prd_Alta",
 					PropertyName: "my.new.property.com",
+					CloneFrom: &PropertyCloneFrom{
+						PropertyID: "prp_1234",
+						Version:    1,
+					},
 				},
 			},
 			responseStatus: http.StatusCreated,
@@ -244,7 +291,7 @@ func TestPapi_CreateProperty(t *testing.T) {
 			request: CreatePropertyRequest{
 				ContractID: "ctr_1-1TJZFW",
 				GroupID:    "grp_15166",
-				Property: Property{
+				Property: PropertyCreate{
 					ProductID:    "prd_Alta",
 					PropertyName: "my.new.property.com",
 				},
@@ -258,12 +305,22 @@ func TestPapi_CreateProperty(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error creating property",
 				StatusCode: http.StatusInternalServerError,
 			},
+		},
+		"validation error": {
+			request: CreatePropertyRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Property: PropertyCreate{
+					ProductID: "prd_Alta",
+				},
+			},
+			withError: ErrStructValidation,
 		},
 	}
 
@@ -328,12 +385,19 @@ func TestPapi_RemoveProperty(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780?contractId=ctr_1-1TJZFW&groupId=grp_15166",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error removing property",
 				StatusCode: http.StatusInternalServerError,
 			},
+		},
+		"validation error": {
+			request: RemovePropertyRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+			},
+			withError: ErrStructValidation,
 		},
 	}
 

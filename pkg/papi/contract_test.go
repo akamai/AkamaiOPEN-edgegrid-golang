@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -56,7 +55,7 @@ func TestPapi_GetContracts(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/papi/v1/contracts",
-			withError: session.APIError{
+			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching contracts",

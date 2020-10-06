@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -48,6 +47,7 @@ type (
 		ContractID    string            `json:"contractId"`
 		GroupID       string            `json:"groupId"`
 		EdgeHostnames EdgeHostnameItems `json:"edgeHostnames"`
+		EdgeHostname  EdgeHostnameGetItem
 	}
 
 	// EdgeHostnameItems contains a list of EdgeHostnames
@@ -201,7 +201,7 @@ func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequ
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &edgeHostnames, nil
@@ -237,8 +237,12 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
+	if len(edgeHostname.EdgeHostnames.Items) == 0 {
+		return nil, fmt.Errorf("%w: EdgeHostnameID: %s", ErrNotFound, params.EdgeHostnameID)
+	}
+	edgeHostname.EdgeHostname = edgeHostname.EdgeHostnames.Items[0]
 
 	return &edgeHostname, nil
 }
@@ -271,7 +275,7 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameReque
 		return nil, fmt.Errorf("createedgehostname request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 	id, err := ResponseLinkParse(createResponse.EdgeHostnameLink)
 	if err != nil {

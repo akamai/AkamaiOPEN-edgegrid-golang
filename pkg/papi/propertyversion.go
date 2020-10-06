@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -57,6 +56,7 @@ type (
 		GroupID      string               `json:"groupId"`
 		AssetID      string               `json:"assetId"`
 		Versions     PropertyVersionItems `json:"versions"`
+		Version      PropertyVersionGetItem
 	}
 
 	// PropertyVersionItems contains collection of property version details
@@ -66,15 +66,15 @@ type (
 
 	// PropertyVersionGetItem contains detailed information about specific property version returned in GET
 	PropertyVersionGetItem struct {
-		Etag             string `json:"etag"`
-		Note             string `json:"note"`
-		ProductID        string `json:"productId"`
-		ProductionStatus string `json:"productionStatus"`
-		PropertyVersion  int    `json:"propertyVersion"`
-		RuleFormat       string `json:"ruleFormat"`
-		StagingStatus    string `json:"stagingStatus"`
-		UpdatedByUser    string `json:"updatedByUser"`
-		UpdatedDate      string `json:"updatedDate"`
+		Etag             string        `json:"etag"`
+		Note             string        `json:"note"`
+		ProductID        string        `json:"productId"`
+		ProductionStatus VersionStatus `json:"productionStatus"`
+		PropertyVersion  int           `json:"propertyVersion"`
+		RuleFormat       string        `json:"ruleFormat"`
+		StagingStatus    VersionStatus `json:"stagingStatus"`
+		UpdatedByUser    string        `json:"updatedByUser"`
+		UpdatedDate      string        `json:"updatedDate"`
 	}
 
 	// GetPropertyVersionRequest contains path and query params used for fetching specific property version
@@ -140,9 +140,18 @@ type (
 	AvailableFeatureItems struct {
 		Items []AvailableFeature `json:"items"`
 	}
+
+	// VersionStatus represents ProductionVersion and StagingVersion of a Version struct
+	VersionStatus string
 )
 
 const (
+	// VersionStatusActive const
+	VersionStatusActive VersionStatus = "ACTIVE"
+	// VersionStatusInactive const
+	VersionStatusInactive VersionStatus = "INACTIVE"
+	// VersionStatusPending const
+	VersionStatusPending VersionStatus = "PENDING"
 	// VersionProduction const
 	VersionProduction = "PRODUCTION"
 	// VersionStaging const
@@ -228,7 +237,7 @@ func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersio
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &versions, nil
@@ -264,8 +273,12 @@ func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequ
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
+	if len(version.Versions.Items) == 0 {
+		return nil, fmt.Errorf("%w: latest version for PropertyID: %s", ErrNotFound, params.PropertyID)
+	}
+	version.Version = version.Versions.Items[0]
 	return &version, nil
 }
 
@@ -297,9 +310,12 @@ func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersion
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
-
+	if len(versions.Versions.Items) == 0 {
+		return nil, fmt.Errorf("%w: Version %d for PropertyID: %s", ErrNotFound, params.PropertyVersion, params.PropertyID)
+	}
+	versions.Version = versions.Versions.Items[0]
 	return &versions, nil
 }
 
@@ -324,13 +340,13 @@ func (p *papi) CreatePropertyVersion(ctx context.Context, request CreateProperty
 	}
 
 	var version CreatePropertyVersionResponse
-	resp, err := p.Exec(req, &version)
+	resp, err := p.Exec(req, &version, request.Version)
 	if err != nil {
 		return nil, fmt.Errorf("createpropertyversion request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 	propertyVersion, err := ResponseLinkParse(version.VersionLink)
 	if err != nil {
@@ -372,7 +388,7 @@ func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetFeaturesRequ
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &versions, nil
@@ -406,7 +422,7 @@ func (p *papi) GetAvailableCriteria(ctx context.Context, params GetFeaturesReque
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &versions, nil
