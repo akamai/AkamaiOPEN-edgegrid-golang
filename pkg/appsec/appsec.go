@@ -15,6 +15,7 @@ var (
 type (
 	// APPSEC is the appsec api interface
 	APPSEC interface {
+		Activations
 		Configuration
 		ConfigurationClone
 		ConfigurationVersion
