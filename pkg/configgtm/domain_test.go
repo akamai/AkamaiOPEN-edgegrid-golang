@@ -20,8 +20,12 @@ func TestGtm_ListDomains(t *testing.T) {
 		expectedPath     string
 		expectedResponse *DomainList
 		withError        error
+		headers          http.Header
 	}{
 		"200 OK": {
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -89,8 +93,6 @@ func TestGtm_ListDomains(t *testing.T) {
 		},
 	}
 
-	// ** TODO **
-	//                 SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8")
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -101,7 +103,10 @@ func TestGtm_ListDomains(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListZones(context.Background(), test.args...)
+			result, err := client.ListZones(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.args...)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -159,9 +164,13 @@ func TestDns_GetDomain(t *testing.T) {
 		expectedPath     string
 		expectedResponse *Domain
 		withError        error
+		headers          http.Header
 	}{
 		"200 OK": {
-			domain:         "gtmdomtest.akadns.net",
+			domain: "gtmdomtest.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{ 
@@ -526,8 +535,6 @@ func TestDns_GetDomain(t *testing.T) {
 		},
 	}
 
-	// ** TODO **
-	//                 SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8")
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -538,7 +545,10 @@ func TestDns_GetDomain(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetDomain(context.Background(), test.domain)
+			result, err := client.GetDomain(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.domain)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -559,13 +569,17 @@ func TestDns_CreateDomain(t *testing.T) {
 		responseBody   string
 		expectedPath   string
 		withError      error
+		headers        http.Header
 	}{
 		"201 Created": {
 			domain: Domain{
 				Name: "gtmdomtest.akadns.net",
 				Type: "basic",
 			},
-			query:          map[string]string{contractId: "1-2ABCDE"},
+			query: map[string]string{contractId: "1-2ABCDE"},
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
 			responseStatus: http.StatusCreated,
 			responseBody: `
 		        {
@@ -756,8 +770,6 @@ func TestDns_CreateDomain(t *testing.T) {
 		},
 	}
 
-	// ** TODO **
-	//                 SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8")
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -769,7 +781,10 @@ func TestDns_CreateDomain(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.CreateDomain(context.Background(), &test.domain, test.query)
+			err := client.CreateDomain(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), &tests.domain, tests.query)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -789,6 +804,7 @@ func TestDns_UpdateDomain(t *testing.T) {
 		responseBody   string
 		expectedPath   string
 		withError      error
+		headers        http.Header
 	}{
 		"200 Success": {
 			domain: Domain{
@@ -796,7 +812,10 @@ func TestDns_UpdateDomain(t *testing.T) {
 				Name:                  "gtmdomtest.akadns.net",
 				Type:                  "basic",
 			},
-			query:          map[string]string{contractId: "1-2ABCDE"},
+			query: map[string]string{contractId: "1-2ABCDE"},
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
 			responseStatus: http.StatusCreated,
 			responseBody: `
                         {
@@ -987,8 +1006,6 @@ func TestDns_UpdateDomain(t *testing.T) {
 		},
 	}
 
-	// ** TODO **
-	//                 SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8")
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -1000,7 +1017,10 @@ func TestDns_UpdateDomain(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.CreateDomain(context.Background(), &test.domain, test.query)
+			err := client.UpdateDomain(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), &test.domain, test.query)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
