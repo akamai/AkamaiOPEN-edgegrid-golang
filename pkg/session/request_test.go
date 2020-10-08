@@ -53,6 +53,22 @@ func TestSession_Exec(t *testing.T) {
 				B: 1,
 			},
 		},
+		"GET request, escape query": {
+			request: func() *http.Request {
+				req, err := http.NewRequest(http.MethodGet, "/test/path?param1=some param", nil)
+				require.NoError(t, err)
+				return req
+			}(),
+			out:            testStruct{},
+			responseBody:   `{"a":"text","b":1}`,
+			responseStatus: http.StatusOK,
+			expectedMethod: http.MethodGet,
+			expectedPath:   "/test/path?param1=some+param",
+			expected: testStruct{
+				A: "text",
+				B: 1,
+			},
+		},
 		"GET request, custom content type and user agent": {
 			request: func() *http.Request {
 				req, err := http.NewRequest(http.MethodGet, "/test/path", nil)

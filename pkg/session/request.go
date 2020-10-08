@@ -33,6 +33,7 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 		}
 	}
 
+	r.URL.RawQuery = r.URL.Query().Encode()
 	if r.UserAgent() == "" {
 		r.Header.Set("User-Agent", s.userAgent)
 	}
