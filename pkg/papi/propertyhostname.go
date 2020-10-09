@@ -61,12 +61,7 @@ type (
 		ContractID        string
 		GroupID           string
 		ValidateHostnames bool
-		Hostnames         HostnameRequestItems
-	}
-
-	// HostnameRequestItems contains the request body for UpdatePropertyVersionHostnamesRequest
-	HostnameRequestItems struct {
-		Items []Hostname
+		Hostnames         []Hostname
 	}
 
 	// UpdatePropertyVersionHostnamesResponse contains information about each of the HostnameRequestItems
@@ -103,7 +98,6 @@ func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
 		"PropertyID":      validation.Validate(ch.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(ch.PropertyVersion, validation.Required),
 		"Hostnames":       validation.Validate(ch.Hostnames, validation.Required),
-		"Hostnames items": validation.Validate(ch.Hostnames.Items, validation.Required),
 	}.Filter()
 }
 

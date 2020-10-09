@@ -54,7 +54,7 @@ type (
 		Options             RuleOptions             `json:"options,omitempty"`
 		UUID                string                  `json:"uuid,omitempty"`
 		Variables           []RuleVariable          `json:"variables,omitempty"`
-		CriteriaMustSatisfy RuleCriteriaMustSatisfy `json:"criteriaMustSatisfy"`
+		CriteriaMustSatisfy RuleCriteriaMustSatisfy `json:"criteriaMustSatisfy,omitempty"`
 	}
 
 	// RuleBehavior contains data for both rule behaviors and rule criteria
@@ -94,8 +94,14 @@ type (
 		GroupID         string
 		ValidateMode    string
 		ValidateRules   bool
-		Rules           Rules
+		Rules           RulesUpdate
 	}
+
+	// RulesUpdate is a wrapper for the request body of PUT /rules request
+	RulesUpdate struct {
+		Rules Rules `json:"rules"`
+	}
+
 	// UpdateRulesResponse contains data returned by performing PUT /rules request
 	UpdateRulesResponse struct {
 		AccountID       string      `json:"accountId"`
@@ -153,6 +159,13 @@ func (r UpdateRulesRequest) Validate() error {
 		"PropertyVersion": validation.Validate(r.PropertyVersion, validation.Required),
 		"ValidateMode":    validation.Validate(r.ValidateMode, validation.In(RuleValidateModeFast, RuleValidateModeFull)),
 		"Rules":           validation.Validate(r.Rules),
+	}.Filter()
+}
+
+// Validate validates RulesUpdate struct
+func (r RulesUpdate) Validate() error {
+	return validation.Errors{
+		"Rules": validation.Validate(r.Rules),
 	}.Filter()
 }
 

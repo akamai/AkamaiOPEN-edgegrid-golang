@@ -55,6 +55,10 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 	}
 
+	s.client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+		return s.Sign(req)
+	}
+
 	if err := s.Sign(r); err != nil {
 		return nil, err
 	}

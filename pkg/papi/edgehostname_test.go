@@ -47,7 +47,7 @@ func TestPapi_GetEdgeHostnames(t *testing.T) {
         ]
     }
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1,opt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
 			expectedResponse: &GetEdgeHostnamesResponse{
 				AccountID:  "acc",
 				ContractID: "contract",
@@ -173,7 +173,7 @@ func TestPapi_GetEdgeHostname(t *testing.T) {
         ]
     }
 }`,
-			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group&options=opt1,opt2",
+			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group&options=opt1%2Copt2",
 			expectedResponse: &GetEdgeHostnamesResponse{
 				AccountID:  "acc",
 				ContractID: "contract",
@@ -222,7 +222,7 @@ func TestPapi_GetEdgeHostname(t *testing.T) {
         ]
     }
 }`,
-			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group&options=opt1,opt2",
+			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group&options=opt1%2Copt2",
 			withError: func(t *testing.T, err error) {
 				assert.True(t, errors.Is(err, ErrNotFound), "want: %v; got: %v", ErrNotFound, err)
 			},
@@ -343,7 +343,7 @@ func TestPapi_CreateEdgeHostname(t *testing.T) {
 {
     "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1,opt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
 			expectedResponse: &CreateEdgeHostnameResponse{
 				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
 				EdgeHostnameID:   "ehID",
@@ -369,7 +369,7 @@ func TestPapi_CreateEdgeHostname(t *testing.T) {
 {
     "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1,opt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
 			expectedResponse: &CreateEdgeHostnameResponse{
 				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
 				EdgeHostnameID:   "ehID",
@@ -395,7 +395,7 @@ func TestPapi_CreateEdgeHostname(t *testing.T) {
 {
     "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1,opt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
 			expectedResponse: &CreateEdgeHostnameResponse{
 				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
 				EdgeHostnameID:   "ehID",
@@ -422,7 +422,7 @@ func TestPapi_CreateEdgeHostname(t *testing.T) {
 {
     "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1,opt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
 			expectedResponse: &CreateEdgeHostnameResponse{
 				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
 				EdgeHostnameID:   "ehID",
@@ -450,7 +450,7 @@ func TestPapi_CreateEdgeHostname(t *testing.T) {
     "detail": "Error creating edge hostname",
     "status": 500
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1,opt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -767,7 +767,7 @@ func TestPapi_CreateEdgeHostname(t *testing.T) {
 {
     "edgeHostnameLink": ":"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1,opt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
 			withError: func(t *testing.T, err error) {
 				want := ErrInvalidResponseLink
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)

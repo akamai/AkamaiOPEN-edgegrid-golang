@@ -474,7 +474,7 @@ func TestPapi_GetLatestVersion(t *testing.T) {
 				GroupID:     "group",
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/papi/v1/properties/propertyID/versions/latest?contractId=contract&groupId=group&activatedOn=STAGING",
+			expectedPath:   "/papi/v1/properties/propertyID/versions/latest?activatedOn=STAGING&contractId=contract&groupId=group",
 			responseBody: `
 {
     "propertyId": "propertyID",
@@ -539,7 +539,7 @@ func TestPapi_GetLatestVersion(t *testing.T) {
 				GroupID:     "group",
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/papi/v1/properties/propertyID/versions/latest?contractId=contract&groupId=group&activatedOn=STAGING",
+			expectedPath:   "/papi/v1/properties/propertyID/versions/latest?activatedOn=STAGING&contractId=contract&groupId=group",
 			responseBody: `
 {
     "propertyId": "propertyID",
