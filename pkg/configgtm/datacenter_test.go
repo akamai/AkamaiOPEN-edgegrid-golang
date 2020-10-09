@@ -1,382 +1,700 @@
 package gtm
 
-/*
 import (
+	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/h2non/gock.v1"
-
-	"fmt"
+	"github.com/stretchr/testify/require"
 )
 
-var GtmTestDC1 = "testDC1"
-var GtmTestDC2 = "testDC2"
-var dcMap = map[string]string{"GtmTestDC1": GtmTestDC1, "GtmTestDC2": GtmTestDC2}
+func TestGtm_NewDatacenterResponse(t *testing.T) {
+	client := Client(session.Must(session.New()))
 
-func instantiateDatacenter() *Datacenter {
+	dcr := client.NewDatacenterResponse(context.Background())
 
-	dc := NewDatacenter()
-	dcData := []byte(`{
-                                "datacenterId" : 3131,
-                                "nickname" : "testDC1",
-                                "scorePenalty" : 0,
-                                "city" : null,
-                                "stateOrProvince" : null,
-                                "country" : null,
-                                "latitude" : null,
-                                "longitude" : null,
-                                "cloneOf" : null,
-                                "virtual" : true,
-                                "defaultLoadObject" : null,
-                                "continent" : null,
-                                "servermonitorPool" : null,
-                                "servermonitorLivenessCount" : null,
-                                "servermonitorLoadCount" : null,
-                                "pingInterval" : null,
-                                "pingPacketSize" : null,
-                                "cloudServerTargeting" : false,
-                                "cloudServerHostHeaderOverride" : false
-                       }`)
-	json.Unmarshal(dcData, dc)
-
-	return dc
-
+	assert.NotNil(t, dcr)
 }
 
-// Verify ListDatacenters. Should pass, e.g. no API errors and non nil list.
-func TestListDatacenters(t *testing.T) {
+func TestGtm_NewDatacenter(t *testing.T) {
+	client := Client(session.Must(session.New()))
 
-	defer gock.Off()
+	dc := client.NewDatacenter(context.Background())
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters")
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters").
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                        "items" : [ {
-                                "datacenterId" : 3131,
-                                "nickname" : "testDC1",
-                                "scorePenalty" : 0,
-                                "city" : null,
-                                "stateOrProvince" : null,
-                                "country" : null,
-                                "latitude" : null,
-                                "longitude" : null,
-                                "cloneOf" : null,
-                                "virtual" : true,
-                                "defaultLoadObject" : null,
-                                "continent" : null,
-                                "servermonitorPool" : null,
-                                "servermonitorLivenessCount" : null,
-                                "servermonitorLoadCount" : null,
-                                "pingInterval" : null,
-                                "pingPacketSize" : null,
-                                "cloudServerTargeting" : false,
-                                "cloudServerHostHeaderOverride" : false,
-                                "links" : [ {
-                                        "rel" : "self",
-                                        "href" : "https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/datacenters/3131"
-                                } ]
-                        } ]
-                }`)
+	assert.NotNil(t, dc)
+}
 
-	Init(config)
+func TestGtm_ListDatacenters(t *testing.T) {
+	var result DatacenterList
 
-	dcList, err := ListDatacenters(gtmTestDomain)
-	assert.NoError(t, err)
-	assert.NotEqual(t, dcList, nil)
-
-	if len(dcList) > 0 {
-		firstDC := dcList[0]
-		assert.Equal(t, firstDC.Nickname, GtmTestDC1)
-	} else {
-		assert.Equal(t, 0, 1, "ListDatacenters: empty list")
-		fmt.Println("ListDatacenters: empty list")
+	respData, err := loadTestData("TestGtm_ListDatacenters.resp.json")
+	if err != nil {
+		t.Fatal(err)
 	}
 
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := map[string]struct {
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse []*Datacenter
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters",
+			expectedResponse: result.DatacenterItems,
+		},
+		"500 internal server error": {
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching datacenters"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/datacenters",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching datacenters",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListDatacenters(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-// Verify GetDatacenter. Name hardcoded. Should pass, e.g. no API errors and property returned
-// Depends on CreateDatacenter
-func TestGetDatacenter(t *testing.T) {
+func TestGtm_GetDatacenter(t *testing.T) {
+	var result Datacenter
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_GetDatacenter.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/3131")
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/3131").
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                                "datacenterId" : 3131,
-                                "nickname" : "testDC1",
-                                "scorePenalty" : 0,
-                                "city" : null,
-                                "stateOrProvince" : null,
-                                "country" : null,
-                                "latitude" : null,
-                                "longitude" : null,
-                                "cloneOf" : null,
-                                "virtual" : true,
-                                "defaultLoadObject" : null,
-                                "continent" : null,
-                                "servermonitorPool" : null,
-                                "servermonitorLivenessCount" : null,
-                                "servermonitorLoadCount" : null,
-                                "pingInterval" : null,
-                                "pingPacketSize" : null,
-                                "cloudServerTargeting" : false,
-                                "cloudServerHostHeaderOverride" : false,
-                                "links" : [ {
-                                        "rel" : "self",
-                                        "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/datacenters/3131"
-                                } ]
-              }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	tests := map[string]struct {
+		id               int
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *Datacenter
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			id:         1,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/1",
+			expectedResponse: &result,
+		},
+		"500 internal server error": {
+			id:             1,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching datacenter"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/datacenters/1",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching datacenter",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
-	testDC, err := GetDatacenter(3131, gtmTestDomain)
-	assert.NoError(t, err)
-	assert.Equal(t, 3131, testDC.DatacenterId)
-
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetDatacenter(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.id, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-// Verify failed case for GetDatacenter. Should pass, e.g. no API errors and domain not found
-func TestGetBadDatacenter(t *testing.T) {
+func TestGtm_CreateDatacenter(t *testing.T) {
+	var result DatacenterResponse
+	var req Datacenter
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateDatacenter.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/9999")
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/9999").
-		HeaderPresent("Authorization").
-		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	reqData, err := loadTestData("TestGtm_CreateDatacenter.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	_, err := GetDatacenter(9999, gtmTestDomain)
-	assert.Error(t, err)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
+	tests := map[string]struct {
+		dc               *Datacenter
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *DatacenterResponse
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			dc:         &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusCreated,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters",
+			expectedResponse: &result,
+		},
+		"500 internal server error": {
+			dc:             &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating dc"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/datacenters",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating dc",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPost, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.CreateDatacenter(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.dc, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-// Test Create datacenter.
-func TestCreateDatacenter(t *testing.T) {
+func TestGtm_CreateMapsDefaultDatacenter(t *testing.T) {
+	var result DatacenterResponse
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateMapsDefaultDatacenter.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters")
-	mock.
-		Post("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters").
-		HeaderPresent("Authorization").
-		Reply(201).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                        "resource" : {
-                                "datacenterId" : 3131,
-                                "nickname" : "testDC1",
-                                "scorePenalty" : 0,
-                                "city" : null,
-                                "stateOrProvince" : null,
-                                "country" : null,
-                                "latitude" : null,
-                                "longitude" : null,
-                                "cloneOf" : null,
-                                "virtual" : true,
-                                "defaultLoadObject" : null,
-                                "continent" : null,
-                                "servermonitorPool" : null,
-                                "servermonitorLivenessCount" : null,
-                                "servermonitorLoadCount" : null,
-                                "pingInterval" : null,
-                                "pingPacketSize" : null,
-                                "cloudServerTargeting" : false,
-                                "cloudServerHostHeaderOverride" : false,
-                                "links" : [ {
-                                        "rel" : "self",
-                                        "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/datacenters/3131"
-                                } ]
-                        },
-                        "status" : {
-                                "message" : "Change Pending",
-                                "changeId" : "4c7e6466-84e1-4895-bdf5-e3608d708d69",
-                                "propagationStatus" : "PENDING",
-                                "propagationStatusDate" : "2019-05-30T17:47:02.831+00:00",
-                                "passingValidation" : true,
-                                "links" : [ {
-                                        "rel" : "self",
-                                        "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/status/current"
-                                } ]
-                        }
-                }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	testDC := NewDatacenter()
-	testDC.Nickname = GtmTestDC1
-	statresp, err := testDC.Create(gtmTestDomain)
-	assert.NoError(t, err)
-	assert.Equal(t, GtmTestDC1, statresp.Resource.Nickname)
+	tests := map[string]struct {
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *Datacenter
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusCreated,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/default-datacenter-for-maps",
+			expectedResponse: result.Resource,
+		},
+		"500 internal server error": {
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating dc"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/datacenters/default-datacenter-for-maps",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating dc",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Method == http.MethodGet {
+					w.WriteHeader(http.StatusNotFound)
+					w.Write([]byte(`
+                                        {
+                                            "type": "Datacenter",
+                                            "title": "not found"
+                                        }`))
+					return
+				}
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPost, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.CreateMapsDefaultDatacenter(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-func TestUpdateDatacenter(t *testing.T) {
+func TestGtm_CreateIPv4DefaultDatacenter(t *testing.T) {
+	var result DatacenterResponse
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateIPv4DefaultDatacenter.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/3131")
-	mock.
-		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/3131").
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                        "resource" : {
-                                "datacenterId" : 3131,
-                                "nickname" : "testDC1",
-                                "scorePenalty" : 0,
-                                "city" : null,
-                                "stateOrProvince" : null,
-                                "country" : null,
-                                "latitude" : null,
-                                "longitude" : null,
-                                "cloneOf" : null,
-                                "virtual" : true,
-                                "defaultLoadObject" : null,
-                                "continent" : null,
-                                "servermonitorPool" : null,
-                                "servermonitorLivenessCount" : null,
-                                "servermonitorLoadCount" : null,
-                                "pingInterval" : null,
-                                "pingPacketSize" : null,
-                                "cloudServerTargeting" : false,
-                                "cloudServerHostHeaderOverride" : false,
-                                "links" : [ {
-                                        "rel" : "self",
-                                        "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/datacenters/3131"
-                                } ]
-                        },
-                        "status" : {
-                                "message" : "Change Pending",
-                                "changeId" : "4c7e6466-84e1-4895-bdf5-e3608d708d69",
-                                "propagationStatus" : "PENDING",
-                                "propagationStatusDate" : "2019-05-30T17:47:02.831+00:00",
-                                "passingValidation" : true,
-                                "links" : [ {
-                                        "rel" : "self",
-                                        "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/status/current"
-                                } ]
-                        }
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	tests := map[string]struct {
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *Datacenter
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusCreated,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/datacenter-for-ip-version-selector-ipv4",
+			expectedResponse: result.Resource,
+		},
+		"500 internal server error": {
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating dc"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/datacenters/datacenter-for-ip-version-selector-ipv4",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating dc",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
-	testDC := instantiateDatacenter()
-	stat, err := testDC.Update(gtmTestDomain)
-	assert.NoError(t, err)
-	assert.Equal(t, stat.ChangeId, "4c7e6466-84e1-4895-bdf5-e3608d708d69")
-
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Method == http.MethodGet {
+					w.WriteHeader(http.StatusNotFound)
+					w.Write([]byte(`
+                                        {
+                                            "type": "Datacenter",
+                                            "title": "not found"
+                                        }`))
+					return
+				}
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPost, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.CreateIPv4DefaultDatacenter(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-func TestDeleteDatacenter(t *testing.T) {
+func TestGtm_CreateIPv6DefaultDatacenter(t *testing.T) {
+	var result DatacenterResponse
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateIPv6DefaultDatacenter.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/3131")
-	mock.
-		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/3131").
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                        "resource" : {
-                        },
-                        "status" : {
-                                "message" : "Change Pending",
-                                "changeId" : "4c7e6466-84e1-4895-bdf5-e3608d708d69",
-                                "propagationStatus" : "PENDING",
-                                "propagationStatusDate" : "2019-05-30T17:47:02.831+00:00",
-                                "passingValidation" : true,
-                                "links" : [ {
-                                        "rel" : "self",
-                                        "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/status/current"
-                                } ]
-                        }
-                }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	tests := map[string]struct {
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *Datacenter
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusCreated,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/datacenter-for-ip-version-selector-ipv6",
+			expectedResponse: result.Resource,
+		},
+		"500 internal server error": {
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating dc"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/datacenters/datacenter-for-ip-version-selector-ipv6",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating dc",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
-	testDC := instantiateDatacenter()
-	_, err := testDC.Delete(gtmTestDomain)
-	assert.NoError(t, err)
-
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Method == http.MethodGet {
+					w.WriteHeader(http.StatusNotFound)
+					w.Write([]byte(`
+                                        {
+                                            "type": "Datacenter",
+                                            "title": "not found"
+                                        }`))
+					return
+				}
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPost, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.CreateIPv6DefaultDatacenter(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-func TestCreateMapsDefaultDatacenter(t *testing.T) {
+func TestGtm_UpdateDatacenter(t *testing.T) {
+	var result DatacenterResponse
+	var req Datacenter
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateDatacenter.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock1 := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/5400")
-	mock1.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/5400").
-		HeaderPresent("Authorization").
-		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8")
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/default-datacenter-for-maps")
-	mock.
-		Post("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/default-datacenter-for-maps").
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                        "resource" : {
-                                "datacenterId" : 5400,
-                                "nickname" : "Default Datacenter",
-                                "scorePenalty" : 0,
-                                "city" : null,
-                                "stateOrProvince" : null,
-                                "country" : null,
-                                "latitude" : null,
-                                "longitude" : null,
-                                "cloneOf" : null,
-                                "virtual" : true,
-                                "defaultLoadObject" : null,
-                                "continent" : null,
-                                "servermonitorPool" : null,
-                                "servermonitorLivenessCount" : null,
-                                "servermonitorLoadCount" : null,
-                                "pingInterval" : null,
-                                "pingPacketSize" : null,
-                                "cloudServerTargeting" : false,
-                                "cloudServerHostHeaderOverride" : false,
-                                "links" : [ {
-                                        "rel" : "self",
-                                        "href" : "https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/datacenters/5400"
-                                } ]
-                        },
-                        "status" : {
-                                "message" : "Change Pending",
-                                "changeId" : "4c7e6466-84e1-4895-bdf5-e3608d708d69",
-                                "propagationStatus" : "PENDING",
-                                "propagationStatusDate" : "2019-05-30T17:47:02.831+00:00",
-                                "passingValidation" : true,
-                                "links" : [ {
-                                        "rel" : "self",
-                                        "href" : "https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/status/current"
-                                } ]
-                        }
-                }`)
+	reqData, err := loadTestData("TestGtm_CreateDatacenter.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
-	defDC, err := CreateMapsDefaultDatacenter(gtmTestDomain)
-	assert.NoError(t, err)
-	assert.Equal(t, defDC.DatacenterId, 5400)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
+	tests := map[string]struct {
+		dc               *Datacenter
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ResponseStatus
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			dc:         &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/0",
+			expectedResponse: result.Status,
+		},
+		"500 internal server error": {
+			dc:             &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error updating dc"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/datacenters/0",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error updating dc",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.UpdateDatacenter(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.dc, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
-*/
+
+func TestGtm_DeleteDatacenter(t *testing.T) {
+	var result DatacenterResponse
+	var req Datacenter
+
+	respData, err := loadTestData("TestGtm_CreateDatacenter.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
+
+	reqData, err := loadTestData("TestGtm_CreateDatacenter.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := map[string]struct {
+		dc               *Datacenter
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ResponseStatus
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			dc:         &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/0",
+			expectedResponse: result.Status,
+		},
+		"500 internal server error": {
+			dc:             &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error updating dc"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/datacenters/0",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error updating dc",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.DeleteDatacenter(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.dc, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}

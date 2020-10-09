@@ -1,0 +1,42 @@
+{
+    "resource": {
+        "city": null,
+        "cloneOf": null,
+        "cloudServerHostHeaderOverride": false,
+        "cloudServerTargeting": false,
+        "continent": null,
+        "country": null,
+        "datacenterId": 5402,
+        "defaultLoadObject": null,
+        "latitude": 0.0,
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/datacenters/5402",
+                "rel": "self"
+            }
+        ],
+        "longitude": 0.0,
+        "nickname": "Target for AAAA records",
+        "pingInterval": null,
+        "pingPacketSize": null,
+        "scorePenalty": 0,
+        "servermonitorLivenessCount": null,
+        "servermonitorLoadCount": null,
+        "servermonitorPool": null,
+        "stateOrProvince": null,
+        "virtual": true
+    },
+    "status": {
+        "changeId": "b97e535e-cec7-417c-bb1e-90fc06bf7783",
+        "message": "Change Pending",
+        "passingValidation": true,
+        "propagationStatus": "PENDING",
+        "propagationStatusDate": "2020-02-18T22:31:00.000+0000",
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
+                "rel": "self"
+            }
+        ]
+    }
+}
