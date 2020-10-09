@@ -1,302 +1,451 @@
 package gtm
 
-/*
 import (
+	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/h2non/gock.v1"
+	"github.com/stretchr/testify/require"
 )
 
-var GtmTestCidrMap = "testCidrMap"
+func TestGtm_NewCidrMap(t *testing.T) {
+	client := Client(session.Must(session.New()))
 
-func instantiateCidrMap() *CidrMap {
+	cmap := client.NewCidrMap(context.Background(), "foo")
 
-	cidrMap := NewCidrMap(GtmTestCidrMap)
-	cidrMapData := []byte(`{
-                               "assignments": [ {
-                                       "blocks": [ "1.2.3.0/24" ],
-                                       "datacenterId": 3134,
-                                       "nickname": "Frostfangs and the Fist of First Men"
-                               },
-                               {
-                                       "blocks": [ "1.2.4.0/24" ],
-                                       "datacenterId": 3133,
-                                       "nickname": "Winterfell"
-                               } ],
-                               "defaultDatacenter": {
-                                       "datacenterId": 5400,
-                                       "nickname": "All Other CIDR Blocks"
-                               },
-                               "links": [ {
-                                       "href": "/config-gtm/v1/domains/example.akadns.net/cidr-maps/testCidrMap",
-                                       "rel": "self"
-                               } ],
-                               "name": "testCidrMap"
-              }`)
-	json.Unmarshal(cidrMapData, cidrMap)
-
-	return cidrMap
-
+	assert.Equal(t, "foo", cmap.Name)
 }
 
-// Verify ListCidrMap. Name hardcoded. Should pass, e.g. no API errors and resource returned
-func TestListCidrMaps(t *testing.T) {
+func TestGtm_ListCidrMaps(t *testing.T) {
+	var result CidrMapList
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_ListCidrMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/cidr-maps")
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps").
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                        "items" : [ {
-                               "assignments": [ {
-                                       "blocks": [ "1.2.3.0/24" ],
-                                       "datacenterId": 3134,
-                                       "nickname": "Frostfangs and the Fist of First Men"
-                               },
-                               {
-                                       "blocks": [ "1.2.4.0/24" ],
-                                       "datacenterId": 3133,
-                                       "nickname": "Winterfell"
-                               } ],
-                               "defaultDatacenter": {
-                                       "datacenterId": 5400,
-                                       "nickname": "All Other CIDR Blocks"
-                               },
-                               "links": [ {
-                                       "href": "/config-gtm/v1/domains/example.akadns.net/cidr-maps/testCidrMap",
-                                       "rel": "self"
-                               } ],
-                               "name": "testCidrMap"
-                       } ]
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	tests := map[string]struct {
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse []*CidrMap
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps",
+			expectedResponse: result.CidrMapItems,
+		},
+		"500 internal server error": {
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching asmap",
+    "status": 500
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/cidr-maps",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
-	testCidrMap, err := ListCidrMaps(gtmTestDomain)
-	assert.NoError(t, err)
-	assert.IsType(t, &CidrMap{}, testCidrMap[0])
-	assert.Equal(t, GtmTestCidrMap, testCidrMap[0].Name)
-
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListCidrMaps(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-// Verify GetCidrMap. Name hardcoded. Should pass, e.g. no API errors and resource returned
-func TestGetCidrMap(t *testing.T) {
+func TestGtm_GetCidrMap(t *testing.T) {
+	var result CidrMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_GetCidrMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/cidr-maps/" + GtmTestCidrMap)
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps/"+GtmTestCidrMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                               "assignments": [ {
-                                       "blocks": [ "1.2.3.0/24" ],
-                                       "datacenterId": 3134,
-                                       "nickname": "Frostfangs and the Fist of First Men"
-                               },
-                               {
-                                       "blocks": [ "1.2.4.0/24" ],
-                                       "datacenterId": 3133,
-                                       "nickname": "Winterfell"
-                               } ],
-                               "defaultDatacenter": {
-                                       "datacenterId": 5400,
-                                       "nickname": "All Other CIDR Blocks"
-                               },
-                               "links": [ {
-                                       "href": "/config-gtm/v1/domains/example.akadns.net/cidr-maps/testCidrMap",
-                                       "rel": "self"
-                               } ],
-                               "name": "testCidrMap"
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	tests := map[string]struct {
+		name             string
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *CidrMap
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			name:       "Software-rollout",
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/Software-rollout",
+			expectedResponse: &result,
+		},
+		"500 internal server error": {
+			name:           "Software-rollout",
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching asmap",
+    "status": 500
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/cidr-maps/Software-rollout",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
-	testCidrMap, err := GetCidrMap(GtmTestCidrMap, gtmTestDomain)
-	assert.NoError(t, err)
-	assert.IsType(t, &CidrMap{}, testCidrMap)
-	assert.Equal(t, GtmTestCidrMap, testCidrMap.Name)
-
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetCidrMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.name, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-// Verify failed case for GetCidrMap. Should pass, e.g. no API errors and domain not found
-func TestGetBadCidrMap(t *testing.T) {
+func TestGtm_NewCidrAssignment(t *testing.T) {
+	client := Client(session.Must(session.New()))
 
-	badName := "somebadname"
-	defer gock.Off()
+	asn := client.NewCidrAssignment(context.Background(), nil, 100, "foo")
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/cidr-maps/" + badName)
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps/"+badName).
-		HeaderPresent("Authorization").
-		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                }`)
-
-	Init(config)
-
-	_, err := GetCidrMap(badName, gtmTestDomain)
-	assert.Error(t, err)
-
+	assert.Equal(t, 100, asn.DatacenterId)
+	assert.Equal(t, "foo", asn.Nickname)
 }
 
-// Test Create CidrMap.
-func TestCreateCidrMap(t *testing.T) {
+func TestGtm_CreateCidrMap(t *testing.T) {
+	var result CidrMapResponse
+	var req CidrMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateCidrMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/cidr-maps/" + GtmTestCidrMap)
-	mock.
-		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps/"+GtmTestCidrMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                    "resource" : {
-                               "assignments": [ {
-                                       "blocks": [ "1.2.3.0/24" ],
-                                       "datacenterId": 3134,
-                                       "nickname": "Frostfangs and the Fist of First Men"
-                               },
-                               {
-                                       "blocks": [ "1.2.4.0/24" ],
-                                       "datacenterId": 3133,
-                                       "nickname": "Winterfell"
-                               } ],
-                               "defaultDatacenter": {
-                                       "datacenterId": 5400,
-                                       "nickname": "All Other CIDR Blocks"
-                               },
-                               "links": [ {
-                                       "href": "/config-gtm/v1/domains/example.akadns.net/cidr-maps/testCidrMap",
-                                       "rel": "self"
-                               } ],
-                               "name": "testCidrMap"
-                    },
-                    "status" : {
-                           "changeId": "93a48b86-4fc3-4a5f-9ca2-036835034cc6",
-                           "links": [
-                               {
-                                  "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
-                                  "rel": "self"
-                               }
-                           ],
-                           "message": "Change Pending",
-                           "passingValidation": true,
-                           "propagationStatus": "PENDING",
-                           "propagationStatusDate": "2014-04-15T11:30:27.000+0000"
-                    }
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	reqData, err := loadTestData("TestGtm_CreateCidrMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	testCidrMap := instantiateCidrMap()
-	statresp, err := testCidrMap.Create(gtmTestDomain)
-	assert.NoError(t, err)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
-	assert.IsType(t, &CidrMap{}, statresp.Resource)
-	assert.Equal(t, GtmTestCidrMap, statresp.Resource.Name)
+	tests := map[string]struct {
+		cmap             *CidrMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *CidrMapResponse
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			cmap:       &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			expectedResponse: &result,
+		},
+		"500 internal server error": {
+			cmap:           &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating asmap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.CreateCidrMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-func TestUpdateCidrMap(t *testing.T) {
+func TestGtm_UpdateCidrMap(t *testing.T) {
+	var result CidrMapResponse
+	var req CidrMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateCidrMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/cidr-maps/" + GtmTestCidrMap)
-	mock.
-		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps/"+GtmTestCidrMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                    "resource" : {
-                               "assignments": [ {
-                                       "blocks": [ "1.2.3.0/24" ],
-                                       "datacenterId": 3134,
-                                       "nickname": "Frostfangs and the Fist of First Men"
-                               },
-                               {
-                                       "blocks": [ "1.2.4.0/24" ],
-                                       "datacenterId": 3133,
-                                       "nickname": "Winterfell"
-                               } ],
-                               "defaultDatacenter": {
-                                       "datacenterId": 5400,
-                                       "nickname": "All Other CIDR Blocks"
-                               },
-                               "links": [ {
-                                       "href": "/config-gtm/v1/domains/example.akadns.net/cidr-maps/testCidrMap",
-                                       "rel": "self"
-                               } ],
-                               "name": "testCidrMap"
-                    },
-                    "status" : {
-                           "changeId": "93a48b86-4fc3-4a5f-9ca2-036835034cc6",
-                           "links": [
-                               {
-                                  "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
-                                  "rel": "self"
-                               }
-                           ],
-                           "message": "Change Pending",
-                           "passingValidation": true,
-                           "propagationStatus": "PENDING",
-                           "propagationStatusDate": "2014-04-15T11:30:27.000+0000"
-                    }
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	reqData, err := loadTestData("TestGtm_CreateCidrMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	testCidrMap := instantiateCidrMap()
-	_, err := testCidrMap.Update(gtmTestDomain)
-	assert.NoError(t, err)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
+	tests := map[string]struct {
+		cmap             *CidrMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ResponseStatus
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			cmap:       &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			expectedResponse: result.Status,
+		},
+		"500 internal server error": {
+			cmap:           &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating asmap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.UpdateCidrMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-func TestDeleteCidrMap(t *testing.T) {
+func TestGtm_DeleteCidrMap(t *testing.T) {
+	var result CidrMapResponse
+	var req CidrMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateCidrMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/cidr-maps/" + GtmTestCidrMap)
-	mock.
-		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps/"+GtmTestCidrMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                    "resource" : {
-                    },
-                    "status" : {
-                           "changeId": "93a48b86-4fc3-4a5f-9ca2-036835034cc6",
-                           "links": [
-                               {
-                                  "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
-                                  "rel": "self"
-                               }
-                           ],
-                           "message": "Change Pending",
-                           "passingValidation": true,
-                           "propagationStatus": "PENDING",
-                           "propagationStatusDate": "2014-04-15T11:30:27.000+0000"
-                    }
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	reqData, err := loadTestData("TestGtm_CreateCidrMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	getCidrMap := instantiateCidrMap()
-	stat, err := getCidrMap.Delete(gtmTestDomain)
-	assert.NoError(t, err)
-	assert.Equal(t, "93a48b86-4fc3-4a5f-9ca2-036835034cc6", stat.ChangeId)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
+	tests := map[string]struct {
+		cmap             *CidrMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ResponseStatus
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			cmap:       &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			expectedResponse: result.Status,
+		},
+		"500 internal server error": {
+			cmap:           &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating asmap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.DeleteCidrMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
-*/

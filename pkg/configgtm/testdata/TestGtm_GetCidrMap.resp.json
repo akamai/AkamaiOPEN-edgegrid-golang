@@ -1,0 +1,29 @@
+{
+    "name": "The North",
+    "defaultDatacenter": {
+        "datacenterId": 5400,
+        "nickname": "All Other CIDR Blocks"
+    },
+    "assignments": [
+        {
+            "datacenterId": 3134,
+            "nickname": "Frostfangs and the Fist of First Men",
+            "blocks": [
+                "1.2.3.0/24"
+            ]
+        },
+        {
+            "datacenterId": 3133,
+            "nickname": "Winterfell",
+            "blocks": [
+                "1.2.4.0/24"
+            ]
+        }
+    ],
+    "links": [
+        {
+            "href": "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+            "rel": "self"
+        }
+    ]
+}

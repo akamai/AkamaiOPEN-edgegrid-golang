@@ -56,7 +56,6 @@ type CidrMapList struct {
 
 // Validate validates CidrMap
 func (cid *CidrMap) Validate() error {
-
 	if len(cid.Name) < 1 {
 		return fmt.Errorf("CidrMap is missing Name")
 	}
