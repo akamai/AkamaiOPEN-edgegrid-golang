@@ -1,0 +1,28 @@
+{
+    "items": [
+        {
+            "acgId": "1-2345",
+            "lastModified": "2014-03-03T16:02:45.000+0000",
+            "name": "example.akadns.net",
+            "status": "2014-02-20 22:56 GMT: Current configuration has been propagated to all GTM name servers",
+            "links": [
+                {
+                    "href": "/config-gtm/v1/domains/example.akadns.net",
+                    "rel": "self"
+                }
+            ]
+        },
+        {
+            "acgId": "1-2345",
+            "lastModified": "2013-11-09T12:04:45.000+0000",
+            "name": "demo.akadns.net",
+            "status": "2014-02-20 22:56 GMT: Current configuration has been propagated to all GTM name servers",
+            "links": [
+                {
+                    "href": "/config-gtm/v1/domains/demo.akadns.net",
+                    "rel": "self"
+                }
+            ]
+        }
+    ]
+}

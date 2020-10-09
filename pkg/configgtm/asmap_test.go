@@ -1,266 +1,451 @@
 package gtm
 
-/*
 import (
+	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/h2non/gock.v1"
+	"github.com/stretchr/testify/require"
 )
 
-var (
-	config = edgegrid.Config{
-		Host:         "akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/",
-		AccessToken:  "akab-access-token-xxx-xxxxxxxxxxxxxxxx",
-		ClientToken:  "akab-client-token-xxx-xxxxxxxxxxxxxxxx",
-		ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
-		MaxBody:      2048,
-		Debug:        false,
+func TestGtm_NewAsMap(t *testing.T) {
+	client := Client(session.Must(session.New()))
+
+	asmap := client.NewAsMap(context.Background(), "foo")
+
+	assert.Equal(t, "foo", asmap.Name)
+}
+
+func TestGtm_ListAsMap(t *testing.T) {
+	var result AsMapList
+
+	respData, err := loadTestData("TestGtm_ListAsMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
 	}
-)
 
-var GtmTestAsMap = "testAsMap"
-var gtmTestDomain = "gtmdomtest.akadns.net"
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-func instantiateAsMap() *AsMap {
+	tests := map[string]struct {
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse []*AsMap
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/as-maps",
+			expectedResponse: result.AsMapItems,
+		},
+		"500 internal server error": {
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching asmap",
+    "status": 500
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/as-maps",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
-	asMap := &AsMap{Name: GtmTestAsMap}
-
-	asMapData := []byte(`{
-                        "assignments": [ {
-                                        "asNumbers": [ 12222, 16702, 17334 ],
-                                        "datacenterId": 3134,
-                                        "nickname": "Frostfangs and the Fist of First Men"
-                                }, {
-                                        "asNumbers": [ 16625 ],
-                                        "datacenterId": 3133,
-                                        "nickname": "Winterfell"
-                                } ],
-                        "defaultDatacenter": {
-                                "datacenterId": 5400,
-                                "nickname": "All Other AS numbers"
-                        },
-                        "name": "testAsMap"
-              }`)
-
-	json.Unmarshal(asMapData, asMap)
-
-	return asMap
-
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListAsMaps(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-// Verify GetAsMap. Name hardcoded. Should pass, e.g. no API errors and resource returned
-// Depends on CreateAsMap
-func TestGetAsMap(t *testing.T) {
+func TestGtm_GetAsMap(t *testing.T) {
+	var result AsMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_GetAsMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/as-maps/" + GtmTestAsMap)
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                        "assignments": [ {
-                                        "asNumbers": [ 12222, 16702, 17334 ],
-                                        "datacenterId": 3134,
-                                        "nickname": "Frostfangs and the Fist of First Men"
-                                }, {
-                                        "asNumbers": [ 16625 ],
-                                        "datacenterId": 3133,
-                                        "nickname": "Winterfell"
-                                } ],
-                        "defaultDatacenter": {
-                                "datacenterId": 5400,
-                                "nickname": "All Other AS numbers"
-                        },
-                        "links": [ {
-                                "href": "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
-                                "rel": "self"
-                        } ],
-                        "name": "testAsMap"
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	tests := map[string]struct {
+		name             string
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *AsMap
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			name:       "Software-rollout",
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/as-maps/Software-rollout",
+			expectedResponse: &result,
+		},
+		"500 internal server error": {
+			name:           "Software-rollout",
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching asmap",
+    "status": 500
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/as-maps/Software-rollout",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
-	testAsMap, err := GetAsMap(GtmTestAsMap, gtmTestDomain)
-	assert.NoError(t, err)
-	assert.IsType(t, &AsMap{}, testAsMap)
-	assert.Equal(t, GtmTestAsMap, testAsMap.Name)
-
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetAsMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.name, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-// Verify failed case for GetAsMap. Should pass, e.g. no API errors and domain not found
-func TestGetBadAsMap(t *testing.T) {
+func TestGtm_NewASAssignment(t *testing.T) {
+	client := Client(session.Must(session.New()))
 
-	badName := "somebadname"
-	defer gock.Off()
+	asn := client.NewASAssignment(context.Background(), nil, 100, "foo")
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/as-maps/" + badName)
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+badName).
-		HeaderPresent("Authorization").
-		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                }`)
-
-	Init(config)
-
-	_, err := GetAsMap(badName, gtmTestDomain)
-	assert.Error(t, err)
-
+	assert.Equal(t, 100, asn.DatacenterId)
+	assert.Equal(t, "foo", asn.Nickname)
 }
 
-// Test Create AsMap.
-func TestCreateAsMap(t *testing.T) {
+func TestGtm_CreateAsMap(t *testing.T) {
+	var result AsMapResponse
+	var req AsMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateAsMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/as-maps/" + GtmTestAsMap)
-	mock.
-		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                    "resource" : {
-                        "assignments": [ {
-                                        "asNumbers": [ 12222, 16702, 17334 ],
-                                        "datacenterId": 3134,
-                                        "nickname": "Frostfangs and the Fist of First Men"
-                                }, {
-                                        "asNumbers": [ 16625 ],
-                                        "datacenterId": 3133,
-                                        "nickname": "Winterfell"
-                                } ],
-                        "defaultDatacenter": {
-                                "datacenterId": 5400,
-                                "nickname": "All Other AS numbers"
-                        },
-                        "links": [ {
-                                "href": "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
-                                "rel": "self"
-                        } ],
-                        "name": "testAsMap"
-                    },
-                    "status" : {
-                           "changeId": "93a48b86-4fc3-4a5f-9ca2-036835034cc6",
-                           "links": [
-                               {
-                                  "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
-                                  "rel": "self"
-                               }
-                           ],
-                           "message": "Change Pending",
-                           "passingValidation": true,
-                           "propagationStatus": "PENDING",
-                           "propagationStatusDate": "2014-04-15T11:30:27.000+0000"
-                    }
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	reqData, err := loadTestData("TestGtm_CreateAsMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	testAsMap := instantiateAsMap()
-	statresp, err := testAsMap.Create(gtmTestDomain)
-	assert.NoError(t, err)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
-	assert.IsType(t, &AsMap{}, statresp.Resource)
-	assert.Equal(t, GtmTestAsMap, statresp.Resource.Name)
+	tests := map[string]struct {
+		asmap            *AsMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *AsMapResponse
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			asmap:      &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
+			expectedResponse: &result,
+		},
+		"500 internal server error": {
+			asmap:          &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating asmap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.CreateAsMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.asmap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-func TestUpdateAsMap(t *testing.T) {
+func TestGtm_UpdateAsMap(t *testing.T) {
+	var result AsMapResponse
+	var req AsMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateAsMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/as-maps/" + GtmTestAsMap)
-	mock.
-		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                    "resource" : {
-                        "assignments": [ {
-                                        "asNumbers": [ 12222, 16702, 17334 ],
-                                        "datacenterId": 3134,
-                                        "nickname": "Frostfangs and the Fist of First Men"
-                                }, {
-                                        "asNumbers": [ 16625 ],
-                                        "datacenterId": 3133,
-                                        "nickname": "Winterfell"
-                                } ],
-                        "defaultDatacenter": {
-                                "datacenterId": 5400,
-                                "nickname": "All Other AS numbers"
-                        },
-                        "links": [ {
-                                "href": "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
-                                "rel": "self"
-                        } ],
-                        "name": "testAsMap"
-                    },
-                    "status" : {
-                           "changeId": "93a48b86-4fc3-4a5f-9ca2-036835034cc6",
-                           "links": [
-                               {
-                                  "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
-                                  "rel": "self"
-                               }
-                           ],
-                           "message": "Change Pending",
-                           "passingValidation": true,
-                           "propagationStatus": "PENDING",
-                           "propagationStatusDate": "2014-04-15T11:30:27.000+0000"
-                    }
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	reqData, err := loadTestData("TestGtm_CreateAsMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	testAsMap := instantiateAsMap()
-	_, err := testAsMap.Update(gtmTestDomain)
-	assert.NoError(t, err)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
+	tests := map[string]struct {
+		asmap            *AsMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ResponseStatus
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			asmap:      &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
+			expectedResponse: result.Status,
+		},
+		"500 internal server error": {
+			asmap:          &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error updating asmap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error updating asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.UpdateAsMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.asmap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-func TestDeleteAsMap(t *testing.T) {
+func TestGtm_DeleteAsMap(t *testing.T) {
+	var result AsMapResponse
+	var req AsMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateAsMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/as-maps/" + GtmTestAsMap)
-	mock.
-		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                    "resource" : {
-                    },
-                    "status" : {
-                           "changeId": "93a48b86-4fc3-4a5f-9ca2-036835034cc6",
-                           "links": [
-                               {
-                                  "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
-                                  "rel": "self"
-                               }
-                           ],
-                           "message": "Change Pending",
-                           "passingValidation": true,
-                           "propagationStatus": "PENDING",
-                           "propagationStatusDate": "2014-04-15T11:30:27.000+0000"
-                    }
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	reqData, err := loadTestData("TestGtm_CreateAsMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	getAsMap := instantiateAsMap()
-	stat, err := getAsMap.Delete(gtmTestDomain)
-	assert.NoError(t, err)
-	assert.Equal(t, "93a48b86-4fc3-4a5f-9ca2-036835034cc6", stat.ChangeId)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
+	tests := map[string]struct {
+		asmap            *AsMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ResponseStatus
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			asmap:      &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
+			expectedResponse: result.Status,
+		},
+		"500 internal server error": {
+			asmap:          &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error updating asmap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error updating asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.DeleteAsMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.asmap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
-*/

@@ -26,6 +26,17 @@ func TestGtm_NewDomain(t *testing.T) {
 
 // Verify GetListDomains. Sould pass, e.g. no API errors and non nil list.
 func TestGtm_ListDomains(t *testing.T) {
+	var result DomainsList
+
+	respData, err := loadTestData("TestGtm_ListDomains.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
+
 	tests := map[string]struct {
 		responseStatus   int
 		responseBody     string
@@ -38,39 +49,10 @@ func TestGtm_ListDomains(t *testing.T) {
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus: http.StatusOK,
-			responseBody: `
-			{
-                            "items" : [ {
-                                "name" : "gtmdomtest.akadns.net",
-                                "status" : "Change Pending",
-                                "acgId" : "1-3CV382",
-                                "lastModified" : "2019-06-06T19:07:20.000+00:00",
-                                "lastModifiedBy" : "operator",
-                                "changeId" : "c3e1b771-2500-40c9-a7da-6c3cdbce1936",
-                                "activationState" : "PENDING",
-                                "modificationComments" : "mock test",
-                                "links" : [ {
-                                    "rel" : "self",
-                                    "href" : "/config-gtm/v1/domains/demo.akadns.net"
-                                } ]
-                            } ]
-			}`,
-			expectedPath: "/config-gtm/v1/domains",
-			expectedResponse: []*DomainItem{
-				{
-					AcgId:        "1-3CV382",
-					LastModified: "2019-06-06T19:07:20.000+00:00",
-					Name:         "gtmdomtest.akadns.net",
-					Status:       "Change Pending",
-					Links: []*Link{
-						{
-							Href: "/config-gtm/v1/domains/demo.akadns.net",
-							Rel:  "self",
-						},
-					},
-				},
-			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains",
+			expectedResponse: result.DomainItems,
 		},
 		"500 internal server error": {
 			headers:        http.Header{},
@@ -79,14 +61,14 @@ func TestGtm_ListDomains(t *testing.T) {
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching authorities",
+    "detail": "Error fetching domains",
     "status": 500
 }`,
 			expectedPath: "/config-gtm/v1/domains",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching authorities",
+				Detail:     "Error fetching domains",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -438,3 +420,41 @@ func TestGtm_UpdateDomain(t *testing.T) {
 		})
 	}
 }
+
+/* Future. Presently no domain Delete endpoint.
+func TestGtm_DeleteDomain(t *testing.T) {
+
+        defer gock.Off()
+
+        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+gtmTestDomain)
+        mock.
+                Delete("/config-gtm/v1/domains/"+gtmTestDomain).
+                HeaderPresent("Authorization").
+                Reply(200).
+                SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+                BodyString(`{
+                        "resource" : null,
+                        "status" : {
+                               "changeId": "40e36abd-bfb2-4635-9fca-62175cf17007",
+                               "links": [
+                                     {
+                                          "href": "https://akab-ymtebc45gco3ypzj-apz4yxpek55y7fyv.luna.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/status/current",
+                                          "rel": "self"
+                                     }
+                               ],
+                               "message": "Change Pending",
+                               "passingValidation": true,
+                               "propagationStatus": "PENDING",
+                               "propagationStatusDate": "2019-04-25T14:54:00.000+00:00"
+                          },
+                }`)
+
+        Init(config)
+
+        getDomain := instantiateDomain()
+
+        _, err := getDomain.Delete()
+        assert.NoError(t, err)
+
+}
+*/
