@@ -1,9 +1,9 @@
 package gtm
 
+/*
 import (
+	"encoding/json"
 	"testing"
-
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/h2non/gock.v1"
@@ -62,7 +62,7 @@ func instantiateProperty() *Property {
                                              "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/properties/testproperty"
                         } ]
             }`)
-	jsonhooks.Unmarshal(propertyData, property)
+	json.Unmarshal(propertyData, property)
 
 	return property
 
@@ -123,7 +123,7 @@ func TestListProperties(t *testing.T) {
                         "links" : [ {
                                             "rel" : "self",
                                             "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/properties/testproperty"
-                        } ] 
+                        } ]
                     } ]
                 }`)
 
@@ -273,9 +273,9 @@ func TestCreateProperty(t *testing.T) {
                                 "enabled" : true,
                                 "weight" : 100.0,
                                 "handoutCName" : null,
-                                "name" : null, 
+                                "name" : null,
                                 "servers" : [ "1.2.3.4" ]
-                        } ],    
+                        } ],
                             "type" : "performance",
                         "unreachableThreshold" : null,
                         "useComputedTargets" : false,
@@ -386,7 +386,7 @@ func TestUpdateProperty(t *testing.T) {
                                             "rel" : "self",
                                             "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/status/current"
                         } ]
-                    } 
+                    }
                 }`)
 
 	Init(config)
@@ -419,3 +419,4 @@ func TestDeleteProperty(t *testing.T) {
 	assert.NoError(t, err)
 
 }
+*/

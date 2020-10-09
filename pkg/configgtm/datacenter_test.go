@@ -1,10 +1,10 @@
 package gtm
 
+/*
 import (
+	"encoding/json"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
-	//edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/h2non/gock.v1"
 
@@ -39,7 +39,7 @@ func instantiateDatacenter() *Datacenter {
                                 "cloudServerTargeting" : false,
                                 "cloudServerHostHeaderOverride" : false
                        }`)
-	jsonhooks.Unmarshal(dcData, dc)
+	json.Unmarshal(dcData, dc)
 
 	return dc
 
@@ -61,7 +61,7 @@ func TestListDatacenters(t *testing.T) {
                                 "datacenterId" : 3131,
                                 "nickname" : "testDC1",
                                 "scorePenalty" : 0,
-                                "city" : null,                            
+                                "city" : null,
                                 "stateOrProvince" : null,
                                 "country" : null,
                                 "latitude" : null,
@@ -379,3 +379,4 @@ func TestCreateMapsDefaultDatacenter(t *testing.T) {
 	assert.Equal(t, defDC.DatacenterId, 5400)
 
 }
+*/

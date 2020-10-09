@@ -362,19 +362,24 @@ func (p *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapSt
 			}
 			continue
 		}
+		list, ok := d.([]interface{})
+		if !ok {
+			continue
+		}
+
 		switch i {
 		case "properties":
-			nullFieldMap.Properties = processObjectList(d.([]interface{}))
+			nullFieldMap.Properties = processObjectList(list)
 		case "datacenters":
-			nullFieldMap.Datacenters = processObjectList(d.([]interface{}))
+			nullFieldMap.Datacenters = processObjectList(list)
 		case "resources":
-			nullFieldMap.Resources = processObjectList(d.([]interface{}))
+			nullFieldMap.Resources = processObjectList(list)
 		case "cidrMaps":
-			nullFieldMap.CidrMaps = processObjectList(d.([]interface{}))
+			nullFieldMap.CidrMaps = processObjectList(list)
 		case "geographicMaps":
-			nullFieldMap.GeoMaps = processObjectList(d.([]interface{}))
+			nullFieldMap.GeoMaps = processObjectList(list)
 		case "asMaps":
-			nullFieldMap.AsMaps = processObjectList(d.([]interface{}))
+			nullFieldMap.AsMaps = processObjectList(list)
 		}
 	}
 

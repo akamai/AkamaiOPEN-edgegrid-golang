@@ -1,9 +1,9 @@
 package gtm
 
+/*
 import (
+	"encoding/json"
 	"testing"
-
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/h2non/gock.v1"
@@ -13,7 +13,8 @@ var GtmTestResource = "testResource"
 
 func instantiateResource() *Resource {
 
-	resource := NewResource("dummy")
+	resource := &Resource{Name: "dummy"}
+
 	resourceData := []byte(`{
                                 "aggregationType" : "median",
                                 "constrainedProperty" : null,
@@ -39,7 +40,8 @@ func instantiateResource() *Resource {
                                         "href" : "https://akaa-32qkzqewderdchot-d3uwbyqc4pqi2c5l.luna-dev.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/resources/testResource"
                                 } ]
                        }`)
-	jsonhooks.Unmarshal(resourceData, resource)
+
+	json.Unmarshal(resourceData, resource)
 
 	return resource
 
@@ -320,3 +322,4 @@ func TestDeleteResource(t *testing.T) {
 	assert.Equal(t, "9a7a8f84-704b-40de-a903-bcc2728513ac", stat.ChangeId)
 
 }
+*/

@@ -3,6 +3,8 @@ package gtm
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -35,6 +37,15 @@ func dummyOpt() Option {
 	return func(*gtm) {
 
 	}
+}
+
+func loadTestData(name string) ([]byte, error) {
+	data, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s", name))
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 func TestClient(t *testing.T) {
