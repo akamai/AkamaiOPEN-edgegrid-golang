@@ -1,277 +1,451 @@
 package gtm
 
-/*
 import (
+	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/h2non/gock.v1"
+	"github.com/stretchr/testify/require"
 )
 
-var GtmTestGeoMap = "testGeoMap"
+func TestGtm_NewGeoMap(t *testing.T) {
+	client := Client(session.Must(session.New()))
 
-func instantiateGeoMap() *GeoMap {
+	geomap := client.NewGeoMap(context.Background(), "foo")
 
-	geoMap := NewGeoMap(GtmTestGeoMap)
-	geoMapData := []byte(`{
-                        "assignments": [ {
-                                "countries": [ "GB", "IE" ],
-                                "datacenterId": 3133,
-                                "nickname": "UK and Ireland users"
-                        } ],
-                        "defaultDatacenter": {
-                                "datacenterId": 5400,
-                                "nickname": "Default Mapping"
-                        },
-                        "links": [ {
-                                "href": "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
-                                "rel": "self"
-                        } ],
-                        "name": "testGeoMap"
-              }`)
-	json.Unmarshal(geoMapData, geoMap)
-
-	return geoMap
-
+	assert.Equal(t, "foo", geomap.Name)
 }
 
-// Verify ListGeoMap. Name hardcoded. Should pass, e.g. no API errors and resource returned
-func TestListGeoMaps(t *testing.T) {
+func TestGtm_ListGeoMap(t *testing.T) {
+	var result GeoMapList
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_ListGeoMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/geographic-maps")
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps").
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                    "items" : [ {
-                        "assignments": [ {
-                                "countries": [ "GB", "IE" ],
-                                "datacenterId": 3133,
-                                "nickname": "UK and Ireland users"
-                        } ],
-                        "defaultDatacenter": {
-                                "datacenterId": 5400,
-                                "nickname": "Default Mapping"
-                        },
-                        "links": [ {
-                                "href": "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
-                                "rel": "self"
-                        } ],
-                        "name": "testGeoMap"
-                    } ]
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	tests := map[string]struct {
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse []*GeoMap
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps",
+			expectedResponse: result.GeoMapItems,
+		},
+		"500 internal server error": {
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching geomap",
+    "status": 500
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/geographic-maps",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching geomap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
-	testGeoMap, err := ListGeoMaps(gtmTestDomain)
-	assert.NoError(t, err)
-	assert.IsType(t, &GeoMap{}, testGeoMap[0])
-	assert.Equal(t, GtmTestGeoMap, testGeoMap[0].Name)
-
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListGeoMaps(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-// Verify GetGeoMap. Name hardcoded. Should pass, e.g. no API errors and resource returned
-func TestGetGeoMap(t *testing.T) {
+func TestGtm_GetGeoMap(t *testing.T) {
+	var result GeoMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_GetGeoMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/geographic-maps/" + GtmTestGeoMap)
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps/"+GtmTestGeoMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                        "assignments": [ {
-                                "countries": [ "GB", "IE" ],
-                                "datacenterId": 3133,
-                                "nickname": "UK and Ireland users"
-                        } ],
-                        "defaultDatacenter": {
-                                "datacenterId": 5400,
-                                "nickname": "Default Mapping"
-                        },
-                        "links": [ {
-                                "href": "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
-                                "rel": "self"
-                        } ],
-                        "name": "testGeoMap"
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	tests := map[string]struct {
+		name             string
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *GeoMap
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			name:       "Software-rollout",
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/Software-rollout",
+			expectedResponse: &result,
+		},
+		"500 internal server error": {
+			name:           "Software-rollout",
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching geomap",
+    "status": 500
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/geographic-maps/Software-rollout",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching geomap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
-	testGeoMap, err := GetGeoMap(GtmTestGeoMap, gtmTestDomain)
-	assert.NoError(t, err)
-	assert.IsType(t, &GeoMap{}, testGeoMap)
-	assert.Equal(t, GtmTestGeoMap, testGeoMap.Name)
-
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetGeoMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.name, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-// Verify failed case for GetGeoMap. Should pass, e.g. no API errors and domain not found
-func TestGetBadGeoMap(t *testing.T) {
+func TestGtm_NewGeoAssignment(t *testing.T) {
+	client := Client(session.Must(session.New()))
 
-	badName := "somebadname"
-	defer gock.Off()
+	asn := client.NewGeoAssignment(context.Background(), nil, 100, "foo")
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/geographic-maps/" + badName)
-	mock.
-		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps/"+badName).
-		HeaderPresent("Authorization").
-		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                }`)
-
-	Init(config)
-
-	_, err := GetGeoMap(badName, gtmTestDomain)
-	assert.Error(t, err)
-
+	assert.Equal(t, 100, asn.DatacenterId)
+	assert.Equal(t, "foo", asn.Nickname)
 }
 
-// Test Create GeoMap.
-func TestCreateGeoMap(t *testing.T) {
+func TestGtm_CreateGeoMap(t *testing.T) {
+	var result GeoMapResponse
+	var req GeoMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateGeoMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/geographic-maps/" + GtmTestGeoMap)
-	mock.
-		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps/"+GtmTestGeoMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                    "resource" : {
-                        "assignments": [ {
-                                "countries": [ "GB", "IE" ],
-                                "datacenterId": 3133,
-                                "nickname": "UK and Ireland users"
-                        } ],
-                        "defaultDatacenter": {
-                                "datacenterId": 5400,
-                                "nickname": "Default Mapping"
-                        },
-                        "links": [ {
-                                "href": "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
-                                "rel": "self"
-                        } ],
-                        "name": "testGeoMap"
-                    },
-                    "status" : {
-                           "changeId": "93a48b86-4fc3-4a5f-9ca2-036835034cc6",
-                           "links": [
-                               {
-                                  "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
-                                  "rel": "self"
-                               }
-                           ],
-                           "message": "Change Pending",
-                           "passingValidation": true,
-                           "propagationStatus": "PENDING",
-                           "propagationStatusDate": "2014-04-15T11:30:27.000+0000"
-                    }
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	reqData, err := loadTestData("TestGtm_CreateGeoMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	testGeoMap := instantiateGeoMap()
-	statresp, err := testGeoMap.Create(gtmTestDomain)
-	assert.NoError(t, err)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
-	assert.IsType(t, &GeoMap{}, statresp.Resource)
-	assert.Equal(t, GtmTestGeoMap, statresp.Resource.Name)
+	tests := map[string]struct {
+		geomap           *GeoMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *GeoMapResponse
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			geomap:     &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+			expectedResponse: &result,
+		},
+		"500 internal server error": {
+			geomap:         &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating geomap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating geomap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
 
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.CreateGeoMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.geomap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-func TestUpdateGeoMap(t *testing.T) {
+func TestGtm_UpdateGeoMap(t *testing.T) {
+	var result GeoMapResponse
+	var req GeoMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateGeoMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/geographic-maps/" + GtmTestGeoMap)
-	mock.
-		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps/"+GtmTestGeoMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                    "resource" : {
-                        "assignments": [ {
-                                "countries": [ "GB", "IE" ],
-                                "datacenterId": 3133,
-                                "nickname": "UK and Ireland users"
-                        } ],
-                        "defaultDatacenter": {
-                                "datacenterId": 5400,
-                                "nickname": "Default Mapping"
-                        },
-                        "links": [ {
-                                "href": "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
-                                "rel": "self"
-                        } ],
-                        "name": "testGeoMap"
-                    },
-                    "status" : {
-                           "changeId": "93a48b86-4fc3-4a5f-9ca2-036835034cc6",
-                           "links": [
-                               {
-                                  "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
-                                  "rel": "self"
-                               }
-                           ],
-                           "message": "Change Pending",
-                           "passingValidation": true,
-                           "propagationStatus": "PENDING",
-                           "propagationStatusDate": "2014-04-15T11:30:27.000+0000"
-                    }
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	reqData, err := loadTestData("TestGtm_CreateGeoMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	testGeoMap := instantiateGeoMap()
-	_, err := testGeoMap.Update(gtmTestDomain)
-	assert.NoError(t, err)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
+	tests := map[string]struct {
+		geomap           *GeoMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ResponseStatus
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			geomap:     &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+			expectedResponse: result.Status,
+		},
+		"500 internal server error": {
+			geomap:         &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error updating geomap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error updating geomap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.UpdateGeoMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.geomap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
 
-func TestDeleteGeoMap(t *testing.T) {
+func TestGtm_DeleteGeoMap(t *testing.T) {
+	var result GeoMapResponse
+	var req GeoMap
 
-	defer gock.Off()
+	respData, err := loadTestData("TestGtm_CreateGeoMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/geographic-maps/" + GtmTestGeoMap)
-	mock.
-		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps/"+GtmTestGeoMap).
-		HeaderPresent("Authorization").
-		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-		BodyString(`{
-                    "resource" : {
-                    },
-                    "status" : {
-                           "changeId": "93a48b86-4fc3-4a5f-9ca2-036835034cc6",
-                           "links": [
-                               {
-                                  "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
-                                  "rel": "self"
-                               }
-                           ],
-                           "message": "Change Pending",
-                           "passingValidation": true,
-                           "propagationStatus": "PENDING",
-                           "propagationStatusDate": "2014-04-15T11:30:27.000+0000"
-                    }
-               }`)
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
 
-	Init(config)
+	reqData, err := loadTestData("TestGtm_CreateGeoMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	getGeoMap := instantiateGeoMap()
-	stat, err := getGeoMap.Delete(gtmTestDomain)
-	assert.NoError(t, err)
-	assert.Equal(t, "93a48b86-4fc3-4a5f-9ca2-036835034cc6", stat.ChangeId)
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
 
+	tests := map[string]struct {
+		geomap           *GeoMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ResponseStatus
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			geomap:     &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+			expectedResponse: result.Status,
+		},
+		"500 internal server error": {
+			geomap:         &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error updating geomap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error updating geomap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.DeleteGeoMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.geomap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
 }
-*/
