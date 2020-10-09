@@ -1,0 +1,77 @@
+{
+    "backupCName": null,
+    "backupIp": null,
+    "balanceByDownloadScore": false,
+    "cname": null,
+    "comments": null,
+    "dynamicTTL": 300,
+    "failbackDelay": 0,
+    "failoverDelay": 0,
+    "handoutMode": "normal",
+    "healthMax": null,
+    "healthMultiplier": null,
+    "healthThreshold": null,
+    "ipv6": false,
+    "lastModified": "2014-04-08T15:11:10.000+0000",
+    "loadImbalancePercentage": null,
+    "mapName": null,
+    "maxUnreachablePenalty": null,
+    "name": "www",
+    "scoreAggregationType": "mean",
+    "staticTTL": 600,
+    "stickinessBonusConstant": 0,
+    "stickinessBonusPercentage": 0,
+    "type": "failover",
+    "unreachableThreshold": null,
+    "useComputedTargets": false,
+    "mxRecords": [],
+    "links": [
+        {
+            "href": "/config-gtm/v1/domains/example.akadns.net/properties/www",
+            "rel": "self"
+        }
+    ],
+    "livenessTests": [
+        {
+            "disableNonstandardPortWarning": false,
+            "hostHeader": "foo.example.com",
+            "httpError3xx": true,
+            "httpError4xx": true,
+            "httpError5xx": true,
+            "name": "health-check",
+            "requestString": null,
+            "responseString": null,
+            "sslClientCertificate": null,
+            "sslClientPrivateKey": null,
+            "testInterval": 60,
+            "testObject": "/status",
+            "testObjectPassword": null,
+            "testObjectPort": 80,
+            "testObjectProtocol": "HTTP",
+            "testObjectUsername": null,
+            "testTimeout": 25.0
+        }
+    ],
+    "trafficTargets": [
+        {
+            "datacenterId": 3134,
+            "enabled": true,
+            "handoutCName": null,
+            "name": null,
+            "weight": 0.0,
+            "servers": [
+                "1.2.3.5"
+            ]
+        },
+        {
+            "datacenterId": 3133,
+            "enabled": true,
+            "handoutCName": null,
+            "name": null,
+            "weight": 1.0,
+            "servers": [
+                "1.2.3.4"
+            ]
+        }
+    ]
+}

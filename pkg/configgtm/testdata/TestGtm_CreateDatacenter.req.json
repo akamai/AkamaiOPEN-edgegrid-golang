@@ -1,0 +1,15 @@
+{
+    "city": "Doune",
+    "stateOrProvince": "Perthshire",
+    "cloneOf": 0,
+    "continent": "EU",
+    "country": "GB",
+    "latitude": 56.185096,
+    "longitude": -4.050264,
+    "nickname": "Winterfell",
+    "defaultLoadObject": {
+        "loadObject": null,
+        "loadObjectPort": 0,
+        "loadServers": null
+    }
+}

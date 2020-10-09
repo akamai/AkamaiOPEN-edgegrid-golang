@@ -13,6 +13,7 @@ import (
 )
 
 func TestDns_ListZones(t *testing.T) {
+
 	tests := map[string]struct {
 		args             []ZoneListQueryArgs
 		responseStatus   int
@@ -20,6 +21,7 @@ func TestDns_ListZones(t *testing.T) {
 		expectedPath     string
 		expectedResponse *ZoneListResponse
 		withError        error
+		headers          http.Header
 	}{
 		"200 OK": {
 			args: []ZoneListQueryArgs{
@@ -31,6 +33,9 @@ func TestDns_ListZones(t *testing.T) {
 					Page:        1,
 					PageSize:    25,
 				},
+			},
+			headers: http.Header{
+				"Accept": []string{"application/json"},
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -123,7 +128,10 @@ func TestDns_ListZones(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListZones(context.Background(), test.args...)
+			result, err := client.ListZones(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.args...)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

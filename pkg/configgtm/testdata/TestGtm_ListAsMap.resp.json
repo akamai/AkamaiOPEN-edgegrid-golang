@@ -1,0 +1,35 @@
+{
+    "items": [
+        {
+            "name": "The North",
+            "defaultDatacenter": {
+                "datacenterId": 5400,
+                "nickname": "All Other AS numbers"
+            },
+            "assignments": [
+                {
+                    "datacenterId": 3134,
+                    "nickname": "Frostfangs and the Fist of First Men",
+                    "asNumbers": [
+                        12222,
+                        16702,
+                        17334
+                    ]
+                },
+                {
+                    "datacenterId": 3133,
+                    "nickname": "Winterfell",
+                    "asNumbers": [
+                        16625
+                    ]
+                }
+            ],
+            "links": [
+                {
+                    "href": "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
+                    "rel": "self"
+                }
+            ]
+        }
+    ]
+}

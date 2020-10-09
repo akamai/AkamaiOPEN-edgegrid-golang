@@ -1,0 +1,45 @@
+{
+    "resource": {
+        "name": "The North",
+        "defaultDatacenter": {
+            "datacenterId": 5400,
+            "nickname": "All Other CIDR Blocks"
+        },
+        "assignments": [
+            {
+                "datacenterId": 3134,
+                "nickname": "Frostfangs and the Fist of First Men",
+                "blocks": [
+                    "1.3.5.9",
+                    "1.2.3.0/24"
+                ]
+            },
+            {
+                "datacenterId": 3133,
+                "nickname": "Winterfell",
+                "blocks": [
+                    "1.2.4.0/24"
+                ]
+            }
+        ],
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%2520North",
+                "rel": "self"
+            }
+        ]
+    },
+    "status": {
+        "changeId": "93a48b86-4fc3-4a5f-9ca2-036835034cc6",
+        "message": "Change Pending",
+        "passingValidation": true,
+        "propagationStatus": "PENDING",
+        "propagationStatusDate": "2014-04-15T11:30:27.000+0000",
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
+                "rel": "self"
+            }
+        ]
+    }
+}
