@@ -30,7 +30,6 @@ type (
 		ID          string   `json:"cpcodeId"`
 		Name        string   `json:"cpcodeName"`
 		CreatedDate string   `json:"createdDate"`
-		ProductID   string   `json:"productId"`
 		ProductIDs  []string `json:"productIds"`
 	}
 
