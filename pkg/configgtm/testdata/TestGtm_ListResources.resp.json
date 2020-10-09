@@ -1,0 +1,44 @@
+{
+    "items": [
+        {
+            "aggregationType": "latest",
+            "constrainedProperty": "**",
+            "decayRate": null,
+            "description": "Supply levels of Arbor Gold",
+            "hostHeader": null,
+            "leaderString": null,
+            "leastSquaresDecay": null,
+            "loadImbalancePercentage": null,
+            "maxUMultiplicativeIncrement": null,
+            "name": "arbor-gold",
+            "type": "Non-XML load object via HTTP",
+            "upperBound": 0,
+            "links": [
+                {
+                    "href": "/config-gtm/v1/domains/example.akadns.net/resources/arbor-gold",
+                    "rel": "self"
+                }
+            ],
+            "resourceInstances": [
+                {
+                    "datacenterId": 3134,
+                    "loadObject": "/cups",
+                    "loadObjectPort": 80,
+                    "useDefaultLoadObject": false,
+                    "loadServers": [
+                        "1.2.3.8"
+                    ]
+                },
+                {
+                    "datacenterId": 3133,
+                    "loadObject": "/cups",
+                    "loadObjectPort": 80,
+                    "useDefaultLoadObject": false,
+                    "loadServers": [
+                        "1.2.3.7"
+                    ]
+                }
+            ]
+        }
+    ]
+}
