@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -25,6 +26,11 @@ type (
 	}
 )
 
+var (
+	ErrGetClientSettings    = errors.New("fetching client settings")
+	ErrUpdateClientSettings = errors.New("updating client settings")
+)
+
 // GetClientSettings is used to list the client settings
 func (p *papi) GetClientSettings(ctx context.Context) (*ClientSettingsBody, error) {
 	logger := p.Log(ctx)
@@ -33,17 +39,17 @@ func (p *papi) GetClientSettings(ctx context.Context) (*ClientSettingsBody, erro
 	getURL := "/papi/v1/client-settings"
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getclientsettings request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetClientSettings, err.Error())
 	}
 
 	var clientSettings ClientSettingsBody
 	resp, err := p.Exec(req, &clientSettings)
 	if err != nil {
-		return nil, fmt.Errorf("getclientsettings request failed: %s", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetClientSettings, err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetClientSettings, p.Error(resp))
 	}
 
 	return &clientSettings, nil
@@ -58,17 +64,17 @@ func (p *papi) UpdateClientSettings(ctx context.Context, params ClientSettingsBo
 	putURL := "/papi/v1/client-settings"
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create updateclientsettings request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateClientSettings, err.Error())
 	}
 
 	var clientSettings ClientSettingsBody
 	resp, err := p.Exec(req, &clientSettings, params)
 	if err != nil {
-		return nil, fmt.Errorf("updateclientsettings request failed: %s", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateClientSettings, err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetClientSettings, p.Error(resp))
 	}
 
 	return &clientSettings, nil

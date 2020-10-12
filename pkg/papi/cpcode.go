@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -115,10 +116,16 @@ func (cp CreateCPCode) Validate() error {
 	}.Filter()
 }
 
+var (
+	ErrGetCPCodes   = errors.New("fetching CP Codes")
+	ErrGetCPCode    = errors.New("fetching CP Code")
+	ErrCreateCPCode = errors.New("creating CP Code")
+)
+
 // GetCPCodes is used to list all available CP codes for given group and contract
 func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCPCodesResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetCPCodes, ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
@@ -131,17 +138,17 @@ func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCP
 	)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getcpcodes request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCPCodes, err.Error())
 	}
 
 	var cpCodes GetCPCodesResponse
 	resp, err := p.Exec(req, &cpCodes)
 	if err != nil {
-		return nil, fmt.Errorf("getcpcodes request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCPCodes, err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetCPCodes, p.Error(resp))
 	}
 
 	return &cpCodes, nil
@@ -150,7 +157,7 @@ func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCP
 // GetCPCodes is used to fetch a CP code with provided ID
 func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCodesResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetCPCode, ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
@@ -159,20 +166,20 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 	getURL := fmt.Sprintf("/papi/v1/cpcodes/%s?contractId=%s&groupId=%s", params.CPCodeID, params.ContractID, params.GroupID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getcpcode request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCPCode, err.Error())
 	}
 
 	var cpCodes GetCPCodesResponse
 	resp, err := p.Exec(req, &cpCodes)
 	if err != nil {
-		return nil, fmt.Errorf("getcpcode request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCPCode, err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetCPCode, p.Error(resp))
 	}
 	if len(cpCodes.CPCodes.Items) == 0 {
-		return nil, fmt.Errorf("%w: CPCodeID: %s", ErrNotFound, params.CPCodeID)
+		return nil, fmt.Errorf("%s: %w: CPCodeID: %s", ErrGetCPCode, ErrNotFound, params.CPCodeID)
 	}
 	cpCodes.CPCode = cpCodes.CPCodes.Items[0]
 
@@ -182,7 +189,7 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 // CreateCPCode creates a new CP code with provided CreateCPCodeRequest data
 func (p *papi) CreateCPCode(ctx context.Context, r CreateCPCodeRequest) (*CreateCPCodeResponse, error) {
 	if err := r.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w: %v", ErrCreateCPCode, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -191,20 +198,20 @@ func (p *papi) CreateCPCode(ctx context.Context, r CreateCPCodeRequest) (*Create
 	createURL := fmt.Sprintf("/papi/v1/cpcodes?contractId=%s&groupId=%s", r.ContractID, r.GroupID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, createURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create createcpcode request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateCPCode, err.Error())
 	}
 
 	var createResponse CreateCPCodeResponse
 	resp, err := p.Exec(req, &createResponse, r.CPCode)
 	if err != nil {
-		return nil, fmt.Errorf("getcpcode request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateCPCode, err.Error())
 	}
 	if resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrCreateCPCode, p.Error(resp))
 	}
 	id, err := ResponseLinkParse(createResponse.CPCodeLink)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidResponseLink, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateCPCode, ErrInvalidResponseLink, err.Error())
 	}
 	createResponse.CPCodeID = id
 	return &createResponse, nil

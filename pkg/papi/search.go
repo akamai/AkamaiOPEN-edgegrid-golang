@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -71,9 +72,13 @@ func (s SearchRequest) Validate() error {
 	}.Filter()
 }
 
+var (
+	ErrSearchProperties = errors.New("searching for properties")
+)
+
 func (p *papi) SearchProperties(ctx context.Context, request SearchRequest) (*SearchResponse, error) {
 	if err := request.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrSearchProperties, ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
@@ -82,17 +87,17 @@ func (p *papi) SearchProperties(ctx context.Context, request SearchRequest) (*Se
 	searchURL := "/papi/v1/search/find-by-value"
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, searchURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create SearchProperties request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrSearchProperties, err.Error())
 	}
 
 	var search SearchResponse
 	resp, err := p.Exec(req, &search, map[string]string{request.Key: request.Value})
 	if err != nil {
-		return nil, fmt.Errorf("SearchProperties request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrSearchProperties, err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrSearchProperties, p.Error(resp))
 	}
 
 	return &search, nil

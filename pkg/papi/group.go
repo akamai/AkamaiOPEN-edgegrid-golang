@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -37,6 +38,10 @@ type (
 	}
 )
 
+var (
+	ErrGetGroups = errors.New("fetching groups")
+)
+
 func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 	var groups GetGroupsResponse
 
@@ -45,16 +50,16 @@ func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/groups", nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getgroups request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetGroups, err.Error())
 	}
 
 	resp, err := p.Exec(req, &groups)
 	if err != nil {
-		return nil, fmt.Errorf("getgroups request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetGroups, err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetGroups, p.Error(resp))
 	}
 
 	return &groups, nil
