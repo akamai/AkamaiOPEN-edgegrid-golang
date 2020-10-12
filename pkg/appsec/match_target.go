@@ -416,7 +416,7 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 	var rval GetMatchTargetsResponse
 
 	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/match-targets?includeChildObjectName=true",
+		"/appsec/v1/configs/%d/versions/%d/match-targets",
 		params.ConfigID,
 		params.ConfigVersion,
 	)

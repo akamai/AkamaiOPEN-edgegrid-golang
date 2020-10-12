@@ -25,7 +25,8 @@ type (
 	}
 
 	GetConfigurationVersionsRequest struct {
-		ConfigID int `json:"configId"`
+		ConfigID      int `json:"configId"`
+		ConfigVersion int `json:"configVersion"`
 	}
 
 	GetConfigurationVersionsResponse struct {

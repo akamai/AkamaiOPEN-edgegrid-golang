@@ -376,12 +376,12 @@ func (p *appsec) GetRatePolicies(ctx context.Context, params GetRatePoliciesRequ
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getratepolicys request: %w", err)
+		return nil, fmt.Errorf("failed to create getratepolicies request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getratepolicys request failed: %w", err)
+		return nil, fmt.Errorf("getratepolicies request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

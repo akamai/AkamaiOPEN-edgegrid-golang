@@ -63,12 +63,12 @@ func (p *appsec) GetSecurityPolicies(ctx context.Context, params GetSecurityPoli
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getsecuritypolicys request: %w", err)
+		return nil, fmt.Errorf("failed to create getsecuritypolicies request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getsecuritypolicys request failed: %w", err)
+		return nil, fmt.Errorf("getsecuritypolicies request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

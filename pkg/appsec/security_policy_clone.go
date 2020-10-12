@@ -231,7 +231,7 @@ func (p *appsec) GetSecurityPolicyClones(ctx context.Context, params GetSecurity
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("gGetSecurityPolicyClone request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

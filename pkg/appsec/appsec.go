@@ -23,6 +23,7 @@ type (
 		CustomRuleAction
 		ExportConfiguration
 		MatchTarget
+		MatchTargetSequence
 		RatePolicy
 		RatePolicyAction
 		SecurityPolicy
