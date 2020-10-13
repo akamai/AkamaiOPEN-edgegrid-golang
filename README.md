@@ -19,7 +19,7 @@ Akamai Terraform Provider. The v2 branch **does not yet** implement the full set
 New users are encouraged to adopt v2 branch it is a simpler API wrapper with little to no business logic.
 
 Current direct users of this v0.9 library are recommended to continue to use the the v1 version as initialization 
-and class organization has significantly changed in v2 and will require substantial work to migrate existing 
+and package structure has significantly changed in v2 and will require substantial work to migrate existing 
 applications. Non-backwards compatible changes were made to improve the code quality and make the project more 
 maintainable. 
 
