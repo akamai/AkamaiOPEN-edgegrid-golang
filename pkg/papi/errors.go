@@ -11,13 +11,15 @@ import (
 type (
 	// Error is a papi error interface
 	Error struct {
-		Type          string `json:"type"`
-		Title         string `json:"title"`
-		Detail        string `json:"detail"`
-		Instance      string `json:"instance,omitempty"`
-		BehaviorName  string `json:"behaviorName,omitempty"`
-		ErrorLocation string `json:"errorLocation,omitempty"`
-		StatusCode    int    `json:"-"`
+		Type          string          `json:"type"`
+		Title         string          `json:"title"`
+		Detail        string          `json:"detail"`
+		Instance      string          `json:"instance,omitempty"`
+		BehaviorName  string          `json:"behaviorName,omitempty"`
+		ErrorLocation string          `json:"errorLocation,omitempty"`
+		StatusCode    int             `json:"statusCode,omitempty"`
+		Errors        json.RawMessage `json:"errors,omitempty"`
+		Warnings      json.RawMessage `json:"warnings,omitempty"`
 	}
 )
 
@@ -48,7 +50,11 @@ func (p *papi) Error(r *http.Response) error {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("Title: %s; Type: %s; Detail: %s", e.Title, e.Type, e.Detail)
+	msg, err := json.MarshalIndent(e, "", "\t")
+	if err != nil {
+		return fmt.Sprintf("error marshaling API error: %s", err)
+	}
+	return fmt.Sprintf("API error: \n%s", msg)
 }
 
 // Is handles error comparisons
