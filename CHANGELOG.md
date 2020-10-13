@@ -1,11 +1,12 @@
-# RELEASE NOTES
+# EDGEGRID GOLANG RELEASE NOTES
 
-## 2.0.0 (Oct 11, 2020)
+## 2.0.0 (Oct 15, 2020)
 * [IMPORTANT] Breaking changes from earlier clients. Project updated to use v2 directory structure.
-* [ADD] Project re-organized to prepare for additional APIs to be included in future versions of this library.
+* [ENHANCEMENT] Papi - Api error return to the user when an activation or validation error occurs.
+* [NOTE] Project re-organized to prepare for additional APIs to be included in future versions of this library.
 
-## 1.0.0 (Oct 11, 2020)
-* first official release for the edggrid goland library
+## 1.0.0 (Oct 15, 2020)
+* Official release for the EdgeGrid Golang library
 * DNSv2 - fix zone create signature
 * papi - Return nil instead of error if no cp code was found
 
