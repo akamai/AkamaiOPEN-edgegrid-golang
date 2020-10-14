@@ -56,7 +56,7 @@ var (
 // GetProducts is used to list all products for a given contract
 func (p *papi) GetProducts(ctx context.Context, params GetProductsRequest) (*GetProductsResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetProducts, ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetProducts, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -65,13 +65,13 @@ func (p *papi) GetProducts(ctx context.Context, params GetProductsRequest) (*Get
 	getURL := fmt.Sprintf("/papi/v1/products?contractId=%s", params.ContractID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProducts, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProducts, err)
 	}
 
 	var products GetProductsResponse
 	resp, err := p.Exec(req, &products)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProducts, err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProducts, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

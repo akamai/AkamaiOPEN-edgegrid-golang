@@ -212,7 +212,7 @@ var (
 
 func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*GetRuleTreeResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetRuleTree, ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetRuleTree, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -233,13 +233,13 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetRuleTree, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetRuleTree, err)
 	}
 
 	var rules GetRuleTreeResponse
 	resp, err := p.Exec(req, &rules)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetRuleTree, err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetRuleTree, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -251,7 +251,7 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 
 func (p *papi) UpdateRuleTree(ctx context.Context, request UpdateRulesRequest) (*UpdateRulesResponse, error) {
 	if err := request.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateRuleTree, ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateRuleTree, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -275,13 +275,13 @@ func (p *papi) UpdateRuleTree(ctx context.Context, request UpdateRulesRequest) (
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateRuleTree, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateRuleTree, err)
 	}
 
 	var versions UpdateRulesResponse
 	resp, err := p.Exec(req, &versions, request.Rules)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateRuleTree, err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateRuleTree, err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateRuleTree, p.Error(resp))

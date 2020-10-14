@@ -39,13 +39,13 @@ func (p *papi) GetClientSettings(ctx context.Context) (*ClientSettingsBody, erro
 	getURL := "/papi/v1/client-settings"
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetClientSettings, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetClientSettings, err)
 	}
 
 	var clientSettings ClientSettingsBody
 	resp, err := p.Exec(req, &clientSettings)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetClientSettings, err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetClientSettings, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -64,13 +64,13 @@ func (p *papi) UpdateClientSettings(ctx context.Context, params ClientSettingsBo
 	putURL := "/papi/v1/client-settings"
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateClientSettings, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateClientSettings, err)
 	}
 
 	var clientSettings ClientSettingsBody
 	resp, err := p.Exec(req, &clientSettings, params)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateClientSettings, err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateClientSettings, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

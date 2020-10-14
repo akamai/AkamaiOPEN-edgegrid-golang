@@ -166,7 +166,7 @@ var (
 
 func (p *papi) GetProperties(ctx context.Context, params GetPropertiesRequest) (*GetPropertiesResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetProperties, ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetProperties, ErrStructValidation, err)
 	}
 
 	var rval GetPropertiesResponse
@@ -181,12 +181,12 @@ func (p *papi) GetProperties(ctx context.Context, params GetPropertiesRequest) (
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProperties, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProperties, err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProperties, err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProperties, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -198,7 +198,7 @@ func (p *papi) GetProperties(ctx context.Context, params GetPropertiesRequest) (
 
 func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest) (*CreatePropertyResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateProperty, ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateProperty, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -211,14 +211,14 @@ func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateProperty, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateProperty, err)
 	}
 
 	var rval CreatePropertyResponse
 
 	resp, err := p.Exec(req, &rval, params.Property)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateProperty, err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateProperty, err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
@@ -227,7 +227,7 @@ func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest)
 
 	id, err := ResponseLinkParse(rval.PropertyLink)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateProperty, ErrInvalidResponseLink, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateProperty, ErrInvalidResponseLink, err)
 	}
 	rval.PropertyID = id
 
@@ -236,7 +236,7 @@ func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest)
 
 func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*GetPropertyResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetProperty, ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetProperty, ErrStructValidation, err)
 	}
 
 	var rval GetPropertyResponse
@@ -249,7 +249,7 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 		params.PropertyID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetProperty, err.Error())
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetProperty, err)
 	}
 	q := uri.Query()
 	if params.GroupID != "" {
@@ -262,12 +262,12 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProperty, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProperty, err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProperty, err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProperty, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -284,7 +284,7 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 
 func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest) (*RemovePropertyResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrRemoveProperty, ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrRemoveProperty, ErrStructValidation, err)
 	}
 
 	var rval RemovePropertyResponse
@@ -297,7 +297,7 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 		params.PropertyID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed parse url: %s", ErrRemoveProperty, err.Error())
+		return nil, fmt.Errorf("%w: failed parse url: %s", ErrRemoveProperty, err)
 	}
 	q := uri.Query()
 	if params.GroupID != "" {

@@ -47,7 +47,7 @@ func (p *papi) GetContracts(ctx context.Context) (*GetContractsResponse, error) 
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/contracts", nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetContracts, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetContracts, err)
 	}
 
 	resp, err := p.Exec(req, &contracts)

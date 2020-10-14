@@ -39,12 +39,12 @@ func (p *papi) GetRuleFormats(ctx context.Context) (*GetRuleFormatsResponse, err
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/rule-formats", nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetRuleFormats, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetRuleFormats, err)
 	}
 
 	resp, err := p.Exec(req, &ruleFormats)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetRuleFormats, err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetRuleFormats, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

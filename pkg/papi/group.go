@@ -50,12 +50,12 @@ func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/groups", nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetGroups, err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetGroups, err)
 	}
 
 	resp, err := p.Exec(req, &groups)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetGroups, err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetGroups, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
