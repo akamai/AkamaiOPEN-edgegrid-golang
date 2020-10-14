@@ -1,6 +1,6 @@
 module github.com/akamai/AkamaiOPEN-edgegrid-golang
 
-go 1.12
+go 1.14
 
 require (
 	github.com/google/go-querystring v1.0.0
