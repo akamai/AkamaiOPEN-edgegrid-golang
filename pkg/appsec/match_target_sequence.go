@@ -29,20 +29,23 @@ type (
 
 	// GetMatchTargetSequence is the argument for GetProperties
 	GetMatchTargetSequenceRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
+		ConfigID      int    `json:"configId"`
+		ConfigVersion int    `json:"configVersion"`
+		Type          string `json:"type"`
 	}
 
 	// GetMatchTargetsRequest is the argument for GetProperties
 	GetMatchTargetSequencesRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
+		ConfigID      int    `json:"configId"`
+		ConfigVersion int    `json:"configVersion"`
+		Type          string `json:"type"`
 	}
 
 	// GetMatchTargetsSequenceRequest is the argument for GetMatchTargetsSequenceRequest
 	GetMatchTargetsSequenceRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
+		ConfigID      int    `json:"configId"`
+		ConfigVersion int    `json:"configVersion"`
+		Type          string `json:"type"`
 	}
 
 	// UpdateMatchTargetRequest is the argument for GetProperties
@@ -269,7 +272,7 @@ func (p *appsec) UpdateMatchTargetSequence(ctx context.Context, params UpdateMat
 	logger.Debug("UpdateMatchTargetSequence")
 
 	putURL := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/match-targets/%d",
+		"/appsec/v1/configs/%d/versions/%d/match-targets/sequence",
 		params.ConfigID,
 		params.ConfigVersion,
 	)
