@@ -163,6 +163,9 @@ const (
 	// ActivationStatusAborted is returned when a PENDING activation is successfully canceled
 	ActivationStatusAborted ActivationStatus = "ABORTED"
 
+	// ActivationStatusFailed is returned when an activation fails downstream from the api
+	ActivationStatusFailed ActivationStatus = "FAILED"
+
 	// ActivationStatusZone1 is not yet active
 	ActivationStatusZone1 ActivationStatus = "ZONE_1"
 
