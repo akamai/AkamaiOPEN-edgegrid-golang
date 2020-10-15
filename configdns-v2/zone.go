@@ -360,6 +360,45 @@ func GetMasterZoneFile(zone string) (string, error) {
 	}
 }
 
+// Update Master Zone file
+func PostMasterZoneFile(zone string, filedata *string) error {
+
+        req, err := client.NewJSONRequest(
+                Config,
+                "POST",
+                fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone),
+                filedata,
+        )
+        if err != nil {
+                return err
+        }
+
+        req.Header.Add("Accept", "text/dns")
+
+        edge.PrintHttpRequest(req, true)
+
+        res, err := client.Do(Config, req)
+
+        // Network error
+        if err != nil {
+                return &ZoneError{
+                        zoneName:         zone,
+                        httpErrorMessage: err.Error(),
+                        err:              err,
+                }
+        }
+
+        edge.PrintHttpResponse(res, true)
+
+        // API error
+        if client.IsError(res) {
+                err := client.NewAPIError(res)
+                return &ZoneError{zoneName: zone, apiErrorMessage: err.Detail, err: err}
+        }
+
+        return nil
+}
+
 // Create a Zone
 func (zone *ZoneCreate) Save(zonequerystring ZoneQueryString, clearConn ...bool) error {
 	// This lock will restrict the concurrency of API calls
