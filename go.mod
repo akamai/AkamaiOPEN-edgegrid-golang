@@ -1,6 +1,6 @@
 module github.com/akamai/AkamaiOPEN-edgegrid-golang/v2
 
-go 1.12
+go 1.15
 
 require (
 	github.com/akamai/AkamaiOPEN-edgegrid-golang v0.9.18
