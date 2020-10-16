@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"strconv"
-	"strings"
 )
 
 //
@@ -209,7 +208,9 @@ func createDefaultDC(ctx context.Context, p *gtm, defaultID int, domainName stri
 	if err == nil {
 		return dc, err
 	} else {
-		if !strings.Contains(err.Error(), "not found") || !strings.Contains(err.Error(), "Datacenter") {
+		apiError, ok := err.(*Error)
+		//if !strings.Contains(err.Error(), "not found") || !strings.Contains(err.Error(), "Datacenter") {
+		if !ok || apiError.StatusCode != http.StatusNotFound {
 			return nil, err
 		}
 	}
