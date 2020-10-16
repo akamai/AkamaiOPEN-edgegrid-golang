@@ -163,7 +163,7 @@ var zoneStructMap map[string]string = map[string]string{
 	"SignAndServeAlgorithm": "signAndServeAlgorithm",
 	"TsigKey":               "tsigKey",
 	"Target":                "target",
-	"EndCustomerId":         "endCustomerId",
+	"EndCustomerID":         "endCustomerId",
 	"ContractId":            "contractId"}
 
 // Util to convert struct to http request body, eg. io.reader
