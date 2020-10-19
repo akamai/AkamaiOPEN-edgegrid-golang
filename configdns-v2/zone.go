@@ -1,6 +1,7 @@
 package dnsv2
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
@@ -361,42 +362,43 @@ func GetMasterZoneFile(zone string) (string, error) {
 }
 
 // Update Master Zone file
-func PostMasterZoneFile(zone string, filedata *string) error {
+func PostMasterZoneFile(zone string, filedata string) error {
 
-        req, err := client.NewJSONRequest(
-                Config,
-                "POST",
-                fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone),
-                filedata,
-        )
-        if err != nil {
-                return err
-        }
+	buf := bytes.NewReader([]byte(filedata))
+	req, err := client.NewRequest(
+		Config,
+		"POST",
+		fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone),
+		buf,
+	)
+	if err != nil {
+		return err
+	}
 
-        req.Header.Add("Accept", "text/dns")
+	req.Header.Set("Content-Type", "text/dns")
 
-        edge.PrintHttpRequest(req, true)
+	edge.PrintHttpRequest(req, true)
 
-        res, err := client.Do(Config, req)
+	res, err := client.Do(Config, req)
 
-        // Network error
-        if err != nil {
-                return &ZoneError{
-                        zoneName:         zone,
-                        httpErrorMessage: err.Error(),
-                        err:              err,
-                }
-        }
+	// Network error
+	if err != nil {
+		return &ZoneError{
+			zoneName:         zone,
+			httpErrorMessage: err.Error(),
+			err:              err,
+		}
+	}
 
-        edge.PrintHttpResponse(res, true)
+	edge.PrintHttpResponse(res, true)
 
-        // API error
-        if client.IsError(res) {
-                err := client.NewAPIError(res)
-                return &ZoneError{zoneName: zone, apiErrorMessage: err.Detail, err: err}
-        }
+	// API error
+	if client.IsError(res) {
+		err := client.NewAPIError(res)
+		return &ZoneError{zoneName: zone, apiErrorMessage: err.Detail, err: err}
+	}
 
-        return nil
+	return nil
 }
 
 // Create a Zone
