@@ -1,6 +1,7 @@
 package dnsv2
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
@@ -358,6 +359,46 @@ func GetMasterZoneFile(zone string) (string, error) {
 		masterZone := string(bodyBytes)
 		return masterZone, nil
 	}
+}
+
+// Update Master Zone file
+func PostMasterZoneFile(zone string, filedata string) error {
+
+	buf := bytes.NewReader([]byte(filedata))
+	req, err := client.NewRequest(
+		Config,
+		"POST",
+		fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone),
+		buf,
+	)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "text/dns")
+
+	edge.PrintHttpRequest(req, true)
+
+	res, err := client.Do(Config, req)
+
+	// Network error
+	if err != nil {
+		return &ZoneError{
+			zoneName:         zone,
+			httpErrorMessage: err.Error(),
+			err:              err,
+		}
+	}
+
+	edge.PrintHttpResponse(res, true)
+
+	// API error
+	if client.IsError(res) {
+		err := client.NewAPIError(res)
+		return &ZoneError{zoneName: zone, apiErrorMessage: err.Detail, err: err}
+	}
+
+	return nil
 }
 
 // Create a Zone
