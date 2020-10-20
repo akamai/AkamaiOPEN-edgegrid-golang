@@ -551,14 +551,15 @@ func (p *appsec) RemoveMatchTarget(ctx context.Context, params RemoveMatchTarget
 		return nil, fmt.Errorf("failed to create delmatchtarget request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
-	if err != nil {
-		return nil, fmt.Errorf("delmatchtarget request failed: %w", err)
+	_, errd := p.Exec(req, &rval)
+	if errd != nil {
+		logger.Debug("No JSON on DELETE")
+		//return nil, fmt.Errorf("delmatchtarget request failed: %w", err)
 	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
-	}
-
+	/*
+		if resp.StatusCode != http.StatusNoContent {
+			return nil, session.NewAPIError(resp, logger)
+		}
+	*/
 	return &rval, nil
 }
