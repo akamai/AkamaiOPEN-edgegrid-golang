@@ -128,7 +128,7 @@ func TestDns_GetRecordList(t *testing.T) {
         }
     ]
 }`,
-			expectedPath: "/config-dns/v2/zones/example.com/recordsets?types=A&showAll=true",
+			expectedPath: "/config-dns/v2/zones/example.com/recordsets?showAll=true&types=A",
 			expectedResponse: &RecordSetResponse{
 				Metadata: MetadataH{
 					LastPage:      0,
@@ -158,7 +158,7 @@ func TestDns_GetRecordList(t *testing.T) {
     "detail": "Error fetching authorities",
     "status": 500
 }`,
-			expectedPath: "/config-dns/v2/zones/example.com/recordsets?types=A&showAll=true",
+			expectedPath: "/config-dns/v2/zones/example.com/recordsets?showAll=true&types=A",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -227,7 +227,7 @@ func TestDns_GetRdata(t *testing.T) {
 		}
     ]
 }`,
-			expectedPath:     "/config-dns/v2/zones/example.com/recordsets?types=AAAA&showAll=true",
+			expectedPath:     "/config-dns/v2/zones/example.com/recordsets?showAll=true&types=AAAA",
 			expectedResponse: []string{"2001:0db8:85a3:0000:0000:8a2e:0370:7334"},
 		},
 		"loc test": {
@@ -257,7 +257,7 @@ func TestDns_GetRdata(t *testing.T) {
         }
     ]
 }`,
-			expectedPath:     "/config-dns/v2/zones/example.com/recordsets?types=LOC&showAll=true",
+			expectedPath:     "/config-dns/v2/zones/example.com/recordsets?showAll=true&types=LOC",
 			expectedResponse: []string{"52 22 23.000 N 4 53 32.000 E -2.00m 0.00m 10000.00m 10.00m"},
 		},
 		"500 internal server error": {
@@ -271,7 +271,7 @@ func TestDns_GetRdata(t *testing.T) {
     "detail": "Error fetching authorities",
     "status": 500
 }`,
-			expectedPath: "/config-dns/v2/zones/example.com/recordsets?types=A&showAll=true",
+			expectedPath: "/config-dns/v2/zones/example.com/recordsets?showAll=true&types=A",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
