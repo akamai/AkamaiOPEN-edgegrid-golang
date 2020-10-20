@@ -510,7 +510,7 @@ func (p *appsec) CreateMatchTarget(ctx context.Context, params CreateMatchTarget
 		return nil, fmt.Errorf("create matchtargetrequest failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		return nil, session.NewAPIError(resp, logger)
 	}
 
