@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.0.0 (Oct 15, 2020)
+## 2.0.1 (Oct 15, 2020)
 * [IMPORTANT] Breaking changes from earlier clients. Project updated to use v2 directory structure.
 * [ENHANCEMENT] PAPI - Api error return to the user when an activation or validation error occurs.
 * [NOTE] Project re-organized to prepare for additional APIs to be included in future versions of this library.

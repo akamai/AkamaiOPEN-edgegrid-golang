@@ -3,7 +3,6 @@ module github.com/akamai/AkamaiOPEN-edgegrid-golang/v2
 go 1.14
 
 require (
-	github.com/akamai/AkamaiOPEN-edgegrid-golang v0.9.18
 	github.com/apex/log v1.9.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.2.2
 	github.com/google/uuid v1.1.1
