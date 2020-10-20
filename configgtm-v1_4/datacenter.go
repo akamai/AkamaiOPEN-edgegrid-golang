@@ -1,9 +1,9 @@
 package configgtm
 
 import (
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"errors"
 	"fmt"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"strconv"
 	"strings"
 )
@@ -231,7 +231,7 @@ func createDefaultDC(defaultID int, domainName string) (*Datacenter, error) {
 		Config,
 		"POST",
 		defaultURL,
-		nil,
+		"",
 	)
 	if err != nil {
 		return nil, err
@@ -299,7 +299,7 @@ func (dc *Datacenter) Update(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, CommonError{entityName: "Datacenter", name: string(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Datacenter", name: strconv.Itoa(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := NewDatacenterResponse()
@@ -349,7 +349,7 @@ func (dc *Datacenter) Delete(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, CommonError{entityName: "Datacenter", name: string(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Datacenter", name: strconv.Itoa(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := NewDatacenterResponse()

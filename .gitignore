@@ -1,3 +1,24 @@
-vendor/
-.idea
+# testing and custom build code
+*.log
+
+# local files
+.DS_Store
+/dist
+
+# vscode
+.vscode/
+_debug_bin
+
+# eclipse
+.classpath
+.project
+.settings
+
+# IntelliJ
+/.idea/
+*.ipr
+*.iws
 *.iml
+
+# go dependencies
+vendor/
