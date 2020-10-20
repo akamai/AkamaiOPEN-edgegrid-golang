@@ -299,7 +299,7 @@ func (dc *Datacenter) Update(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, CommonError{entityName: "Datacenter", name: string(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Datacenter", name: strconv.Itoa(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := NewDatacenterResponse()
@@ -349,7 +349,7 @@ func (dc *Datacenter) Delete(domainName string) (*ResponseStatus, error) {
 	// API error
 	if client.IsError(res) {
 		err := client.NewAPIError(res)
-		return nil, CommonError{entityName: "Datacenter", name: string(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
+		return nil, CommonError{entityName: "Datacenter", name: strconv.Itoa(dc.DatacenterId), apiErrorMessage: err.Detail, err: err}
 	}
 
 	responseBody := NewDatacenterResponse()
