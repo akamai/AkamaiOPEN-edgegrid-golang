@@ -442,12 +442,12 @@ func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRe
 		return nil, fmt.Errorf("failed to create delcustomrule request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, nil)
 	if err != nil {
 		return nil, fmt.Errorf("delcustomrule request failed: %w", err)
 	}
-
-	if resp.StatusCode != http.StatusOK {
+	logger.Debugf("RemoveCustomRule RESP CODE %v", resp.StatusCode)
+	if resp.StatusCode != http.StatusNoContent {
 		return nil, session.NewAPIError(resp, logger)
 	}
 

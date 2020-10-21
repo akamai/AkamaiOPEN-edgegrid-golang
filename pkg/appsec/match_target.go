@@ -112,7 +112,7 @@ type (
 
 	// CreateMatchTargetResponse is the argument for GetProperties
 	CreateMatchTargetResponse struct {
-		Type                      string `json:"type"`
+		MType                     string `json:"type"`
 		ConfigID                  int    `json:"configId"`
 		ConfigVersion             int    `json:"configVersion"`
 		DefaultFile               string `json:"defaultFile"`
@@ -510,7 +510,7 @@ func (p *appsec) CreateMatchTarget(ctx context.Context, params CreateMatchTarget
 		return nil, fmt.Errorf("create matchtargetrequest failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusCreated {
+	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
 		return nil, session.NewAPIError(resp, logger)
 	}
 
@@ -551,15 +551,15 @@ func (p *appsec) RemoveMatchTarget(ctx context.Context, params RemoveMatchTarget
 		return nil, fmt.Errorf("failed to create delmatchtarget request: %w", err)
 	}
 
-	_, errd := p.Exec(req, &rval)
+	resp, errd := p.Exec(req, nil)
 	if errd != nil {
 		logger.Debug("No JSON on DELETE")
-		//return nil, fmt.Errorf("delmatchtarget request failed: %w", err)
+		return nil, fmt.Errorf("delmatchtarget request failed: %w", err)
 	}
-	/*
-		if resp.StatusCode != http.StatusNoContent {
-			return nil, session.NewAPIError(resp, logger)
-		}
-	*/
+
+	if resp.StatusCode != http.StatusNoContent {
+		return nil, session.NewAPIError(resp, logger)
+	}
+
 	return &rval, nil
 }
