@@ -262,6 +262,145 @@ func TestDns_GetZone(t *testing.T) {
 	}
 }
 
+func TestDns_GetZoneMasterFile(t *testing.T) {
+	tests := map[string]struct {
+		zone             string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse string
+		withError        error
+	}{
+		"200 OK": {
+			zone:           "example.com",
+			responseStatus: http.StatusOK,
+			responseBody: `"example.com.        10000    IN SOA ns1.akamaidns.com. webmaster.example.com. 1 28800 14400 2419200 86400
+example.com.        10000    IN NS  ns1.akamaidns.com.
+example.com.        10000    IN NS  ns2.akamaidns.com.
+example.com.            300 IN  A   10.0.0.1
+example.com.            300 IN  A   10.0.0.2
+www.example.com.        300 IN  A   10.0.0.1
+www.example.com.        300 IN  A   10.0.0.2"`,
+			expectedPath: "/config-dns/v2/zones/example.com/zone-file",
+			expectedResponse: `"example.com.        10000    IN SOA ns1.akamaidns.com. webmaster.example.com. 1 28800 14400 2419200 86400
+example.com.        10000    IN NS  ns1.akamaidns.com.
+example.com.        10000    IN NS  ns2.akamaidns.com.
+example.com.            300 IN  A   10.0.0.1
+example.com.            300 IN  A   10.0.0.2
+www.example.com.        300 IN  A   10.0.0.1
+www.example.com.        300 IN  A   10.0.0.2"`,
+		},
+		"500 internal server error": {
+			zone:           "example.com",
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching authorities",
+    "status": 500
+}`,
+			expectedPath: "/config-dns/v2/zones/example.com/zone-file",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching authorities",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				//assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetMasterZoneFile(context.Background(), test.zone)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestDns_UpdateZoneMasterFile(t *testing.T) {
+	tests := map[string]struct {
+		zone           string
+		masterfile     string
+		responseStatus int
+		expectedPath   string
+		responseBody   string 
+		withError      error
+	}{
+		"204 Updated": {
+			zone: "example.com",
+			masterfile: `"example.com.        10000    IN SOA ns1.akamaidns.com. webmaster.example.com. 1 28800 14400 2419200 86400
+example.com.        10000    IN NS  ns1.akamaidns.com.
+example.com.        10000    IN NS  ns2.akamaidns.com.
+example.com.            300 IN  A   10.0.0.1
+example.com.            300 IN  A   10.0.0.2
+www.example.com.        300 IN  A   10.0.0.1
+www.example.com.        300 IN  A   10.0.0.2"`,
+			responseStatus: http.StatusNoContent,
+			responseBody: "",
+			expectedPath:   "/config-dns/v2/zones/example.com/zone-file",
+		},
+		"500 internal server error": {
+			zone: "example.com",
+			masterfile: `"example.com.        10000    IN SOA ns1.akamaidns.com. webmaster.example.com. 1 28800 14400 2419200 86400
+example.com.        10000    IN NS  ns1.akamaidns.com.
+example.com.        10000    IN NS  ns2.akamaidns.com.
+example.com.            300 IN  A   10.0.0.1
+example.com.            300 IN  A   10.0.0.2
+www.example.com.        300 IN  A   10.0.0.1
+www.example.com.        300 IN  A   10.0.0.2"`,
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating zone",
+    "status": 500
+}`,
+			expectedPath: "/config-dns/v2/zones/example.com/zone-file",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating zone",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, http.MethodPost, r.Method)
+				w.WriteHeader(test.responseStatus)
+				if len(test.responseBody) > 0 {
+					_, err := w.Write([]byte(test.responseBody))
+					assert.NoError(t, err)
+				}
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.PostMasterZoneFile(context.Background(), test.zone, test.masterfile)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
 func TestDns_GetChangeList(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
