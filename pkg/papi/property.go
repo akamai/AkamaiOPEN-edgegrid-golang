@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -183,7 +182,7 @@ func (p *papi) GetProperties(ctx context.Context, params GetPropertiesRequest) (
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -215,7 +214,7 @@ func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	id, err := ResponseLinkParse(rval.PropertyLink)
@@ -264,7 +263,7 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	if len(rval.Properties.Items) == 0 {
@@ -312,7 +311,7 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil

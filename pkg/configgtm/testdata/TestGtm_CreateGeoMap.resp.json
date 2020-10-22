@@ -1,0 +1,37 @@
+{
+    "resource": {
+        "name": "UK Delivery",
+        "defaultDatacenter": {
+            "datacenterId": 5400,
+            "nickname": "Default Mapping"
+        },
+        "assignments": [
+            {
+                "datacenterId": 3133,
+                "nickname": "UK users",
+                "countries": [
+                    "GB"
+                ]
+            }
+        ],
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+                "rel": "self"
+            }
+        ]
+    },
+    "status": {
+        "changeId": "f2977f97-565b-46af-abfb-1da7e3e8c54b",
+        "message": "Change Pending",
+        "passingValidation": true,
+        "propagationStatus": "PENDING",
+        "propagationStatusDate": "2014-04-15T11:30:27.000+0000",
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
+                "rel": "self"
+            }
+        ]
+    }
+}

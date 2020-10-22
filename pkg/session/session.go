@@ -141,9 +141,10 @@ func WithHTTPTracing(trace bool) Option {
 
 // Log will return the context logger, or the session log
 func (s *session) Log(ctx context.Context) log.Interface {
-	o := ctx.Value(contextOptionKey)
-	if o != nil {
-		return o.(*contextOptions).log
+	if o := ctx.Value(contextOptionKey); o != nil {
+		if ops, ok := o.(*contextOptions); ok && ops.log != nil {
+			return ops.log
+		}
 	}
 	if s.log != nil {
 		return s.log

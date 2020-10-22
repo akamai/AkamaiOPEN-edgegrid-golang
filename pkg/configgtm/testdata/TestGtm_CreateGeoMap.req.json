@@ -1,0 +1,16 @@
+{
+    "name": "UK Delivery",
+    "defaultDatacenter": {
+        "datacenterId": 5400,
+        "nickname": "Default Mapping"
+    },
+    "assignments": [
+        {
+            "datacenterId": 3133,
+            "nickname": "UK users",
+            "countries": [
+                "GB"
+            ]
+        }
+    ]
+}

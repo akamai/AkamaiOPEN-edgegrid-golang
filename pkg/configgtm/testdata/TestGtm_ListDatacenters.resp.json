@@ -1,0 +1,50 @@
+{
+    "items": [
+        {
+            "city": "Doune",
+            "cloneOf": 0,
+            "continent": "EU",
+            "country": "GB",
+            "datacenterId": 3133,
+            "latitude": 56.185097,
+            "longitude": -4.050264,
+            "nickname": "Winterfell",
+            "stateOrProvince": "Perthshire",
+            "virtual": true,
+            "defaultLoadObject": {
+                "loadObject": null,
+                "loadObjectPort": 0,
+                "loadServers": null
+            },
+            "links": [
+                {
+                    "href": "/config-gtm/v1/domains/example.akadns.net/datacenters/3133",
+                    "rel": "self"
+                }
+            ]
+        },
+        {
+            "city": "Sn\u00e6fellsj\u00f6kull",
+            "cloneOf": 0,
+            "continent": "EU",
+            "country": "IS",
+            "datacenterId": 3134,
+            "latitude": 64.808,
+            "longitude": -23.776,
+            "nickname": "Frostfangs",
+            "stateOrProvince": null,
+            "virtual": true,
+            "defaultLoadObject": {
+                "loadObject": null,
+                "loadObjectPort": 0,
+                "loadServers": null
+            },
+            "links": [
+                {
+                    "href": "/config-gtm/v1/domains/example.akadns.net/datacenters/3134",
+                    "rel": "self"
+                }
+            ]
+        }
+    ]
+}

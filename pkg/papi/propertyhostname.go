@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -62,12 +61,7 @@ type (
 		ContractID        string
 		GroupID           string
 		ValidateHostnames bool
-		Hostnames         HostnameRequestItems
-	}
-
-	// HostnameRequestItems contains the request body for UpdatePropertyVersionHostnamesRequest
-	HostnameRequestItems struct {
-		Items []Hostname
+		Hostnames         []Hostname
 	}
 
 	// UpdatePropertyVersionHostnamesResponse contains information about each of the HostnameRequestItems
@@ -104,7 +98,6 @@ func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
 		"PropertyID":      validation.Validate(ch.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(ch.PropertyVersion, validation.Required),
 		"Hostnames":       validation.Validate(ch.Hostnames, validation.Required),
-		"Hostnames items": validation.Validate(ch.Hostnames.Items, validation.Required),
 	}.Filter()
 }
 
@@ -135,7 +128,7 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 		return nil, fmt.Errorf("GetPropertyVersionHostnames request failed: %v", err.Error())
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &hostnames, nil
@@ -170,7 +163,7 @@ func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params Update
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &hostnames, nil
