@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -140,7 +139,7 @@ func (p *appsec) GetRatePolicyAction(ctx context.Context, params GetRatePolicyAc
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -174,7 +173,7 @@ func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyA
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -215,7 +214,7 @@ func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePo
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil

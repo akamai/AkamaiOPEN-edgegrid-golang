@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -294,7 +293,7 @@ func (p *appsec) GetCustomRule(ctx context.Context, params GetCustomRuleRequest)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -327,7 +326,7 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -366,7 +365,7 @@ func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRe
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -404,7 +403,7 @@ func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRe
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -448,7 +447,7 @@ func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRe
 	}
 	logger.Debugf("RemoveCustomRule RESP CODE %v", resp.StatusCode)
 	if resp.StatusCode != http.StatusNoContent {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil

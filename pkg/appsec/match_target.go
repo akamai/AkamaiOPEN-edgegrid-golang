@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -398,7 +397,7 @@ func (p *appsec) GetMatchTarget(ctx context.Context, params GetMatchTargetReques
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -432,7 +431,7 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -472,7 +471,7 @@ func (p *appsec) UpdateMatchTarget(ctx context.Context, params UpdateMatchTarget
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -511,7 +510,7 @@ func (p *appsec) CreateMatchTarget(ctx context.Context, params CreateMatchTarget
 	}
 
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -558,7 +557,7 @@ func (p *appsec) RemoveMatchTarget(ctx context.Context, params RemoveMatchTarget
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil

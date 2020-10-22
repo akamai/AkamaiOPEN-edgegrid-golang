@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -130,7 +129,7 @@ func (p *appsec) GetCustomRuleAction(ctx context.Context, params GetCustomRuleAc
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	for _, val := range rvals {
@@ -170,7 +169,7 @@ func (p *appsec) GetCustomRuleActions(ctx context.Context, params GetCustomRuleA
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -211,7 +210,7 @@ func (p *appsec) UpdateCustomRuleAction(ctx context.Context, params UpdateCustom
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil

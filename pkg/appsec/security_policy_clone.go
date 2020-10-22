@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -189,7 +188,7 @@ func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityP
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	var rval GetSecurityPolicyCloneResponse
@@ -235,7 +234,7 @@ func (p *appsec) GetSecurityPolicyClones(ctx context.Context, params GetSecurity
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
@@ -274,7 +273,7 @@ func (p *appsec) CreateSecurityPolicyClone(ctx context.Context, params CreateSec
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil

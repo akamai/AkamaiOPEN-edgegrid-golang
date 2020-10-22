@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
 
 // ConfigurationVersion represents a collection of ConfigurationVersion
@@ -72,7 +70,7 @@ func (p *appsec) GetConfigurationVersions(ctx context.Context, params GetConfigu
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, session.NewAPIError(resp, logger)
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil
