@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -34,12 +33,10 @@ type (
 	}
 
 	GetActivationsResponse struct {
-		client.Resource
 		DispatchCount     int          `json:"dispatchCount"`
 		ActivationID      int          `json:"activationId"`
 		Action            string       `json:"action"`
 		Status            StatusValue  `json:"status"`
-		StatusChange      chan bool    `json:"-"`
 		Network           NetworkValue `json:"network"`
 		Estimate          string       `json:"estimate"`
 		CreatedBy         string       `json:"createdBy"`
@@ -64,12 +61,10 @@ type (
 	}
 
 	CreateActivationsResponse struct {
-		client.Resource
 		DispatchCount     int          `json:"dispatchCount"`
 		ActivationID      int          `json:"activationId"`
 		Action            string       `json:"action"`
 		Status            StatusValue  `json:"status"`
-		StatusChange      chan bool    `json:"-"`
 		Network           NetworkValue `json:"network"`
 		Estimate          string       `json:"estimate"`
 		CreatedBy         string       `json:"createdBy"`
@@ -111,12 +106,10 @@ type (
 	}
 
 	RemoveActivationsResponse struct {
-		client.Resource
 		DispatchCount     int          `json:"dispatchCount"`
 		ActivationID      int          `json:"activationId"`
 		Action            string       `json:"action"`
 		Status            StatusValue  `json:"status"`
-		StatusChange      chan bool    `json:"-"`
 		Network           NetworkValue `json:"network"`
 		Estimate          string       `json:"estimate"`
 		CreatedBy         string       `json:"createdBy"`
