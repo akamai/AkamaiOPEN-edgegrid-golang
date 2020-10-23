@@ -337,7 +337,7 @@ func TestDns_UpdateZoneMasterFile(t *testing.T) {
 		masterfile     string
 		responseStatus int
 		expectedPath   string
-		responseBody   string 
+		responseBody   string
 		withError      error
 	}{
 		"204 Updated": {
@@ -350,7 +350,7 @@ example.com.            300 IN  A   10.0.0.2
 www.example.com.        300 IN  A   10.0.0.1
 www.example.com.        300 IN  A   10.0.0.2"`,
 			responseStatus: http.StatusNoContent,
-			responseBody: "",
+			responseBody:   "",
 			expectedPath:   "/config-dns/v2/zones/example.com/zone-file",
 		},
 		"500 internal server error": {

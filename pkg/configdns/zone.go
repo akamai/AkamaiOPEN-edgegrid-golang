@@ -161,7 +161,7 @@ type (
 	// Zones List Response
 	ZoneNameListResponse struct {
 		Zones   []string `json:"zones"`
-		Aliases []string `json:"aliases"`
+		Aliases []string `json:"aliases,omitempty"`
 	}
 
 	// returned list of Zone Names

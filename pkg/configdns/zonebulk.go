@@ -32,13 +32,13 @@ type BulkFailedZone struct {
 type BulkCreateResultResponse struct {
 	RequestId                string            `json:"requestId"`
 	SuccessfullyCreatedZones []string          `json:"successfullyCreatedZones"`
-	FailedZones              []*BulkFailedZone `JSON:"failedZones"`
+	FailedZones              []*BulkFailedZone `json:"failedZones"`
 }
 
 type BulkDeleteResultResponse struct {
 	RequestId                string            `json:"requestId"`
 	SuccessfullyDeletedZones []string          `json:"successfullyDeletedZones"`
-	FailedZones              []*BulkFailedZone `JSON:"failedZones"`
+	FailedZones              []*BulkFailedZone `json:"failedZones"`
 }
 
 // Get Bulk Zone Create Status
