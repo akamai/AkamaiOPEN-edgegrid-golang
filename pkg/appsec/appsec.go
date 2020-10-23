@@ -24,6 +24,7 @@ type (
 		ExportConfiguration
 		MatchTarget
 		MatchTargetSequence
+		PenaltyBox
 		RatePolicy
 		RatePolicyAction
 		SecurityPolicy
@@ -31,6 +32,8 @@ type (
 		SelectedHostname
 		SelectableHostnames
 		SlowPostProtectionSetting
+		WAFMode
+		WAFProtection
 	}
 
 	appsec struct {
