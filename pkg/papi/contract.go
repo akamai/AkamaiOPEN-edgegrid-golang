@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -34,6 +35,10 @@ type (
 	}
 )
 
+var (
+	ErrGetContracts = errors.New("fetching contracts")
+)
+
 func (p *papi) GetContracts(ctx context.Context) (*GetContractsResponse, error) {
 	var contracts GetContractsResponse
 
@@ -42,16 +47,16 @@ func (p *papi) GetContracts(ctx context.Context) (*GetContractsResponse, error) 
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/contracts", nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getcontracts request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetContracts, err)
 	}
 
 	resp, err := p.Exec(req, &contracts)
 	if err != nil {
-		return nil, fmt.Errorf("getcontracts request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetContracts, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetContracts, p.Error(resp))
 	}
 
 	return &contracts, nil

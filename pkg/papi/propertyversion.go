@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -204,10 +205,19 @@ func (v GetFeaturesRequest) Validate() error {
 	}.Filter()
 }
 
+var (
+	ErrGetPropertyVersions   = errors.New("fetching property versions")
+	ErrGetPropertyVersion    = errors.New("fetching property version")
+	ErrGetLatestVersion      = errors.New("fetching latest property version")
+	ErrCreatePropertyVersion = errors.New("creating property version")
+	ErrGetAvailableBehaviors = errors.New("fetching available behaviors")
+	ErrGetAvailableCriteria  = errors.New("fetching available criteria")
+)
+
 // GetPropertyVersions returns list of property versions for give propertyID, contractID and groupID
 func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersionsRequest) (*GetPropertyVersionsResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetPropertyVersions, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -227,17 +237,17 @@ func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersio
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getpropertyversions request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPropertyVersions, err)
 	}
 
 	var versions GetPropertyVersionsResponse
 	resp, err := p.Exec(req, &versions)
 	if err != nil {
-		return nil, fmt.Errorf("getpropertyversions request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPropertyVersions, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetPropertyVersions, p.Error(resp))
 	}
 
 	return &versions, nil
@@ -246,7 +256,7 @@ func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersio
 // GetLatestVersion returns either the latest property version overall, or the latest ACTIVE version on production or staging network
 func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequest) (*GetPropertyVersionsResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetLatestVersion, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -263,20 +273,20 @@ func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequ
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getlatestversion request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetLatestVersion, err)
 	}
 
 	var version GetPropertyVersionsResponse
 	resp, err := p.Exec(req, &version)
 	if err != nil {
-		return nil, fmt.Errorf("getlatestversion request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetLatestVersion, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetLatestVersion, p.Error(resp))
 	}
 	if len(version.Versions.Items) == 0 {
-		return nil, fmt.Errorf("%w: latest version for PropertyID: %s", ErrNotFound, params.PropertyID)
+		return nil, fmt.Errorf("%s: %w: latest version for PropertyID: %s", ErrGetLatestVersion, ErrNotFound, params.PropertyID)
 	}
 	version.Version = version.Versions.Items[0]
 	return &version, nil
@@ -285,7 +295,7 @@ func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequ
 // GetPropertyVersion returns property version with provided version number
 func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersionRequest) (*GetPropertyVersionsResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetPropertyVersion, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -300,20 +310,20 @@ func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersion
 	)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getpropertyversion request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPropertyVersion, err)
 	}
 
 	var versions GetPropertyVersionsResponse
 	resp, err := p.Exec(req, &versions)
 	if err != nil {
-		return nil, fmt.Errorf("getpropertyversion request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPropertyVersion, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetPropertyVersion, p.Error(resp))
 	}
 	if len(versions.Versions.Items) == 0 {
-		return nil, fmt.Errorf("%w: Version %d for PropertyID: %s", ErrNotFound, params.PropertyVersion, params.PropertyID)
+		return nil, fmt.Errorf("%s: %w: Version %d for PropertyID: %s", ErrGetPropertyVersion, ErrNotFound, params.PropertyVersion, params.PropertyID)
 	}
 	versions.Version = versions.Versions.Items[0]
 	return &versions, nil
@@ -322,7 +332,7 @@ func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersion
 // CreatePropertyVersion creates a new property version and returns location and number for the new version
 func (p *papi) CreatePropertyVersion(ctx context.Context, request CreatePropertyVersionRequest) (*CreatePropertyVersionResponse, error) {
 	if err := request.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreatePropertyVersion, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -336,25 +346,25 @@ func (p *papi) CreatePropertyVersion(ctx context.Context, request CreateProperty
 	)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create createpropertyversion request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreatePropertyVersion, err)
 	}
 
 	var version CreatePropertyVersionResponse
 	resp, err := p.Exec(req, &version, request.Version)
 	if err != nil {
-		return nil, fmt.Errorf("createpropertyversion request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCreatePropertyVersion, err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrCreatePropertyVersion, p.Error(resp))
 	}
 	propertyVersion, err := ResponseLinkParse(version.VersionLink)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidResponseLink, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreatePropertyVersion, ErrInvalidResponseLink, err)
 	}
 	versionNumber, err := strconv.Atoi(propertyVersion)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s: %s", ErrInvalidResponseLink, "version should be a number", propertyVersion)
+		return nil, fmt.Errorf("%s: %w: %s: %s", ErrCreatePropertyVersion, ErrInvalidResponseLink, "version should be a number", propertyVersion)
 	}
 	version.PropertyVersion = versionNumber
 	return &version, nil
@@ -363,7 +373,7 @@ func (p *papi) CreatePropertyVersion(ctx context.Context, request CreateProperty
 // GetAvailableBehaviors lists available behaviors for given property version
 func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetAvailableBehaviors, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -378,17 +388,17 @@ func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetFeaturesRequ
 	)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getavailablebehaviors request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAvailableBehaviors, err)
 	}
 
 	var versions GetFeaturesCriteriaResponse
 	resp, err := p.Exec(req, &versions)
 	if err != nil {
-		return nil, fmt.Errorf("getavailablebehaviors request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetAvailableBehaviors, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetAvailableBehaviors, p.Error(resp))
 	}
 
 	return &versions, nil
@@ -397,7 +407,7 @@ func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetFeaturesRequ
 // GetAvailableCriteria lists available criteria for given property version
 func (p *papi) GetAvailableCriteria(ctx context.Context, params GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetAvailableCriteria, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -412,17 +422,17 @@ func (p *papi) GetAvailableCriteria(ctx context.Context, params GetFeaturesReque
 	)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getavailablecriteria request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAvailableCriteria, err)
 	}
 
 	var versions GetFeaturesCriteriaResponse
 	resp, err := p.Exec(req, &versions)
 	if err != nil {
-		return nil, fmt.Errorf("getavailablecriteria request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetAvailableCriteria, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetAvailableCriteria, p.Error(resp))
 	}
 
 	return &versions, nil

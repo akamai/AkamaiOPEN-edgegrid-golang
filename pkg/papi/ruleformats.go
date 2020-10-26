@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -26,6 +27,10 @@ type (
 	}
 )
 
+var (
+	ErrGetRuleFormats = errors.New("fetching rule formats")
+)
+
 func (p *papi) GetRuleFormats(ctx context.Context) (*GetRuleFormatsResponse, error) {
 	var ruleFormats GetRuleFormatsResponse
 
@@ -34,16 +39,16 @@ func (p *papi) GetRuleFormats(ctx context.Context) (*GetRuleFormatsResponse, err
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/rule-formats", nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create GetRuleFormats request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetRuleFormats, err)
 	}
 
 	resp, err := p.Exec(req, &ruleFormats)
 	if err != nil {
-		return nil, fmt.Errorf("GetRuleFormats request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetRuleFormats, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetRuleFormats, p.Error(resp))
 	}
 
 	return &ruleFormats, nil
