@@ -144,7 +144,6 @@ func (p *appsec) GetActivations(ctx context.Context, params GetActivationsReques
 	logger.Debug("GetActivations")
 
 	var rval GetActivationsResponse
-	rval.Init()
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/activations/%d",
