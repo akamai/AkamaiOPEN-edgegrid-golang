@@ -93,16 +93,15 @@ type (
 			ApplyReputationControls       bool `json:"applyReputationControls"`
 			ApplySlowPostControls         bool `json:"applySlowPostControls"`
 		} `json:"effectiveSecurityControls"`
+		FileExtensions               []string `json:"fileExtensions"`
+		FilePaths                    []string `json:"filePaths"`
 		Hostnames                    []string `json:"hostnames"`
 		IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
 		IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
-		FilePaths                    []string `json:"filePaths"`
-		FileExtensions               []string `json:"fileExtensions"`
 		SecurityPolicy               struct {
 			PolicyID string `json:"policyId"`
 		} `json:"securityPolicy"`
 		Sequence           int `json:"sequence"`
-		TargetID           int `json:"targetId"`
 		BypassNetworkLists []struct {
 			Name string `json:"name"`
 			ID   string `json:"id"`
@@ -323,6 +322,10 @@ type (
 	BypassNetworkList struct {
 		Name string `json:"name"`
 		ID   string `json:"id"`
+	}
+
+	Hostnames struct {
+		Hostnames string `json:"hostnames"`
 	}
 )
 
