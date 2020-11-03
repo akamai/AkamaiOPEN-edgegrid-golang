@@ -43,6 +43,9 @@ type (
 		// GetMasterZoneFile retrieves master zone file
 		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getversionmasterzonefile
 		GetMasterZoneFile(context.Context, string) (string, error)
+		//  PostMasterZoneFile updates master zone file
+		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postmasterzonefile
+		PostMasterZoneFile(context.Context, string, string) error
 		// CreateZone
 		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postzones
 		CreateZone(context.Context, *ZoneCreate, ZoneQueryString, ...bool) error
@@ -66,6 +69,24 @@ type (
 		// GetZoneNameTypes retrieves a zone name's record types
 		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getzonerecordsettypes
 		GetZoneNameTypes(context.Context, string, string) (*ZoneNameTypesResponse, error)
+		// CreateBulkZones submits create bulk zone request
+		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postbulkzonecreate
+		CreateBulkZones(context.Context, *BulkZonesCreate, ZoneQueryString) (*BulkZonesResponse, error)
+		// DeleteBulkZones submits delete bulk zone request
+		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postbulkzonedelete
+		DeleteBulkZones(context.Context, *ZoneNameListResponse, ...bool) (*BulkZonesResponse, error)
+		// GetBulkZoneCreateStatus retrieves submit request status
+		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getbulkzonecreatestatus
+		GetBulkZoneCreateStatus(context.Context, string) (*BulkStatusResponse, error)
+		//GetBulkZoneDeleteStatus retrieves submit request status
+		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getbulkzonedeletestatus
+		GetBulkZoneDeleteStatus(context.Context, string) (*BulkStatusResponse, error)
+		// GetBulkZoneCreateResult retrieves create request result
+		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getbulkzonecreateresult
+		GetBulkZoneCreateResult(ctx context.Context, requestid string) (*BulkCreateResultResponse, error)
+		// GetBulkZoneDeleteResult retrieves delete request result
+		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getbulkzonedeleteresult
+		GetBulkZoneDeleteResult(context.Context, string) (*BulkDeleteResultResponse, error)
 	}
 
 	ZoneQueryString struct {
@@ -140,7 +161,7 @@ type (
 	// Zones List Response
 	ZoneNameListResponse struct {
 		Zones   []string `json:"zones"`
-		Aliases []string `json:"aliases"`
+		Aliases []string `json:"aliases,omitempty"`
 	}
 
 	// returned list of Zone Names
@@ -357,6 +378,34 @@ func (p *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error
 	}
 
 	return string(masterfile), nil
+}
+
+// Update Master Zone file
+func (p *dns) PostMasterZoneFile(ctx context.Context, zone string, filedata string) error {
+
+	logger := p.Log(ctx)
+	logger.Debug("PostMasterZoneFile")
+
+	mtresp := ""
+	pmzfURL := fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone)
+	buf := bytes.NewReader([]byte(filedata))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, pmzfURL, buf)
+	if err != nil {
+		return fmt.Errorf("failed to create PostMasterZoneFile request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "text/dns")
+
+	resp, err := p.Exec(req, &mtresp)
+	if err != nil {
+		return fmt.Errorf("Create PostMasterZoneFile failed: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return p.Error(resp)
+	}
+
+	return nil
 }
 
 // Create a Zone
