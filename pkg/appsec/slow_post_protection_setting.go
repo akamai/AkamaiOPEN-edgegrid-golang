@@ -229,7 +229,7 @@ func (p *appsec) UpdateSlowPostProtectionSetting(ctx context.Context, params Upd
 		return nil, fmt.Errorf("create SlowPostProtectionSetting request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 

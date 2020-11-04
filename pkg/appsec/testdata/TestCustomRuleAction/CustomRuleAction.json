@@ -1,0 +1,9 @@
+
+   
+        {
+            "action": "none",
+            "canUseAdvancedActions": true,
+            "link": "/appsec-resource/v1/configs/43253/custom-rules/60036378",
+            "name": "Existing Test Rule",
+            "ruleId": 60036378
+        }

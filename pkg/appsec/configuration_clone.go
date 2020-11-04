@@ -167,14 +167,14 @@ func (p *appsec) CreateConfigurationClone(ctx context.Context, params CreateConf
 
 	var rval CreateConfigurationCloneResponse
 
-	_, err = p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
 		return nil, fmt.Errorf("create configurationclonerequest failed: %w", err)
 	}
 
-	/*if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
-	}*/
+	}
 
 	return &rval, nil
 

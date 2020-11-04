@@ -423,7 +423,7 @@ func (p *appsec) UpdateRatePolicy(ctx context.Context, params UpdateRatePolicyRe
 		return nil, fmt.Errorf("create RatePolicy request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 
@@ -462,7 +462,7 @@ func (p *appsec) CreateRatePolicy(ctx context.Context, params CreateRatePolicyRe
 		return nil, fmt.Errorf("create ratepolicyrequest failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 

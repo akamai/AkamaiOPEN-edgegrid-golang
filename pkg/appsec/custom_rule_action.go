@@ -44,7 +44,7 @@ type (
 		ConfigID int    `json:"configId"`
 		Version  int    `json:"version"`
 		PolicyID string `json:"policyId"`
-		ID       int    `json:"ruleId"`
+		RuleID   int    `json:"ruleId"`
 	}
 
 	GetCustomRuleActionResponse struct {
@@ -59,7 +59,7 @@ type (
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
-		ID       int    `json:"-"`
+		RuleID   int    `json:"-"`
 		Action   string `json:"action"`
 	}
 
@@ -96,7 +96,7 @@ func (v UpdateCustomRuleActionRequest) Validate() error {
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
 		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-		"ID":       validation.Validate(v.ID, validation.Required),
+		"RuleID":   validation.Validate(v.RuleID, validation.Required),
 	}.Filter()
 }
 
@@ -133,7 +133,7 @@ func (p *appsec) GetCustomRuleAction(ctx context.Context, params GetCustomRuleAc
 	}
 
 	for _, val := range rvals {
-		if val.RuleID == params.ID {
+		if val.RuleID == params.RuleID {
 			rval = val
 		}
 	}
@@ -195,7 +195,7 @@ func (p *appsec) UpdateCustomRuleAction(ctx context.Context, params UpdateCustom
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
-		params.ID,
+		params.RuleID,
 	)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
@@ -209,7 +209,7 @@ func (p *appsec) UpdateCustomRuleAction(ctx context.Context, params UpdateCustom
 		return nil, fmt.Errorf("create CustomRuleAction request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 

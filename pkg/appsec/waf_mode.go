@@ -198,7 +198,7 @@ func (p *appsec) UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest)
 		return nil, fmt.Errorf("create WAFMode request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 

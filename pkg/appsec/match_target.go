@@ -473,7 +473,7 @@ func (p *appsec) UpdateMatchTarget(ctx context.Context, params UpdateMatchTarget
 		return nil, fmt.Errorf("create MatchTarget request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 
@@ -559,7 +559,7 @@ func (p *appsec) RemoveMatchTarget(ctx context.Context, params RemoveMatchTarget
 		return nil, fmt.Errorf("delmatchtarget request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusNoContent {
+	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 

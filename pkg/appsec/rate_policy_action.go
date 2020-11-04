@@ -61,12 +61,12 @@ type (
 	}
 
 	UpdateRatePolicyActionRequest struct {
-		ConfigID   int    `json:"-"`
-		Version    int    `json:"-"`
-		PolicyID   string `json:"-"`
-		ID         int    `json:"-"`
-		Ipv4Action string `json:"ipv4Action"`
-		Ipv6Action string `json:"ipv6Action"`
+		ConfigID     int    `json:"-"`
+		Version      int    `json:"-"`
+		PolicyID     string `json:"-"`
+		RatePolicyID int    `json:"-"`
+		Ipv4Action   string `json:"ipv4Action"`
+		Ipv6Action   string `json:"ipv6Action"`
 	}
 
 	UpdateRatePolicyActionResponse struct {
@@ -105,10 +105,10 @@ func (v GetRatePolicyActionsRequest) Validate() error {
 // Validate validates UpdateRatePolicyActionRequest
 func (v UpdateRatePolicyActionRequest) Validate() error {
 	return validation.Errors{
-		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
-		"Version":  validation.Validate(v.Version, validation.Required),
-		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-		"ID":       validation.Validate(v.ID, validation.Required),
+		"ConfigID":     validation.Validate(v.ConfigID, validation.Required),
+		"Version":      validation.Validate(v.Version, validation.Required),
+		"PolicyID":     validation.Validate(v.PolicyID, validation.Required),
+		"RatePolicyID": validation.Validate(v.RatePolicyID, validation.Required),
 	}.Filter()
 }
 
@@ -199,7 +199,7 @@ func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePo
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
-		params.ID,
+		params.RatePolicyID,
 	)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
@@ -213,7 +213,7 @@ func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePo
 		return nil, fmt.Errorf("create RatePolicyAction request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 

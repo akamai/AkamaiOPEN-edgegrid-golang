@@ -182,7 +182,7 @@ func (p *appsec) UpdateSelectedHostname(ctx context.Context, params UpdateSelect
 		return nil, fmt.Errorf("create SelectedHostname request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 

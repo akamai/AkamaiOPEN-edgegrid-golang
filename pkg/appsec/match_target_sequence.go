@@ -287,7 +287,7 @@ func (p *appsec) UpdateMatchTargetSequence(ctx context.Context, params UpdateMat
 		return nil, fmt.Errorf("create MatchTargetSequence request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 

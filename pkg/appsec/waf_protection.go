@@ -205,7 +205,7 @@ func (p *appsec) UpdateWAFProtection(ctx context.Context, params UpdateWAFProtec
 		return nil, fmt.Errorf("create WAFProtection request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 

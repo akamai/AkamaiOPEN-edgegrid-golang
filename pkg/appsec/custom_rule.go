@@ -364,7 +364,7 @@ func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRe
 		return nil, fmt.Errorf("create CustomRule request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 
@@ -402,7 +402,7 @@ func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRe
 		return nil, fmt.Errorf("create customrulerequest failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 
@@ -446,7 +446,7 @@ func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRe
 		return nil, fmt.Errorf("delcustomrule request failed: %w", err)
 	}
 	logger.Debugf("RemoveCustomRule RESP CODE %v", resp.StatusCode)
-	if resp.StatusCode != http.StatusNoContent {
+	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
