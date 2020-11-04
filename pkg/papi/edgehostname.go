@@ -114,8 +114,8 @@ const (
 
 	// EHIPVersionV4 constant
 	EHIPVersionV4 = "IPV4"
-	// EHIPVersionV6 constant
-	EHIPVersionV6 = "IPV6"
+	// EHIPVersionV6Performance constant
+	EHIPVersionV6Performance = "IPV6_PERFORMANCE"
 	// EHIPVersionV6Compliance constant
 	EHIPVersionV6Compliance = "IPV6_COMPLIANCE"
 
@@ -143,7 +143,7 @@ func (eh EdgeHostnameCreate) Validate() error {
 		),
 		"ProductID":         validation.Validate(eh.ProductID, validation.Required),
 		"CertEnrollmentID":  validation.Validate(eh.CertEnrollmentID, validation.Required.When(eh.SecureNetwork == EHSecureNetworkEnhancedTLS)),
-		"IPVersionBehavior": validation.Validate(eh.IPVersionBehavior, validation.Required, validation.In(EHIPVersionV4, EHIPVersionV6, EHIPVersionV6Compliance)),
+		"IPVersionBehavior": validation.Validate(eh.IPVersionBehavior, validation.Required, validation.In(EHIPVersionV4, EHIPVersionV6Performance, EHIPVersionV6Compliance)),
 		"SecureNetwork":     validation.Validate(eh.SecureNetwork, validation.In(EHSecureNetworkStandardTLS, EHSecureNetworkSharedCert, EHSecureNetworkEnhancedTLS)),
 		"UseCases":          validation.Validate(eh.UseCases),
 	}.Filter()
