@@ -50,9 +50,9 @@ type (
 	// Hostname contains information about each of the HostnameResponseItems
 	Hostname struct {
 		CnameType      HostnameCnameType `json:"cnameType"`
-		EdgeHostnameID string            `json:"edgeHostnameId"`
+		EdgeHostnameID string            `json:"edgeHostnameId,omitempty"`
 		CnameFrom      string            `json:"cnameFrom"`
-		CnameTo        string            `json:"cnameTo"`
+		CnameTo        string            `json:"cnameTo,omitempty"`
 	}
 
 	// UpdatePropertyVersionHostnamesRequest contains parameters required to update the set of hostname entries for a property version
