@@ -10,14 +10,13 @@ This library is dependent on the `github.com/akamai/AkamaiOPEN-edgegrid-golang/p
 
 ```
 func main() {
-     edgerc := Must(New())
+     edgerc := edgegrid.Must(edgegrid.New(
+		edgegrid.WithFile(edgegrid.DefaultConfigFile),
+	))
 
-     s, err := session.New(
-         session.WithConfig(edgerc),
-     )
-     if err != nil {
-         panic(err)
-     }
+     s := session.Must(session.New(
+         session.WithSigner(edgerc),
+     ))
 
      var contracts struct {
 		AccountID string         `json:"accountId"`
@@ -37,7 +36,6 @@ func main() {
 
      // do something with contracts
 }
-        
 ```
 
 ## Library Logging
@@ -46,13 +44,10 @@ The session package supports the structured logging interface from `github.com/a
 ### Adding a logger to the session
 
 ```
-    s, err := session.New(
-         session.WithConfig(edgerc),
+    s := session.Must(session.New(
+         session.WithSigner(edgerc),
          session.WithLog(log.Log),
-     )
-     if err != nil {
-         panic(err)
-     }
+     ))
 ```
 
 ### Request logging
