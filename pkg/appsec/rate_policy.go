@@ -201,6 +201,7 @@ type (
 		ConfigID      int `json:"configId"`
 		ConfigVersion int `json:"configVersion"`
 	}
+
 	GetRatePolicyRequest struct {
 		ConfigID      int `json:"configId"`
 		ConfigVersion int `json:"configVersion"`
@@ -208,14 +209,87 @@ type (
 	}
 
 	CreateRatePolicyRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
+		ID                    int    `json:"id"`
+		PolicyID              int    `json:"policyId"`
+		ConfigID              int    `json:"configId"`
+		ConfigVersion         int    `json:"configVersion"`
+		MatchType             string `json:"matchType"`
+		Type                  string `json:"type"`
+		Name                  string `json:"name"`
+		Description           string `json:"description"`
+		AverageThreshold      int    `json:"averageThreshold"`
+		BurstThreshold        int    `json:"burstThreshold"`
+		ClientIdentifier      string `json:"clientIdentifier"`
+		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
+		RequestType           string `json:"requestType"`
+		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
+		Path                  struct {
+			PositiveMatch bool     `json:"positiveMatch"`
+			Values        []string `json:"values"`
+		} `json:"path"`
+		PathMatchType        string `json:"pathMatchType"`
+		PathURIPositiveMatch bool   `json:"pathUriPositiveMatch"`
+		FileExtensions       struct {
+			PositiveMatch bool     `json:"positiveMatch"`
+			Values        []string `json:"values"`
+		} `json:"fileExtensions"`
+		Hostnames              []string `json:"hostNames"`
+		AdditionalMatchOptions []struct {
+			PositiveMatch bool     `json:"positiveMatch"`
+			Type          string   `json:"type"`
+			Values        []string `json:"values"`
+		} `json:"additionalMatchOptions"`
+		QueryParameters []struct {
+			Name          string   `json:"name"`
+			Values        []string `json:"values"`
+			PositiveMatch bool     `json:"positiveMatch"`
+			ValueInRange  bool     `json:"valueInRange"`
+		} `json:"queryParameters"`
+		CreateDate string `json:"createDate"`
+		UpdateDate string `json:"updateDate"`
+		Used       bool   `json:"used"`
 	}
 
 	UpdateRatePolicyRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		RatePolicyID  int `json:"ratePolicyId"`
+		RatePolicyID          int    `json:"id"`
+		PolicyID              int    `json:"policyId"`
+		ConfigID              int    `json:"configId"`
+		ConfigVersion         int    `json:"configVersion"`
+		MatchType             string `json:"matchType"`
+		Type                  string `json:"type"`
+		Name                  string `json:"name"`
+		Description           string `json:"description"`
+		AverageThreshold      int    `json:"averageThreshold"`
+		BurstThreshold        int    `json:"burstThreshold"`
+		ClientIdentifier      string `json:"clientIdentifier"`
+		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
+		RequestType           string `json:"requestType"`
+		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
+		Path                  struct {
+			PositiveMatch bool     `json:"positiveMatch"`
+			Values        []string `json:"values"`
+		} `json:"path"`
+		PathMatchType        string `json:"pathMatchType"`
+		PathURIPositiveMatch bool   `json:"pathUriPositiveMatch"`
+		FileExtensions       struct {
+			PositiveMatch bool     `json:"positiveMatch"`
+			Values        []string `json:"values"`
+		} `json:"fileExtensions"`
+		Hostnames              []string `json:"hostNames"`
+		AdditionalMatchOptions []struct {
+			PositiveMatch bool     `json:"positiveMatch"`
+			Type          string   `json:"type"`
+			Values        []string `json:"values"`
+		} `json:"additionalMatchOptions"`
+		QueryParameters []struct {
+			Name          string   `json:"name"`
+			Values        []string `json:"values"`
+			PositiveMatch bool     `json:"positiveMatch"`
+			ValueInRange  bool     `json:"valueInRange"`
+		} `json:"queryParameters"`
+		CreateDate string `json:"createDate"`
+		UpdateDate string `json:"updateDate"`
+		Used       bool   `json:"used"`
 	}
 
 	RemoveRatePolicyRequest struct {

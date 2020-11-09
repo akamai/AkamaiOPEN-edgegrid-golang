@@ -57,18 +57,19 @@ type (
 	}
 
 	GetSecurityPolicyCloneResponse struct {
-		PolicyID                string `json:"policyId"`
-		PolicyName              string `json:"policyName"`
-		HasRatePolicyWithAPIKey bool   `json:"hasRatePolicyWithApiKey"`
-		PolicySecurityControls  struct {
+		ConfigID               int    `json:"configId"`
+		PolicyID               string `json:"policyId"`
+		PolicyName             string `json:"policyName"`
+		PolicySecurityControls struct {
+			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
+			ApplyBotmanControls           bool `json:"applyBotmanControls"`
 			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
 			ApplyRateControls             bool `json:"applyRateControls"`
 			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		}
+		} `json:"policySecurityControls"`
+		Version int `json:"version"`
 	}
 
 	CreateSecurityPolicyCloneRequest struct {
@@ -170,12 +171,14 @@ func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityP
 	logger := p.Log(ctx)
 	logger.Debug("GetSecurityPolicyClone")
 
-	var rvals GetSecurityPolicyClonesResponse
+	var rvals GetSecurityPolicyCloneResponse
 
 	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/security-policies?notMatched=false&detail=true",
+		//	"/appsec/v1/configs/%d/versions/%d/security-policies?notMatched=false&detail=true",
+		"/appsec/v1/configs/%d/versions/%d/security-policies/%s",
 		params.ConfigID,
-		params.Version)
+		params.Version,
+		params.PolicyID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -191,10 +194,10 @@ func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityP
 		return nil, p.Error(resp)
 	}
 
-	var rval GetSecurityPolicyCloneResponse
+	/*var rval GetSecurityPolicyCloneResponse
 
 	for _, configval := range rvals.Policies {
-
+		logger.Debugf("GetSecurityPolicyClone %v", configval)
 		if configval.PolicyID == params.PolicyID {
 			rval.PolicyID = configval.PolicyID
 			rval.PolicyName = configval.PolicyName
@@ -204,7 +207,8 @@ func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityP
 		}
 	}
 
-	return &rval, nil
+	return &rval, nil*/
+	return &rvals, nil
 
 }
 
@@ -219,7 +223,7 @@ func (p *appsec) GetSecurityPolicyClones(ctx context.Context, params GetSecurity
 	var rval GetSecurityPolicyClonesResponse
 
 	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/security-policies?notMatched=false&detail=true",
+		"/appsec/v1/configs/%d/versions/%d/security-policies?detail=true&notMatched=false",
 		params.ConfigID,
 		params.Version)
 

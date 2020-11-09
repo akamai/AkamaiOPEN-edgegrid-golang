@@ -92,9 +92,10 @@ type (
 	}
 
 	GetCustomRuleRequest struct {
-		ConfigID      int      `json:"configid,omitempty"`
-		ID            int      `json:"id,omitempty"`
-		Name          string   `json:"name"`
+		ConfigID int `json:"configid,omitempty"`
+		ID       int `json:"id,omitempty"`
+	}
+	/*	Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		Version       int      `json:"version,omitempty"`
 		RuleActivated bool     `json:"ruleActivated"`
@@ -109,11 +110,11 @@ type (
 			Name          []string `json:"name,omitempty"`
 			NameCase      bool     `json:"nameCase,omitempty"`
 		} `json:"conditions"`
-	}
+	}*/
 
 	CreateCustomRuleRequest struct {
-		ConfigID      int      `json:"configid,omitempty"`
-		ID            int      `json:"id,omitempty"`
+		ConfigID int `json:"configid,omitempty"`
+		//ID            int      `json:"id,omitempty"`
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		Version       int      `json:"version,omitempty"`
@@ -190,25 +191,27 @@ type (
 	}
 
 	RemoveCustomRuleRequest struct {
-		ConfigID      int      `json:"configid,omitempty"`
-		ID            int      `json:"id,omitempty"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		Version       int      `json:"version,omitempty"`
-		RuleActivated bool     `json:"ruleActivated"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
-		} `json:"conditions"`
+		ConfigID int `json:"configid,omitempty"`
+		ID       int `json:"id,omitempty"`
 	}
-
+	/*
+			Name          string   `json:"name"`
+			Description   string   `json:"description"`
+			Version       int      `json:"version,omitempty"`
+			RuleActivated bool     `json:"ruleActivated"`
+			Tag           []string `json:"tag"`
+			Conditions    []struct {
+				Type          string   `json:"type"`
+				PositiveMatch bool     `json:"positiveMatch"`
+				Value         []string `json:"value,omitempty"`
+				ValueWildcard bool     `json:"valueWildcard,omitempty"`
+				ValueCase     bool     `json:"valueCase,omitempty"`
+				NameWildcard  bool     `json:"nameWildcard,omitempty"`
+				Name          []string `json:"name,omitempty"`
+				NameCase      bool     `json:"nameCase,omitempty"`
+			} `json:"conditions"`
+		}
+	*/
 	RemoveCustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
 		Name          string   `json:"name"`
@@ -446,7 +449,7 @@ func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRe
 		return nil, fmt.Errorf("delcustomrule request failed: %w", err)
 	}
 	logger.Debugf("RemoveCustomRule RESP CODE %v", resp.StatusCode)
-	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		return nil, p.Error(resp)
 	}
 

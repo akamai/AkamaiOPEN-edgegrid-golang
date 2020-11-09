@@ -23,7 +23,6 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationclone
 	ConfigurationClone interface {
-		//	GetConfigurationClones(ctx context.Context, params GetConfigurationClonesRequest) (*GetConfigurationClonesResponse, error)
 		GetConfigurationClone(ctx context.Context, params GetConfigurationCloneRequest) (*GetConfigurationCloneResponse, error)
 		CreateConfigurationClone(ctx context.Context, params CreateConfigurationCloneRequest) (*CreateConfigurationCloneResponse, error)
 	}
@@ -45,36 +44,21 @@ type (
 		} `json:"staging"`
 	}
 
-	/*	CreateConfigurationCloneResponse struct {
-			ConfigID     int       `json:"configId"`
-			ConfigName   string    `json:"configName"`
-			Version      int       `json:"version"`
-			VersionNotes string    `json:"versionNotes"`
-			CreateDate   time.Time `json:"createDate"`
-			CreatedBy    string    `json:"createdBy"`
-			BasedOn      int       `json:"basedOn"`
-			Production   struct {
-				Status string    `json:"status"`
-				Time   time.Time `json:"time"`
-			} `json:"production"`
-			Staging struct {
-				Status string `json:"status"`
-			} `json:"staging"`
-		}
-	*/
-
 	CreateConfigurationCloneResponse struct {
-		BasedOn    int       `json:"basedOn"`
-		ConfigID   int       `json:"configId"`
-		CreateDate time.Time `json:"createDate"`
-		CreatedBy  string    `json:"createdBy"`
-		Production struct {
-			Status string `json:"status"`
+		ConfigID     int       `json:"configId"`
+		ConfigName   string    `json:"configName"`
+		Version      int       `json:"version"`
+		VersionNotes string    `json:"versionNotes"`
+		CreateDate   time.Time `json:"createDate"`
+		CreatedBy    string    `json:"createdBy"`
+		BasedOn      int       `json:"basedOn"`
+		Production   struct {
+			Status string    `json:"status"`
+			Time   time.Time `json:"time"`
 		} `json:"production"`
 		Staging struct {
 			Status string `json:"status"`
 		} `json:"staging"`
-		Version int `json:"version"`
 	}
 
 	GetConfigurationCloneResponse struct {

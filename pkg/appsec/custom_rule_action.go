@@ -59,16 +59,16 @@ type (
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
-		RuleID   int    `json:"-"`
+		RuleID   int    `json:"ruleId"`
 		Action   string `json:"action"`
 	}
 
-	UpdateCustomRuleActionResponse struct {
-		Action                string `json:"action"`
-		CanUseAdvancedActions bool   `json:"canUseAdvancedActions"`
-		Link                  string `json:"link"`
-		Name                  string `json:"name"`
-		RuleID                int    `json:"ruleId"`
+	UpdateCustomRuleActionResponse []struct {
+		Action string `json:"action"`
+		/*	CanUseAdvancedActions bool   `json:"canUseAdvancedActions"`
+			Link                  string `json:"link"`
+			Name                  string `json:"name"`
+			RuleID                int    `json:"ruleId"`*/
 	}
 )
 
@@ -96,7 +96,7 @@ func (v UpdateCustomRuleActionRequest) Validate() error {
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
 		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-		"RuleID":   validation.Validate(v.RuleID, validation.Required),
+		"ID":       validation.Validate(v.RuleID, validation.Required),
 	}.Filter()
 }
 
@@ -135,6 +135,7 @@ func (p *appsec) GetCustomRuleAction(ctx context.Context, params GetCustomRuleAc
 	for _, val := range rvals {
 		if val.RuleID == params.RuleID {
 			rval = val
+			return &rval, nil
 		}
 	}
 

@@ -39,7 +39,7 @@ func TestApsec_ListSecurityPolicyClone(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies?detail=true&notMatched=false",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
@@ -56,7 +56,7 @@ func TestApsec_ListSecurityPolicyClone(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies?detail=true&notMatched=false",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -115,7 +115,7 @@ func TestAppSec_GetSecurityPolicyClone(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies?detail=true&notMatched=false",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
@@ -130,7 +130,7 @@ func TestAppSec_GetSecurityPolicyClone(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error fetching match target"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies?detail=true&notMatched=false",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -196,7 +196,7 @@ func TestAppSec_CreateSecurityPolicyClone(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/",
 		},
 		"500 internal server error": {
 			params: CreateSecurityPolicyCloneRequest{
@@ -210,7 +210,7 @@ func TestAppSec_CreateSecurityPolicyClone(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error creating domain"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",

@@ -55,7 +55,7 @@ func (p *appsec) GetSecurityPolicies(ctx context.Context, params GetSecurityPoli
 	var rval GetSecurityPoliciesResponse
 
 	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/security-policies?notMatched=false&detail=true",
+		"/appsec/v1/configs/%d/versions/%d/security-policies",
 		params.ConfigID,
 		params.Version)
 

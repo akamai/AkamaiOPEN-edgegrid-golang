@@ -260,62 +260,32 @@ type (
 
 	// RemoveMatchTargetResponse ...
 	RemoveMatchTargetResponse struct {
-		MatchTargets struct {
-			APITargets []struct {
-				ConfigID                  int    `json:"configId"`
-				ConfigVersion             int    `json:"configVersion"`
-				Sequence                  int    `json:"sequence"`
-				TargetID                  int    `json:"targetId"`
-				Type                      string `json:"type"`
-				EffectiveSecurityControls struct {
-					ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyRateControls             bool `json:"applyRateControls"`
-					ApplyReputationControls       bool `json:"applyReputationControls"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls"`
-				} `json:"effectiveSecurityControls"`
-				SecurityPolicy struct {
-					PolicyID string `json:"policyId"`
-				} `json:"securityPolicy"`
-				Apis []struct {
-					ID   int    `json:"id"`
-					Name string `json:"name"`
-				} `json:"apis"`
-				BypassNetworkLists []struct {
-					Name string `json:"name"`
-					ID   string `json:"id"`
-				} `json:"bypassNetworkLists"`
-			} `json:"apiTargets"`
-			WebsiteTargets []struct {
-				ConfigID                     int           `json:"configId"`
-				ConfigVersion                int           `json:"configVersion"`
-				DefaultFile                  string        `json:"defaultFile"`
-				IsNegativeFileExtensionMatch bool          `json:"isNegativeFileExtensionMatch"`
-				IsNegativePathMatch          bool          `json:"isNegativePathMatch"`
-				Sequence                     int           `json:"sequence"`
-				TargetID                     int           `json:"targetId"`
-				Type                         string        `json:"type"`
-				FileExtensions               []string      `json:"fileExtensions"`
-				FilePaths                    []string      `json:"filePaths"`
-				Hostnames                    []interface{} `json:"hostnames"`
-				EffectiveSecurityControls    struct {
-					ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyRateControls             bool `json:"applyRateControls"`
-					ApplyReputationControls       bool `json:"applyReputationControls"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls"`
-				} `json:"effectiveSecurityControls"`
-				SecurityPolicy struct {
-					PolicyID string `json:"policyId"`
-				} `json:"securityPolicy"`
-				BypassNetworkLists []struct {
-					Name string `json:"name"`
-					ID   string `json:"id"`
-				} `json:"bypassNetworkLists"`
-			} `json:"websiteTargets"`
-		} `json:"matchTargets"`
+		Type                      string `json:"type"`
+		ConfigID                  int    `json:"configId"`
+		ConfigVersion             int    `json:"configVersion"`
+		DefaultFile               string `json:"defaultFile"`
+		EffectiveSecurityControls struct {
+			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
+			ApplyBotmanControls           bool `json:"applyBotmanControls"`
+			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
+			ApplyRateControls             bool `json:"applyRateControls"`
+			ApplyReputationControls       bool `json:"applyReputationControls"`
+			ApplySlowPostControls         bool `json:"applySlowPostControls"`
+		} `json:"effectiveSecurityControls"`
+		Hostnames                    []string `json:"hostnames"`
+		IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
+		IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
+		FilePaths                    []string `json:"filePaths"`
+		FileExtensions               []string `json:"fileExtensions"`
+		SecurityPolicy               struct {
+			PolicyID string `json:"policyId"`
+		} `json:"securityPolicy"`
+		Sequence           int `json:"sequence"`
+		TargetID           int `json:"targetId"`
+		BypassNetworkLists []struct {
+			Name string `json:"name"`
+			ID   string `json:"id"`
+		} `json:"bypassNetworkLists"`
 	}
 
 	// BypassNetworkList ...
@@ -470,7 +440,7 @@ func (p *appsec) UpdateMatchTarget(ctx context.Context, params UpdateMatchTarget
 	var rval UpdateMatchTargetResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create MatchTarget request failed: %w", err)
+		return nil, fmt.Errorf("update MatchTarget request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

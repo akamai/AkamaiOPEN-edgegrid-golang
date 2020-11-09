@@ -27,12 +27,12 @@ type (
 	}
 
 	GetRatePolicyActionsRequest struct {
-		ConfigID   int    `json:"configId"`
-		Version    int    `json:"version"`
-		PolicyID   string `json:"policyId"`
-		ID         int    `json:"id"`
-		Ipv4Action string `json:"ipv4Action"`
-		Ipv6Action string `json:"ipv6Action"`
+		ConfigID     int    `json:"configId"`
+		Version      int    `json:"version"`
+		PolicyID     string `json:"policyId"`
+		RatePolicyID int    `json:"id"`
+		Ipv4Action   string `json:"ipv4Action"`
+		Ipv6Action   string `json:"ipv6Action"`
 	}
 
 	GetRatePolicyActionsResponse struct {
@@ -70,11 +70,9 @@ type (
 	}
 
 	UpdateRatePolicyActionResponse struct {
-		RatePolicyActions []struct {
-			ID         int    `json:"-"`
-			Ipv4Action string `json:"ipv4Action"`
-			Ipv6Action string `json:"ipv6Action"`
-		} `json:"ratePolicyActions"`
+		ID         int    `json:"id"`
+		Ipv4Action string `json:"ipv4Action"`
+		Ipv6Action string `json:"ipv6Action"`
 	}
 
 	RatePolicyActionPost struct {
@@ -135,7 +133,7 @@ func (p *appsec) GetRatePolicyAction(ctx context.Context, params GetRatePolicyAc
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("getratepolicyaction  request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
