@@ -16,35 +16,28 @@ type (
 	// APPSEC is the appsec api interface
 	APPSEC interface {
 		Activations
-		AttackGroupConditionException
 		Configuration
 		ConfigurationClone
 		ConfigurationVersion
 		CustomRule
 		CustomRuleAction
 		ExportConfiguration
-		KRSRuleAction
 		MatchTarget
 		MatchTargetSequence
 		PenaltyBox
 		RatePolicy
 		RatePolicyAction
-		RateProtection
-		ReputationProtection
 		SecurityPolicy
 		SecurityPolicyClone
 		SelectedHostname
 		SelectableHostnames
 		SlowPostProtectionSetting
-		SlowPostProtection
 		WAFMode
 		WAFProtection
-		WAFAttackGroupAction
 	}
 
 	appsec struct {
 		session.Session
-		usePrefixes bool
 	}
 
 	// Option defines a PAPI option
@@ -58,7 +51,6 @@ type (
 func Client(sess session.Session, opts ...Option) APPSEC {
 	p := &appsec{
 		Session: sess,
-		//usePrefixes: true,
 	}
 
 	for _, opt := range opts {
@@ -66,21 +58,3 @@ func Client(sess session.Session, opts ...Option) APPSEC {
 	}
 	return p
 }
-
-/*
-// WithUsePrefixes sets the `PAPI-Use-Prefixes` header on requests
-// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#prefixes
-func WithUsePrefixes(usePrefixes bool) Option {
-	return func(p *papi) {
-		p.usePrefixes = usePrefixes
-	}
-}
-
-// Exec overrides the session.Exec to add papi options
-func (p *papi) Exec(r *http.Request, out interface{}, in ...interface{}) (*http.Response, error) {
-	// explicitly add the PAPI-Use-Prefixes header
-	r.Header.Set("PAPI-Use-Prefixes", cast.ToString(p.usePrefixes))
-
-	return p.Session.Exec(r, out, in...)
-}
-*/
