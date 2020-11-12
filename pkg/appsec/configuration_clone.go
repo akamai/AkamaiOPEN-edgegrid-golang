@@ -93,6 +93,14 @@ func (v GetConfigurationCloneRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate validates GetConfigurationCloneRequest
+func (v CreateConfigurationCloneRequest) Validate() error {
+	return validation.Errors{
+		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
+		"Version":  validation.Validate(v.CreateFromVersion, validation.Required),
+	}.Filter()
+}
+
 func (p *appsec) GetConfigurationClone(ctx context.Context, params GetConfigurationCloneRequest) (*GetConfigurationCloneResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -133,9 +141,9 @@ func (p *appsec) GetConfigurationClone(ctx context.Context, params GetConfigurat
 //
 // https://developer.akamai.com/api/cloud_security/application_security/v1.html#postconfigurationclone
 func (p *appsec) CreateConfigurationClone(ctx context.Context, params CreateConfigurationCloneRequest) (*CreateConfigurationCloneResponse, error) {
-	/*if err := params.Validate(); err != nil {
+	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
-	}*/
+	}
 
 	logger := p.Log(ctx)
 	logger.Debug("CreateConfigurationClone")
