@@ -194,20 +194,6 @@ func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityP
 		return nil, p.Error(resp)
 	}
 
-	/*var rval GetSecurityPolicyCloneResponse
-
-	for _, configval := range rvals.Policies {
-		logger.Debugf("GetSecurityPolicyClone %v", configval)
-		if configval.PolicyID == params.PolicyID {
-			rval.PolicyID = configval.PolicyID
-			rval.PolicyName = configval.PolicyName
-			rval.HasRatePolicyWithAPIKey = configval.HasRatePolicyWithAPIKey
-			rval.PolicySecurityControls = configval.PolicySecurityControls
-
-		}
-	}
-
-	return &rval, nil*/
 	return &rvals, nil
 
 }
