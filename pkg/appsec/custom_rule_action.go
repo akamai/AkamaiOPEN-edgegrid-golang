@@ -59,16 +59,16 @@ type (
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
-		RuleID   int    `json:"ruleId"`
+		RuleID   int    `json:"-"`
 		Action   string `json:"action"`
 	}
 
-	UpdateCustomRuleActionResponse []struct {
-		Action string `json:"action"`
-		/*	CanUseAdvancedActions bool   `json:"canUseAdvancedActions"`
-			Link                  string `json:"link"`
-			Name                  string `json:"name"`
-			RuleID                int    `json:"ruleId"`*/
+	UpdateCustomRuleActionResponse struct {
+		Action                string `json:"action"`
+		CanUseAdvancedActions bool   `json:"canUseAdvancedActions"`
+		Link                  string `json:"link"`
+		Name                  string `json:"name"`
+		RuleID                int    `json:"ruleId"`
 	}
 )
 
@@ -210,7 +210,7 @@ func (p *appsec) UpdateCustomRuleAction(ctx context.Context, params UpdateCustom
 		return nil, fmt.Errorf("create CustomRuleAction request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {
 		return nil, p.Error(resp)
 	}
 

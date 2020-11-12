@@ -171,7 +171,7 @@ func TestAppSec_GetCustomRuleAction(t *testing.T) {
 func TestAppSec_UpdateCustomRuleAction(t *testing.T) {
 	result := UpdateCustomRuleActionResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRuleAction/CustomRuleActions.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRuleAction/CustomRuleActionUpdate.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	req := UpdateCustomRuleActionRequest{}
