@@ -190,11 +190,6 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 	if err != nil {
 		return nil, fmt.Errorf("create activationrequest failed: %w", err)
 	}
-	/*
-		if client.IsError(res) && (!acknowledgeWarnings || (acknowledgeWarnings && res.StatusCode != 400)) {
-			return nil, client.NewAPIError(res)
-		}
-	*/
 
 	var rvalget CreateActivationsResponse
 
@@ -228,8 +223,6 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 //
 // https://developer.akamai.com/api/cloud_security/application_security/v1.html#deleteactivations
 func (p *appsec) RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error) {
-
-	//func (activations *ActivationsResponse) DeactivateActivations(postpayload *ActivationsPost, correlationid string) (*ActivationsResponse, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("CreateRatePolicy")
@@ -277,12 +270,6 @@ const (
 	StatusInactive StatusValue = "INACTIVE"
 	// StatusPending Activation.Status value RECEIVED
 	StatusPending StatusValue = "RECEIVED"
-	// StatusZone1 Activation.Status value ZONE_1
-	StatusZone1 StatusValue = "ZONE_1"
-	// StatusZone2 Activation.Status value ZONE_2
-	StatusZone2 StatusValue = "ZONE_2"
-	// StatusZone3 Activation.Status value ZONE_3
-	StatusZone3 StatusValue = "ZONE_3"
 	// StatusAborted Activation.Status value ABORTED
 	StatusAborted StatusValue = "ABORTED"
 	// StatusFailed Activation.Status value FAILED
