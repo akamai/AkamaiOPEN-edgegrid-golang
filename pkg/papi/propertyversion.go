@@ -97,7 +97,7 @@ type (
 	// PropertyVersionCreate contains request body used in POST /versions request
 	PropertyVersionCreate struct {
 		CreateFromVersion     int    `json:"createFromVersion"`
-		CreateFromVersionEtag string `json:"createFromVersionEtag"`
+		CreateFromVersionEtag string `json:"createFromVersionEtag,omitempty"`
 	}
 
 	// CreatePropertyVersionResponse contains a link returned after creating new property version and version number of this version
