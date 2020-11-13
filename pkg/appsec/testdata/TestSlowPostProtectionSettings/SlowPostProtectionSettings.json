@@ -1,0 +1,8 @@
+
+    {
+        "action": "alert",
+        "slowRateThreshold": {
+            "period": 60,
+            "rate": 10
+        }
+    }
