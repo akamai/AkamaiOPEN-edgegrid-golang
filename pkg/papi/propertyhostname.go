@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -49,9 +50,9 @@ type (
 	// Hostname contains information about each of the HostnameResponseItems
 	Hostname struct {
 		CnameType      HostnameCnameType `json:"cnameType"`
-		EdgeHostnameID string            `json:"edgeHostnameId"`
+		EdgeHostnameID string            `json:"edgeHostnameId,omitempty"`
 		CnameFrom      string            `json:"cnameFrom"`
-		CnameTo        string            `json:"cnameTo"`
+		CnameTo        string            `json:"cnameTo,omitempty"`
 	}
 
 	// UpdatePropertyVersionHostnamesRequest contains parameters required to update the set of hostname entries for a property version
@@ -101,9 +102,14 @@ func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
 	}.Filter()
 }
 
+var (
+	ErrGetPropertyVersionHostnames    = errors.New("fetching hostnames")
+	ErrUpdatePropertyVersionHostnames = errors.New("updating hostnames")
+)
+
 func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetPropertyVersionHostnamesRequest) (*GetPropertyVersionHostnamesResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetPropertyVersionHostnames, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -119,16 +125,16 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get the GetPropertyVersionHostnames request: %v", err.Error())
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPropertyVersionHostnames, err)
 	}
 
 	var hostnames GetPropertyVersionHostnamesResponse
 	resp, err := p.Exec(req, &hostnames)
 	if err != nil {
-		return nil, fmt.Errorf("GetPropertyVersionHostnames request failed: %v", err.Error())
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPropertyVersionHostnames, err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetPropertyVersionHostnames, p.Error(resp))
 	}
 
 	return &hostnames, nil
@@ -136,7 +142,7 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 
 func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params UpdatePropertyVersionHostnamesRequest) (*UpdatePropertyVersionHostnamesResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrUpdatePropertyVersionHostnames, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -153,17 +159,17 @@ func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params Update
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create createpropertyversionhostnames request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdatePropertyVersionHostnames, err)
 	}
 
 	var hostnames UpdatePropertyVersionHostnamesResponse
 	resp, err := p.Exec(req, &hostnames, params.Hostnames)
 	if err != nil {
-		return nil, fmt.Errorf("createpropertyversionhostnames request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePropertyVersionHostnames, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrUpdatePropertyVersionHostnames, p.Error(resp))
 	}
 
 	return &hostnames, nil

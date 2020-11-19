@@ -39,7 +39,7 @@ func (c Config) SignRequest(r *http.Request) {
 	if r.URL.Host == "" {
 		r.URL.Host = c.Host
 	}
-
+	r.URL.RawQuery = c.addAccountSwitchKey(r)
 	r.Header.Set("Authorization", c.createAuthHeader(r).String())
 }
 
@@ -136,4 +136,13 @@ func (a authHeader) String() string {
 		auth += fmt.Sprintf("signature=%s", a.signature)
 	}
 	return auth
+}
+
+func (c Config) addAccountSwitchKey(r *http.Request) string {
+	if c.AccountKey != "" {
+		values := r.URL.Query()
+		values.Add("accountSwitchKey", c.AccountKey)
+		r.URL.RawQuery = values.Encode()
+	}
+	return r.URL.RawQuery
 }

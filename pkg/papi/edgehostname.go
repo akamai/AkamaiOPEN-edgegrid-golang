@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -113,8 +114,10 @@ const (
 
 	// EHIPVersionV4 constant
 	EHIPVersionV4 = "IPV4"
+	// EHIPVersionV6Performance constant
+	EHIPVersionV6Performance = "IPV6_PERFORMANCE"
 	// EHIPVersionV6Compliance constant
-	EHIPVersionV6Compliance = "IPV4"
+	EHIPVersionV6Compliance = "IPV6_COMPLIANCE"
 
 	// UseCaseGlobal constant
 	UseCaseGlobal = "GLOBAL"
@@ -140,7 +143,7 @@ func (eh EdgeHostnameCreate) Validate() error {
 		),
 		"ProductID":         validation.Validate(eh.ProductID, validation.Required),
 		"CertEnrollmentID":  validation.Validate(eh.CertEnrollmentID, validation.Required.When(eh.SecureNetwork == EHSecureNetworkEnhancedTLS)),
-		"IPVersionBehavior": validation.Validate(eh.IPVersionBehavior, validation.Required, validation.In(EHIPVersionV4, EHIPVersionV6Compliance)),
+		"IPVersionBehavior": validation.Validate(eh.IPVersionBehavior, validation.Required, validation.In(EHIPVersionV4, EHIPVersionV6Performance, EHIPVersionV6Compliance)),
 		"SecureNetwork":     validation.Validate(eh.SecureNetwork, validation.In(EHSecureNetworkStandardTLS, EHSecureNetworkSharedCert, EHSecureNetworkEnhancedTLS)),
 		"UseCases":          validation.Validate(eh.UseCases),
 	}.Filter()
@@ -172,10 +175,16 @@ func (eh GetEdgeHostnameRequest) Validate() error {
 	}.Filter()
 }
 
+var (
+	ErrGetEdgeHostnames   = errors.New("fetching edge hostnames")
+	ErrGetEdgeHostname    = errors.New("fetching edge hostname")
+	ErrCreateEdgeHostname = errors.New("creating edge hostname")
+)
+
 // GetEdgeHostnames id used to list edge hostnames for provided group and contract IDs
 func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequest) (*GetEdgeHostnamesResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetEdgeHostnames, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -191,17 +200,17 @@ func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequ
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getedgehostnames request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeHostnames, err)
 	}
 
 	var edgeHostnames GetEdgeHostnamesResponse
 	resp, err := p.Exec(req, &edgeHostnames)
 	if err != nil {
-		return nil, fmt.Errorf("getedgehostnames request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeHostnames, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetEdgeHostnames, p.Error(resp))
 	}
 
 	return &edgeHostnames, nil
@@ -210,7 +219,7 @@ func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequ
 // GetEdgeHostname id used to fetch edge hostname with given ID for provided group and contract IDs
 func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameRequest) (*GetEdgeHostnamesResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetEdgeHostname, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -227,20 +236,20 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getedgehostname request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeHostname, err)
 	}
 
 	var edgeHostname GetEdgeHostnamesResponse
 	resp, err := p.Exec(req, &edgeHostname)
 	if err != nil {
-		return nil, fmt.Errorf("getedgehostname request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeHostname, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 	if len(edgeHostname.EdgeHostnames.Items) == 0 {
-		return nil, fmt.Errorf("%w: EdgeHostnameID: %s", ErrNotFound, params.EdgeHostnameID)
+		return nil, fmt.Errorf("%s: %w: EdgeHostnameID: %s", ErrGetEdgeHostname, ErrNotFound, params.EdgeHostnameID)
 	}
 	edgeHostname.EdgeHostname = edgeHostname.EdgeHostnames.Items[0]
 
@@ -250,7 +259,7 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 // CreateEdgeHostname id used to create new edge hostname for provided group and contract IDs
 func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameRequest) (*CreateEdgeHostnameResponse, error) {
 	if err := r.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEdgeHostname, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -266,20 +275,20 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameReque
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, createURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create createedgehostname request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateEdgeHostname, err)
 	}
 
 	var createResponse CreateEdgeHostnameResponse
 	resp, err := p.Exec(req, &createResponse, r.EdgeHostname)
 	if err != nil {
-		return nil, fmt.Errorf("createedgehostname request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEdgeHostname, err)
 	}
 	if resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrCreateEdgeHostname, p.Error(resp))
 	}
 	id, err := ResponseLinkParse(createResponse.EdgeHostnameLink)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidResponseLink, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEdgeHostname, ErrInvalidResponseLink, err)
 	}
 	createResponse.EdgeHostnameID = id
 	return &createResponse, nil

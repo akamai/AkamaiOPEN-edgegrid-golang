@@ -163,3 +163,66 @@ func TestAuthHeader_String(t *testing.T) {
 		})
 	}
 }
+
+func TestAddAccountSwitchKey(t *testing.T) {
+	tests := map[string]struct {
+		config    Config
+		request   *http.Request
+		expected  string
+		withError error
+	}{
+		"test account switch single param GET": {
+			config: Config{
+				ClientToken: "12345",
+				AccessToken: "54321",
+				AccountKey:  "test_switch",
+				MaxBody:     MaxBodySize,
+			},
+			request: func() *http.Request {
+				req, err := http.NewRequest(http.MethodGet, "http://akamai.com/test/path?query=test", nil)
+				require.NoError(t, err)
+				return req
+			}(),
+			expected: "accountSwitchKey=test_switch&query=test",
+		},
+		"test account switch multiple param GET": {
+			config: Config{
+				ClientToken: "12345",
+				AccessToken: "54321",
+				AccountKey:  "test_switch",
+				MaxBody:     MaxBodySize,
+			},
+			request: func() *http.Request {
+				req, err := http.NewRequest(http.MethodGet, "http://akamai.com/test/path?query1=test1&query2=test2", nil)
+				require.NoError(t, err)
+				return req
+			}(),
+			expected: "accountSwitchKey=test_switch&query1=test1&query2=test2",
+		},
+		"test account switch empty GET": {
+			config: Config{
+				ClientToken: "12345",
+				AccessToken: "54321",
+				AccountKey:  "test_switch",
+				MaxBody:     MaxBodySize,
+			},
+			request: func() *http.Request {
+				req, err := http.NewRequest(http.MethodGet, "http://akamai.com/test/path", nil)
+				require.NoError(t, err)
+				return req
+			}(),
+			expected: "accountSwitchKey=test_switch",
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			res := test.config.addAccountSwitchKey(test.request)
+			assert.NotNil(t, test.request.URL.Host)
+			assert.NotEmpty(t, res)
+			assert.Equal(t, test.expected, res)
+			assert.Equal(t, test.request.URL.Host, "akamai.com")
+			assert.Equal(t, test.request.URL.Path, "/test/path")
+		})
+	}
+}

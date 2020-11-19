@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -231,9 +232,16 @@ func (v CancelActivationRequest) Validate() error {
 	}.Filter()
 }
 
+var (
+	ErrCreateActivation = errors.New("creating activation")
+	ErrGetActivations   = errors.New("fetching activations")
+	ErrGetActivation    = errors.New("fetching activation")
+	ErrCancelActivation = errors.New("canceling activation")
+)
+
 func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequest) (*CreateActivationResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateActivation, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -249,7 +257,7 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 		params.PropertyID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateActivation, err)
 	}
 	q := uri.Query()
 	if params.GroupID != "" {
@@ -262,23 +270,23 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create createactivation request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateActivation, err)
 	}
 
 	var rval CreateActivationResponse
 
 	resp, err := p.Exec(req, &rval, params.Activation)
 	if err != nil {
-		return nil, fmt.Errorf("createactivation request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateActivation, err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrCreateActivation, p.Error(resp))
 	}
 
 	id, err := ResponseLinkParse(rval.ActivationLink)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInvalidResponseLink, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateActivation, ErrInvalidResponseLink, err)
 	}
 	rval.ActivationID = id
 
@@ -287,18 +295,18 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 
 func (p *papi) GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetActivations, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("GetActivation")
+	logger.Debug("GetActivations")
 
 	uri, err := url.Parse(fmt.Sprintf(
 		"/papi/v1/properties/%s/activations",
 		params.PropertyID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetActivations, err)
 	}
 	q := uri.Query()
 	if params.GroupID != "" {
@@ -311,18 +319,18 @@ func (p *papi) GetActivations(ctx context.Context, params GetActivationsRequest)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getactivation request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetActivations, err)
 	}
 
 	var rval GetActivationsResponse
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getactivation request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetActivations, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetActivations, p.Error(resp))
 	}
 
 	return &rval, nil
@@ -330,7 +338,7 @@ func (p *papi) GetActivations(ctx context.Context, params GetActivationsRequest)
 
 func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetActivation, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
@@ -345,18 +353,18 @@ func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getactivation request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetActivation, err)
 	}
 
 	var rval GetActivationResponse
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getactivation request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetActivation, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetActivation, p.Error(resp))
 	}
 
 	// Get the Retry-After header to return the caller
@@ -365,7 +373,7 @@ func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (
 	}
 
 	if len(rval.Activations.Items) == 0 {
-		return nil, fmt.Errorf("%w: ActivationID: %s", ErrNotFound, params.ActivationID)
+		return nil, fmt.Errorf("%s: %w: ActivationID: %s", ErrGetActivation, ErrNotFound, params.ActivationID)
 	}
 	rval.Activation = rval.Activations.Items[0]
 
@@ -374,11 +382,11 @@ func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (
 
 func (p *papi) CancelActivation(ctx context.Context, params CancelActivationRequest) (*CancelActivationResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		return nil, fmt.Errorf("%s: %w: %s", ErrCancelActivation, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("GetActivation")
+	logger.Debug("CancelActivation")
 
 	uri := fmt.Sprintf(
 		"/papi/v1/properties/%s/activations/%s?contractId=%s&groupId=%s",
@@ -389,18 +397,18 @@ func (p *papi) CancelActivation(ctx context.Context, params CancelActivationRequ
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getactivation request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCancelActivation, err)
 	}
 
 	var rval CancelActivationResponse
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getactivation request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCancelActivation, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrCancelActivation, p.Error(resp))
 	}
 
 	return &rval, nil
