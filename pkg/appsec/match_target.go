@@ -40,6 +40,7 @@ type (
 	GetMatchTargetsRequest struct {
 		ConfigID      int `json:"configId"`
 		ConfigVersion int `json:"configVersion"`
+		TargetID      int `json:"targetId"`
 	}
 
 	// UpdateMatchTargetRequest is the argument for GetProperties
@@ -386,6 +387,7 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 	logger.Debug("GetMatchTargets")
 
 	var rval GetMatchTargetsResponse
+	var rvalfiltered GetMatchTargetsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/match-targets",
@@ -407,7 +409,25 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.TargetID != 0 {
+
+		for _, val := range rval.MatchTargets.WebsiteTargets {
+			if val.TargetID == params.TargetID {
+				rvalfiltered.MatchTargets.WebsiteTargets = append(rvalfiltered.MatchTargets.WebsiteTargets, val)
+			}
+		}
+
+		for _, val := range rval.MatchTargets.APITargets {
+			if val.TargetID == params.TargetID {
+				rvalfiltered.MatchTargets.APITargets = append(rvalfiltered.MatchTargets.APITargets, val)
+			}
+		}
+
+	} else {
+		rvalfiltered = rval
+	}
+
+	return &rvalfiltered, nil
 
 }
 
