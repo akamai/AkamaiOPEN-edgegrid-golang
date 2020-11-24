@@ -20,6 +20,7 @@ type (
 	IAM interface {
 		Groups
 		Roles
+		Support
 	}
 
 	iam struct {
