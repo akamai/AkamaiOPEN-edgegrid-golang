@@ -43,7 +43,7 @@ type (
 	Role struct {
 		Actions         *RoleAction       `json:"actions,omitempty"`
 		CreatedBy       string            `json:"createdBy"`
-		CreatedDate     striong           `json:"createdDate"`
+		CreatedDate     string            `json:"createdDate"`
 		GrantedRoles    []RoleGrantedRole `json:"grantedRoles,omitempty"`
 		ModifiedBy      string            `json:"modifiedBy"`
 		ModifiedDate    string            `json:"modifiedDate"`
@@ -65,3 +65,7 @@ var (
 	// RoleTypeCustom is a custom role provided by the account
 	RoleTypeCustom RoleType = "custom"
 )
+
+func (i *iam) ListRoles(context.Context, ListRolesRequest) ([]Role, error) {
+	return nil, nil
+}

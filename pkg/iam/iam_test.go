@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func mockAPIClient(t *testing.T, mockServer *httptest.Server) PAPI {
+func mockAPIClient(t *testing.T, mockServer *httptest.Server) IAM {
 	serverURL, err := url.Parse(mockServer.URL)
 	require.NoError(t, err)
 	certPool := x509.NewCertPool()
@@ -41,15 +41,13 @@ func TestClient(t *testing.T) {
 		"no options provided, return default": {
 			options: nil,
 			expected: &iam{
-				Session:     sess,
-				usePrefixes: true,
+				Session: sess,
 			},
 		},
 		"iam prefixes set to false": {
-			options: []Option{WithUsePrefixes(false)},
+			options: []Option{},
 			expected: &iam{
-				Session:     sess,
-				usePrefixes: false,
+				Session: sess,
 			},
 		},
 	}
