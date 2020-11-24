@@ -24,3 +24,27 @@ type (
 		Country string `json:"country"`
 	}
 )
+
+func (i *iam) SupportedCountries(context.Context) ([]string, error) {
+	return nil, nil
+}
+
+func (i *iam) SupportedContactTypes(context.Context) ([]string, error) {
+	return nil, nil
+}
+
+func (i *iam) SupportedLanguages(context.Context) ([]string, error) {
+	return nil, nil
+}
+
+func (i *iam) ListProducts(context.Context) ([]string, error) {
+	return nil, nil
+}
+
+func (i *iam) ListTimeoutPolicies(context.Context) ([]TimeoutPolicy, error) {
+	return nil, nil
+}
+
+func (i *iam) ListStates(context.Context, ListStatesRequest) ([]string, error) {
+	return nil, nil
+}

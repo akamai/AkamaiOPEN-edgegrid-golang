@@ -32,3 +32,7 @@ type (
 		SubGroups     []Group       `json:"subGroups,omitempty"`
 	}
 )
+
+func (i *iam) ListGroups(context.Context, ListGroupsRequest) ([]Group, error) {
+	return nil, nil
+}
