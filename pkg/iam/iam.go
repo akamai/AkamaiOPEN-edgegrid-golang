@@ -3,6 +3,7 @@ package iam
 
 import (
 	"errors"
+	"path"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
@@ -42,6 +43,14 @@ type (
 		Errors     []*Error `json:"errors,omitempty"`
 		Warnings   []*Error `json:"warnings,omitempty"`
 	}
+)
+
+var (
+	// BaseEndPoint is the IAM basepath
+	BaseEndPoint = "/identity-management/v2"
+
+	// UserAdminEP is the IAM user-admin endpoint
+	UserAdminEP = path.Join(BaseEndPoint, "user-admin")
 )
 
 // Client returns a new iam Client instance with the specified controller
