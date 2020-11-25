@@ -69,7 +69,7 @@ func TestIAM_ListRoles(t *testing.T) {
 {
 	"type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching cp codes",
+    "detail": "Error making request",
     "status": 500
 }`,
 			expectedPath: "/identity-management/v2/user-admin/roles?actions=true&ignoreContext=false&users=false",
@@ -77,7 +77,7 @@ func TestIAM_ListRoles(t *testing.T) {
 				want := &Error{
 					Type:       "internal_error",
 					Title:      "Internal Server Error",
-					Detail:     "Error fetching cp codes",
+					Detail:     "Error making request",
 					StatusCode: http.StatusInternalServerError,
 				}
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
