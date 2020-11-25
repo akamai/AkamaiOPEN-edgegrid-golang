@@ -1,6 +1,14 @@
 package iam
 
-import "context"
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"net/url"
+	"path"
+
+	"github.com/spf13/cast"
+)
 
 type (
 	// Roles is the iam role management interface
@@ -66,6 +74,39 @@ var (
 	RoleTypeCustom RoleType = "custom"
 )
 
-func (i *iam) ListRoles(context.Context, ListRolesRequest) ([]Role, error) {
-	return nil, nil
+func (i *iam) ListRoles(ctx context.Context, params ListRolesRequest) ([]Role, error) {
+	logger := i.Log(ctx)
+	logger.Debug("ListRoles")
+
+	u, err := url.Parse(path.Join(UserAdminEP, "roles"))
+	if err != nil {
+		return nil, fmt.Errorf("%s: failed to create request: %s", "ListRoles", err)
+	}
+	q := u.Query()
+	q.Add("actions", cast.ToString(params.Actions))
+	q.Add("ignoreContext", cast.ToString(params.IgnoreContext))
+	q.Add("users", cast.ToString(params.Users))
+
+	if params.GroupID != nil {
+		q.Add("groupId", cast.ToString(*params.GroupID))
+	}
+
+	u.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%s: failed to create request: %s", "ListRoles", err)
+	}
+
+	var rval []Role
+	resp, err := i.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("%s: request failed: %s", "ListRoles", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", "ListRoles", i.Error(resp))
+	}
+
+	return rval, nil
 }
