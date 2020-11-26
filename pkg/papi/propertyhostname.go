@@ -98,7 +98,6 @@ func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":      validation.Validate(ch.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(ch.PropertyVersion, validation.Required),
-		"Hostnames":       validation.Validate(ch.Hostnames, validation.Required),
 	}.Filter()
 }
 
@@ -163,7 +162,11 @@ func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params Update
 	}
 
 	var hostnames UpdatePropertyVersionHostnamesResponse
-	resp, err := p.Exec(req, &hostnames, params.Hostnames)
+	newHostnames := params.Hostnames
+	if newHostnames == nil {
+		newHostnames = []Hostname{}
+	}
+	resp, err := p.Exec(req, &hostnames, newHostnames)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePropertyVersionHostnames, err)
 	}
