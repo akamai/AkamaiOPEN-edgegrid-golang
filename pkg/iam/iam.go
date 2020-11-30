@@ -22,6 +22,7 @@ type (
 		Groups
 		Roles
 		Support
+		Users
 	}
 
 	iam struct {
