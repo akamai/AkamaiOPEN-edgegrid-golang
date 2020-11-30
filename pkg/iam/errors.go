@@ -23,6 +23,11 @@ type (
 	}
 )
 
+var (
+	// ErrInputValidation is returned when the input parameters failed validation
+	ErrInputValidation = errors.New("input validation error")
+)
+
 // Error parses an error from the response
 func (p *iam) Error(r *http.Response) error {
 	var e Error
