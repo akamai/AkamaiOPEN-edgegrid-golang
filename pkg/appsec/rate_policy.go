@@ -32,8 +32,8 @@ type (
 	GetRatePolicyResponse struct {
 		ID                    int    `json:"id"`
 		PolicyID              int    `json:"policyId"`
-		ConfigID              int    `json:"configId"`
-		ConfigVersion         int    `json:"configVersion"`
+		ConfigID              int    `json:"-"`
+		ConfigVersion         int    `json:"-"`
 		MatchType             string `json:"matchType"`
 		Type                  string `json:"type"`
 		Name                  string `json:"name"`
@@ -302,8 +302,8 @@ type (
 	GetRatePoliciesResponse struct {
 		RatePolicies []struct {
 			ID                    int    `json:"id"`
-			ConfigID              int    `json:"configId"`
-			ConfigVersion         int    `json:"configVersion"`
+			ConfigID              int    `json:"-"`
+			ConfigVersion         int    `json:"-"`
 			MatchType             string `json:"matchType"`
 			Type                  string `json:"type"`
 			Name                  string `json:"name"`
