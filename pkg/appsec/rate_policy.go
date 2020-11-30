@@ -200,6 +200,7 @@ type (
 	GetRatePoliciesRequest struct {
 		ConfigID      int `json:"configId"`
 		ConfigVersion int `json:"configVersion"`
+		RatePolicyID  int `json:"ratePolicyId"`
 	}
 
 	GetRatePolicyRequest struct {
@@ -440,6 +441,7 @@ func (p *appsec) GetRatePolicies(ctx context.Context, params GetRatePoliciesRequ
 	logger.Debug("GetRatePolicys")
 
 	var rval GetRatePoliciesResponse
+	var rvalfiltered GetRatePoliciesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/rate-policies",
@@ -461,7 +463,18 @@ func (p *appsec) GetRatePolicies(ctx context.Context, params GetRatePoliciesRequ
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.RatePolicyID != 0 {
+		for _, val := range rval.RatePolicies {
+			if val.ID == params.RatePolicyID {
+				rvalfiltered.RatePolicies = append(rvalfiltered.RatePolicies, val)
+			}
+		}
+
+	} else {
+		rvalfiltered = rval
+	}
+
+	return &rvalfiltered, nil
 
 }
 
@@ -581,7 +594,7 @@ func (p *appsec) RemoveRatePolicy(ctx context.Context, params RemoveRatePolicyRe
 		return nil, fmt.Errorf("delratepolicy request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 

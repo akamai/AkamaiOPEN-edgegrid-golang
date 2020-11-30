@@ -410,23 +410,19 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 	}
 
 	if params.TargetID != 0 {
-
 		for _, val := range rval.MatchTargets.WebsiteTargets {
 			if val.TargetID == params.TargetID {
 				rvalfiltered.MatchTargets.WebsiteTargets = append(rvalfiltered.MatchTargets.WebsiteTargets, val)
 			}
 		}
-
 		for _, val := range rval.MatchTargets.APITargets {
 			if val.TargetID == params.TargetID {
 				rvalfiltered.MatchTargets.APITargets = append(rvalfiltered.MatchTargets.APITargets, val)
 			}
 		}
-
 	} else {
 		rvalfiltered = rval
 	}
-
 	return &rvalfiltered, nil
 
 }

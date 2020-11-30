@@ -13,24 +13,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListWAFAttackGroupAction(t *testing.T) {
+func TestApsec_ListEval(t *testing.T) {
 
-	result := GetWAFAttackGroupActionsResponse{}
+	result := GetEvalResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestWAFAttackGroupAction/WAFAttackGroupActions.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestEval/Eval.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetWAFAttackGroupActionsRequest
+		params           GetEvalRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetWAFAttackGroupActionsResponse
+		expectedResponse *GetEvalResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetWAFAttackGroupActionsRequest{
+			params: GetEvalRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -40,11 +40,11 @@ func TestApsec_ListWAFAttackGroupAction(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/mode",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetWAFAttackGroupActionsRequest{
+			params: GetEvalRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -55,14 +55,14 @@ func TestApsec_ListWAFAttackGroupAction(t *testing.T) {
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching attack group actions",
+    "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/mode",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching attack group actions",
+				Detail:     "Error fetching propertys",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -78,7 +78,7 @@ func TestApsec_ListWAFAttackGroupAction(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetWAFAttackGroupActions(
+			result, err := client.GetEval(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -94,53 +94,51 @@ func TestApsec_ListWAFAttackGroupAction(t *testing.T) {
 	}
 }
 
-// Test WAFAttackGroupAction
-func TestAppSec_GetWAFAttackGroupAction(t *testing.T) {
+// Test Eval
+func TestAppSec_GetEval(t *testing.T) {
 
-	result := GetWAFAttackGroupActionResponse{}
+	result := GetEvalResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestWAFAttackGroupAction/WAFAttackGroupAction.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestEval/Eval.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetWAFAttackGroupActionRequest
+		params           GetEvalRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetWAFAttackGroupActionResponse
+		expectedResponse *GetEvalResponse
 		withError        error
 	}{
 		"200 OK": {
-			params: GetWAFAttackGroupActionRequest{
+			params: GetEvalRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				Group:    "SQL",
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/SQL",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/mode",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetWAFAttackGroupActionRequest{
+			params: GetEvalRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				Group:    "SQL",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching attack group action"
+    "detail": "Error fetching match target"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/SQL",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/mode",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching attack group action",
+				Detail:     "Error fetching match target",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -156,7 +154,7 @@ func TestAppSec_GetWAFAttackGroupAction(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetWAFAttackGroupAction(context.Background(), test.params)
+			result, err := client.GetEval(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -167,33 +165,32 @@ func TestAppSec_GetWAFAttackGroupAction(t *testing.T) {
 	}
 }
 
-// Test Update WAFAttackGroupAction.
-func TestAppSec_UpdateWAFAttackGroupAction(t *testing.T) {
-	result := UpdateWAFAttackGroupActionResponse{}
+// Test Update Eval.
+func TestAppSec_UpdateEval(t *testing.T) {
+	result := UpdateEvalResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestWAFAttackGroupAction/WAFAttackGroupAction.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestEval/Eval.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := UpdateWAFAttackGroupActionRequest{}
+	req := UpdateEvalRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestWAFAttackGroupAction/WAFAttackGroupActionReq.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestEval/Eval.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
-		params           UpdateWAFAttackGroupActionRequest
+		params           UpdateEvalRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *UpdateWAFAttackGroupActionResponse
+		expectedResponse *UpdateEvalResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdateWAFAttackGroupActionRequest{
+			params: UpdateEvalRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				Group:    "SQL",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -201,27 +198,26 @@ func TestAppSec_UpdateWAFAttackGroupAction(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/%s",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval",
 		},
 		"500 internal server error": {
-			params: UpdateWAFAttackGroupActionRequest{
+			params: UpdateEvalRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				Group:    "SQL",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error updating attack group action"
+    "detail": "Error creating zone"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/%s",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error updating attack group action",
+				Detail:     "Error creating zone",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -230,7 +226,7 @@ func TestAppSec_UpdateWAFAttackGroupAction(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, http.MethodPut, r.Method)
+				assert.Equal(t, http.MethodPost, r.Method)
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -238,7 +234,7 @@ func TestAppSec_UpdateWAFAttackGroupAction(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateWAFAttackGroupAction(
+			result, err := client.UpdateEval(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)

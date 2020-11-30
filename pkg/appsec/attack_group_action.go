@@ -8,50 +8,50 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// WAFAttackGroupAction represents a collection of WAFAttackGroupAction
+// AttackGroupAction represents a collection of AttackGroupAction
 //
-// See: WAFAttackGroupAction.GetWAFAttackGroupAction()
+// See: AttackGroupAction.GetAttackGroupAction()
 // API Docs: // appsec v1
 //
 // https://developer.akamai.com/api/cloud_security/application_security/v1.html
 
 type (
-	// WAFAttackGroupAction  contains operations available on WAFAttackGroupAction  resource
+	// AttackGroupAction  contains operations available on AttackGroupAction  resource
 	// See: // appsec v1
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getwafattackgroupaction
-	WAFAttackGroupAction interface {
-		GetWAFAttackGroupActions(ctx context.Context, params GetWAFAttackGroupActionsRequest) (*GetWAFAttackGroupActionsResponse, error)
-		GetWAFAttackGroupAction(ctx context.Context, params GetWAFAttackGroupActionRequest) (*GetWAFAttackGroupActionResponse, error)
-		UpdateWAFAttackGroupAction(ctx context.Context, params UpdateWAFAttackGroupActionRequest) (*UpdateWAFAttackGroupActionResponse, error)
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getattackgroupaction
+	AttackGroupAction interface {
+		GetAttackGroupActions(ctx context.Context, params GetAttackGroupActionsRequest) (*GetAttackGroupActionsResponse, error)
+		GetAttackGroupAction(ctx context.Context, params GetAttackGroupActionRequest) (*GetAttackGroupActionResponse, error)
+		UpdateAttackGroupAction(ctx context.Context, params UpdateAttackGroupActionRequest) (*UpdateAttackGroupActionResponse, error)
 	}
 
-	GetWAFAttackGroupActionsRequest struct {
+	GetAttackGroupActionsRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
 		Group    string `json:"group"`
 	}
 
-	GetWAFAttackGroupActionsResponse struct {
+	GetAttackGroupActionsResponse struct {
 		AttackGroupActions []struct {
 			Action string `json:"action"`
 			Group  string `json:"group"`
 		} `json:"attackGroupActions"`
 	}
 
-	GetWAFAttackGroupActionRequest struct {
+	GetAttackGroupActionRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
 		Group    string `json:"group"`
 	}
 
-	GetWAFAttackGroupActionResponse struct {
+	GetAttackGroupActionResponse struct {
 		Action string `json:"action"`
 	}
 
-	CreateWAFAttackGroupActionRequest struct {
+	CreateAttackGroupActionRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
@@ -59,11 +59,11 @@ type (
 		Group    string `json:"group"`
 	}
 
-	CreateWAFAttackGroupActionResponse struct {
+	CreateAttackGroupActionResponse struct {
 		Action string `json:"action"`
 	}
 
-	UpdateWAFAttackGroupActionRequest struct {
+	UpdateAttackGroupActionRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
@@ -71,11 +71,11 @@ type (
 		Group    string `json:"group"`
 	}
 
-	UpdateWAFAttackGroupActionResponse struct {
+	UpdateAttackGroupActionResponse struct {
 		Action string `json:"action"`
 	}
 
-	RemoveWAFAttackGroupActionRequest struct {
+	RemoveAttackGroupActionRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
@@ -83,13 +83,13 @@ type (
 		Group    string `json:"group"`
 	}
 
-	RemoveWAFAttackGroupActionResponse struct {
+	RemoveAttackGroupActionResponse struct {
 		Action string `json:"action"`
 	}
 )
 
-// Validate validates GetWAFAttackGroupActionRequest
-func (v GetWAFAttackGroupActionRequest) Validate() error {
+// Validate validates GetAttackGroupActionRequest
+func (v GetAttackGroupActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
@@ -98,8 +98,8 @@ func (v GetWAFAttackGroupActionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetWAFAttackGroupActionsRequest
-func (v GetWAFAttackGroupActionsRequest) Validate() error {
+// Validate validates GetAttackGroupActionsRequest
+func (v GetAttackGroupActionsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
@@ -107,8 +107,8 @@ func (v GetWAFAttackGroupActionsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateWAFAttackGroupActionRequest
-func (v UpdateWAFAttackGroupActionRequest) Validate() error {
+// Validate validates UpdateAttackGroupActionRequest
+func (v UpdateAttackGroupActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
@@ -117,15 +117,15 @@ func (v UpdateWAFAttackGroupActionRequest) Validate() error {
 	}.Filter()
 }
 
-func (p *appsec) GetWAFAttackGroupAction(ctx context.Context, params GetWAFAttackGroupActionRequest) (*GetWAFAttackGroupActionResponse, error) {
+func (p *appsec) GetAttackGroupAction(ctx context.Context, params GetAttackGroupActionRequest) (*GetAttackGroupActionResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("GetWAFAttackGroupAction")
+	logger.Debug("GetAttackGroupAction")
 
-	var rval GetWAFAttackGroupActionResponse
+	var rval GetAttackGroupActionResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/attack-groups/%s",
@@ -136,12 +136,12 @@ func (p *appsec) GetWAFAttackGroupAction(ctx context.Context, params GetWAFAttac
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getwafattackgroupaction request: %w", err)
+		return nil, fmt.Errorf("failed to create getattackgroupaction request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getwafattackgroupaction  request failed: %w", err)
+		return nil, fmt.Errorf("getattackgroupaction  request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -152,15 +152,16 @@ func (p *appsec) GetWAFAttackGroupAction(ctx context.Context, params GetWAFAttac
 
 }
 
-func (p *appsec) GetWAFAttackGroupActions(ctx context.Context, params GetWAFAttackGroupActionsRequest) (*GetWAFAttackGroupActionsResponse, error) {
+func (p *appsec) GetAttackGroupActions(ctx context.Context, params GetAttackGroupActionsRequest) (*GetAttackGroupActionsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("GetWAFAttackGroupActions")
+	logger.Debug("GetAttackGroupActions")
 
-	var rval GetWAFAttackGroupActionsResponse
+	var rval GetAttackGroupActionsResponse
+	var rvalfiltered GetAttackGroupActionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/attack-groups/",
@@ -170,35 +171,44 @@ func (p *appsec) GetWAFAttackGroupActions(ctx context.Context, params GetWAFAtta
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getwafattackgroupactions request: %w", err)
+		return nil, fmt.Errorf("failed to create getattackgroupactions request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getwafattackgroupactions request failed: %w", err)
+		return nil, fmt.Errorf("getattackgroupactions request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.Group != "" {
+		for k, val := range rval.AttackGroupActions {
+			if val.Group == params.Group {
+				rvalfiltered.AttackGroupActions = append(rvalfiltered.AttackGroupActions, rval.AttackGroupActions[k])
+			}
+		}
+	} else {
+		rvalfiltered = rval
+	}
+	return &rvalfiltered, nil
 
 }
 
-// Update will update a WAFAttackGroupAction.
+// Update will update a AttackGroupAction.
 //
 // API Docs: // appsec v1
 //
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putwafattackgroupaction
+// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putattackgroupaction
 
-func (p *appsec) UpdateWAFAttackGroupAction(ctx context.Context, params UpdateWAFAttackGroupActionRequest) (*UpdateWAFAttackGroupActionResponse, error) {
+func (p *appsec) UpdateAttackGroupAction(ctx context.Context, params UpdateAttackGroupActionRequest) (*UpdateAttackGroupActionResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("UpdateWAFAttackGroupAction")
+	logger.Debug("UpdateAttackGroupAction")
 
 	putURL := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/attack-groups/%s",
@@ -210,13 +220,13 @@ func (p *appsec) UpdateWAFAttackGroupAction(ctx context.Context, params UpdateWA
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create WAFAttackGroupActionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create create AttackGroupActionrequest: %w", err)
 	}
 
-	var rval UpdateWAFAttackGroupActionResponse
+	var rval UpdateAttackGroupActionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create WAFAttackGroupAction request failed: %w", err)
+		return nil, fmt.Errorf("create AttackGroupAction request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

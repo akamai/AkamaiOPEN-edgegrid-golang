@@ -8,51 +8,51 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// KRSRuleAction represents a collection of KRSRuleAction
+// RuleAction represents a collection of RuleAction
 //
-// See: KRSRuleAction.GetKRSRuleAction()
+// See: RuleAction.GetRuleAction()
 // API Docs: // appsec v1
 //
 // https://developer.akamai.com/api/cloud_security/application_security/v1.html
 
 type (
-	// KRSRuleAction  contains operations available on KRSRuleAction  resource
+	// RuleAction  contains operations available on RuleAction  resource
 	// See: // appsec v1
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getkrsruleaction
-	KRSRuleAction interface {
-		GetKRSRuleActions(ctx context.Context, params GetKRSRuleActionsRequest) (*GetKRSRuleActionsResponse, error)
-		GetKRSRuleAction(ctx context.Context, params GetKRSRuleActionRequest) (*GetKRSRuleActionResponse, error)
-		UpdateKRSRuleAction(ctx context.Context, params UpdateKRSRuleActionRequest) (*UpdateKRSRuleActionResponse, error)
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getruleaction
+	RuleAction interface {
+		GetRuleActions(ctx context.Context, params GetRuleActionsRequest) (*GetRuleActionsResponse, error)
+		GetRuleAction(ctx context.Context, params GetRuleActionRequest) (*GetRuleActionResponse, error)
+		UpdateRuleAction(ctx context.Context, params UpdateRuleActionRequest) (*UpdateRuleActionResponse, error)
 	}
 
-	GetKRSRuleActionsRequest struct {
+	GetRuleActionsRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int    `json:"-"`
 	}
 
-	GetKRSRuleActionRequest struct {
+	GetRuleActionRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int    `json:"-"`
 	}
 
-	GetKRSRuleActionsResponse struct {
+	GetRuleActionsResponse struct {
 		RuleActions []struct {
 			Action string `json:"action"`
 			ID     int    `json:"id"`
 		} `json:"ruleActions"`
 	}
 
-	GetKRSRuleActionResponse struct {
+	GetRuleActionResponse struct {
 		Action string `json:"action"`
 		ID     int    `json:"id"`
 	}
 
-	UpdateKRSRuleActionRequest struct {
+	UpdateRuleActionRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
@@ -60,14 +60,14 @@ type (
 		Action   string `json:"action"`
 	}
 
-	UpdateKRSRuleActionResponse struct {
+	UpdateRuleActionResponse struct {
 		Action string `json:"action"`
 		ID     int    `json:"id"`
 	}
 )
 
-// Validate validates GetKRSRuleActionRequest
-func (v GetKRSRuleActionRequest) Validate() error {
+// Validate validates GetRuleActionRequest
+func (v GetRuleActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
@@ -76,8 +76,8 @@ func (v GetKRSRuleActionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetKRSRuleActionsRequest
-func (v GetKRSRuleActionsRequest) Validate() error {
+// Validate validates GetRuleActionsRequest
+func (v GetRuleActionsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
@@ -85,8 +85,8 @@ func (v GetKRSRuleActionsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateKRSRuleActionRequest
-func (v UpdateKRSRuleActionRequest) Validate() error {
+// Validate validates UpdateRuleActionRequest
+func (v UpdateRuleActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
@@ -95,15 +95,15 @@ func (v UpdateKRSRuleActionRequest) Validate() error {
 	}.Filter()
 }
 
-func (p *appsec) GetKRSRuleAction(ctx context.Context, params GetKRSRuleActionRequest) (*GetKRSRuleActionResponse, error) {
+func (p *appsec) GetRuleAction(ctx context.Context, params GetRuleActionRequest) (*GetRuleActionResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("GetKRSRuleAction")
+	logger.Debug("GetRuleAction")
 
-	var rval GetKRSRuleActionResponse
+	var rval GetRuleActionResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules/%d",
@@ -114,12 +114,12 @@ func (p *appsec) GetKRSRuleAction(ctx context.Context, params GetKRSRuleActionRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getkrsruleaction request: %w", err)
+		return nil, fmt.Errorf("failed to create getruleaction request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getkrsruleaction  request failed: %w", err)
+		return nil, fmt.Errorf("getruleaction  request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -130,15 +130,16 @@ func (p *appsec) GetKRSRuleAction(ctx context.Context, params GetKRSRuleActionRe
 
 }
 
-func (p *appsec) GetKRSRuleActions(ctx context.Context, params GetKRSRuleActionsRequest) (*GetKRSRuleActionsResponse, error) {
+func (p *appsec) GetRuleActions(ctx context.Context, params GetRuleActionsRequest) (*GetRuleActionsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("GetKRSRuleActions")
+	logger.Debug("GetRuleActions")
 
-	var rval GetKRSRuleActionsResponse
+	var rval GetRuleActionsResponse
+	var rvalfiltered GetRuleActionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules",
@@ -148,35 +149,46 @@ func (p *appsec) GetKRSRuleActions(ctx context.Context, params GetKRSRuleActions
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getkrsruleactions request: %w", err)
+		return nil, fmt.Errorf("failed to create getruleactions request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getkrsruleactions request failed: %w", err)
+		return nil, fmt.Errorf("getruleactions request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.RuleID != 0 {
+		for _, val := range rval.RuleActions {
+			if val.ID == params.RuleID {
+				rvalfiltered.RuleActions = append(rvalfiltered.RuleActions, val)
+			}
+		}
+
+	} else {
+		rvalfiltered = rval
+	}
+
+	return &rvalfiltered, nil
 
 }
 
-// Update will update a KRSRuleAction.
+// Update will update a RuleAction.
 //
 // API Docs: // appsec v1
 //
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putkrsruleaction
+// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putruleaction
 
-func (p *appsec) UpdateKRSRuleAction(ctx context.Context, params UpdateKRSRuleActionRequest) (*UpdateKRSRuleActionResponse, error) {
+func (p *appsec) UpdateRuleAction(ctx context.Context, params UpdateRuleActionRequest) (*UpdateRuleActionResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("UpdateKRSRuleAction")
+	logger.Debug("UpdateRuleAction")
 
 	putURL := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules/%d",
@@ -188,13 +200,13 @@ func (p *appsec) UpdateKRSRuleAction(ctx context.Context, params UpdateKRSRuleAc
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create KRSRuleActionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create create RuleActionrequest: %w", err)
 	}
 
-	var rval UpdateKRSRuleActionResponse
+	var rval UpdateRuleActionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create KRSRuleAction request failed: %w", err)
+		return nil, fmt.Errorf("create RuleAction request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

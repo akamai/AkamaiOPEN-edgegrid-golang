@@ -153,6 +153,7 @@ func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyA
 	logger.Debug("GetRatePolicyActions")
 
 	var rval GetRatePolicyActionsResponse
+	var rvalfiltered GetRatePolicyActionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rate-policies",
@@ -174,7 +175,18 @@ func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyA
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.RatePolicyID != 0 {
+		for _, val := range rval.RatePolicyActions {
+			if val.ID == params.RatePolicyID {
+				rvalfiltered.RatePolicyActions = append(rvalfiltered.RatePolicyActions, val)
+			}
+		}
+
+	} else {
+		rvalfiltered = rval
+	}
+
+	return &rvalfiltered, nil
 
 }
 

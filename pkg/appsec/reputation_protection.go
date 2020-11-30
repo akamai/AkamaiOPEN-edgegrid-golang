@@ -197,7 +197,7 @@ func (p *appsec) UpdateReputationProtection(ctx context.Context, params UpdateRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create ReputationProtectionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create ReputationProtectionrequest: %w", err)
 	}
 
 	var rval UpdateReputationProtectionResponse

@@ -16,14 +16,19 @@ type (
 	// APPSEC is the appsec api interface
 	APPSEC interface {
 		Activations
+		AttackGroupAction
 		AttackGroupConditionException
 		Configuration
 		ConfigurationClone
 		ConfigurationVersion
 		CustomRule
 		CustomRuleAction
+		Eval
+		EvalRuleAction
+		EvalRuleConditionException
 		ExportConfiguration
-		KRSRuleAction
+		RuleAction
+		RuleConditionException
 		MatchTarget
 		MatchTargetSequence
 		PenaltyBox
@@ -39,7 +44,6 @@ type (
 		SlowPostProtection
 		WAFMode
 		WAFProtection
-		WAFAttackGroupAction
 	}
 
 	appsec struct {

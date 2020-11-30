@@ -176,17 +176,14 @@ func (p *appsec) GetCustomRuleActions(ctx context.Context, params GetCustomRuleA
 	}
 
 	if params.RuleID != 0 {
-
 		for _, val := range rval {
 			if val.RuleID == params.RuleID {
 				rvalfiltered = append(rvalfiltered, val)
 			}
 		}
-
 	} else {
 		rvalfiltered = rval
 	}
-
 	return &rvalfiltered, nil
 
 }

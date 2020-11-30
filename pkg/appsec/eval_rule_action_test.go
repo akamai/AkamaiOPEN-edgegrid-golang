@@ -13,24 +13,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListKRSRuleActions(t *testing.T) {
+func TestApsec_ListEvalRuleActions(t *testing.T) {
 
-	result := GetKRSRuleActionsResponse{}
+	result := GetEvalRuleActionsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestKRSRuleActions/KRSRuleActions.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleActions/EvalRuleAction.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetKRSRuleActionsRequest
+		params           GetEvalRuleActionsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetKRSRuleActionsResponse
+		expectedResponse *GetEvalRuleActionsResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetKRSRuleActionsRequest{
+			params: GetEvalRuleActionsRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -40,11 +40,11 @@ func TestApsec_ListKRSRuleActions(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetKRSRuleActionsRequest{
+			params: GetEvalRuleActionsRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -58,7 +58,7 @@ func TestApsec_ListKRSRuleActions(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -78,7 +78,7 @@ func TestApsec_ListKRSRuleActions(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetKRSRuleActions(
+			result, err := client.GetEvalRuleActions(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -94,24 +94,24 @@ func TestApsec_ListKRSRuleActions(t *testing.T) {
 	}
 }
 
-// Test KRSRuleAction
-func TestAppSec_GetKRSRuleAction(t *testing.T) {
+// Test EvalRuleAction
+func TestAppSec_GetEvalRuleAction(t *testing.T) {
 
-	result := GetKRSRuleActionResponse{}
+	result := GetEvalRuleActionResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestKRSRuleActions/KRSRuleActions.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleActions/EvalRuleAction.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetKRSRuleActionRequest
+		params           GetEvalRuleActionRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetKRSRuleActionResponse
+		expectedResponse *GetEvalRuleActionResponse
 		withError        error
 	}{
 		"200 OK": {
-			params: GetKRSRuleActionRequest{
+			params: GetEvalRuleActionRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -119,11 +119,11 @@ func TestAppSec_GetKRSRuleAction(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules/12345",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetKRSRuleActionRequest{
+			params: GetEvalRuleActionRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -136,7 +136,7 @@ func TestAppSec_GetKRSRuleAction(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error fetching match target"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules/12345",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -156,7 +156,7 @@ func TestAppSec_GetKRSRuleAction(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetKRSRuleAction(context.Background(), test.params)
+			result, err := client.GetEvalRuleAction(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -167,33 +167,34 @@ func TestAppSec_GetKRSRuleAction(t *testing.T) {
 	}
 }
 
-// Test Update KRSRuleAction.
-func TestAppSec_UpdateKRSRuleAction(t *testing.T) {
-	result := UpdateKRSRuleActionResponse{}
+// Test Update EvalRuleAction.
+func TestAppSec_UpdateEvalRuleAction(t *testing.T) {
+	result := UpdateEvalRuleActionResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestKRSRuleActions/KRSRuleActions.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleActions/EvalRuleActionUpdate.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := UpdateKRSRuleActionRequest{}
+	req := UpdateEvalRuleActionRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestKRSRuleActions/KRSRuleAction.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleActions/EvalRuleAction.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
-		params           UpdateKRSRuleActionRequest
+		params           UpdateEvalRuleActionRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *UpdateKRSRuleActionResponse
+		expectedResponse *UpdateEvalRuleActionResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdateKRSRuleActionRequest{
+			params: UpdateEvalRuleActionRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
 				RuleID:   12345,
+				Action:   "alert",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -201,27 +202,28 @@ func TestAppSec_UpdateKRSRuleAction(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-ruleseval-rules/12345",
 		},
 		"500 internal server error": {
-			params: UpdateKRSRuleActionRequest{
+			params: UpdateEvalRuleActionRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
 				RuleID:   12345,
+				Action:   "alert",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error creating KRS rule action"
+    "detail": "Error creating EvalRuleAction"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error creating KRS rule action",
+				Detail:     "Error creating EvalRuleAction",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -238,7 +240,7 @@ func TestAppSec_UpdateKRSRuleAction(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateKRSRuleAction(
+			result, err := client.UpdateEvalRuleAction(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)
