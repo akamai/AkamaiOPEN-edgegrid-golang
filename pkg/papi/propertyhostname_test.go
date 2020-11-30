@@ -202,7 +202,6 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
         ]
     }
 }
-
 `,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
 			expectedResponse: &UpdatePropertyVersionHostnamesResponse{
@@ -289,7 +288,6 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
         "items": []
     }
 }
-
 `,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=true",
 			expectedResponse: &UpdatePropertyVersionHostnamesResponse{
@@ -326,38 +324,108 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 				assert.Contains(t, err.Error(), "PropertyVersion")
 			},
 		},
-		"validation error Hostnames missing": {
+		"200 Hostnames missing": {
 			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
+				GroupID:         "grp_15225",
+				ContractID:      "ctr_1-1TJZH5",
 			},
-			withError: func(t *testing.T, err error) {
-				want := ErrStructValidation
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "Hostnames")
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+	"accountId": "act_1-1TJZFB",
+	"contractId": "ctr_1-1TJZH5",
+	"groupId": "grp_15225",
+	"propertyId": "prp_175780",
+	"propertyVersion": 3,
+	"etag": "6aed418629b4e5c0",
+	"validateHostnames": false,
+	"hostnames": {
+		"items": []
+	}
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
+			expectedResponse: &UpdatePropertyVersionHostnamesResponse{
+				AccountID:       "act_1-1TJZFB",
+				ContractID:      "ctr_1-1TJZH5",
+				GroupID:         "grp_15225",
+				PropertyID:      "prp_175780",
+				PropertyVersion: 3,
+				Etag:            "6aed418629b4e5c0",
+				Hostnames: HostnameResponseItems{
+					Items: []Hostname{},
+				},
 			},
 		},
-		"validation error Hostnames items missing": {
+		"200 Hostnames items missing": {
 			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
+				GroupID:         "grp_15225",
+				ContractID:      "ctr_1-1TJZH5",
+				Hostnames:       nil,
 			},
-			withError: func(t *testing.T, err error) {
-				want := ErrStructValidation
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "Hostnames")
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+	"accountId": "act_1-1TJZFB",
+	"contractId": "ctr_1-1TJZH5",
+	"groupId": "grp_15225",
+	"propertyId": "prp_175780",
+	"propertyVersion": 3,
+	"etag": "6aed418629b4e5c0",
+	"validateHostnames": false,
+	"hostnames": {
+		"items": []
+	}
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
+			expectedResponse: &UpdatePropertyVersionHostnamesResponse{
+				AccountID:       "act_1-1TJZFB",
+				ContractID:      "ctr_1-1TJZH5",
+				GroupID:         "grp_15225",
+				PropertyID:      "prp_175780",
+				PropertyVersion: 3,
+				Etag:            "6aed418629b4e5c0",
+				Hostnames: HostnameResponseItems{
+					Items: []Hostname{},
+				},
 			},
 		},
-		"validation error Hostnames items empty": {
+		"200 Hostnames items empty": {
 			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:      "prp_175780",
 				PropertyVersion: 3,
+				GroupID:         "grp_15225",
+				ContractID:      "ctr_1-1TJZH5",
 				Hostnames:       []Hostname{},
 			},
-			withError: func(t *testing.T, err error) {
-				want := ErrStructValidation
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "Hostnames")
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+	"accountId": "act_1-1TJZFB",
+	"contractId": "ctr_1-1TJZH5",
+	"groupId": "grp_15225",
+	"propertyId": "prp_175780",
+	"propertyVersion": 3,
+	"etag": "6aed418629b4e5c0",
+	"validateHostnames": false,
+	"hostnames": {
+		"items": []
+	}
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
+			expectedResponse: &UpdatePropertyVersionHostnamesResponse{
+				AccountID:       "act_1-1TJZFB",
+				ContractID:      "ctr_1-1TJZH5",
+				GroupID:         "grp_15225",
+				PropertyID:      "prp_175780",
+				PropertyVersion: 3,
+				Etag:            "6aed418629b4e5c0",
+				Hostnames: HostnameResponseItems{
+					Items: []Hostname{},
+				},
 			},
 		},
 		"500 internal server status error": {
