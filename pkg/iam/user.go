@@ -18,15 +18,15 @@ type (
 		CreateUser(context.Context, CreateUserRequest) (*User, error)
 		UpdateUserInfo(context.Context, UpdateUserInfoRequest) (*UserBasicInfo, error)
 		UpdateUserNotifications(context.Context, UpdateUserNotificationsRequest) (*UserNotifications, error)
-		UpdateUserAuthGrants(context.Context, UpdateUserAuthGrantsRequest) ([]*AuthGrant, error)
+		UpdateUserAuthGrants(context.Context, UpdateUserAuthGrantsRequest) ([]AuthGrant, error)
 		RemoveUser(context.Context, RemoveUserRequest) error
 	}
 
 	// CreateUserRequest is the input to CreateUser
 	CreateUserRequest struct {
 		User          UserBasicInfo      `json:"user"`
-		Notifications *UserNotifications `json:"notifications"`
-		AuthGrants    []*AuthGrant       `json:"authGrants,omitempty"`
+		Notifications *UserNotifications `json:"notifications,omitempty"`
+		AuthGrants    []AuthGrant        `json:"authGrants,omitempty"`
 		SendEmail     bool               `json:"sendEmail"`
 	}
 
@@ -44,8 +44,8 @@ type (
 
 	// UpdateUserAuthGrantsRequest is the input to update user auth grants
 	UpdateUserAuthGrantsRequest struct {
-		IdentityID string       `json:"uiIdentityId"`
-		AuthGrants []*AuthGrant `json:"authGrants,omitempty"`
+		IdentityID string      `json:"uiIdentityId"`
+		AuthGrants []AuthGrant `json:"authGrants,omitempty"`
 	}
 
 	// RemoveUserRequest is the input for RemoveUser
@@ -62,7 +62,7 @@ type (
 		PasswordExpiryDate string             `json:"passwordExpiryDate,omitempty"`
 		TFAConfigured      bool               `json:"tfaConfigured"`
 		EmailUpdatePending bool               `json:"emailUpdatePending"`
-		AuthGrants         []*AuthGrant       `json:"authGrants,omitempty"`
+		AuthGrants         []AuthGrant        `json:"authGrants,omitempty"`
 		Notifications      *UserNotifications `json:"notifications,omitempty"`
 	}
 
@@ -85,7 +85,7 @@ type (
 		Country           string `json:"country"`
 		ContactType       string `json:"contactType"`
 		PreferredLanguage string `json:"preferredLanguage,omitempty"`
-		SessionTimeOut    *int64 `json:"sessionTimeOut,omitempty"`
+		SessionTimeOut    *int   `json:"sessionTimeOut,omitempty"`
 	}
 
 	// UserActions encapsulates permissions available to the user for this group.
@@ -100,11 +100,11 @@ type (
 
 	// AuthGrant is user’s role assignments, per group.
 	AuthGrant struct {
-		GroupID         int64       `json:"groupId"`
+		GroupID         int         `json:"groupId"`
 		GroupName       string      `json:"groupName"`
 		IsBlocked       bool        `json:"isBlocked"`
 		RoleDescription string      `json:"roleDescription"`
-		RoleID          int64       `json:"roleId"`
+		RoleID          *int        `json:"roleId,omitempty"`
 		RoleName        string      `json:"roleName"`
 		Subgroups       []AuthGrant `json:"subGroups,omitempty"`
 	}
@@ -272,30 +272,30 @@ func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNoti
 }
 
 // UpdateUserAuthGrants updates a user's notifications
-func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGrantsRequest) ([]*AuthGrant, error) {
+func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGrantsRequest) ([]AuthGrant, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrInputValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "notifications"))
+	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "auth-grants"))
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "UpdateUserNotifications", err)
+		return nil, fmt.Errorf("%s: failed to create request: %s", "UpdateUserAuthGrants", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "UpdateUserNotifications", err)
+		return nil, fmt.Errorf("%s: failed to create request: %s", "UpdateUserAuthGrants", err)
 	}
 
-	rval := make([]*AuthGrant, 0)
+	rval := make([]AuthGrant, 0)
 
 	resp, err := i.Exec(req, &rval, params.AuthGrants)
 	if err != nil {
-		return nil, fmt.Errorf("%s: request failed: %s", "UpdateUserNotifications", err)
+		return nil, fmt.Errorf("%s: request failed: %s", "UpdateUserAuthGrants", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", "UpdateUserNotifications", i.Error(resp))
+		return nil, fmt.Errorf("%s: %w", "UpdateUserAuthGrants", i.Error(resp))
 	}
 
 	return rval, nil
@@ -312,7 +312,7 @@ func (i *iam) RemoveUser(ctx context.Context, params RemoveUserRequest) error {
 		return fmt.Errorf("%s: failed to create request: %s", "RemoveUser", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u.String(), nil)
 	if err != nil {
 		return fmt.Errorf("%s: failed to create request: %s", "RemoveUser", err)
 	}
