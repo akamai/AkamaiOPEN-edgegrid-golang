@@ -32,6 +32,7 @@ type (
 		MatchTarget
 		MatchTargetSequence
 		PenaltyBox
+		PolicyProtections
 		RatePolicy
 		RatePolicyAction
 		RateProtection
