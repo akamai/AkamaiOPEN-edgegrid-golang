@@ -31,25 +31,23 @@ type (
 
 	GetReputationProfilesResponse struct {
 		ReputationProfiles []struct {
-			ID               int    `json:"id"`
-			Name             string `json:"name"`
 			Context          string `json:"context"`
 			ContextReadable  string `json:"contextReadable"`
-			Threshold        int    `json:"threshold"`
-			SharedIPHandling string `json:"sharedIpHandling"`
 			Enabled          bool   `json:"enabled"`
-			Description      string `json:"description,omitempty"`
+			ID               int    `json:"id"`
+			Name             string `json:"name"`
+			SharedIPHandling string `json:"sharedIpHandling"`
+			Threshold        int    `json:"threshold"`
 			Condition        struct {
-				ID               string `json:"id"`
-				Name             string `json:"name"`
-				Description      string `json:"description"`
 				AtomicConditions []struct {
+					ClassName     string   `json:"className"`
+					Index         int      `json:"index"`
+					Name          []string `json:"name"`
+					NameWildcard  bool     `json:"nameWildcard"`
 					PositiveMatch bool     `json:"positiveMatch"`
 					Value         []string `json:"value"`
-					NameWildcard  bool     `json:"nameWildcard"`
-					Name          string   `json:"name"`
+					ValueCase     bool     `json:"valueCase"`
 					ValueWildcard bool     `json:"valueWildcard"`
-					ClassName     string   `json:"className"`
 				} `json:"atomicConditions"`
 				PositiveMatch bool `json:"positiveMatch"`
 			} `json:"condition,omitempty"`
