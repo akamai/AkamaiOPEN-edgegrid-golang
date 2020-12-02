@@ -27,6 +27,7 @@ type (
 		EvalRuleAction
 		EvalRuleConditionException
 		ExportConfiguration
+		IPGeo
 		RuleAction
 		RuleConditionException
 		MatchTarget
@@ -36,6 +37,7 @@ type (
 		RatePolicy
 		RatePolicyAction
 		RateProtection
+		ReputationProfile
 		ReputationProtection
 		SecurityPolicy
 		SecurityPolicyClone
