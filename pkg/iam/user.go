@@ -16,6 +16,7 @@ type (
 	// Users is the IAM user identity management interface
 	Users interface {
 		CreateUser(context.Context, CreateUserRequest) (*User, error)
+		GetUser(context.Context, GetUserRequest) (*User, error)
 		UpdateUserInfo(context.Context, UpdateUserInfoRequest) (*UserBasicInfo, error)
 		UpdateUserNotifications(context.Context, UpdateUserNotificationsRequest) (*UserNotifications, error)
 		UpdateUserAuthGrants(context.Context, UpdateUserAuthGrantsRequest) ([]AuthGrant, error)
@@ -28,6 +29,14 @@ type (
 		Notifications *UserNotifications `json:"notifications,omitempty"`
 		AuthGrants    []AuthGrant        `json:"authGrants,omitempty"`
 		SendEmail     bool               `json:"sendEmail"`
+	}
+
+	// GetUserRequest is the input for GetUser
+	GetUserRequest struct {
+		IdentityID    string `json:"uiIdentityId"`
+		Actions       bool   `json:"actions"`
+		AuthGrants    bool   `json:"authGrants"`
+		Notifications bool   `json:"notificiations"`
 	}
 
 	// UpdateUserInfoRequest is the input to UpdateUserInfo
@@ -136,6 +145,13 @@ func (r CreateUserRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate performs the input validation for GetUserRequest
+func (r GetUserRequest) Validate() error {
+	return validation.Errors{
+		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
+	}.Filter()
+}
+
 // Validate performs the input validation for UpdateUserRequest
 func (r UpdateUserInfoRequest) Validate() error {
 	return validation.Errors{
@@ -208,6 +224,42 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", "CreateUser", i.Error(resp))
+	}
+
+	return &rval, nil
+}
+
+// GetUser gets a user by id
+func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrInputValidation, err)
+	}
+
+	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID))
+	if err != nil {
+		return nil, fmt.Errorf("%s: failed to create request: %s", "GetUser", err)
+	}
+
+	q := u.Query()
+	q.Add("actions", cast.ToString(params.Actions))
+	q.Add("authGrants", cast.ToString(params.AuthGrants))
+	q.Add("notifications", cast.ToString(params.Notifications))
+
+	u.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%s: failed to create request: %s", "GetUser", err)
+	}
+
+	var rval User
+	resp, err := i.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("%s: request failed: %s", "GetUser", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", "GetUser", i.Error(resp))
 	}
 
 	return &rval, nil
