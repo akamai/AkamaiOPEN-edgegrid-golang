@@ -35,6 +35,7 @@ func TestIAM_CreateUser(t *testing.T) {
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
+	"uiIdentityId": "A-BC-1234567",
 	"firstName": "John",
 	"lastName": "Doe",
 	"email": "john.doe@mycompany.com",
@@ -44,6 +45,7 @@ func TestIAM_CreateUser(t *testing.T) {
 }`,
 			expectedPath: "/identity-management/v2/user-admin/ui-identities?sendEmail=false",
 			expectedResponse: &User{
+				IdentityID: "A-BC-1234567",
 				UserBasicInfo: UserBasicInfo{
 					FirstName: "John",
 					LastName:  "Doe",
@@ -97,6 +99,89 @@ func TestIAM_CreateUser(t *testing.T) {
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateUser(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestIAM_GetUser(t *testing.T) {
+	tests := map[string]struct {
+		params           GetUserRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *User
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			params: GetUserRequest{
+				IdentityID: "A-BC-1234567",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+	"uiIdentityId": "A-BC-1234567",
+	"firstName": "John",
+	"lastName": "Doe",
+	"email": "john.doe@mycompany.com",
+	"phone": "(123) 321-1234",
+	"state": "CA",
+	"country": "USA"
+}`,
+			expectedPath: "/identity-management/v2/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
+			expectedResponse: &User{
+				IdentityID: "A-BC-1234567",
+				UserBasicInfo: UserBasicInfo{
+					FirstName: "John",
+					LastName:  "Doe",
+					Email:     "john.doe@mycompany.com",
+					Phone:     "(123) 321-1234",
+					Country:   "USA",
+					State:     "CA",
+				},
+			},
+		},
+		"500 internal server error": {
+			params: GetUserRequest{
+				IdentityID: "A-BC-1234567",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error making request",
+    "status": 500
+}`,
+			expectedPath: "/identity-management/v2/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error making request",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetUser(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
