@@ -38,6 +38,7 @@ type (
 		RatePolicyAction
 		RateProtection
 		ReputationProfile
+		ReputationProfileAction
 		ReputationProtection
 		SecurityPolicy
 		SecurityPolicyClone
