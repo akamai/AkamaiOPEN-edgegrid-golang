@@ -31,7 +31,7 @@ type (
 		Version             int    `json:"version"`
 		PolicyID            string `json:"policyId"`
 		ReputationProfileID int    `json:"id"`
-		Action              string `json:"Action"`
+		Action              string `json:"action"`
 	}
 
 	GetReputationProfileActionsResponse struct {
@@ -46,11 +46,11 @@ type (
 		Version             int    `json:"version"`
 		PolicyID            string `json:"policyId"`
 		ReputationProfileID int    `json:"id"`
-		Action              string `json:"Action"`
+		Action              string `json:"action"`
 	}
 
 	GetReputationProfileActionResponse struct {
-		Action string `json:"Action"`
+		Action string `json:"action"`
 	}
 
 	UpdateReputationProfileActionRequest struct {
@@ -58,17 +58,17 @@ type (
 		Version             int    `json:"-"`
 		PolicyID            string `json:"-"`
 		ReputationProfileID int    `json:"-"`
-		Action              string `json:"Action"`
+		Action              string `json:"action"`
 	}
 
 	UpdateReputationProfileActionResponse struct {
 		ID     int    `json:"-"`
-		Action string `json:"Action"`
+		Action string `json:"action"`
 	}
 
 	ReputationProfileActionPost struct {
 		ID     int    `json:"id"`
-		action string `json:"Action"`
+		action string `json:"action"`
 	}
 )
 
