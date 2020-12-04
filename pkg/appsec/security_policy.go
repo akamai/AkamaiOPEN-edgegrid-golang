@@ -377,7 +377,7 @@ func (p *appsec) RemoveSecurityPolicy(ctx context.Context, params RemoveSecurity
 		return nil, fmt.Errorf("delsecuritypolicy request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 

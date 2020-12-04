@@ -62,12 +62,10 @@ type (
 	}
 
 	UpdateReputationProfileActionResponse struct {
-		ID     int    `json:"-"`
 		Action string `json:"action"`
 	}
 
 	ReputationProfileActionPost struct {
-		ID     int    `json:"id"`
 		action string `json:"action"`
 	}
 )
