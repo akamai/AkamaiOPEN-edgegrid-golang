@@ -31,6 +31,22 @@ type (
 
 	GetReputationProfilesResponse struct {
 		ReputationProfiles []struct {
+			Condition struct {
+				AtomicConditions []struct {
+					CheckIps      string   `json:"checkIps,omitempty"`
+					ClassName     string   `json:"className"`
+					Index         int      `json:"index"`
+					PositiveMatch bool     `json:"positiveMatch"`
+					Value         []string `json:"value,omitempty"`
+					Name          string   `json:"name,omitempty"`
+					NameCase      bool     `json:"nameCase,omitempty"`
+					NameWildcard  bool     `json:"nameWildcard,omitempty"`
+					ValueCase     bool     `json:"valueCase,omitempty"`
+					ValueWildcard bool     `json:"valueWildcard,omitempty"`
+					Host          []string `json:"host,omitempty"`
+				} `json:"atomicConditions"`
+				PositiveMatch bool `json:"positiveMatch"`
+			} `json:"condition,omitempty"`
 			Context          string `json:"context"`
 			ContextReadable  string `json:"contextReadable"`
 			Enabled          bool   `json:"enabled"`
@@ -38,62 +54,17 @@ type (
 			Name             string `json:"name"`
 			SharedIPHandling string `json:"sharedIpHandling"`
 			Threshold        int    `json:"threshold"`
-			Condition        struct {
-				AtomicConditions []struct {
-					ClassName     string   `json:"className"`
-					Index         int      `json:"index"`
-					Name          []string `json:"name"`
-					NameWildcard  bool     `json:"nameWildcard"`
-					PositiveMatch bool     `json:"positiveMatch"`
-					Value         []string `json:"value"`
-					ValueCase     bool     `json:"valueCase"`
-					ValueWildcard bool     `json:"valueWildcard"`
-				} `json:"atomicConditions"`
-				PositiveMatch bool `json:"positiveMatch"`
-			} `json:"condition,omitempty"`
 		} `json:"reputationProfiles"`
 	}
 
 	GetReputationProfileResponse struct {
-		ID                    int    `json:"id"`
-		PolicyID              int    `json:"policyId"`
-		ConfigID              int    `json:"configId"`
-		ConfigVersion         int    `json:"configVersion"`
-		MatchType             string `json:"matchType"`
-		Type                  string `json:"type"`
-		Name                  string `json:"name"`
-		Description           string `json:"description"`
-		AverageThreshold      int    `json:"averageThreshold"`
-		BurstThreshold        int    `json:"burstThreshold"`
-		ClientIdentifier      string `json:"clientIdentifier"`
-		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
-		RequestType           string `json:"requestType"`
-		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
-		Path                  struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Values        []string `json:"values"`
-		} `json:"path"`
-		PathMatchType        string `json:"pathMatchType"`
-		PathURIPositiveMatch bool   `json:"pathUriPositiveMatch"`
-		FileExtensions       struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Values        []string `json:"values"`
-		} `json:"fileExtensions"`
-		Hostnames              []string `json:"hostNames"`
-		AdditionalMatchOptions []struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Type          string   `json:"type"`
-			Values        []string `json:"values"`
-		} `json:"additionalMatchOptions"`
-		QueryParameters []struct {
-			Name          string   `json:"name"`
-			Values        []string `json:"values"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			ValueInRange  bool     `json:"valueInRange"`
-		} `json:"queryParameters"`
-		CreateDate string `json:"createDate"`
-		UpdateDate string `json:"updateDate"`
-		Used       bool   `json:"used"`
+		Context          string `json:"context"`
+		ContextReadable  string `json:"contextReadable"`
+		Enabled          bool   `json:"enabled"`
+		ID               int    `json:"id"`
+		Name             string `json:"name"`
+		SharedIPHandling string `json:"sharedIpHandling"`
+		Threshold        int    `json:"threshold"`
 	}
 
 	CreateReputationProfileResponse struct {

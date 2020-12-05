@@ -40,6 +40,7 @@ type (
 		ReputationProfile
 		ReputationProfileAction
 		ReputationProtection
+		RuleUpgrade
 		SecurityPolicy
 		SecurityPolicyClone
 		SelectedHostname

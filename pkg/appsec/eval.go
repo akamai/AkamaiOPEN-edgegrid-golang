@@ -24,6 +24,7 @@ type (
 		GetEvals(ctx context.Context, params GetEvalsRequest) (*GetEvalsResponse, error)
 		GetEval(ctx context.Context, params GetEvalRequest) (*GetEvalResponse, error)
 		UpdateEval(ctx context.Context, params UpdateEvalRequest) (*UpdateEvalResponse, error)
+		RemoveEval(ctx context.Context, params RemoveEvalRequest) (*RemoveEvalResponse, error)
 	}
 
 	GetEvalsRequest struct {
@@ -60,6 +61,21 @@ type (
 		Expires    string `json:"expires"`
 	}
 
+	RemoveEvalRequest struct {
+		ConfigID int    `json:"-"`
+		Version  int    `json:"-"`
+		PolicyID string `json:"-"`
+		Current  string `json:"-"`
+		Mode     string `json:"-"`
+		Eval     string `json:"eval"`
+	}
+
+	RemoveEvalResponse struct {
+		Current string `json:"current"`
+		Eval    string `json:"eval"`
+		Mode    string `json:"mode"`
+	}
+
 	UpdateEvalRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -71,6 +87,7 @@ type (
 
 	UpdateEvalResponse struct {
 		Current string `json:"current"`
+		Eval    string `json:"eval"`
 		Mode    string `json:"mode"`
 	}
 )
@@ -95,6 +112,15 @@ func (v GetEvalsRequest) Validate() error {
 
 // Validate validates UpdateEvalRequest
 func (v UpdateEvalRequest) Validate() error {
+	return validation.Errors{
+		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
+		"Version":  validation.Validate(v.Version, validation.Required),
+		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates UpdateEvalRequest
+func (v RemoveEvalRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
@@ -197,6 +223,45 @@ func (p *appsec) UpdateEval(ctx context.Context, params UpdateEvalRequest) (*Upd
 	}
 
 	var rval UpdateEvalResponse
+	resp, err := p.Exec(req, &rval, params)
+	if err != nil {
+		return nil, fmt.Errorf("create Eval request failed: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return nil, p.Error(resp)
+	}
+
+	return &rval, nil
+}
+
+// Remove will update a Eval.
+//
+// API Docs: // appsec v1
+//
+// https://developer.akamai.com/api/cloud_security/application_security/v1.html#puteval
+
+func (p *appsec) RemoveEval(ctx context.Context, params RemoveEvalRequest) (*RemoveEvalResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	logger := p.Log(ctx)
+	logger.Debug("UpdateEval")
+
+	putURL := fmt.Sprintf(
+		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/eval",
+		params.ConfigID,
+		params.Version,
+		params.PolicyID,
+	)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, putURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create create Evalrequest: %w", err)
+	}
+
+	var rval RemoveEvalResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
 		return nil, fmt.Errorf("create Eval request failed: %w", err)
