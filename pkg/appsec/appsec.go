@@ -32,6 +32,7 @@ type (
 		RuleConditionException
 		MatchTarget
 		MatchTargetSequence
+		NetworkLayerProtection
 		PenaltyBox
 		PolicyProtections
 		RatePolicy
