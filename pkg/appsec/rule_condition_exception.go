@@ -43,34 +43,34 @@ type (
 
 	GetRuleConditionExceptionsResponse struct {
 		Conditions []struct {
-			Type          string   `json:"type"`
+			Type          string   `json:"type,omitempty"`
 			Filenames     []string `json:"filenames,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch"`
+			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Methods       []string `json:"methods,omitempty"`
-		} `json:"conditions"`
+		} `json:"conditions,omitempty"`
 		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
+			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names"`
-				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
-		} `json:"exception"`
+				Names    []string `json:"names,omitempty"`
+				Selector string   `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamNames,omitempty"`
+		} `json:"exception,omitempty"`
 	}
 
 	GetRuleConditionExceptionResponse struct {
 		Conditions []struct {
-			Type          string   `json:"type"`
+			Type          string   `json:"type,omitempty"`
 			Filenames     []string `json:"filenames,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch"`
+			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Methods       []string `json:"methods,omitempty"`
-		} `json:"conditions"`
+		} `json:"conditions,omitempty"`
 		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
+			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names"`
-				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
-		} `json:"exception"`
+				Names    []string `json:"names,omitempty"`
+				Selector string   `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamNames,omitempty"`
+		} `json:"exception,omitempty"`
 	}
 
 	UpdateRuleConditionExceptionRequest struct {
