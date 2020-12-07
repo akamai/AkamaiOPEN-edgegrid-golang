@@ -28,23 +28,23 @@ type (
 	}
 
 	GetConfigurationVersionsResponse struct {
-		ConfigID           int    `json:"configId"`
-		ConfigName         string `json:"configName"`
-		LastCreatedVersion int    `json:"lastCreatedVersion"`
-		Page               int    `json:"page"`
-		PageSize           int    `json:"pageSize"`
-		TotalSize          int    `json:"totalSize"`
+		ConfigID           int    `json:"configId,omitempty"`
+		ConfigName         string `json:"configName,omitempty"`
+		LastCreatedVersion int    `json:"lastCreatedVersion,omitempty"`
+		Page               int    `json:"page,omitempty"`
+		PageSize           int    `json:"pageSize,omitempty"`
+		TotalSize          int    `json:"totalSize,omitempty"`
 		VersionList        []struct {
-			ConfigID   int `json:"configId"`
+			ConfigID   int `json:"configId,omitempty"`
 			Production struct {
-				Status string `json:"status"`
-			} `json:"production"`
+				Status string `json:"status,omitempty"`
+			} `json:"production,omitempty"`
 			Staging struct {
-				Status string `json:"status"`
-			} `json:"staging"`
-			Version int `json:"version"`
+				Status string `json:"status,omitempty"`
+			} `json:"staging,omitempty"`
+			Version int `json:"version,omitempty"`
 			BasedOn int `json:"basedOn,omitempty"`
-		} `json:"versionList"`
+		} `json:"versionList,omitempty"`
 	}
 )
 

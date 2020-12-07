@@ -45,19 +45,19 @@ type (
 	}
 
 	GetWAFModesResponse struct {
-		Current    string `json:"current"`
-		Mode       string `json:"mode"`
-		Eval       string `json:"eval"`
-		Evaluating string `json:"evaluating"`
-		Expires    string `json:"expires"`
+		Current    string `json:"current,omitempty"`
+		Mode       string `json:"mode,omitempty"`
+		Eval       string `json:"eval,omitempty"`
+		Evaluating string `json:"evaluating,omitempty"`
+		Expires    string `json:"expires,omitempty"`
 	}
 
 	GetWAFModeResponse struct {
-		Current    string `json:"current"`
-		Mode       string `json:"mode"`
-		Eval       string `json:"eval"`
-		Evaluating string `json:"evaluating"`
-		Expires    string `json:"expires"`
+		Current    string `json:"current,omitempty"`
+		Mode       string `json:"mode,omitempty"`
+		Eval       string `json:"eval,omitempty"`
+		Evaluating string `json:"evaluating,omitempty"`
+		Expires    string `json:"expires,omitempty"`
 	}
 
 	UpdateWAFModeRequest struct {

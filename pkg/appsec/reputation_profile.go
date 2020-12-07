@@ -34,8 +34,8 @@ type (
 			Condition struct {
 				AtomicConditions []struct {
 					CheckIps      string   `json:"checkIps,omitempty"`
-					ClassName     string   `json:"className"`
-					Index         int      `json:"index"`
+					ClassName     string   `json:"className,omitempty"`
+					Index         int      `json:"index,omitempty"`
 					PositiveMatch bool     `json:"positiveMatch"`
 					Value         []string `json:"value,omitempty"`
 					Name          string   `json:"name,omitempty"`
@@ -44,27 +44,27 @@ type (
 					ValueCase     bool     `json:"valueCase,omitempty"`
 					ValueWildcard bool     `json:"valueWildcard,omitempty"`
 					Host          []string `json:"host,omitempty"`
-				} `json:"atomicConditions"`
-				PositiveMatch bool `json:"positiveMatch"`
+				} `json:"atomicConditions,omitempty"`
+				PositiveMatch bool `json:"positiveMatch,omitempty"`
 			} `json:"condition,omitempty"`
-			Context          string `json:"context"`
-			ContextReadable  string `json:"contextReadable"`
-			Enabled          bool   `json:"enabled"`
-			ID               int    `json:"id"`
-			Name             string `json:"name"`
-			SharedIPHandling string `json:"sharedIpHandling"`
-			Threshold        int    `json:"threshold"`
-		} `json:"reputationProfiles"`
+			Context          string `json:"context,omitempty"`
+			ContextReadable  string `json:"contextReadable,omitempty"`
+			Enabled          bool   `json:"enabled,omitempty"`
+			ID               int    `json:"id,omitempty"`
+			Name             string `json:"name,omitempty"`
+			SharedIPHandling string `json:"sharedIpHandling,omitempty"`
+			Threshold        int    `json:"threshold,omitempty"`
+		} `json:"reputationProfiles,omitempty"`
 	}
 
 	GetReputationProfileResponse struct {
-		Context          string `json:"context"`
-		ContextReadable  string `json:"contextReadable"`
-		Enabled          bool   `json:"enabled"`
-		ID               int    `json:"id"`
-		Name             string `json:"name"`
-		SharedIPHandling string `json:"sharedIpHandling"`
-		Threshold        int    `json:"threshold"`
+		Context          string `json:"context,omitempty"`
+		ContextReadable  string `json:"contextReadable,omitempty"`
+		Enabled          bool   `json:"enabled,omitempty"`
+		ID               int    `json:"id,omitempty"`
+		Name             string `json:"name,omitempty"`
+		SharedIPHandling string `json:"sharedIpHandling,omitempty"`
+		Threshold        int    `json:"threshold,omitempty"`
 	}
 
 	CreateReputationProfileResponse struct {

@@ -32,35 +32,35 @@ type (
 	}
 
 	GetRuleUpgradeResponse struct {
-		Current          string `json:"current"`
-		Evaluating       string `json:"evaluating"`
-		Latest           string `json:"latest"`
+		Current          string `json:"current,omitempty"`
+		Evaluating       string `json:"evaluating,omitempty"`
+		Latest           string `json:"latest,omitempty"`
 		KRSToEvalUpdates struct {
 			UpdatedRules []struct {
-				ID    int    `json:"id"`
-				Title string `json:"title"`
-			} `json:"updatedRules"`
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"updatedRules,omitempty"`
 			NewRules []struct {
-				ID    int    `json:"id"`
-				Title string `json:"title"`
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
 			} `json:"newRules"`
-		} `json:"KRSToEvalUpdates"`
+		} `json:"KRSToEvalUpdates,omitempty"`
 		EvalToEvalUpdates struct {
 			NewRules []struct {
-				ID    int    `json:"id"`
-				Title string `json:"title"`
-			} `json:"newRules"`
-		} `json:"EvalToEvalUpdates"`
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"newRules,omitempty"`
+		} `json:"EvalToEvalUpdates,omitempty"`
 		KRSToLatestUpdates struct {
 			DeletedRules []struct {
-				ID    int    `json:"id"`
-				Title string `json:"title"`
-			} `json:"deletedRules"`
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"deletedRules,omitempty"`
 			NewRules []struct {
-				ID    int    `json:"id"`
-				Title string `json:"title"`
-			} `json:"newRules"`
-		} `json:"KRSToLatestUpdates"`
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"newRules,omitempty"`
+		} `json:"KRSToLatestUpdates,omitempty"`
 	}
 
 	UpdateRuleUpgradeRequest struct {

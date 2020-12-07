@@ -35,9 +35,9 @@ type (
 
 	GetAttackGroupActionsResponse struct {
 		AttackGroupActions []struct {
-			Action string `json:"action"`
-			Group  string `json:"group"`
-		} `json:"attackGroupActions"`
+			Action string `json:"action,omitempty"`
+			Group  string `json:"group,omitempty"`
+		} `json:"attackGroupActions,omitempty"`
 	}
 
 	GetAttackGroupActionRequest struct {
@@ -48,7 +48,7 @@ type (
 	}
 
 	GetAttackGroupActionResponse struct {
-		Action string `json:"action"`
+		Action string `json:"action,omitempty"`
 	}
 
 	CreateAttackGroupActionRequest struct {

@@ -42,14 +42,14 @@ type (
 
 	GetRuleActionsResponse struct {
 		RuleActions []struct {
-			Action string `json:"action"`
-			ID     int    `json:"id"`
-		} `json:"ruleActions"`
+			Action string `json:"action,omitempty"`
+			ID     int    `json:"id,omitempty"`
+		} `json:"ruleActions,omitempty"`
 	}
 
 	GetRuleActionResponse struct {
-		Action string `json:"action"`
-		ID     int    `json:"id"`
+		Action string `json:"action,omitempty"`
+		ID     int    `json:"id,omitempty"`
 	}
 
 	UpdateRuleActionRequest struct {

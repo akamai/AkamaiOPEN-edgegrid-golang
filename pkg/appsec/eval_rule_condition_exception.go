@@ -42,7 +42,7 @@ type (
 
 	GetEvalRuleConditionExceptionsResponse struct {
 		Conditions []struct {
-			Type          string   `json:"type"`
+			Type          string   `json:"type,omitempty"`
 			Extensions    []string `json:"extensions,omitempty"`
 			PositiveMatch bool     `json:"positiveMatch"`
 			Filenames     []string `json:"filenames,omitempty"`
@@ -59,39 +59,39 @@ type (
 			ValueWildcard bool     `json:"valueWildcard,omitempty"`
 			Methods       []string `json:"methods,omitempty"`
 			Paths         []string `json:"paths,omitempty"`
-		} `json:"conditions"`
+		} `json:"conditions,omitempty"`
 		Exception struct {
-			HeaderCookieOrParamValues            []string `json:"headerCookieOrParamValues"`
+			HeaderCookieOrParamValues            []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNameValue struct {
-				Name     string `json:"name"`
-				Selector string `json:"selector"`
-				Value    string `json:"value"`
-			} `json:"specificHeaderCookieOrParamNameValue"`
+				Name     string `json:"name,omitempty"`
+				Selector string `json:"selector,omitempty"`
+				Value    string `json:"value,omitempty"`
+			} `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names"`
-				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
+				Names    []string `json:"names,omitempty"`
+				Selector string   `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamNames,omitempty"`
 			SpecificHeaderCookieOrParamPrefix struct {
-				Prefix   string `json:"prefix"`
-				Selector string `json:"selector"`
-			} `json:"specificHeaderCookieOrParamPrefix"`
-		} `json:"exception"`
+				Prefix   string `json:"prefix,omitempty"`
+				Selector string `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+		} `json:"exception,omitempty"`
 	}
 
 	GetEvalRuleConditionExceptionResponse struct {
 		Conditions []struct {
-			Type          string   `json:"type"`
+			Type          string   `json:"type,omitempty"`
 			Filenames     []string `json:"filenames,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch"`
+			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Methods       []string `json:"methods,omitempty"`
-		} `json:"conditions"`
+		} `json:"conditions,omitempty"`
 		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
+			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names"`
-				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
-		} `json:"exception"`
+				Names    []string `json:"names,omitempty"`
+				Selector string   `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamNames,omitempty"`
+		} `json:"exception,omitempty"`
 	}
 
 	UpdateEvalRuleConditionExceptionRequest struct {

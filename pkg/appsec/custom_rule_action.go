@@ -34,11 +34,11 @@ type (
 	}
 
 	GetCustomRuleActionsResponse []struct {
-		Action                string `json:"action"`
-		CanUseAdvancedActions bool   `json:"canUseAdvancedActions"`
-		Link                  string `json:"link"`
-		Name                  string `json:"name"`
-		RuleID                int    `json:"ruleId"`
+		Action                string `json:"action,omitempty"`
+		CanUseAdvancedActions bool   `json:"canUseAdvancedActions,omitempty"`
+		Link                  string `json:"link,omitempty"`
+		Name                  string `json:"name,omitempty"`
+		RuleID                int    `json:"ruleId,omitempty"`
 	}
 
 	GetCustomRuleActionRequest struct {
@@ -49,11 +49,11 @@ type (
 	}
 
 	GetCustomRuleActionResponse struct {
-		Action                string `json:"action"`
-		CanUseAdvancedActions bool   `json:"canUseAdvancedActions"`
-		Link                  string `json:"link"`
-		Name                  string `json:"name"`
-		RuleID                int    `json:"ruleId"`
+		Action                string `json:"action,omitempty"`
+		CanUseAdvancedActions bool   `json:"canUseAdvancedActions,omitempty"`
+		Link                  string `json:"link,omitempty"`
+		Name                  string `json:"name,omitempty"`
+		RuleID                int    `json:"ruleId,omitempty"`
 	}
 
 	UpdateCustomRuleActionRequest struct {

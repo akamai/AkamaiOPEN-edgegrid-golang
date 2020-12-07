@@ -42,14 +42,14 @@ type (
 
 	GetEvalRuleActionsResponse struct {
 		RuleActions []struct {
-			Action string `json:"action"`
-			ID     int    `json:"id"`
-		} `json:"evalRuleActions"`
+			Action string `json:"action,omitempty"`
+			ID     int    `json:"id,omitempty"`
+		} `json:"evalRuleActions,omitempty"`
 	}
 
 	GetEvalRuleActionResponse struct {
-		Action string `json:"action"`
-		ID     int    `json:"id"`
+		Action string `json:"action,omitempty"`
+		ID     int    `json:"id,omitempty"`
 	}
 
 	UpdateEvalRuleActionRequest struct {

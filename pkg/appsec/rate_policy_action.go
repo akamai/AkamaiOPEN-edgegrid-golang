@@ -38,9 +38,9 @@ type (
 	GetRatePolicyActionsResponse struct {
 		RatePolicyActions []struct {
 			ID         int    `json:"id"`
-			Ipv4Action string `json:"ipv4Action"`
-			Ipv6Action string `json:"ipv6Action"`
-		} `json:"ratePolicyActions"`
+			Ipv4Action string `json:"ipv4Action,omitempty"`
+			Ipv6Action string `json:"ipv6Action,omitempty"`
+		} `json:"ratePolicyActions,omitempty"`
 	}
 
 	GetRatePolicyActionRequest struct {
@@ -55,8 +55,8 @@ type (
 	GetRatePolicyActionResponse struct {
 		RatePolicyActions []struct {
 			ID         int    `json:"id"`
-			Ipv4Action string `json:"ipv4Action"`
-			Ipv6Action string `json:"ipv6Action"`
+			Ipv4Action string `json:"ipv4Action,omitempty"`
+			Ipv6Action string `json:"ipv6Action,omitempty"`
 		} `json:"ratePolicyActions"`
 	}
 

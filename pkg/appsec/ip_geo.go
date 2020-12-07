@@ -32,20 +32,20 @@ type (
 	}
 
 	GetIPGeoResponse struct {
-		Block       string `json:"block"`
+		Block       string `json:"block,omitempty"`
 		GeoControls struct {
 			BlockedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"blockedIPNetworkLists"`
-		} `json:"geoControls"`
+				NetworkList []string `json:"networkList,omitempty"`
+			} `json:"blockedIPNetworkLists,omitempty"`
+		} `json:"geoControls,omitempty"`
 		IPControls struct {
 			AllowedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"allowedIPNetworkLists"`
+				NetworkList []string `json:"networkList,omitempty"`
+			} `json:"allowedIPNetworkLists,omitempty"`
 			BlockedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"blockedIPNetworkLists"`
-		} `json:"ipControls"`
+				NetworkList []string `json:"networkList,omitempty"`
+			} `json:"blockedIPNetworkLists,omitempty"`
+		} `json:"ipControls,omitempty"`
 	}
 
 	UpdateIPGeoRequest struct {

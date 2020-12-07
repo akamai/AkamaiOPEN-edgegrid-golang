@@ -36,9 +36,9 @@ type (
 
 	GetReputationProfileActionsResponse struct {
 		ReputationProfiles []struct {
-			Action string `json:"action"`
-			ID     int    `json:"id"`
-		} `json:"reputationProfiles"`
+			Action string `json:"action,omitempty"`
+			ID     int    `json:"id,omitempty"`
+		} `json:"reputationProfiles,omitempty"`
 	}
 
 	GetReputationProfileActionRequest struct {
@@ -50,7 +50,7 @@ type (
 	}
 
 	GetReputationProfileActionResponse struct {
-		Action string `json:"action"`
+		Action string `json:"action,omitempty"`
 	}
 
 	UpdateReputationProfileActionRequest struct {

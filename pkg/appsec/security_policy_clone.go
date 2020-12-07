@@ -57,19 +57,19 @@ type (
 	}
 
 	GetSecurityPolicyCloneResponse struct {
-		ConfigID               int    `json:"configId"`
-		PolicyID               string `json:"policyId"`
-		PolicyName             string `json:"policyName"`
+		ConfigID               int    `json:"configId,omitempty"`
+		PolicyID               string `json:"policyId,omitempty"`
+		PolicyName             string `json:"policyName,omitempty"`
 		PolicySecurityControls struct {
-			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-			ApplyRateControls             bool `json:"applyRateControls"`
-			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		} `json:"policySecurityControls"`
-		Version int `json:"version"`
+			ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
+			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
+			ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
+			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
+			ApplyRateControls             bool `json:"applyRateControls,omitempty"`
+			ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
+			ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
+		} `json:"policySecurityControls,omitempty"`
+		Version int `json:"version,omitempty"`
 	}
 
 	CreateSecurityPolicyCloneRequest struct {

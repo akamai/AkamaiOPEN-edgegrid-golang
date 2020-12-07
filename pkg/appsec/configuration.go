@@ -29,15 +29,15 @@ type (
 	GetConfigurationsResponse struct {
 		Configurations []struct {
 			Description         string   `json:"description,omitempty"`
-			FileType            string   `json:"fileType"`
-			ID                  int      `json:"id"`
-			LatestVersion       int      `json:"latestVersion"`
+			FileType            string   `json:"fileType,omitempty"`
+			ID                  int      `json:"id,omitempty"`
+			LatestVersion       int      `json:"latestVersion,omitempty"`
 			Name                string   `json:"name,omitempty"`
 			StagingVersion      int      `json:"stagingVersion,omitempty"`
-			TargetProduct       string   `json:"targetProduct"`
+			TargetProduct       string   `json:"targetProduct,omitempty"`
 			ProductionHostnames []string `json:"productionHostnames,omitempty"`
 			ProductionVersion   int      `json:"productionVersion,omitempty"`
-		} `json:"configurations"`
+		} `json:"configurations,omitempty"`
 	}
 )
 

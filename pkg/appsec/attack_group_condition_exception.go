@@ -38,42 +38,42 @@ type (
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
-		Group    string `json:"group"`
+		Group    string `json:"group,omitempty"`
 	}
 
 	GetAttackGroupConditionExceptionsResponse struct {
 		Conditions []struct {
-			Type          string   `json:"type"`
+			Type          string   `json:"type,omitempty"`
 			Filenames     []string `json:"filenames,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch"`
+			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Methods       []string `json:"methods,omitempty"`
-		} `json:"conditions"`
+		} `json:"conditions,omitempty"`
 		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
+			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names"`
-				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
+				Names    []string `json:"names,omitempty"`
+				Selector string   `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamNames,omitempty"`
 			SpecificHeaderCookieOrParamPrefix struct {
-				Prefix   string `json:"prefix"`
-				Selector string `json:"selector"`
-			} `json:"specificHeaderCookieOrParamPrefix"`
-		} `json:"exception"`
+				Prefix   string `json:"prefix,omitempty"`
+				Selector string `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+		} `json:"exception,omitempty"`
 	}
 
 	GetAttackGroupConditionExceptionResponse struct {
-		Conditions []interface{} `json:"conditions"`
+		Conditions []interface{} `json:"conditions,omitempty"`
 		Exception  struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
+			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names"`
-				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
+				Names    []string `json:"names,omitempty"`
+				Selector string   `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamNames,omitempty"`
 			SpecificHeaderCookieOrParamPrefix struct {
-				Prefix   string `json:"prefix"`
-				Selector string `json:"selector"`
-			} `json:"specificHeaderCookieOrParamPrefix"`
-		} `json:"exception"`
+				Prefix   string `json:"prefix,omitempty"`
+				Selector string `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+		} `json:"exception,omitempty"`
 	}
 
 	UpdateAttackGroupConditionExceptionRequest struct {

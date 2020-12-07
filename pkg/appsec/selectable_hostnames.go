@@ -29,16 +29,16 @@ type (
 
 	GetSelectableHostnamesResponse struct {
 		AvailableSet []struct {
-			ActiveInProduction     bool   `json:"activeInProduction"`
-			ActiveInStaging        bool   `json:"activeInStaging"`
-			ArlInclusion           bool   `json:"arlInclusion"`
-			Hostname               string `json:"hostname"`
+			ActiveInProduction     bool   `json:"activeInProduction,omitempty"`
+			ActiveInStaging        bool   `json:"activeInStaging,omitempty"`
+			ArlInclusion           bool   `json:"arlInclusion,omitempty"`
+			Hostname               string `json:"hostname,omitempty"`
 			ConfigIDInProduction   int    `json:"configIdInProduction,omitempty"`
 			ConfigNameInProduction string `json:"configNameInProduction,omitempty"`
-		} `json:"availableSet"`
-		ConfigID                int  `json:"configId"`
-		ConfigVersion           int  `json:"configVersion"`
-		ProtectARLInclusionHost bool `json:"protectARLInclusionHost"`
+		} `json:"availableSet,omitempty"`
+		ConfigID                int  `json:"configId,omitempty"`
+		ConfigVersion           int  `json:"configVersion,omitempty"`
+		ProtectARLInclusionHost bool `json:"protectARLInclusionHost,omitempty"`
 	}
 )
 
