@@ -63,13 +63,13 @@ type (
 		ConfigID                      int    `json:"-"`
 		Version                       int    `json:"-"`
 		PolicyID                      string `json:"-"`
-		ApplyAPIConstraints           bool   `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool   `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool   `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool   `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool   `json:"applyRateControls"`
-		ApplyReputationControls       bool   `json:"applyReputationControls"`
-		ApplySlowPostControls         bool   `json:"applySlowPostControls"`
+		ApplyAPIConstraints           bool   `json:"applyApiConstraints,omitempty"`
+		ApplyApplicationLayerControls bool   `json:"applyApplicationLayerControls,omitempty"`
+		ApplyBotmanControls           bool   `json:"applyBotmanControls,omitempty"`
+		ApplyNetworkLayerControls     bool   `json:"applyNetworkLayerControls,omitempty"`
+		ApplyRateControls             bool   `json:"applyRateControls,omitempty"`
+		ApplyReputationControls       bool   `json:"applyReputationControls,omitempty"`
+		ApplySlowPostControls         bool   `json:"applySlowPostControls,omitempty"`
 	}
 
 	RemovePolicyProtectionsResponse struct {
