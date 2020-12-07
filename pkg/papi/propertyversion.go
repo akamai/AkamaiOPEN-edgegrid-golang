@@ -153,6 +153,8 @@ const (
 	VersionStatusInactive VersionStatus = "INACTIVE"
 	// VersionStatusPending const
 	VersionStatusPending VersionStatus = "PENDING"
+	// ActivationStatusDeactivated is deactivated
+	VersionStatusDeactivated VersionStatus = "DEACTIVATED"
 	// VersionProduction const
 	VersionProduction = "PRODUCTION"
 	// VersionStaging const
