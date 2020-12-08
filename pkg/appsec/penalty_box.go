@@ -49,7 +49,7 @@ type (
 	}
 
 	GetPenaltyBoxResponse struct {
-		Action               string `json:"actionv"`
+		Action               string `json:"action"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection,omitempty"`
 	}
 
