@@ -1,5 +1,9 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.0.3 (Dec 7, 2020)
+* PAPI - Property hostname validation fix for missing hostnames.  
+* PAPI - fix minor typo in rules error messages
+
 ## 2.0.2 (Nov 19, 2020)
 * [IMPORTANT] APPSEC - Added Application Security API
 * [ENHANCEMENT] DNS - Bulk Api endpoints added
