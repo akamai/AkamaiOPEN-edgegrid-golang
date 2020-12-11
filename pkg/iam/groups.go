@@ -43,7 +43,7 @@ type (
 
 func (i *iam) ListGroups(ctx context.Context, params ListGroupsRequest) ([]Group, error) {
 	logger := i.Log(ctx)
-	logger.Debug("ListRoles")
+	logger.Debug("ListGroups")
 
 	u, err := url.Parse(path.Join(UserAdminEP, "groups"))
 	if err != nil {
