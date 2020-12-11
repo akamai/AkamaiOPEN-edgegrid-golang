@@ -1,5 +1,17 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.0.3 (Dec 7, 2020)
+* PAPI - Property hostname validation fix for missing hostnames.  
+* PAPI - fix minor typo in rules error messages
+
+## 2.0.2 (Nov 19, 2020)
+* [IMPORTANT] APPSEC - Added Application Security API
+* [ENHANCEMENT] DNS - Bulk Api endpoints added
+* ALL - Re-enabled global account switch key support in edgerc files
+* PAPI - Edgehostname IPV6 support fix.  Added enums with allowed values.
+* PAPI - Edgehostname blank cname or egdehostname id fix
+* PAPI - propertyversion blank etag field fix
+
 ## 2.0.1 (Oct 15, 2020)
 * [IMPORTANT] Breaking changes from earlier clients. Project updated to use v2 directory structure.
 * [ENHANCEMENT] PAPI - Api error return to the user when an activation or validation error occurs.
