@@ -229,7 +229,7 @@ type (
 				Index         int      `json:"index"`
 				PositiveMatch bool     `json:"positiveMatch"`
 				Value         []string `json:"value,omitempty"`
-				Name          string   `json:"name,omitempty"`
+				Name          []string `json:"name,omitempty"`
 				NameCase      bool     `json:"nameCase,omitempty"`
 				NameWildcard  bool     `json:"nameWildcard,omitempty"`
 				ValueCase     bool     `json:"valueCase,omitempty"`
