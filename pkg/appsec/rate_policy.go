@@ -54,7 +54,7 @@ type (
 			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Values        []string `json:"values,omitempty"`
 		} `json:"fileExtensions,omitempty"`
-		Hostnames              []string `json:"hostNames,omitempty"`
+		Hostnames              []string `json:"hostnames,omitempty"`
 		AdditionalMatchOptions []struct {
 			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Type          string   `json:"type,omitempty"`
