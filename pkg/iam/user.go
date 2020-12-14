@@ -222,7 +222,7 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 		return nil, fmt.Errorf("%s: request failed: %s", "CreateUser", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", "CreateUser", i.Error(resp))
 	}
 

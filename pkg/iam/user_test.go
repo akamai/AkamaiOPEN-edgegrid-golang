@@ -21,7 +21,7 @@ func TestIAM_CreateUser(t *testing.T) {
 		expectedResponse *User
 		withError        func(*testing.T, error)
 	}{
-		"200 OK": {
+		"201 OK": {
 			params: CreateUserRequest{
 				User: UserBasicInfo{
 					FirstName: "John",
@@ -32,7 +32,7 @@ func TestIAM_CreateUser(t *testing.T) {
 					State:     "CA",
 				},
 			},
-			responseStatus: http.StatusOK,
+			responseStatus: http.StatusCreated,
 			responseBody: `
 {
 	"uiIdentityId": "A-BC-1234567",
