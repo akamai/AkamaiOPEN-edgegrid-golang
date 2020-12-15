@@ -133,6 +133,14 @@ type (
 	}
 )
 
+// Validate performs validation on AuthGrant
+func (r AuthGrant) Validate() error {
+	return validation.Errors{
+		"group_id": validation.Validate(r.GroupID, validation.Required),
+		"role_id":  validation.Validate(r.RoleID, validation.Required),
+	}.Filter()
+}
+
 // Validate performs the input validation for CreateUserRequest
 func (r CreateUserRequest) Validate() error {
 	return validation.Errors{
@@ -141,7 +149,7 @@ func (r CreateUserRequest) Validate() error {
 		"firstName":  validation.Validate(r.User.FirstName, validation.Required),
 		"lastName":   validation.Validate(r.User.LastName, validation.Required),
 		"phone":      validation.Validate(r.User.Phone, validation.Required),
-		"authGrants": validation.Validate(r.AuthGrants, validation.NilOrNotEmpty),
+		"authGrants": validation.Validate(r.AuthGrants, validation.Required),
 	}.Filter()
 }
 
