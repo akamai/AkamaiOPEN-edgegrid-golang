@@ -31,6 +31,8 @@ func TestIAM_CreateUser(t *testing.T) {
 					Country:   "USA",
 					State:     "CA",
 				},
+				AuthGrants:    []AuthGrant{{GroupID: 1, RoleID: tools.IntPtr(1)}},
+				Notifications: &UserNotifications{},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody: `
@@ -66,6 +68,8 @@ func TestIAM_CreateUser(t *testing.T) {
 					Country:   "USA",
 					State:     "CA",
 				},
+				AuthGrants:    []AuthGrant{{GroupID: 1, RoleID: tools.IntPtr(1)}},
+				Notifications: &UserNotifications{},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
