@@ -90,13 +90,13 @@ type (
 		Exception struct {
 			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
 			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names"`
-				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
+				Names    []string `json:"names,omitempty"`
+				Selector string   `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamNames,omitempty"`
 			SpecificHeaderCookieOrParamPrefix struct {
-				Prefix   string `json:"prefix"`
-				Selector string `json:"selector"`
-			} `json:"specificHeaderCookieOrParamPrefix"`
+				Prefix   string `json:"prefix,omitempty"`
+				Selector string `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamPrefix,omitempty"`
 		} `json:"exception"`
 	}
 

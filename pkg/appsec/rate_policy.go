@@ -210,8 +210,8 @@ type (
 	}
 
 	CreateRatePolicyRequest struct {
-		ID                    int    `json:"id"`
-		PolicyID              int    `json:"policyId"`
+		ID                    int    `json:"-"`
+		PolicyID              int    `json:"-"`
 		ConfigID              int    `json:"configId"`
 		ConfigVersion         int    `json:"configVersion"`
 		MatchType             string `json:"matchType"`
