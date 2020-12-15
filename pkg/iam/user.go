@@ -25,10 +25,10 @@ type (
 
 	// CreateUserRequest is the input to CreateUser
 	CreateUserRequest struct {
-		User          UserBasicInfo      `json:"user"`
-		Notifications *UserNotifications `json:"notifications,omitempty"`
-		AuthGrants    []AuthGrant        `json:"authGrants,omitempty"`
-		SendEmail     bool               `json:"sendEmail"`
+		User          UserBasicInfo     `json:"user"`
+		Notifications UserNotifications `json:"notifications"`
+		AuthGrants    []AuthGrant       `json:"authGrants"`
+		SendEmail     bool              `json:"sendEmail"`
 	}
 
 	// GetUserRequest is the input for GetUser
@@ -65,14 +65,14 @@ type (
 	// User encapsulates information about each user.
 	User struct {
 		UserBasicInfo
-		IdentityID         string             `json:"uiIdentityId"`
-		IsLocked           bool               `json:"isLocked"`
-		LastLoginDate      string             `json:"lastLoginDate,omitempty"`
-		PasswordExpiryDate string             `json:"passwordExpiryDate,omitempty"`
-		TFAConfigured      bool               `json:"tfaConfigured"`
-		EmailUpdatePending bool               `json:"emailUpdatePending"`
-		AuthGrants         []AuthGrant        `json:"authGrants,omitempty"`
-		Notifications      *UserNotifications `json:"notifications,omitempty"`
+		IdentityID         string            `json:"uiIdentityId"`
+		IsLocked           bool              `json:"isLocked"`
+		LastLoginDate      string            `json:"lastLoginDate,omitempty"`
+		PasswordExpiryDate string            `json:"passwordExpiryDate,omitempty"`
+		TFAConfigured      bool              `json:"tfaConfigured"`
+		EmailUpdatePending bool              `json:"emailUpdatePending"`
+		AuthGrants         []AuthGrant       `json:"authGrants,omitempty"`
+		Notifications      UserNotifications `json:"notifications,omitempty"`
 	}
 
 	// UserBasicInfo is the user basic info structure
@@ -120,16 +120,16 @@ type (
 
 	// UserNotifications types of notification emails the user receives.
 	UserNotifications struct {
-		EnableEmail bool                     `json:"enableEmailNotifications"`
-		Options     *UserNotificationOptions `json:"options,omitempty"`
+		EnableEmail bool                    `json:"enableEmailNotifications"`
+		Options     UserNotificationOptions `json:"options"`
 	}
 
 	// UserNotificationOptions types of notification emails the user receives.
 	UserNotificationOptions struct {
 		NewUser        bool     `json:"newUserNotification"`
 		PasswordExpiry bool     `json:"passwordExpiry"`
-		Proactive      []string `json:"proactive,omitempty"`
-		Upgrade        []string `json:"upgrade,omitempty"`
+		Proactive      []string `json:"proactive"`
+		Upgrade        []string `json:"upgrade"`
 	}
 )
 

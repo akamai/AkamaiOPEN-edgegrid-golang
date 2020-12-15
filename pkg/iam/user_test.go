@@ -32,7 +32,7 @@ func TestIAM_CreateUser(t *testing.T) {
 					State:     "CA",
 				},
 				AuthGrants:    []AuthGrant{{GroupID: 1, RoleID: tools.IntPtr(1)}},
-				Notifications: &UserNotifications{},
+				Notifications: UserNotifications{},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody: `
@@ -69,7 +69,7 @@ func TestIAM_CreateUser(t *testing.T) {
 					State:     "CA",
 				},
 				AuthGrants:    []AuthGrant{{GroupID: 1, RoleID: tools.IntPtr(1)}},
-				Notifications: &UserNotifications{},
+				Notifications: UserNotifications{},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -321,7 +321,7 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 				IdentityID: "1-ABCDE",
 				Notifications: UserNotifications{
 					EnableEmail: true,
-					Options: &UserNotificationOptions{
+					Options: UserNotificationOptions{
 						Upgrade:        []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
 						Proactive:      []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
 						PasswordExpiry: true,
@@ -349,7 +349,7 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/notifications",
 			expectedResponse: &UserNotifications{
 				EnableEmail: true,
-				Options: &UserNotificationOptions{
+				Options: UserNotificationOptions{
 					Upgrade:        []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
 					Proactive:      []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
 					PasswordExpiry: true,
@@ -362,7 +362,7 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 				IdentityID: "1-ABCDE",
 				Notifications: UserNotifications{
 					EnableEmail: true,
-					Options: &UserNotificationOptions{
+					Options: UserNotificationOptions{
 						Upgrade:        []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
 						Proactive:      []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
 						PasswordExpiry: true,
