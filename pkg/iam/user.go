@@ -144,12 +144,13 @@ func (r AuthGrant) Validate() error {
 // Validate performs the input validation for CreateUserRequest
 func (r CreateUserRequest) Validate() error {
 	return validation.Errors{
-		"country":    validation.Validate(r.User.Country, validation.Required),
-		"email":      validation.Validate(r.User.Email, validation.Required, is.EmailFormat),
-		"firstName":  validation.Validate(r.User.FirstName, validation.Required),
-		"lastName":   validation.Validate(r.User.LastName, validation.Required),
-		"phone":      validation.Validate(r.User.Phone, validation.Required),
-		"authGrants": validation.Validate(r.AuthGrants, validation.Required),
+		"country":       validation.Validate(r.User.Country, validation.Required),
+		"email":         validation.Validate(r.User.Email, validation.Required, is.EmailFormat),
+		"firstName":     validation.Validate(r.User.FirstName, validation.Required),
+		"lastName":      validation.Validate(r.User.LastName, validation.Required),
+		"phone":         validation.Validate(r.User.Phone, validation.Required),
+		"authGrants":    validation.Validate(r.AuthGrants, validation.Required),
+		"notifications": validation.Validate(r.Notifications, validation.Required),
 	}.Filter()
 }
 
