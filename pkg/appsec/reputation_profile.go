@@ -2,9 +2,11 @@ package appsec
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -29,21 +31,23 @@ type (
 		RemoveReputationProfile(ctx context.Context, params RemoveReputationProfileRequest) (*RemoveReputationProfileResponse, error)
 	}
 
+	atomicConditionsName []string
+
 	GetReputationProfilesResponse struct {
 		ReputationProfiles []struct {
 			Condition struct {
 				AtomicConditions []struct {
-					CheckIps      string   `json:"checkIps,omitempty"`
-					ClassName     string   `json:"className,omitempty"`
-					Index         int      `json:"index,omitempty"`
-					PositiveMatch bool     `json:"positiveMatch"`
-					Value         []string `json:"value,omitempty"`
-					Name          string   `json:"name,omitempty"`
-					NameCase      bool     `json:"nameCase,omitempty"`
-					NameWildcard  bool     `json:"nameWildcard,omitempty"`
-					ValueCase     bool     `json:"valueCase,omitempty"`
-					ValueWildcard bool     `json:"valueWildcard,omitempty"`
-					Host          []string `json:"host,omitempty"`
+					CheckIps      string               `json:"checkIps,omitempty"`
+					ClassName     string               `json:"className,omitempty"`
+					Index         int                  `json:"index,omitempty"`
+					PositiveMatch bool                 `json:"positiveMatch"`
+					Value         []string             `json:"value,omitempty"`
+					Name          atomicConditionsName `json:"name,omitempty"`
+					NameCase      bool                 `json:"nameCase,omitempty"`
+					NameWildcard  bool                 `json:"nameWildcard,omitempty"`
+					ValueCase     bool                 `json:"valueCase,omitempty"`
+					ValueWildcard bool                 `json:"valueWildcard,omitempty"`
+					Host          []string             `json:"host,omitempty"`
 				} `json:"atomicConditions,omitempty"`
 				PositiveMatch bool `json:"positiveMatch,omitempty"`
 			} `json:"condition,omitempty"`
@@ -76,17 +80,17 @@ type (
 		SharedIPHandling string `json:"sharedIpHandling"`
 		Condition        struct {
 			AtomicConditions []struct {
-				CheckIps      string   `json:"checkIps,omitempty"`
-				ClassName     string   `json:"className"`
-				Index         int      `json:"index"`
-				PositiveMatch bool     `json:"positiveMatch"`
-				Value         []string `json:"value,omitempty"`
-				Name          string   `json:"name,omitempty"`
-				NameCase      bool     `json:"nameCase,omitempty"`
-				NameWildcard  bool     `json:"nameWildcard,omitempty"`
-				ValueCase     bool     `json:"valueCase,omitempty"`
-				ValueWildcard bool     `json:"valueWildcard,omitempty"`
-				Host          []string `json:"host,omitempty"`
+				CheckIps      string               `json:"checkIps,omitempty"`
+				ClassName     string               `json:"className"`
+				Index         int                  `json:"index"`
+				PositiveMatch bool                 `json:"positiveMatch"`
+				Value         []string             `json:"value,omitempty"`
+				Name          atomicConditionsName `json:"name,omitempty"`
+				NameCase      bool                 `json:"nameCase,omitempty"`
+				NameWildcard  bool                 `json:"nameWildcard,omitempty"`
+				ValueCase     bool                 `json:"valueCase,omitempty"`
+				ValueWildcard bool                 `json:"valueWildcard,omitempty"`
+				Host          []string             `json:"host,omitempty"`
 			} `json:"atomicConditions"`
 			PositiveMatch bool `json:"positiveMatch"`
 		} `json:"condition"`
@@ -190,62 +194,51 @@ type (
 	}
 
 	CreateReputationProfileRequest struct {
-		ConfigID         int    `json:"-"`
-		ConfigVersion    int    `json:"-"`
-		Name             string `json:"name"`
-		Description      string `json:"description"`
-		Context          string `json:"context"`
-		Threshold        int    `json:"threshold"`
-		SharedIPHandling string `json:"sharedIpHandling"`
-		Condition        struct {
-			PositiveMatch    bool `json:"positiveMatch"`
-			AtomicConditions []struct {
-				PositiveMatch bool     `json:"positiveMatch"`
-				ClassName     string   `json:"className"`
-				Value         []string `json:"value,omitempty"`
-				NameWildcard  bool     `json:"nameWildcard,omitempty"`
-				ValueWildcard bool     `json:"valueWildcard,omitempty"`
-				NameCase      bool     `json:"nameCase,omitempty"`
-				Name          string   `json:"name,omitempty"`
-				Host          []string `json:"host,omitempty"`
-			} `json:"atomicConditions"`
-		} `json:"condition"`
+		ConfigID       int             `json:"-"`
+		ConfigVersion  int             `json:"-"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	UpdateReputationProfileRequest struct {
-		ConfigID            int    `json:"-"`
-		ConfigVersion       int    `json:"-"`
-		ReputationProfileId int    `json:"-"`
-		ID                  int    `json:"id"`
-		Name                string `json:"name"`
-		Context             string `json:"context"`
-		Description         string `json:"description"`
-		Threshold           int    `json:"threshold"`
-		SharedIPHandling    string `json:"sharedIpHandling"`
-		Condition           struct {
-			AtomicConditions []struct {
-				CheckIps      string   `json:"checkIps,omitempty"`
-				ClassName     string   `json:"className"`
-				Index         int      `json:"index"`
-				PositiveMatch bool     `json:"positiveMatch"`
-				Value         []string `json:"value,omitempty"`
-				Name          []string `json:"name,omitempty"`
-				NameCase      bool     `json:"nameCase,omitempty"`
-				NameWildcard  bool     `json:"nameWildcard,omitempty"`
-				ValueCase     bool     `json:"valueCase,omitempty"`
-				ValueWildcard bool     `json:"valueWildcard,omitempty"`
-				Host          []string `json:"host,omitempty"`
-			} `json:"atomicConditions"`
-			PositiveMatch bool `json:"positiveMatch"`
-		} `json:"condition"`
-		Enabled bool `json:"enabled"`
+		ConfigID            int             `json:"-"`
+		ConfigVersion       int             `json:"-"`
+		ReputationProfileId int             `json:"-"`
+		JsonPayloadRaw      json.RawMessage `json:"-"`
 	}
+
 	RemoveReputationProfileRequest struct {
 		ConfigID            int `json:"configId"`
 		ConfigVersion       int `json:"configVersion"`
 		ReputationProfileId int `json:"-"`
 	}
 )
+
+func (c *atomicConditionsName) UnmarshalJSON(data []byte) error {
+	var nums interface{}
+	err := json.Unmarshal(data, &nums)
+	if err != nil {
+		return err
+	}
+
+	items := reflect.ValueOf(nums)
+	switch items.Kind() {
+	case reflect.String:
+		*c = append(*c, items.String())
+
+	case reflect.Slice:
+		*c = make(atomicConditionsName, 0, items.Len())
+		for i := 0; i < items.Len(); i++ {
+			item := items.Index(i)
+			switch item.Kind() {
+			case reflect.String:
+				*c = append(*c, item.String())
+			case reflect.Interface:
+				*c = append(*c, item.Interface().(string))
+			}
+		}
+	}
+	return nil
+}
 
 // Validate validates GetReputationProfileRequest
 func (v GetReputationProfileRequest) Validate() error {
@@ -396,8 +389,9 @@ func (p *appsec) UpdateReputationProfile(ctx context.Context, params UpdateReput
 		return nil, fmt.Errorf("failed to create create ReputationProfilerequest: %w", err)
 	}
 
+	req.Header.Set("Content-Type", "application/json")
 	var rval UpdateReputationProfileResponse
-	resp, err := p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create ReputationProfile request failed: %w", err)
 	}
@@ -435,8 +429,8 @@ func (p *appsec) CreateReputationProfile(ctx context.Context, params CreateReput
 	}
 
 	var rval CreateReputationProfileResponse
-
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create reputationprofilerequest failed: %w", err)
 	}
