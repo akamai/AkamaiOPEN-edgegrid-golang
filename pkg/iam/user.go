@@ -383,7 +383,7 @@ func (i *iam) RemoveUser(ctx context.Context, params RemoveUserRequest) error {
 		return fmt.Errorf("%s: request failed: %s", "RemoveUser", err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", "RemoveUser", i.Error(resp))
 	}
 

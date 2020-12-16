@@ -535,6 +535,14 @@ func TestIAM_RemoveUser(t *testing.T) {
 			responseBody:   "",
 			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE",
 		},
+		"204 No Content": {
+			params: RemoveUserRequest{
+				IdentityID: "1-ABCDE",
+			},
+			responseStatus: http.StatusNoContent,
+			responseBody:   "",
+			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE",
+		},
 		"500 internal server error": {
 			params: RemoveUserRequest{
 				IdentityID: "1-ABCDE",
