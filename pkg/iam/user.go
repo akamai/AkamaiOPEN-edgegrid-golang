@@ -92,7 +92,7 @@ type (
 		State             string `json:"state,omitempty"`
 		ZipCode           string `json:"zipCode,omitempty"`
 		Country           string `json:"country"`
-		ContactType       string `json:"contactType"`
+		ContactType       string `json:"contactType,omitempty"`
 		PreferredLanguage string `json:"preferredLanguage,omitempty"`
 		SessionTimeOut    *int   `json:"sessionTimeOut,omitempty"`
 	}
