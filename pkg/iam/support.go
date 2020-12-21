@@ -13,6 +13,7 @@ type (
 		SupportedCountries(context.Context) ([]string, error)
 		SupportedContactTypes(context.Context) ([]string, error)
 		SupportedLanguages(context.Context) ([]string, error)
+		SupportedTimezones(context.Context) ([]Timezone, error)
 		ListProducts(context.Context) ([]string, error)
 		ListTimeoutPolicies(context.Context) ([]TimeoutPolicy, error)
 		ListStates(context.Context, ListStatesRequest) ([]string, error)
@@ -27,6 +28,14 @@ type (
 	// ListStatesRequest specifies the country for the requested states
 	ListStatesRequest struct {
 		Country string `json:"country"`
+	}
+
+	// Timezone is the object retured by the SupportedTimezones method
+	Timezone struct {
+		Description string `json:"description"`
+		Offset      string `json:"offset"`
+		Posix       string `json:"posix"`
+		Timezone    string `json:"timezone"`
 	}
 )
 
@@ -49,6 +58,30 @@ func (i *iam) SupportedCountries(ctx context.Context) ([]string, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", "SupportedCountries", i.Error(resp))
+	}
+
+	return rval, nil
+}
+
+func (i *iam) SupportedTimezones(ctx context.Context) ([]Timezone, error) {
+	logger := i.Log(ctx)
+	logger.Debug("SupportedTimezones")
+
+	getURL := path.Join(UserAdminEP, "common", "timezones")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%s: failed to create request: %s", "SupportedTimezones", err)
+	}
+
+	var rval []Timezone
+	resp, err := i.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("%s: request failed: %s", "SupportedTimezones", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", "SupportedTimezones", i.Error(resp))
 	}
 
 	return rval, nil

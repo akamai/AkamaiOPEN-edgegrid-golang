@@ -73,6 +73,78 @@ func TestIAM_SupportedCountries(t *testing.T) {
 	}
 }
 
+func TestIAM_SupportedTimezones(t *testing.T) {
+	tests := map[string]struct {
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse []Timezone
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			responseStatus: http.StatusOK,
+			responseBody: `
+			[
+				{
+					"timezone": "Asia/Rangoon",
+					"description": "Asia/Rangoon GMT+6",
+					"offset": "+6",
+					"posix": "Asia/Rangoon"
+				}
+			]`,
+			expectedPath: "/identity-management/v2/user-admin/common/timezones",
+			expectedResponse: []Timezone{
+				{
+					Timezone:    "Asia/Rangoon",
+					Description: "Asia/Rangoon GMT+6",
+					Offset:      "+6",
+					Posix:       "Asia/Rangoon",
+				},
+			},
+		},
+		"500 internal server error": {
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error making request",
+    "status": 500
+}`,
+			expectedPath: "/identity-management/v2/user-admin/common/timezones",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error making request",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.SupportedTimezones(context.Background())
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
 func TestIAM_SupportedContactTypes(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus   int
