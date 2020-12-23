@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.1.0 (Dec 21, 2020)
+## 2.0.4 (Dec 23, 2020)
 * APPSEC - Extended list of supported endpoints from APPSEC API:
   * DDoS Protection -- Rate Policy & Action
   * DDoS Protection -- Slowpost setting & Action
