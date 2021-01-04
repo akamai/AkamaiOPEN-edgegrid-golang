@@ -31,13 +31,13 @@ type (
 
 	CustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description"`
+		Name          string   `json:"name,omitempty"`
+		Description   string   `json:"description,omitempty"`
 		Version       int      `json:"version,omitempty"`
-		RuleActivated bool     `json:"ruleActivated"`
-		Tag           []string `json:"tag"`
+		RuleActivated bool     `json:"ruleActivated,omitempty"`
+		Tag           []string `json:"tag,omitempty"`
 		Conditions    []struct {
-			Type          string   `json:"type"`
+			Type          string   `json:"type,omitempty"`
 			PositiveMatch bool     `json:"positiveMatch"`
 			Value         []string `json:"value,omitempty"`
 			ValueWildcard bool     `json:"valueWildcard,omitempty"`
@@ -45,17 +45,17 @@ type (
 			NameWildcard  bool     `json:"nameWildcard,omitempty"`
 			Name          []string `json:"name,omitempty"`
 			NameCase      bool     `json:"nameCase,omitempty"`
-		} `json:"conditions"`
+		} `json:"conditions,omitempty"`
 	}
 
 	CustomRulesResponse struct {
 		CustomRules []struct {
-			ID      int    `json:"id"`
-			Link    string `json:"link"`
-			Name    string `json:"name"`
-			Status  string `json:"status"`
-			Version int    `json:"version"`
-		} `json:"customRules"`
+			ID      int    `json:"id,omitempty"`
+			Link    string `json:"link,omitempty"`
+			Name    string `json:"name,omitempty"`
+			Status  string `json:"status,omitempty"`
+			Version int    `json:"version,omitempty"`
+		} `json:"customRules,omitempty"`
 	}
 
 	GetCustomRuleResponse struct {

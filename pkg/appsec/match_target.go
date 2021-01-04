@@ -40,6 +40,7 @@ type (
 	GetMatchTargetsRequest struct {
 		ConfigID      int `json:"configId"`
 		ConfigVersion int `json:"configVersion"`
+		TargetID      int `json:"targetId"`
 	}
 
 	// UpdateMatchTargetRequest is the argument for GetProperties
@@ -140,92 +141,92 @@ type (
 
 	//GetMatchTargetResponse ...
 	GetMatchTargetResponse struct {
-		Type                      string `json:"type"`
-		ConfigID                  int    `json:"configId"`
-		ConfigVersion             int    `json:"configVersion"`
-		DefaultFile               string `json:"defaultFile"`
+		Type                      string `json:"type,omitempty"`
+		ConfigID                  int    `json:"configId,omitempty"`
+		ConfigVersion             int    `json:"configVersion,omitempty"`
+		DefaultFile               string `json:"defaultFile,omitempty"`
 		EffectiveSecurityControls struct {
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-			ApplyRateControls             bool `json:"applyRateControls"`
-			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		} `json:"effectiveSecurityControls"`
-		Hostnames                    []string `json:"hostnames"`
-		IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
-		IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
-		FilePaths                    []string `json:"filePaths"`
-		FileExtensions               []string `json:"fileExtensions"`
+			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
+			ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
+			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
+			ApplyRateControls             bool `json:"applyRateControls,omitempty"`
+			ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
+			ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
+		} `json:"effectiveSecurityControls,omitempty"`
+		Hostnames                    []string `json:"hostnames,omitempty"`
+		IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch,omitempty"`
+		IsNegativePathMatch          bool     `json:"isNegativePathMatch,omitempty"`
+		FilePaths                    []string `json:"filePaths,omitempty"`
+		FileExtensions               []string `json:"fileExtensions,omitempty"`
 		SecurityPolicy               struct {
-			PolicyID string `json:"policyId"`
-		} `json:"securityPolicy"`
-		Sequence           int `json:"sequence"`
-		TargetID           int `json:"targetId"`
+			PolicyID string `json:"policyId,omitempty"`
+		} `json:"securityPolicy,omitempty"`
+		Sequence           int `json:"sequence,omitempty"`
+		TargetID           int `json:"targetId,omitempty"`
 		BypassNetworkLists []struct {
-			Name string `json:"name"`
-			ID   string `json:"id"`
-		} `json:"bypassNetworkLists"`
+			Name string `json:"name,omitempty"`
+			ID   string `json:"id,omitempty"`
+		} `json:"bypassNetworkLists,omitempty"`
 	}
 
 	// GetMatchTargetResponse ...
 	GetMatchTargetsResponse struct {
 		MatchTargets struct {
 			APITargets []struct {
-				ConfigID                  int    `json:"configId"`
-				ConfigVersion             int    `json:"configVersion"`
-				Sequence                  int    `json:"sequence"`
-				TargetID                  int    `json:"targetId"`
-				Type                      string `json:"type"`
+				ConfigID                  int    `json:"configId,omitempty"`
+				ConfigVersion             int    `json:"configVersion,omitempty"`
+				Sequence                  int    `json:"sequence,omitempty"`
+				TargetID                  int    `json:"targetId,omitempty"`
+				Type                      string `json:"type,omitempty"`
 				EffectiveSecurityControls struct {
-					ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyRateControls             bool `json:"applyRateControls"`
-					ApplyReputationControls       bool `json:"applyReputationControls"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls"`
-				} `json:"effectiveSecurityControls"`
+					ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
+					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
+					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
+					ApplyRateControls             bool `json:"applyRateControls,omitempty"`
+					ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
+					ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
+				} `json:"effectiveSecurityControls,omitempty"`
 				SecurityPolicy struct {
-					PolicyID string `json:"policyId"`
-				} `json:"securityPolicy"`
+					PolicyID string `json:"policyId,omitempty"`
+				} `json:"securityPolicy,omitempty"`
 				Apis []struct {
-					ID   int    `json:"id"`
-					Name string `json:"name"`
-				} `json:"apis"`
+					ID   int    `json:"id,omitempty"`
+					Name string `json:"name,omitempty"`
+				} `json:"apis,omitempty"`
 				BypassNetworkLists []struct {
-					Name string `json:"name"`
-					ID   string `json:"id"`
-				} `json:"bypassNetworkLists"`
-			} `json:"apiTargets"`
+					Name string `json:"name,omitempty"`
+					ID   string `json:"id,omitempty"`
+				} `json:"bypassNetworkLists,omitempty"`
+			} `json:"apiTargets,omitempty"`
 			WebsiteTargets []struct {
-				ConfigID                     int           `json:"configId"`
-				ConfigVersion                int           `json:"configVersion"`
-				DefaultFile                  string        `json:"defaultFile"`
-				IsNegativeFileExtensionMatch bool          `json:"isNegativeFileExtensionMatch"`
-				IsNegativePathMatch          bool          `json:"isNegativePathMatch"`
-				Sequence                     int           `json:"sequence"`
-				TargetID                     int           `json:"targetId"`
-				Type                         string        `json:"type"`
-				FileExtensions               []string      `json:"fileExtensions"`
-				FilePaths                    []string      `json:"filePaths"`
-				Hostnames                    []interface{} `json:"hostnames"`
+				ConfigID                     int           `json:"configId,omitempty"`
+				ConfigVersion                int           `json:"configVersion,omitempty"`
+				DefaultFile                  string        `json:"defaultFile,omitempty"`
+				IsNegativeFileExtensionMatch bool          `json:"isNegativeFileExtensionMatch,omitempty"`
+				IsNegativePathMatch          bool          `json:"isNegativePathMatch,omitempty"`
+				Sequence                     int           `json:"sequence,omitempty"`
+				TargetID                     int           `json:"targetId,omitempty"`
+				Type                         string        `json:"type,omitempty"`
+				FileExtensions               []string      `json:"fileExtensions,omitempty"`
+				FilePaths                    []string      `json:"filePaths,omitempty"`
+				Hostnames                    []interface{} `json:"hostnames,omitempty"`
 				EffectiveSecurityControls    struct {
-					ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyRateControls             bool `json:"applyRateControls"`
-					ApplyReputationControls       bool `json:"applyReputationControls"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls"`
-				} `json:"effectiveSecurityControls"`
+					ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
+					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
+					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
+					ApplyRateControls             bool `json:"applyRateControls,omitempty"`
+					ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
+					ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
+				} `json:"effectiveSecurityControls,omitempty"`
 				SecurityPolicy struct {
-					PolicyID string `json:"policyId"`
-				} `json:"securityPolicy"`
+					PolicyID string `json:"policyId,omitempty"`
+				} `json:"securityPolicy,omitempty"`
 				BypassNetworkLists []struct {
-					Name string `json:"name"`
-					ID   string `json:"id"`
-				} `json:"bypassNetworkLists"`
-			} `json:"websiteTargets"`
-		} `json:"matchTargets"`
+					Name string `json:"name,omitempty"`
+					ID   string `json:"id,omitempty"`
+				} `json:"bypassNetworkLists,omitempty"`
+			} `json:"websiteTargets,omitempty"`
+		} `json:"matchTargets,omitempty"`
 	}
 
 	// UpdateMatchTargetResponse ...
@@ -386,6 +387,7 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 	logger.Debug("GetMatchTargets")
 
 	var rval GetMatchTargetsResponse
+	var rvalfiltered GetMatchTargetsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/match-targets",
@@ -407,7 +409,21 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.TargetID != 0 {
+		for _, val := range rval.MatchTargets.WebsiteTargets {
+			if val.TargetID == params.TargetID {
+				rvalfiltered.MatchTargets.WebsiteTargets = append(rvalfiltered.MatchTargets.WebsiteTargets, val)
+			}
+		}
+		for _, val := range rval.MatchTargets.APITargets {
+			if val.TargetID == params.TargetID {
+				rvalfiltered.MatchTargets.APITargets = append(rvalfiltered.MatchTargets.APITargets, val)
+			}
+		}
+	} else {
+		rvalfiltered = rval
+	}
+	return &rvalfiltered, nil
 
 }
 

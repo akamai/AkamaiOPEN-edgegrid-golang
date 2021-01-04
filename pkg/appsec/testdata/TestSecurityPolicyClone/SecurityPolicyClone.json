@@ -1,11 +1,15 @@
-
-    {
-        "configId": 43253,
-        "policies": [
-            {
-                "policyId": "AAAA_81230",
-                "policyName": "akamaitools"
-            }
-        ],
-        "version": 15
-    }
+{
+    "configId": 43253,
+    "policyId": "AAAA_81230",
+    "policyName": "akamaitools",
+    "policySecurityControls": {
+        "applyApiConstraints": true,
+        "applyApplicationLayerControls": true,
+        "applyBotmanControls": true,
+        "applyNetworkLayerControls": true,
+        "applyRateControls": false,
+        "applyReputationControls": true,
+        "applySlowPostControls": true
+    },
+    "version": 15
+}

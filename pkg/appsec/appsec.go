@@ -16,28 +16,45 @@ type (
 	// APPSEC is the appsec api interface
 	APPSEC interface {
 		Activations
+		AttackGroupAction
+		AttackGroupConditionException
 		Configuration
 		ConfigurationClone
 		ConfigurationVersion
 		CustomRule
 		CustomRuleAction
+		Eval
+		EvalRuleAction
+		EvalRuleConditionException
 		ExportConfiguration
+		IPGeo
+		RuleAction
+		RuleConditionException
 		MatchTarget
 		MatchTargetSequence
+		NetworkLayerProtection
 		PenaltyBox
+		PolicyProtections
 		RatePolicy
 		RatePolicyAction
+		RateProtection
+		ReputationProfile
+		ReputationProfileAction
+		ReputationProtection
+		RuleUpgrade
 		SecurityPolicy
 		SecurityPolicyClone
 		SelectedHostname
 		SelectableHostnames
 		SlowPostProtectionSetting
+		SlowPostProtection
 		WAFMode
 		WAFProtection
 	}
 
 	appsec struct {
 		session.Session
+		usePrefixes bool
 	}
 
 	// Option defines a PAPI option

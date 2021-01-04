@@ -1,5 +1,16 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.0.4 (Dec 23, 2020)
+* APPSEC - Extended list of supported endpoints from APPSEC API:
+  * DDoS Protection -- Rate Policy & Action
+  * DDoS Protection -- Slowpost setting & Action
+  * Application Layer Protection -- Rule Action, Exceptions & Conditions
+  * Application Layer Protection -- Rule Evaluation Action, Exceptions & Conditions
+  * Application Layer Protection -- Attack Group Action, Exceptions & Conditions
+  * Application Layer Protection -- Rule Upgrade & Change Mode for Rule Eval
+  * Reputation Profile & Action
+  * Network Layer Control -- IP & GEO setting
+
 ## 2.0.3 (Dec 7, 2020)
 * PAPI - Property hostname validation fix for missing hostnames.  
 * PAPI - fix minor typo in rules error messages

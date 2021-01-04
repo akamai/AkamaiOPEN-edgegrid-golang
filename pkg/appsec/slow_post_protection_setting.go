@@ -41,14 +41,14 @@ type (
 	}
 
 	GetSlowPostProtectionSettingsResponse struct {
-		Action            string `json:"action"`
+		Action            string `json:"action,omitempty"`
 		SlowRateThreshold struct {
-			Rate   int `json:"rate"`
-			Period int `json:"period"`
-		} `json:"slowRateThreshold"`
+			Rate   int `json:"rate,omitempty"`
+			Period int `json:"period,omitempty"`
+		} `json:"slowRateThreshold,omitempty"`
 		DurationThreshold struct {
-			Timeout int `json:"timeout"`
-		} `json:"durationThreshold"`
+			Timeout int `json:"timeout,omitempty"`
+		} `json:"durationThreshold,omitempty"`
 	}
 
 	GetSlowPostProtectionSettingRequest struct {
@@ -66,14 +66,14 @@ type (
 	}
 
 	GetSlowPostProtectionSettingResponse struct {
-		Action            string `json:"action"`
+		Action            string `json:"action,omitempty"`
 		SlowRateThreshold struct {
-			Rate   int `json:"rate"`
-			Period int `json:"period"`
-		} `json:"slowRateThreshold"`
+			Rate   int `json:"rate,omitempty"`
+			Period int `json:"period,omitempty"`
+		} `json:"slowRateThreshold,omitempty"`
 		DurationThreshold struct {
-			Timeout int `json:"timeout"`
-		} `json:"durationThreshold"`
+			Timeout int `json:"timeout,omitempty"`
+		} `json:"durationThreshold,omitempty"`
 	}
 
 	UpdateSlowPostProtectionSettingRequest struct {

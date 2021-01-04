@@ -1,0 +1,40 @@
+{
+    "conditions": [],
+    "exception": {
+        "headerCookieOrParamValues": [
+            "abc"
+        ],
+        "specificHeaderCookieOrParamNames": [
+            {
+                "names": [
+                    "new",
+                    "hear"
+                ],
+                "selector": "REQUEST_HEADERS"
+            },
+            {
+                "names": [
+                    "cook",
+                    "vale"
+                ],
+                "selector": "REQUEST_COOKIES"
+            },
+            {
+                "names": [
+                    "new"
+                ],
+                "selector": "JSON_PAIRS"
+            },
+            {
+                "names": [
+                    "xml"
+                ],
+                "selector": "XML_PAIRS"
+            }
+        ],
+        "specificHeaderCookieOrParamPrefix": {
+            "prefix": "b*",
+            "selector": "REQUEST_COOKIES"
+        }
+    }
+}

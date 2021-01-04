@@ -30,14 +30,15 @@ type (
 		ConfigID int    `json:"configId"`
 		Version  int    `json:"version"`
 		PolicyID string `json:"policyId"`
+		RuleID   int    `json:"ruleId"`
 	}
 
 	GetCustomRuleActionsResponse []struct {
-		Action                string `json:"action"`
-		CanUseAdvancedActions bool   `json:"canUseAdvancedActions"`
-		Link                  string `json:"link"`
-		Name                  string `json:"name"`
-		RuleID                int    `json:"ruleId"`
+		Action                string `json:"action,omitempty"`
+		CanUseAdvancedActions bool   `json:"canUseAdvancedActions,omitempty"`
+		Link                  string `json:"link,omitempty"`
+		Name                  string `json:"name,omitempty"`
+		RuleID                int    `json:"ruleId,omitempty"`
 	}
 
 	GetCustomRuleActionRequest struct {
@@ -48,11 +49,11 @@ type (
 	}
 
 	GetCustomRuleActionResponse struct {
-		Action                string `json:"action"`
-		CanUseAdvancedActions bool   `json:"canUseAdvancedActions"`
-		Link                  string `json:"link"`
-		Name                  string `json:"name"`
-		RuleID                int    `json:"ruleId"`
+		Action                string `json:"action,omitempty"`
+		CanUseAdvancedActions bool   `json:"canUseAdvancedActions,omitempty"`
+		Link                  string `json:"link,omitempty"`
+		Name                  string `json:"name,omitempty"`
+		RuleID                int    `json:"ruleId,omitempty"`
 	}
 
 	UpdateCustomRuleActionRequest struct {
@@ -152,6 +153,7 @@ func (p *appsec) GetCustomRuleActions(ctx context.Context, params GetCustomRuleA
 	logger.Debug("GetCustomRuleActions")
 
 	var rval GetCustomRuleActionsResponse
+	var rvalfiltered GetCustomRuleActionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/custom-rules",
@@ -173,7 +175,16 @@ func (p *appsec) GetCustomRuleActions(ctx context.Context, params GetCustomRuleA
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.RuleID != 0 {
+		for _, val := range rval {
+			if val.RuleID == params.RuleID {
+				rvalfiltered = append(rvalfiltered, val)
+			}
+		}
+	} else {
+		rvalfiltered = rval
+	}
+	return &rvalfiltered, nil
 
 }
 

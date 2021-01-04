@@ -39,7 +39,7 @@ type (
 	}
 
 	GetSelectedHostnamesResponse struct {
-		HostnameList []Hostname `json:"hostnameList"`
+		HostnameList []Hostname `json:"hostnameList,omitempty"`
 	}
 
 	UpdateSelectedHostnameRequest struct {
