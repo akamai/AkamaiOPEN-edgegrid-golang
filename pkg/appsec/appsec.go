@@ -16,17 +16,25 @@ type (
 	// APPSEC is the appsec api interface
 	APPSEC interface {
 		Activations
+		AdvancedSettingsLogging
+		AdvancedSettingsPolicyLogging
+		AdvancedSettingsPrefetch
+		ApiEndpoints
+		ApiRequestConstraints
 		AttackGroupAction
 		AttackGroupConditionException
 		Configuration
 		ConfigurationClone
 		ConfigurationVersion
+		ContractsGroups
+		CustomDeny
 		CustomRule
 		CustomRuleAction
 		Eval
 		EvalRuleAction
 		EvalRuleConditionException
 		ExportConfiguration
+		FailoverHostnames
 		IPGeo
 		RuleAction
 		RuleConditionException
@@ -34,6 +42,7 @@ type (
 		MatchTargetSequence
 		NetworkLayerProtection
 		PenaltyBox
+		PolicyApiEndpoints
 		PolicyProtections
 		RatePolicy
 		RatePolicyAction
@@ -46,6 +55,8 @@ type (
 		SecurityPolicyClone
 		SelectedHostname
 		SelectableHostnames
+		SiemDefinitions
+		SiemSettings
 		SlowPostProtectionSetting
 		SlowPostProtection
 		WAFMode
