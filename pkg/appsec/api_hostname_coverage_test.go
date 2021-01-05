@@ -13,41 +13,39 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListPolicyApiEndpoints(t *testing.T) {
+func TestApsec_ListApiHostnameCoverage(t *testing.T) {
 
-	result := GetPolicyApiEndpointsResponse{}
+	result := GetApiHostnameCoverageResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyApiEndpoints/PolicyApiEndpoints.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestApiHostnameCoverage/ApiHostnameCoverage.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetPolicyApiEndpointsRequest
+		params           GetApiHostnameCoverageRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetPolicyApiEndpointsResponse
+		expectedResponse *GetApiHostnameCoverageResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetPolicyApiEndpointsRequest{
+			params: GetApiHostnameCoverageRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/api-endpoints",
+			expectedPath:     "/appsec/v1/hostname-coverage",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetPolicyApiEndpointsRequest{
+			params: GetApiHostnameCoverageRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -55,14 +53,14 @@ func TestApsec_ListPolicyApiEndpoints(t *testing.T) {
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching PolicyApiEndpoints",
+    "detail": "Error fetching ApiHostnameCoverage",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/api-endpoints",
+			expectedPath: "/appsec/v1/hostname-coverage",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching PolicyApiEndpoints",
+				Detail:     "Error fetching ApiHostnameCoverage",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -78,7 +76,7 @@ func TestApsec_ListPolicyApiEndpoints(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetPolicyApiEndpoints(
+			result, err := client.GetApiHostnameCoverage(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -94,51 +92,49 @@ func TestApsec_ListPolicyApiEndpoints(t *testing.T) {
 	}
 }
 
-// Test ApiEndpoints
-func TestAppSec_GetPolicyApiEndpoints(t *testing.T) {
+// Test ApiHostnameCoverage
+func TestAppSec_GetApiHostnameCoverage(t *testing.T) {
 
-	result := GetPolicyApiEndpointsResponse{}
+	result := GetApiHostnameCoverageResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyApiEndpoints/ApiEndpoints.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestApiHostnameCoverage/ApiHostnameCoverage.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetPolicyApiEndpointsRequest
+		params           GetApiHostnameCoverageRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetPolicyApiEndpointsResponse
+		expectedResponse *GetApiHostnameCoverageResponse
 		withError        error
 	}{
 		"200 OK": {
-			params: GetPolicyApiEndpointsRequest{
+			params: GetApiHostnameCoverageRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/api-endpoints",
+			expectedPath:     "/appsec/v1/hostname-coverage",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetPolicyApiEndpointsRequest{
+			params: GetApiHostnameCoverageRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching match target"
+    "detail": "Error fetching ApiHostnameCoverage"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/api-endpoints",
+			expectedPath: "/appsec/v1/hostname-coverage",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching match target",
+				Detail:     "Error fetching ApiHostnameCoverage",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -154,7 +150,7 @@ func TestAppSec_GetPolicyApiEndpoints(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetPolicyApiEndpoints(context.Background(), test.params)
+			result, err := client.GetApiHostnameCoverage(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

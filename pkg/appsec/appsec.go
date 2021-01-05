@@ -20,6 +20,9 @@ type (
 		AdvancedSettingsPolicyLogging
 		AdvancedSettingsPrefetch
 		ApiEndpoints
+		ApiHostnameCoverage
+		ApiHostnameCoverageOverlapping
+		ApiHostnameCoverageMatchTargets
 		ApiRequestConstraints
 		AttackGroupAction
 		AttackGroupConditionException
