@@ -34,6 +34,8 @@ type (
 		CustomRule
 		CustomRuleAction
 		Eval
+		EvalHost
+		EvalProtectHost
 		EvalRuleAction
 		EvalRuleConditionException
 		ExportConfiguration

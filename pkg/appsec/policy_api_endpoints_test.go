@@ -99,7 +99,7 @@ func TestAppSec_GetPolicyApiEndpoints(t *testing.T) {
 
 	result := GetPolicyApiEndpointsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyApiEndpoints/ApiEndpoints.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestApiEndpoints/ApiEndpoints.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
