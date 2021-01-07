@@ -1,5 +1,8 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 1.0.1 (Jan 7, 2021)
+* CPSv2 - Fixed several issues with listing enrollments
+
 ## 2.0.0 (Oct 15, 2020)
 * [IMPORTANT] Breaking changes from earlier clients. Project updated to use v2 directory structure.
 * [ENHANCEMENT] PAPI - Api error return to the user when an activation or validation error occurs.

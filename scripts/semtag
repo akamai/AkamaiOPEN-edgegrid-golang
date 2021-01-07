@@ -584,7 +584,11 @@ case $ACTION in
   final)
     init
     diff=$(git diff master | cat)
+    diff_dev=$(git diff develop | cat)
+    diff_v2=$(git diff v2 | cat)
     if [ "$forcetag" == "false" ]; then
+      if  [ -n "$diff_dev" ] && [ -n "$diff" ] && [ -n "$diff_v2" ]; then
+        echo "ERROR: Branch must be updated with develop, master, or v2 for final versions"
       if [ -n "$diff" ]; then
         echo "ERROR: Branch must be updated with master for final versions"
         exit 1
