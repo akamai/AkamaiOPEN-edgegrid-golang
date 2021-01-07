@@ -13,24 +13,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListConfigurationClone(t *testing.T) {
+func TestApsec_ListConfigurationVersionClone(t *testing.T) {
 
-	result := GetConfigurationCloneResponse{}
+	result := GetConfigurationVersionCloneResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationClone/ConfigurationClone.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationVersionClone/ConfigurationVersionClone.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetConfigurationCloneRequest
+		params           GetConfigurationVersionCloneRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetConfigurationCloneResponse
+		expectedResponse *GetConfigurationVersionCloneResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetConfigurationCloneRequest{
+			params: GetConfigurationVersionCloneRequest{
 				ConfigID: 43253,
 				Version:  15,
 			},
@@ -43,7 +43,7 @@ func TestApsec_ListConfigurationClone(t *testing.T) {
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetConfigurationCloneRequest{
+			params: GetConfigurationVersionCloneRequest{
 				ConfigID: 43253,
 				Version:  15,
 			},
@@ -76,7 +76,7 @@ func TestApsec_ListConfigurationClone(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetConfigurationClone(
+			result, err := client.GetConfigurationVersionClone(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -93,23 +93,23 @@ func TestApsec_ListConfigurationClone(t *testing.T) {
 }
 
 // Test ConfigurationClone
-func TestAppSec_GetConfigurationClone(t *testing.T) {
+func TestAppSec_GetConfigurationVersionClone(t *testing.T) {
 
-	result := GetConfigurationCloneResponse{}
+	result := GetConfigurationVersionCloneResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationClone/ConfigurationClone.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationVersionClone/ConfigurationVersionClone.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetConfigurationCloneRequest
+		params           GetConfigurationVersionCloneRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetConfigurationCloneResponse
+		expectedResponse *GetConfigurationVersionCloneResponse
 		withError        error
 	}{
 		"200 OK": {
-			params: GetConfigurationCloneRequest{
+			params: GetConfigurationVersionCloneRequest{
 				ConfigID: 43253,
 				Version:  15,
 			},
@@ -119,7 +119,7 @@ func TestAppSec_GetConfigurationClone(t *testing.T) {
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetConfigurationCloneRequest{
+			params: GetConfigurationVersionCloneRequest{
 				ConfigID: 43253,
 				Version:  15,
 			},
@@ -128,13 +128,13 @@ func TestAppSec_GetConfigurationClone(t *testing.T) {
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching ConfigurationClone"
+    "detail": "Error fetching match target"
 }`),
 			expectedPath: "/appsec/v1/configs/43253/versions/15",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching ConfigurationClone",
+				Detail:     "Error fetching match target",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -150,7 +150,7 @@ func TestAppSec_GetConfigurationClone(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetConfigurationClone(context.Background(), test.params)
+			result, err := client.GetConfigurationVersionClone(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -162,60 +162,59 @@ func TestAppSec_GetConfigurationClone(t *testing.T) {
 }
 
 // Test Create ConfigurationClone
-func TestAppSec_CreateConfigurationClone(t *testing.T) {
+// Test Create ConfigurationClone
+func TestAppSec_CreateConfigurationVersionClone(t *testing.T) {
 
-	result := CreateConfigurationCloneResponse{}
+	result := CreateConfigurationVersionCloneResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationClone/ConfigurationClone.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationVersionClone/ConfigurationVersionClone.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := CreateConfigurationCloneRequest{}
+	req := CreateConfigurationVersionCloneRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestConfigurationClone/ConfigurationClone.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestConfigurationVersionClone/ConfigurationVersionClone.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
-		params           CreateConfigurationCloneRequest
-		prop             *CreateConfigurationCloneRequest
+		params           CreateConfigurationVersionCloneRequest
+		prop             *CreateConfigurationVersionCloneRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *CreateConfigurationCloneResponse
+		expectedResponse *CreateConfigurationVersionCloneResponse
 		withError        error
 		headers          http.Header
 	}{
 		"201 Created": {
-			params: CreateConfigurationCloneRequest{Name: "Test", CreateFrom: struct {
-				ConfigID int `json:"configId"`
-				Version  int `json:"version"`
-			}{ConfigID: 42345,
-				Version: 7}},
+			params: CreateConfigurationVersionCloneRequest{
+				ConfigID:          43253,
+				CreateFromVersion: 3,
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/",
+			expectedPath:     "/appsec/v1/configs/43253/versions",
 		},
 		"500 internal server error": {
-			params: CreateConfigurationCloneRequest{Name: "Test", CreateFrom: struct {
-				ConfigID int `json:"configId"`
-				Version  int `json:"version"`
-			}{ConfigID: 42345,
-				Version: 7}},
+			params: CreateConfigurationVersionCloneRequest{
+				ConfigID:          43253,
+				CreateFromVersion: 3,
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error creating ConfigurationClone"
+    "detail": "Error creating ConfigurationVersionClone"
 }`),
-			expectedPath: "/appsec/v1/configs/",
+			expectedPath: "/appsec/v1/configs/43253/versions",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error creating ConfigurationClone",
+				Detail:     "Error creating ConfigurationVersionClone",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -224,7 +223,6 @@ func TestAppSec_CreateConfigurationClone(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
@@ -233,7 +231,7 @@ func TestAppSec_CreateConfigurationClone(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateConfigurationClone(
+			result, err := client.CreateConfigurationVersionClone(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)

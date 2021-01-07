@@ -28,6 +28,7 @@ type (
 		AttackGroupConditionException
 		Configuration
 		ConfigurationClone
+		ConfigurationVersionClone
 		ConfigurationVersion
 		ContractsGroups
 		CustomDeny
