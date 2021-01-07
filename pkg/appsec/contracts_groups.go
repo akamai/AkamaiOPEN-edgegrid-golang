@@ -23,9 +23,11 @@ type (
 	}
 
 	GetContractsGroupsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
-		PolicyID string `json:"-"`
+		ConfigID   int    `json:"-"`
+		Version    int    `json:"-"`
+		PolicyID   string `json:"-"`
+		ContractID string `json:"-"`
+		GroupID    int    `json:"-"`
 	}
 
 	GetContractsGroupsResponse struct {
@@ -37,16 +39,15 @@ type (
 	}
 )
 
-
-
 func (p *appsec) GetContractsGroups(ctx context.Context, params GetContractsGroupsRequest) (*GetContractsGroupsResponse, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetContractsGroups")
 
 	var rval GetContractsGroupsResponse
+	var rvalfiltered GetContractsGroupsResponse
 
-	uri := 
+	uri :=
 		"/appsec/v1/contracts-groups"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
@@ -55,7 +56,7 @@ func (p *appsec) GetContractsGroups(ctx context.Context, params GetContractsGrou
 	}
 
 	resp, err := p.Exec(req, &rval)
-	if err!= nil {
+	if err != nil {
 		return nil, fmt.Errorf("getcontractsgroups  request failed: %w", err)
 	}
 
@@ -63,6 +64,15 @@ func (p *appsec) GetContractsGroups(ctx context.Context, params GetContractsGrou
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.GroupID != 0 {
+		for _, val := range rval.ContractGroups {
+			if val.ContractID == params.ContractID && val.GroupID == params.GroupID {
+				rvalfiltered.ContractGroups = append(rvalfiltered.ContractGroups, val)
+			}
+		}
+	} else {
+		rvalfiltered = rval
+	}
+	return &rvalfiltered, nil
 
 }
