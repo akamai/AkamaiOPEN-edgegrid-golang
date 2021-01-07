@@ -41,6 +41,7 @@ type (
 		ExportConfiguration
 		FailoverHostnames
 		IPGeo
+		ReputationAnalysis
 		RuleAction
 		RuleConditionException
 		MatchTarget
