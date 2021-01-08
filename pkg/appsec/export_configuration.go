@@ -162,6 +162,11 @@ type (
 					ID               int    `json:"id"`
 					RulesetVersionID int    `json:"rulesetVersionId"`
 				} `json:"ruleActions"`
+				AttackGroupActions []struct {
+					Action           string `json:"action"`
+					Group            string `json:"group"`
+					RulesetVersionID int    `json:"rulesetVersionId"`
+				} `json:"attackGroupActions"`
 			} `json:"webApplicationFirewall"`
 			CustomRuleActions []struct {
 				Action string `json:"action"`
@@ -170,6 +175,12 @@ type (
 			APIRequestConstraints struct {
 				Action string `json:"action"`
 			} `json:"apiRequestConstraints"`
+			ClientReputation struct {
+				ReputationProfileActions []struct {
+					Action string `json:"action"`
+					ID     int    `json:"id"`
+				} `json:"reputationProfileActions"`
+			} `json:"clientReputation"`
 			RatePolicyActions []struct {
 				ID         int    `json:"id"`
 				Ipv4Action string `json:"ipv4Action"`
