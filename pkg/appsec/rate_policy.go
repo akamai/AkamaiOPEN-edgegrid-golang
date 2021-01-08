@@ -234,7 +234,7 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hostnames              []string `json:"hostNames"`
+		Hostnames              []string `json:"hostnames"`
 		AdditionalMatchOptions []struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Type          string   `json:"type"`
@@ -276,7 +276,7 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hostnames              []string `json:"hostNames"`
+		Hostnames              []string `json:"hostnames"`
 		AdditionalMatchOptions []struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Type          string   `json:"type"`
