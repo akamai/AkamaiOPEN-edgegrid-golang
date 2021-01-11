@@ -30,6 +30,8 @@ type (
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		Name     string `json:"-"`
+		PolicyID string `json:"-"`
+		ID       int    `json:"-"`
 	}
 
 	GetApiEndpointsResponse struct {
@@ -70,11 +72,20 @@ func (p *appsec) GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequ
 	var rval GetApiEndpointsResponse
 	var rvalfiltered GetApiEndpointsResponse
 
-	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/api-endpoints",
-		params.ConfigID,
-		params.Version,
-	)
+	var uri string
+	if params.PolicyID != "" {
+		uri = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-endpoints",
+			params.ConfigID,
+			params.Version,
+			params.PolicyID)
+	} else {
+		uri = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/api-endpoints",
+			params.ConfigID,
+			params.Version,
+		)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {

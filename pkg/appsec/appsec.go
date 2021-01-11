@@ -17,7 +17,6 @@ type (
 	APPSEC interface {
 		Activations
 		AdvancedSettingsLogging
-		AdvancedSettingsPolicyLogging
 		AdvancedSettingsPrefetch
 		ApiEndpoints
 		ApiHostnameCoverage
@@ -49,7 +48,6 @@ type (
 		MatchTargetSequence
 		NetworkLayerProtection
 		PenaltyBox
-		PolicyApiEndpoints
 		PolicyProtections
 		RatePolicy
 		RatePolicyAction

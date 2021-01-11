@@ -126,11 +126,20 @@ func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvan
 	logger.Debug("GetAdvancedSettingsLoggings")
 
 	var rval GetAdvancedSettingsLoggingResponse
+	var uri string
 
-	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/advanced-settings/logging",
-		params.ConfigID,
-		params.Version)
+	if params.PolicyID != "" {
+		uri = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/advanced-settings/logging",
+			params.ConfigID,
+			params.Version,
+			params.PolicyID)
+	} else {
+		uri = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/advanced-settings/logging",
+			params.ConfigID,
+			params.Version)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -164,11 +173,19 @@ func (p *appsec) UpdateAdvancedSettingsLogging(ctx context.Context, params Updat
 	logger := p.Log(ctx)
 	logger.Debug("UpdateAdvancedSettingsLogging")
 
-	putURL := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/advanced-settings/logging",
-		params.ConfigID,
-		params.Version,
-	)
+	var putURL string
+	if params.PolicyID != "" {
+		putURL = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/advanced-settings/logging",
+			params.ConfigID,
+			params.Version,
+			params.PolicyID)
+	} else {
+		putURL = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/advanced-settings/logging",
+			params.ConfigID,
+			params.Version)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
