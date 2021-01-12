@@ -25,6 +25,7 @@ type (
 		ApiRequestConstraints
 		AttackGroupAction
 		AttackGroupConditionException
+		BypassNetworkLists
 		Configuration
 		ConfigurationClone
 		ConfigurationVersionClone
@@ -64,6 +65,7 @@ type (
 		SiemSettings
 		SlowPostProtectionSetting
 		SlowPostProtection
+		VersionNotes
 		WAFMode
 		WAFProtection
 	}
