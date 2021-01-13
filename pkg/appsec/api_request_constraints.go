@@ -21,7 +21,6 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getapirequestconstraints
 	ApiRequestConstraints interface {
-		//	GetApiRequestConstraintss(ctx context.Context, params GetApiRequestConstraintssRequest) (*GetApiRequestConstraintssResponse, error)
 		GetApiRequestConstraints(ctx context.Context, params GetApiRequestConstraintsRequest) (*GetApiRequestConstraintsResponse, error)
 		UpdateApiRequestConstraints(ctx context.Context, params UpdateApiRequestConstraintsRequest) (*UpdateApiRequestConstraintsResponse, error)
 	}
@@ -74,16 +73,6 @@ func (v GetApiRequestConstraintsRequest) Validate() error {
 	}.Filter()
 }
 
-/*
-// Validate validates GetApiRequestConstraintssRequest
-func (v GetApiRequestConstraintssRequest) Validate() error {
-	return validation.Errors{
-		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
-		"Version":  validation.Validate(v.Version, validation.Required),
-		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-	}.Filter()
-}
-*/
 // Validate validates UpdateApiRequestConstraintsRequest
 func (v UpdateApiRequestConstraintsRequest) Validate() error {
 	return validation.Errors{
@@ -127,41 +116,6 @@ func (p *appsec) GetApiRequestConstraints(ctx context.Context, params GetApiRequ
 
 }
 
-/*
-func (p *appsec) GetApiRequestConstraintss(ctx context.Context, params GetApiRequestConstraintssRequest) (*GetApiRequestConstraintssResponse, error) {
-	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
-	}
-
-	logger := p.Log(ctx)
-	logger.Debug("GetApiRequestConstraintss")
-
-	var rval GetApiRequestConstraintssResponse
-
-	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints",
-		params.ConfigID,
-		params.Version,
-		params.PolicyID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create getapirequestconstraintss request: %w", err)
-	}
-
-	resp, err := p.Exec(req, &rval)
-	if err != nil {
-		return nil, fmt.Errorf("getapirequestconstraintss request failed: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
-	}
-
-	return &rval, nil
-
-}
-*/
 // Update will update a ApiRequestConstraints.
 //
 // API Docs: // appsec v1

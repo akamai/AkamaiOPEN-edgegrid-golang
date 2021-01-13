@@ -21,7 +21,6 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getadvancedsettingsprefetch
 	AdvancedSettingsPrefetch interface {
-		//GetAdvancedSettingsPrefetchs(ctx context.Context,  params GetAdvancedSettingsPrefetchsRequest) (*GetAdvancedSettingsPrefetchsResponse, error)
 		GetAdvancedSettingsPrefetch(ctx context.Context, params GetAdvancedSettingsPrefetchRequest) (*GetAdvancedSettingsPrefetchResponse, error)
 		UpdateAdvancedSettingsPrefetch(ctx context.Context, params UpdateAdvancedSettingsPrefetchRequest) (*UpdateAdvancedSettingsPrefetchResponse, error)
 	}

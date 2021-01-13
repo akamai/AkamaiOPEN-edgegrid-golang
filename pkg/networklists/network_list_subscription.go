@@ -19,7 +19,6 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getnetworklistsubscription
 	NetworkListSubscription interface {
-		//GetNetworkListSubscriptions(ctx context.Context, params GetNetworkListSubscriptionsRequest) (*GetNetworkListSubscriptionsResponse, error)
 		GetNetworkListSubscription(ctx context.Context, params GetNetworkListSubscriptionRequest) (*GetNetworkListSubscriptionResponse, error)
 		UpdateNetworkListSubscription(ctx context.Context, params UpdateNetworkListSubscriptionRequest) (*UpdateNetworkListSubscriptionResponse, error)
 		RemoveNetworkListSubscription(ctx context.Context, params RemoveNetworkListSubscriptionRequest) (*RemoveNetworkListSubscriptionResponse, error)
@@ -101,22 +100,6 @@ type (
 	}
 )
 
-/*
-// Validate validates GetNetworkListSubscriptionRequest
-func (v GetNetworkListSubscriptionRequest) Validate() error {
-	return validation.Errors{
-		"Name": validation.Validate(v.Name, validation.Required),
-	}.Filter()
-}
-*/
-/*
-// Validate validates UpdateNetworkListSubscriptionRequest
-func (v RemoveNetworkListSubscriptionRequest) Validate() error {
-	return validation.Errors{
-		"Name": validation.Validate(v.Name, validation.Required),
-	}.Filter()
-}
-*/
 func (p *networklists) GetNetworkListSubscription(ctx context.Context, params GetNetworkListSubscriptionRequest) (*GetNetworkListSubscriptionResponse, error) {
 	/*if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -155,10 +138,7 @@ func (p *networklists) GetNetworkListSubscription(ctx context.Context, params Ge
 // https://developer.akamai.com/api/cloud_security/network_lists/v2.html#putnetworklistsubscription
 
 func (p *networklists) UpdateNetworkListSubscription(ctx context.Context, params UpdateNetworkListSubscriptionRequest) (*UpdateNetworkListSubscriptionResponse, error) {
-	/*if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
-	}
-	*/
+
 	logger := p.Log(ctx)
 	logger.Debug("UpdateNetworkListSubscription")
 
@@ -190,10 +170,7 @@ func (p *networklists) UpdateNetworkListSubscription(ctx context.Context, params
 // https://developer.akamai.com/api/cloud_security/network_lists/v2.html#putnetworklistsubscription
 
 func (p *networklists) RemoveNetworkListSubscription(ctx context.Context, params RemoveNetworkListSubscriptionRequest) (*RemoveNetworkListSubscriptionResponse, error) {
-	/*if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
-	}
-	*/
+
 	logger := p.Log(ctx)
 	logger.Debug("UpdateNetworkListSubscription")
 

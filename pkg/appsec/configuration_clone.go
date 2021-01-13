@@ -22,7 +22,6 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationclone
 	ConfigurationClone interface {
-		//GetConfigurationClones(ctx context.Context, params GetConfigurationClonesRequest) (*GetConfigurationClonesResponse, error)
 		GetConfigurationClone(ctx context.Context, params GetConfigurationCloneRequest) (*GetConfigurationCloneResponse, error)
 		CreateConfigurationClone(ctx context.Context, params CreateConfigurationCloneRequest) (*CreateConfigurationCloneResponse, error)
 	}
@@ -94,15 +93,6 @@ func (v GetConfigurationCloneRequest) Validate() error {
 	}.Filter()
 }
 
-/*
-// Validate validates GetConfigurationClonesRequest
-func (v GetConfigurationClonesRequest) Validate() error {
-	return validation.Errors{
-		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
-		"Version":  validation.Validate(v.Version, validation.Required),
-	}.Filter()
-}
-*/
 // Validate validates CreateConfigurationCloneRequest
 func (v CreateConfigurationCloneRequest) Validate() error {
 	return validation.Errors{

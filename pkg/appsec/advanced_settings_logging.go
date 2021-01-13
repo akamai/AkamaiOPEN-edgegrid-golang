@@ -21,7 +21,6 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getadvancedsettingslogging
 	AdvancedSettingsLogging interface {
-		//GetAdvancedSettingsLoggings(ctx context.Context, params GetAdvancedSettingsLoggingsRequest) (*GetAdvancedSettingsLoggingsResponse, error)
 		GetAdvancedSettingsLogging(ctx context.Context, params GetAdvancedSettingsLoggingRequest) (*GetAdvancedSettingsLoggingResponse, error)
 		UpdateAdvancedSettingsLogging(ctx context.Context, params UpdateAdvancedSettingsLoggingRequest) (*UpdateAdvancedSettingsLoggingResponse, error)
 	}

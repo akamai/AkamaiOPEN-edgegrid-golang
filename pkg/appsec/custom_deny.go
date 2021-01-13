@@ -138,7 +138,6 @@ func (c *customDenyID) UnmarshalJSON(data []byte) error {
 	items := reflect.ValueOf(nums)
 	switch items.Kind() {
 	case reflect.String:
-		//*c = items.String()
 		*c = customDenyID(nums.(string))
 	case reflect.Int:
 
@@ -257,7 +256,7 @@ func (p *appsec) GetCustomDenyList(ctx context.Context, params GetCustomDenyList
 	}
 
 	if params.ID != "" {
-	for _, val := range rval.CustomDenyList {
+		for _, val := range rval.CustomDenyList {
 			if string(val.ID) == params.ID {
 				rvalfiltered.CustomDenyList = append(rvalfiltered.CustomDenyList, val)
 			}

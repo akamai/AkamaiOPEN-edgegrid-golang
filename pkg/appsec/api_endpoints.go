@@ -21,9 +21,7 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getapiendpoints
 	ApiEndpoints interface {
-		//	GetApiEndpointss(ctx context.Context, params GetApiEndpointssRequest) (*GetApiEndpointssResponse, error)
 		GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequest) (*GetApiEndpointsResponse, error)
-		//	UpdateApiEndpoints(ctx context.Context, params UpdateApiEndpointsRequest) (*UpdateApiEndpointsResponse, error)
 	}
 
 	GetApiEndpointsRequest struct {

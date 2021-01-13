@@ -43,26 +43,13 @@ type (
 	}
 )
 
-// Validate validates GetApiHostnameCoverageRequest
-/*func (v GetApiHostnameCoverageRequest) Validate() error {
-	return validation.Errors{
-		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
-		"Version":  validation.Validate(v.Version, validation.Required),
-		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-	}.Filter()
-}
-*/
 func (p *appsec) GetApiHostnameCoverage(ctx context.Context, params GetApiHostnameCoverageRequest) (*GetApiHostnameCoverageResponse, error) {
-	/*	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
-		}
-	*/
 	logger := p.Log(ctx)
 	logger.Debug("GetApiHostnameCoverage")
 
 	var rval GetApiHostnameCoverageResponse
 
-	uri := 
+	uri :=
 		"/appsec/v1/hostname-coverage"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)

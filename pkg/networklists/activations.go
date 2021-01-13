@@ -111,23 +111,7 @@ type (
 			} `json:"activationDetails"`
 		} `json:"links"`
 	}
-	/*
-		ActivationsPost struct {
-			Action             string   `json:"action"`
-			Network            string   `json:"network"`
-			Note               string   `json:"note"`
-			NotificationEmails []string `json:"notificationEmails"`
-			ActivationConfigs  []struct {
-				ConfigID      int `json:"configId"`
-				ConfigVersion int `json:"configVersion"`
-			} `json:"activationConfigs"`
-		}
 
-		ActivationConfigs struct {
-			ConfigID      int `json:"configId"`
-			ConfigVersion int `json:"configVersion"`
-		}
-	*/
 	RemoveActivationsRequest struct {
 		UniqueID               string   `json:"-"`
 		ActivationID           int      `json:"-"`
@@ -223,7 +207,6 @@ func (p *networklists) GetActivations(ctx context.Context, params GetActivations
 // a second attempt is made, acknowledging the warnings.
 //
 func (p *networklists) CreateActivations(ctx context.Context, params CreateActivationsRequest, acknowledgeWarnings bool) (*CreateActivationsResponse, error) {
-	//func (activations *CreateActivationsResponse) SaveActivations(postpayload *ActivationsPost, acknowledgeWarnings bool, correlationid string) (*CreateActivationsResponse, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("CreateActivations")

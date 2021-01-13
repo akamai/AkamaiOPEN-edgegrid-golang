@@ -21,7 +21,6 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsiemsettings
 	SiemSettings interface {
-		//GetSiemSettingss(ctx context.Context, params GetSiemSettingssRequest) (*GetSiemSettingssResponse, error)
 		GetSiemSettings(ctx context.Context, params GetSiemSettingsRequest) (*GetSiemSettingsResponse, error)
 		UpdateSiemSettings(ctx context.Context, params UpdateSiemSettingsRequest) (*UpdateSiemSettingsResponse, error)
 	}

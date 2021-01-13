@@ -21,9 +21,7 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationanalysis
 	ReputationAnalysis interface {
-		//GetReputationAnalysiss(ctx context.Context, params GetReputationAnalysissRequest) (*GetReputationAnalysissResponse, error)
 		GetReputationAnalysis(ctx context.Context, params GetReputationAnalysisRequest) (*GetReputationAnalysisResponse, error)
-		//CreateReputationAnalysis(ctx context.Context, params CreateReputationAnalysisRequest) (*CreateReputationAnalysisResponse, error)
 		UpdateReputationAnalysis(ctx context.Context, params UpdateReputationAnalysisRequest) (*UpdateReputationAnalysisResponse, error)
 		RemoveReputationAnalysis(ctx context.Context, params RemoveReputationAnalysisRequest) (*RemoveReputationAnalysisResponse, error)
 	}
@@ -176,9 +174,6 @@ func (p *appsec) UpdateReputationAnalysis(ctx context.Context, params UpdateRepu
 // https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletereputationanalysis
 
 func (p *appsec) RemoveReputationAnalysis(ctx context.Context, params RemoveReputationAnalysisRequest) (*RemoveReputationAnalysisResponse, error) {
-	/*	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
-	}*/
 
 	var rval RemoveReputationAnalysisResponse
 

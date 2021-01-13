@@ -95,26 +95,9 @@ type (
 		ConfigID int `json:"configid,omitempty"`
 		ID       int `json:"id,omitempty"`
 	}
-	/*	Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		Version       int      `json:"version,omitempty"`
-		RuleActivated bool     `json:"ruleActivated"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
-		} `json:"conditions"`
-	}*/
 
 	CreateCustomRuleRequest struct {
-		ConfigID int `json:"configid,omitempty"`
-		//ID            int      `json:"id,omitempty"`
+		ConfigID      int      `json:"configid,omitempty"`
 		Name          string   `json:"name"`
 		Description   string   `json:"description"`
 		Version       int      `json:"version,omitempty"`
@@ -194,24 +177,7 @@ type (
 		ConfigID int `json:"configid,omitempty"`
 		ID       int `json:"id,omitempty"`
 	}
-	/*
-			Name          string   `json:"name"`
-			Description   string   `json:"description"`
-			Version       int      `json:"version,omitempty"`
-			RuleActivated bool     `json:"ruleActivated"`
-			Tag           []string `json:"tag"`
-			Conditions    []struct {
-				Type          string   `json:"type"`
-				PositiveMatch bool     `json:"positiveMatch"`
-				Value         []string `json:"value,omitempty"`
-				ValueWildcard bool     `json:"valueWildcard,omitempty"`
-				ValueCase     bool     `json:"valueCase,omitempty"`
-				NameWildcard  bool     `json:"nameWildcard,omitempty"`
-				Name          []string `json:"name,omitempty"`
-				NameCase      bool     `json:"nameCase,omitempty"`
-			} `json:"conditions"`
-		}
-	*/
+
 	RemoveCustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
 		Name          string   `json:"name"`
