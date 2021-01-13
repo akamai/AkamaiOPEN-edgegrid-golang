@@ -1,5 +1,8 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.1.0 (Jan 13, 2021)
+* [IMPORTANT] IAM - New Identity and Access Management API Support
+
 ## 2.0.4 (Dec 23, 2020)
 * APPSEC - Extended list of supported endpoints from APPSEC API:
   * DDoS Protection -- Rate Policy & Action
