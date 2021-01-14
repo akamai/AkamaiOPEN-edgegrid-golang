@@ -23,6 +23,7 @@ type (
 	BypassNetworkLists interface {
 		GetBypassNetworkLists(ctx context.Context, params GetBypassNetworkListsRequest) (*GetBypassNetworkListsResponse, error)
 		UpdateBypassNetworkLists(ctx context.Context, params UpdateBypassNetworkListsRequest) (*UpdateBypassNetworkListsResponse, error)
+		RemoveBypassNetworkLists(ctx context.Context, params RemoveBypassNetworkListsRequest) (*RemoveBypassNetworkListsResponse, error)
 	}
 
 	GetBypassNetworkListsRequest struct {
@@ -83,6 +84,14 @@ func (v GetBypassNetworkListsRequest) Validate() error {
 
 // Validate validates UpdateBypassNetworkListsRequest
 func (v UpdateBypassNetworkListsRequest) Validate() error {
+	return validation.Errors{
+		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
+		"Version":  validation.Validate(v.Version, validation.Required),
+	}.Filter()
+}
+
+// Validate validates RemoveBypassNetworkListsRequest
+func (v RemoveBypassNetworkListsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
@@ -152,6 +161,44 @@ func (p *appsec) UpdateBypassNetworkLists(ctx context.Context, params UpdateBypa
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
 		return nil, fmt.Errorf("create BypassNetworkLists request failed: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return nil, p.Error(resp)
+	}
+
+	return &rval, nil
+}
+
+// Remove will Remove a BypassNetworkLists.
+//
+// API Docs: // appsec v1
+//
+// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putbypassnetworklists
+
+func (p *appsec) RemoveBypassNetworkLists(ctx context.Context, params RemoveBypassNetworkListsRequest) (*RemoveBypassNetworkListsResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	logger := p.Log(ctx)
+	logger.Debug("RemoveBypassNetworkLists")
+
+	putURL := fmt.Sprintf(
+		"/appsec/v1/configs/%d/versions/%d/bypass-network-lists",
+		params.ConfigID,
+		params.Version,
+	)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create create BypassNetworkListsrequest: %w", err)
+	}
+
+	var rval RemoveBypassNetworkListsResponse
+	resp, err := p.Exec(req, &rval, params)
+	if err != nil {
+		return nil, fmt.Errorf("Remove BypassNetworkLists request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
