@@ -37,12 +37,12 @@ type (
 			Type string `json:"type"`
 		} `json:"cookies"`
 		CustomHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values"`
+			Type   string   `json:"type,omitempty"`
+			Values []string `json:"values,omitempty"`
 		} `json:"customHeaders"`
 		StandardHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values"`
+			Type   string   `json:"type,omitempty"`
+			Values []string `json:"values,omitempty"`
 		} `json:"standardHeaders"`
 	}
 

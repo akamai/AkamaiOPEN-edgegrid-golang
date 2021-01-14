@@ -91,6 +91,7 @@ func (p *appsec) GetApiRequestConstraints(ctx context.Context, params GetApiRequ
 	logger.Debug("GetApiRequestConstraints")
 
 	var rval GetApiRequestConstraintsResponse
+	var rvalfiltered GetApiRequestConstraintsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints",
@@ -112,7 +113,18 @@ func (p *appsec) GetApiRequestConstraints(ctx context.Context, params GetApiRequ
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.ApiID != 0 {
+		for _, val := range rval.APIEndpoints {
+			if val.ID == params.ApiID {
+				rvalfiltered.APIEndpoints = append(rvalfiltered.APIEndpoints, val)
+			}
+		}
+
+	} else {
+		rvalfiltered = rval
+	}
+
+	return &rvalfiltered, nil
 
 }
 
