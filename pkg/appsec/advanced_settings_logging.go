@@ -32,6 +32,7 @@ type (
 	}
 
 	GetAdvancedSettingsLoggingResponse struct {
+		Override      bool `json:"override"`
 		AllowSampling bool `json:"allowSampling"`
 		Cookies       struct {
 			Type string `json:"type"`
@@ -50,6 +51,7 @@ type (
 		ConfigID      int    `json:"-"`
 		Version       int    `json:"-"`
 		PolicyID      string `json:"-"`
+		Override      bool   `json:"override"`
 		AllowSampling bool   `json:"allowSampling"`
 		Cookies       struct {
 			Type string `json:"type"`
@@ -64,6 +66,7 @@ type (
 		} `json:"standardHeaders"`
 	}
 	UpdateAdvancedSettingsLoggingResponse struct {
+		Override      bool `json:"override"`
 		AllowSampling bool `json:"allowSampling"`
 		Cookies       struct {
 			Type string `json:"type"`
@@ -81,6 +84,7 @@ type (
 		ConfigID      int    `json:"-"`
 		Version       int    `json:"-"`
 		PolicyID      string `json:"-"`
+		Override      bool   `json:"override"`
 		AllowSampling bool   `json:"allowSampling"`
 		Cookies       struct {
 			Type string `json:"type"`
