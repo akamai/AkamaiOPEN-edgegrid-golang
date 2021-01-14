@@ -27,8 +27,8 @@ type (
 	}
 
 	GetFailoverHostnamesResponse struct {
-		ConfigID                int  `json:"configId"`
-		ConfigVersion           int  `json:"configVersion"`
+		ConfigID                int  `json:"-"`
+		ConfigVersion           int  `json:"-"`
 		ProtectARLInclusionHost bool `json:"protectARLInclusionHost"`
 		AvailableSet            []struct {
 			ArlInclusion           bool   `json:"arlInclusion"`
