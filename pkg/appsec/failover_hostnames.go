@@ -27,30 +27,11 @@ type (
 	}
 
 	GetFailoverHostnamesResponse struct {
-		ConfigID                int  `json:"-"`
-		ConfigVersion           int  `json:"-"`
-		ProtectARLInclusionHost bool `json:"protectARLInclusionHost"`
-		AvailableSet            []struct {
-			ArlInclusion           bool   `json:"arlInclusion"`
-			ActiveInProduction     bool   `json:"activeInProduction"`
-			ActiveInStaging        bool   `json:"activeInStaging"`
-			ConfigIDInProduction   int    `json:"configIdInProduction"`
-			ConfigNameInProduction string `json:"configNameInProduction"`
-			Hostname               string `json:"hostname"`
-		} `json:"availableSet"`
-		ErrorSet []struct {
-			Hostname   string `json:"hostname"`
-			Reason     string `json:"reason"`
-			ReasonCode int    `json:"reasonCode"`
-		} `json:"errorSet"`
-		SelectedSet []struct {
-			ArlInclusion           bool   `json:"arlInclusion"`
-			ActiveInProduction     bool   `json:"activeInProduction"`
-			ActiveInStaging        bool   `json:"activeInStaging"`
-			ConfigIDInProduction   int    `json:"configIdInProduction"`
-			ConfigNameInProduction string `json:"configNameInProduction"`
-			Hostname               string `json:"hostname"`
-		} `json:"selectedSet"`
+		ConfigID      int `json:"-"`
+		ConfigVersion int `json:"-"`
+		HostnameList  []struct {
+			Hostname string `json:"hostname"`
+		} `json:"hostnameList"`
 	}
 )
 
