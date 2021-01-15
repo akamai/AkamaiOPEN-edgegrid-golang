@@ -81,11 +81,11 @@ type (
 	RemoveSiemSettingsRequest struct {
 		ConfigID                int      `json:"-"`
 		Version                 int      `json:"-"`
-		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
+		EnableForAllPolicies    bool     `json:"-"`
 		EnableSiem              bool     `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
-		SiemDefinitionID        int      `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
+		EnabledBotmanSiemEvents bool     `json:"-"`
+		SiemDefinitionID        int      `json:"-"`
+		FirewallPolicyIds       []string `json:"-"`
 	}
 )
 
