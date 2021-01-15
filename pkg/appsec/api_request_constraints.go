@@ -142,13 +142,23 @@ func (p *appsec) UpdateApiRequestConstraints(ctx context.Context, params UpdateA
 	logger := p.Log(ctx)
 	logger.Debug("UpdateApiRequestConstraints")
 
-	putURL := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints/%d",
-		params.ConfigID,
-		params.Version,
-		params.PolicyID,
-		params.ApiID,
-	)
+	var putURL string
+	if params.ApiID != 0 {
+		putURL = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints/%d",
+			params.ConfigID,
+			params.Version,
+			params.PolicyID,
+			params.ApiID,
+		)
+	} else {
+		putURL = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints",
+			params.ConfigID,
+			params.Version,
+			params.PolicyID,
+		)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
