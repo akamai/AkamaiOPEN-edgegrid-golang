@@ -2,6 +2,7 @@ package appsec
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -48,22 +49,10 @@ type (
 	}
 
 	UpdateAdvancedSettingsLoggingRequest struct {
-		ConfigID      int    `json:"-"`
-		Version       int    `json:"-"`
-		PolicyID      string `json:"-"`
-		Override      bool   `json:"override"`
-		AllowSampling bool   `json:"allowSampling"`
-		Cookies       struct {
-			Type string `json:"type"`
-		} `json:"cookies"`
-		CustomHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values"`
-		} `json:"customHeaders"`
-		StandardHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values"`
-		} `json:"standardHeaders"`
+		ConfigID       int             `json:"-"`
+		Version        int             `json:"-"`
+		PolicyID       string          `json:"-"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 	UpdateAdvancedSettingsLoggingResponse struct {
 		Override      bool `json:"override"`
@@ -195,8 +184,9 @@ func (p *appsec) UpdateAdvancedSettingsLogging(ctx context.Context, params Updat
 		return nil, fmt.Errorf("failed to create create AdvancedSettingsLoggingrequest: %w", err)
 	}
 
+	req.Header.Set("Content-Type", "application/json")
 	var rval UpdateAdvancedSettingsLoggingResponse
-	resp, err := p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create AdvancedSettingsLogging request failed: %w", err)
 	}

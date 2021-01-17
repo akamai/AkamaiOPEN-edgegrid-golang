@@ -2,6 +2,7 @@ package appsec
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -95,23 +96,11 @@ type (
 	}
 
 	UpdateEvalRuleConditionExceptionRequest struct {
-		ConfigID   int    `json:"-"`
-		Version    int    `json:"-"`
-		PolicyID   string `json:"-"`
-		RuleID     int    `json:"-"`
-		Conditions []struct {
-			Type          string   `json:"type"`
-			Filenames     []string `json:"filenames,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Methods       []string `json:"methods,omitempty"`
-		} `json:"conditions"`
-		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
-			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names"`
-				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
-		} `json:"exception"`
+		ConfigID       int             `json:"-"`
+		Version        int             `json:"-"`
+		PolicyID       string          `json:"-"`
+		RuleID         int             `json:"-"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	UpdateEvalRuleConditionExceptionResponse struct {
@@ -290,7 +279,8 @@ func (p *appsec) UpdateEvalRuleConditionException(ctx context.Context, params Up
 	}
 
 	var rval UpdateEvalRuleConditionExceptionResponse
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create EvalRuleConditionException request failed: %w", err)
 	}

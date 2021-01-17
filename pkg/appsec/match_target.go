@@ -2,6 +2,7 @@ package appsec
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -45,32 +46,10 @@ type (
 
 	// UpdateMatchTargetRequest is the argument for GetProperties
 	UpdateMatchTargetRequest struct {
-		Type                      string `json:"type"`
-		ConfigID                  int    `json:"configId"`
-		ConfigVersion             int    `json:"configVersion"`
-		DefaultFile               string `json:"defaultFile"`
-		EffectiveSecurityControls struct {
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-			ApplyRateControls             bool `json:"applyRateControls"`
-			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		} `json:"effectiveSecurityControls"`
-		Hostnames                    []string `json:"hostnames"`
-		IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
-		IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
-		FilePaths                    []string `json:"filePaths"`
-		FileExtensions               []string `json:"fileExtensions"`
-		SecurityPolicy               struct {
-			PolicyID string `json:"policyId"`
-		} `json:"securityPolicy"`
-		Sequence           int `json:"sequence"`
-		TargetID           int `json:"targetId"`
-		BypassNetworkLists []struct {
-			Name string `json:"name"`
-			ID   string `json:"id"`
-		} `json:"bypassNetworkLists"`
+		ConfigID       int             `json:"configId"`
+		ConfigVersion  int             `json:"configVersion"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
+		TargetID       int             `json:"targetId"`
 	}
 
 	// RemoveMatchTargetRequest is the argument for GetProperties
@@ -82,31 +61,10 @@ type (
 
 	// CreateMatchTargetRequest is the argument for GetProperties
 	CreateMatchTargetRequest struct {
-		Type                      string `json:"type"`
-		ConfigID                  int    `json:"configId"`
-		ConfigVersion             int    `json:"configVersion"`
-		DefaultFile               string `json:"defaultFile"`
-		EffectiveSecurityControls struct {
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-			ApplyRateControls             bool `json:"applyRateControls"`
-			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		} `json:"effectiveSecurityControls"`
-		FileExtensions               []string `json:"fileExtensions"`
-		FilePaths                    []string `json:"filePaths"`
-		Hostnames                    []string `json:"hostnames"`
-		IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
-		IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
-		SecurityPolicy               struct {
-			PolicyID string `json:"policyId"`
-		} `json:"securityPolicy"`
-		Sequence           int `json:"sequence"`
-		BypassNetworkLists []struct {
-			Name string `json:"name"`
-			ID   string `json:"id"`
-		} `json:"bypassNetworkLists"`
+		Type           string          `json:"type"`
+		ConfigID       int             `json:"configId"`
+		ConfigVersion  int             `json:"configVersion"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	// CreateMatchTargetResponse is the argument for GetProperties
@@ -454,7 +412,8 @@ func (p *appsec) UpdateMatchTarget(ctx context.Context, params UpdateMatchTarget
 	}
 
 	var rval UpdateMatchTargetResponse
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("update MatchTarget request failed: %w", err)
 	}
@@ -492,8 +451,8 @@ func (p *appsec) CreateMatchTarget(ctx context.Context, params CreateMatchTarget
 	}
 
 	var rval CreateMatchTargetResponse
-
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create matchtargetrequest failed: %w", err)
 	}

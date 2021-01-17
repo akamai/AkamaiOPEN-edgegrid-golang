@@ -71,15 +71,9 @@ type (
 	}
 
 	CreateCustomDenyRequest struct {
-		ConfigID    int    `json:"-"`
-		Version     int    `json:"-"`
-		Description string `json:"description"`
-		Name        string `json:"name"`
-		Parameters  []struct {
-			DisplayName string `json:"displayName"`
-			Name        string `json:"name"`
-			Value       string `json:"value"`
-		} `json:"parameters"`
+		ConfigID       int             `json:"-"`
+		Version        int             `json:"-"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	CreateCustomDenyResponse struct {
@@ -94,16 +88,10 @@ type (
 	}
 
 	UpdateCustomDenyRequest struct {
-		ConfigID    int    `json:"-"`
-		Version     int    `json:"-"`
-		Description string `json:"description"`
-		Name        string `json:"name"`
-		ID          string `json:"id"`
-		Parameters  []struct {
-			DisplayName string `json:"displayName"`
-			Name        string `json:"name"`
-			Value       string `json:"value"`
-		} `json:"parameters"`
+		ConfigID       int             `json:"-"`
+		Version        int             `json:"-"`
+		ID             string          `json:"id"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	UpdateCustomDenyResponse struct {
@@ -296,7 +284,8 @@ func (p *appsec) UpdateCustomDeny(ctx context.Context, params UpdateCustomDenyRe
 	}
 
 	var rval UpdateCustomDenyResponse
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create CustomDeny request failed: %w", err)
 	}
@@ -334,8 +323,8 @@ func (p *appsec) CreateCustomDeny(ctx context.Context, params CreateCustomDenyRe
 	}
 
 	var rval CreateCustomDenyResponse
-
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create customdenyrequest failed: %w", err)
 	}

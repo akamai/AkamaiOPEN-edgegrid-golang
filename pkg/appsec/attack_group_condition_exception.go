@@ -2,6 +2,7 @@ package appsec
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -77,27 +78,11 @@ type (
 	}
 
 	UpdateAttackGroupConditionExceptionRequest struct {
-		ConfigID   int    `json:"-"`
-		Version    int    `json:"-"`
-		PolicyID   string `json:"-"`
-		Group      string `json:"-"`
-		Conditions []struct {
-			Type          string   `json:"type"`
-			Filenames     []string `json:"filenames,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Methods       []string `json:"methods,omitempty"`
-		} `json:"conditions"`
-		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
-			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names,omitempty"`
-				Selector string   `json:"selector,omitempty"`
-			} `json:"specificHeaderCookieOrParamNames,omitempty"`
-			SpecificHeaderCookieOrParamPrefix struct {
-				Prefix   string `json:"prefix,omitempty"`
-				Selector string `json:"selector,omitempty"`
-			} `json:"specificHeaderCookieOrParamPrefix,omitempty"`
-		} `json:"exception"`
+		ConfigID       int             `json:"-"`
+		Version        int             `json:"-"`
+		PolicyID       string          `json:"-"`
+		Group          string          `json:"-"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	UpdateAttackGroupConditionExceptionResponse struct {
@@ -279,7 +264,8 @@ func (p *appsec) UpdateAttackGroupConditionException(ctx context.Context, params
 	}
 
 	var rval UpdateAttackGroupConditionExceptionResponse
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create AttackGroupConditionException request failed: %w", err)
 	}
