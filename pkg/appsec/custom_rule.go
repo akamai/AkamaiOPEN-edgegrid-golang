@@ -2,6 +2,7 @@ package appsec
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -97,22 +98,9 @@ type (
 	}
 
 	CreateCustomRuleRequest struct {
-		ConfigID      int      `json:"configid,omitempty"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		Version       int      `json:"version,omitempty"`
-		RuleActivated bool     `json:"ruleActivated"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
-		} `json:"conditions"`
+		ConfigID       int             `json:"configid,omitempty"`
+		Version        int             `json:"version,omitempty"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	CreateCustomRuleResponse struct {
@@ -135,23 +123,10 @@ type (
 	}
 
 	UpdateCustomRuleRequest struct {
-		ConfigID      int      `json:"configid,omitempty"`
-		ID            int      `json:"id,omitempty"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		Version       int      `json:"version,omitempty"`
-		RuleActivated bool     `json:"ruleActivated"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
-		} `json:"conditions"`
+		ConfigID       int             `json:"configid,omitempty"`
+		ID             int             `json:"id,omitempty"`
+		Version        int             `json:"version,omitempty"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	UpdateCustomRuleResponse struct {
@@ -328,7 +303,8 @@ func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRe
 	}
 
 	var rval UpdateCustomRuleResponse
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create CustomRule request failed: %w", err)
 	}
@@ -365,8 +341,8 @@ func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRe
 	}
 
 	var rval CreateCustomRuleResponse
-
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create customrulerequest failed: %w", err)
 	}
