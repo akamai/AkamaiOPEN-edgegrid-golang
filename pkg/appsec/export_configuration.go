@@ -2,8 +2,10 @@ package appsec
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"reflect"
 
 	"time"
 )
@@ -23,6 +25,8 @@ type (
 	ExportConfiguration interface {
 		GetExportConfigurations(ctx context.Context, params GetExportConfigurationsRequest) (*GetExportConfigurationsResponse, error)
 	}
+
+	ConditionsValue []string
 
 	GetExportConfigurationsRequest struct {
 		ConfigID int `json:"configId"`
@@ -92,11 +96,11 @@ type (
 		} `json:"reputationProfiles"`
 		CustomRules []struct {
 			Conditions []struct {
-				Type          string   `json:"type"`
-				PositiveMatch bool     `json:"positiveMatch"`
-				Value         []string `json:"value"`
-				ValueCase     bool     `json:"valueCase,omitempty"`
-				ValueWildcard bool     `json:"valueWildcard,omitempty"`
+				Type          string          `json:"type"`
+				PositiveMatch bool            `json:"positiveMatch"`
+				Value         ConditionsValue `json:"value"`
+				ValueCase     bool            `json:"valueCase,omitempty"`
+				ValueWildcard bool            `json:"valueWildcard,omitempty"`
 			} `json:"conditions"`
 			Description   string   `json:"description"`
 			ID            int      `json:"id"`
@@ -222,6 +226,33 @@ type (
 		} `json:"advancedOptions"`
 	}
 )
+
+func (c *ConditionsValue) UnmarshalJSON(data []byte) error {
+	var nums interface{}
+	err := json.Unmarshal(data, &nums)
+	if err != nil {
+		return err
+	}
+
+	items := reflect.ValueOf(nums)
+	switch items.Kind() {
+	case reflect.String:
+		*c = append(*c, items.String())
+
+	case reflect.Slice:
+		*c = make(ConditionsValue, 0, items.Len())
+		for i := 0; i < items.Len(); i++ {
+			item := items.Index(i)
+			switch item.Kind() {
+			case reflect.String:
+				*c = append(*c, item.String())
+			case reflect.Interface:
+				*c = append(*c, item.Interface().(string))
+			}
+		}
+	}
+	return nil
+}
 
 func (p *appsec) GetExportConfigurations(ctx context.Context, params GetExportConfigurationsRequest) (*GetExportConfigurationsResponse, error) {
 
