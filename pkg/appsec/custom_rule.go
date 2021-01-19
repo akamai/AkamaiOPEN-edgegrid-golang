@@ -31,7 +31,7 @@ type (
 		RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRequest) (*RemoveCustomRuleResponse, error)
 	}
 
-	ConditionsValue []string
+	CustomRuleConditionsValue []string
 
 	CustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
@@ -41,14 +41,14 @@ type (
 		RuleActivated bool     `json:"ruleActivated,omitempty"`
 		Tag           []string `json:"tag,omitempty"`
 		Conditions    []struct {
-			Type          string          `json:"type,omitempty"`
-			PositiveMatch bool            `json:"positiveMatch"`
-			Value         ConditionsValue `json:"value,omitempty"`
-			ValueWildcard bool            `json:"valueWildcard,omitempty"`
-			ValueCase     bool            `json:"valueCase,omitempty"`
-			NameWildcard  bool            `json:"nameWildcard,omitempty"`
-			Name          []string        `json:"name,omitempty"`
-			NameCase      bool            `json:"nameCase,omitempty"`
+			Type          string                    `json:"type,omitempty"`
+			PositiveMatch bool                      `json:"positiveMatch"`
+			Value         CustomRuleConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
+			ValueCase     bool                      `json:"valueCase,omitempty"`
+			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
+			Name          []string                  `json:"name,omitempty"`
+			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions,omitempty"`
 	}
 
@@ -70,14 +70,14 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string          `json:"type"`
-			PositiveMatch bool            `json:"positiveMatch"`
-			Value         ConditionsValue `json:"value,omitempty"`
-			ValueWildcard bool            `json:"valueWildcard,omitempty"`
-			ValueCase     bool            `json:"valueCase,omitempty"`
-			NameWildcard  bool            `json:"nameWildcard,omitempty"`
-			Name          []string        `json:"name,omitempty"`
-			NameCase      bool            `json:"nameCase,omitempty"`
+			Type          string                    `json:"type"`
+			PositiveMatch bool                      `json:"positiveMatch"`
+			Value         CustomRuleConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
+			ValueCase     bool                      `json:"valueCase,omitempty"`
+			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
+			Name          []string                  `json:"name,omitempty"`
+			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 
@@ -114,14 +114,14 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string          `json:"type"`
-			PositiveMatch bool            `json:"positiveMatch"`
-			Value         ConditionsValue `json:"value,omitempty"`
-			ValueWildcard bool            `json:"valueWildcard,omitempty"`
-			ValueCase     bool            `json:"valueCase,omitempty"`
-			NameWildcard  bool            `json:"nameWildcard,omitempty"`
-			Name          []string        `json:"name,omitempty"`
-			NameCase      bool            `json:"nameCase,omitempty"`
+			Type          string                    `json:"type"`
+			PositiveMatch bool                      `json:"positiveMatch"`
+			Value         CustomRuleConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
+			ValueCase     bool                      `json:"valueCase,omitempty"`
+			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
+			Name          []string                  `json:"name,omitempty"`
+			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 
@@ -140,14 +140,14 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string          `json:"type"`
-			PositiveMatch bool            `json:"positiveMatch"`
-			Value         ConditionsValue `json:"value,omitempty"`
-			ValueWildcard bool            `json:"valueWildcard,omitempty"`
-			ValueCase     bool            `json:"valueCase,omitempty"`
-			NameWildcard  bool            `json:"nameWildcard,omitempty"`
-			Name          []string        `json:"name,omitempty"`
-			NameCase      bool            `json:"nameCase,omitempty"`
+			Type          string                    `json:"type"`
+			PositiveMatch bool                      `json:"positiveMatch"`
+			Value         CustomRuleConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
+			ValueCase     bool                      `json:"valueCase,omitempty"`
+			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
+			Name          []string                  `json:"name,omitempty"`
+			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 
@@ -164,19 +164,19 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string          `json:"type"`
-			PositiveMatch bool            `json:"positiveMatch"`
-			Value         ConditionsValue `json:"value,omitempty"`
-			ValueWildcard bool            `json:"valueWildcard,omitempty"`
-			ValueCase     bool            `json:"valueCase,omitempty"`
-			NameWildcard  bool            `json:"nameWildcard,omitempty"`
-			Name          []string        `json:"name,omitempty"`
-			NameCase      bool            `json:"nameCase,omitempty"`
+			Type          string                    `json:"type"`
+			PositiveMatch bool                      `json:"positiveMatch"`
+			Value         CustomRuleConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
+			ValueCase     bool                      `json:"valueCase,omitempty"`
+			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
+			Name          []string                  `json:"name,omitempty"`
+			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 )
 
-func (c *ConditionsValue) UnmarshalJSON(data []byte) error {
+func (c *CustomRuleConditionsValue) UnmarshalJSON(data []byte) error {
 	var nums interface{}
 	err := json.Unmarshal(data, &nums)
 	if err != nil {
@@ -189,7 +189,7 @@ func (c *ConditionsValue) UnmarshalJSON(data []byte) error {
 		*c = append(*c, items.String())
 
 	case reflect.Slice:
-		*c = make(ConditionsValue, 0, items.Len())
+		*c = make(CustomRuleConditionsValue, 0, items.Len())
 		for i := 0; i < items.Len(); i++ {
 			item := items.Index(i)
 			switch item.Kind() {
