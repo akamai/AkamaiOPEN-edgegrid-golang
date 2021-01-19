@@ -32,6 +32,7 @@ type (
 	}
 
 	CustomRuleConditionsValue []string
+	CustomRuleConditionsName  []string
 
 	CustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
@@ -47,7 +48,7 @@ type (
 			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
 			ValueCase     bool                      `json:"valueCase,omitempty"`
 			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
-			Name          []string                  `json:"name,omitempty"`
+			Name          CustomRuleConditionsName  `json:"name,omitempty"`
 			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions,omitempty"`
 	}
@@ -76,7 +77,7 @@ type (
 			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
 			ValueCase     bool                      `json:"valueCase,omitempty"`
 			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
-			Name          []string                  `json:"name,omitempty"`
+			Name          CustomRuleConditionsName  `json:"name,omitempty"`
 			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
@@ -120,7 +121,7 @@ type (
 			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
 			ValueCase     bool                      `json:"valueCase,omitempty"`
 			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
-			Name          []string                  `json:"name,omitempty"`
+			Name          CustomRuleConditionsName  `json:"name,omitempty"`
 			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
@@ -146,7 +147,7 @@ type (
 			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
 			ValueCase     bool                      `json:"valueCase,omitempty"`
 			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
-			Name          []string                  `json:"name,omitempty"`
+			Name          CustomRuleConditionsName  `json:"name,omitempty"`
 			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
@@ -170,7 +171,7 @@ type (
 			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
 			ValueCase     bool                      `json:"valueCase,omitempty"`
 			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
-			Name          []string                  `json:"name,omitempty"`
+			Name          CustomRuleConditionsName  `json:"name,omitempty"`
 			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
@@ -190,6 +191,33 @@ func (c *CustomRuleConditionsValue) UnmarshalJSON(data []byte) error {
 
 	case reflect.Slice:
 		*c = make(CustomRuleConditionsValue, 0, items.Len())
+		for i := 0; i < items.Len(); i++ {
+			item := items.Index(i)
+			switch item.Kind() {
+			case reflect.String:
+				*c = append(*c, item.String())
+			case reflect.Interface:
+				*c = append(*c, item.Interface().(string))
+			}
+		}
+	}
+	return nil
+}
+
+func (c *CustomRuleConditionsName) UnmarshalJSON(data []byte) error {
+	var nums interface{}
+	err := json.Unmarshal(data, &nums)
+	if err != nil {
+		return err
+	}
+
+	items := reflect.ValueOf(nums)
+	switch items.Kind() {
+	case reflect.String:
+		*c = append(*c, items.String())
+
+	case reflect.Slice:
+		*c = make(CustomRuleConditionsName, 0, items.Len())
 		for i := 0; i < items.Len(); i++ {
 			item := items.Index(i)
 			switch item.Kind() {
