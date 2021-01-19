@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -30,6 +31,8 @@ type (
 		RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRequest) (*RemoveCustomRuleResponse, error)
 	}
 
+	ConditionsValue []string
+
 	CustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
 		Name          string   `json:"name,omitempty"`
@@ -38,14 +41,14 @@ type (
 		RuleActivated bool     `json:"ruleActivated,omitempty"`
 		Tag           []string `json:"tag,omitempty"`
 		Conditions    []struct {
-			Type          string   `json:"type,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
+			Type          string          `json:"type,omitempty"`
+			PositiveMatch bool            `json:"positiveMatch"`
+			Value         ConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool            `json:"valueWildcard,omitempty"`
+			ValueCase     bool            `json:"valueCase,omitempty"`
+			NameWildcard  bool            `json:"nameWildcard,omitempty"`
+			Name          []string        `json:"name,omitempty"`
+			NameCase      bool            `json:"nameCase,omitempty"`
 		} `json:"conditions,omitempty"`
 	}
 
@@ -67,14 +70,14 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
+			Type          string          `json:"type"`
+			PositiveMatch bool            `json:"positiveMatch"`
+			Value         ConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool            `json:"valueWildcard,omitempty"`
+			ValueCase     bool            `json:"valueCase,omitempty"`
+			NameWildcard  bool            `json:"nameWildcard,omitempty"`
+			Name          []string        `json:"name,omitempty"`
+			NameCase      bool            `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 
@@ -111,14 +114,14 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
+			Type          string          `json:"type"`
+			PositiveMatch bool            `json:"positiveMatch"`
+			Value         ConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool            `json:"valueWildcard,omitempty"`
+			ValueCase     bool            `json:"valueCase,omitempty"`
+			NameWildcard  bool            `json:"nameWildcard,omitempty"`
+			Name          []string        `json:"name,omitempty"`
+			NameCase      bool            `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 
@@ -137,14 +140,14 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
+			Type          string          `json:"type"`
+			PositiveMatch bool            `json:"positiveMatch"`
+			Value         ConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool            `json:"valueWildcard,omitempty"`
+			ValueCase     bool            `json:"valueCase,omitempty"`
+			NameWildcard  bool            `json:"nameWildcard,omitempty"`
+			Name          []string        `json:"name,omitempty"`
+			NameCase      bool            `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 
@@ -161,17 +164,44 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
+			Type          string          `json:"type"`
+			PositiveMatch bool            `json:"positiveMatch"`
+			Value         ConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool            `json:"valueWildcard,omitempty"`
+			ValueCase     bool            `json:"valueCase,omitempty"`
+			NameWildcard  bool            `json:"nameWildcard,omitempty"`
+			Name          []string        `json:"name,omitempty"`
+			NameCase      bool            `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 )
+
+func (c *ConditionsValue) UnmarshalJSON(data []byte) error {
+	var nums interface{}
+	err := json.Unmarshal(data, &nums)
+	if err != nil {
+		return err
+	}
+
+	items := reflect.ValueOf(nums)
+	switch items.Kind() {
+	case reflect.String:
+		*c = append(*c, items.String())
+
+	case reflect.Slice:
+		*c = make(ConditionsValue, 0, items.Len())
+		for i := 0; i < items.Len(); i++ {
+			item := items.Index(i)
+			switch item.Kind() {
+			case reflect.String:
+				*c = append(*c, item.String())
+			case reflect.Interface:
+				*c = append(*c, item.Interface().(string))
+			}
+		}
+	}
+	return nil
+}
 
 // Validate validates GetCustomRuleRequest
 func (v GetCustomRuleRequest) Validate() error {
