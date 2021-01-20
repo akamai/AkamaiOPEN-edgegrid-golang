@@ -83,7 +83,7 @@ type (
 		PolicyID        string `json:"-"`
 		PolicyName      string `json:"policyName"`
 		PolicyPrefix    string `json:"policyPrefix"`
-		DefaultSettings bool   `json:"defaultSettings,omitempty"`
+		DefaultSettings bool   `json:"defaultSettings"`
 	}
 
 	CreateSecurityPolicyResponse struct {
