@@ -39,7 +39,7 @@ func TestApsec_ListApiHostnameCoverageOverlapping(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/hostname-coverage/match-targets?hostname=www.example.com",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/hostname-coverage/match-targets?hostname=",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
@@ -56,7 +56,7 @@ func TestApsec_ListApiHostnameCoverageOverlapping(t *testing.T) {
     "detail": "Error fetching ApiHostnameCoverageOverlapping",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/hostname-coverage/match-targets?hostname=www.example.com",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/hostname-coverage/match-targets?hostname=",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",

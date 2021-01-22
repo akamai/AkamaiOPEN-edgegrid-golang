@@ -61,9 +61,11 @@ func (p *appsec) GetApiHostnameCoverageOverlapping(ctx context.Context, params G
 	var rval GetApiHostnameCoverageOverlappingResponse
 
 	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/hostname-coverage/match-targets?hostname=www.example.com",
+		"/appsec/v1/configs/%d/versions/%d/hostname-coverage/match-targets?hostname=%s",
 		params.ConfigID,
-		params.Version)
+		params.Version,
+		params.Hostname,
+	)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
