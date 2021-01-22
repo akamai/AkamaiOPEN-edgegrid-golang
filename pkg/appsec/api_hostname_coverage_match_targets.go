@@ -31,8 +31,8 @@ type (
 
 	GetApiHostnameCoverageMatchTargetsResponse struct {
 		MatchTargets struct {
-			APITargets     []interface{} `json:"apiTargets"`
 			WebsiteTargets []struct {
+				Type               string `json:"type"`
 				BypassNetworkLists []struct {
 					ID   string `json:"id"`
 					Name string `json:"name"`
@@ -44,45 +44,22 @@ type (
 					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
 					ApplyBotmanControls           bool `json:"applyBotmanControls"`
 					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyPageIntegrityControls    bool `json:"applyPageIntegrityControls"`
 					ApplyRateControls             bool `json:"applyRateControls"`
+					ApplyReputationControls       bool `json:"applyReputationControls"`
 					ApplySlowPostControls         bool `json:"applySlowPostControls"`
 				} `json:"effectiveSecurityControls"`
-				FileExtensions []interface{} `json:"fileExtensions"`
-				FilePaths      []string      `json:"filePaths"`
-				FirewallPolicy struct {
-					Evaluated              bool   `json:"evaluated"`
-					PolicyID               string `json:"policyId"`
-					PolicyName             string `json:"policyName"`
-					PolicySecurityControls struct {
-						ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-						ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-						ApplyBotmanControls           bool `json:"applyBotmanControls"`
-						ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-						ApplyPageIntegrityControls    bool `json:"applyPageIntegrityControls"`
-						ApplyRateControls             bool `json:"applyRateControls"`
-						ApplyReputationControls       bool `json:"applyReputationControls"`
-						ApplySlowPostControls         bool `json:"applySlowPostControls"`
-					} `json:"policySecurityControls"`
-				} `json:"firewallPolicy"`
-				Hostnames                        []string `json:"hostnames"`
-				IsNegativeFileExtensionMatch     bool     `json:"isNegativeFileExtensionMatch"`
-				IsNegativePathMatch              bool     `json:"isNegativePathMatch"`
-				IsTargetSecurityControlsEditable bool     `json:"isTargetSecurityControlsEditable"`
-				LogicalID                        int      `json:"logicalId"`
-				Sequence                         int      `json:"sequence"`
-				TargetID                         int      `json:"targetId"`
-				TargetSecurityControls           struct {
-					ApplyApplicationLayerControls bool   `json:"applyApplicationLayerControls"`
-					ApplyNetworkLayerControls     bool   `json:"applyNetworkLayerControls"`
-					ApplyPageIntegrityControls    bool   `json:"applyPageIntegrityControls"`
-					ApplyRateControls             bool   `json:"applyRateControls"`
-					ApplyReputationControls       bool   `json:"applyReputationControls"`
-					ApplySlowPostControls         bool   `json:"applySlowPostControls"`
-					Type                          string `json:"type"`
-				} `json:"websiteTargets"`
-			} `json:"matchTargets"`
-		}
+				FilePaths                    []string `json:"filePaths"`
+				Hostnames                    []string `json:"hostnames"`
+				IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
+				IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
+				SecurityPolicy               struct {
+					PolicyID string `json:"policyId"`
+				} `json:"securityPolicy"`
+				Sequence int `json:"sequence"`
+				TargetID int `json:"targetId"`
+			} `json:"websiteTargets"`
+			APITargets []interface{} `json:"apiTargets"`
+		} `json:"matchTargets"`
 	}
 )
 
@@ -91,7 +68,6 @@ func (v GetApiHostnameCoverageMatchTargetsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
-		
 	}.Filter()
 }
 
