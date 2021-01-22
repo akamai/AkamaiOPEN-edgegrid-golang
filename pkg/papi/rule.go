@@ -40,6 +40,7 @@ type (
 		Etag            string `json:"etag"`
 		RuleFormat      string `json:"ruleFormat"`
 		Rules           Rules  `json:"rules"`
+		Comments        string `json:"comments,omitempty"`
 	}
 
 	// Rules contains Rule object
@@ -90,7 +91,6 @@ type (
 	UpdateRulesRequest struct {
 		PropertyID      string
 		PropertyVersion int
-		Comments        string
 		ContractID      string
 		DryRun          bool
 		GroupID         string
@@ -101,7 +101,8 @@ type (
 
 	// RulesUpdate is a wrapper for the request body of PUT /rules request
 	RulesUpdate struct {
-		Rules Rules `json:"rules"`
+		Comments        string      `json:"comments,omitempty"`
+		Rules           Rules       `json:"rules"`
 	}
 
 	// UpdateRulesResponse contains data returned by performing PUT /rules request
@@ -168,7 +169,8 @@ func (r UpdateRulesRequest) Validate() error {
 // Validate validates RulesUpdate struct
 func (r RulesUpdate) Validate() error {
 	return validation.Errors{
-		"Rules": validation.Validate(r.Rules),
+		"Rules":    validation.Validate(r.Rules),
+		"Comments": validation.Validate(r.Comments),
 	}.Filter()
 }
 
@@ -181,6 +183,7 @@ func (r Rules) Validate() error {
 		"Criteria":       validation.Validate(r.Criteria),
 		"Children":       validation.Validate(r.Children),
 		"Variables":      validation.Validate(r.Variables),
+		"Comments":       validation.Validate(r.Comments),
 	}.Filter()
 }
 
