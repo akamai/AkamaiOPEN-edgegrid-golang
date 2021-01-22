@@ -37,7 +37,8 @@ type (
 		Override      bool `json:"override"`
 		AllowSampling bool `json:"allowSampling"`
 		Cookies       struct {
-			Type string `json:"type"`
+			Type   string   `json:"type"`
+			Values []string `json:"values"`
 		} `json:"cookies"`
 		CustomHeaders struct {
 			Type   string   `json:"type,omitempty"`
@@ -55,11 +56,13 @@ type (
 		PolicyID       string          `json:"-"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
+
 	UpdateAdvancedSettingsLoggingResponse struct {
 		Override      bool `json:"override"`
 		AllowSampling bool `json:"allowSampling"`
 		Cookies       struct {
-			Type string `json:"type"`
+			Type   string   `json:"type"`
+			Values []string `json:"values"`
 		} `json:"cookies"`
 		CustomHeaders struct {
 			Type   string   `json:"type"`
