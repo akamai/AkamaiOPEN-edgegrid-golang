@@ -456,8 +456,10 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 				DryRun:          true,
 				ValidateMode:    "fast",
 				ValidateRules:   false,
+				Comments:        "version comment",
 				Rules: RulesUpdate{
 					Rules: Rules{
+						Comments: "default comment",
 						Behaviors: []RuleBehavior{
 							{
 								Name: "origin",
@@ -535,8 +537,10 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
     "propertyVersion": 2,
     "etag": "etag",
     "ruleFormat": "v2020-09-16",
+	"comments": "version comment",
     "rules": {
         "name": "default",
+        "comments": "default comment",
         "criteria": [],
         "children": [
             {
@@ -623,7 +627,9 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 				PropertyVersion: 2,
 				Etag:            "etag",
 				RuleFormat:      "v2020-09-16",
+				Comments:        "version comment",
 				Rules: Rules{
+					Comments: "default comment",
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",

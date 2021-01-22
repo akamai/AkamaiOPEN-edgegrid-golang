@@ -47,7 +47,7 @@ type (
 		AdvancedOverride    string                  `json:"advancedOverride,omitempty"`
 		Behaviors           []RuleBehavior          `json:"behaviors,omitempty"`
 		Children            []Rules                 `json:"children,omitempty"`
-		Comment             string                  `json:"comment,omitempty"`
+		Comments            string                  `json:"comments,omitempty"`
 		Criteria            []RuleBehavior          `json:"criteria,omitempty"`
 		CriteriaLocked      bool                    `json:"criteriaLocked,omitempty"`
 		CustomOverride      *RuleCustomOverride     `json:"customOverride,omitempty"`
@@ -90,6 +90,7 @@ type (
 	UpdateRulesRequest struct {
 		PropertyID      string
 		PropertyVersion int
+		Comments        string
 		ContractID      string
 		DryRun          bool
 		GroupID         string
@@ -107,6 +108,7 @@ type (
 	UpdateRulesResponse struct {
 		AccountID       string      `json:"accountId"`
 		ContractID      string      `json:"contractId"`
+		Comments        string      `json:"comments,omitempty"`
 		GroupID         string      `json:"groupId"`
 		PropertyID      string      `json:"propertyId"`
 		PropertyVersion int         `json:"propertyVersion"`
