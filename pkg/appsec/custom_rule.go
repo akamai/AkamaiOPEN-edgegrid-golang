@@ -94,6 +94,7 @@ type (
 
 	GetCustomRulesRequest struct {
 		ConfigID int `json:"configid,omitempty"`
+		ID       int `json:"-"`
 	}
 
 	GetCustomRuleRequest struct {
@@ -311,6 +312,7 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 	logger.Debug("GetCustomRules")
 
 	var rval GetCustomRulesResponse
+	var rvalfiltered GetCustomRulesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/custom-rules",
@@ -331,7 +333,18 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.ID != 0 {
+		for _, val := range rval.CustomRules {
+			if val.ID == params.ID {
+				rvalfiltered.CustomRules = append(rvalfiltered.CustomRules, val)
+			}
+		}
+
+	} else {
+		rvalfiltered = rval
+	}
+
+	return &rvalfiltered, nil
 
 }
 
