@@ -79,17 +79,6 @@ type (
 		PolicyID      string `json:"-"`
 		Override      bool   `json:"override"`
 		AllowSampling bool   `json:"allowSampling"`
-		Cookies       struct {
-			Type string `json:"type"`
-		} `json:"cookies"`
-		CustomHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values"`
-		} `json:"customHeaders"`
-		StandardHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values"`
-		} `json:"standardHeaders"`
 	}
 
 	RemoveAdvancedSettingsLoggingResponse struct {
