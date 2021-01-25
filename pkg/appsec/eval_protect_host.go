@@ -103,7 +103,7 @@ func (p *appsec) GetEvalProtectHost(ctx context.Context, params GetEvalProtectHo
 	var rval GetEvalProtectHostResponse
 
 	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/protect-eval-hostnames",
+		"/appsec/v1/configs/%d/versions/%d/selected-hostnames/eval-hostnames",
 		params.ConfigID,
 		params.Version)
 
@@ -136,7 +136,7 @@ func (p *appsec) GetEvalProtectHosts(ctx context.Context, params GetEvalProtectH
 	var rval GetEvalProtectHostsResponse
 
 	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/protect-eval-hostnames",
+		"/appsec/v1/configs/%d/versions/%d/selected-hostnames/eval-hostnames",
 		params.ConfigID,
 		params.Version)
 
