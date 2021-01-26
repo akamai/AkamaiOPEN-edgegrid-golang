@@ -31,45 +31,53 @@ type (
 	}
 
 	GetRatePolicyResponse struct {
-		ID                    int    `json:"id,omitempty"`
-		PolicyID              int    `json:"policyId,omitempty"`
-		ConfigID              int    `json:"-"`
-		ConfigVersion         int    `json:"-"`
-		MatchType             string `json:"matchType,omitempty"`
-		Type                  string `json:"type,omitempty"`
-		Name                  string `json:"name,omitempty"`
-		Description           string `json:"description,omitempty"`
-		AverageThreshold      int    `json:"averageThreshold,omitempty"`
-		BurstThreshold        int    `json:"burstThreshold,omitempty"`
-		ClientIdentifier      string `json:"clientIdentifier,omitempty"`
-		UseXForwardForHeaders bool   `json:"useXForwardForHeaders,omitempty"`
-		RequestType           string `json:"requestType,omitempty"`
-		SameActionOnIpv6      bool   `json:"sameActionOnIpv6,omitempty"`
-		Path                  struct {
-			PositiveMatch bool     `json:"positiveMatch,omitempty"`
-			Values        []string `json:"values,omitempty"`
-		} `json:"path,omitempty"`
-		PathMatchType        string `json:"pathMatchType,omitempty"`
-		PathURIPositiveMatch bool   `json:"pathUriPositiveMatch,omitempty"`
-		FileExtensions       struct {
-			PositiveMatch bool     `json:"positiveMatch,omitempty"`
-			Values        []string `json:"values,omitempty"`
-		} `json:"fileExtensions,omitempty"`
-		Hostnames              []string `json:"hostnames,omitempty"`
-		AdditionalMatchOptions []struct {
-			PositiveMatch bool     `json:"positiveMatch,omitempty"`
-			Type          string   `json:"type,omitempty"`
-			Values        []string `json:"values,omitempty"`
-		} `json:"additionalMatchOptions,omitempty"`
-		QueryParameters []struct {
-			Name          string   `json:"name,omitempty"`
-			Values        []string `json:"values,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch,omitempty"`
-			ValueInRange  bool     `json:"valueInRange,omitempty"`
-		} `json:"queryParameters,omitempty"`
-		CreateDate string `json:"createDate,omitempty"`
-		UpdateDate string `json:"updateDate,omitempty"`
-		Used       bool   `json:"used,omitempty"`
+		ID                     int                               `json:"id,omitempty"`
+		PolicyID               int                               `json:"policyId,omitempty"`
+		ConfigID               int                               `json:"-"`
+		ConfigVersion          int                               `json:"-"`
+		MatchType              string                            `json:"matchType,omitempty"`
+		Type                   string                            `json:"type,omitempty"`
+		Name                   string                            `json:"name,omitempty"`
+		Description            string                            `json:"description,omitempty"`
+		AverageThreshold       int                               `json:"averageThreshold,omitempty"`
+		BurstThreshold         int                               `json:"burstThreshold,omitempty"`
+		ClientIdentifier       string                            `json:"clientIdentifier,omitempty"`
+		UseXForwardForHeaders  bool                              `json:"useXForwardForHeaders,omitempty"`
+		RequestType            string                            `json:"requestType,omitempty"`
+		SameActionOnIpv6       bool                              `json:"sameActionOnIpv6,omitempty"`
+		Path                   *RatePolicyPath                   `json:"path,omitempty"`
+		PathMatchType          string                            `json:"pathMatchType,omitempty"`
+		PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch,omitempty"`
+		FileExtensions         *RatePolicyFileExtensions         `json:"fileExtensions,omitempty"`
+		Hostnames              []string                          `json:"hostnames,omitempty"`
+		AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
+		QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
+		CreateDate             string                            `json:"createDate,omitempty"`
+		UpdateDate             string                            `json:"updateDate,omitempty"`
+		Used                   bool                              `json:"used,omitempty"`
+	}
+
+	RatePolicyPath struct {
+		PositiveMatch bool     `json:"positiveMatch,omitempty"`
+		Values        []string `json:"values,omitempty"`
+	}
+
+	RatePolicyFileExtensions struct {
+		PositiveMatch bool     `json:"positiveMatch,omitempty"`
+		Values        []string `json:"values,omitempty"`
+	}
+
+	RatePolicyAdditionalMatchOptions []struct {
+		PositiveMatch bool     `json:"positiveMatch,omitempty"`
+		Type          string   `json:"type,omitempty"`
+		Values        []string `json:"values,omitempty"`
+	}
+
+	RatePolicyQueryParameters []struct {
+		Name          string   `json:"name,omitempty"`
+		Values        []string `json:"values,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch,omitempty"`
+		ValueInRange  bool     `json:"valueInRange,omitempty"`
 	}
 
 	CreateRatePolicyResponse struct {
@@ -234,57 +242,46 @@ type (
 
 	GetRatePoliciesResponse struct {
 		RatePolicies []struct {
-			ID                    int    `json:"id"`
-			ConfigID              int    `json:"-"`
-			ConfigVersion         int    `json:"-"`
-			MatchType             string `json:"matchType,omitempty"`
-			Type                  string `json:"type,omitempty"`
-			Name                  string `json:"name,omitempty"`
-			Description           string `json:"description,omitempty"`
-			AverageThreshold      int    `json:"averageThreshold,omitempty"`
-			BurstThreshold        int    `json:"burstThreshold,omitempty"`
-			ClientIdentifier      string `json:"clientIdentifier,omitempty"`
-			UseXForwardForHeaders bool   `json:"useXForwardForHeaders,omitempty"`
-			RequestType           string `json:"requestType,omitempty"`
-			SameActionOnIpv6      bool   `json:"sameActionOnIpv6,omitempty"`
-			Path                  struct {
-				PositiveMatch bool     `json:"positiveMatch,omitempty"`
-				Values        []string `json:"values,omitempty"`
-			} `json:"path,omitempty"`
-			PathMatchType        string `json:"pathMatchType,omitempty"`
-			PathURIPositiveMatch bool   `json:"pathUriPositiveMatch,omitempty"`
-			FileExtensions       struct {
-				PositiveMatch bool     `json:"positiveMatch,omitempty"`
-				Values        []string `json:"values,omitempty"`
-			} `json:"fileExtensions,omitempty"`
-			Hostnames              []string `json:"hostnames,omitempty"`
-			AdditionalMatchOptions []struct {
-				PositiveMatch bool     `json:"positiveMatch,omitempty"`
-				Type          string   `json:"type,omitempty"`
-				Values        []string `json:"values,omitempty"`
-			} `json:"additionalMatchOptions,omitempty"`
-			QueryParameters []struct {
-				Name          string   `json:"name,omitempty"`
-				Values        []string `json:"values,omitempty"`
-				PositiveMatch bool     `json:"positiveMatch,omitempty"`
-				ValueInRange  bool     `json:"valueInRange,omitempty"`
-			} `json:"queryParameters,omitempty"`
-			CreateDate      string `json:"createDate,omitempty"`
-			UpdateDate      string `json:"updateDate,omitempty"`
-			EnableActions   bool   `json:"enableActions,omitempty"`
-			Used            bool   `json:"used,omitempty"`
-			SameActionOnIpv bool   `json:"sameActionOnIpv,omitempty"`
-			APISelectors    []struct {
-				APIDefinitionID int   `json:"apiDefinitionId,omitempty"`
-				ResourceIds     []int `json:"resourceIds,omitempty"`
-			} `json:"apiSelectors,omitempty"`
-			BodyParameters []struct {
-				Name          string   `json:"name,omitempty"`
-				Values        []string `json:"values,omitempty"`
-				PositiveMatch bool     `json:"positiveMatch,omitempty"`
-				ValueInRange  bool     `json:"valueInRange,omitempty"`
-			} `json:"bodyParameters,omitempty"`
+			ID                     int                               `json:"id"`
+			ConfigID               int                               `json:"-"`
+			ConfigVersion          int                               `json:"-"`
+			MatchType              string                            `json:"matchType,omitempty"`
+			Type                   string                            `json:"type,omitempty"`
+			Name                   string                            `json:"name,omitempty"`
+			Description            string                            `json:"description,omitempty"`
+			AverageThreshold       int                               `json:"averageThreshold,omitempty"`
+			BurstThreshold         int                               `json:"burstThreshold,omitempty"`
+			ClientIdentifier       string                            `json:"clientIdentifier,omitempty"`
+			UseXForwardForHeaders  bool                              `json:"useXForwardForHeaders,omitempty"`
+			RequestType            string                            `json:"requestType,omitempty"`
+			SameActionOnIpv6       bool                              `json:"sameActionOnIpv6,omitempty"`
+			Path                   *RatePolicyPath                   `json:"path,omitempty"`
+			PathMatchType          string                            `json:"pathMatchType,omitempty"`
+			PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch,omitempty"`
+			FileExtensions         *RatePolicyFileExtensions         `json:"fileExtensions,omitempty"`
+			Hostnames              []string                          `json:"hostnames,omitempty"`
+			AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
+			QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
+			CreateDate             string                            `json:"createDate,omitempty"`
+			UpdateDate             string                            `json:"updateDate,omitempty"`
+			EnableActions          bool                              `json:"enableActions,omitempty"`
+			Used                   bool                              `json:"used,omitempty"`
+			SameActionOnIpv        bool                              `json:"sameActionOnIpv,omitempty"`
+			APISelectors           *RatePolicyAPISelectors           `json:"apiSelectors,omitempty"`
+			BodyParameters         *RatePolicyBodyParameters         `json:"bodyParameters,omitempty"`
 		} `json:"ratePolicies,omitempty"`
+	}
+
+	RatePolicyAPISelectors []struct {
+		APIDefinitionID int   `json:"apiDefinitionId,omitempty"`
+		ResourceIds     []int `json:"resourceIds,omitempty"`
+	}
+
+	RatePolicyBodyParameters []struct {
+		Name          string   `json:"name,omitempty"`
+		Values        []string `json:"values,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch,omitempty"`
+		ValueInRange  bool     `json:"valueInRange,omitempty"`
 	}
 )
 
