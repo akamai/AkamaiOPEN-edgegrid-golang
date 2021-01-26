@@ -32,26 +32,16 @@ type (
 	GetApiHostnameCoverageMatchTargetsResponse struct {
 		MatchTargets struct {
 			WebsiteTargets []struct {
-				Type               string `json:"type"`
-				BypassNetworkLists []struct {
-					ID   string `json:"id"`
-					Name string `json:"name"`
-				} `json:"bypassNetworkLists"`
-				ConfigID                  int    `json:"configId"`
-				ConfigVersion             int    `json:"configVersion"`
-				DefaultFile               string `json:"defaultFile"`
-				EffectiveSecurityControls struct {
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-					ApplyBotmanControls           bool `json:"applyBotmanControls"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyRateControls             bool `json:"applyRateControls"`
-					ApplyReputationControls       bool `json:"applyReputationControls"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls"`
-				} `json:"effectiveSecurityControls"`
-				FilePaths                    []string `json:"filePaths"`
-				Hostnames                    []string `json:"hostnames"`
-				IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
-				IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
+				Type                         string                                                `json:"type"`
+				BypassNetworkLists           *HostnameCoverageMatchTargetBypassNetworkLists        `json:"bypassNetworkLists,omitempty"`
+				ConfigID                     int                                                   `json:"configId"`
+				ConfigVersion                int                                                   `json:"configVersion"`
+				DefaultFile                  string                                                `json:"defaultFile"`
+				EffectiveSecurityControls    *HostnameCoverageMatchTargetEffectiveSecurityControls `json:"effectiveSecurityControls,omitempty"`
+				FilePaths                    []string                                              `json:"filePaths"`
+				Hostnames                    []string                                              `json:"hostnames"`
+				IsNegativeFileExtensionMatch bool                                                  `json:"isNegativeFileExtensionMatch"`
+				IsNegativePathMatch          bool                                                  `json:"isNegativePathMatch"`
 				SecurityPolicy               struct {
 					PolicyID string `json:"policyId"`
 				} `json:"securityPolicy"`
@@ -60,6 +50,20 @@ type (
 			} `json:"websiteTargets"`
 			APITargets []interface{} `json:"apiTargets"`
 		} `json:"matchTargets"`
+	}
+
+	HostnameCoverageMatchTargetBypassNetworkLists []struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+
+	HostnameCoverageMatchTargetEffectiveSecurityControls struct {
+		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
+		ApplyBotmanControls           bool `json:"applyBotmanControls"`
+		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
+		ApplyRateControls             bool `json:"applyRateControls"`
+		ApplyReputationControls       bool `json:"applyReputationControls"`
+		ApplySlowPostControls         bool `json:"applySlowPostControls"`
 	}
 )
 

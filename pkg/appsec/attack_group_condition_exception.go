@@ -43,38 +43,55 @@ type (
 	}
 
 	GetAttackGroupConditionExceptionsResponse struct {
-		Conditions []struct {
-			Type          string   `json:"type,omitempty"`
-			Filenames     []string `json:"filenames,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch,omitempty"`
-			Methods       []string `json:"methods,omitempty"`
-		} `json:"conditions,omitempty"`
-		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
-			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names,omitempty"`
-				Selector string   `json:"selector,omitempty"`
-			} `json:"specificHeaderCookieOrParamNames,omitempty"`
-			SpecificHeaderCookieOrParamPrefix struct {
-				Prefix   string `json:"prefix,omitempty"`
-				Selector string `json:"selector,omitempty"`
-			} `json:"specificHeaderCookieOrParamPrefix,omitempty"`
-		} `json:"exception,omitempty"`
+		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
+		Conditions             *AttackGroupConditions         `json:"conditions,omitempty"`
+		Exception              *AttackGroupException          `json:"exception,omitempty"`
+	}
+
+	AttackGroupAdvancedExceptions struct {
+		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames"`
+	}
+
+	AttackGroupSpecificHeaderCookieParamXMLOrJSONNames []struct {
+		Criteria *AttackGroupCriteria `json:"criteria,omitempty"`
+		Selector string               `json:"selector,omitempty"`
+		Wildcard bool                 `json:"wildcard,omitempty"`
+		Names    []string             `json:"names,omitempty"`
+	}
+
+	AttackGroupCriteria []struct {
+		Hostnames []string `json:"hostnames"`
+		Paths     []string `json:"paths"`
+	}
+
+	AttackGroupConditions []struct {
+		Type          string   `json:"type,omitempty"`
+		Filenames     []string `json:"filenames,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch,omitempty"`
+		Methods       []string `json:"methods,omitempty"`
+	}
+
+	AttackGroupException struct {
+		HeaderCookieOrParamValues               []string                                            `json:"headerCookieOrParamValues,omitempty"`
+		SpecificHeaderCookieOrParamNames        *AttackGroupSpecificHeaderCookieOrParamNames        `json:"specificHeaderCookieOrParamNames,omitempty"`
+		SpecificHeaderCookieOrParamPrefix       *AttackGroupSpecificHeaderCookieOrParamPrefix       `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames"`
+	}
+
+	AttackGroupSpecificHeaderCookieOrParamNames []struct {
+		Names    []string `json:"names,omitempty"`
+		Selector string   `json:"selector,omitempty"`
+	}
+
+	AttackGroupSpecificHeaderCookieOrParamPrefix struct {
+		Prefix   string `json:"prefix,omitempty"`
+		Selector string `json:"selector,omitempty"`
 	}
 
 	GetAttackGroupConditionExceptionResponse struct {
-		Conditions []interface{} `json:"conditions,omitempty"`
-		Exception  struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
-			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names,omitempty"`
-				Selector string   `json:"selector,omitempty"`
-			} `json:"specificHeaderCookieOrParamNames,omitempty"`
-			SpecificHeaderCookieOrParamPrefix struct {
-				Prefix   string `json:"prefix,omitempty"`
-				Selector string `json:"selector,omitempty"`
-			} `json:"specificHeaderCookieOrParamPrefix,omitempty"`
-		} `json:"exception,omitempty"`
+		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
+		Conditions             *AttackGroupConditions         `json:"conditions,omitempty"`
+		Exception              *AttackGroupException          `json:"exception,omitempty"`
 	}
 
 	UpdateAttackGroupConditionExceptionRequest struct {

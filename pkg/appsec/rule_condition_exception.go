@@ -88,14 +88,29 @@ type (
 			Filenames     []string `json:"filenames,omitempty"`
 			PositiveMatch bool     `json:"positiveMatch"`
 			Methods       []string `json:"methods,omitempty"`
-		} `json:"conditions"`
+		} `json:"conditions,omitempty"`
 		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
+			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
 				Names    []string `json:"names"`
 				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
-		} `json:"exception"`
+			} `json:"specificHeaderCookieOrParamNames,omitempty"`
+		} `json:"exception,omitempty"`
+	}
+
+	RuleConditions []struct {
+		Type          string   `json:"type"`
+		Filenames     []string `json:"filenames,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch"`
+		Methods       []string `json:"methods,omitempty"`
+	}
+
+	RuleException struct {
+		HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
+		SpecificHeaderCookieOrParamNames []struct {
+			Names    []string `json:"names"`
+			Selector string   `json:"selector"`
+		} `json:"specificHeaderCookieOrParamNames,omitempty"`
 	}
 
 	RemoveRuleConditionExceptionRequest struct {

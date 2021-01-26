@@ -34,20 +34,26 @@ type (
 	}
 
 	GetAdvancedSettingsLoggingResponse struct {
-		Override      bool `json:"override"`
-		AllowSampling bool `json:"allowSampling"`
-		Cookies       struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values"`
-		} `json:"cookies"`
-		CustomHeaders struct {
-			Type   string   `json:"type,omitempty"`
-			Values []string `json:"values,omitempty"`
-		} `json:"customHeaders"`
-		StandardHeaders struct {
-			Type   string   `json:"type,omitempty"`
-			Values []string `json:"values,omitempty"`
-		} `json:"standardHeaders"`
+		Override        bool                             `json:"override"`
+		AllowSampling   bool                             `json:"allowSampling"`
+		Cookies         *AdvancedSettingsCookies         `json:"cookies,omitempty"`
+		CustomHeaders   *AdvancedSettingsCustomHeaders   `json:"customHeaders,omitempty"`
+		StandardHeaders *AdvancedSettingsStandardHeaders `json:"standardHeaders,omitempty"`
+	}
+
+	AdvancedSettingsCookies struct {
+		Type   string   `json:"type"`
+		Values []string `json:"values"`
+	}
+
+	AdvancedSettingsCustomHeaders struct {
+		Type   string   `json:"type,omitempty"`
+		Values []string `json:"values,omitempty"`
+	}
+
+	AdvancedSettingsStandardHeaders struct {
+		Type   string   `json:"type,omitempty"`
+		Values []string `json:"values,omitempty"`
 	}
 
 	UpdateAdvancedSettingsLoggingRequest struct {
