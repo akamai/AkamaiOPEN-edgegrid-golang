@@ -23,8 +23,10 @@ type (
 	}
 
 	GetSelectableHostnamesRequest struct {
-		ConfigID int `json:"configId"`
-		Version  int `json:"version"`
+		ConfigID   int    `json:"configId"`
+		Version    int    `json:"version"`
+		ContractID string `json:"-"`
+		GroupID    int    `json:"-"`
 	}
 
 	GetSelectableHostnamesResponse struct {
@@ -49,10 +51,19 @@ func (p *appsec) GetSelectableHostnames(ctx context.Context, params GetSelectabl
 
 	var rval GetSelectableHostnamesResponse
 
-	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/selectable-hostnames",
-		params.ConfigID,
-		params.Version)
+	var uri string
+
+	if params.ConfigID != 0 {
+		uri = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/selectable-hostnames",
+			params.ConfigID,
+			params.Version)
+	} else {
+		uri = fmt.Sprintf(
+			"/appsec/v1/contracts/%s/groups/%d/selectable-hostnames",
+			params.ContractID,
+			params.GroupID)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
