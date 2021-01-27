@@ -1,5 +1,8 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.1.1 (Jan 27, 2021)
+* PAPI - Fixed validation on empty rule behaviors causing some properties with nested behaviors to fail
+
 ## 2.1.0 (Jan 13, 2021)
 * [IMPORTANT] IAM - New Identity and Access Management API Support
 
