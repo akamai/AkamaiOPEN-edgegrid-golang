@@ -42,19 +42,19 @@ type (
 		AverageThreshold       int                               `json:"averageThreshold,omitempty"`
 		BurstThreshold         int                               `json:"burstThreshold,omitempty"`
 		ClientIdentifier       string                            `json:"clientIdentifier,omitempty"`
-		UseXForwardForHeaders  bool                              `json:"useXForwardForHeaders,omitempty"`
+		UseXForwardForHeaders  bool                              `json:"useXForwardForHeaders"`
 		RequestType            string                            `json:"requestType,omitempty"`
-		SameActionOnIpv6       bool                              `json:"sameActionOnIpv6,omitempty"`
+		SameActionOnIpv6       bool                              `json:"sameActionOnIpv6"`
 		Path                   *RatePolicyPath                   `json:"path,omitempty"`
 		PathMatchType          string                            `json:"pathMatchType,omitempty"`
-		PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch,omitempty"`
+		PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch"`
 		FileExtensions         *RatePolicyFileExtensions         `json:"fileExtensions,omitempty"`
 		Hostnames              []string                          `json:"hostnames,omitempty"`
 		AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
 		QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
 		CreateDate             string                            `json:"createDate,omitempty"`
 		UpdateDate             string                            `json:"updateDate,omitempty"`
-		Used                   bool                              `json:"used,omitempty"`
+		Used                   bool                              `json:"used"`
 	}
 
 	RatePolicyPath struct {
@@ -252,21 +252,21 @@ type (
 			AverageThreshold       int                               `json:"averageThreshold,omitempty"`
 			BurstThreshold         int                               `json:"burstThreshold,omitempty"`
 			ClientIdentifier       string                            `json:"clientIdentifier,omitempty"`
-			UseXForwardForHeaders  bool                              `json:"useXForwardForHeaders,omitempty"`
+			UseXForwardForHeaders  bool                              `json:"useXForwardForHeaders"`
 			RequestType            string                            `json:"requestType,omitempty"`
-			SameActionOnIpv6       bool                              `json:"sameActionOnIpv6,omitempty"`
+			SameActionOnIpv6       bool                              `json:"sameActionOnIpv6"`
 			Path                   *RatePolicyPath                   `json:"path,omitempty"`
 			PathMatchType          string                            `json:"pathMatchType,omitempty"`
-			PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch,omitempty"`
+			PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch"`
 			FileExtensions         *RatePolicyFileExtensions         `json:"fileExtensions,omitempty"`
 			Hostnames              []string                          `json:"hostnames,omitempty"`
 			AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
 			QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
 			CreateDate             string                            `json:"createDate,omitempty"`
 			UpdateDate             string                            `json:"updateDate,omitempty"`
-			EnableActions          bool                              `json:"enableActions,omitempty"`
-			Used                   bool                              `json:"used,omitempty"`
-			SameActionOnIpv        bool                              `json:"sameActionOnIpv,omitempty"`
+			EnableActions          bool                              `json:"enableActions"`
+			Used                   bool                              `json:"used"`
+			SameActionOnIpv        bool                              `json:"sameActionOnIpv"`
 			APISelectors           *RatePolicyAPISelectors           `json:"apiSelectors,omitempty"`
 			BodyParameters         *RatePolicyBodyParameters         `json:"bodyParameters,omitempty"`
 		} `json:"ratePolicies,omitempty"`
