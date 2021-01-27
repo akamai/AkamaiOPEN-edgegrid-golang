@@ -58,17 +58,17 @@ type (
 	}
 
 	RatePolicyPath struct {
-		PositiveMatch bool     `json:"positiveMatch,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch"`
 		Values        []string `json:"values,omitempty"`
 	}
 
 	RatePolicyFileExtensions struct {
-		PositiveMatch bool     `json:"positiveMatch,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch"`
 		Values        []string `json:"values,omitempty"`
 	}
 
 	RatePolicyAdditionalMatchOptions []struct {
-		PositiveMatch bool     `json:"positiveMatch,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch"`
 		Type          string   `json:"type,omitempty"`
 		Values        []string `json:"values,omitempty"`
 	}
@@ -76,8 +76,8 @@ type (
 	RatePolicyQueryParameters []struct {
 		Name          string   `json:"name,omitempty"`
 		Values        []string `json:"values,omitempty"`
-		PositiveMatch bool     `json:"positiveMatch,omitempty"`
-		ValueInRange  bool     `json:"valueInRange,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch"`
+		ValueInRange  bool     `json:"valueInRange"`
 	}
 
 	CreateRatePolicyResponse struct {
@@ -280,8 +280,8 @@ type (
 	RatePolicyBodyParameters []struct {
 		Name          string   `json:"name,omitempty"`
 		Values        []string `json:"values,omitempty"`
-		PositiveMatch bool     `json:"positiveMatch,omitempty"`
-		ValueInRange  bool     `json:"valueInRange,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch"`
+		ValueInRange  bool     `json:"valueInRange"`
 	}
 )
 
