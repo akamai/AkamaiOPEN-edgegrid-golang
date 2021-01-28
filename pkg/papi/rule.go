@@ -185,8 +185,8 @@ func (r Rules) Validate() error {
 // Validate validates RuleBehavior struct
 func (b RuleBehavior) Validate() error {
 	return validation.Errors{
-		"Name":    validation.Validate(b.Name, validation.Required),
-		"Options": validation.Validate(b.Options, validation.Required),
+		"Name":    validation.Validate(b.Name),
+		"Options": validation.Validate(b.Options),
 	}.Filter()
 }
 
