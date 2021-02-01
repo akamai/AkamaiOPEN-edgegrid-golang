@@ -264,7 +264,6 @@ type (
 			QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
 			CreateDate             string                            `json:"createDate,omitempty"`
 			UpdateDate             string                            `json:"updateDate,omitempty"`
-			EnableActions          bool                              `json:"enableActions"`
 			Used                   bool                              `json:"used"`
 			SameActionOnIpv        bool                              `json:"sameActionOnIpv"`
 			APISelectors           *RatePolicyAPISelectors           `json:"apiSelectors,omitempty"`
