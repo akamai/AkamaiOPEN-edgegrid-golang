@@ -273,7 +273,7 @@ type (
 
 	RatePolicyAPISelectors []struct {
 		APIDefinitionID int   `json:"apiDefinitionId,omitempty"`
-		ResourceIds     []int `json:"resourceIds,omitempty"`
+		ResourceIds     []int `json:"resourceIds"`
 	}
 
 	RatePolicyBodyParameters []struct {
