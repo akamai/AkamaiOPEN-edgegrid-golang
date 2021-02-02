@@ -43,7 +43,7 @@ type (
 	}
 
 	GetAttackGroupConditionExceptionsResponse struct {
-		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
+		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
 		Conditions             *AttackGroupConditions         `json:"conditions,omitempty"`
 		Exception              *AttackGroupException          `json:"exception,omitempty"`
 	}
@@ -89,7 +89,7 @@ type (
 	}
 
 	GetAttackGroupConditionExceptionResponse struct {
-		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
+		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
 		Conditions             *AttackGroupConditions         `json:"conditions,omitempty"`
 		Exception              *AttackGroupException          `json:"exception,omitempty"`
 	}
