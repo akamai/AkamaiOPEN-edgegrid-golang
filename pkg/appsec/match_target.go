@@ -157,17 +157,17 @@ type (
 				} `json:"bypassNetworkLists,omitempty"`
 			} `json:"apiTargets,omitempty"`
 			WebsiteTargets []struct {
-				ConfigID                     int           `json:"configId,omitempty"`
-				ConfigVersion                int           `json:"configVersion,omitempty"`
-				DefaultFile                  string        `json:"defaultFile,omitempty"`
-				IsNegativeFileExtensionMatch bool          `json:"isNegativeFileExtensionMatch,omitempty"`
-				IsNegativePathMatch          bool          `json:"isNegativePathMatch,omitempty"`
-				Sequence                     int           `json:"sequence,omitempty"`
-				TargetID                     int           `json:"targetId,omitempty"`
-				Type                         string        `json:"type,omitempty"`
-				FileExtensions               []string      `json:"fileExtensions,omitempty"`
-				FilePaths                    []string      `json:"filePaths,omitempty"`
-				Hostnames                    []interface{} `json:"hostnames,omitempty"`
+				ConfigID                     int      `json:"configId,omitempty"`
+				ConfigVersion                int      `json:"configVersion,omitempty"`
+				DefaultFile                  string   `json:"defaultFile,omitempty"`
+				IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch,omitempty"`
+				IsNegativePathMatch          bool     `json:"isNegativePathMatch,omitempty"`
+				Sequence                     int      `json:"sequence,omitempty"`
+				TargetID                     int      `json:"targetId,omitempty"`
+				Type                         string   `json:"type,omitempty"`
+				FileExtensions               []string `json:"fileExtensions,omitempty"`
+				FilePaths                    []string `json:"filePaths,omitempty"`
+				Hostnames                    []string `json:"hostnames,omitempty"`
 				EffectiveSecurityControls    struct {
 					ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
 					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
