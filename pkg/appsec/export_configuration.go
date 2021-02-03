@@ -204,6 +204,12 @@ type (
 				} `json:"durationThreshold"`
 			} `json:"slowPost"`
 		} `json:"securityPolicies"`
+		Siem struct {
+			EnableForAllPolicies    bool `json:"enableForAllPolicies"`
+			EnableSiem              bool `json:"enableSiem"`
+			EnabledBotmanSiemEvents bool `json:"enabledBotmanSiemEvents"`
+			SiemDefinitionID        int  `json:"siemDefinitionId"`
+		} `json:"siem"`
 		AdvancedOptions struct {
 			Logging struct {
 				AllowSampling bool `json:"allowSampling"`
@@ -224,6 +230,15 @@ type (
 				Extensions         []string `json:"extensions"`
 			} `json:"prefetch"`
 		} `json:"advancedOptions"`
+		CustomDenyList []struct {
+			ID         string `json:"id"`
+			Name       string `json:"name"`
+			Parameters []struct {
+				DisplayName string `json:"displayName"`
+				Name        string `json:"name"`
+				Value       string `json:"value"`
+			} `json:"parameters"`
+		} `json:"customDenyList"`
 	}
 )
 
