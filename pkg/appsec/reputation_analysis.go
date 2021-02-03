@@ -192,7 +192,7 @@ func (p *appsec) RemoveReputationAnalysis(ctx context.Context, params RemoveRepu
 		return nil, fmt.Errorf("failed to create create ReputationAnalysisrequest: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
 		return nil, fmt.Errorf("delreputationanalysis request failed: %w", err)
 	}
