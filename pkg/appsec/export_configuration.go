@@ -128,7 +128,11 @@ type (
 		} `json:"rulesets"`
 		MatchTargets struct {
 			WebsiteTargets []struct {
-				Type                      string `json:"type"`
+				Type               string `json:"type"`
+				BypassNetworkLists []struct {
+					ID   string `json:"id"`
+					Name string `json:"name"`
+				} `json:"bypassNetworkLists,omitempty"`
 				DefaultFile               string `json:"defaultFile"`
 				EffectiveSecurityControls struct {
 					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
@@ -138,6 +142,7 @@ type (
 					ApplySlowPostControls         bool `json:"applySlowPostControls"`
 				} `json:"effectiveSecurityControls"`
 				FilePaths                    []string `json:"filePaths"`
+				Hostnames                    []string `json:"hostnames,omitempty"`
 				ID                           int      `json:"id"`
 				IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
 				IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
