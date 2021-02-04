@@ -1,18 +1,17 @@
 package appsec
 
 import (
-        "context"
-        "encoding/json"
-        "errors"
-        "net/http"
-        "net/http/httptest"
-        "testing"
+	"context"
+	"encoding/json"
+	"errors"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-        "github.com/stretchr/testify/assert"
-        "github.com/stretchr/testify/require"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
-
 
 func TestApsec_ListAdvancedSettingsPrefetch(t *testing.T) {
 
@@ -32,9 +31,8 @@ func TestApsec_ListAdvancedSettingsPrefetch(t *testing.T) {
 	}{
 		"200 OK": {
 			params: GetAdvancedSettingsPrefetchRequest{
-				ConfigID:    43253,
-Version:    15,
-
+				ConfigID: 43253,
+				Version:  15,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
@@ -46,9 +44,8 @@ Version:    15,
 		},
 		"500 internal server error": {
 			params: GetAdvancedSettingsPrefetchRequest{
-				ConfigID:    43253,
-Version:    15,
-
+				ConfigID: 43253,
+				Version:  15,
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -113,9 +110,8 @@ func TestAppSec_GetAdvancedSettingsPrefetch(t *testing.T) {
 	}{
 		"200 OK": {
 			params: GetAdvancedSettingsPrefetchRequest{
-				ConfigID:    43253,
-Version:    15,
-
+				ConfigID: 43253,
+				Version:  15,
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
@@ -124,9 +120,8 @@ Version:    15,
 		},
 		"500 internal server error": {
 			params: GetAdvancedSettingsPrefetchRequest{
-				ConfigID:    43253,
-Version:    15,
-
+				ConfigID: 43253,
+				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
@@ -166,7 +161,6 @@ Version:    15,
 	}
 }
 
-
 // Test Update AdvancedSettingsPrefetch.
 func TestAppSec_UpdateAdvancedSettingsPrefetch(t *testing.T) {
 	result := UpdateAdvancedSettingsPrefetchResponse{}
@@ -190,9 +184,8 @@ func TestAppSec_UpdateAdvancedSettingsPrefetch(t *testing.T) {
 	}{
 		"200 Success": {
 			params: UpdateAdvancedSettingsPrefetchRequest{
-				ConfigID:    43253,
-Version:    15,
-
+				ConfigID: 43253,
+				Version:  15,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -204,9 +197,8 @@ Version:    15,
 		},
 		"500 internal server error": {
 			params: UpdateAdvancedSettingsPrefetchRequest{
-				ConfigID:    43253,
-Version:    15,
-
+				ConfigID: 43253,
+				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
@@ -249,4 +241,3 @@ Version:    15,
 		})
 	}
 }
-
