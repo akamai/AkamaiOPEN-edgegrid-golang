@@ -166,6 +166,15 @@ func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvan
 		return nil, p.Error(resp)
 	}
 
+	if len(rval.Cookies.Values) == 0 {
+		rval.Cookies.Values = make([]string, 0)
+	}
+	if len(rval.CustomHeaders.Values) == 0 {
+		rval.CustomHeaders.Values = make([]string, 0)
+	}
+	if len(rval.StandardHeaders.Values) == 0 {
+		rval.StandardHeaders.Values = make([]string, 0)
+	}
 	return &rval, nil
 
 }

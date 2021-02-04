@@ -43,7 +43,7 @@ type (
 			NewRules []struct {
 				ID    int    `json:"id,omitempty"`
 				Title string `json:"title,omitempty"`
-			} `json:"newRules"`
+			} `json:"newRules,omitempty"`
 		} `json:"KRSToEvalUpdates,omitempty"`
 		EvalToEvalUpdates struct {
 			NewRules []struct {
