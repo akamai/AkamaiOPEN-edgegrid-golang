@@ -112,6 +112,10 @@ func (p *appsec) GetAdvancedSettingsPrefetch(ctx context.Context, params GetAdva
 		return nil, p.Error(resp)
 	}
 
+	if len(rval.Extensions) == 0 {
+		rval.Extensions = make([]string, 0)
+	}
+
 	return &rval, nil
 
 }

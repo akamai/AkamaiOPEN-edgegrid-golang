@@ -34,10 +34,12 @@ type (
 	}
 
 	GetApiRequestConstraintsResponse struct {
-		APIEndpoints []struct {
-			ID     int    `json:"id"`
-			Action string `json:"action"`
-		} `json:"apiEndpoints"`
+		APIEndpoints []ApiEndpoint `json:"apiEndpoints,omitEmpty"`
+	}
+
+	ApiEndpoint struct {
+		ID     int    `json:"id"`
+		Action string `json:"action"`
 	}
 
 	UpdateApiRequestConstraintsRequest struct {
@@ -124,14 +126,17 @@ func (p *appsec) GetApiRequestConstraints(ctx context.Context, params GetApiRequ
 	}
 
 	if params.ApiID != 0 {
+		rvalfiltered.APIEndpoints = make([]ApiEndpoint, 0)
 		for _, val := range rval.APIEndpoints {
 			if val.ID == params.ApiID {
 				rvalfiltered.APIEndpoints = append(rvalfiltered.APIEndpoints, val)
 			}
 		}
-
 	} else {
 		rvalfiltered = rval
+		if len(rvalfiltered.APIEndpoints) == 0 {
+			rvalfiltered.APIEndpoints = make([]ApiEndpoint, 0)
+		}
 	}
 
 	return &rvalfiltered, nil
