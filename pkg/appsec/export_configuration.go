@@ -270,6 +270,20 @@ type (
 					Timeout int `json:"timeout"`
 				} `json:"durationThreshold"`
 			} `json:"slowPost"`
+			LoggingOverrides struct {
+				AllowSampling bool `json:"allowSampling"`
+				Cookies       struct {
+					Type   string   `json:"type"`
+					Values []string `json:"values"`
+				} `json:"cookies"`
+				CustomHeaders struct {
+					Type   string   `json:"type"`
+					Values []string `json:"values"`
+				} `json:"customHeaders"`
+				StandardHeaders struct {
+					Type string `json:"type"`
+				} `json:"standardHeaders"`
+			} `json:"loggingOverrides,omitempty"`
 		} `json:"securityPolicies"`
 		Siem struct {
 			EnableForAllPolicies    bool `json:"enableForAllPolicies"`
