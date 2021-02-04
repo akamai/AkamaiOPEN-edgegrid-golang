@@ -49,6 +49,15 @@ type (
 	}
 
 	AttackGroupAdvancedExceptions struct {
+		SpecificHeaderCookieOrParamNameValue []struct {
+			NamesValues []struct {
+				Names  []string `json:"names"`
+				Values []string `json:"values"`
+			} `json:"namesValues"`
+			Selector      string `json:"selector"`
+			ValueWildcard bool   `json:"valueWildcard"`
+			Wildcard      bool   `json:"wildcard"`
+		} `json:"specificHeaderCookieOrParamNameValue"`
 		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames"`
 	}
 
