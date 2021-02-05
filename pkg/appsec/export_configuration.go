@@ -368,7 +368,7 @@ type (
 		ClassName     string               `json:"className"`
 		Index         int                  `json:"index"`
 		PositiveMatch bool                 `json:"positiveMatch"`
-		Value         []string             `json:"value"`
+		Value         []string             `json:"value,omitempty"`
 		Name          atomicConditionsName `json:"name,omitempty"`
 		NameCase      bool                 `json:"nameCase,omitempty"`
 		NameWildcard  bool                 `json:"nameWildcard,omitempty"`
