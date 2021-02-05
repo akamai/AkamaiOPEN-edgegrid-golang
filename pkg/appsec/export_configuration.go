@@ -89,13 +89,13 @@ type (
 		ReputationProfiles []struct {
 			Condition struct {
 				AtomicConditions *AtomicConditionsexp `json:"atomicConditions,omitempty"`
-				CanDelete        bool                 `json:"canDelete"`
-				ConfigVersionID  int                  `json:"configVersionId"`
-				ID               int                  `json:"id"`
-				Name             string               `json:"name"`
+				CanDelete        bool                 `json:"-"`
+				ConfigVersionID  int                  `json:"-"`
+				ID               int                  `json:"-"`
+				Name             string               `json:"-"`
 				PositiveMatch    bool                 `json:"positiveMatch"`
-				UUID             string               `json:"uuid"`
-				Version          int64                `json:"version"`
+				UUID             string               `json:"-"`
+				Version          int64                `json:"-"`
 			} `json:"condition,omitempty"`
 			Context          string `json:"context"`
 			ContextReadable  string `json:"contextReadable"`
