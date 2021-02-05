@@ -2,12 +2,15 @@
     {
         "allowSampling": true,
         "cookies": {
-            "type": "all"
+            "type": "all",
+            "values": []
         },
         "customHeaders": {
-            "type": "all"
+            "type": "all",
+            "values": []
         },
         "standardHeaders": {
-            "type": "all"
+            "type": "all",
+            "values": []
         }
     }
