@@ -95,6 +95,7 @@ type (
 	EvalRuleConditionExceptionConditions []struct {
 		Type          string   `json:"type,omitempty"`
 		Filenames     []string `json:"filenames,omitempty"`
+		Extensions    []string `json:"extensions,omitempty"`
 		PositiveMatch bool     `json:"positiveMatch,omitempty"`
 		Methods       []string `json:"methods,omitempty"`
 	}
