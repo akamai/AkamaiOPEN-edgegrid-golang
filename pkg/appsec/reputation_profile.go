@@ -40,7 +40,7 @@ type (
 					CheckIps      string               `json:"checkIps,omitempty"`
 					ClassName     string               `json:"className,omitempty"`
 					Index         int                  `json:"index,omitempty"`
-					PositiveMatch bool                 `json:"positiveMatch"`
+					PositiveMatch bool                 `json:"positiveMatch,omitempty"`
 					Value         []string             `json:"value,omitempty"`
 					Name          atomicConditionsName `json:"name,omitempty"`
 					NameCase      bool                 `json:"nameCase,omitempty"`
@@ -49,7 +49,7 @@ type (
 					ValueWildcard bool                 `json:"valueWildcard,omitempty"`
 					Host          []string             `json:"host,omitempty"`
 				} `json:"atomicConditions,omitempty"`
-				PositiveMatch bool `json:"positiveMatch,omitempty"`
+				PositiveMatch bool `json:"positiveMatch"`
 			} `json:"condition,omitempty"`
 			Context          string `json:"context,omitempty"`
 			ContextReadable  string `json:"contextReadable,omitempty"`
@@ -67,7 +67,7 @@ type (
 				CheckIps      string               `json:"checkIps,omitempty"`
 				ClassName     string               `json:"className,omitempty"`
 				Index         int                  `json:"index,omitempty"`
-				PositiveMatch bool                 `json:"positiveMatch"`
+				PositiveMatch bool                 `json:"positiveMatch,omitempty"`
 				Value         []string             `json:"value,omitempty"`
 				Name          atomicConditionsName `json:"name,omitempty"`
 				NameCase      bool                 `json:"nameCase,omitempty"`
@@ -76,7 +76,7 @@ type (
 				ValueWildcard bool                 `json:"valueWildcard,omitempty"`
 				Host          []string             `json:"host,omitempty"`
 			} `json:"atomicConditions,omitempty"`
-			PositiveMatch bool `json:"positiveMatch,omitempty"`
+			PositiveMatch bool `json:"positiveMatch"`
 		} `json:"condition,omitempty"`
 		Context          string `json:"context,omitempty"`
 		ContextReadable  string `json:"contextReadable,omitempty"`

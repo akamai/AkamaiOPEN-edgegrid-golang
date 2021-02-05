@@ -367,7 +367,7 @@ type (
 		CheckIps      string               `json:"checkIps,omitempty"`
 		ClassName     string               `json:"className"`
 		Index         int                  `json:"index"`
-		PositiveMatch bool                 `json:"positiveMatch"`
+		PositiveMatch bool                 `json:"positiveMatch,omitempty"`
 		Value         []string             `json:"value,omitempty"`
 		Name          atomicConditionsName `json:"name,omitempty"`
 		NameCase      bool                 `json:"nameCase,omitempty"`
