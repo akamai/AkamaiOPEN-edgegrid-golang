@@ -192,6 +192,7 @@ type (
 						PositiveMatch bool     `json:"positiveMatch"`
 					} `json:"conditions,omitempty"`
 					Exception struct {
+						AnyHeaderCookieOrParam               []string `json:"anyHeaderCookieOrParam"`
 						SpecificHeaderCookieOrParamNameValue struct {
 							Name     string `json:"name"`
 							Selector string `json:"selector"`
@@ -286,10 +287,11 @@ type (
 			} `json:"loggingOverrides,omitempty"`
 		} `json:"securityPolicies"`
 		Siem struct {
-			EnableForAllPolicies    bool `json:"enableForAllPolicies"`
-			EnableSiem              bool `json:"enableSiem"`
-			EnabledBotmanSiemEvents bool `json:"enabledBotmanSiemEvents"`
-			SiemDefinitionID        int  `json:"siemDefinitionId"`
+			EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
+			EnableSiem              bool     `json:"enableSiem"`
+			EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
+			FirewallPolicyIds       []string `json:"firewallPolicyIds"`
+			SiemDefinitionID        int      `json:"siemDefinitionId"`
 		} `json:"siem"`
 		AdvancedOptions struct {
 			Logging struct {
