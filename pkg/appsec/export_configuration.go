@@ -316,6 +316,7 @@ type (
 					Type   string   `json:"type"`
 					Values []string `json:"values"`
 				} `json:"customHeaders"`
+				Override        bool `json:"override"`
 				StandardHeaders struct {
 					Type string `json:"type"`
 				} `json:"standardHeaders"`
