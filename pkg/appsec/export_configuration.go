@@ -333,13 +333,16 @@ type (
 			Logging struct {
 				AllowSampling bool `json:"allowSampling"`
 				Cookies       struct {
-					Type string `json:"type"`
+					Type   string   `json:"type"`
+					Values []string `json:"values"`
 				} `json:"cookies"`
 				CustomHeaders struct {
-					Type string `json:"type"`
+					Type   string   `json:"type"`
+					Values []string `json:"values"`
 				} `json:"customHeaders"`
 				StandardHeaders struct {
-					Type string `json:"type"`
+					Type   string   `json:"type"`
+					Values []string `json:"values"`
 				} `json:"standardHeaders"`
 			} `json:"logging"`
 			Prefetch struct {
