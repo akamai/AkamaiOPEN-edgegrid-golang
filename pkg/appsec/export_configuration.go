@@ -143,6 +143,33 @@ type (
 			} `json:"attackGroups,omitempty"`
 		} `json:"rulesets"`
 		MatchTargets struct {
+			APITargets []struct {
+				ConfigID                  int    `json:"-"`
+				ConfigVersion             int    `json:"-"`
+				Sequence                  int    `json:"sequence,omitempty"`
+				TargetID                  int    `json:"targetId,omitempty"`
+				Type                      string `json:"type,omitempty"`
+				EffectiveSecurityControls struct {
+					ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
+					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
+					ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
+					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
+					ApplyRateControls             bool `json:"applyRateControls,omitempty"`
+					ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
+					ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
+				} `json:"effectiveSecurityControls,omitempty"`
+				SecurityPolicy struct {
+					PolicyID string `json:"policyId,omitempty"`
+				} `json:"securityPolicy,omitempty"`
+				Apis []struct {
+					ID   int    `json:"id,omitempty"`
+					Name string `json:"name,omitempty"`
+				} `json:"apis,omitempty"`
+				BypassNetworkLists []struct {
+					Name string `json:"name,omitempty"`
+					ID   string `json:"id,omitempty"`
+				} `json:"bypassNetworkLists,omitempty"`
+			} `json:"apiTargets,omitempty"`
 			WebsiteTargets []struct {
 				Type               string `json:"type"`
 				BypassNetworkLists []struct {
@@ -232,7 +259,11 @@ type (
 				ID     int    `json:"id"`
 			} `json:"customRuleActions"`
 			APIRequestConstraints struct {
-				Action string `json:"action"`
+				Action       string `json:"action"`
+				APIEndpoints []struct {
+					Action string `json:"action"`
+					ID     int    `json:"id"`
+				} `json:"apiEndpoints"`
 			} `json:"apiRequestConstraints"`
 			ClientReputation struct {
 				ReputationProfileActions []struct {
@@ -261,6 +292,10 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
+			PenaltyBox struct {
+				Action               string `json:"action"`
+				PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
+			} `json:"penaltyBox,omitempty"`
 			SlowPost struct {
 				Action            string `json:"action"`
 				SlowRateThreshold struct {
