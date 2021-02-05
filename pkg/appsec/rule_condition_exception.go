@@ -46,10 +46,12 @@ type (
 		Conditions []struct {
 			Type          string   `json:"type,omitempty"`
 			Filenames     []string `json:"filenames,omitempty"`
+			Extensions    []string `json:"extensions,omitempty"`
 			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Methods       []string `json:"methods,omitempty"`
 		} `json:"conditions,omitempty"`
 		Exception struct {
+			AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
 			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
 				Names    []string `json:"names,omitempty"`
@@ -62,10 +64,12 @@ type (
 		Conditions []struct {
 			Type          string   `json:"type,omitempty"`
 			Filenames     []string `json:"filenames,omitempty"`
+			Extensions    []string `json:"extensions,omitempty"`
 			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Methods       []string `json:"methods,omitempty"`
 		} `json:"conditions,omitempty"`
 		Exception struct {
+			AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
 			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
 				Names    []string `json:"names,omitempty"`
