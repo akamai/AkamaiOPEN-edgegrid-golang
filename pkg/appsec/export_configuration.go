@@ -374,6 +374,7 @@ type (
 		NameWildcard  bool                 `json:"nameWildcard,omitempty"`
 		ValueCase     bool                 `json:"valueCase,omitempty"`
 		ValueWildcard bool                 `json:"valueWildcard,omitempty"`
+		Host          []string             `json:"host,omitempty"`
 	}
 )
 
