@@ -144,27 +144,25 @@ type (
 		} `json:"rulesets"`
 		MatchTargets struct {
 			APITargets []struct {
-				ConfigID                  int    `json:"-"`
-				ConfigVersion             int    `json:"-"`
-				Sequence                  int    `json:"sequence,omitempty"`
-				TargetID                  int    `json:"targetId,omitempty"`
-				Type                      string `json:"type,omitempty"`
+				Sequence int    `json:"sequence,omitempty"`
+				ID       int    `json:"id,omitempty"`
+				Type     string `json:"type,omitempty"`
+				Apis     []struct {
+					ID   int    `json:"id,omitempty"`
+					Name string `json:"name,omitempty"`
+				} `json:"apis,omitempty"`
 				EffectiveSecurityControls struct {
-					ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
+					ApplyAPIConstraints           bool `json:"applyApiConstraints"`
+					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
 					ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-					ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-					ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
+					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
+					ApplyRateControls             bool `json:"applyRateControls"`
+					ApplyReputationControls       bool `json:"applyReputationControls"`
+					ApplySlowPostControls         bool `json:"applySlowPostControls"`
 				} `json:"effectiveSecurityControls,omitempty"`
 				SecurityPolicy struct {
 					PolicyID string `json:"policyId,omitempty"`
 				} `json:"securityPolicy,omitempty"`
-				Apis []struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-				} `json:"apis,omitempty"`
 				BypassNetworkLists []struct {
 					Name string `json:"name,omitempty"`
 					ID   string `json:"id,omitempty"`
@@ -306,21 +304,7 @@ type (
 					Timeout int `json:"timeout"`
 				} `json:"durationThreshold"`
 			} `json:"slowPost"`
-			LoggingOverrides struct {
-				AllowSampling bool `json:"allowSampling"`
-				Cookies       struct {
-					Type   string   `json:"type"`
-					Values []string `json:"values"`
-				} `json:"cookies"`
-				CustomHeaders struct {
-					Type   string   `json:"type"`
-					Values []string `json:"values"`
-				} `json:"customHeaders"`
-				Override        bool `json:"override"`
-				StandardHeaders struct {
-					Type string `json:"type"`
-				} `json:"standardHeaders"`
-			} `json:"loggingOverrides,omitempty"`
+			LoggingOverrides *LoggingOverridesexp `json:"loggingOverrides,omitempty"`
 		} `json:"securityPolicies"`
 		Siem struct {
 			EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
@@ -330,21 +314,7 @@ type (
 			SiemDefinitionID        int      `json:"siemDefinitionId"`
 		} `json:"siem"`
 		AdvancedOptions struct {
-			Logging struct {
-				AllowSampling bool `json:"allowSampling"`
-				Cookies       struct {
-					Type   string   `json:"type"`
-					Values []string `json:"values,omitempty"`
-				} `json:"cookies"`
-				CustomHeaders struct {
-					Type   string   `json:"type"`
-					Values []string `json:"values,omitempty"`
-				} `json:"customHeaders"`
-				StandardHeaders struct {
-					Type   string   `json:"type"`
-					Values []string `json:"values,omitempty"`
-				} `json:"standardHeaders"`
-			} `json:"logging"`
+			Logging  *Loggingexp `json:"logging"`
 			Prefetch struct {
 				AllExtensions      bool     `json:"allExtensions"`
 				EnableAppLayer     bool     `json:"enableAppLayer"`
@@ -375,6 +345,37 @@ type (
 		ValueCase     bool                 `json:"valueCase,omitempty"`
 		ValueWildcard bool                 `json:"valueWildcard,omitempty"`
 		Host          []string             `json:"host,omitempty"`
+	}
+	Loggingexp struct {
+		AllowSampling bool `json:"allowSampling"`
+		Cookies       struct {
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
+		} `json:"cookies"`
+		CustomHeaders struct {
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
+		} `json:"customHeaders"`
+		StandardHeaders struct {
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
+		} `json:"standardHeaders"`
+	}
+
+	LoggingOverridesexp struct {
+		AllowSampling bool `json:"allowSampling"`
+		Cookies       struct {
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
+		} `json:"cookies"`
+		CustomHeaders struct {
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
+		} `json:"customHeaders"`
+		Override        bool `json:"override"`
+		StandardHeaders struct {
+			Type string `json:"type"`
+		} `json:"standardHeaders"`
 	}
 )
 
