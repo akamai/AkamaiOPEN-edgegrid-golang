@@ -406,7 +406,8 @@ func (p *dns) ParseRData(ctx context.Context, rtype string, rdata []string) map[
 			fieldMap["certificate"] = parts[3]
 			break
 		}
-	case "SVCB", "HTTPS":
+
+	case "SVCB":
 		for _, rcontent := range rdata {
 			parts := strings.Split(rcontent, " ")
 			fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
@@ -414,6 +415,15 @@ func (p *dns) ParseRData(ctx context.Context, rtype string, rdata []string) map[
 			fieldMap["svc_params"] = parts[2]
 			break
 		}
+
+        case "HTTPS":
+                for _, rcontent := range rdata {
+                        parts := strings.Split(rcontent, " ")
+                        fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
+                        fieldMap["target_name"] = parts[1]
+                        fieldMap["svc_params"] = parts[2]
+                        break
+                }
 
 	default:
 		for _, rcontent := range rdata {
