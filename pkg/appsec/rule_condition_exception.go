@@ -69,8 +69,8 @@ type (
 			Methods       []string `json:"methods,omitempty"`
 		} `json:"conditions,omitempty"`
 		Exception struct {
-			AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
+			AnyHeaderCookieOrParam           *AnyHeaderCookieOrParamRuleCondition `json:"anyHeaderCookieOrParam,omitempty"`
+			HeaderCookieOrParamValues        []string                             `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
 				Names    []string `json:"names,omitempty"`
 				Selector string   `json:"selector,omitempty"`
@@ -140,6 +140,8 @@ type (
 			} `json:"specificHeaderCookieOrParamNames"`
 		} `json:"exception"`
 	}
+
+	AnyHeaderCookieOrParamRuleCondition []string
 )
 
 // Validate validates GetRuleConditionExceptionRequest
