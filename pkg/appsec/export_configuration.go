@@ -60,25 +60,14 @@ type (
 			ClientIdentifier string    `json:"clientIdentifier"`
 			CreateDate       time.Time `json:"createDate"`
 			Description      string    `json:"description"`
-			FileExtensions   struct {
-				PositiveMatch bool     `json:"positiveMatch"`
-				Values        []string `json:"values"`
-			} `json:"fileExtensions"`
+			FileExtensions *RatePoliciesFileExtensions `json:"fileExtensions,omitempty"`
 			ID        int    `json:"id"`
 			MatchType string `json:"matchType"`
 			Name      string `json:"name"`
-			Path      struct {
-				PositiveMatch bool     `json:"positiveMatch"`
-				Values        []string `json:"values"`
-			} `json:"path"`
+			Path *RatePoliciesPath `json:"path,omitempty"`
 			PathMatchType        string `json:"pathMatchType"`
 			PathURIPositiveMatch bool   `json:"pathUriPositiveMatch"`
-			QueryParameters      []struct {
-				Name          string   `json:"name"`
-				PositiveMatch bool     `json:"positiveMatch"`
-				ValueInRange  bool     `json:"valueInRange"`
-				Values        []string `json:"values"`
-			} `json:"queryParameters"`
+			QueryParameters *RatePoliciesQueryParameters `json:"fileExtensions,omitempty"`
 			RequestType           string    `json:"requestType"`
 			SameActionOnIpv6      bool      `json:"sameActionOnIpv6"`
 			Type                  string    `json:"type"`
@@ -376,6 +365,23 @@ type (
 		StandardHeaders struct {
 			Type string `json:"type"`
 		} `json:"standardHeaders"`
+	}
+
+	RatePoliciesFileExtensions struct {
+		PositiveMatch bool     `json:"positiveMatch"`
+		Values        []string `json:"values"`
+	}
+
+	RatePoliciesPath struct {
+		PositiveMatch bool     `json:"positiveMatch"`
+		Values        []string `json:"values"`
+	}
+
+	RatePoliciesQueryParameters      []struct {
+		Name          string   `json:"name"`
+		PositiveMatch bool     `json:"positiveMatch"`
+		ValueInRange  bool     `json:"valueInRange"`
+		Values        []string `json:"values"`
 	}
 )
 
