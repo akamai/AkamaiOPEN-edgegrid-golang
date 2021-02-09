@@ -61,30 +61,25 @@ type (
 			CreateDate       time.Time `json:"createDate"`
 			Description      string    `json:"description"`
 			FileExtensions   struct {
-				PositiveMatch bool     `json:"positiveMatch"`
-				Values        []string `json:"values"`
+				PositiveMatch bool                              `json:"positiveMatch"`
+				Values        *RatePoliciesFileExtensionsValues `json:"values,omitempty"`
 			} `json:"fileExtensions"`
 			ID        int    `json:"id"`
 			MatchType string `json:"matchType"`
 			Name      string `json:"name"`
 			Path      struct {
-				PositiveMatch bool     `json:"positiveMatch"`
-				Values        []string `json:"values"`
+				PositiveMatch bool                    `json:"positiveMatch"`
+				Values        *RatePoliciesPathValues `json:"values,omitempty"`
 			} `json:"path"`
-			PathMatchType        string `json:"pathMatchType"`
-			PathURIPositiveMatch bool   `json:"pathUriPositiveMatch"`
-			QueryParameters      []struct {
-				Name          string   `json:"name"`
-				PositiveMatch bool     `json:"positiveMatch"`
-				ValueInRange  bool     `json:"valueInRange"`
-				Values        []string `json:"values"`
-			} `json:"queryParameters"`
-			RequestType           string    `json:"requestType"`
-			SameActionOnIpv6      bool      `json:"sameActionOnIpv6"`
-			Type                  string    `json:"type"`
-			UpdateDate            time.Time `json:"updateDate"`
-			UseXForwardForHeaders bool      `json:"useXForwardForHeaders"`
-			Used                  bool      `json:"used"`
+			PathMatchType         string                       `json:"pathMatchType"`
+			PathURIPositiveMatch  bool                         `json:"pathUriPositiveMatch"`
+			QueryParameters       *RatePoliciesQueryParameters `json:"queryParameters,omitempty"`
+			RequestType           string                       `json:"requestType"`
+			SameActionOnIpv6      bool                         `json:"sameActionOnIpv6"`
+			Type                  string                       `json:"type"`
+			UpdateDate            time.Time                    `json:"updateDate"`
+			UseXForwardForHeaders bool                         `json:"useXForwardForHeaders"`
+			Used                  bool                         `json:"used"`
 		} `json:"ratePolicies"`
 		ReputationProfiles []struct {
 			Condition struct {
@@ -378,6 +373,19 @@ type (
 			Type string `json:"type"`
 		} `json:"standardHeaders"`
 	}
+
+	RatePoliciesFileExtensionsValues []string
+
+	RatePoliciesPathValues []string
+
+	RatePoliciesQueryParameters []struct {
+		Name          string                             `json:"name"`
+		PositiveMatch bool                               `json:"positiveMatch"`
+		ValueInRange  bool                               `json:"valueInRange"`
+		Values        *RatePoliciesQueryParametersValues `json:"values,omitempty"`
+	}
+
+	RatePoliciesQueryParametersValues []string
 )
 
 func (c *ConditionsValue) UnmarshalJSON(data []byte) error {
