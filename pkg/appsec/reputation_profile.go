@@ -40,7 +40,7 @@ type (
 					CheckIps      string               `json:"checkIps,omitempty"`
 					ClassName     string               `json:"className,omitempty"`
 					Index         int                  `json:"index,omitempty"`
-					PositiveMatch bool                 `json:"positiveMatch,omitempty"`
+					PositiveMatch bool                 `json:"positiveMatch"`
 					Value         []string             `json:"value,omitempty"`
 					Name          atomicConditionsName `json:"name,omitempty"`
 					NameCase      bool                 `json:"nameCase,omitempty"`
@@ -64,17 +64,17 @@ type (
 	GetReputationProfileResponse struct {
 		Condition struct {
 			AtomicConditions []struct {
-				CheckIps      string               `json:"checkIps,omitempty"`
-				ClassName     string               `json:"className,omitempty"`
-				Index         int                  `json:"index,omitempty"`
-				PositiveMatch bool                 `json:"positiveMatch,omitempty"`
-				Value         []string             `json:"value,omitempty"`
-				Name          atomicConditionsName `json:"name,omitempty"`
-				NameCase      bool                 `json:"nameCase,omitempty"`
-				NameWildcard  bool                 `json:"nameWildcard,omitempty"`
-				ValueCase     bool                 `json:"valueCase,omitempty"`
-				ValueWildcard bool                 `json:"valueWildcard,omitempty"`
-				Host          []string             `json:"host,omitempty"`
+				CheckIps      string           `json:"checkIps,omitempty"`
+				ClassName     string           `json:"className,omitempty"`
+				Index         int              `json:"index,omitempty"`
+				PositiveMatch bool             `json:"positiveMatch,omitempty"`
+				Value         []string         `json:"value,omitempty"`
+				Name          *json.RawMessage `json:"name,omitempty"`
+				NameCase      bool             `json:"nameCase,omitempty"`
+				NameWildcard  bool             `json:"nameWildcard,omitempty"`
+				ValueCase     bool             `json:"valueCase,omitempty"`
+				ValueWildcard bool             `json:"valueWildcard,omitempty"`
+				Host          []string         `json:"host,omitempty"`
 			} `json:"atomicConditions,omitempty"`
 			PositiveMatch bool `json:"positiveMatch"`
 		} `json:"condition,omitempty"`

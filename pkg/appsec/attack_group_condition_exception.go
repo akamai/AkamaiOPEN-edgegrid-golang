@@ -44,7 +44,6 @@ type (
 
 	GetAttackGroupConditionExceptionsResponse struct {
 		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
-		Conditions             *AttackGroupConditions         `json:"conditions,omitempty"`
 		Exception              *AttackGroupException          `json:"exception,omitempty"`
 	}
 
@@ -58,7 +57,7 @@ type (
 			ValueWildcard bool   `json:"valueWildcard"`
 			Wildcard      bool   `json:"wildcard"`
 		} `json:"specificHeaderCookieOrParamNameValue"`
-		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames"`
+		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
 	}
 
 	AttackGroupSpecificHeaderCookieParamXMLOrJSONNames []struct {
@@ -84,7 +83,7 @@ type (
 		HeaderCookieOrParamValues               []string                                            `json:"headerCookieOrParamValues,omitempty"`
 		SpecificHeaderCookieOrParamNames        *AttackGroupSpecificHeaderCookieOrParamNames        `json:"specificHeaderCookieOrParamNames,omitempty"`
 		SpecificHeaderCookieOrParamPrefix       *AttackGroupSpecificHeaderCookieOrParamPrefix       `json:"specificHeaderCookieOrParamPrefix,omitempty"`
-		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames"`
+		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
 	}
 
 	AttackGroupSpecificHeaderCookieOrParamNames []struct {
@@ -99,7 +98,6 @@ type (
 
 	GetAttackGroupConditionExceptionResponse struct {
 		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
-		Conditions             *AttackGroupConditions         `json:"conditions,omitempty"`
 		Exception              *AttackGroupException          `json:"exception,omitempty"`
 	}
 
