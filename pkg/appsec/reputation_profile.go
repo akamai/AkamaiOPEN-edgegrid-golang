@@ -80,7 +80,7 @@ type (
 		} `json:"condition,omitempty"`
 		Context          string `json:"context,omitempty"`
 		ContextReadable  string `json:"contextReadable,omitempty"`
-		Enabled          bool   `json:"enabled,omitempty"`
+		Enabled          bool   `json:"enabled"`
 		ID               int    `json:"id,omitempty"`
 		Name             string `json:"name,omitempty"`
 		SharedIPHandling string `json:"sharedIpHandling,omitempty"`
