@@ -215,9 +215,11 @@ type (
 					} `json:"exception,omitempty"`
 				} `json:"ruleActions"`
 				AttackGroupActions []struct {
-					Action           string `json:"action"`
-					Group            string `json:"group"`
-					RulesetVersionID int    `json:"rulesetVersionId"`
+					Action                 string                         `json:"action"`
+					Group                  string                         `json:"group"`
+					RulesetVersionID       int                            `json:"rulesetVersionId"`
+					AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
+					Exception              *AttackGroupException          `json:"exception,omitempty"`
 				} `json:"attackGroupActions"`
 				Evaluation struct {
 					AttackGroupActions []struct {

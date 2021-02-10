@@ -72,9 +72,9 @@ type (
 	}
 
 	EvalRuleConditionExceptionsSpecificHeaderCookieOrParamNameValue struct {
-		Name     string `json:"name,omitempty"`
-		Selector string `json:"selector,omitempty"`
-		Value    string `json:"value,omitempty"`
+		Name     *json.RawMessage `json:"name,omitempty"`
+		Selector string           `json:"selector,omitempty"`
+		Value    *json.RawMessage `json:"value,omitempty"`
 	}
 
 	EvalRuleConditionExceptionsSpecificHeaderCookieOrParamNames []struct {
