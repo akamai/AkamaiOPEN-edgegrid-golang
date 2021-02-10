@@ -101,6 +101,7 @@ type (
 	}
 
 	EvalRuleConditionExceptionException struct {
+		AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
 		HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 		SpecificHeaderCookieOrParamNames []struct {
 			Names    []string `json:"names,omitempty"`
