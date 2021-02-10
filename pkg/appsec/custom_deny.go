@@ -35,7 +35,7 @@ type (
 	customDenyID string
 
 	GetCustomDenyResponse struct {
-		Description string       `json:"description"`
+		Description string       `json:"description,omitempty"`
 		Name        string       `json:"name"`
 		ID          customDenyID `json:"id"`
 		Parameters  []struct {
@@ -47,7 +47,7 @@ type (
 
 	GetCustomDenyListResponse struct {
 		CustomDenyList []struct {
-			Description string       `json:"description"`
+			Description string       `json:"description,omitempty"`
 			Name        string       `json:"name"`
 			ID          customDenyID `json:"id"`
 			Parameters  []struct {
