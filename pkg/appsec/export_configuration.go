@@ -101,20 +101,14 @@ type (
 			Threshold        int    `json:"threshold"`
 		} `json:"reputationProfiles"`
 		CustomRules []struct {
-			Conditions []struct {
-				Type          string          `json:"type"`
-				PositiveMatch bool            `json:"positiveMatch"`
-				Value         ConditionsValue `json:"value"`
-				ValueCase     bool            `json:"valueCase,omitempty"`
-				ValueWildcard bool            `json:"valueWildcard,omitempty"`
-			} `json:"conditions"`
-			Description   string   `json:"description"`
-			ID            int      `json:"id"`
-			Name          string   `json:"name"`
-			RuleActivated bool     `json:"ruleActivated"`
-			Structured    bool     `json:"structured"`
-			Tag           []string `json:"tag"`
-			Version       int      `json:"version"`
+			Conditions    *ConditionsExp `json:"conditions,omitempty"`
+			Description   string         `json:"description"`
+			ID            int            `json:"id"`
+			Name          string         `json:"name"`
+			RuleActivated bool           `json:"ruleActivated"`
+			Structured    bool           `json:"structured"`
+			Tag           []string       `json:"tag"`
+			Version       int            `json:"version"`
 		} `json:"customRules"`
 		Rulesets []struct {
 			ID               int       `json:"id"`
@@ -214,9 +208,9 @@ type (
 					Exception struct {
 						AnyHeaderCookieOrParam               []string `json:"anyHeaderCookieOrParam"`
 						SpecificHeaderCookieOrParamNameValue struct {
-							Name     string `json:"name"`
-							Selector string `json:"selector"`
-							Value    string `json:"value"`
+							Name     *json.RawMessage `json:"name"`
+							Selector string           `json:"selector"`
+							Value    *json.RawMessage `json:"value"`
 						} `json:"specificHeaderCookieOrParamNameValue"`
 					} `json:"exception,omitempty"`
 				} `json:"ruleActions"`
@@ -372,6 +366,14 @@ type (
 		StandardHeaders struct {
 			Type string `json:"type"`
 		} `json:"standardHeaders"`
+	}
+
+	ConditionsExp []struct {
+		Type          string           `json:"type,omitempty"`
+		PositiveMatch bool             `json:"positiveMatch,omitempty"`
+		Value         *json.RawMessage `json:"value,omitempty"`
+		ValueCase     bool             `json:"valueCase,omitempty"`
+		ValueWildcard bool             `json:"valueWildcard,omitempty"`
 	}
 
 	RatePoliciesFileExtensionsValues []string
