@@ -371,6 +371,7 @@ type (
 	ConditionsExp []struct {
 		Type          string           `json:"type,omitempty"`
 		PositiveMatch bool             `json:"positiveMatch,omitempty"`
+		Name          *json.RawMessage `json:"name,omitempty"`
 		Value         *json.RawMessage `json:"value,omitempty"`
 		ValueCase     bool             `json:"valueCase,omitempty"`
 		ValueWildcard bool             `json:"valueWildcard,omitempty"`
