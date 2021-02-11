@@ -208,10 +208,7 @@ type (
 			CustomRuleActions     *SecurityPolicyCustomRuleActions `json:"customRuleActions,omitempty"`
 			APIRequestConstraints struct {
 				Action       string `json:"action"`
-				APIEndpoints []struct {
-					Action string `json:"action"`
-					ID     int    `json:"id"`
-				} `json:"apiEndpoints"`
+				APIEndpoints *APIRequestConstraintsAPIEndpoints `json:"apiEndpoints,omitempty"`
 			} `json:"apiRequestConstraints"`
 			ClientReputation  *SecurityPolicyClientReputation `json:"clientReputation,omitempty"`
 			RatePolicyActions *SecurityPolicyRatePolicyActions `json:"ratePolicyActions,omitempty"`
@@ -377,6 +374,11 @@ type (
 			SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
 			SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 		} `json:"exception,omitempty"`
+	}
+
+	APIRequestConstraintsAPIEndpoints []struct {
+		Action string `json:"action"`
+		ID     int    `json:"id"`
 	}
 
 	SpecificHeaderCookieOrParamNameValueexp struct {
