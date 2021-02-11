@@ -201,17 +201,13 @@ type (
 					ID               int    `json:"id"`
 					RulesetVersionID int    `json:"rulesetVersionId"`
 					Conditions       []struct {
-						Type          string   `json:"type"`
-						Extensions    []string `json:"extensions"`
-						PositiveMatch bool     `json:"positiveMatch"`
+						Type          string   `json:"type,omitempty"`
+						Extensions    []string `json:"extensions,omitempty"`
+						PositiveMatch bool     `json:"positiveMatch,omitempty"`
 					} `json:"conditions,omitempty"`
 					Exception struct {
-						AnyHeaderCookieOrParam               []string `json:"anyHeaderCookieOrParam"`
-						SpecificHeaderCookieOrParamNameValue struct {
-							Name     *json.RawMessage `json:"name"`
-							Selector string           `json:"selector"`
-							Value    *json.RawMessage `json:"value"`
-						} `json:"specificHeaderCookieOrParamNameValue"`
+						AnyHeaderCookieOrParam               []string                                 `json:"anyHeaderCookieOrParam,omitempty"`
+						SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 					} `json:"exception,omitempty"`
 				} `json:"ruleActions"`
 				AttackGroupActions []struct {
@@ -322,6 +318,12 @@ type (
 				Value       string `json:"value"`
 			} `json:"parameters"`
 		} `json:"customDenyList"`
+	}
+
+	SpecificHeaderCookieOrParamNameValueexp struct {
+		Name     *json.RawMessage `json:"name,omitempty"`
+		Selector string           `json:"selector,omitempty"`
+		Value    *json.RawMessage `json:"value,omitempty"`
 	}
 
 	AtomicConditionsexp []struct {
