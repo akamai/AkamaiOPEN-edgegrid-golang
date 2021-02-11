@@ -90,6 +90,8 @@ type (
 	AttackGroupCriteria []struct {
 		Hostnames []string `json:"hostnames"`
 		Paths     []string `json:"paths"`
+		Names     []string `json:"names"`
+		Values    []string `json:"values"`
 	}
 
 	AttackGroupConditions []struct {
