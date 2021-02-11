@@ -161,7 +161,7 @@ type (
 					ApplySlowPostControls         bool `json:"applySlowPostControls"`
 				} `json:"effectiveSecurityControls"`
 				FilePaths                    []string `json:"filePaths"`
-				Hostnames                    []string `json:"hostnames,omitempty"`
+				Hostnames                    *StringSlice `json:"hostnames,omitempty"`
 				ID                           int      `json:"id"`
 				IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
 				IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
@@ -296,11 +296,11 @@ type (
 		ID         int    `json:"id"`
 		Conditions []struct {
 			Type          string   `json:"type,omitempty"`
-			Extensions    []string `json:"extensions,omitempty"`
+			Extensions    *StringSlice `json:"extensions,omitempty"`
 			PositiveMatch bool     `json:"positiveMatch"`
-			Filenames     []string `json:"filenames,omitempty"`
-			Hosts         []string `json:"hosts,omitempty"`
-			Ips           []string `json:"ips,omitempty"`
+			Filenames     *StringSlice `json:"filenames,omitempty"`
+			Hosts         *StringSlice `json:"hosts,omitempty"`
+			Ips           *StringSlice `json:"ips,omitempty"`
 			UseHeaders    bool     `json:"useHeaders,omitempty"`
 			CaseSensitive bool     `json:"caseSensitive,omitempty"`
 			Name          string   `json:"name,omitempty"`
@@ -310,14 +310,14 @@ type (
 			Header        string   `json:"header,omitempty"`
 			ValueCase     bool     `json:"valueCase,omitempty"`
 			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			Methods       []string `json:"methods,omitempty"`
-			Paths         []string `json:"paths,omitempty"`
+			Methods       *StringSlice `json:"methods,omitempty"`
+			Paths         *StringSlice `json:"paths,omitempty"`
 		} `json:"conditions,omitempty"`
 		Exception struct {
-			AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
+			AnyHeaderCookieOrParam           *StringSlice `json:"anyHeaderCookieOrParam,omitempty"`
+			HeaderCookieOrParamValues        *StringSlice `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names,omitempty"`
+				Names    *StringSlice `json:"names,omitempty"`
 				Selector string   `json:"selector,omitempty"`
 			} `json:"specificHeaderCookieOrParamNames,omitempty"`
 			SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
@@ -337,11 +337,11 @@ type (
 		RulesetVersionID int    `json:"rulesetVersionId"`
 		Conditions       []struct {
 			Type          string   `json:"type,omitempty"`
-			Extensions    []string `json:"extensions,omitempty"`
+			Extensions    *StringSlice `json:"extensions,omitempty"`
 			PositiveMatch bool     `json:"positiveMatch"`
-			Filenames     []string `json:"filenames,omitempty"`
-			Hosts         []string `json:"hosts,omitempty"`
-			Ips           []string `json:"ips,omitempty"`
+			Filenames     *StringSlice `json:"filenames,omitempty"`
+			Hosts         *StringSlice `json:"hosts,omitempty"`
+			Ips           *StringSlice `json:"ips,omitempty"`
 			UseHeaders    bool     `json:"useHeaders,omitempty"`
 			CaseSensitive bool     `json:"caseSensitive,omitempty"`
 			Name          string   `json:"name,omitempty"`
@@ -351,14 +351,14 @@ type (
 			Header        string   `json:"header,omitempty"`
 			ValueCase     bool     `json:"valueCase,omitempty"`
 			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			Methods       []string `json:"methods,omitempty"`
-			Paths         []string `json:"paths,omitempty"`
+			Methods       *StringSlice `json:"methods,omitempty"`
+			Paths         *StringSlice `json:"paths,omitempty"`
 		} `json:"conditions,omitempty"`
 		Exception struct {
-			AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
+			AnyHeaderCookieOrParam           *StringSlice `json:"anyHeaderCookieOrParam,omitempty"`
+			HeaderCookieOrParamValues        *StringSlice `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names,omitempty"`
+				Names    *StringSlice `json:"names,omitempty"`
 				Selector string   `json:"selector,omitempty"`
 			} `json:"specificHeaderCookieOrParamNames,omitempty"`
 			SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
@@ -382,7 +382,7 @@ type (
 	RatePoliciesAdditionalMatchOptions []struct {
 		PositiveMatch bool     `json:"positiveMatch"`
 		Type          string   `json:"type"`
-		Values        []string `json:"values"`
+		Values        *StringSlice `json:"values"`
 	}
 
 	SpecificHeaderCookieOrParamNameValueexp struct {
@@ -396,28 +396,28 @@ type (
 		ClassName     string           `json:"className"`
 		Index         int              `json:"index"`
 		PositiveMatch bool             `json:"positiveMatch,omitempty"`
-		Value         []string         `json:"value,omitempty"`
+		Value         *StringSlice         `json:"value,omitempty"`
 		Name          *json.RawMessage `json:"name,omitempty"`
 		NameCase      bool             `json:"nameCase,omitempty"`
 		NameWildcard  bool             `json:"nameWildcard,omitempty"`
 		ValueCase     bool             `json:"valueCase,omitempty"`
 		ValueWildcard bool             `json:"valueWildcard,omitempty"`
-		Host          []string         `json:"host,omitempty"`
+		Host          *StringSlice         `json:"host,omitempty"`
 	}
 
 	Loggingexp struct {
 		AllowSampling bool `json:"allowSampling"`
 		Cookies       struct {
 			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
+			Values *StringSlice `json:"values,omitempty"`
 		} `json:"cookies"`
 		CustomHeaders struct {
 			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
+			Values *StringSlice `json:"values,omitempty"`
 		} `json:"customHeaders"`
 		StandardHeaders struct {
 			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
+			Values *StringSlice `json:"values,omitempty"`
 		} `json:"standardHeaders"`
 	}
 
@@ -425,11 +425,11 @@ type (
 		AllowSampling bool `json:"allowSampling"`
 		Cookies       struct {
 			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
+			Values *StringSlice `json:"values,omitempty"`
 		} `json:"cookies"`
 		CustomHeaders struct {
 			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
+			Values *StringSlice `json:"values,omitempty"`
 		} `json:"customHeaders"`
 		Override        bool `json:"override"`
 		StandardHeaders struct {
