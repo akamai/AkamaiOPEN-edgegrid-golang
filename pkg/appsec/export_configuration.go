@@ -249,12 +249,7 @@ type (
 					ID     int    `json:"id"`
 				} `json:"apiEndpoints"`
 			} `json:"apiRequestConstraints"`
-			ClientReputation struct {
-				ReputationProfileActions []struct {
-					Action string `json:"action"`
-					ID     int    `json:"id"`
-				} `json:"reputationProfileActions"`
-			} `json:"clientReputation"`
+			ClientReputation *SecurityPolicyClientReputation `json:"clientReputation,omitempty"`
 			RatePolicyActions []struct {
 				ID         int    `json:"id"`
 				Ipv4Action string `json:"ipv4Action"`
@@ -333,6 +328,15 @@ type (
 	EvaluationAttackGroupActions []struct {
 		Action string `json:"action"`
 		Group  string `json:"group"`
+	}
+
+	ClientReputationReputationProfileActions []struct {
+		Action string `json:"action"`
+		ID     int    `json:"id"`
+	}
+
+	SecurityPolicyClientReputation struct {
+		ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
 	}
 
 	EvaluationRuleActions       []struct {
