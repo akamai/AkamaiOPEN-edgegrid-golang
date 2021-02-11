@@ -247,11 +247,7 @@ type (
 				} `json:"apiEndpoints"`
 			} `json:"apiRequestConstraints"`
 			ClientReputation  *SecurityPolicyClientReputation `json:"clientReputation,omitempty"`
-			RatePolicyActions []struct {
-				ID         int    `json:"id"`
-				Ipv4Action string `json:"ipv4Action"`
-				Ipv6Action string `json:"ipv6Action"`
-			} `json:"ratePolicyActions"`
+			RatePolicyActions *SecurityPolicyRatePolicyActions `json:"ratePolicyActions,omitempty"`
 			IPGeoFirewall struct {
 				Block       string `json:"block"`
 				GeoControls struct {
@@ -373,6 +369,12 @@ type (
 			SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
 			SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 		} `json:"exception,omitempty"`
+	}
+
+	SecurityPolicyRatePolicyActions []struct {
+		ID         int    `json:"id"`
+		Ipv4Action string `json:"ipv4Action"`
+		Ipv6Action string `json:"ipv6Action"`
 	}
 
 	SpecificHeaderCookieOrParamNameValueexp struct {
