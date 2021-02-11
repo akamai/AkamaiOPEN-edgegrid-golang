@@ -228,12 +228,13 @@ type (
 						Action     string `json:"action"`
 						ID         int    `json:"id"`
 						Conditions []struct {
-							Type          string   `json:"type"`
-							Extensions    []string `json:"extensions"`
-							PositiveMatch bool     `json:"positiveMatch"`
+							Type          string   `json:"type,omitempty"`
+							Extensions    []string `json:"extensions,omitempty"`
+							PositiveMatch bool     `json:"positiveMatch,omitempty"`
 						} `json:"conditions,omitempty"`
 						Exception struct {
-							AnyHeaderCookieOrParam []string `json:"anyHeaderCookieOrParam"`
+							AnyHeaderCookieOrParam               []string                                 `json:"anyHeaderCookieOrParam,omitempty"`
+							SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 						} `json:"exception,omitempty"`
 					} `json:"ruleActions"`
 					RulesetVersionID int `json:"rulesetVersionId"`
