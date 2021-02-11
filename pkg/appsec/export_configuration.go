@@ -190,13 +190,7 @@ type (
 			} `json:"securityControls"`
 			WebApplicationFirewall struct {
 				RuleActions *WebApplicationFirewallRuleActions `json:"ruleActions,omitempty"`
-				AttackGroupActions []struct {
-					Action                 string                         `json:"action"`
-					Group                  string                         `json:"group"`
-					RulesetVersionID       int                            `json:"rulesetVersionId"`
-					AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
-					Exception              *AttackGroupException          `json:"exception,omitempty"`
-				} `json:"attackGroupActions"`
+				AttackGroupActions *WebApplicationFirewallAttackGroupActions `json:"attackGroupActions,omitempty"`
 				Evaluation struct {
 					AttackGroupActions *EvaluationAttackGroupActions `json:"attackGroupActions,omitempty"`
 					EvaluationID       int                           `json:"evaluationId"`
@@ -374,6 +368,14 @@ type (
 			SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
 			SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 		} `json:"exception,omitempty"`
+	}
+
+	WebApplicationFirewallAttackGroupActions []struct {
+		Action                 string                         `json:"action"`
+		Group                  string                         `json:"group"`
+		RulesetVersionID       int                            `json:"rulesetVersionId"`
+		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
+		Exception              *AttackGroupException          `json:"exception,omitempty"`
 	}
 
 	APIRequestConstraintsAPIEndpoints []struct {
