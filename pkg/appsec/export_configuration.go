@@ -51,11 +51,7 @@ type (
 		SelectedHosts   []string  `json:"selectedHosts"`
 		SelectableHosts []string  `json:"selectableHosts"`
 		RatePolicies    []struct {
-			AdditionalMatchOptions []struct {
-				PositiveMatch bool     `json:"positiveMatch"`
-				Type          string   `json:"type"`
-				Values        []string `json:"values"`
-			} `json:"additionalMatchOptions"`
+			AdditionalMatchOptions *RatePoliciesAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
 			AllTraffic       bool      `json:"allTraffic"`
 			AverageThreshold int       `json:"averageThreshold"`
 			BurstThreshold   int       `json:"burstThreshold"`
@@ -381,6 +377,12 @@ type (
 	APIRequestConstraintsAPIEndpoints []struct {
 		Action string `json:"action"`
 		ID     int    `json:"id"`
+	}
+
+	RatePoliciesAdditionalMatchOptions []struct {
+		PositiveMatch bool     `json:"positiveMatch"`
+		Type          string   `json:"type"`
+		Values        []string `json:"values"`
 	}
 
 	SpecificHeaderCookieOrParamNameValueexp struct {
