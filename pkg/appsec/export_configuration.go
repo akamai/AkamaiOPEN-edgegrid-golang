@@ -212,8 +212,8 @@ type (
 							Names    []string `json:"names,omitempty"`
 							Selector string   `json:"selector,omitempty"`
 						} `json:"specificHeaderCookieOrParamNames,omitempty"`
-						SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix
-						SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp `json:"specificHeaderCookieOrParamNameValue,omitempty"`
+						SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+						SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 					} `json:"exception,omitempty"`
 				} `json:"ruleActions"`
 				AttackGroupActions []struct {
@@ -245,8 +245,8 @@ type (
 								Names    []string `json:"names,omitempty"`
 								Selector string   `json:"selector,omitempty"`
 							} `json:"specificHeaderCookieOrParamNames,omitempty"`
-							SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix
-							SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp `json:"specificHeaderCookieOrParamNameValue,omitempty"`
+							SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+							SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 						} `json:"exception,omitempty"`
 					} `json:"ruleActions"`
 					RulesetVersionID int `json:"rulesetVersionId"`
