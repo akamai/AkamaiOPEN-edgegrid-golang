@@ -203,7 +203,7 @@ type (
 					Conditions       []struct {
 						Type          string   `json:"type,omitempty"`
 						Extensions    []string `json:"extensions,omitempty"`
-						PositiveMatch bool     `json:"positiveMatch,omitempty"`
+						PositiveMatch bool     `json:"positiveMatch"`
 					} `json:"conditions,omitempty"`
 					Exception struct {
 						AnyHeaderCookieOrParam               []string                                 `json:"anyHeaderCookieOrParam,omitempty"`
@@ -230,7 +230,7 @@ type (
 						Conditions []struct {
 							Type          string   `json:"type,omitempty"`
 							Extensions    []string `json:"extensions,omitempty"`
-							PositiveMatch bool     `json:"positiveMatch,omitempty"`
+							PositiveMatch bool     `json:"positiveMatch"`
 						} `json:"conditions,omitempty"`
 						Exception struct {
 							AnyHeaderCookieOrParam               []string                                 `json:"anyHeaderCookieOrParam,omitempty"`
@@ -375,7 +375,7 @@ type (
 
 	ConditionsExp []struct {
 		Type          string           `json:"type,omitempty"`
-		PositiveMatch bool             `json:"positiveMatch,omitempty"`
+		PositiveMatch bool             `json:"positiveMatch"`
 		Name          *json.RawMessage `json:"name,omitempty"`
 		Value         *json.RawMessage `json:"value,omitempty"`
 		ValueCase     bool             `json:"valueCase,omitempty"`
