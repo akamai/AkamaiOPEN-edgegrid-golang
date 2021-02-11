@@ -231,45 +231,10 @@ type (
 					Exception              *AttackGroupException          `json:"exception,omitempty"`
 				} `json:"attackGroupActions"`
 				Evaluation struct {
-					AttackGroupActions []struct {
-						Action string `json:"action"`
-						Group  string `json:"group"`
-					} `json:"attackGroupActions"`
+					AttackGroupActions *EvaluationAttackGroupActions `json:"attackGroupActions,omitempty"`
 					EvaluationID      int `json:"evaluationId"`
 					EvaluationVersion int `json:"evaluationVersion"`
-					RuleActions       []struct {
-						Action     string `json:"action"`
-						ID         int    `json:"id"`
-						Conditions []struct {
-							Type          string   `json:"type,omitempty"`
-							Extensions    []string `json:"extensions,omitempty"`
-							PositiveMatch bool     `json:"positiveMatch"`
-							Filenames     []string `json:"filenames,omitempty"`
-							Hosts         []string `json:"hosts,omitempty"`
-							Ips           []string `json:"ips,omitempty"`
-							UseHeaders    bool     `json:"useHeaders,omitempty"`
-							CaseSensitive bool     `json:"caseSensitive,omitempty"`
-							Name          string   `json:"name,omitempty"`
-							NameCase      bool     `json:"nameCase,omitempty"`
-							Value         string   `json:"value,omitempty"`
-							Wildcard      bool     `json:"wildcard,omitempty"`
-							Header        string   `json:"header,omitempty"`
-							ValueCase     bool     `json:"valueCase,omitempty"`
-							ValueWildcard bool     `json:"valueWildcard,omitempty"`
-							Methods       []string `json:"methods,omitempty"`
-							Paths         []string `json:"paths,omitempty"`
-						} `json:"conditions,omitempty"`
-						Exception struct {
-							AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
-							HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
-							SpecificHeaderCookieOrParamNames []struct {
-								Names    []string `json:"names,omitempty"`
-								Selector string   `json:"selector,omitempty"`
-							} `json:"specificHeaderCookieOrParamNames,omitempty"`
-							SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
-							SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
-						} `json:"exception,omitempty"`
-					} `json:"ruleActions"`
+					RuleActions       *EvaluationRuleActions `json:"ruleActions,omitempty"`
 					RulesetVersionID int `json:"rulesetVersionId"`
 				} `json:"evaluation"`
 			} `json:"webApplicationFirewall"`
@@ -363,6 +328,45 @@ type (
 		Score               int    `json:"score"`
 		Tag                 string `json:"tag"`
 		Title               string `json:"title"`
+	}
+
+	EvaluationAttackGroupActions []struct {
+		Action string `json:"action"`
+		Group  string `json:"group"`
+	}
+
+	EvaluationRuleActions       []struct {
+		Action     string `json:"action"`
+		ID         int    `json:"id"`
+		Conditions []struct {
+			Type          string   `json:"type,omitempty"`
+			Extensions    []string `json:"extensions,omitempty"`
+			PositiveMatch bool     `json:"positiveMatch"`
+			Filenames     []string `json:"filenames,omitempty"`
+			Hosts         []string `json:"hosts,omitempty"`
+			Ips           []string `json:"ips,omitempty"`
+			UseHeaders    bool     `json:"useHeaders,omitempty"`
+			CaseSensitive bool     `json:"caseSensitive,omitempty"`
+			Name          string   `json:"name,omitempty"`
+			NameCase      bool     `json:"nameCase,omitempty"`
+			Value         string   `json:"value,omitempty"`
+			Wildcard      bool     `json:"wildcard,omitempty"`
+			Header        string   `json:"header,omitempty"`
+			ValueCase     bool     `json:"valueCase,omitempty"`
+			ValueWildcard bool     `json:"valueWildcard,omitempty"`
+			Methods       []string `json:"methods,omitempty"`
+			Paths         []string `json:"paths,omitempty"`
+		} `json:"conditions,omitempty"`
+		Exception struct {
+			AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
+			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
+			SpecificHeaderCookieOrParamNames []struct {
+				Names    []string `json:"names,omitempty"`
+				Selector string   `json:"selector,omitempty"`
+			} `json:"specificHeaderCookieOrParamNames,omitempty"`
+			SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+			SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
+		} `json:"exception,omitempty"`
 	}
 
 	SpecificHeaderCookieOrParamNameValueexp struct {
