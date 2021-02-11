@@ -117,16 +117,7 @@ type (
 			RulesetVersionID int       `json:"rulesetVersionId"`
 			Type             string    `json:"type"`
 			ReleaseDate      time.Time `json:"releaseDate"`
-			Rules            []struct {
-				ID                  int    `json:"id"`
-				InspectRequestBody  bool   `json:"inspectRequestBody"`
-				InspectResponseBody bool   `json:"inspectResponseBody"`
-				Outdated            bool   `json:"outdated"`
-				RuleVersion         int    `json:"ruleVersion"`
-				Score               int    `json:"score"`
-				Tag                 string `json:"tag"`
-				Title               string `json:"title"`
-			} `json:"rules"`
+			Rules            *RulesetsRules `json:"rules,omitempty"`
 			AttackGroups []struct {
 				Group     string `json:"group"`
 				GroupName string `json:"groupName"`
@@ -361,6 +352,17 @@ type (
 				Value       string `json:"value"`
 			} `json:"parameters"`
 		} `json:"customDenyList"`
+	}
+
+	RulesetsRules []struct {
+		ID                  int    `json:"id"`
+		InspectRequestBody  bool   `json:"inspectRequestBody"`
+		InspectResponseBody bool   `json:"inspectResponseBody"`
+		Outdated            bool   `json:"outdated"`
+		RuleVersion         int    `json:"ruleVersion"`
+		Score               int    `json:"score"`
+		Tag                 string `json:"tag"`
+		Title               string `json:"title"`
 	}
 
 	SpecificHeaderCookieOrParamNameValueexp struct {
