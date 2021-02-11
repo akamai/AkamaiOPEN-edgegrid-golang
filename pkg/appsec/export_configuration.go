@@ -251,7 +251,7 @@ type (
 			EnableForAllPolicies    bool         `json:"enableForAllPolicies"`
 			EnableSiem              bool         `json:"enableSiem"`
 			EnabledBotmanSiemEvents bool         `json:"enabledBotmanSiemEvents"`
-			FirewallPolicyIds       *StringSlice `json:"firewallPolicyIds"`
+			FirewallPolicyIds       *StringSlice `json:"firewallPolicyIds,omitempty"`
 			SiemDefinitionID        int          `json:"siemDefinitionId"`
 		} `json:"siem"`
 		AdvancedOptions struct {
