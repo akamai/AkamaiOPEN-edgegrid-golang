@@ -238,10 +238,7 @@ type (
 					RulesetVersionID int `json:"rulesetVersionId"`
 				} `json:"evaluation"`
 			} `json:"webApplicationFirewall"`
-			CustomRuleActions []struct {
-				Action string `json:"action"`
-				ID     int    `json:"id"`
-			} `json:"customRuleActions"`
+			CustomRuleActions *SecurityPolicyCustomRuleActions `json:"customRuleActions,omitempty"`
 			APIRequestConstraints struct {
 				Action       string `json:"action"`
 				APIEndpoints []struct {
@@ -337,6 +334,11 @@ type (
 
 	SecurityPolicyClientReputation struct {
 		ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
+	}
+
+	SecurityPolicyCustomRuleActions []struct {
+		Action string `json:"action"`
+		ID     int    `json:"id"`
 	}
 
 	EvaluationRuleActions       []struct {
