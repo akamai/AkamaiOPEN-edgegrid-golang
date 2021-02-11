@@ -113,12 +113,12 @@ type (
 			Version       int            `json:"version"`
 		} `json:"customRules"`
 		Rulesets []struct {
-			ID               int       `json:"id"`
-			RulesetVersionID int       `json:"rulesetVersionId"`
-			Type             string    `json:"type"`
-			ReleaseDate      time.Time `json:"releaseDate"`
+			ID               int            `json:"id"`
+			RulesetVersionID int            `json:"rulesetVersionId"`
+			Type             string         `json:"type"`
+			ReleaseDate      time.Time      `json:"releaseDate"`
 			Rules            *RulesetsRules `json:"rules,omitempty"`
-			AttackGroups []struct {
+			AttackGroups     []struct {
 				Group     string `json:"group"`
 				GroupName string `json:"groupName"`
 				Threshold int    `json:"threshold"`
@@ -232,13 +232,13 @@ type (
 				} `json:"attackGroupActions"`
 				Evaluation struct {
 					AttackGroupActions *EvaluationAttackGroupActions `json:"attackGroupActions,omitempty"`
-					EvaluationID      int `json:"evaluationId"`
-					EvaluationVersion int `json:"evaluationVersion"`
-					RuleActions       *EvaluationRuleActions `json:"ruleActions,omitempty"`
-					RulesetVersionID int `json:"rulesetVersionId"`
+					EvaluationID       int                           `json:"evaluationId"`
+					EvaluationVersion  int                           `json:"evaluationVersion"`
+					RuleActions        *EvaluationRuleActions        `json:"ruleActions,omitempty"`
+					RulesetVersionID   int                           `json:"rulesetVersionId"`
 				} `json:"evaluation"`
 			} `json:"webApplicationFirewall"`
-			CustomRuleActions *SecurityPolicyCustomRuleActions `json:"customRuleActions,omitempty"`
+			CustomRuleActions     *SecurityPolicyCustomRuleActions `json:"customRuleActions,omitempty"`
 			APIRequestConstraints struct {
 				Action       string `json:"action"`
 				APIEndpoints []struct {
@@ -246,7 +246,7 @@ type (
 					ID     int    `json:"id"`
 				} `json:"apiEndpoints"`
 			} `json:"apiRequestConstraints"`
-			ClientReputation *SecurityPolicyClientReputation `json:"clientReputation,omitempty"`
+			ClientReputation  *SecurityPolicyClientReputation `json:"clientReputation,omitempty"`
 			RatePolicyActions []struct {
 				ID         int    `json:"id"`
 				Ipv4Action string `json:"ipv4Action"`
@@ -256,15 +256,15 @@ type (
 				Block       string `json:"block"`
 				GeoControls struct {
 					BlockedIPNetworkLists struct {
-						NetworkList []string `json:"networkList"`
+						NetworkList *StringSlice `json:"networkList,omitempty"`
 					} `json:"blockedIPNetworkLists"`
 				} `json:"geoControls"`
 				IPControls struct {
 					AllowedIPNetworkLists struct {
-						NetworkList []string `json:"networkList"`
+						NetworkList *StringSlice `json:"networkList,omitempty"`
 					} `json:"allowedIPNetworkLists"`
 					BlockedIPNetworkLists struct {
-						NetworkList []string `json:"networkList"`
+						NetworkList *StringSlice `json:"networkList,omitempty"`
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
@@ -285,19 +285,19 @@ type (
 			LoggingOverrides *LoggingOverridesexp `json:"loggingOverrides,omitempty"`
 		} `json:"securityPolicies"`
 		Siem struct {
-			EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
-			EnableSiem              bool     `json:"enableSiem"`
-			EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
-			FirewallPolicyIds       []string `json:"firewallPolicyIds"`
-			SiemDefinitionID        int      `json:"siemDefinitionId"`
+			EnableForAllPolicies    bool         `json:"enableForAllPolicies"`
+			EnableSiem              bool         `json:"enableSiem"`
+			EnabledBotmanSiemEvents bool         `json:"enabledBotmanSiemEvents"`
+			FirewallPolicyIds       *StringSlice `json:"firewallPolicyIds"`
+			SiemDefinitionID        int          `json:"siemDefinitionId"`
 		} `json:"siem"`
 		AdvancedOptions struct {
 			Logging  *Loggingexp `json:"logging"`
 			Prefetch struct {
-				AllExtensions      bool     `json:"allExtensions"`
-				EnableAppLayer     bool     `json:"enableAppLayer"`
-				EnableRateControls bool     `json:"enableRateControls"`
-				Extensions         []string `json:"extensions"`
+				AllExtensions      bool         `json:"allExtensions"`
+				EnableAppLayer     bool         `json:"enableAppLayer"`
+				EnableRateControls bool         `json:"enableRateControls"`
+				Extensions         *StringSlice `json:"extensions"`
 			} `json:"prefetch"`
 		} `json:"advancedOptions"`
 		CustomDenyList []struct {
@@ -341,7 +341,7 @@ type (
 		ID     int    `json:"id"`
 	}
 
-	EvaluationRuleActions       []struct {
+	EvaluationRuleActions []struct {
 		Action     string `json:"action"`
 		ID         int    `json:"id"`
 		Conditions []struct {
