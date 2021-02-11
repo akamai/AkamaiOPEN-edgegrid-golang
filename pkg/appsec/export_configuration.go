@@ -146,30 +146,7 @@ type (
 					ID   string `json:"id,omitempty"`
 				} `json:"bypassNetworkLists,omitempty"`
 			} `json:"apiTargets,omitempty"`
-			WebsiteTargets []struct {
-				Type               string `json:"type"`
-				BypassNetworkLists []struct {
-					ID   string `json:"id"`
-					Name string `json:"name"`
-				} `json:"bypassNetworkLists,omitempty"`
-				DefaultFile               string `json:"defaultFile"`
-				EffectiveSecurityControls struct {
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyRateControls             bool `json:"applyRateControls"`
-					ApplyReputationControls       bool `json:"applyReputationControls"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls"`
-				} `json:"effectiveSecurityControls"`
-				FilePaths                    []string `json:"filePaths"`
-				Hostnames                    *StringSlice `json:"hostnames,omitempty"`
-				ID                           int      `json:"id"`
-				IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
-				IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
-				SecurityPolicy               struct {
-					PolicyID string `json:"policyId"`
-				} `json:"securityPolicy"`
-				Sequence int `json:"sequence"`
-			} `json:"websiteTargets"`
+			WebsiteTargets *MatchTargetsWebsiteTargets `json:"websiteTargets,omitempty"`
 		} `json:"matchTargets"`
 		SecurityPolicies []struct {
 			ID                      string `json:"id"`
@@ -455,6 +432,31 @@ type (
 		PositiveMatch bool                               `json:"positiveMatch"`
 		ValueInRange  bool                               `json:"valueInRange"`
 		Values        *RatePoliciesQueryParametersValues `json:"values,omitempty"`
+	}
+
+	MatchTargetsWebsiteTargets []struct {
+		Type               string `json:"type"`
+		BypassNetworkLists []struct {
+			ID   string `json:"id"`
+			Name string `json:"name"`
+		} `json:"bypassNetworkLists,omitempty"`
+		DefaultFile               string `json:"defaultFile"`
+		EffectiveSecurityControls struct {
+			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
+			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
+			ApplyRateControls             bool `json:"applyRateControls"`
+			ApplyReputationControls       bool `json:"applyReputationControls"`
+			ApplySlowPostControls         bool `json:"applySlowPostControls"`
+		} `json:"effectiveSecurityControls"`
+		FilePaths                    []string `json:"filePaths"`
+		Hostnames                    *StringSlice `json:"hostnames,omitempty"`
+		ID                           int      `json:"id"`
+		IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
+		IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
+		SecurityPolicy               struct {
+			PolicyID string `json:"policyId"`
+		} `json:"securityPolicy"`
+		Sequence int `json:"sequence"`
 	}
 
 	RatePoliciesQueryParametersValues []string
