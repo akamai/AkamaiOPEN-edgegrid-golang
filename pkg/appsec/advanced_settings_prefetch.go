@@ -36,7 +36,7 @@ type (
 		AllExtensions      bool     `json:"allExtensions"`
 		EnableAppLayer     bool     `json:"enableAppLayer"`
 		EnableRateControls bool     `json:"enableRateControls"`
-		Extensions         []string `json:"extensions"`
+		Extensions         []string `json:"extensions,omitempty"`
 	}
 
 	UpdateAdvancedSettingsPrefetchRequest struct {
@@ -45,13 +45,13 @@ type (
 		AllExtensions      bool     `json:"allExtensions"`
 		EnableAppLayer     bool     `json:"enableAppLayer"`
 		EnableRateControls bool     `json:"enableRateControls"`
-		Extensions         []string `json:"extensions"`
+		Extensions         []string `json:"extensions,omitempty"`
 	}
 	UpdateAdvancedSettingsPrefetchResponse struct {
 		AllExtensions      bool     `json:"allExtensions"`
 		EnableAppLayer     bool     `json:"enableAppLayer"`
 		EnableRateControls bool     `json:"enableRateControls"`
-		Extensions         []string `json:"extensions"`
+		Extensions         []string `json:"extensions,omitempty"`
 	}
 
 	RemoveAdvancedSettingsPrefetchRequest struct {
@@ -110,10 +110,6 @@ func (p *appsec) GetAdvancedSettingsPrefetch(ctx context.Context, params GetAdva
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
-	}
-
-	if len(rval.Extensions) == 0 {
-		rval.Extensions = make([]string, 0)
 	}
 
 	return &rval, nil
