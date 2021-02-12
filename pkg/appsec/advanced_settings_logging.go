@@ -43,17 +43,17 @@ type (
 
 	AdvancedSettingsCookies struct {
 		Type   string   `json:"type"`
-		Values []string `json:"values"`
+		Values *StringSlice `json:"values,omitempty"`
 	}
 
 	AdvancedSettingsCustomHeaders struct {
 		Type   string   `json:"type,omitempty"`
-		Values []string `json:"values,omitempty"`
+		Values *StringSlice `json:"values,omitempty"`
 	}
 
 	AdvancedSettingsStandardHeaders struct {
 		Type   string   `json:"type,omitempty"`
-		Values []string `json:"values,omitempty"`
+		Values *StringSlice `json:"values,omitempty"`
 	}
 
 	UpdateAdvancedSettingsLoggingRequest struct {
@@ -68,15 +68,15 @@ type (
 		AllowSampling bool `json:"allowSampling"`
 		Cookies       struct {
 			Type   string   `json:"type"`
-			Values []string `json:"values"`
+			Values *StringSlice `json:"values,omitempty"`
 		} `json:"cookies"`
 		CustomHeaders struct {
 			Type   string   `json:"type"`
-			Values []string `json:"values"`
+			Values *StringSlice `json:"values,omitempty"`
 		} `json:"customHeaders"`
 		StandardHeaders struct {
 			Type   string   `json:"type"`
-			Values []string `json:"values"`
+			Values *StringSlice `json:"values,omitempty"`
 		} `json:"standardHeaders"`
 	}
 	RemoveAdvancedSettingsLoggingRequest struct {
@@ -95,11 +95,11 @@ type (
 		} `json:"cookies"`
 		CustomHeaders struct {
 			Type   string   `json:"type"`
-			Values []string `json:"values"`
+			Values *StringSlice `json:"values,omitempty"`
 		} `json:"customHeaders"`
 		StandardHeaders struct {
 			Type   string   `json:"type"`
-			Values []string `json:"values"`
+			Values *StringSlice `json:"values,omitempty"`
 		} `json:"standardHeaders"`
 	}
 )
@@ -166,15 +166,6 @@ func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvan
 		return nil, p.Error(resp)
 	}
 
-	if len(rval.Cookies.Values) == 0 {
-		rval.Cookies.Values = make([]string, 0)
-	}
-	if len(rval.CustomHeaders.Values) == 0 {
-		rval.CustomHeaders.Values = make([]string, 0)
-	}
-	if len(rval.StandardHeaders.Values) == 0 {
-		rval.StandardHeaders.Values = make([]string, 0)
-	}
 	return &rval, nil
 
 }
