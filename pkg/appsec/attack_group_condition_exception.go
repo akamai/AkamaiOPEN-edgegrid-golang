@@ -48,14 +48,16 @@ type (
 	}
 
 	AttackGroupAdvancedExceptions struct {
+		Conditions                           *ConditionsAttackGroup `json:"conditions,omitempty"`
 		SpecificHeaderCookieOrParamNameValue []struct {
 			NamesValues []struct {
 				Names  []string `json:"names"`
 				Values []string `json:"values"`
 			} `json:"namesValues"`
-			Selector      string `json:"selector"`
-			ValueWildcard bool   `json:"valueWildcard"`
-			Wildcard      bool   `json:"wildcard"`
+			Criteria      *AttackGroupCriteria `json:"criteria,omitempty"`
+			Selector      string               `json:"selector"`
+			ValueWildcard bool                 `json:"valueWildcard"`
+			Wildcard      bool                 `json:"wildcard"`
 		} `json:"specificHeaderCookieOrParamNameValue"`
 		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
 	}
@@ -70,6 +72,28 @@ type (
 	AttackGroupCriteria []struct {
 		Hostnames []string `json:"hostnames"`
 		Paths     []string `json:"paths"`
+		Names     []string `json:"names"`
+		Values    []string `json:"values"`
+	}
+
+	ConditionsAttackGroup []struct {
+		Type          string   `json:"type,omitempty"`
+		Extensions    []string `json:"extensions,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch"`
+		Filenames     []string `json:"filenames,omitempty"`
+		Hosts         []string `json:"hosts,omitempty"`
+		Ips           []string `json:"ips,omitempty"`
+		UseHeaders    bool     `json:"useHeaders,omitempty"`
+		CaseSensitive bool     `json:"caseSensitive,omitempty"`
+		Name          string   `json:"name,omitempty"`
+		NameCase      bool     `json:"nameCase,omitempty"`
+		Value         string   `json:"value,omitempty"`
+		Wildcard      bool     `json:"wildcard,omitempty"`
+		Header        string   `json:"header,omitempty"`
+		ValueCase     bool     `json:"valueCase,omitempty"`
+		ValueWildcard bool     `json:"valueWildcard,omitempty"`
+		Methods       []string `json:"methods,omitempty"`
+		Paths         []string `json:"paths,omitempty"`
 	}
 
 	AttackGroupConditions []struct {
