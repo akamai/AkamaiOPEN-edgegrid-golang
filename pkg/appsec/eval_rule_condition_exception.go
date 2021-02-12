@@ -94,10 +94,22 @@ type (
 
 	EvalRuleConditionExceptionConditions []struct {
 		Type          string   `json:"type,omitempty"`
-		Filenames     []string `json:"filenames,omitempty"`
 		Extensions    []string `json:"extensions,omitempty"`
-		PositiveMatch bool     `json:"positiveMatch,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch"`
+		Filenames     []string `json:"filenames,omitempty"`
+		Hosts         []string `json:"hosts,omitempty"`
+		Ips           []string `json:"ips,omitempty"`
+		UseHeaders    bool     `json:"useHeaders,omitempty"`
+		CaseSensitive bool     `json:"caseSensitive,omitempty"`
+		Name          string   `json:"name,omitempty"`
+		NameCase      bool     `json:"nameCase,omitempty"`
+		Value         string   `json:"value,omitempty"`
+		Wildcard      bool     `json:"wildcard,omitempty"`
+		Header        string   `json:"header,omitempty"`
+		ValueCase     bool     `json:"valueCase,omitempty"`
+		ValueWildcard bool     `json:"valueWildcard,omitempty"`
 		Methods       []string `json:"methods,omitempty"`
+		Paths         []string `json:"paths,omitempty"`
 	}
 
 	EvalRuleConditionExceptionException struct {
