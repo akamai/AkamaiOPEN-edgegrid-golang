@@ -1,5 +1,9 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.1.2 (TBD, 2021)
+* PAPI - Fixed issue with version and rule comments being dropped
+* PAPI - Fixed client side validation to allow certain PAPI errors to passthrough
+
 ## 2.1.1 (Feb 3, 2021)
 * PAPI - Fixed validation on empty rule behaviors causing some properties with nested behaviors to fail
 
