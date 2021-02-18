@@ -206,38 +206,14 @@ type (
 						Extensions    []string `json:"extensions,omitempty"`
 						PositiveMatch bool     `json:"positiveMatch"`
 					} `json:"conditions,omitempty"`
-					Exception struct {
-						AnyHeaderCookieOrParam               []string                                      `json:"anyHeaderCookieOrParam,omitempty"`
-						HeaderCookieOrParamValues            []string                                      `json:"headerCookieOrParamValues,omitempty"`
-						SpecificHeaderCookieOrParamNames     *AttackGroupSpecificHeaderCookieOrParamNames  `json:"specificHeaderCookieOrParamNames,omitempty"`
-						SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
-						SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
-					} `json:"exception,omitempty"`
+					Exception *ExceptioneExpruleaction `json:"exception,omitempty"`
 				} `json:"ruleActions"`
 				AttackGroupActions []struct {
-					Action             string `json:"action"`
-					Group              string `json:"group"`
-					RulesetVersionID   int    `json:"rulesetVersionId"`
-					AdvancedExceptions struct {
-						Conditions                           *ConditionsAttackGroup `json:"conditions,omitempty"`
-						SpecificHeaderCookieOrParamNameValue []struct {
-							NamesValues []struct {
-								Names  []string `json:"names,omitempty"`
-								Values []string `json:"values,omitempty"`
-							} `json:"namesValues"`
-							Criteria      *AttackGroupCriteria `json:"criteria,omitempty"`
-							Selector      string               `json:"selector,omitempty"`
-							ValueWildcard bool                 `json:"valueWildcard"`
-							Wildcard      bool                 `json:"wildcard"`
-						} `json:"specificHeaderCookieOrParamNameValue,omitempty"`
-						SpecificHeaderCookieParamXMLOrJSONNames []struct {
-							Criteria *AttackGroupCriteria `json:"criteria,omitempty"`
-							Selector string               `json:"selector,omitempty"`
-							Wildcard bool                 `json:"wildcard,omitempty"`
-							Names    []string             `json:"names,omitempty"`
-						} `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
-					} `json:"advancedExceptions,omitempty"`
-					Exception *AttackGroupException `json:"exception,omitempty"`
+					Action             string                 `json:"action"`
+					Group              string                 `json:"group"`
+					RulesetVersionID   int                    `json:"rulesetVersionId"`
+					AdvancedExceptions *AdvancedExceptionsexp `json:"advancedExceptions,omitempty"`
+					Exception          *AttackGroupException  `json:"exception,omitempty"`
 				} `json:"attackGroupActions"`
 				Evaluation struct {
 					AttackGroupActions []struct {
@@ -268,16 +244,7 @@ type (
 							Methods       []string `json:"methods,omitempty"`
 							Paths         []string `json:"paths,omitempty"`
 						} `json:"conditions,omitempty"`
-						Exception struct {
-							AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
-							HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
-							SpecificHeaderCookieOrParamNames []struct {
-								Names    []string `json:"names,omitempty"`
-								Selector string   `json:"selector,omitempty"`
-							} `json:"specificHeaderCookieOrParamNames,omitempty"`
-							SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
-							SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
-						} `json:"exception,omitempty"`
+						Exception *ExceptioneExpEvalruleaction `json:"exception,omitempty"`
 					} `json:"ruleActions"`
 					RulesetVersionID int `json:"rulesetVersionId"`
 				} `json:"evaluation"`
@@ -363,6 +330,52 @@ type (
 		} `json:"customDenyList"`
 	}
 
+	ExceptioneExpEvalruleaction struct {
+		AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
+		HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
+		SpecificHeaderCookieOrParamNames []struct {
+			Names    []string `json:"names,omitempty"`
+			Selector string   `json:"selector,omitempty"`
+		} `json:"specificHeaderCookieOrParamNames,omitempty"`
+		SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+		SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
+	}
+
+	ExceptioneExpruleaction struct {
+		AnyHeaderCookieOrParam               []string                                      `json:"anyHeaderCookieOrParam,omitempty"`
+		HeaderCookieOrParamValues            []string                                      `json:"headerCookieOrParamValues,omitempty"`
+		SpecificHeaderCookieOrParamNames     *AttackGroupSpecificHeaderCookieOrParamNames  `json:"specificHeaderCookieOrParamNames,omitempty"`
+		SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+		SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
+	}
+
+	HeaderCookieOrParamValuesattackgroup []struct {
+		Criteria []struct {
+			Hostnames []string `json:"hostnames,omitempty"`
+			Paths     []string `json:"paths,omitempty"`
+			Values    []string `json:"values,omitempty"`
+		} `json:"criteria"`
+		ValueWildcard bool     `json:"valueWildcard,omitempty"`
+		Values        []string `json:"values,omitempty"`
+	}
+
+	AdvancedExceptionsexp struct {
+		Conditions                              *ConditionsAttackGroup                              `json:"conditions,omitempty"`
+		HeaderCookieOrParamValues               *HeaderCookieOrParamValuesattackgroup               `json:"headerCookieOrParamValues,omitempty"`
+		SpecificHeaderCookieOrParamNameValue    *SpecificHeaderCookieOrParamNameValueAttackGroups   `json:"specificHeaderCookieOrParamNameValue,omitempty"`
+		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
+	}
+
+	SpecificHeaderCookieOrParamNameValueAttackGroups []struct {
+		NamesValues []struct {
+			Names  []string `json:"names"`
+			Values []string `json:"values"`
+		} `json:"namesValues"`
+		Criteria      *AttackGroupCriteria `json:"criteria,omitempty"`
+		Selector      string               `json:"selector"`
+		ValueWildcard bool                 `json:"valueWildcard"`
+		Wildcard      bool                 `json:"wildcard"`
+	}
 	SpecificHeaderCookieOrParamNameValueexp struct {
 		Name     *json.RawMessage `json:"name,omitempty"`
 		Selector string           `json:"selector,omitempty"`
