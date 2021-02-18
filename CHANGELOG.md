@@ -1,5 +1,21 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.2.0 (Feb. 18, 2021)
+* APPSEC - Extended list of supported list endpoints from APPSEC API:
+  * Custom Deny
+  * SIEM Setting
+  * Advanced Options Settings
+  * API Match Target
+  * API Request Constraint
+  * Create/Delete/Rename Security Policy
+  * Host Coverage / Edit Version Notes
+  * All WAP Features / WAP Hostname Evaluation
+  * Create Security Configuration
+  * Rename Security Configuration Version
+  * Delete Security Configuration Version
+  * Clone Security Configuration
+  * Import tool for adding existing resources to Terraform state
+
 ## 2.1.0 (Jan 13, 2021)
 * [IMPORTANT] IAM - New Identity and Access Management API Support
 
