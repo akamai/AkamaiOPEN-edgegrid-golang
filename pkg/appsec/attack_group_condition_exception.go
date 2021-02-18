@@ -70,10 +70,10 @@ type (
 	}
 
 	AttackGroupCriteria []struct {
-		Hostnames []string `json:"hostnames"`
-		Paths     []string `json:"paths"`
-		Names     []string `json:"names"`
-		Values    []string `json:"values"`
+		Hostnames []string `json:"hostnames,omitempty"`
+		Paths     []string `json:"paths,omitempty"`
+		Names     []string `json:"names,omitempty"`
+		Values    []string `json:"values,omitempty"`
 	}
 
 	ConditionsAttackGroup []struct {

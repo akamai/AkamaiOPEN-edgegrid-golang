@@ -207,12 +207,9 @@ type (
 						PositiveMatch bool     `json:"positiveMatch"`
 					} `json:"conditions,omitempty"`
 					Exception struct {
-						AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
-						HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
-						SpecificHeaderCookieOrParamNames []struct {
-							Names    []string `json:"names,omitempty"`
-							Selector string   `json:"selector,omitempty"`
-						} `json:"specificHeaderCookieOrParamNames,omitempty"`
+						AnyHeaderCookieOrParam               []string                                      `json:"anyHeaderCookieOrParam,omitempty"`
+						HeaderCookieOrParamValues            []string                                      `json:"headerCookieOrParamValues,omitempty"`
+						SpecificHeaderCookieOrParamNames     *AttackGroupSpecificHeaderCookieOrParamNames  `json:"specificHeaderCookieOrParamNames,omitempty"`
 						SpecificHeaderCookieOrParamPrefix    *AttackGroupSpecificHeaderCookieOrParamPrefix `json:"specificHeaderCookieOrParamPrefix,omitempty"`
 						SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValueexp      `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 					} `json:"exception,omitempty"`
@@ -222,74 +219,25 @@ type (
 					Group              string `json:"group"`
 					RulesetVersionID   int    `json:"rulesetVersionId"`
 					AdvancedExceptions struct {
-						Conditions []struct {
-							Type          string   `json:"type,omitempty"`
-							Extensions    []string `json:"extensions,omitempty"`
-							PositiveMatch bool     `json:"positiveMatch"`
-							Filenames     []string `json:"filenames,omitempty"`
-							Hosts         []string `json:"hosts,omitempty"`
-							Ips           []string `json:"ips,omitempty"`
-							UseHeaders    bool     `json:"useHeaders,omitempty"`
-							CaseSensitive bool     `json:"caseSensitive,omitempty"`
-							Name          string   `json:"name,omitempty"`
-							NameCase      bool     `json:"nameCase,omitempty"`
-							Value         string   `json:"value,omitempty"`
-							Wildcard      bool     `json:"wildcard,omitempty"`
-							Header        string   `json:"header,omitempty"`
-							ValueCase     bool     `json:"valueCase,omitempty"`
-							ValueWildcard bool     `json:"valueWildcard,omitempty"`
-							Methods       []string `json:"methods,omitempty"`
-							Paths         []string `json:"paths,omitempty"`
-						} `json:"conditions,omitempty"`
+						Conditions                           *ConditionsAttackGroup `json:"conditions,omitempty"`
 						SpecificHeaderCookieOrParamNameValue []struct {
 							NamesValues []struct {
-								Names  []string `json:"names"`
-								Values []string `json:"values"`
+								Names  []string `json:"names,omitempty"`
+								Values []string `json:"values,omitempty"`
 							} `json:"namesValues"`
-							Criteria []struct {
-								Hostnames []string `json:"hostnames"`
-								Paths     []string `json:"paths"`
-								Names     []string `json:"names"`
-								Values    []string `json:"values"`
-							} `json:"criteria,omitempty"`
-							Selector      string `json:"selector"`
-							ValueWildcard bool   `json:"valueWildcard"`
-							Wildcard      bool   `json:"wildcard"`
+							Criteria      *AttackGroupCriteria `json:"criteria,omitempty"`
+							Selector      string               `json:"selector,omitempty"`
+							ValueWildcard bool                 `json:"valueWildcard"`
+							Wildcard      bool                 `json:"wildcard"`
 						} `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 						SpecificHeaderCookieParamXMLOrJSONNames []struct {
-							Criteria []struct {
-								Hostnames []string `json:"hostnames"`
-								Paths     []string `json:"paths"`
-								Names     []string `json:"names"`
-								Values    []string `json:"values"`
-							} `json:"criteria,omitempty"`
-							Selector string   `json:"selector,omitempty"`
-							Wildcard bool     `json:"wildcard,omitempty"`
-							Names    []string `json:"names,omitempty"`
+							Criteria *AttackGroupCriteria `json:"criteria,omitempty"`
+							Selector string               `json:"selector,omitempty"`
+							Wildcard bool                 `json:"wildcard,omitempty"`
+							Names    []string             `json:"names,omitempty"`
 						} `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
 					} `json:"advancedExceptions,omitempty"`
-					Exception struct {
-						HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
-						SpecificHeaderCookieOrParamNames []struct {
-							Names    []string `json:"names,omitempty"`
-							Selector string   `json:"selector,omitempty"`
-						} `json:"specificHeaderCookieOrParamNames"`
-						SpecificHeaderCookieOrParamPrefix struct {
-							Prefix   string `json:"prefix,omitempty"`
-							Selector string `json:"selector,omitempty"`
-						} `json:"specificHeaderCookieOrParamPrefix"`
-						SpecificHeaderCookieParamXMLOrJSONNames []struct {
-							Criteria []struct {
-								Hostnames []string `json:"hostnames"`
-								Paths     []string `json:"paths"`
-								Names     []string `json:"names"`
-								Values    []string `json:"values"`
-							} `json:"criteria,omitempty"`
-							Selector string   `json:"selector,omitempty"`
-							Wildcard bool     `json:"wildcard,omitempty"`
-							Names    []string `json:"names,omitempty"`
-						} `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
-					} `json:"exception,omitempty"`
+					Exception *AttackGroupException `json:"exception,omitempty"`
 				} `json:"attackGroupActions"`
 				Evaluation struct {
 					AttackGroupActions []struct {
