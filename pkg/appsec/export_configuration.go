@@ -80,23 +80,14 @@ type (
 			Used                  bool                         `json:"used"`
 		} `json:"ratePolicies"`
 		ReputationProfiles []struct {
-			Condition struct {
-				AtomicConditions *AtomicConditionsexp `json:"atomicConditions,omitempty"`
-				CanDelete        bool                 `json:"-"`
-				ConfigVersionID  int                  `json:"-"`
-				ID               int                  `json:"-"`
-				Name             string               `json:"-"`
-				PositiveMatch    bool                 `json:"positiveMatch"`
-				UUID             string               `json:"-"`
-				Version          int64                `json:"-"`
-			} `json:"condition,omitempty"`
-			Context          string `json:"context"`
-			ContextReadable  string `json:"contextReadable"`
-			Enabled          bool   `json:"enabled"`
-			ID               int    `json:"id"`
-			Name             string `json:"name"`
-			SharedIPHandling string `json:"sharedIpHandling"`
-			Threshold        int    `json:"threshold"`
+			Condition        *ConditionReputationProfile `json:"condition,omitempty"`
+			Context          string                      `json:"context"`
+			ContextReadable  string                      `json:"contextReadable"`
+			Enabled          bool                        `json:"enabled"`
+			ID               int                         `json:"id"`
+			Name             string                      `json:"name"`
+			SharedIPHandling string                      `json:"sharedIpHandling"`
+			Threshold        int                         `json:"threshold"`
 		} `json:"reputationProfiles"`
 		CustomRules []struct {
 			Conditions    *ConditionsExp `json:"conditions,omitempty"`
@@ -343,6 +334,16 @@ type (
 		} `json:"customDenyList"`
 	}
 
+	ConditionReputationProfile struct {
+		AtomicConditions *AtomicConditionsexp `json:"atomicConditions,omitempty"`
+		CanDelete        bool                 `json:"-"`
+		ConfigVersionID  int                  `json:"-"`
+		ID               int                  `json:"-"`
+		Name             string               `json:"-"`
+		PositiveMatch    bool                 `json:"positiveMatch"`
+		UUID             string               `json:"-"`
+		Version          int64                `json:"-"`
+	}
 	ExceptioneExpEvalruleaction struct {
 		AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
 		HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
