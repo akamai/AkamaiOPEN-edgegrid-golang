@@ -221,10 +221,7 @@ type (
 				} `json:"attackGroupActions"`
 				Evaluation *Evaluationexp `json:"evaluation,omitempty"`
 			} `json:"webApplicationFirewall"`
-			CustomRuleActions []struct {
-				Action string `json:"action"`
-				ID     int    `json:"id"`
-			} `json:"customRuleActions"`
+			CustomRuleActions     *CustomRuleActionsexp     `json:"customRuleActions,omitempty"`
 			APIRequestConstraints *APIRequestConstraintsexp `json:"apiRequestConstraints,omitempty"`
 			ClientReputation      struct {
 				ReputationProfileActions []struct {
@@ -287,6 +284,10 @@ type (
 		} `json:"customDenyList"`
 	}
 
+	CustomRuleActionsexp []struct {
+		Action string `json:"action"`
+		ID     int    `json:"id"`
+	}
 	Siemexp struct {
 		EnableForAllPolicies    bool     `json:"enableForAllPolicies,omitempty"`
 		EnableSiem              bool     `json:"enableSiem"`
