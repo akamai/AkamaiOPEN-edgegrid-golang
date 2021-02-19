@@ -266,13 +266,7 @@ type (
 			} `json:"slowPost"`
 			LoggingOverrides *LoggingOverridesexp `json:"loggingOverrides,omitempty"`
 		} `json:"securityPolicies"`
-		Siem struct {
-			EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
-			EnableSiem              bool     `json:"enableSiem"`
-			EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents,omitempty"`
-			FirewallPolicyIds       []string `json:"firewallPolicyIds"`
-			SiemDefinitionID        int      `json:"siemDefinitionId"`
-		} `json:"siem"`
+		Siem            *Siemexp `json:"siem,omitempty"`
 		AdvancedOptions struct {
 			Logging  *Loggingexp `json:"logging"`
 			Prefetch struct {
@@ -293,6 +287,13 @@ type (
 		} `json:"customDenyList"`
 	}
 
+	Siemexp struct {
+		EnableForAllPolicies    bool     `json:"enableForAllPolicies,omitempty"`
+		EnableSiem              bool     `json:"enableSiem"`
+		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents,omitempty"`
+		FirewallPolicyIds       []string `json:"firewallPolicyIds,omitempty"`
+		SiemDefinitionID        int      `json:"siemDefinitionId,omitempty"`
+	}
 	PenaltyBoxexp struct {
 		Action               string `json:"action"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
