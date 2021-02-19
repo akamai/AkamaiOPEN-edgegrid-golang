@@ -225,14 +225,8 @@ type (
 				Action string `json:"action"`
 				ID     int    `json:"id"`
 			} `json:"customRuleActions"`
-			APIRequestConstraints struct {
-				Action       string `json:"action"`
-				APIEndpoints []struct {
-					Action string `json:"action"`
-					ID     int    `json:"id"`
-				} `json:"apiEndpoints"`
-			} `json:"apiRequestConstraints"`
-			ClientReputation struct {
+			APIRequestConstraints *APIRequestConstraintsexp `json:"apiRequestConstraints,omitempty"`
+			ClientReputation      struct {
 				ReputationProfileActions []struct {
 					Action string `json:"action"`
 					ID     int    `json:"id"`
@@ -302,6 +296,13 @@ type (
 		} `json:"customDenyList"`
 	}
 
+	APIRequestConstraintsexp struct {
+		Action       string `json:"action"`
+		APIEndpoints []struct {
+			Action string `json:"action"`
+			ID     int    `json:"id"`
+		} `json:"apiEndpoints"`
+	}
 	Evaluationexp struct {
 		AttackGroupActions []struct {
 			Action string `json:"action"`
