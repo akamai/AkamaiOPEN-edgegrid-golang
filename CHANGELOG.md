@@ -16,6 +16,9 @@
   * Clone Security Configuration
   * Import tool for adding existing resources to Terraform state
 
+## 2.1.1 (Feb 3, 2021)
+* PAPI - Fixed validation on empty rule behaviors causing some properties with nested behaviors to fail
+
 ## 2.1.0 (Jan 13, 2021)
 * [IMPORTANT] IAM - New Identity and Access Management API Support
 
