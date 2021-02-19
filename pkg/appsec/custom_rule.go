@@ -46,10 +46,10 @@ type (
 			PositiveMatch bool             `json:"positiveMatch"`
 			Value         *json.RawMessage `json:"value,omitempty"`
 			ValueWildcard bool             `json:"valueWildcard,omitempty"`
-			ValueCase     bool             `json:"valueCase,omitempty"`
+			ValueCase     bool             `json:"valueCase"`
 			NameWildcard  bool             `json:"nameWildcard,omitempty"`
 			Name          *json.RawMessage `json:"name,omitempty"`
-			NameCase      bool             `json:"nameCase,omitempty"`
+			NameCase      bool             `json:"nameCase"`
 		} `json:"conditions,omitempty"`
 	}
 
