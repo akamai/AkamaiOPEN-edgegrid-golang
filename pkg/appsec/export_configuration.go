@@ -103,7 +103,7 @@ type (
 		} `json:"reputationProfiles"`
 		CustomRules []struct {
 			Conditions    *ConditionsExp `json:"conditions,omitempty"`
-			Description   string         `json:"description"`
+			Description   string         `json:"description,omitempty"`
 			ID            int            `json:"id"`
 			Name          string         `json:"name"`
 			RuleActivated bool           `json:"ruleActivated"`
@@ -322,7 +322,7 @@ type (
 		Siem struct {
 			EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
 			EnableSiem              bool     `json:"enableSiem"`
-			EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
+			EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents,omitempty"`
 			FirewallPolicyIds       []string `json:"firewallPolicyIds"`
 			SiemDefinitionID        int      `json:"siemDefinitionId"`
 		} `json:"siem"`
