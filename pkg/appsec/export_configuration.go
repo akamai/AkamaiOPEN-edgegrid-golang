@@ -219,39 +219,7 @@ type (
 					AdvancedExceptions *AdvancedExceptionsexp `json:"advancedExceptions,omitempty"`
 					Exception          *AttackGroupException  `json:"exception,omitempty"`
 				} `json:"attackGroupActions"`
-				Evaluation struct {
-					AttackGroupActions []struct {
-						Action string `json:"action"`
-						Group  string `json:"group"`
-					} `json:"attackGroupActions"`
-					EvaluationID      int `json:"evaluationId"`
-					EvaluationVersion int `json:"evaluationVersion"`
-					RuleActions       []struct {
-						Action     string `json:"action"`
-						ID         int    `json:"id"`
-						Conditions []struct {
-							Type          string   `json:"type,omitempty"`
-							Extensions    []string `json:"extensions,omitempty"`
-							PositiveMatch bool     `json:"positiveMatch"`
-							Filenames     []string `json:"filenames,omitempty"`
-							Hosts         []string `json:"hosts,omitempty"`
-							Ips           []string `json:"ips,omitempty"`
-							UseHeaders    bool     `json:"useHeaders,omitempty"`
-							CaseSensitive bool     `json:"caseSensitive,omitempty"`
-							Name          string   `json:"name,omitempty"`
-							NameCase      bool     `json:"nameCase,omitempty"`
-							Value         string   `json:"value,omitempty"`
-							Wildcard      bool     `json:"wildcard,omitempty"`
-							Header        string   `json:"header,omitempty"`
-							ValueCase     bool     `json:"valueCase,omitempty"`
-							ValueWildcard bool     `json:"valueWildcard,omitempty"`
-							Methods       []string `json:"methods,omitempty"`
-							Paths         []string `json:"paths,omitempty"`
-						} `json:"conditions,omitempty"`
-						Exception *ExceptioneExpEvalruleaction `json:"exception,omitempty"`
-					} `json:"ruleActions"`
-					RulesetVersionID int `json:"rulesetVersionId"`
-				} `json:"evaluation"`
+				Evaluation *Evaluationexp `json:"evaluation,omitempty"`
 			} `json:"webApplicationFirewall"`
 			CustomRuleActions []struct {
 				Action string `json:"action"`
@@ -334,6 +302,39 @@ type (
 		} `json:"customDenyList"`
 	}
 
+	Evaluationexp struct {
+		AttackGroupActions []struct {
+			Action string `json:"action"`
+			Group  string `json:"group"`
+		} `json:"attackGroupActions"`
+		EvaluationID      int `json:"evaluationId"`
+		EvaluationVersion int `json:"evaluationVersion"`
+		RuleActions       []struct {
+			Action     string `json:"action"`
+			ID         int    `json:"id"`
+			Conditions []struct {
+				Type          string   `json:"type,omitempty"`
+				Extensions    []string `json:"extensions,omitempty"`
+				PositiveMatch bool     `json:"positiveMatch"`
+				Filenames     []string `json:"filenames,omitempty"`
+				Hosts         []string `json:"hosts,omitempty"`
+				Ips           []string `json:"ips,omitempty"`
+				UseHeaders    bool     `json:"useHeaders,omitempty"`
+				CaseSensitive bool     `json:"caseSensitive,omitempty"`
+				Name          string   `json:"name,omitempty"`
+				NameCase      bool     `json:"nameCase,omitempty"`
+				Value         string   `json:"value,omitempty"`
+				Wildcard      bool     `json:"wildcard,omitempty"`
+				Header        string   `json:"header,omitempty"`
+				ValueCase     bool     `json:"valueCase,omitempty"`
+				ValueWildcard bool     `json:"valueWildcard,omitempty"`
+				Methods       []string `json:"methods,omitempty"`
+				Paths         []string `json:"paths,omitempty"`
+			} `json:"conditions,omitempty"`
+			Exception *ExceptioneExpEvalruleaction `json:"exception,omitempty"`
+		} `json:"ruleActions"`
+		RulesetVersionID int `json:"rulesetVersionId"`
+	}
 	ConditionReputationProfile struct {
 		AtomicConditions *AtomicConditionsexp `json:"atomicConditions,omitempty"`
 		CanDelete        bool                 `json:"-"`
