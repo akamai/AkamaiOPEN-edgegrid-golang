@@ -440,7 +440,8 @@ type (
 		} `json:"customHeaders"`
 		Override        bool `json:"override"`
 		StandardHeaders struct {
-			Type string `json:"type"`
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
 		} `json:"standardHeaders"`
 	}
 
