@@ -55,20 +55,17 @@ type (
 				Type          string   `json:"type"`
 				Values        []string `json:"values"`
 			} `json:"additionalMatchOptions"`
-			AllTraffic       bool      `json:"allTraffic"`
-			AverageThreshold int       `json:"averageThreshold"`
-			BurstThreshold   int       `json:"burstThreshold"`
-			ClientIdentifier string    `json:"clientIdentifier"`
-			CreateDate       time.Time `json:"createDate"`
-			Description      string    `json:"description"`
-			FileExtensions   struct {
-				PositiveMatch bool                              `json:"positiveMatch"`
-				Values        *RatePoliciesFileExtensionsValues `json:"values,omitempty"`
-			} `json:"fileExtensions"`
-			ID        int    `json:"id"`
-			MatchType string `json:"matchType"`
-			Name      string `json:"name"`
-			Path      struct {
+			AllTraffic       bool                      `json:"allTraffic,omitempty"`
+			AverageThreshold int                       `json:"averageThreshold"`
+			BurstThreshold   int                       `json:"burstThreshold"`
+			ClientIdentifier string                    `json:"clientIdentifier"`
+			CreateDate       time.Time                 `json:"createDate"`
+			Description      string                    `json:"description"`
+			FileExtensions   *RatePolicyFileExtensions `json:"fileExtensions"`
+			ID               int                       `json:"id"`
+			MatchType        string                    `json:"matchType"`
+			Name             string                    `json:"name"`
+			Path             struct {
 				PositiveMatch bool                    `json:"positiveMatch"`
 				Values        *RatePoliciesPathValues `json:"values,omitempty"`
 			} `json:"path"`
