@@ -253,11 +253,8 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox struct {
-				Action               string `json:"action"`
-				PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
-			} `json:"penaltyBox,omitempty"`
-			SlowPost struct {
+			PenaltyBox *PenaltyBoxexp `json:"penaltyBox,omitempty"`
+			SlowPost   struct {
 				Action            string `json:"action"`
 				SlowRateThreshold struct {
 					Period int `json:"period"`
@@ -296,6 +293,10 @@ type (
 		} `json:"customDenyList"`
 	}
 
+	PenaltyBoxexp struct {
+		Action               string `json:"action"`
+		PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
+	}
 	APIRequestConstraintsexp struct {
 		Action       string `json:"action"`
 		APIEndpoints []struct {
