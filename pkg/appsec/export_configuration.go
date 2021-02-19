@@ -173,6 +173,7 @@ type (
 					ApplySlowPostControls         bool `json:"applySlowPostControls"`
 				} `json:"effectiveSecurityControls"`
 				FilePaths                    []string `json:"filePaths"`
+				FileExtensions               []string `json:"fileExtensions,omitempty"`
 				Hostnames                    []string `json:"hostnames,omitempty"`
 				ID                           int      `json:"id"`
 				IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
