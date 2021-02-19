@@ -53,6 +53,7 @@ type (
 		EdgeHostnameID string            `json:"edgeHostnameId,omitempty"`
 		CnameFrom      string            `json:"cnameFrom"`
 		CnameTo        string            `json:"cnameTo,omitempty"`
+		CertProvisioningType string 	 `json:"certProvisioningType"`
 	}
 
 	// UpdatePropertyVersionHostnamesRequest contains parameters required to update the set of hostname entries for a property version

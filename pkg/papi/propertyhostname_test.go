@@ -165,14 +165,16 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 				ContractID:      "ctr_1-1TJZH5",
 				Hostnames: []Hostname{
 					{
-						CnameType: "EDGE_HOSTNAME",
-						CnameFrom: "m.example.com",
-						CnameTo:   "example.com.edgesuite.net",
+						CnameType:            "EDGE_HOSTNAME",
+						CnameFrom:            "m.example.com",
+						CnameTo:              "example.com.edgesuite.net",
+						CertProvisioningType: "CPS_MANAGED",
 					},
 					{
-						CnameType:      "EDGE_HOSTNAME",
-						EdgeHostnameID: "ehn_895824",
-						CnameFrom:      "example3.com",
+						CnameType:            "EDGE_HOSTNAME",
+						EdgeHostnameID:       "ehn_895824",
+						CnameFrom:            "example3.com",
+						CertProvisioningType: "CPS_MANAGED",
 					},
 				},
 			},
@@ -192,12 +194,14 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
                 "edgeHostnameId": "ehn_895822",
                 "cnameFrom": "example.com",
                 "cnameTo": "example.com.edgesuite.net"
+                "certProvisioningType: "CPS_MANAGED"
             },
             {
                 "cnameType": "EDGE_HOSTNAME",
                 "edgeHostnameId": "ehn_895833",
                 "cnameFrom": "m.example.com",
                 "cnameTo": "m.example.com.edgesuite.net"
+ 				"certProvisioningType: "CPS_MANAGED"
             }
         ]
     }
@@ -218,12 +222,14 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 							EdgeHostnameID: "ehn_895822",
 							CnameFrom:      "example.com",
 							CnameTo:        "example.com.edgesuite.net",
+							CertProvisioningType: "CPS_MANAGED",
 						},
 						{
 							CnameType:      "EDGE_HOSTNAME",
 							EdgeHostnameID: "ehn_895833",
 							CnameFrom:      "m.example.com",
 							CnameTo:        "m.example.com.edgesuite.net",
+							CertProvisioningType: "CPS_MANAGED",
 						},
 					},
 				},
