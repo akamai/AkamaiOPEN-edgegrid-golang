@@ -30,16 +30,18 @@ type (
 
 	GetApiHostnameCoverageResponse struct {
 		HostnameCoverage []struct {
-			Configuration struct {
-				ID      int    `json:"id"`
-				Name    string `json:"name"`
-				Version int    `json:"version"`
-			} `json:"configuration"`
-			Status         string   `json:"status"`
-			HasMatchTarget bool     `json:"hasMatchTarget"`
-			Hostname       string   `json:"hostname"`
-			PolicyNames    []string `json:"policyNames"`
+			Configuration  *ConfigurationHostnameCoverage `json:"configuration,omitempty"`
+			Status         string                         `json:"status"`
+			HasMatchTarget bool                           `json:"hasMatchTarget"`
+			Hostname       string                         `json:"hostname"`
+			PolicyNames    []string                       `json:"policyNames"`
 		} `json:"hostnameCoverage"`
+	}
+
+	ConfigurationHostnameCoverage struct {
+		ID      int    `json:"id,omitempty"`
+		Name    string `json:"name,omitempty"`
+		Version int    `json:"version,omitempty"`
 	}
 )
 
