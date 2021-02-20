@@ -250,38 +250,53 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox *PenaltyBoxexp `json:"penaltyBox,omitempty"`
-			SlowPost   struct {
-				Action            string `json:"action"`
-				SlowRateThreshold struct {
-					Period int `json:"period"`
-					Rate   int `json:"rate"`
-				} `json:"slowRateThreshold"`
-				DurationThreshold struct {
-					Timeout int `json:"timeout"`
-				} `json:"durationThreshold"`
-			} `json:"slowPost"`
+			PenaltyBox       *PenaltyBoxexp       `json:"penaltyBox,omitempty"`
+			SlowPost         *SlowPostexp         `json:"slowPost,omitempty"`
 			LoggingOverrides *LoggingOverridesexp `json:"loggingOverrides,omitempty"`
 		} `json:"securityPolicies"`
-		Siem            *Siemexp `json:"siem,omitempty"`
-		AdvancedOptions struct {
-			Logging  *Loggingexp `json:"logging"`
-			Prefetch struct {
-				AllExtensions      bool     `json:"allExtensions"`
-				EnableAppLayer     bool     `json:"enableAppLayer"`
-				EnableRateControls bool     `json:"enableRateControls"`
-				Extensions         []string `json:"extensions"`
-			} `json:"prefetch"`
-		} `json:"advancedOptions"`
-		CustomDenyList []struct {
-			ID         string `json:"id"`
-			Name       string `json:"name"`
-			Parameters []struct {
-				DisplayName string `json:"displayName"`
-				Name        string `json:"name"`
-				Value       string `json:"value"`
-			} `json:"parameters"`
-		} `json:"customDenyList"`
+		Siem            *Siemexp            `json:"siem,omitempty"`
+		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
+		CustomDenyList  *CustomDenyListexp  `json:"customDenyList,omitempty"`
+	}
+
+	//TODO fails export
+	ReputationProfileActionsexp []struct {
+		Action string `json:"action"`
+		ID     int    `json:"id"`
+	}
+	//TODO nfails export
+	RatePolicyActionsexp []struct {
+		ID         int    `json:"id"`
+		Ipv4Action string `json:"ipv4Action"`
+		Ipv6Action string `json:"ipv6Action"`
+	}
+	SlowPostexp struct {
+		Action            string `json:"action"`
+		SlowRateThreshold struct {
+			Period int `json:"period"`
+			Rate   int `json:"rate"`
+		} `json:"slowRateThreshold"`
+		DurationThreshold struct {
+			Timeout int `json:"timeout"`
+		} `json:"durationThreshold"`
+	}
+	AdvancedOptionsexp struct {
+		Logging  *Loggingexp `json:"logging"`
+		Prefetch struct {
+			AllExtensions      bool     `json:"allExtensions"`
+			EnableAppLayer     bool     `json:"enableAppLayer"`
+			EnableRateControls bool     `json:"enableRateControls"`
+			Extensions         []string `json:"extensions"`
+		} `json:"prefetch"`
+	}
+	CustomDenyListexp []struct {
+		ID         string `json:"id"`
+		Name       string `json:"name"`
+		Parameters []struct {
+			DisplayName string `json:"displayName"`
+			Name        string `json:"name"`
+			Value       string `json:"value"`
+		} `json:"parameters"`
 	}
 
 	CustomRuleActionsexp []struct {
