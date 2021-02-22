@@ -193,15 +193,15 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
                 "cnameType": "EDGE_HOSTNAME",
                 "edgeHostnameId": "ehn_895822",
                 "cnameFrom": "example.com",
-                "cnameTo": "example.com.edgesuite.net"
-                "certProvisioningType: "CPS_MANAGED"
+                "cnameTo": "example.com.edgesuite.net",
+                "certProvisioningType": "CPS_MANAGED"
             },
             {
                 "cnameType": "EDGE_HOSTNAME",
                 "edgeHostnameId": "ehn_895833",
                 "cnameFrom": "m.example.com",
-                "cnameTo": "m.example.com.edgesuite.net"
- 				"certProvisioningType: "CPS_MANAGED"
+                "cnameTo": "m.example.com.edgesuite.net",
+ 				"certProvisioningType": "CPS_MANAGED"
             }
         ]
     }
@@ -432,6 +432,40 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 				Hostnames: HostnameResponseItems{
 					Items: []Hostname{},
 				},
+			},
+		},
+		"400 Hostnames cert type is invalid": {
+			params: UpdatePropertyVersionHostnamesRequest{
+				PropertyID:      "prp_175780",
+				PropertyVersion: 3,
+				GroupID:         "grp_15225",
+				ContractID:      "ctr_1-1TJZH5",
+				Hostnames: []Hostname{
+					{
+						CnameType:            "EDGE_HOSTNAME",
+						CnameFrom:            "m.example.com",
+						CnameTo:              "example.com.edgesuite.net",
+						CertProvisioningType: "INVALID_TYPE",
+					},
+				},
+			},
+			responseStatus: http.StatusBadRequest,
+			responseBody: `
+{
+	"type": "json-schema-invalid",
+    "title": "Invalid schema",
+    "detail": "Error updating hostnames",
+    "status": 400
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "json-schema-invalid",
+					Title:      "Invalid schema",
+					Detail:     "Error updating hostnames",
+					StatusCode: http.StatusBadRequest,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
 		"500 internal server status error": {
