@@ -14,7 +14,7 @@
   * Rename Security Configuration Version
   * Delete Security Configuration Version
   * Clone Security Configuration
-  * Import tool for adding existing resources to Terraform state
+  * Import tool for adding existing resources to Terraform state (#207)
 
 ## 2.1.1 (Feb 3, 2021)
 * PAPI - Fixed validation on empty rule behaviors causing some properties with nested behaviors to fail
