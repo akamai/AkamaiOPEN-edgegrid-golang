@@ -250,7 +250,10 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox       *PenaltyBoxexp       `json:"penaltyBox,omitempty"`
+			PenaltyBox struct {
+				Action               string `json:"action"`
+				PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
+			} `json:"penaltyBox,omitempty"`
 			SlowPost         *SlowPostexp         `json:"slowPost,omitempty"`
 			LoggingOverrides *LoggingOverridesexp `json:"loggingOverrides,omitempty"`
 		} `json:"securityPolicies"`
@@ -264,7 +267,7 @@ type (
 		Action string `json:"action"`
 		ID     int    `json:"id"`
 	}
-	//TODO nfails export
+	//TODO fails export
 	RatePolicyActionsexp []struct {
 		ID         int    `json:"id"`
 		Ipv4Action string `json:"ipv4Action"`
@@ -310,6 +313,7 @@ type (
 		FirewallPolicyIds       []string `json:"firewallPolicyIds,omitempty"`
 		SiemDefinitionID        int      `json:"siemDefinitionId,omitempty"`
 	}
+	//TODO nfails export
 	PenaltyBoxexp struct {
 		Action               string `json:"action"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
