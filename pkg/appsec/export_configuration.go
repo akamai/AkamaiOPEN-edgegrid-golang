@@ -221,7 +221,10 @@ type (
 				} `json:"attackGroupActions"`
 				Evaluation *Evaluationexp `json:"evaluation,omitempty"`
 			} `json:"webApplicationFirewall"`
-			CustomRuleActions     *CustomRuleActionsexp     `json:"customRuleActions,omitempty"`
+			CustomRuleActions []struct {
+				Action string `json:"action"`
+				ID     int    `json:"id"`
+			} `json:"customRuleActions,omitempty"`
 			APIRequestConstraints *APIRequestConstraintsexp `json:"apiRequestConstraints,omitempty"`
 			ClientReputation      struct {
 				ReputationProfileActions []struct {
@@ -301,7 +304,7 @@ type (
 			Value       string `json:"value"`
 		} `json:"parameters"`
 	}
-
+	//TODO breaks export
 	CustomRuleActionsexp []struct {
 		Action string `json:"action"`
 		ID     int    `json:"id"`
