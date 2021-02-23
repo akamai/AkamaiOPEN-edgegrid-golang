@@ -64,6 +64,7 @@ type (
 		ConfigID               int    `json:"configId,omitempty"`
 		PolicyID               string `json:"policyId,omitempty"`
 		PolicyName             string `json:"policyName,omitempty"`
+		DefaultSettings        bool   `json:"defaultSettings,omitempty"`
 		PolicySecurityControls struct {
 			ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
 			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
@@ -77,17 +78,19 @@ type (
 	}
 
 	CreateSecurityPolicyRequest struct {
-		ConfigID     int    `json:"-"`
-		Version      int    `json:"-"`
-		PolicyID     string `json:"-"`
-		PolicyName   string `json:"policyName"`
-		PolicyPrefix string `json:"policyPrefix"`
+		ConfigID        int    `json:"-"`
+		Version         int    `json:"-"`
+		PolicyID        string `json:"-"`
+		PolicyName      string `json:"policyName"`
+		PolicyPrefix    string `json:"policyPrefix"`
+		DefaultSettings bool   `json:"defaultSettings"`
 	}
 
 	CreateSecurityPolicyResponse struct {
 		ConfigID               int    `json:"configId"`
 		PolicyID               string `json:"policyId"`
 		PolicyName             string `json:"policyName"`
+		DefaultSettings        bool   `json:"defaultSettings,omitempty"`
 		PolicySecurityControls struct {
 			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
@@ -101,17 +104,19 @@ type (
 	}
 
 	UpdateSecurityPolicyRequest struct {
-		ConfigID     int    `json:"-"`
-		Version      int    `json:"-"`
-		PolicyID     string `json:"-"`
-		PolicyName   string `json:"policyName"`
-		PolicyPrefix string `json:"policyPrefix"`
+		ConfigID        int    `json:"-"`
+		Version         int    `json:"-"`
+		PolicyID        string `json:"-"`
+		PolicyName      string `json:"policyName"`
+		DefaultSettings bool   `json:"defaultSettings,omitempty"`
+		PolicyPrefix    string `json:"policyPrefix"`
 	}
 
 	UpdateSecurityPolicyResponse struct {
 		ConfigID               int    `json:"configId"`
 		PolicyID               string `json:"policyId"`
 		PolicyName             string `json:"policyName"`
+		DefaultSettings        bool   `json:"defaultSettings,omitempty"`
 		PolicySecurityControls struct {
 			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`

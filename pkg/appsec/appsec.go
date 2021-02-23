@@ -16,18 +16,33 @@ type (
 	// APPSEC is the appsec api interface
 	APPSEC interface {
 		Activations
+		AdvancedSettingsLogging
+		AdvancedSettingsPrefetch
+		ApiEndpoints
+		ApiHostnameCoverage
+		ApiHostnameCoverageOverlapping
+		ApiHostnameCoverageMatchTargets
+		ApiRequestConstraints
 		AttackGroupAction
 		AttackGroupConditionException
+		BypassNetworkLists
 		Configuration
 		ConfigurationClone
+		ConfigurationVersionClone
 		ConfigurationVersion
+		ContractsGroups
+		CustomDeny
 		CustomRule
 		CustomRuleAction
 		Eval
+		EvalHost
+		EvalProtectHost
 		EvalRuleAction
 		EvalRuleConditionException
 		ExportConfiguration
+		FailoverHostnames
 		IPGeo
+		ReputationAnalysis
 		RuleAction
 		RuleConditionException
 		MatchTarget
@@ -46,8 +61,11 @@ type (
 		SecurityPolicyClone
 		SelectedHostname
 		SelectableHostnames
+		SiemDefinitions
+		SiemSettings
 		SlowPostProtectionSetting
 		SlowPostProtection
+		VersionNotes
 		WAFMode
 		WAFProtection
 	}
