@@ -218,17 +218,17 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 				Hostnames: HostnameResponseItems{
 					Items: []Hostname{
 						{
-							CnameType:      "EDGE_HOSTNAME",
-							EdgeHostnameID: "ehn_895822",
-							CnameFrom:      "example.com",
-							CnameTo:        "example.com.edgesuite.net",
+							CnameType:            "EDGE_HOSTNAME",
+							EdgeHostnameID:       "ehn_895822",
+							CnameFrom:            "example.com",
+							CnameTo:              "example.com.edgesuite.net",
 							CertProvisioningType: "CPS_MANAGED",
 						},
 						{
-							CnameType:      "EDGE_HOSTNAME",
-							EdgeHostnameID: "ehn_895833",
-							CnameFrom:      "m.example.com",
-							CnameTo:        "m.example.com.edgesuite.net",
+							CnameType:            "EDGE_HOSTNAME",
+							EdgeHostnameID:       "ehn_895833",
+							CnameFrom:            "m.example.com",
+							CnameTo:              "m.example.com.edgesuite.net",
 							CertProvisioningType: "CPS_MANAGED",
 						},
 					},
@@ -452,17 +452,17 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 			responseStatus: http.StatusBadRequest,
 			responseBody: `
 {
-	"type": "json-schema-invalid",
-    "title": "Invalid schema",
-    "detail": "Error updating hostnames",
+    "type": "https://problems.luna.akamaiapis.net/papi/v0/json-mapping-error",
+    "title": "Unable to interpret JSON",
+    "detail": "Your input could not be interpreted as the expected JSON format. Cannot deserialize value of type com.akamai.platformtk.entities.HostnameRelation$CertProvisioningType from String INVALID_TYPE: not one of the values accepted for Enum class: [DEFAULT, CPS_MANAGED]\n at [Source: (org.apache.catalina.connector.CoyoteInputStream); line: 6, column: 41] (through reference chain: java.util.ArrayList[0]->com.akamai.luna.papi.model.HostnameItem[certProvisioningType]).",
     "status": 400
 }`,
 			expectedPath: "/papi/v1/properties/prp_175780/versions/3/hostnames?contractId=ctr_1-1TJZH5&groupId=grp_15225&validateHostnames=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
-					Type:       "json-schema-invalid",
-					Title:      "Invalid schema",
-					Detail:     "Error updating hostnames",
+					Type:       "https://problems.luna.akamaiapis.net/papi/v0/json-mapping-error",
+					Title:      "Unable to interpret JSON",
+					Detail:     "Your input could not be interpreted as the expected JSON format. Cannot deserialize value of type com.akamai.platformtk.entities.HostnameRelation$CertProvisioningType from String INVALID_TYPE: not one of the values accepted for Enum class: [DEFAULT, CPS_MANAGED]\n at [Source: (org.apache.catalina.connector.CoyoteInputStream); line: 6, column: 41] (through reference chain: java.util.ArrayList[0]->com.akamai.luna.papi.model.HostnameItem[certProvisioningType]).",
 					StatusCode: http.StatusBadRequest,
 				}
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)

@@ -608,7 +608,6 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 				DryRun:          true,
 				ValidateMode:    "fast",
 				ValidateRules:   false,
-				Comments:        "version comment",
 				Rules: RulesUpdate{
 					Rules: Rules{
 						Comments: "default comment",
