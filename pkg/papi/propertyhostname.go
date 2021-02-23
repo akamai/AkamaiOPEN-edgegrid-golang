@@ -29,6 +29,7 @@ type (
 		ContractID        string
 		GroupID           string
 		ValidateHostnames bool
+		IncludeCertStatus bool
 	}
 
 	// GetPropertyVersionHostnamesResponse contains all property version hostnames associated to the given parameters
@@ -54,6 +55,22 @@ type (
 		CnameFrom      string            `json:"cnameFrom"`
 		CnameTo        string            `json:"cnameTo,omitempty"`
 		CertProvisioningType string 	 `json:"certProvisioningType"`
+		CertStatus     CertStatusItem	 `json:"certStatus,omitempty"`
+	}
+
+	CertStatusItem struct {
+		ValidationCname ValidationCname `json:"validationCname,omitempty"`
+		Staging   []StatusItem `json:"staging"`
+		Production   []StatusItem `json:"production"`
+	}
+
+	ValidationCname struct {
+		Hostname      string            `json:"hostname,omitempty"`
+		Target        string            `json:"target,omitempty"`
+	}
+
+	StatusItem struct {
+		Status string `json:"status,omitempty"`
 	}
 
 	// UpdatePropertyVersionHostnamesRequest contains parameters required to update the set of hostname entries for a property version
@@ -63,6 +80,7 @@ type (
 		ContractID        string
 		GroupID           string
 		ValidateHostnames bool
+		IncludeCertStatus bool
 		Hostnames         []Hostname
 	}
 
@@ -116,12 +134,13 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 	logger.Debug("GetPropertyVersionHostnames")
 
 	getURL := fmt.Sprintf(
-		"/papi/v1/properties/%s/versions/%d/hostnames?contractId=%s&groupId=%s&validateHostnames=%t",
+		"/papi/v1/properties/%s/versions/%d/hostnames?contractId=%s&groupId=%s&validateHostnames=%t&includeCertStatus=%t",
 		params.PropertyID,
 		params.PropertyVersion,
 		params.ContractID,
 		params.GroupID,
-		params.ValidateHostnames)
+		params.ValidateHostnames,
+		params.IncludeCertStatus)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -149,12 +168,13 @@ func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params Update
 	logger.Debug("UpdatePropertyVersionHostnames")
 
 	putURL := fmt.Sprintf(
-		"/papi/v1/properties/%s/versions/%v/hostnames?contractId=%s&groupId=%s&validateHostnames=%t",
+		"/papi/v1/properties/%s/versions/%v/hostnames?contractId=%s&groupId=%s&validateHostnames=%t&includeCertStatus=%t",
 		params.PropertyID,
 		params.PropertyVersion,
 		params.ContractID,
 		params.GroupID,
 		params.ValidateHostnames,
+		params.IncludeCertStatus,
 	)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
