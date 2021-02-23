@@ -21,7 +21,7 @@
     * Rename Security Configuration Version
     * Delete Security Configuration Version
     * Clone Security Configuration
-    * Import tool for adding existing resources to Terraform state (#207)
+    * Import tool for adding existing resources to Terraform state
 * DNS
     * Add support for HTTPS, SVCB records to ParseRData
 
