@@ -445,6 +445,24 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 			break
 		}
 
+	case "SVCB":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
+			fieldMap["target_name"] = parts[1]
+			fieldMap["svc_params"] = parts[2]
+			break
+		}
+
+	case "HTTPS":
+		for _, rcontent := range rdata {
+			parts := strings.Split(rcontent, " ")
+			fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
+			fieldMap["target_name"] = parts[1]
+			fieldMap["svc_params"] = parts[2]
+			break
+		}
+
 	default:
 		for _, rcontent := range rdata {
 			newrdata = append(newrdata, rcontent)

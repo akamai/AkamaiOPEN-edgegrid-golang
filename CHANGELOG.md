@@ -1,5 +1,11 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 1.1.0 (Feb 23, 2021)
+
+#### FEATURES/ENHANCEMENTS:
+* DNSv2
+    * Add support to parse HTTPS, SVCB records
+
 ## 1.0.1 (Jan 7, 2021)
 * CPSv2 - Fixed several issues with listing enrollments
 
