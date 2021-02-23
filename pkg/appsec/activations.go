@@ -22,7 +22,6 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getactivations
 	Activations interface {
-		//GetActivationss(ctx context.Context, params GetActivationssRequest) (*GetActivationssResponse, error)
 		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
 		CreateActivations(ctx context.Context, params CreateActivationsRequest, acknowledgeWarnings bool) (*CreateActivationsResponse, error)
 		RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error)

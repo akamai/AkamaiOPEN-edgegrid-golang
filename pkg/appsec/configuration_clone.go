@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -45,20 +44,10 @@ type (
 	}
 
 	CreateConfigurationCloneResponse struct {
-		ConfigID     int       `json:"configId"`
-		ConfigName   string    `json:"configName"`
-		Version      int       `json:"version"`
-		VersionNotes string    `json:"versionNotes"`
-		CreateDate   time.Time `json:"createDate"`
-		CreatedBy    string    `json:"createdBy"`
-		BasedOn      int       `json:"basedOn"`
-		Production   struct {
-			Status string    `json:"status"`
-			Time   time.Time `json:"time"`
-		} `json:"production"`
-		Staging struct {
-			Status string `json:"status"`
-		} `json:"staging"`
+		ConfigID    int    `json:"configId"`
+		Version     int    `json:"version"`
+		Description string `json:"description"`
+		Name        string `json:"name"`
 	}
 
 	GetConfigurationCloneResponse struct {
@@ -78,10 +67,21 @@ type (
 		} `json:"staging"`
 	}
 
-	CreateConfigurationCloneRequest struct {
-		ConfigID          int  `json:"-"`
+	CreateConfigurationClonePost struct {
 		CreateFromVersion int  `json:"createFromVersion"`
 		RuleUpdate        bool `json:"ruleUpdate"`
+	}
+
+	CreateConfigurationCloneRequest struct {
+		Name        string   `json:"name"`
+		Description string   `json:"description"`
+		ContractID  string   `json:"contractId"`
+		GroupID     int      `json:"groupId"`
+		Hostnames   []string `json:"hostnames"`
+		CreateFrom  struct {
+			ConfigID int `json:"configId"`
+			Version  int `json:"version"`
+		} `json:"createFrom"`
 	}
 )
 
@@ -93,11 +93,10 @@ func (v GetConfigurationCloneRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetConfigurationCloneRequest
+// Validate validates CreateConfigurationCloneRequest
 func (v CreateConfigurationCloneRequest) Validate() error {
 	return validation.Errors{
-		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
-		"Version":  validation.Validate(v.CreateFromVersion, validation.Required),
+		"CreateFromConfigID": validation.Validate(v.CreateFrom.ConfigID, validation.Required),
 	}.Filter()
 }
 
@@ -148,9 +147,8 @@ func (p *appsec) CreateConfigurationClone(ctx context.Context, params CreateConf
 	logger := p.Log(ctx)
 	logger.Debug("CreateConfigurationClone")
 
-	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions",
-		params.ConfigID)
+	uri :=
+		"/appsec/v1/configs/"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {

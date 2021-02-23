@@ -2,9 +2,11 @@ package appsec
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -29,6 +31,9 @@ type (
 		RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRequest) (*RemoveCustomRuleResponse, error)
 	}
 
+	CustomRuleConditionsValue []string
+	CustomRuleConditionsName  []string
+
 	CustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
 		Name          string   `json:"name,omitempty"`
@@ -37,14 +42,14 @@ type (
 		RuleActivated bool     `json:"ruleActivated,omitempty"`
 		Tag           []string `json:"tag,omitempty"`
 		Conditions    []struct {
-			Type          string   `json:"type,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
+			Type          string           `json:"type,omitempty"`
+			PositiveMatch bool             `json:"positiveMatch"`
+			Value         *json.RawMessage `json:"value,omitempty"`
+			ValueWildcard bool             `json:"valueWildcard,omitempty"`
+			ValueCase     bool             `json:"valueCase"`
+			NameWildcard  bool             `json:"nameWildcard,omitempty"`
+			Name          *json.RawMessage `json:"name,omitempty"`
+			NameCase      bool             `json:"nameCase"`
 		} `json:"conditions,omitempty"`
 	}
 
@@ -64,16 +69,17 @@ type (
 		Description   string   `json:"description"`
 		Version       int      `json:"version,omitempty"`
 		RuleActivated bool     `json:"ruleActivated"`
+		Structured    bool     `json:"structured,omitempty"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
+			Type          string           `json:"type"`
+			PositiveMatch bool             `json:"positiveMatch"`
+			Value         *json.RawMessage `json:"value,omitempty"`
+			ValueWildcard bool             `json:"valueWildcard,omitempty"`
+			ValueCase     bool             `json:"valueCase,omitempty"`
+			NameWildcard  bool             `json:"nameWildcard,omitempty"`
+			Name          *json.RawMessage `json:"name,omitempty"`
+			NameCase      bool             `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 
@@ -89,47 +95,18 @@ type (
 
 	GetCustomRulesRequest struct {
 		ConfigID int `json:"configid,omitempty"`
+		ID       int `json:"-"`
 	}
 
 	GetCustomRuleRequest struct {
 		ConfigID int `json:"configid,omitempty"`
 		ID       int `json:"id,omitempty"`
 	}
-	/*	Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		Version       int      `json:"version,omitempty"`
-		RuleActivated bool     `json:"ruleActivated"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
-		} `json:"conditions"`
-	}*/
 
 	CreateCustomRuleRequest struct {
-		ConfigID int `json:"configid,omitempty"`
-		//ID            int      `json:"id,omitempty"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		Version       int      `json:"version,omitempty"`
-		RuleActivated bool     `json:"ruleActivated"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
-		} `json:"conditions"`
+		ConfigID       int             `json:"configid,omitempty"`
+		Version        int             `json:"version,omitempty"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	CreateCustomRuleResponse struct {
@@ -140,35 +117,22 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
+			Type          string                    `json:"type"`
+			PositiveMatch bool                      `json:"positiveMatch"`
+			Value         CustomRuleConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
+			ValueCase     bool                      `json:"valueCase,omitempty"`
+			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
+			Name          CustomRuleConditionsName  `json:"name,omitempty"`
+			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 
 	UpdateCustomRuleRequest struct {
-		ConfigID      int      `json:"configid,omitempty"`
-		ID            int      `json:"id,omitempty"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description"`
-		Version       int      `json:"version,omitempty"`
-		RuleActivated bool     `json:"ruleActivated"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
-		} `json:"conditions"`
+		ConfigID       int             `json:"configid,omitempty"`
+		ID             int             `json:"id,omitempty"`
+		Version        int             `json:"version,omitempty"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	UpdateCustomRuleResponse struct {
@@ -179,14 +143,14 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
+			Type          string           `json:"type"`
+			PositiveMatch bool             `json:"positiveMatch"`
+			Value         *json.RawMessage `json:"value,omitempty"`
+			ValueWildcard bool             `json:"valueWildcard,omitempty"`
+			ValueCase     bool             `json:"valueCase,omitempty"`
+			NameWildcard  bool             `json:"nameWildcard,omitempty"`
+			Name          *json.RawMessage `json:"name,omitempty"`
+			NameCase      bool             `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 
@@ -194,24 +158,7 @@ type (
 		ConfigID int `json:"configid,omitempty"`
 		ID       int `json:"id,omitempty"`
 	}
-	/*
-			Name          string   `json:"name"`
-			Description   string   `json:"description"`
-			Version       int      `json:"version,omitempty"`
-			RuleActivated bool     `json:"ruleActivated"`
-			Tag           []string `json:"tag"`
-			Conditions    []struct {
-				Type          string   `json:"type"`
-				PositiveMatch bool     `json:"positiveMatch"`
-				Value         []string `json:"value,omitempty"`
-				ValueWildcard bool     `json:"valueWildcard,omitempty"`
-				ValueCase     bool     `json:"valueCase,omitempty"`
-				NameWildcard  bool     `json:"nameWildcard,omitempty"`
-				Name          []string `json:"name,omitempty"`
-				NameCase      bool     `json:"nameCase,omitempty"`
-			} `json:"conditions"`
-		}
-	*/
+
 	RemoveCustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
 		Name          string   `json:"name"`
@@ -220,17 +167,71 @@ type (
 		RuleActivated bool     `json:"ruleActivated"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string   `json:"type"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Value         []string `json:"value,omitempty"`
-			ValueWildcard bool     `json:"valueWildcard,omitempty"`
-			ValueCase     bool     `json:"valueCase,omitempty"`
-			NameWildcard  bool     `json:"nameWildcard,omitempty"`
-			Name          []string `json:"name,omitempty"`
-			NameCase      bool     `json:"nameCase,omitempty"`
+			Type          string                    `json:"type"`
+			PositiveMatch bool                      `json:"positiveMatch"`
+			Value         CustomRuleConditionsValue `json:"value,omitempty"`
+			ValueWildcard bool                      `json:"valueWildcard,omitempty"`
+			ValueCase     bool                      `json:"valueCase,omitempty"`
+			NameWildcard  bool                      `json:"nameWildcard,omitempty"`
+			Name          CustomRuleConditionsName  `json:"name,omitempty"`
+			NameCase      bool                      `json:"nameCase,omitempty"`
 		} `json:"conditions"`
 	}
 )
+
+func (c *CustomRuleConditionsValue) UnmarshalJSON(data []byte) error {
+	var nums interface{}
+	err := json.Unmarshal(data, &nums)
+	if err != nil {
+		return err
+	}
+
+	items := reflect.ValueOf(nums)
+	switch items.Kind() {
+	case reflect.String:
+		*c = append(*c, items.String())
+
+	case reflect.Slice:
+		*c = make(CustomRuleConditionsValue, 0, items.Len())
+		for i := 0; i < items.Len(); i++ {
+			item := items.Index(i)
+			switch item.Kind() {
+			case reflect.String:
+				*c = append(*c, item.String())
+			case reflect.Interface:
+				*c = append(*c, item.Interface().(string))
+			}
+		}
+	}
+	return nil
+}
+
+func (c *CustomRuleConditionsName) UnmarshalJSON(data []byte) error {
+	var nums interface{}
+	err := json.Unmarshal(data, &nums)
+	if err != nil {
+		return err
+	}
+
+	items := reflect.ValueOf(nums)
+	switch items.Kind() {
+	case reflect.String:
+		*c = append(*c, items.String())
+
+	case reflect.Slice:
+		*c = make(CustomRuleConditionsName, 0, items.Len())
+		for i := 0; i < items.Len(); i++ {
+			item := items.Index(i)
+			switch item.Kind() {
+			case reflect.String:
+				*c = append(*c, item.String())
+			case reflect.Interface:
+				*c = append(*c, item.Interface().(string))
+			}
+		}
+	}
+	return nil
+}
 
 // Validate validates GetCustomRuleRequest
 func (v GetCustomRuleRequest) Validate() error {
@@ -312,6 +313,7 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 	logger.Debug("GetCustomRules")
 
 	var rval GetCustomRulesResponse
+	var rvalfiltered GetCustomRulesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/custom-rules",
@@ -332,7 +334,18 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	if params.ID != 0 {
+		for _, val := range rval.CustomRules {
+			if val.ID == params.ID {
+				rvalfiltered.CustomRules = append(rvalfiltered.CustomRules, val)
+			}
+		}
+
+	} else {
+		rvalfiltered = rval
+	}
+
+	return &rvalfiltered, nil
 
 }
 
@@ -362,7 +375,8 @@ func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRe
 	}
 
 	var rval UpdateCustomRuleResponse
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create CustomRule request failed: %w", err)
 	}
@@ -399,8 +413,8 @@ func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRe
 	}
 
 	var rval CreateCustomRuleResponse
-
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create customrulerequest failed: %w", err)
 	}

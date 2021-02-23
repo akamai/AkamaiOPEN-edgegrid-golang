@@ -1,0 +1,34 @@
+{
+    "overLappingList": [
+        {
+            "configId": 30141,
+            "configName": "Grainger Mexico",
+            "configVersion": 37,
+            "contractId": "C-AVLN15",
+            "contractName": "W.W. Grainger, Inc.-C-AVLN15",
+            "versionTags": [
+                "STAGING"
+            ]
+        },
+        {
+            "configId": 30142,
+            "configName": "Grainger Inc",
+            "configVersion": 1,
+            "contractId": "C-AVLN15",
+            "contractName": "W.W. Grainger, Inc.-C-AVLN15",
+            "versionTags": [
+                "STAGING"
+            ]
+        },
+        {
+            "configId": 30143,
+            "configName": "Grainger Local",
+            "configVersion": 3,
+            "contractId": "G-2V3R4M7",
+            "contractName": "Zoro-W.W. Grainger, Inc",
+            "versionTags": [
+                "LAST_CREATED"
+            ]
+        }
+    ]
+}

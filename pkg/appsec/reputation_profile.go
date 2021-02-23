@@ -49,7 +49,7 @@ type (
 					ValueWildcard bool                 `json:"valueWildcard,omitempty"`
 					Host          []string             `json:"host,omitempty"`
 				} `json:"atomicConditions,omitempty"`
-				PositiveMatch bool `json:"positiveMatch,omitempty"`
+				PositiveMatch bool `json:"positiveMatch"`
 			} `json:"condition,omitempty"`
 			Context          string `json:"context,omitempty"`
 			ContextReadable  string `json:"contextReadable,omitempty"`
@@ -62,9 +62,25 @@ type (
 	}
 
 	GetReputationProfileResponse struct {
+		Condition struct {
+			AtomicConditions []struct {
+				CheckIps      string           `json:"checkIps,omitempty"`
+				ClassName     string           `json:"className,omitempty"`
+				Index         int              `json:"index,omitempty"`
+				PositiveMatch bool             `json:"positiveMatch,omitempty"`
+				Value         []string         `json:"value,omitempty"`
+				Name          *json.RawMessage `json:"name,omitempty"`
+				NameCase      bool             `json:"nameCase,omitempty"`
+				NameWildcard  bool             `json:"nameWildcard,omitempty"`
+				ValueCase     bool             `json:"valueCase,omitempty"`
+				ValueWildcard bool             `json:"valueWildcard,omitempty"`
+				Host          []string         `json:"host,omitempty"`
+			} `json:"atomicConditions,omitempty"`
+			PositiveMatch bool `json:"positiveMatch"`
+		} `json:"condition,omitempty"`
 		Context          string `json:"context,omitempty"`
 		ContextReadable  string `json:"contextReadable,omitempty"`
-		Enabled          bool   `json:"enabled,omitempty"`
+		Enabled          bool   `json:"enabled"`
 		ID               int    `json:"id,omitempty"`
 		Name             string `json:"name,omitempty"`
 		SharedIPHandling string `json:"sharedIpHandling,omitempty"`
