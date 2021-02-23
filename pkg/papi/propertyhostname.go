@@ -50,23 +50,23 @@ type (
 
 	// Hostname contains information about each of the HostnameResponseItems
 	Hostname struct {
-		CnameType      HostnameCnameType `json:"cnameType"`
-		EdgeHostnameID string            `json:"edgeHostnameId,omitempty"`
-		CnameFrom      string            `json:"cnameFrom"`
-		CnameTo        string            `json:"cnameTo,omitempty"`
-		CertProvisioningType string 	 `json:"certProvisioningType"`
-		CertStatus     CertStatusItem	 `json:"certStatus,omitempty"`
+		CnameType            HostnameCnameType `json:"cnameType"`
+		EdgeHostnameID       string            `json:"edgeHostnameId,omitempty"`
+		CnameFrom            string            `json:"cnameFrom"`
+		CnameTo              string            `json:"cnameTo,omitempty"`
+		CertProvisioningType string            `json:"certProvisioningType"`
+		CertStatus           CertStatusItem    `json:"certStatus,omitempty"`
 	}
 
 	CertStatusItem struct {
 		ValidationCname ValidationCname `json:"validationCname,omitempty"`
-		Staging   []StatusItem `json:"staging"`
-		Production   []StatusItem `json:"production"`
+		Staging         []StatusItem    `json:"staging"`
+		Production      []StatusItem    `json:"production"`
 	}
 
 	ValidationCname struct {
-		Hostname      string            `json:"hostname,omitempty"`
-		Target        string            `json:"target,omitempty"`
+		Hostname string `json:"hostname,omitempty"`
+		Target   string `json:"target,omitempty"`
 	}
 
 	StatusItem struct {

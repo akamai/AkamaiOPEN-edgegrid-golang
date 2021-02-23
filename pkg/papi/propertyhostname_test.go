@@ -22,11 +22,11 @@ func TestPapi_GetPropertyVersionHostnames(t *testing.T) {
 	}{
 		"200 OK": {
 			params: GetPropertyVersionHostnamesRequest{
-				PropertyID:      "prp_175780",
-				PropertyVersion: 3,
-				GroupID:         "grp_15225",
-				ContractID:      "ctr_1-1TJZH5",
-				IncludeCertStatus:false,
+				PropertyID:        "prp_175780",
+				PropertyVersion:   3,
+				GroupID:           "grp_15225",
+				ContractID:        "ctr_1-1TJZH5",
+				IncludeCertStatus: false,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -160,10 +160,10 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 	}{
 		"200 OK": {
 			params: UpdatePropertyVersionHostnamesRequest{
-				PropertyID:      "prp_175780",
-				PropertyVersion: 3,
-				GroupID:         "grp_15225",
-				ContractID:      "ctr_1-1TJZH5",
+				PropertyID:        "prp_175780",
+				PropertyVersion:   3,
+				GroupID:           "grp_15225",
+				ContractID:        "ctr_1-1TJZH5",
 				IncludeCertStatus: true,
 				Hostnames: []Hostname{
 					{
@@ -241,20 +241,15 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 							CnameFrom:            "m.example.com",
 							CnameTo:              "example.com.edgekey.net",
 							CertProvisioningType: "DEFAULT",
-							CertStatus:CertStatusItem{
+							CertStatus: CertStatusItem{
 								ValidationCname: ValidationCname{
 									Hostname: "_acme-challenge.www.example.com",
 									Target:   "{token}.www.example.com.akamai-domain.com",
 								},
-								Staging: []StatusItem{{Status:"NEEDS_VALIDATION"},
-
-								},
-								Production: []StatusItem{{Status:"NEEDS_VALIDATION"},
-
-								},
+								Staging:    []StatusItem{{Status: "NEEDS_VALIDATION"}},
+								Production: []StatusItem{{Status: "NEEDS_VALIDATION"}},
 							},
-
-					},
+						},
 						{
 							CnameType:            "EDGE_HOSTNAME",
 							EdgeHostnameID:       "ehn_895833",
@@ -268,12 +263,12 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 		},
 		"200 empty hostnames": {
 			params: UpdatePropertyVersionHostnamesRequest{
-				PropertyID:      "prp_175780",
-				PropertyVersion: 3,
-				GroupID:         "grp_15225",
-				ContractID:      "ctr_1-1TJZH5",
+				PropertyID:        "prp_175780",
+				PropertyVersion:   3,
+				GroupID:           "grp_15225",
+				ContractID:        "ctr_1-1TJZH5",
 				IncludeCertStatus: true,
-				Hostnames:       []Hostname{{}},
+				Hostnames:         []Hostname{{}},
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -310,7 +305,7 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 				GroupID:           "grp_15225",
 				ContractID:        "ctr_1-1TJZH5",
 				ValidateHostnames: true,
-				IncludeCertStatus:true,
+				IncludeCertStatus: true,
 				Hostnames:         []Hostname{{}},
 			},
 			responseStatus: http.StatusOK,
@@ -365,10 +360,10 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 		},
 		"200 Hostnames missing": {
 			params: UpdatePropertyVersionHostnamesRequest{
-				PropertyID:      "prp_175780",
-				PropertyVersion: 3,
-				GroupID:         "grp_15225",
-				ContractID:      "ctr_1-1TJZH5",
+				PropertyID:        "prp_175780",
+				PropertyVersion:   3,
+				GroupID:           "grp_15225",
+				ContractID:        "ctr_1-1TJZH5",
 				IncludeCertStatus: true,
 			},
 			responseStatus: http.StatusOK,
@@ -400,12 +395,12 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 		},
 		"200 Hostnames items missing": {
 			params: UpdatePropertyVersionHostnamesRequest{
-				PropertyID:      "prp_175780",
-				PropertyVersion: 3,
-				GroupID:         "grp_15225",
-				ContractID:      "ctr_1-1TJZH5",
-				Hostnames:       nil,
-				IncludeCertStatus:true,
+				PropertyID:        "prp_175780",
+				PropertyVersion:   3,
+				GroupID:           "grp_15225",
+				ContractID:        "ctr_1-1TJZH5",
+				Hostnames:         nil,
+				IncludeCertStatus: true,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -436,12 +431,12 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 		},
 		"200 Hostnames items empty": {
 			params: UpdatePropertyVersionHostnamesRequest{
-				PropertyID:      "prp_175780",
-				PropertyVersion: 3,
-				GroupID:         "grp_15225",
-				ContractID:      "ctr_1-1TJZH5",
+				PropertyID:        "prp_175780",
+				PropertyVersion:   3,
+				GroupID:           "grp_15225",
+				ContractID:        "ctr_1-1TJZH5",
 				IncludeCertStatus: true,
-				Hostnames:       []Hostname{},
+				Hostnames:         []Hostname{},
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -472,10 +467,10 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 		},
 		"400 Hostnames cert type is invalid": {
 			params: UpdatePropertyVersionHostnamesRequest{
-				PropertyID:      "prp_175780",
-				PropertyVersion: 3,
-				GroupID:         "grp_15225",
-				ContractID:      "ctr_1-1TJZH5",
+				PropertyID:        "prp_175780",
+				PropertyVersion:   3,
+				GroupID:           "grp_15225",
+				ContractID:        "ctr_1-1TJZH5",
 				IncludeCertStatus: true,
 				Hostnames: []Hostname{
 					{
@@ -507,9 +502,9 @@ func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
 		},
 		"500 internal server status error": {
 			params: UpdatePropertyVersionHostnamesRequest{
-				PropertyID:      "prp_175780",
-				PropertyVersion: 3,
-				Hostnames:       []Hostname{{}},
+				PropertyID:        "prp_175780",
+				PropertyVersion:   3,
+				Hostnames:         []Hostname{{}},
 				IncludeCertStatus: true,
 			},
 			responseStatus: http.StatusInternalServerError,
