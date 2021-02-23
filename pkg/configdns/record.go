@@ -179,8 +179,8 @@ func (p *dns) UpdateRecord(ctx context.Context, record *RecordBody, zone string,
 	logger.Debug("UpdateRecord")
 	logger.Debugf("DNS Lib Update Record: [%v]", record)
 	if err := record.Validate(); err != nil {
-		logger.Errorf("Record content not vaiid: %s", err.Error())
-		return fmt.Errorf("Record content not vaiid. [%w]", err)
+		logger.Errorf("Record content not valid: %s", err.Error())
+		return fmt.Errorf("Record content not valid. [%w]", err)
 	}
 
 	reqbody, err := convertStructToReqBody(record)
@@ -223,8 +223,8 @@ func (p *dns) DeleteRecord(ctx context.Context, record *RecordBody, zone string,
 	logger.Debug("DeleteRecord")
 
 	if err := record.Validate(); err != nil {
-		logger.Errorf("Record content not vaiid: %w", err)
-		return fmt.Errorf("Record content not vaiid. [%w]", err)
+		logger.Errorf("Record content not valid: %w", err)
+		return fmt.Errorf("Record content not valid. [%w]", err)
 	}
 
 	//var mtbody string
