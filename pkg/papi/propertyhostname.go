@@ -60,8 +60,8 @@ type (
 
 	CertStatusItem struct {
 		ValidationCname ValidationCname `json:"validationCname,omitempty"`
-		Staging         []StatusItem    `json:"staging"`
-		Production      []StatusItem    `json:"production"`
+		Staging         []StatusItem    `json:"staging,omitempty"`
+		Production      []StatusItem    `json:"production,omitempty"`
 	}
 
 	ValidationCname struct {
