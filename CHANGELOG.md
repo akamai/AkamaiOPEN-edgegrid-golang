@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.2.0 (Feb 24, 2021) APPSEC - Extended list of supported list endpoints from APPSEC API
+## 2.2.0 (Feb 23, 2021) APPSEC - Extended list of supported list endpoints from APPSEC API
 
 #### BUG FIXES:
 * PAPI
