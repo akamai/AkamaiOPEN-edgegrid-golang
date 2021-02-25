@@ -188,6 +188,313 @@ func TestPapi_GetRuleTree(t *testing.T) {
 				},
 			},
 		},
+		"200 OK nested with empty behaviour": {
+			params: GetRuleTreeRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+				ValidateMode:    "fast",
+				ValidateRules:   false,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+	"accountId": "accountID",
+	"contractId": "contract",
+	"groupId": "group",
+	"propertyId": "propertyID",
+	"propertyVersion": 2,
+	"etag": "etag",
+	"ruleFormat": "v2020-09-16",
+	"rules": {
+		"name": "default",
+		"children": [{
+			"name": "Augment insights",
+			"criteria": [],
+			"children": [{
+				"name": "Compress Text Content",
+				"criteria": [{
+					"name": "contentType",
+					"options": {
+						"matchOperator": "IS_ONE_OF",
+						"matchWildcard": true,
+						"matchCaseSensitive": false,
+						"values": [
+							"text/html*",
+							"text/css*",
+							"application/x-javascript*"
+						]
+					}
+				}],
+				"behaviors": []
+			}],
+			"options": {
+				"is_secure": false
+			}
+		}],
+		"behaviors": [{
+				"name": "origin",
+				"options": {
+					"httpPort": 80,
+					"enableTrueClientIp": false,
+					"compress": true,
+					"cacheKeyHostname": "ORIGIN_HOSTNAME",
+					"forwardHostHeader": "REQUEST_HOST_HEADER",
+					"hostname": "origin.test.com",
+					"originType": "CUSTOMER"
+				}
+			},
+			{
+				"name": "cpCode",
+				"options": {
+					"value": {
+						"id": 12345,
+						"name": "my CP code"
+					}
+				}
+			}
+		],
+		"customOverride": {
+			"overrideId": "cbo_12345",
+			"name": "mdc"
+		},
+		"variables": [{
+			"name": "VAR_NAME",
+			"value": "default value",
+			"description": "This is a sample Property Manager variable.",
+			"hidden": false,
+			"sensitive": false
+		}]
+	}
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2/rules?contractId=contract&groupId=group&validateMode=fast&validateRules=false",
+			expectedResponse: &GetRuleTreeResponse{
+				Response: Response{
+					AccountID:  "accountID",
+					ContractID: "contract",
+					GroupID:    "group",
+				},
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				Etag:            "etag",
+				RuleFormat:      "v2020-09-16",
+				Rules: Rules{
+					Behaviors: []RuleBehavior{
+						{
+							Name: "origin",
+							Options: RuleOptionsMap{
+								"httpPort":           float64(80),
+								"enableTrueClientIp": false,
+								"compress":           true,
+								"cacheKeyHostname":   "ORIGIN_HOSTNAME",
+								"forwardHostHeader":  "REQUEST_HOST_HEADER",
+								"hostname":           "origin.test.com",
+								"originType":         "CUSTOMER",
+							},
+						},
+						{
+							Name: "cpCode",
+							Options: RuleOptionsMap{
+								"value": map[string]interface{}{
+									"id":   float64(12345),
+									"name": "my CP code",
+								},
+							},
+						},
+					},
+					Children: []Rules{
+						{
+							Criteria: []RuleBehavior{},
+							Name:     "Augment insights",
+
+							Children: []Rules{
+								{
+									Behaviors: []RuleBehavior{},
+									Criteria: []RuleBehavior{
+										{
+											Locked: "",
+											Name:   "contentType",
+											Options: RuleOptionsMap{
+												"matchOperator":      "IS_ONE_OF",
+												"matchWildcard":      true,
+												"matchCaseSensitive": false,
+												"values":             []interface{}{"text/html*", "text/css*", "application/x-javascript*"},
+											},
+										},
+									},
+									Name: "Compress Text Content"},
+							}}},
+					Name:    "default",
+					Options: RuleOptions{IsSecure: false},
+					CustomOverride: &RuleCustomOverride{
+						OverrideID: "cbo_12345",
+						Name:       "mdc",
+					},
+					Variables: []RuleVariable{
+						{
+							Description: "This is a sample Property Manager variable.",
+							Hidden:      false,
+							Name:        "VAR_NAME",
+							Sensitive:   false,
+							Value:       "default value",
+						},
+					},
+				},
+			},
+		},
+		"200 OK nested with empty name": {
+			params: GetRuleTreeRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+				ValidateMode:    "fast",
+				ValidateRules:   false,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+	"accountId": "accountID",
+	"contractId": "contract",
+	"groupId": "group",
+	"propertyId": "propertyID",
+	"propertyVersion": 2,
+	"etag": "etag",
+	"ruleFormat": "v2020-09-16",
+	"rules": {
+		"name": "default",
+		"children": [{
+			"criteria": [],
+			"children": [{
+				"name": "Compress Text Content",
+				"criteria": [{
+					"name": "contentType",
+					"options": {
+						"matchOperator": "IS_ONE_OF",
+						"matchWildcard": true,
+						"matchCaseSensitive": false,
+						"values": [
+							"text/html*",
+							"text/css*",
+							"application/x-javascript*"
+						]
+					}
+				}],
+				"behaviors": []
+			}],
+			"options": {
+				"is_secure": false
+			}
+		}],
+		"behaviors": [{
+				"name": "origin",
+				"options": {
+					"httpPort": 80,
+					"enableTrueClientIp": false,
+					"compress": true,
+					"cacheKeyHostname": "ORIGIN_HOSTNAME",
+					"forwardHostHeader": "REQUEST_HOST_HEADER",
+					"hostname": "origin.test.com",
+					"originType": "CUSTOMER"
+				}
+			},
+			{
+				"name": "cpCode",
+				"options": {
+					"value": {
+						"id": 12345,
+						"name": "my CP code"
+					}
+				}
+			}
+		],
+		"customOverride": {
+			"overrideId": "cbo_12345",
+			"name": "mdc"
+		},
+		"variables": [{
+			"name": "VAR_NAME",
+			"value": "default value",
+			"description": "This is a sample Property Manager variable.",
+			"hidden": false,
+			"sensitive": false
+		}]
+	}
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2/rules?contractId=contract&groupId=group&validateMode=fast&validateRules=false",
+			expectedResponse: &GetRuleTreeResponse{
+				Response: Response{
+					AccountID:  "accountID",
+					ContractID: "contract",
+					GroupID:    "group",
+				},
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				Etag:            "etag",
+				RuleFormat:      "v2020-09-16",
+				Rules: Rules{
+					Behaviors: []RuleBehavior{
+						{
+							Name: "origin",
+							Options: RuleOptionsMap{
+								"httpPort":           float64(80),
+								"enableTrueClientIp": false,
+								"compress":           true,
+								"cacheKeyHostname":   "ORIGIN_HOSTNAME",
+								"forwardHostHeader":  "REQUEST_HOST_HEADER",
+								"hostname":           "origin.test.com",
+								"originType":         "CUSTOMER",
+							},
+						},
+						{
+							Name: "cpCode",
+							Options: RuleOptionsMap{
+								"value": map[string]interface{}{
+									"id":   float64(12345),
+									"name": "my CP code",
+								},
+							},
+						},
+					},
+					Children: []Rules{
+						{
+							Criteria: []RuleBehavior{},
+							Children: []Rules{
+								{
+									Behaviors: []RuleBehavior{},
+									Criteria: []RuleBehavior{
+										{
+											Locked: "",
+											Name:   "contentType",
+											Options: RuleOptionsMap{
+												"matchOperator":      "IS_ONE_OF",
+												"matchWildcard":      true,
+												"matchCaseSensitive": false,
+												"values":             []interface{}{"text/html*", "text/css*", "application/x-javascript*"},
+											},
+										},
+									},
+									Name: "Compress Text Content"},
+							}}},
+					Name:    "default",
+					Options: RuleOptions{IsSecure: false},
+					CustomOverride: &RuleCustomOverride{
+						OverrideID: "cbo_12345",
+						Name:       "mdc",
+					},
+					Variables: []RuleVariable{
+						{
+							Description: "This is a sample Property Manager variable.",
+							Hidden:      false,
+							Name:        "VAR_NAME",
+							Sensitive:   false,
+							Value:       "default value",
+						},
+					},
+				},
+			},
+		},
 		"500 Internal Server Error": {
 			params: GetRuleTreeRequest{
 				PropertyID:      "propertyID",
@@ -302,7 +609,9 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 				ValidateMode:    "fast",
 				ValidateRules:   false,
 				Rules: RulesUpdate{
+					Comments: "version comment",
 					Rules: Rules{
+						Comments: "default comment",
 						Behaviors: []RuleBehavior{
 							{
 								Name: "origin",
@@ -380,8 +689,10 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
     "propertyVersion": 2,
     "etag": "etag",
     "ruleFormat": "v2020-09-16",
+	"comments": "version comment",
     "rules": {
         "name": "default",
+        "comments": "default comment",
         "criteria": [],
         "children": [
             {
@@ -468,7 +779,9 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 				PropertyVersion: 2,
 				Etag:            "etag",
 				RuleFormat:      "v2020-09-16",
+				Comments:        "version comment",
 				Rules: Rules{
+					Comments: "default comment",
 					Behaviors: []RuleBehavior{
 						{
 							Name: "origin",
@@ -893,68 +1206,6 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 				assert.Contains(t, err.Error(), "ValidateMode")
 			},
 		},
-		"empty behaviors": {
-			params: UpdateRulesRequest{
-				PropertyID:      "propertyID",
-				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
-				DryRun:          true,
-				ValidateMode:    "fast",
-				ValidateRules:   false,
-				Rules: RulesUpdate{
-					Rules: Rules{
-						Behaviors: nil,
-						Children: []Rules{
-							{
-								Behaviors: []RuleBehavior{
-									{
-										Name: "gzipResponse",
-										Options: RuleOptionsMap{
-											"behavior": "ALWAYS",
-										},
-									},
-								},
-								Criteria: []RuleBehavior{
-									{
-										Locked: "",
-										Name:   "contentType",
-										Options: RuleOptionsMap{
-											"matchOperator":      "IS_ONE_OF",
-											"matchWildcard":      true,
-											"matchCaseSensitive": false,
-											"values":             []interface{}{"text/html*", "text/css*", "application/x-javascript*"},
-										},
-									},
-								},
-								Name: "Compress Text Content",
-							},
-						},
-						Criteria: []RuleBehavior{},
-						Name:     "default",
-						Options:  RuleOptions{IsSecure: false},
-						CustomOverride: &RuleCustomOverride{
-							OverrideID: "cbo_12345",
-							Name:       "mdc",
-						},
-						Variables: []RuleVariable{
-							{
-								Description: "This is a sample Property Manager variable.",
-								Hidden:      false,
-								Name:        "VAR_NAME",
-								Sensitive:   false,
-								Value:       "default value",
-							},
-						},
-					},
-				},
-			},
-			withError: func(t *testing.T, err error) {
-				want := ErrStructValidation
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "Behaviors")
-			},
-		},
 		"empty name": {
 			params: UpdateRulesRequest{
 				PropertyID:      "propertyID",
@@ -1037,148 +1288,6 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 				want := ErrStructValidation
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 				assert.Contains(t, err.Error(), "Name")
-			},
-		},
-		"empty name in behavior": {
-			params: UpdateRulesRequest{
-				PropertyID:      "propertyID",
-				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
-				DryRun:          true,
-				ValidateMode:    "test",
-				ValidateRules:   false,
-				Rules: RulesUpdate{
-					Rules: Rules{
-						Behaviors: []RuleBehavior{
-							{
-								Name: "",
-								Options: RuleOptionsMap{
-									"httpPort":           float64(80),
-									"enableTrueClientIp": false,
-									"compress":           true,
-									"cacheKeyHostname":   "ORIGIN_HOSTNAME",
-									"forwardHostHeader":  "REQUEST_HOST_HEADER",
-									"hostname":           "origin.test.com",
-									"originType":         "CUSTOMER",
-								},
-							},
-						},
-						Children: []Rules{
-							{
-								Behaviors: []RuleBehavior{
-									{
-										Name: "gzipResponse",
-										Options: RuleOptionsMap{
-											"behavior": "ALWAYS",
-										},
-									},
-								},
-								Criteria: []RuleBehavior{
-									{
-										Locked: "",
-										Name:   "contentType",
-										Options: RuleOptionsMap{
-											"matchOperator":      "IS_ONE_OF",
-											"matchWildcard":      true,
-											"matchCaseSensitive": false,
-											"values":             []interface{}{"text/html*", "text/css*", "application/x-javascript*"},
-										},
-									},
-								},
-								Name: "Compress Text Content",
-							},
-						},
-						Criteria: []RuleBehavior{},
-						Name:     "default",
-						Options:  RuleOptions{IsSecure: false},
-						CustomOverride: &RuleCustomOverride{
-							OverrideID: "cbo_12345",
-							Name:       "mdc",
-						},
-						Variables: []RuleVariable{
-							{
-								Description: "This is a sample Property Manager variable.",
-								Hidden:      false,
-								Name:        "VAR_NAME",
-								Sensitive:   false,
-								Value:       "default value",
-							},
-						},
-					},
-				},
-			},
-			withError: func(t *testing.T, err error) {
-				want := ErrStructValidation
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "Name")
-			},
-		},
-		"empty options in behavior": {
-			params: UpdateRulesRequest{
-				PropertyID:      "propertyID",
-				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
-				DryRun:          true,
-				ValidateMode:    "test",
-				ValidateRules:   false,
-				Rules: RulesUpdate{
-					Rules: Rules{
-						Behaviors: []RuleBehavior{
-							{
-								Name:    "origin",
-								Options: nil,
-							},
-						},
-						Children: []Rules{
-							{
-								Behaviors: []RuleBehavior{
-									{
-										Name: "gzipResponse",
-										Options: RuleOptionsMap{
-											"behavior": "ALWAYS",
-										},
-									},
-								},
-								Criteria: []RuleBehavior{
-									{
-										Locked: "",
-										Name:   "contentType",
-										Options: RuleOptionsMap{
-											"matchOperator":      "IS_ONE_OF",
-											"matchWildcard":      true,
-											"matchCaseSensitive": false,
-											"values":             []interface{}{"text/html*", "text/css*", "application/x-javascript*"},
-										},
-									},
-								},
-								Name: "Compress Text Content",
-							},
-						},
-						Criteria: []RuleBehavior{},
-						Name:     "default",
-						Options:  RuleOptions{IsSecure: false},
-						CustomOverride: &RuleCustomOverride{
-							OverrideID: "cbo_12345",
-							Name:       "mdc",
-						},
-						Variables: []RuleVariable{
-							{
-								Description: "This is a sample Property Manager variable.",
-								Hidden:      false,
-								Name:        "VAR_NAME",
-								Sensitive:   false,
-								Value:       "default value",
-							},
-						},
-					},
-				},
-			},
-			withError: func(t *testing.T, err error) {
-				want := ErrStructValidation
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "Options")
 			},
 		},
 		"empty name in custom override": {

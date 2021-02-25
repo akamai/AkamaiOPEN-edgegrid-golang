@@ -36,6 +36,10 @@ type (
 		Evaluating       string `json:"evaluating,omitempty"`
 		Latest           string `json:"latest,omitempty"`
 		KRSToEvalUpdates struct {
+			DeletedRules []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"deletedRules,omitempty"`
 			UpdatedRules []struct {
 				ID    int    `json:"id,omitempty"`
 				Title string `json:"title,omitempty"`
@@ -43,9 +47,17 @@ type (
 			NewRules []struct {
 				ID    int    `json:"id,omitempty"`
 				Title string `json:"title,omitempty"`
-			} `json:"newRules"`
+			} `json:"newRules,omitempty"`
 		} `json:"KRSToEvalUpdates,omitempty"`
 		EvalToEvalUpdates struct {
+			DeletedRules []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"deletedRules,omitempty"`
+			UpdatedRules []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"updatedRules,omitempty"`
 			NewRules []struct {
 				ID    int    `json:"id,omitempty"`
 				Title string `json:"title,omitempty"`
@@ -60,6 +72,10 @@ type (
 				ID    int    `json:"id,omitempty"`
 				Title string `json:"title,omitempty"`
 			} `json:"newRules,omitempty"`
+			UpdatedRules []struct {
+				ID    int    `json:"id,omitempty"`
+				Title string `json:"title,omitempty"`
+			} `json:"updatedRules,omitempty"`
 		} `json:"KRSToLatestUpdates,omitempty"`
 	}
 

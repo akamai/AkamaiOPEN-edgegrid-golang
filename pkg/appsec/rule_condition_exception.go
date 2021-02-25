@@ -2,6 +2,7 @@ package appsec
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -45,10 +46,12 @@ type (
 		Conditions []struct {
 			Type          string   `json:"type,omitempty"`
 			Filenames     []string `json:"filenames,omitempty"`
+			Extensions    []string `json:"extensions,omitempty"`
 			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Methods       []string `json:"methods,omitempty"`
 		} `json:"conditions,omitempty"`
 		Exception struct {
+			AnyHeaderCookieOrParam           []string `json:"anyHeaderCookieOrParam,omitempty"`
 			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
 				Names    []string `json:"names,omitempty"`
@@ -61,11 +64,13 @@ type (
 		Conditions []struct {
 			Type          string   `json:"type,omitempty"`
 			Filenames     []string `json:"filenames,omitempty"`
+			Extensions    []string `json:"extensions,omitempty"`
 			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Methods       []string `json:"methods,omitempty"`
 		} `json:"conditions,omitempty"`
 		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
+			AnyHeaderCookieOrParam           *AnyHeaderCookieOrParamRuleCondition `json:"anyHeaderCookieOrParam,omitempty"`
+			HeaderCookieOrParamValues        []string                             `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
 				Names    []string `json:"names,omitempty"`
 				Selector string   `json:"selector,omitempty"`
@@ -74,23 +79,11 @@ type (
 	}
 
 	UpdateRuleConditionExceptionRequest struct {
-		ConfigID   int    `json:"-"`
-		Version    int    `json:"-"`
-		PolicyID   string `json:"-"`
-		RuleID     int    `json:"-"`
-		Conditions []struct {
-			Type          string   `json:"type"`
-			Filenames     []string `json:"filenames,omitempty"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			Methods       []string `json:"methods,omitempty"`
-		} `json:"conditions"`
-		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
-			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names"`
-				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
-		} `json:"exception"`
+		ConfigID       int             `json:"-"`
+		Version        int             `json:"-"`
+		PolicyID       string          `json:"-"`
+		RuleID         int             `json:"-"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	UpdateRuleConditionExceptionResponse struct {
@@ -99,14 +92,29 @@ type (
 			Filenames     []string `json:"filenames,omitempty"`
 			PositiveMatch bool     `json:"positiveMatch"`
 			Methods       []string `json:"methods,omitempty"`
-		} `json:"conditions"`
+		} `json:"conditions,omitempty"`
 		Exception struct {
-			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues"`
+			HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
 			SpecificHeaderCookieOrParamNames []struct {
 				Names    []string `json:"names"`
 				Selector string   `json:"selector"`
-			} `json:"specificHeaderCookieOrParamNames"`
-		} `json:"exception"`
+			} `json:"specificHeaderCookieOrParamNames,omitempty"`
+		} `json:"exception,omitempty"`
+	}
+
+	RuleConditions []struct {
+		Type          string   `json:"type"`
+		Filenames     []string `json:"filenames,omitempty"`
+		PositiveMatch bool     `json:"positiveMatch"`
+		Methods       []string `json:"methods,omitempty"`
+	}
+
+	RuleException struct {
+		HeaderCookieOrParamValues        []string `json:"headerCookieOrParamValues,omitempty"`
+		SpecificHeaderCookieOrParamNames []struct {
+			Names    []string `json:"names"`
+			Selector string   `json:"selector"`
+		} `json:"specificHeaderCookieOrParamNames,omitempty"`
 	}
 
 	RemoveRuleConditionExceptionRequest struct {
@@ -132,6 +140,8 @@ type (
 			} `json:"specificHeaderCookieOrParamNames"`
 		} `json:"exception"`
 	}
+
+	AnyHeaderCookieOrParamRuleCondition []string
 )
 
 // Validate validates GetRuleConditionExceptionRequest
@@ -269,7 +279,8 @@ func (p *appsec) UpdateRuleConditionException(ctx context.Context, params Update
 	}
 
 	var rval UpdateRuleConditionExceptionResponse
-	resp, err := p.Exec(req, &rval, params)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("create RuleConditionException request failed: %w", err)
 	}

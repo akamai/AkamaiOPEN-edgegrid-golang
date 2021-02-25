@@ -1,0 +1,16 @@
+{
+    "apiEndpoints": [
+        {
+            "id": 1941,
+            "action": "alert"
+        },
+        {
+            "id": 1942,
+            "action": "alert"
+        },
+        {
+            "id": 1943,
+            "action": "alert"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+
+    {
+        "type": "https://problems.luna.akamaiapis.net/appsec/error-types/INVALID-INPUT-ERROR",
+        "status": 404,
+        "title": "Invalid Input Error",
+        "detail": "HTTP 404 Not Found",
+        "instance": "https://problems.luna.akamaiapis.net/appsec/error-instances/0bbfafab-6b8f-4ede-ad35-5ac751282e5d"
+    }

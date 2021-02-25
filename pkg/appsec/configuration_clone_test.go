@@ -128,13 +128,13 @@ func TestAppSec_GetConfigurationClone(t *testing.T) {
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching match target"
+    "detail": "Error fetching ConfigurationClone"
 }`),
 			expectedPath: "/appsec/v1/configs/43253/versions/15",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching match target",
+				Detail:     "Error fetching ConfigurationClone",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -162,7 +162,6 @@ func TestAppSec_GetConfigurationClone(t *testing.T) {
 }
 
 // Test Create ConfigurationClone
-// Test Create ConfigurationClone
 func TestAppSec_CreateConfigurationClone(t *testing.T) {
 
 	result := CreateConfigurationCloneResponse{}
@@ -186,23 +185,25 @@ func TestAppSec_CreateConfigurationClone(t *testing.T) {
 		headers          http.Header
 	}{
 		"201 Created": {
-			params: CreateConfigurationCloneRequest{
-				ConfigID:          43253,
-				CreateFromVersion: 3,
-			},
+			params: CreateConfigurationCloneRequest{Name: "Test", CreateFrom: struct {
+				ConfigID int `json:"configId"`
+				Version  int `json:"version"`
+			}{ConfigID: 42345,
+				Version: 7}},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions",
+			expectedPath:     "/appsec/v1/configs/",
 		},
 		"500 internal server error": {
-			params: CreateConfigurationCloneRequest{
-				ConfigID:          43253,
-				CreateFromVersion: 3,
-			},
+			params: CreateConfigurationCloneRequest{Name: "Test", CreateFrom: struct {
+				ConfigID int `json:"configId"`
+				Version  int `json:"version"`
+			}{ConfigID: 42345,
+				Version: 7}},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
@@ -210,7 +211,7 @@ func TestAppSec_CreateConfigurationClone(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error creating ConfigurationClone"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions",
+			expectedPath: "/appsec/v1/configs/",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -223,6 +224,7 @@ func TestAppSec_CreateConfigurationClone(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
