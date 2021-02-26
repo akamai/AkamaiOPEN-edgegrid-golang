@@ -65,6 +65,7 @@ type (
 		Name    string         `json:"name"`
 		Options RuleOptionsMap `json:"options"`
 		UUID    string         `json:"uuid,omitempty"`
+		TemplateUuid string    `json:"templateUuid,omitempty"`
 	}
 
 	// RuleCustomOverride represents customOverride field from Rule resource
