@@ -35,6 +35,7 @@ type (
 
 	GetNetworkListsRequest struct {
 		Name string `json:"name"`
+		Type string `json:"type"`
 	}
 
 	GetNetworkListsResponse struct {
@@ -322,19 +323,29 @@ func (p *networklists) GetNetworkLists(ctx context.Context, params GetNetworkLis
 		return nil, p.Error(resp)
 	}
 
-	if params.Name != "" {
+	if params.Name != "" && params.Type != "" {
+		for _, val := range rval.NetworkLists {
+			if val.UniqueID == params.Name && val.Type == params.Type {
+				rvalfiltered.NetworkLists = append(rvalfiltered.NetworkLists, val)
+			}
+		}
+	} else if params.Name != "" {
 		for _, val := range rval.NetworkLists {
 			if val.UniqueID == params.Name {
 				rvalfiltered.NetworkLists = append(rvalfiltered.NetworkLists, val)
 			}
 		}
-
+	} else if params.Type != "" {
+		for _, val := range rval.NetworkLists {
+			if val.Type == params.Type {
+				rvalfiltered.NetworkLists = append(rvalfiltered.NetworkLists, val)
+			}
+		}
 	} else {
 		rvalfiltered = rval
 	}
 
 	return &rvalfiltered, nil
-
 }
 
 // Update will update a NetworkList.
