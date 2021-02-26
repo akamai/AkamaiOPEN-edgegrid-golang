@@ -754,14 +754,15 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
                     }
                 },
 				"uuid": "fd6a63bc-120a-4891-a5f2-c479765d5553",
-				"templateUuid": "bedbac99-4ce1-43a3-96cc-b84c8cd30176",
-				"templateLink": "/platformtoolkit/service/ruletemplate/30582260/1?accountId=1-1TJZFB&gid=61726&ck=16.3.1.1"
+				"templateUuid": "bedbac99-4ce1-43a3-96cc-b84c8cd30176"
             }
         ],
  		"customOverride": {
         	"overrideId": "cbo_12345",
         	"name": "mdc"
     	},
+		"templateUuid": "bedbac99-4ce1-43a3-96cc-b84c8cd30176",
+		"templateLink": "/platformtoolkit/service/ruletemplate/30582260/1?accountId=1-1TJZFB&gid=61726&ck=16.3.1.1",
 		"variables": [
             {
                 "name": "VAR_NAME",
@@ -826,7 +827,6 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							},
 							UUID: "fd6a63bc-120a-4891-a5f2-c479765d5553",
 							TemplateUuid: "bedbac99-4ce1-43a3-96cc-b84c8cd30176",
-							TemplateLink: "/platformtoolkit/service/ruletemplate/30582260/1?accountId=1-1TJZFB&gid=61726&ck=16.3.1.1",
 						},
 					},
 					Children: []Rules{
@@ -861,6 +861,8 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						OverrideID: "cbo_12345",
 						Name:       "mdc",
 					},
+					TemplateUuid: "bedbac99-4ce1-43a3-96cc-b84c8cd30176",
+					TemplateLink: "/platformtoolkit/service/ruletemplate/30582260/1?accountId=1-1TJZFB&gid=61726&ck=16.3.1.1",
 					Variables: []RuleVariable{
 						{
 							Description: "This is a sample Property Manager variable.",

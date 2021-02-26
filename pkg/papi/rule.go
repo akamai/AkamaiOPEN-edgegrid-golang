@@ -55,6 +55,8 @@ type (
 		Name                string                  `json:"name"`
 		Options             RuleOptions             `json:"options,omitempty"`
 		UUID                string                  `json:"uuid,omitempty"`
+		TemplateUuid 		string    				`json:"templateUuid,omitempty"`
+		TemplateLink 		string 					`json:"templateLink,omitempty"`
 		Variables           []RuleVariable          `json:"variables,omitempty"`
 		CriteriaMustSatisfy RuleCriteriaMustSatisfy `json:"criteriaMustSatisfy,omitempty"`
 	}
@@ -66,7 +68,6 @@ type (
 		Options RuleOptionsMap `json:"options"`
 		UUID    string         `json:"uuid,omitempty"`
 		TemplateUuid string    `json:"templateUuid,omitempty"`
-		TemplateLink string 	`json:"templateLink,omitempty"`
 	}
 
 	// RuleCustomOverride represents customOverride field from Rule resource
