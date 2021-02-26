@@ -325,13 +325,13 @@ func (p *networklists) GetNetworkLists(ctx context.Context, params GetNetworkLis
 
 	if params.Name != "" && params.Type != "" {
 		for _, val := range rval.NetworkLists {
-			if val.UniqueID == params.Name && val.Type == params.Type {
+			if val.Name == params.Name && val.Type == params.Type {
 				rvalfiltered.NetworkLists = append(rvalfiltered.NetworkLists, val)
 			}
 		}
 	} else if params.Name != "" {
 		for _, val := range rval.NetworkLists {
-			if val.UniqueID == params.Name {
+			if val.Name == params.Name {
 				rvalfiltered.NetworkLists = append(rvalfiltered.NetworkLists, val)
 			}
 		}
