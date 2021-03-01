@@ -156,7 +156,7 @@ func TestPapi_GetRuleTree(t *testing.T) {
 							},
 							Criteria: []RuleBehavior{
 								{
-									Locked: "",
+									Locked: false,
 									Name:   "contentType",
 									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
@@ -313,7 +313,7 @@ func TestPapi_GetRuleTree(t *testing.T) {
 									Behaviors: []RuleBehavior{},
 									Criteria: []RuleBehavior{
 										{
-											Locked: "",
+											Locked: false,
 											Name:   "contentType",
 											Options: RuleOptionsMap{
 												"matchOperator":      "IS_ONE_OF",
@@ -465,7 +465,7 @@ func TestPapi_GetRuleTree(t *testing.T) {
 									Behaviors: []RuleBehavior{},
 									Criteria: []RuleBehavior{
 										{
-											Locked: "",
+											Locked: false,
 											Name:   "contentType",
 											Options: RuleOptionsMap{
 												"matchOperator":      "IS_ONE_OF",
@@ -647,7 +647,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								},
 								Criteria: []RuleBehavior{
 									{
-										Locked: "",
+										Locked: false,
 										Name:   "contentType",
 										Options: RuleOptionsMap{
 											"matchOperator":      "IS_ONE_OF",
@@ -753,6 +753,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
                         "name": "my advanced match"
                     }
                 },
+				"locked": true,
 				"uuid": "fd6a63bc-120a-4891-a5f2-c479765d5553",
 				"templateUuid": "bedbac99-4ce1-43a3-96cc-b84c8cd30176"
             }
@@ -825,6 +826,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 									"name": "my advanced match",
 								},
 							},
+							Locked: true,
 							UUID: "fd6a63bc-120a-4891-a5f2-c479765d5553",
 							TemplateUuid: "bedbac99-4ce1-43a3-96cc-b84c8cd30176",
 						},
@@ -841,7 +843,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 							},
 							Criteria: []RuleBehavior{
 								{
-									Locked: "",
+									Locked: false,
 									Name:   "contentType",
 									Options: RuleOptionsMap{
 										"matchOperator":      "IS_ONE_OF",
@@ -930,7 +932,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								},
 								Criteria: []RuleBehavior{
 									{
-										Locked: "",
+										Locked: false,
 										Name:   "contentType",
 										Options: RuleOptionsMap{
 											"matchOperator":      "IS_ONE_OF",
@@ -1027,7 +1029,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								},
 								Criteria: []RuleBehavior{
 									{
-										Locked: "",
+										Locked: false,
 										Name:   "contentType",
 										Options: RuleOptionsMap{
 											"matchOperator":      "IS_ONE_OF",
@@ -1110,7 +1112,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								},
 								Criteria: []RuleBehavior{
 									{
-										Locked: "",
+										Locked: false,
 										Name:   "contentType",
 										Options: RuleOptionsMap{
 											"matchOperator":      "IS_ONE_OF",
@@ -1194,7 +1196,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								},
 								Criteria: []RuleBehavior{
 									{
-										Locked: "",
+										Locked: false,
 										Name:   "contentType",
 										Options: RuleOptionsMap{
 											"matchOperator":      "IS_ONE_OF",
@@ -1278,7 +1280,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								},
 								Criteria: []RuleBehavior{
 									{
-										Locked: "",
+										Locked: false,
 										Name:   "contentType",
 										Options: RuleOptionsMap{
 											"matchOperator":      "IS_ONE_OF",
@@ -1362,7 +1364,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								},
 								Criteria: []RuleBehavior{
 									{
-										Locked: "",
+										Locked: false,
 										Name:   "contentType",
 										Options: RuleOptionsMap{
 											"matchOperator":      "IS_ONE_OF",
@@ -1446,7 +1448,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								},
 								Criteria: []RuleBehavior{
 									{
-										Locked: "",
+										Locked: false,
 										Name:   "contentType",
 										Options: RuleOptionsMap{
 											"matchOperator":      "IS_ONE_OF",
@@ -1530,7 +1532,7 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 								},
 								Criteria: []RuleBehavior{
 									{
-										Locked: "",
+										Locked: false,
 										Name:   "contentType",
 										Options: RuleOptionsMap{
 											"matchOperator":      "IS_ONE_OF",
