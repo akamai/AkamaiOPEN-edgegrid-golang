@@ -39,41 +39,10 @@ type (
 	}
 
 	GetNetworkListsResponse struct {
-		Links struct {
-			Create struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"create"`
-		} `json:"links"`
+		Links *NetworkListsResponseLinks `json:"links,omitempty"`
 		NetworkLists []struct {
 			ElementCount int `json:"elementCount"`
-			Links        struct {
-				ActivateInProduction struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"activateInProduction"`
-				ActivateInStaging struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"activateInStaging"`
-				AppendItems struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"appendItems"`
-				Retrieve struct {
-					Href string `json:"href"`
-				} `json:"retrieve"`
-				StatusInProduction struct {
-					Href string `json:"href"`
-				} `json:"statusInProduction"`
-				StatusInStaging struct {
-					Href string `json:"href"`
-				} `json:"statusInStaging"`
-				Update struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"update"`
-			} `json:"links"`
+			Links              *NetworkListsLinks `json:"links,omitempty"`
 			Name               string `json:"name"`
 			NetworkListType    string `json:"networkListType"`
 			ReadOnly           bool   `json:"readOnly"`
@@ -235,6 +204,25 @@ type (
 				Method string `json:"method"`
 			} `json:"update"`
 		} `json:"links"`
+	}
+
+	LinkInfo struct {
+		Href   string `json:"href,omitempty"`
+		Method string `json:"method,omitempty"`
+	}
+
+	NetworkListsResponseLinks struct {
+		Create *LinkInfo `json:"create,omitempty"`
+	}
+
+	NetworkListsLinks        struct {
+		ActivateInProduction *LinkInfo `json:"activateInProduction,omitempty"`
+		ActivateInStaging    *LinkInfo `json:"activateInStaging,omitempty"`
+		AppendItems          *LinkInfo `json:"appendItems,omitempty"`
+		Retrieve             *LinkInfo `json:"retrieve,omitempty"`
+		StatusInProduction   *LinkInfo `json:"statusInProduction,omitempty"`
+		StatusInStaging      *LinkInfo `json:"statusInStaging,omitempty"`
+		Update               *LinkInfo `json:"update,omitempty"`
 	}
 )
 
