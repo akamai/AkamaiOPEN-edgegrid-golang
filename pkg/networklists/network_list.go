@@ -39,19 +39,19 @@ type (
 	}
 
 	GetNetworkListsResponse struct {
-		Links *NetworkListsResponseLinks `json:"links,omitempty"`
+		Links        *NetworkListsResponseLinks `json:"links,omitempty"`
 		NetworkLists []struct {
-			ElementCount int `json:"elementCount"`
+			ElementCount       int                `json:"elementCount"`
 			Links              *NetworkListsLinks `json:"links,omitempty"`
-			Name               string `json:"name"`
-			NetworkListType    string `json:"networkListType"`
-			ReadOnly           bool   `json:"readOnly"`
-			Shared             bool   `json:"shared"`
-			SyncPoint          int    `json:"syncPoint"`
-			Type               string `json:"type"`
-			UniqueID           string `json:"uniqueId"`
-			AccessControlGroup string `json:"accessControlGroup,omitempty"`
-			Description        string `json:"description,omitempty"`
+			Name               string             `json:"name"`
+			NetworkListType    string             `json:"networkListType"`
+			ReadOnly           bool               `json:"readOnly"`
+			Shared             bool               `json:"shared"`
+			SyncPoint          int                `json:"syncPoint"`
+			Type               string             `json:"type"`
+			UniqueID           string             `json:"uniqueId"`
+			AccessControlGroup string             `json:"accessControlGroup,omitempty"`
+			Description        string             `json:"description,omitempty"`
 		} `json:"networkLists"`
 	}
 
@@ -108,6 +108,7 @@ type (
 		Description string   `json:"description"`
 		SyncPoint   int      `json:"syncPoint"`
 		List        []string `json:"list"`
+		UniqueID    string   `json:"uniqueId"`
 	}
 
 	UpdateNetworkListResponse struct {
@@ -216,7 +217,7 @@ type (
 		Create *LinkInfo `json:"create,omitempty"`
 	}
 
-	NetworkListsLinks        struct {
+	NetworkListsLinks struct {
 		ActivateInProduction *LinkInfo `json:"activateInProduction,omitempty"`
 		ActivateInStaging    *LinkInfo `json:"activateInStaging,omitempty"`
 		AppendItems          *LinkInfo `json:"appendItems,omitempty"`
@@ -353,7 +354,7 @@ func (p *networklists) UpdateNetworkList(ctx context.Context, params UpdateNetwo
 
 	putURL := fmt.Sprintf(
 		"/network-list/v2/network-lists/%s",
-		params.Name,
+		params.UniqueID,
 	)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
