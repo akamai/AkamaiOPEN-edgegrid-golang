@@ -96,7 +96,7 @@ type (
 			Name          string         `json:"name"`
 			RuleActivated bool           `json:"ruleActivated"`
 			Structured    bool           `json:"structured"`
-			Tag           []string       `json:"tag"`
+			Tag           *StringSlice   `json:"tag,omitempty"`
 			Version       int            `json:"version"`
 		} `json:"customRules"`
 		Rulesets []struct {
