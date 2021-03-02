@@ -91,6 +91,7 @@ type (
 		UniqueID        string   `json:"uniqueId"`
 		SyncPoint       int      `json:"syncPoint"`
 		Type            string   `json:"type"`
+		Description     string   `json:"description,omitempty"`
 		NetworkListType string   `json:"networkListType"`
 		ElementCount    int      `json:"elementCount"`
 		ReadOnly        bool     `json:"readOnly"`
