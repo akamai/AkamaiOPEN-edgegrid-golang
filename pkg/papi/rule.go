@@ -55,16 +55,19 @@ type (
 		Name                string                  `json:"name"`
 		Options             RuleOptions             `json:"options,omitempty"`
 		UUID                string                  `json:"uuid,omitempty"`
+		TemplateUuid 		string    				`json:"templateUuid,omitempty"`
+		TemplateLink 		string 					`json:"templateLink,omitempty"`
 		Variables           []RuleVariable          `json:"variables,omitempty"`
 		CriteriaMustSatisfy RuleCriteriaMustSatisfy `json:"criteriaMustSatisfy,omitempty"`
 	}
 
 	// RuleBehavior contains data for both rule behaviors and rule criteria
 	RuleBehavior struct {
-		Locked  string         `json:"locked,omitempty"`
+		Locked  bool           `json:"locked,omitempty"`
 		Name    string         `json:"name"`
 		Options RuleOptionsMap `json:"options"`
 		UUID    string         `json:"uuid,omitempty"`
+		TemplateUuid string    `json:"templateUuid,omitempty"`
 	}
 
 	// RuleCustomOverride represents customOverride field from Rule resource
