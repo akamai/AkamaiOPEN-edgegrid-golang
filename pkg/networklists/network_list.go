@@ -38,17 +38,6 @@ type (
 		Type string `json:"type"`
 	}
 
-	// prevent these empty sections from being returned:
-	/*
-	{
-		"links": {
-			"create": {
-				"href": "",
-				"method": ""
-			}
-		}
-	}
-	*/
 	GetNetworkListsResponse struct {
 		Links *NetworkListsResponseLinks `json:"links,omitempty"`
 		NetworkLists []struct {
