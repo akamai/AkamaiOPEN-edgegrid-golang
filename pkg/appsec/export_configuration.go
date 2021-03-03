@@ -193,10 +193,7 @@ type (
 			} `json:"customRuleActions,omitempty"`
 			APIRequestConstraints *APIRequestConstraintsexp `json:"apiRequestConstraints,omitempty"`
 			ClientReputation      struct {
-				ReputationProfileActions []struct {
-					Action string `json:"action"`
-					ID     int    `json:"id"`
-				} `json:"reputationProfileActions"`
+				ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
 			} `json:"clientReputation"`
 			RatePolicyActions []struct {
 				ID         int    `json:"id"`
@@ -529,6 +526,10 @@ type (
 			Paths         []string `json:"paths,omitempty"`
 		} `json:"conditions,omitempty"`
 		Exception *ExceptioneExpruleaction `json:"exception,omitempty"`
+	}
+	ClientReputationReputationProfileActions []struct {
+		Action string `json:"action"`
+		ID     int    `json:"id"`
 	}
 )
 
