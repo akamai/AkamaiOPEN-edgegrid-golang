@@ -1,5 +1,8 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.2.1 (Mar 3, 2021)
+* PAPI - Fixed issue with rules causing advanced locked behaviors to fail
+
 ## 2.2.0 (Feb 23, 2021) APPSEC - Extended list of supported list endpoints from APPSEC API
 
 #### BUG FIXES:
