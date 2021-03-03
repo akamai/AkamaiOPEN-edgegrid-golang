@@ -195,11 +195,7 @@ type (
 			ClientReputation      struct {
 				ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
 			} `json:"clientReputation"`
-			RatePolicyActions []struct {
-				ID         int    `json:"id"`
-				Ipv4Action string `json:"ipv4Action"`
-				Ipv6Action string `json:"ipv6Action"`
-			} `json:"ratePolicyActions"`
+			RatePolicyActions *SecurityPoliciesRatePolicyActions `json:"ratePolicyActions,omitempty"`
 			IPGeoFirewall struct {
 				Block       string `json:"block"`
 				GeoControls struct {
@@ -530,6 +526,11 @@ type (
 	ClientReputationReputationProfileActions []struct {
 		Action string `json:"action"`
 		ID     int    `json:"id"`
+	}
+	SecurityPoliciesRatePolicyActions []struct {
+		ID         int    `json:"id"`
+		Ipv4Action string `json:"ipv4Action"`
+		Ipv6Action string `json:"ipv6Action"`
 	}
 )
 
