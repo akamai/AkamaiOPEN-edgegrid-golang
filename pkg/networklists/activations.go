@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 )
@@ -21,8 +22,8 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getactivations
 	Activations interface {
-		//GetActivationss(ctx context.Context, params GetActivationssRequest) (*GetActivationssResponse, error)
 		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
+		GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error)
 		CreateActivations(ctx context.Context, params CreateActivationsRequest, acknowledgeWarnings bool) (*CreateActivationsResponse, error)
 		RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error)
 	}
@@ -32,6 +33,10 @@ type (
 		Action       string `json:"-"`
 		Network      string `json:"network"`
 		ActivationID int    `json:"activationId"`
+	}
+
+	GetActivationRequest struct {
+		ActivationID int `json:"activationId"`
 	}
 
 	GetActivationsResponse struct {
@@ -67,6 +72,43 @@ type (
 				Href string `json:"href"`
 			} `json:"activationDetails"`
 		} `json:"links"`
+	}
+
+	GetActivationResponse struct {
+		ActivationID     int       `json:"activationId"`
+		CreateDate       time.Time `json:"createDate"`
+		CreatedBy        string    `json:"createdBy"`
+		Environment      string    `json:"environment"`
+		Fast             bool      `json:"fast"`
+		ActivationStatus string    `json:"status"`
+		NetworkList      struct {
+			ActivationComments string `json:"activationComments"`
+			ActivationStatus   string `json:"activationStatus"`
+			Links              struct {
+				AppendItems struct {
+					Href   string `json:"href"`
+					Method string `json:"method"`
+				} `json:"appendItems"`
+				Retrieve struct {
+					Href string `json:"href"`
+				} `json:"retrieve"`
+				StatusInProduction struct {
+					Href string `json:"href"`
+				} `json:"statusInProduction"`
+				StatusInStaging struct {
+					Href string `json:"href"`
+				} `json:"statusInStaging"`
+				SyncPointHistory struct {
+					Href string `json:"href"`
+				} `json:"syncPointHistory"`
+				Update struct {
+					Href   string `json:"href"`
+					Method string `json:"method"`
+				} `json:"update"`
+			} `json:"links"`
+			SyncPoint int    `json:"syncPoint"`
+			UniqueID  string `json:"uniqueId"`
+		} `json:"networkList"`
 	}
 
 	CreateActivationsRequest struct {
@@ -164,6 +206,13 @@ func (v GetActivationsRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate validates GetActivationRequest
+func (v GetActivationRequest) Validate() error {
+	return validation.Errors{
+		"ActivationID": validation.Validate(v.ActivationID, validation.Required),
+	}.Filter()
+}
+
 // GetActivations populates  *Activations with it's related Activations
 //
 // API Docs: // appsec v1
@@ -192,6 +241,42 @@ func (p *networklists) GetActivations(ctx context.Context, params GetActivations
 	resp, errp := p.Exec(req, &rval)
 	if errp != nil {
 		return nil, fmt.Errorf("getactivations request failed: %w", errp)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, p.Error(resp)
+	}
+
+	return &rval, nil
+}
+
+// GetActivation populates  *Activation with it's related Activations
+//
+// API Docs: // appsec v1
+//
+// https://developer.akamai.com/api/cloud_security/application_security/v1.html
+func (p *networklists) GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	logger := p.Log(ctx)
+	logger.Debug("GetActivation")
+
+	var rval GetActivationResponse
+
+	uri := fmt.Sprintf("/network-list/v2/activations/%d",
+		params.ActivationID,
+	)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create getactivation request: %w", err)
+	}
+
+	resp, errp := p.Exec(req, &rval)
+	if errp != nil {
+		return nil, fmt.Errorf("getactivation request failed: %w", errp)
 	}
 
 	if resp.StatusCode != http.StatusOK {
