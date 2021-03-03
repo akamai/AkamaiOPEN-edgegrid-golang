@@ -104,17 +104,7 @@ type (
 			RulesetVersionID int       `json:"rulesetVersionId"`
 			Type             string    `json:"type"`
 			ReleaseDate      time.Time `json:"releaseDate"`
-			Rules            []struct {
-				ID                  int      `json:"id"`
-				InspectRequestBody  bool     `json:"inspectRequestBody"`
-				InspectResponseBody bool     `json:"inspectResponseBody"`
-				Outdated            bool     `json:"outdated"`
-				RuleVersion         int      `json:"ruleVersion"`
-				Score               int      `json:"score"`
-				Tag                 string   `json:"tag"`
-				Title               string   `json:"title"`
-				AttackGroups        []string `json:"attackGroups,omitempty"`
-			} `json:"rules"`
+			Rules            *RulesetsRules `json:"rules,omitempty"`
 			AttackGroups []struct {
 				Group     string `json:"group"`
 				GroupName string `json:"groupName"`
@@ -527,6 +517,17 @@ type (
 			Exception *ExceptioneExpEvalruleaction `json:"exception,omitempty"`
 		} `json:"ruleActions"`
 		RulesetVersionID int `json:"rulesetVersionId"`
+	}
+	RulesetsRules            []struct {
+		ID                  int      `json:"id"`
+		InspectRequestBody  bool     `json:"inspectRequestBody"`
+		InspectResponseBody bool     `json:"inspectResponseBody"`
+		Outdated            bool     `json:"outdated"`
+		RuleVersion         int      `json:"ruleVersion"`
+		Score               int      `json:"score"`
+		Tag                 string   `json:"tag"`
+		Title               string   `json:"title"`
+		AttackGroups        []string `json:"attackGroups,omitempty"`
 	}
 )
 
