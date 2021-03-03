@@ -30,7 +30,7 @@ func TestApsec_ListNetworkListDescription(t *testing.T) {
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetNetworkListDescriptionRequest{Name: "Test"},
+			params: GetNetworkListDescriptionRequest{UniqueID: "Test"},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
@@ -40,7 +40,7 @@ func TestApsec_ListNetworkListDescription(t *testing.T) {
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params:         GetNetworkListDescriptionRequest{Name: "Test"},
+			params:         GetNetworkListDescriptionRequest{UniqueID: "Test"},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -103,14 +103,14 @@ func TestAppSec_GetNetworkListDescription(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			params:           GetNetworkListDescriptionRequest{Name: "Test"},
+			params:           GetNetworkListDescriptionRequest{UniqueID: "Test"},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
 			expectedPath:     "/network-list/v2/network-lists/Test",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params:         GetNetworkListDescriptionRequest{Name: "Test"},
+			params:         GetNetworkListDescriptionRequest{UniqueID: "Test"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {

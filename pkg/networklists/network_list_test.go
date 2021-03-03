@@ -103,14 +103,14 @@ func TestNetworkList_GetNetworkList(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			params:           GetNetworkListRequest{Name: "Test"},
+			params:           GetNetworkListRequest{UniqueID: "Test"},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
 			expectedPath:     "/network-list/v2/network-lists/Test",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params:         GetNetworkListRequest{Name: "Test"},
+			params:         GetNetworkListRequest{UniqueID: "Test"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
@@ -249,7 +249,7 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdateNetworkListRequest{Name: "Test"},
+			params: UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test"},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -259,7 +259,7 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 			expectedPath:     "/network-list/v2/network-lists/Test",
 		},
 		"500 internal server error": {
-			params:         UpdateNetworkListRequest{Name: "Test"},
+			params:         UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
@@ -326,7 +326,7 @@ func TestNetworkList_DeleteNetworkList(t *testing.T) {
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: RemoveNetworkListRequest{Name: "Test"},
+			params: RemoveNetworkListRequest{UniqueID: "Test"},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -336,7 +336,7 @@ func TestNetworkList_DeleteNetworkList(t *testing.T) {
 			expectedPath:     "/network-list/v2/network-lists/Test",
 		},
 		"500 internal server error": {
-			params:         RemoveNetworkListRequest{Name: "Test"},
+			params:         RemoveNetworkListRequest{UniqueID: "Test"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {

@@ -30,7 +30,7 @@ type (
 	}
 
 	GetNetworkListRequest struct {
-		Name string `json:"name"`
+		UniqueID string `json:"-"`
 	}
 
 	GetNetworkListsRequest struct {
@@ -160,7 +160,7 @@ type (
 	}
 
 	RemoveNetworkListRequest struct {
-		Name string `json:"name"`
+		UniqueID string `json:"-"`
 	}
 
 	RemoveNetworkListResponse struct {
@@ -231,7 +231,7 @@ type (
 // Validate validates GetNetworkListRequest
 func (v GetNetworkListRequest) Validate() error {
 	return validation.Errors{
-		"Name": validation.Validate(v.Name, validation.Required),
+		"UniqueID": validation.Validate(v.UniqueID, validation.Required),
 	}.Filter()
 }
 
@@ -252,7 +252,7 @@ func (v UpdateNetworkListRequest) Validate() error {
 // Validate validates RemoveNetworkListRequest
 func (v RemoveNetworkListRequest) Validate() error {
 	return validation.Errors{
-		"Name": validation.Validate(v.Name, validation.Required),
+		"UniqueID": validation.Validate(v.UniqueID, validation.Required),
 	}.Filter()
 }
 
@@ -268,7 +268,7 @@ func (p *networklists) GetNetworkList(ctx context.Context, params GetNetworkList
 
 	uri := fmt.Sprintf(
 		"/network-list/v2/network-lists/%s",
-		params.Name)
+		params.UniqueID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -431,7 +431,7 @@ func (p *networklists) RemoveNetworkList(ctx context.Context, params RemoveNetwo
 
 	uri, err := url.Parse(fmt.Sprintf(
 		"/network-list/v2/network-lists/%s",
-		params.Name),
+		params.UniqueID),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed parse url: %w", err)

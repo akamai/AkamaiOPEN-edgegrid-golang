@@ -35,6 +35,7 @@ type (
 	GetNetworkListDescriptionResponse struct {
 		Name            string   `json:"name"`
 		UniqueID        string   `json:"uniqueId"`
+		Description     string   `json:"description"`
 		SyncPoint       int      `json:"syncPoint"`
 		Type            string   `json:"type"`
 		NetworkListType string   `json:"networkListType"`
@@ -85,7 +86,7 @@ type (
 // Validate validates GetNetworkListDescriptionRequest
 func (v GetNetworkListDescriptionRequest) Validate() error {
 	return validation.Errors{
-		"Name": validation.Validate(v.Name, validation.Required),
+		"UniqueID": validation.Validate(v.UniqueID, validation.Required),
 	}.Filter()
 }
 
@@ -108,7 +109,7 @@ func (p *networklists) GetNetworkListDescription(ctx context.Context, params Get
 
 	uri := fmt.Sprintf(
 		"/network-list/v2/network-lists/%s",
-		params.Name)
+		params.UniqueID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
