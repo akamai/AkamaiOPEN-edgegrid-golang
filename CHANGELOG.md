@@ -1,6 +1,9 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.2.0 (Feb 24, 2021) APPSEC - Extended list of supported list endpoints from APPSEC API
+## 2.2.1 (Mar 3, 2021)
+* PAPI - Fixed issue with rules causing advanced locked behaviors to fail
+
+## 2.2.0 (Feb 23, 2021) APPSEC - Extended list of supported list endpoints from APPSEC API
 
 #### BUG FIXES:
 * PAPI
@@ -21,7 +24,7 @@
     * Rename Security Configuration Version
     * Delete Security Configuration Version
     * Clone Security Configuration
-    * Import tool for adding existing resources to Terraform state (#207)
+    * Import tool for adding existing resources to Terraform state
 * DNS
     * Add support for HTTPS, SVCB records to ParseRData
 
