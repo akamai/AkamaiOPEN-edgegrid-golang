@@ -1,5 +1,15 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.3.0 (Mar 8, 2021) Network Lists
+
+Add support for the following operations in the Network Lists API v2:
+
+* Create a network list
+* Update an existing network list
+* Get the existing network lists, including optional filtering by name or type
+* Subscribe to a network list
+* Activate a network list
+
 ## 2.2.0 (Feb 23, 2021) APPSEC - Extended list of supported list endpoints from APPSEC API
 
 #### BUG FIXES:
