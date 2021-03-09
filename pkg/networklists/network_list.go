@@ -272,12 +272,12 @@ func (p *networklists) GetNetworkList(ctx context.Context, params GetNetworkList
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getnetworklist request: %w", err)
+		return nil, fmt.Errorf("failed to create getnetworklist request: %s", err.Error())
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("getproperties request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -301,12 +301,12 @@ func (p *networklists) GetNetworkLists(ctx context.Context, params GetNetworkLis
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getnetworklists request: %w", err)
+		return nil, fmt.Errorf("failed to create getnetworklists request: %s", err.Error())
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getnetworklists request failed: %w", err)
+		return nil, fmt.Errorf("getnetworklists request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -359,13 +359,13 @@ func (p *networklists) UpdateNetworkList(ctx context.Context, params UpdateNetwo
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create NetworkListrequest: %w", err)
+		return nil, fmt.Errorf("failed to create create NetworkListrequest: %s", err.Error())
 	}
 
 	var rval UpdateNetworkListResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create NetworkList request failed: %w", err)
+		return nil, fmt.Errorf("create NetworkList request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -394,14 +394,14 @@ func (p *networklists) CreateNetworkList(ctx context.Context, params CreateNetwo
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create networklist request: %w", err)
+		return nil, fmt.Errorf("failed to create create networklist request: %s", err.Error())
 	}
 
 	var rval CreateNetworkListResponse
 
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create networklistrequest failed: %w", err)
+		return nil, fmt.Errorf("create networklistrequest failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -439,12 +439,12 @@ func (p *networklists) RemoveNetworkList(ctx context.Context, params RemoveNetwo
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create delnetworklist request: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveNetworkList request: %s", err.Error())
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("delnetworklist request failed: %w", err)
+		return nil, fmt.Errorf("RemoveNetworkList request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {

@@ -24,7 +24,7 @@ type (
 	Activations interface {
 		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
 		GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error)
-		CreateActivations(ctx context.Context, params CreateActivationsRequest, acknowledgeWarnings bool) (*CreateActivationsResponse, error)
+		CreateActivations(ctx context.Context, params CreateActivationsRequest) (*CreateActivationsResponse, error)
 		RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error)
 	}
 
@@ -197,6 +197,44 @@ type (
 			} `json:"activationDetails"`
 		} `json:"links"`
 	}
+
+	// ActivationValue is used to create an "enum" of possible Activation.ActivationType values
+	ActivationValue string
+
+	// NetworkValue is used to create an "enum" of possible Activation.Network values
+	NetworkValue string
+
+	// StatusValue is used to create an "enum" of possible Activation.Status values
+	StatusValue string
+)
+
+const (
+	// ActivationTypeActivate Activation.ActivationType value ACTIVATE
+	ActivationTypeActivate ActivationValue = "ACTIVATE"
+	// ActivationTypeDeactivate Activation.ActivationType value DEACTIVATE
+	ActivationTypeDeactivate ActivationValue = "DEACTIVATE"
+
+	// NetworkProduction Activation.Network value PRODUCTION
+	NetworkProduction NetworkValue = "PRODUCTION"
+	// NetworkStaging Activation.Network value STAGING
+	NetworkStaging NetworkValue = "STAGING"
+
+	// StatusActive Activation.Status value ACTIVE
+	StatusActive StatusValue = "ACTIVATED"
+	// StatusInactive Activation.Status value INACTIVE
+	StatusInactive StatusValue = "INACTIVE"
+	// StatusPending Activation.Status value RECEIVED
+	StatusPending StatusValue = "RECEIVED"
+	// StatusAborted Activation.Status value ABORTED
+	StatusAborted StatusValue = "ABORTED"
+	// StatusFailed Activation.Status value FAILED
+	StatusFailed StatusValue = "FAILED"
+	// StatusDeactivated Activation.Status value DEACTIVATED
+	StatusDeactivated StatusValue = "DEACTIVATED"
+	// StatusPendingDeactivation Activation.Status value PENDING_DEACTIVATION
+	StatusPendingDeactivation StatusValue = "PENDING_DEACTIVATION"
+	// StatusNew Activation.Status value NEW
+	StatusNew StatusValue = "NEW"
 )
 
 // Validate validates GetActivationsRequest
@@ -235,12 +273,12 @@ func (p *networklists) GetActivations(ctx context.Context, params GetActivations
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getactivations request: %w", err)
+		return nil, fmt.Errorf("failed to create getactivations request: %s", err.Error())
 	}
 
-	resp, errp := p.Exec(req, &rval)
-	if errp != nil {
-		return nil, fmt.Errorf("getactivations request failed: %w", errp)
+	resp, err := p.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("getactivations request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -271,12 +309,12 @@ func (p *networklists) GetActivation(ctx context.Context, params GetActivationRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getactivation request: %w", err)
+		return nil, fmt.Errorf("failed to create getactivation request: %s", err.Error())
 	}
 
-	resp, errp := p.Exec(req, &rval)
-	if errp != nil {
-		return nil, fmt.Errorf("getactivation request failed: %w", errp)
+	resp, err := p.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("getactivation request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -291,7 +329,7 @@ func (p *networklists) GetActivation(ctx context.Context, params GetActivationRe
 // If acknowledgeWarnings is true and warnings are returned on the first attempt,
 // a second attempt is made, acknowledging the warnings.
 //
-func (p *networklists) CreateActivations(ctx context.Context, params CreateActivationsRequest, acknowledgeWarnings bool) (*CreateActivationsResponse, error) {
+func (p *networklists) CreateActivations(ctx context.Context, params CreateActivationsRequest) (*CreateActivationsResponse, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("CreateActivations")
@@ -310,7 +348,7 @@ func (p *networklists) CreateActivations(ctx context.Context, params CreateActiv
 
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create activationrequest failed: %w", err)
+		return nil, fmt.Errorf("create activation request failed: %s", err.Error())
 	}
 
 	var rvalget CreateActivationsResponse
@@ -322,12 +360,12 @@ func (p *networklists) CreateActivations(ctx context.Context, params CreateActiv
 
 	req, err = http.NewRequestWithContext(ctx, http.MethodGet, uriget, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get activation request: %w", err)
+		return nil, fmt.Errorf("failed to get activation request: %s", err.Error())
 	}
 
 	resp, err = p.Exec(req, &rvalget)
 	if err != nil {
-		return nil, fmt.Errorf("get activation request failed: %w", err)
+		return nil, fmt.Errorf("get activation request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -347,62 +385,23 @@ func (p *networklists) CreateActivations(ctx context.Context, params CreateActiv
 func (p *networklists) RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error) {
 
 	logger := p.Log(ctx)
-	logger.Debug("CreateRatePolicy")
+	logger.Debug("RemoveActivations")
 
-	//uri := "/appsec/v1/activations"
 	uri := fmt.Sprintf("/network-list/v2/network-lists/%s/environments/%s/deactivate",
 		params.UniqueID,
 		params.Network,
 	)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create remove activation request: %w", err)
+		return nil, fmt.Errorf("failed to create remove activation request: %s", err.Error())
 	}
 
 	var rval RemoveActivationsResponse
 
-	_, errp := p.Exec(req, &rval, params)
-	if errp != nil {
-		return nil, fmt.Errorf("remove activationrequest failed: %w", errp)
+	_, err = p.Exec(req, &rval, params)
+	if err != nil {
+		return nil, fmt.Errorf("remove activation request failed: %s", err.Error())
 	}
 
 	return &rval, nil
 }
-
-// ActivationValue is used to create an "enum" of possible Activation.ActivationType values
-type ActivationValue string
-
-// NetworkValue is used to create an "enum" of possible Activation.Network values
-type NetworkValue string
-
-// StatusValue is used to create an "enum" of possible Activation.Status values
-type StatusValue string
-
-const (
-	// ActivationTypeActivate Activation.ActivationType value ACTIVATE
-	ActivationTypeActivate ActivationValue = "ACTIVATE"
-	// ActivationTypeDeactivate Activation.ActivationType value DEACTIVATE
-	ActivationTypeDeactivate ActivationValue = "DEACTIVATE"
-
-	// NetworkProduction Activation.Network value PRODUCTION
-	NetworkProduction NetworkValue = "PRODUCTION"
-	// NetworkStaging Activation.Network value STAGING
-	NetworkStaging NetworkValue = "STAGING"
-
-	// StatusActive Activation.Status value ACTIVE
-	StatusActive StatusValue = "ACTIVATED"
-	// StatusInactive Activation.Status value INACTIVE
-	StatusInactive StatusValue = "INACTIVE"
-	// StatusPending Activation.Status value RECEIVED
-	StatusPending StatusValue = "RECEIVED"
-	// StatusAborted Activation.Status value ABORTED
-	StatusAborted StatusValue = "ABORTED"
-	// StatusFailed Activation.Status value FAILED
-	StatusFailed StatusValue = "FAILED"
-	// StatusDeactivated Activation.Status value DEACTIVATED
-	StatusDeactivated StatusValue = "DEACTIVATED"
-	// StatusPendingDeactivation Activation.Status value PENDING_DEACTIVATION
-	StatusPendingDeactivation StatusValue = "PENDING_DEACTIVATION"
-	// StatusNew Activation.Status value NEW
-	StatusNew StatusValue = "NEW"
-)

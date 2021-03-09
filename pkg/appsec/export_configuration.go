@@ -100,12 +100,12 @@ type (
 			Version       int            `json:"version"`
 		} `json:"customRules"`
 		Rulesets []struct {
-			ID               int       `json:"id"`
-			RulesetVersionID int       `json:"rulesetVersionId"`
-			Type             string    `json:"type"`
-			ReleaseDate      time.Time `json:"releaseDate"`
+			ID               int            `json:"id"`
+			RulesetVersionID int            `json:"rulesetVersionId"`
+			Type             string         `json:"type"`
+			ReleaseDate      time.Time      `json:"releaseDate"`
 			Rules            *RulesetsRules `json:"rules,omitempty"`
-			AttackGroups []struct {
+			AttackGroups     []struct {
 				Group     string `json:"group"`
 				GroupName string `json:"groupName"`
 				Threshold int    `json:"threshold"`
@@ -177,7 +177,7 @@ type (
 				ApplySlowPostControls         bool `json:"applySlowPostControls"`
 			} `json:"securityControls"`
 			WebApplicationFirewall struct {
-				RuleActions *WebApplicationFirewallRuleActions `json:"ruleActions,omitempty"`
+				RuleActions        *WebApplicationFirewallRuleActions `json:"ruleActions,omitempty"`
 				AttackGroupActions []struct {
 					Action             string                 `json:"action"`
 					Group              string                 `json:"group"`
@@ -196,7 +196,7 @@ type (
 				ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
 			} `json:"clientReputation"`
 			RatePolicyActions *SecurityPoliciesRatePolicyActions `json:"ratePolicyActions,omitempty"`
-			IPGeoFirewall struct {
+			IPGeoFirewall     struct {
 				Block       string `json:"block"`
 				GeoControls struct {
 					BlockedIPNetworkLists struct {
@@ -212,9 +212,9 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox *SecurityPoliciesPenaltyBox `json:"penaltyBox,omitempty"`
-			SlowPost         *SlowPostexp         `json:"slowPost,omitempty"`
-			LoggingOverrides *LoggingOverridesexp `json:"loggingOverrides,omitempty"`
+			PenaltyBox       *SecurityPoliciesPenaltyBox `json:"penaltyBox,omitempty"`
+			SlowPost         *SlowPostexp                `json:"slowPost,omitempty"`
+			LoggingOverrides *LoggingOverridesexp        `json:"loggingOverrides,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -487,7 +487,7 @@ type (
 		} `json:"ruleActions"`
 		RulesetVersionID int `json:"rulesetVersionId"`
 	}
-	RulesetsRules            []struct {
+	RulesetsRules []struct {
 		ID                  int      `json:"id"`
 		InspectRequestBody  bool     `json:"inspectRequestBody"`
 		InspectResponseBody bool     `json:"inspectResponseBody"`

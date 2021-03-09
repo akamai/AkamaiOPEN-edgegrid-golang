@@ -21,7 +21,6 @@ type (
 	//
 	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getnetworklistdescription
 	NetworkListDescription interface {
-		//GetNetworkListDescriptions(ctx context.Context, params GetNetworkListDescriptionsRequest) (*GetNetworkListDescriptionsResponse, error)
 		GetNetworkListDescription(ctx context.Context, params GetNetworkListDescriptionRequest) (*GetNetworkListDescriptionResponse, error)
 		UpdateNetworkListDescription(ctx context.Context, params UpdateNetworkListDescriptionRequest) (*UpdateNetworkListDescriptionResponse, error)
 	}
@@ -113,12 +112,12 @@ func (p *networklists) GetNetworkListDescription(ctx context.Context, params Get
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getnetworklistdescription request: %w", err)
+		return nil, fmt.Errorf("failed to create getnetworklistdescription request: %s", err.Error())
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getnetworklistdescription  request failed: %w", err)
+		return nil, fmt.Errorf("getnetworklistdescription  request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -150,13 +149,13 @@ func (p *networklists) UpdateNetworkListDescription(ctx context.Context, params 
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create NetworkListDescriptionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create create NetworkListDescriptionrequest: %s", err.Error())
 	}
 
 	var rval UpdateNetworkListDescriptionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create NetworkListDescription request failed: %w", err)
+		return nil, fmt.Errorf("create NetworkListDescription request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {

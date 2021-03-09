@@ -339,11 +339,11 @@ func TestNetworkList_DeleteNetworkList(t *testing.T) {
 			params:         RemoveNetworkListRequest{UniqueID: "Test"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error deleting networklist"
-}`),
+        {
+         "type": "internal_error",
+         "title": "Internal Server Error",
+         "detail": "Error deleting networklist"
+         }`),
 			expectedPath: "/network-list/v2/network-lists/Test",
 			withError: &Error{
 				Type:       "internal_error",

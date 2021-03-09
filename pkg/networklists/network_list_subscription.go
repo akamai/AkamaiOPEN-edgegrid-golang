@@ -100,27 +100,23 @@ type (
 	}
 )
 
-func (p *networklists) GetNetworkListSubscription(ctx context.Context, params GetNetworkListSubscriptionRequest) (*GetNetworkListSubscriptionResponse, error) {
-	/*if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
-	}*/
+func (p *networklists) GetNetworkListSubscription(ctx context.Context, _ GetNetworkListSubscriptionRequest) (*GetNetworkListSubscriptionResponse, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetNetworkListSubscription")
 
 	var rval GetNetworkListSubscriptionResponse
 
-	uri :=
-		"/network-list/v2/notifications/subscriptions"
+	uri := "/network-list/v2/notifications/subscriptions"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getnetworklistsubscription request: %w", err)
+		return nil, fmt.Errorf("failed to create getnetworklistsubscription request: %s", err.Error())
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getnetworklistsubscription  request failed: %w", err)
+		return nil, fmt.Errorf("getnetworklistsubscription  request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -142,18 +138,17 @@ func (p *networklists) UpdateNetworkListSubscription(ctx context.Context, params
 	logger := p.Log(ctx)
 	logger.Debug("UpdateNetworkListSubscription")
 
-	postURL :=
-		"/network-list/v2/notifications/subscribe"
+	postURL := "/network-list/v2/notifications/subscribe"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create NetworkListSubscriptionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create create NetworkListSubscriptionrequest: %s", err.Error())
 	}
 
 	var rval UpdateNetworkListSubscriptionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("remove NetworkListSubscription request failed: %w", err)
+		return nil, fmt.Errorf("remove NetworkListSubscription request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {
@@ -174,18 +169,17 @@ func (p *networklists) RemoveNetworkListSubscription(ctx context.Context, params
 	logger := p.Log(ctx)
 	logger.Debug("UpdateNetworkListSubscription")
 
-	postURL :=
-		"/network-list/v2/notifications/unsubscribe"
+	postURL := "/network-list/v2/notifications/unsubscribe"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create NetworkListSubscriptionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create create NetworkListSubscriptionrequest: %s", err.Error())
 	}
 
 	var rval RemoveNetworkListSubscriptionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("remove NetworkListSubscription request failed: %w", err)
+		return nil, fmt.Errorf("remove NetworkListSubscription request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {
