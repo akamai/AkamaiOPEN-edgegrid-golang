@@ -27,7 +27,6 @@ type (
 	}
 
 	ConditionsValue []string
-	StringSlice     []string
 
 	GetExportConfigurationsRequest struct {
 		ConfigID int `json:"configId"`
@@ -96,7 +95,7 @@ type (
 			Name          string         `json:"name"`
 			RuleActivated bool           `json:"ruleActivated"`
 			Structured    bool           `json:"structured"`
-			Tag           *StringSlice   `json:"tag,omitempty"`
+			Tag           []string       `json:"tag,omitempty"`
 			Version       int            `json:"version"`
 		} `json:"customRules"`
 		Rulesets []struct {
