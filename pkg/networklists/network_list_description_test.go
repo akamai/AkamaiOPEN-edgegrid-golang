@@ -112,12 +112,12 @@ func TestAppSec_GetNetworkListDescription(t *testing.T) {
 		"500 internal server error": {
 			params:         GetNetworkListDescriptionRequest{UniqueID: "Test"},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
+			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
     "detail": "Error fetching NetworkListDescription"
-}`),
+}`,
 			expectedPath: "/network-list/v2/network-lists/Test",
 			withError: &Error{
 				Type:       "internal_error",
@@ -183,12 +183,12 @@ func TestAppSec_UpdateNetworkListDescription(t *testing.T) {
 		"500 internal server error": {
 			params:         UpdateNetworkListDescriptionRequest{UniqueID: "Test"},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
+			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
     "detail": "Error creating NetworkListDescription"
-}`),
+}`,
 			expectedPath: "/network-list/v2/network-lists/Test/details",
 			withError: &Error{
 				Type:       "internal_error",
