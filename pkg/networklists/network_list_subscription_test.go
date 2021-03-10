@@ -112,12 +112,12 @@ func TestAppSec_GetNetworkListSubscription(t *testing.T) {
 		"500 internal server error": {
 			params:         GetNetworkListSubscriptionRequest{},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
+			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
     "detail": "Error fetching subscriptions"
-}`),
+}`,
 			expectedPath: "/network-list/v2/notifications/subscriptions",
 			withError: &Error{
 				Type:       "internal_error",
@@ -183,12 +183,12 @@ func TestAppSec_UpdateNetworkListSubscription(t *testing.T) {
 		"500 internal server error": {
 			params:         UpdateNetworkListSubscriptionRequest{},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
+			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
     "detail": "Error creating subscription"
-}`),
+}`,
 			expectedPath: "/network-list/v2/notifications/subscribe",
 			withError: &Error{
 				Type:       "internal_error",
