@@ -313,30 +313,17 @@ func (p *networklists) GetNetworkLists(ctx context.Context, params GetNetworkLis
 		return nil, p.Error(resp)
 	}
 
-	if params.Name != "" && params.Type != "" {
-		for _, val := range rval.NetworkLists {
-			if val.Name == params.Name && val.Type == params.Type {
-				rvalfiltered.NetworkLists = append(rvalfiltered.NetworkLists, val)
-			}
-		}
-	} else if params.Name != "" {
-		for _, val := range rval.NetworkLists {
-			if val.Name == params.Name {
-				rvalfiltered.NetworkLists = append(rvalfiltered.NetworkLists, val)
-			}
-		}
-	} else if params.Type != "" {
-		for _, val := range rval.NetworkLists {
-			if val.Type == params.Type {
-				rvalfiltered.NetworkLists = append(rvalfiltered.NetworkLists, val)
-			}
-		}
-	} else {
-		rvalfiltered = rval
+	if params.Name == "" && params.Type == "" {
+		return &rval, nil
 	}
 
-	return &rvalfiltered, nil
-}
+	for _, val := range rval.NetworkLists {
+		if (params.Name == "" || params.Name == val.Name) && (params.Type == "" || params.Type == val.Type) {
+			rvalfiltered.NetworkLists = append(rvalfiltered.NetworkLists, val)
+		}
+	}
+
+	return &rvalfiltered, nil}
 
 // Update will update a NetworkList.
 //
