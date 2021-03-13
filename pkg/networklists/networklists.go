@@ -14,7 +14,7 @@ var (
 
 type (
 	// NETWORKLIST is the networklist api interface
-	NETWORKLISTS interface {
+	NTWRKLISTS interface {
 		Activations
 		NetworkList
 		NetworkListDescription
@@ -30,11 +30,11 @@ type (
 	Option func(*networklists)
 
 	// ClientFunc is a networklist client new method, this can used for mocking
-	ClientFunc func(sess session.Session, opts ...Option) NETWORKLISTS
+	ClientFunc func(sess session.Session, opts ...Option) NTWRKLISTS
 )
 
 // Client returns a new networklist Client instance with the specified controller
-func Client(sess session.Session, opts ...Option) NETWORKLISTS {
+func Client(sess session.Session, opts ...Option) NTWRKLISTS {
 	p := &networklists{
 		Session: sess,
 	}
