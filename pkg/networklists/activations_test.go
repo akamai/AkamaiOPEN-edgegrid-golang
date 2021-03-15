@@ -32,7 +32,7 @@ func TestApsec_ListActivations(t *testing.T) {
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
+			responseBody:     respData,
 			expectedPath:     "/network-list/v2/network-lists/38069_INTERNALWHITELIST/environments/STAGING/status",
 			expectedResponse: &result,
 		},

@@ -421,7 +421,7 @@ func (p *networklists) RemoveNetworkList(ctx context.Context, params RemoveNetwo
 		params.UniqueID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed parse url: %w", err)
+		return nil, fmt.Errorf("failed parse url: %s", err.Error())
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)

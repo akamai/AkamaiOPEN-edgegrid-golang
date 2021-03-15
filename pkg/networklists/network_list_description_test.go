@@ -35,7 +35,7 @@ func TestApsec_ListNetworkListDescription(t *testing.T) {
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
+			responseBody:     respData,
 			expectedPath:     "/network-list/v2/network-lists/Test",
 			expectedResponse: &result,
 		},

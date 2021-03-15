@@ -35,7 +35,7 @@ func TestNetworkList_ListNetworkList(t *testing.T) {
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
+			responseBody:     respData,
 			expectedPath:     "/network-list/v2/network-lists",
 			expectedResponse: &result,
 		},
@@ -261,12 +261,12 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 		"500 internal server error": {
 			params:         UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test"},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
+			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
     "detail": "Error updating networklist"
-}`),
+}`,
 			expectedPath: "/network-list/v2/network-lists/Test",
 			withError: &Error{
 				Type:       "internal_error",

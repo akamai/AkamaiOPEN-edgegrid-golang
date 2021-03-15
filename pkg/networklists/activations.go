@@ -341,7 +341,7 @@ func (p *networklists) CreateActivations(ctx context.Context, params CreateActiv
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create activation request: %w", err)
+		return nil, fmt.Errorf("failed to create create activation request: %s", err.Error())
 	}
 
 	var rval CreateActivationsResponse
