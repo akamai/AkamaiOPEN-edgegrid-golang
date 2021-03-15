@@ -27,7 +27,6 @@ type (
 	}
 
 	ConditionsValue []string
-	StringSlice     []string
 
 	GetExportConfigurationsRequest struct {
 		ConfigID int `json:"configId"`
@@ -96,26 +95,16 @@ type (
 			Name          string         `json:"name"`
 			RuleActivated bool           `json:"ruleActivated"`
 			Structured    bool           `json:"structured"`
-			Tag           []string       `json:"tag"`
+			Tag           []string       `json:"tag,omitempty"`
 			Version       int            `json:"version"`
 		} `json:"customRules"`
 		Rulesets []struct {
-			ID               int       `json:"id"`
-			RulesetVersionID int       `json:"rulesetVersionId"`
-			Type             string    `json:"type"`
-			ReleaseDate      time.Time `json:"releaseDate"`
-			Rules            []struct {
-				ID                  int      `json:"id"`
-				InspectRequestBody  bool     `json:"inspectRequestBody"`
-				InspectResponseBody bool     `json:"inspectResponseBody"`
-				Outdated            bool     `json:"outdated"`
-				RuleVersion         int      `json:"ruleVersion"`
-				Score               int      `json:"score"`
-				Tag                 string   `json:"tag"`
-				Title               string   `json:"title"`
-				AttackGroups        []string `json:"attackGroups,omitempty"`
-			} `json:"rules"`
-			AttackGroups []struct {
+			ID               int            `json:"id"`
+			RulesetVersionID int            `json:"rulesetVersionId"`
+			Type             string         `json:"type"`
+			ReleaseDate      time.Time      `json:"releaseDate"`
+			Rules            *RulesetsRules `json:"rules,omitempty"`
+			AttackGroups     []struct {
 				Group     string `json:"group"`
 				GroupName string `json:"groupName"`
 				Threshold int    `json:"threshold"`
@@ -187,31 +176,7 @@ type (
 				ApplySlowPostControls         bool `json:"applySlowPostControls"`
 			} `json:"securityControls"`
 			WebApplicationFirewall struct {
-				RuleActions []struct {
-					Action           string `json:"action"`
-					ID               int    `json:"id"`
-					RulesetVersionID int    `json:"rulesetVersionId"`
-					Conditions       []struct {
-						Type          string   `json:"type,omitempty"`
-						Extensions    []string `json:"extensions,omitempty"`
-						PositiveMatch bool     `json:"positiveMatch"`
-						Filenames     []string `json:"filenames,omitempty"`
-						Hosts         []string `json:"hosts,omitempty"`
-						Ips           []string `json:"ips,omitempty"`
-						UseHeaders    bool     `json:"useHeaders,omitempty"`
-						CaseSensitive bool     `json:"caseSensitive,omitempty"`
-						Name          string   `json:"name,omitempty"`
-						NameCase      bool     `json:"nameCase,omitempty"`
-						Value         string   `json:"value,omitempty"`
-						Wildcard      bool     `json:"wildcard,omitempty"`
-						Header        string   `json:"header,omitempty"`
-						ValueCase     bool     `json:"valueCase,omitempty"`
-						ValueWildcard bool     `json:"valueWildcard,omitempty"`
-						Methods       []string `json:"methods,omitempty"`
-						Paths         []string `json:"paths,omitempty"`
-					} `json:"conditions,omitempty"`
-					Exception *ExceptioneExpruleaction `json:"exception,omitempty"`
-				} `json:"ruleActions"`
+				RuleActions        *WebApplicationFirewallRuleActions `json:"ruleActions,omitempty"`
 				AttackGroupActions []struct {
 					Action             string                 `json:"action"`
 					Group              string                 `json:"group"`
@@ -219,39 +184,7 @@ type (
 					AdvancedExceptions *AdvancedExceptionsexp `json:"advancedExceptions,omitempty"`
 					Exception          *AttackGroupException  `json:"exception,omitempty"`
 				} `json:"attackGroupActions"`
-				Evaluation struct {
-					AttackGroupActions []struct {
-						Action string `json:"action"`
-						Group  string `json:"group"`
-					} `json:"attackGroupActions"`
-					EvaluationID      int `json:"evaluationId"`
-					EvaluationVersion int `json:"evaluationVersion"`
-					RuleActions       []struct {
-						Action     string `json:"action"`
-						ID         int    `json:"id"`
-						Conditions []struct {
-							Type          string   `json:"type,omitempty"`
-							Extensions    []string `json:"extensions,omitempty"`
-							PositiveMatch bool     `json:"positiveMatch"`
-							Filenames     []string `json:"filenames,omitempty"`
-							Hosts         []string `json:"hosts,omitempty"`
-							Ips           []string `json:"ips,omitempty"`
-							UseHeaders    bool     `json:"useHeaders,omitempty"`
-							CaseSensitive bool     `json:"caseSensitive,omitempty"`
-							Name          string   `json:"name,omitempty"`
-							NameCase      bool     `json:"nameCase,omitempty"`
-							Value         string   `json:"value,omitempty"`
-							Wildcard      bool     `json:"wildcard,omitempty"`
-							Header        string   `json:"header,omitempty"`
-							ValueCase     bool     `json:"valueCase,omitempty"`
-							ValueWildcard bool     `json:"valueWildcard,omitempty"`
-							Methods       []string `json:"methods,omitempty"`
-							Paths         []string `json:"paths,omitempty"`
-						} `json:"conditions,omitempty"`
-						Exception *ExceptioneExpEvalruleaction `json:"exception,omitempty"`
-					} `json:"ruleActions"`
-					RulesetVersionID int `json:"rulesetVersionId"`
-				} `json:"evaluation,omitempty"`
+				Evaluation *WebApplicationFirewallEvaluation `json:"evaluation,omitempty"`
 			} `json:"webApplicationFirewall"`
 			CustomRuleActions []struct {
 				Action string `json:"action"`
@@ -259,17 +192,10 @@ type (
 			} `json:"customRuleActions,omitempty"`
 			APIRequestConstraints *APIRequestConstraintsexp `json:"apiRequestConstraints,omitempty"`
 			ClientReputation      struct {
-				ReputationProfileActions []struct {
-					Action string `json:"action"`
-					ID     int    `json:"id"`
-				} `json:"reputationProfileActions"`
+				ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
 			} `json:"clientReputation"`
-			RatePolicyActions []struct {
-				ID         int    `json:"id"`
-				Ipv4Action string `json:"ipv4Action"`
-				Ipv6Action string `json:"ipv6Action"`
-			} `json:"ratePolicyActions"`
-			IPGeoFirewall struct {
+			RatePolicyActions *SecurityPoliciesRatePolicyActions `json:"ratePolicyActions,omitempty"`
+			IPGeoFirewall     struct {
 				Block       string `json:"block"`
 				GeoControls struct {
 					BlockedIPNetworkLists struct {
@@ -285,12 +211,9 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox struct {
-				Action               string `json:"action"`
-				PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
-			} `json:"penaltyBox,omitempty"`
-			SlowPost         *SlowPostexp         `json:"slowPost,omitempty"`
-			LoggingOverrides *LoggingOverridesexp `json:"loggingOverrides,omitempty"`
+			PenaltyBox       *SecurityPoliciesPenaltyBox `json:"penaltyBox,omitempty"`
+			SlowPost         *SlowPostexp                `json:"slowPost,omitempty"`
+			LoggingOverrides *LoggingOverridesexp        `json:"loggingOverrides,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -354,7 +277,7 @@ type (
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
 	}
 	APIRequestConstraintsexp struct {
-		Action       string `json:"action"`
+		Action       string `json:"action,omitempty"`
 		APIEndpoints []struct {
 			Action string `json:"action"`
 			ID     int    `json:"id"`
@@ -524,6 +447,90 @@ type (
 	}
 
 	RatePoliciesQueryParametersValues []string
+
+	SecurityPoliciesPenaltyBox struct {
+		Action               string `json:"action,omitempty"`
+		PenaltyBoxProtection bool   `json:"penaltyBoxProtection,omitempty"`
+	}
+
+	WebApplicationFirewallEvaluation struct {
+		AttackGroupActions []struct {
+			Action string `json:"action"`
+			Group  string `json:"group"`
+		} `json:"attackGroupActions"`
+		EvaluationID      int `json:"evaluationId"`
+		EvaluationVersion int `json:"evaluationVersion"`
+		RuleActions       []struct {
+			Action     string `json:"action"`
+			ID         int    `json:"id"`
+			Conditions []struct {
+				Type          string   `json:"type,omitempty"`
+				Extensions    []string `json:"extensions,omitempty"`
+				PositiveMatch bool     `json:"positiveMatch"`
+				Filenames     []string `json:"filenames,omitempty"`
+				Hosts         []string `json:"hosts,omitempty"`
+				Ips           []string `json:"ips,omitempty"`
+				UseHeaders    bool     `json:"useHeaders,omitempty"`
+				CaseSensitive bool     `json:"caseSensitive,omitempty"`
+				Name          string   `json:"name,omitempty"`
+				NameCase      bool     `json:"nameCase,omitempty"`
+				Value         string   `json:"value,omitempty"`
+				Wildcard      bool     `json:"wildcard,omitempty"`
+				Header        string   `json:"header,omitempty"`
+				ValueCase     bool     `json:"valueCase,omitempty"`
+				ValueWildcard bool     `json:"valueWildcard,omitempty"`
+				Methods       []string `json:"methods,omitempty"`
+				Paths         []string `json:"paths,omitempty"`
+			} `json:"conditions,omitempty"`
+			Exception *ExceptioneExpEvalruleaction `json:"exception,omitempty"`
+		} `json:"ruleActions"`
+		RulesetVersionID int `json:"rulesetVersionId"`
+	}
+	RulesetsRules []struct {
+		ID                  int      `json:"id"`
+		InspectRequestBody  bool     `json:"inspectRequestBody"`
+		InspectResponseBody bool     `json:"inspectResponseBody"`
+		Outdated            bool     `json:"outdated"`
+		RuleVersion         int      `json:"ruleVersion"`
+		Score               int      `json:"score"`
+		Tag                 string   `json:"tag"`
+		Title               string   `json:"title"`
+		AttackGroups        []string `json:"attackGroups,omitempty"`
+	}
+	WebApplicationFirewallRuleActions []struct {
+		Action           string `json:"action"`
+		ID               int    `json:"id"`
+		RulesetVersionID int    `json:"rulesetVersionId"`
+		Conditions       []struct {
+			Type          string   `json:"type,omitempty"`
+			Extensions    []string `json:"extensions,omitempty"`
+			PositiveMatch bool     `json:"positiveMatch"`
+			Filenames     []string `json:"filenames,omitempty"`
+			Hosts         []string `json:"hosts,omitempty"`
+			Ips           []string `json:"ips,omitempty"`
+			UseHeaders    bool     `json:"useHeaders,omitempty"`
+			CaseSensitive bool     `json:"caseSensitive,omitempty"`
+			Name          string   `json:"name,omitempty"`
+			NameCase      bool     `json:"nameCase,omitempty"`
+			Value         string   `json:"value,omitempty"`
+			Wildcard      bool     `json:"wildcard,omitempty"`
+			Header        string   `json:"header,omitempty"`
+			ValueCase     bool     `json:"valueCase,omitempty"`
+			ValueWildcard bool     `json:"valueWildcard,omitempty"`
+			Methods       []string `json:"methods,omitempty"`
+			Paths         []string `json:"paths,omitempty"`
+		} `json:"conditions,omitempty"`
+		Exception *ExceptioneExpruleaction `json:"exception,omitempty"`
+	}
+	ClientReputationReputationProfileActions []struct {
+		Action string `json:"action"`
+		ID     int    `json:"id"`
+	}
+	SecurityPoliciesRatePolicyActions []struct {
+		ID         int    `json:"id"`
+		Ipv4Action string `json:"ipv4Action"`
+		Ipv6Action string `json:"ipv6Action"`
+	}
 )
 
 func (c *ConditionsValue) UnmarshalJSON(data []byte) error {
