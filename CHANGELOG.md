@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.3.0 (Mar 16, 2021) Network Lists
+## 2.3.0 (Mar 15, 2021) Network Lists
 
 Add support for the following operations in the Network Lists API v2:
 
