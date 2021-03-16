@@ -35,56 +35,60 @@ type (
 
 	GetReputationProfilesResponse struct {
 		ReputationProfiles []struct {
-			Condition struct {
-				AtomicConditions []struct {
-					CheckIps      string               `json:"checkIps,omitempty"`
-					ClassName     string               `json:"className,omitempty"`
-					Index         int                  `json:"index,omitempty"`
-					PositiveMatch bool                 `json:"positiveMatch"`
-					Value         []string             `json:"value,omitempty"`
-					Name          atomicConditionsName `json:"name,omitempty"`
-					NameCase      bool                 `json:"nameCase,omitempty"`
-					NameWildcard  bool                 `json:"nameWildcard,omitempty"`
-					ValueCase     bool                 `json:"valueCase,omitempty"`
-					ValueWildcard bool                 `json:"valueWildcard,omitempty"`
-					Host          []string             `json:"host,omitempty"`
-				} `json:"atomicConditions,omitempty"`
-				PositiveMatch bool `json:"positiveMatch"`
-			} `json:"condition,omitempty"`
-			Context          string `json:"context,omitempty"`
-			ContextReadable  string `json:"contextReadable,omitempty"`
-			Enabled          bool   `json:"enabled,omitempty"`
-			ID               int    `json:"id,omitempty"`
-			Name             string `json:"name,omitempty"`
-			SharedIPHandling string `json:"sharedIpHandling,omitempty"`
-			Threshold        int    `json:"threshold,omitempty"`
+			Condition        *ReputationProfileCondition `json:"condition,omitempty"`
+			Context          string                      `json:"context,omitempty"`
+			ContextReadable  string                      `json:"-"`
+			Enabled          bool                        `json:"-"`
+			ID               int                         `json:"id,omitempty"`
+			Name             string                      `json:"name,omitempty"`
+			SharedIPHandling string                      `json:"sharedIpHandling,omitempty"`
+			Threshold        int                         `json:"threshold,omitempty"`
 		} `json:"reputationProfiles,omitempty"`
 	}
 
+	ReputationProfileCondition struct {
+		AtomicConditions []struct {
+			CheckIps      *json.RawMessage `json:"checkIps,omitempty"`
+			ClassName     string           `json:"className,omitempty"`
+			Index         int              `json:"index,omitempty"`
+			PositiveMatch *json.RawMessage `json:"positiveMatch,omitempty"`
+			Value         []string         `json:"value,omitempty"`
+			Name          *json.RawMessage `json:"name,omitempty"`
+			NameCase      bool             `json:"nameCase,omitempty"`
+			NameWildcard  *json.RawMessage `json:"nameWildcard,omitempty"`
+			ValueCase     bool             `json:"valueCase,omitempty"`
+			ValueWildcard *json.RawMessage `json:"valueWildcard,omitempty"`
+			Host          []string         `json:"host,omitempty"`
+		} `json:"atomicConditions,omitempty"`
+		PositiveMatch *json.RawMessage `json:"positiveMatch,omitempty"`
+	}
+
 	GetReputationProfileResponse struct {
-		Condition struct {
-			AtomicConditions []struct {
-				CheckIps      string           `json:"checkIps,omitempty"`
-				ClassName     string           `json:"className,omitempty"`
-				Index         int              `json:"index,omitempty"`
-				PositiveMatch bool             `json:"positiveMatch,omitempty"`
-				Value         []string         `json:"value,omitempty"`
-				Name          *json.RawMessage `json:"name,omitempty"`
-				NameCase      bool             `json:"nameCase,omitempty"`
-				NameWildcard  bool             `json:"nameWildcard,omitempty"`
-				ValueCase     bool             `json:"valueCase,omitempty"`
-				ValueWildcard bool             `json:"valueWildcard,omitempty"`
-				Host          []string         `json:"host,omitempty"`
-			} `json:"atomicConditions,omitempty"`
-			PositiveMatch bool `json:"positiveMatch"`
-		} `json:"condition,omitempty"`
-		Context          string `json:"context,omitempty"`
-		ContextReadable  string `json:"contextReadable,omitempty"`
-		Enabled          bool   `json:"enabled"`
-		ID               int    `json:"id,omitempty"`
-		Name             string `json:"name,omitempty"`
-		SharedIPHandling string `json:"sharedIpHandling,omitempty"`
-		Threshold        int    `json:"threshold,omitempty"`
+		Condition        *GetReputationProfileResponseCondition `json:"condition,omitempty"`
+		Context          string                                 `json:"context,omitempty"`
+		ContextReadable  string                                 `json:"-"`
+		Enabled          bool                                   `json:"-"`
+		ID               int                                    `json:"-"`
+		Name             string                                 `json:"name,omitempty"`
+		SharedIPHandling string                                 `json:"sharedIpHandling,omitempty"`
+		Threshold        int                                    `json:"threshold,omitempty"`
+	}
+
+	GetReputationProfileResponseCondition struct {
+		AtomicConditions []struct {
+			CheckIps      *json.RawMessage `json:"checkIps,omitempty"`
+			ClassName     string           `json:"className,omitempty"`
+			Index         int              `json:"index,omitempty"`
+			PositiveMatch json.RawMessage  `json:"positiveMatch,omitempty"`
+			Value         []string         `json:"value,omitempty"`
+			Name          *json.RawMessage `json:"name,omitempty"`
+			NameCase      bool             `json:"nameCase,omitempty"`
+			NameWildcard  *json.RawMessage `json:"nameWildcard,omitempty"`
+			ValueCase     bool             `json:"valueCase,omitempty"`
+			ValueWildcard *json.RawMessage `json:"valueWildcard,omitempty"`
+			Host          []string         `json:"host,omitempty"`
+		} `json:"atomicConditions,omitempty"`
+		PositiveMatch *json.RawMessage `json:"positiveMatch,omitempty"`
 	}
 
 	CreateReputationProfileResponse struct {
@@ -108,7 +112,7 @@ type (
 				ValueWildcard bool                 `json:"valueWildcard,omitempty"`
 				Host          []string             `json:"host,omitempty"`
 			} `json:"atomicConditions"`
-			PositiveMatch bool `json:"positiveMatch"`
+			PositiveMatch *json.RawMessage `json:"positiveMatch,omitempty"`
 		} `json:"condition"`
 		Enabled bool `json:"enabled"`
 	}

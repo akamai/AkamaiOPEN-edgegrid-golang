@@ -31,7 +31,7 @@ type (
 	}
 
 	GetRatePolicyResponse struct {
-		ID                     int                               `json:"id,omitempty"`
+		ID                     int                               `json:"-"`
 		PolicyID               int                               `json:"policyId,omitempty"`
 		ConfigID               int                               `json:"-"`
 		ConfigVersion          int                               `json:"-"`
@@ -52,9 +52,9 @@ type (
 		Hostnames              []string                          `json:"hostnames,omitempty"`
 		AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
 		QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
-		CreateDate             string                            `json:"createDate,omitempty"`
-		UpdateDate             string                            `json:"updateDate,omitempty"`
-		Used                   bool                              `json:"used"`
+		CreateDate             string                            `json:"-"`
+		UpdateDate             string                            `json:"-"`
+		Used                   bool                              `json:"-"`
 	}
 
 	RatePolicyPath struct {
@@ -117,9 +117,9 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate string `json:"createDate"`
-		UpdateDate string `json:"updateDate"`
-		Used       bool   `json:"used"`
+		CreateDate string          `json:"-"`
+		UpdateDate string          `json:"-"`
+		Used       json.RawMessage `json:"used"`
 	}
 
 	UpdateRatePolicyResponse struct {
@@ -159,9 +159,9 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate string `json:"createDate"`
-		UpdateDate string `json:"updateDate"`
-		Used       bool   `json:"used"`
+		CreateDate string          `json:"-"`
+		UpdateDate string          `json:"-"`
+		Used       json.RawMessage `json:"used"`
 	}
 
 	RemoveRatePolicyResponse struct {
@@ -201,9 +201,9 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate string `json:"createDate"`
-		UpdateDate string `json:"updateDate"`
-		Used       bool   `json:"used"`
+		CreateDate string          `json:"-"`
+		UpdateDate string          `json:"-"`
+		Used       json.RawMessage `json:"used"`
 	}
 
 	GetRatePoliciesRequest struct {
@@ -262,9 +262,9 @@ type (
 			Hostnames              []string                          `json:"hostnames,omitempty"`
 			AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
 			QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
-			CreateDate             string                            `json:"createDate,omitempty"`
-			UpdateDate             string                            `json:"updateDate,omitempty"`
-			Used                   bool                              `json:"used"`
+			CreateDate             string                            `json:"-"`
+			UpdateDate             string                            `json:"-"`
+			Used                   json.RawMessage                   `json:"used"`
 			SameActionOnIpv        bool                              `json:"sameActionOnIpv"`
 			APISelectors           *RatePolicyAPISelectors           `json:"apiSelectors,omitempty"`
 			BodyParameters         *RatePolicyBodyParameters         `json:"bodyParameters,omitempty"`

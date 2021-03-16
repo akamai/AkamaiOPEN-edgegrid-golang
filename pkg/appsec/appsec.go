@@ -72,7 +72,6 @@ type (
 
 	appsec struct {
 		session.Session
-		usePrefixes bool
 	}
 
 	// Option defines a PAPI option

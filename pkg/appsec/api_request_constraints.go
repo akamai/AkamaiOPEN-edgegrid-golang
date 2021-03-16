@@ -34,7 +34,7 @@ type (
 	}
 
 	GetApiRequestConstraintsResponse struct {
-		APIEndpoints []ApiEndpoint `json:"apiEndpoints,omitEmpty"`
+		APIEndpoints []ApiEndpoint `json:"apiEndpoints,omitempty"`
 	}
 
 	ApiEndpoint struct {
@@ -233,7 +233,7 @@ func (p *appsec) RemoveApiRequestConstraints(ctx context.Context, params RemoveA
 	var rval RemoveApiRequestConstraintsResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("Remove ApiRequestConstraints request failed: %w", err)
+		return nil, fmt.Errorf("remove ApiRequestConstraints request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

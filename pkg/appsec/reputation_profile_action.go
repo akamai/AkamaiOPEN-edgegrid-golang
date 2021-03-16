@@ -66,7 +66,7 @@ type (
 	}
 
 	ReputationProfileActionPost struct {
-		action string `json:"action"`
+		Action string `json:"action"`
 	}
 )
 
