@@ -1,0 +1,35 @@
+{
+    "activationId": 1303191,
+    "createDate": "2018-03-13T10:26:23.659Z",
+    "createdBy": "jane.thompson@securedproperty.com",
+    "environment": "STAGING",
+    "fast": false,
+    "networkList": {
+        "activationComments": "Allow local IPs",
+        "activationStatus": "PENDING_ACTIVATION",
+        "links": {
+            "appendItems": {
+                "href": "/networklist-api/38069_INTERNALWHITELIST/append",
+                "method": "POST"
+            },
+            "retrieve": {
+                "href": "/networklist-api/38069_INTERNALWHITELIST"
+            },
+            "statusInProduction": {
+                "href": "/networklist-api/38069_INTERNALWHITELIST/environments/PRODUCTION/status"
+            },
+            "statusInStaging": {
+                "href": "/networklist-api/38069_INTERNALWHITELIST/environments/STAGING/status"
+            },
+            "syncPointHistory": {
+                "href": "/networklist-api/38069_INTERNALWHITELIST/sync-points/0/history"
+            },
+            "update": {
+                "href": "/networklist-api/38069_INTERNALWHITELIST",
+                "method": "PUT"
+            }
+        },
+        "syncPoint": 0,
+        "uniqueId": "38069_INTERNALWHITELIST"
+    }
+}

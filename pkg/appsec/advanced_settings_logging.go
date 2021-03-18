@@ -42,18 +42,18 @@ type (
 	}
 
 	AdvancedSettingsCookies struct {
-		Type   string       `json:"type"`
-		Values *StringSlice `json:"values,omitempty"`
+		Type   string   `json:"type"`
+		Values []string `json:"values,omitempty"`
 	}
 
 	AdvancedSettingsCustomHeaders struct {
-		Type   string       `json:"type,omitempty"`
-		Values *StringSlice `json:"values,omitempty"`
+		Type   string   `json:"type,omitempty"`
+		Values []string `json:"values,omitempty"`
 	}
 
 	AdvancedSettingsStandardHeaders struct {
-		Type   string       `json:"type,omitempty"`
-		Values *StringSlice `json:"values,omitempty"`
+		Type   string   `json:"type,omitempty"`
+		Values []string `json:"values,omitempty"`
 	}
 
 	UpdateAdvancedSettingsLoggingRequest struct {
@@ -67,16 +67,16 @@ type (
 		Override      bool `json:"override"`
 		AllowSampling bool `json:"allowSampling"`
 		Cookies       struct {
-			Type   string       `json:"type"`
-			Values *StringSlice `json:"values,omitempty"`
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
 		} `json:"cookies"`
 		CustomHeaders struct {
-			Type   string       `json:"type"`
-			Values *StringSlice `json:"values,omitempty"`
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
 		} `json:"customHeaders"`
 		StandardHeaders struct {
-			Type   string       `json:"type"`
-			Values *StringSlice `json:"values,omitempty"`
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
 		} `json:"standardHeaders"`
 	}
 	RemoveAdvancedSettingsLoggingRequest struct {
@@ -94,12 +94,12 @@ type (
 			Type string `json:"type"`
 		} `json:"cookies"`
 		CustomHeaders struct {
-			Type   string       `json:"type"`
-			Values *StringSlice `json:"values,omitempty"`
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
 		} `json:"customHeaders"`
 		StandardHeaders struct {
-			Type   string       `json:"type"`
-			Values *StringSlice `json:"values,omitempty"`
+			Type   string   `json:"type"`
+			Values []string `json:"values,omitempty"`
 		} `json:"standardHeaders"`
 	}
 )

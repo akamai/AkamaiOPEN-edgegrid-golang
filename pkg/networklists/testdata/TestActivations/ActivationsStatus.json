@@ -1,0 +1,34 @@
+{
+    "activationId": 12345,
+    "activationComments": "Allow IPs of new employees who joined this week",
+    "activationStatus": "PENDING_ACTIVATION",
+    "syncPoint": 5,
+    "uniqueId": "38069_INTERNALWHITELIST",
+    "fast": false,
+    "dispatchCount": 1,
+    "links": {
+        "appendItems": {
+            "href": "/networklist-api/rest/v2/network-lists/38069_INTERNALWHITELIST/append",
+            "method": "POST"
+        },
+        "retrieve": {
+            "href": "/networklist-api/rest/v2/network-lists/38069_INTERNALWHITELIST"
+        },
+        "statusInProduction": {
+            "href": "/networklist-api/rest/v2/network-lists/38069_INTERNALWHITELIST/environments/PRODUCTION/status"
+        },
+        "statusInStaging": {
+            "href": "/networklist-api/rest/v2/network-lists/38069_INTERNALWHITELIST/environments/STAGING/status"
+        },
+        "syncPointHistory": {
+            "href": "/networklist-api/rest/v2/network-lists/38069_INTERNALWHITELIST/sync-points/5/history"
+        },
+        "update": {
+            "href": "/networklist-api/rest/v2/network-lists/38069_INTERNALWHITELIST",
+            "method": "PUT"
+        },
+        "activationDetails": {
+            "href": "/network-list/v2/network-lists/activations/12345/"
+        }
+    }
+}
