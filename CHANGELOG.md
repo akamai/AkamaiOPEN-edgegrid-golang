@@ -1,5 +1,10 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.4.0 (Mar 29, 2021) PAPI - Secure by default
+*PAPI
+   * Support to provision default certs as part of hostnames request
+   * New cert status object in hostnames response if it exists
+
 ## 2.3.0 (Mar 15, 2021) Network Lists
 
 Add support for the following operations in the Network Lists API v2:
