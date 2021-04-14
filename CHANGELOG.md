@@ -1,5 +1,13 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.3.1
+
+#### BUG FIXES
+
+* APPSEC
+  * Suppress 'null' text on output of empty/false values
+  * Prevent configuration drift when reapplying configuration after importing or creating resources
+
 ## 2.3.0 (Mar 15, 2021) Network Lists
 
 Add support for the following operations in the Network Lists API v2:
