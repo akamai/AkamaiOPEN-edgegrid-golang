@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.4.1 (Apr 14, 2021)
+## 2.4.1 (Apr 19, 2021)
 
 #### BUG FIXES
 
