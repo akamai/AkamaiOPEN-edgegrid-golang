@@ -1,6 +1,15 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.4.1 (Apr 19, 2021)
+
+#### BUG FIXES
+
+* APPSEC
+  * Suppress 'null' text on output of empty/false values
+  * Prevent configuration drift when reapplying configuration after importing or creating resources
+
 ## 2.4.0 (Mar 29, 2021) PAPI - Secure by default
+
 *PAPI
    * Support to provision default certs as part of hostnames request
    * New cert status object in hostnames response if it exists

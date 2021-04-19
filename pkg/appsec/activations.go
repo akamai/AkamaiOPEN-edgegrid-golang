@@ -185,7 +185,7 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 
 	var rval CreateActivationsResponse
 
-	resp, err := p.Exec(req, &rval, params)
+	_, err = p.Exec(req, &rval, params)
 	if err != nil {
 		return nil, fmt.Errorf("create activationrequest failed: %w", err)
 	}
@@ -202,7 +202,7 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 		return nil, fmt.Errorf("failed to get activation request: %w", err)
 	}
 
-	resp, err = p.Exec(req, &rvalget)
+	resp, err := p.Exec(req, &rvalget)
 	if err != nil {
 		return nil, fmt.Errorf("get activation request failed: %w", err)
 	}

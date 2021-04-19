@@ -68,14 +68,16 @@ type (
 			PositiveMatch bool     `json:"positiveMatch,omitempty"`
 			Methods       []string `json:"methods,omitempty"`
 		} `json:"conditions,omitempty"`
-		Exception struct {
-			AnyHeaderCookieOrParam           *AnyHeaderCookieOrParamRuleCondition `json:"anyHeaderCookieOrParam,omitempty"`
-			HeaderCookieOrParamValues        []string                             `json:"headerCookieOrParamValues,omitempty"`
-			SpecificHeaderCookieOrParamNames []struct {
-				Names    []string `json:"names,omitempty"`
-				Selector string   `json:"selector,omitempty"`
-			} `json:"specificHeaderCookieOrParamNames,omitempty"`
-		} `json:"exception,omitempty"`
+		Exception *RuleConditionExceptionResponseException `json:"exception,omitempty"`
+	}
+
+	RuleConditionExceptionResponseException struct {
+		AnyHeaderCookieOrParam           *AnyHeaderCookieOrParamRuleCondition `json:"anyHeaderCookieOrParam,omitempty"`
+		HeaderCookieOrParamValues        []string                             `json:"headerCookieOrParamValues,omitempty"`
+		SpecificHeaderCookieOrParamNames []struct {
+			Names    []string `json:"names,omitempty"`
+			Selector string   `json:"selector,omitempty"`
+		} `json:"specificHeaderCookieOrParamNames,omitempty"`
 	}
 
 	UpdateRuleConditionExceptionRequest struct {

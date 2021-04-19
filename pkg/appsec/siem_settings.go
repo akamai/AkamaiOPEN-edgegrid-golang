@@ -213,7 +213,7 @@ func (p *appsec) RemoveSiemSettings(ctx context.Context, params RemoveSiemSettin
 	var rval RemoveSiemSettingsResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("Remove SiemSettings request failed: %w", err)
+		return nil, fmt.Errorf("remove SiemSettings request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

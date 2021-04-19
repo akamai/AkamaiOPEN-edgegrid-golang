@@ -37,9 +37,9 @@ type (
 	GetCustomDenyResponse struct {
 		Description string       `json:"description,omitempty"`
 		Name        string       `json:"name"`
-		ID          customDenyID `json:"id"`
+		ID          customDenyID `json:"-"`
 		Parameters  []struct {
-			DisplayName string `json:"displayName"`
+			DisplayName string `json:"-"`
 			Name        string `json:"name"`
 			Value       string `json:"value"`
 		} `json:"parameters"`
@@ -51,7 +51,7 @@ type (
 			Name        string       `json:"name"`
 			ID          customDenyID `json:"id"`
 			Parameters  []struct {
-				DisplayName string `json:"displayName"`
+				DisplayName string `json:"-"`
 				Name        string `json:"name"`
 				Value       string `json:"value"`
 			} `json:"parameters"`
@@ -77,11 +77,11 @@ type (
 	}
 
 	CreateCustomDenyResponse struct {
-		Description string       `json:"description"`
+		Description string       `json:"description,omitempty"`
 		Name        string       `json:"name"`
 		ID          customDenyID `json:"id"`
 		Parameters  []struct {
-			DisplayName string `json:"displayName"`
+			DisplayName string `json:"-"`
 			Name        string `json:"name"`
 			Value       string `json:"value"`
 		} `json:"parameters"`
@@ -95,11 +95,11 @@ type (
 	}
 
 	UpdateCustomDenyResponse struct {
-		Description string       `json:"description"`
+		Description string       `json:"description,omitempty"`
 		Name        string       `json:"name"`
-		ID          customDenyID `json:"id"`
+		ID          customDenyID `json:"-"`
 		Parameters  []struct {
-			DisplayName string `json:"displayName"`
+			DisplayName string `json:"-"`
 			Name        string `json:"name"`
 			Value       string `json:"value"`
 		} `json:"parameters"`

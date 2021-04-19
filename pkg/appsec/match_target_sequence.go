@@ -68,19 +68,11 @@ type (
 	GetMatchTargetSequenceResponse struct {
 		MatchTargets struct {
 			APITargets []struct {
-				ConfigID                  int    `json:"configId"`
-				ConfigVersion             int    `json:"configVersion"`
-				Sequence                  int    `json:"sequence"`
-				TargetID                  int    `json:"targetId"`
-				Type                      string `json:"type"`
-				EffectiveSecurityControls struct {
-					ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyRateControls             bool `json:"applyRateControls"`
-					ApplyReputationControls       bool `json:"applyReputationControls"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls"`
-				} `json:"effectiveSecurityControls"`
+				ConfigID       int    `json:"configId"`
+				ConfigVersion  int    `json:"configVersion"`
+				Sequence       int    `json:"sequence"`
+				TargetID       int    `json:"targetId"`
+				Type           string `json:"type"`
 				SecurityPolicy struct {
 					PolicyID string `json:"policyId"`
 				} `json:"securityPolicy"`
@@ -105,15 +97,7 @@ type (
 				FileExtensions               []string      `json:"fileExtensions"`
 				FilePaths                    []string      `json:"filePaths"`
 				Hostnames                    []interface{} `json:"hostnames"`
-				EffectiveSecurityControls    struct {
-					ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyRateControls             bool `json:"applyRateControls"`
-					ApplyReputationControls       bool `json:"applyReputationControls"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls"`
-				} `json:"effectiveSecurityControls"`
-				SecurityPolicy struct {
+				SecurityPolicy               struct {
 					PolicyID string `json:"policyId"`
 				} `json:"securityPolicy"`
 				BypassNetworkLists []struct {
@@ -128,19 +112,11 @@ type (
 	GetMatchTargetSequencesResponse struct {
 		MatchTargets struct {
 			APITargets []struct {
-				ConfigID                  int    `json:"configId"`
-				ConfigVersion             int    `json:"configVersion"`
-				Sequence                  int    `json:"sequence"`
-				TargetID                  int    `json:"targetId"`
-				Type                      string `json:"type"`
-				EffectiveSecurityControls struct {
-					ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyRateControls             bool `json:"applyRateControls"`
-					ApplyReputationControls       bool `json:"applyReputationControls"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls"`
-				} `json:"effectiveSecurityControls"`
+				ConfigID       int    `json:"configId"`
+				ConfigVersion  int    `json:"configVersion"`
+				Sequence       int    `json:"sequence"`
+				TargetID       int    `json:"targetId"`
+				Type           string `json:"type"`
 				SecurityPolicy struct {
 					PolicyID string `json:"policyId"`
 				} `json:"securityPolicy"`
@@ -165,15 +141,7 @@ type (
 				FileExtensions               []string      `json:"fileExtensions"`
 				FilePaths                    []string      `json:"filePaths"`
 				Hostnames                    []interface{} `json:"hostnames"`
-				EffectiveSecurityControls    struct {
-					ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-					ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-					ApplyRateControls             bool `json:"applyRateControls"`
-					ApplyReputationControls       bool `json:"applyReputationControls"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls"`
-				} `json:"effectiveSecurityControls"`
-				SecurityPolicy struct {
+				SecurityPolicy               struct {
 					PolicyID string `json:"policyId"`
 				} `json:"securityPolicy"`
 				BypassNetworkLists []struct {

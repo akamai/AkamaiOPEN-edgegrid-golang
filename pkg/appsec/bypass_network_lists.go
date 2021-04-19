@@ -198,7 +198,7 @@ func (p *appsec) RemoveBypassNetworkLists(ctx context.Context, params RemoveBypa
 	var rval RemoveBypassNetworkListsResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("Remove BypassNetworkLists request failed: %w", err)
+		return nil, fmt.Errorf("remove BypassNetworkLists request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

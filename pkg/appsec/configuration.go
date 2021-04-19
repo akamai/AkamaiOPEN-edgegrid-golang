@@ -169,9 +169,7 @@ func (p *appsec) GetConfigurations(ctx context.Context, params GetConfigurations
 
 	var rval GetConfigurationsResponse
 
-	uri := fmt.Sprintf(
-		"/appsec/v1/configs",
-	)
+	uri := "/appsec/v1/configs"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {

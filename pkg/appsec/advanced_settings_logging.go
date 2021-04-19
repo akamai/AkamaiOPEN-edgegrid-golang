@@ -34,7 +34,7 @@ type (
 	}
 
 	GetAdvancedSettingsLoggingResponse struct {
-		Override        bool                             `json:"override"`
+		Override        json.RawMessage                  `json:"override,omitempty"`
 		AllowSampling   bool                             `json:"allowSampling"`
 		Cookies         *AdvancedSettingsCookies         `json:"cookies,omitempty"`
 		CustomHeaders   *AdvancedSettingsCustomHeaders   `json:"customHeaders,omitempty"`

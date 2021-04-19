@@ -41,15 +41,6 @@ func dummyOpt() Option {
 	}
 }
 
-func loadTestData(name string) ([]byte, error) {
-	data, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s", name))
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
-}
-
 // loadFixtureBytes returns the entire contents of the given file as a byte slice
 func loadFixtureBytes(path string) []byte {
 	contents, err := ioutil.ReadFile(path)
@@ -57,11 +48,6 @@ func loadFixtureBytes(path string) []byte {
 		panic(err)
 	}
 	return contents
-}
-
-// loadFixtureString returns the entire contents of the given file as a string
-func loadFixtureString(path string) string {
-	return string(loadFixtureBytes(path))
 }
 
 // compactJSON converts a JSON-encoded byte slice to a compact form (so our JSON fixtures can be readable)

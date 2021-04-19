@@ -31,9 +31,7 @@ type (
 		Version  int `json:"-"`
 	}
 	GetEvalProtectHostResponse struct {
-		HostnameList []struct {
-			Hostname string `json:"hostname"`
-		} `json:"hostnameList"`
+		Hostnames []string `json:"hostnames"`
 	}
 
 	GetEvalProtectHostsRequest struct {
@@ -42,9 +40,7 @@ type (
 	}
 
 	GetEvalProtectHostsResponse struct {
-		HostnameList []struct {
-			Hostname string `json:"hostname"`
-		} `json:"hostnameList"`
+		Hostnames []string `json:"hostnames"`
 	}
 
 	UpdateEvalProtectHostRequest struct {
@@ -63,7 +59,7 @@ type (
 		ConfigID int `json:"-"`
 		Version  int `json:"-"`
 	}
-	emoveEvalProtectHostResponse struct {
+	RemoveEvalProtectHostResponse struct {
 		Action string `json:"action"`
 	}
 )
