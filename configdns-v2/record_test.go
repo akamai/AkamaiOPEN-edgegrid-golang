@@ -268,8 +268,8 @@ func TestGetRecord(t *testing.T) {
 
 func TestParseRDataNoParams(t *testing.T) {
 
-        rtype := "SVCB"
-        rdata := []string{"0 svc4.example.com."}
+	rtype := "SVCB"
+	rdata := []string{"0 svc4.example.com."}
 
 	parsedData := ParseRData(rtype, rdata)
 	delete(parsedData, "target")
@@ -284,51 +284,51 @@ func TestParseRDataOneParam(t *testing.T) {
 	// quoted
 	rdata := []string{"3 svc4.example.com. alpn=\"bar\""}
 	parsedData := ParseRData(rtype, rdata)
-        delete(parsedData, "target")
-        assert.Equal(t, len(parsedData), 3)
-        assert.Equal(t, parsedData["svc_priority"].(int), 3)
-        assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
+	delete(parsedData, "target")
+	assert.Equal(t, len(parsedData), 3)
+	assert.Equal(t, parsedData["svc_priority"].(int), 3)
+	assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
 	assert.Equal(t, parsedData["svc_params"].(string), "alpn=\"bar\"")
 
 	// unquoted
-        rdata = []string{"3 svc4.example.com. alpn=bar"}
-        parsedData = ParseRData(rtype, rdata)
-        delete(parsedData, "target")
-        assert.Equal(t, len(parsedData), 3)
-        assert.Equal(t, parsedData["svc_priority"].(int), 3)
-        assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
+	rdata = []string{"3 svc4.example.com. alpn=bar"}
+	parsedData = ParseRData(rtype, rdata)
+	delete(parsedData, "target")
+	assert.Equal(t, len(parsedData), 3)
+	assert.Equal(t, parsedData["svc_priority"].(int), 3)
+	assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
 	assert.Equal(t, parsedData["svc_params"].(string), "alpn=bar")
 }
 
 func TestParseRDataMultipleParams(t *testing.T) {
 
 	rtype := "SVCB"
-        // quoted
-        rdata := []string{"3 svc4.example.com. alpn=\"bar\" port=\"8080\""}
-        parsedData := ParseRData(rtype, rdata)
-        delete(parsedData, "target")
-        assert.Equal(t, len(parsedData), 3)
-        assert.Equal(t, parsedData["svc_priority"].(int), 3)
-        assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
-        assert.Equal(t, parsedData["svc_params"].(string), "alpn=\"bar\" port=\"8080\"")
+	// quoted
+	rdata := []string{"3 svc4.example.com. alpn=\"bar\" port=\"8080\""}
+	parsedData := ParseRData(rtype, rdata)
+	delete(parsedData, "target")
+	assert.Equal(t, len(parsedData), 3)
+	assert.Equal(t, parsedData["svc_priority"].(int), 3)
+	assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
+	assert.Equal(t, parsedData["svc_params"].(string), "alpn=\"bar\" port=\"8080\"")
 
-        // unquoted
-        rdata = []string{"3 svc4.example.com. alpn=bar port=8080"}
-        parsedData = ParseRData(rtype, rdata)
-        delete(parsedData, "target")
-        assert.Equal(t, len(parsedData), 3)
-        assert.Equal(t, parsedData["svc_priority"].(int), 3)
-        assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
-        assert.Equal(t, parsedData["svc_params"].(string), "alpn=bar port=8080")
+	// unquoted
+	rdata = []string{"3 svc4.example.com. alpn=bar port=8080"}
+	parsedData = ParseRData(rtype, rdata)
+	delete(parsedData, "target")
+	assert.Equal(t, len(parsedData), 3)
+	assert.Equal(t, parsedData["svc_priority"].(int), 3)
+	assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
+	assert.Equal(t, parsedData["svc_params"].(string), "alpn=bar port=8080")
 
-        // mixed
-        rdata = []string{"3 svc4.example.com. alpn=bar port=\"8080\""}
-        parsedData = ParseRData(rtype, rdata)
-        delete(parsedData, "target")
-        assert.Equal(t, len(parsedData), 3)
-        assert.Equal(t, parsedData["svc_priority"].(int), 3)
-        assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
-        assert.Equal(t, parsedData["svc_params"].(string), "alpn=bar port=\"8080\"")
+	// mixed
+	rdata = []string{"3 svc4.example.com. alpn=bar port=\"8080\""}
+	parsedData = ParseRData(rtype, rdata)
+	delete(parsedData, "target")
+	assert.Equal(t, len(parsedData), 3)
+	assert.Equal(t, parsedData["svc_priority"].(int), 3)
+	assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
+	assert.Equal(t, parsedData["svc_params"].(string), "alpn=bar port=\"8080\"")
 }
 
 func TestParseRDataParamNoVal(t *testing.T) {
@@ -336,20 +336,20 @@ func TestParseRDataParamNoVal(t *testing.T) {
 	rtype := "HTTPS"
 
 	rdata := []string{"3 svc4.example.com. alpn"}
-        parsedData := ParseRData(rtype, rdata)
-        delete(parsedData, "target")
-        assert.Equal(t, len(parsedData), 3)
-        assert.Equal(t, parsedData["svc_priority"].(int), 3)
-        assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
-        assert.Equal(t, parsedData["svc_params"].(string), "alpn")
+	parsedData := ParseRData(rtype, rdata)
+	delete(parsedData, "target")
+	assert.Equal(t, len(parsedData), 3)
+	assert.Equal(t, parsedData["svc_priority"].(int), 3)
+	assert.Equal(t, parsedData["target_name"].(string), "svc4.example.com.")
+	assert.Equal(t, parsedData["svc_params"].(string), "alpn")
 }
 
 func TestParseRDataMissingFields(t *testing.T) {
 
 	rtype := "SVCB"
 
-        rdata := []string{"svc4.example.com."}
-        parsedData := ParseRData(rtype, rdata)
-        delete(parsedData, "target")
-        assert.Equal(t, len(parsedData), 0)
+	rdata := []string{"svc4.example.com."}
+	parsedData := ParseRData(rtype, rdata)
+	delete(parsedData, "target")
+	assert.Equal(t, len(parsedData), 0)
 }

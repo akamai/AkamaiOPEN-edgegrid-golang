@@ -454,7 +454,7 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 			}
 			fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
 			fieldMap["target_name"] = parts[1]
-                        if len(parts) > 2 {
+			if len(parts) > 2 {
 				fieldMap["svc_params"] = parts[2]
 			}
 			break
@@ -462,16 +462,16 @@ func ParseRData(rtype string, rdata []string) map[string]interface{} {
 
 	case "HTTPS":
 		for _, rcontent := range rdata {
-                        parts := strings.SplitN(rcontent, " ", 3)
-                        // has to be at least two fields.
-                        if len(parts) < 2 {
-                                break
-                        }
+			parts := strings.SplitN(rcontent, " ", 3)
+			// has to be at least two fields.
+			if len(parts) < 2 {
+				break
+			}
 			fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
 			fieldMap["target_name"] = parts[1]
-                        if len(parts) > 2 {
-                                fieldMap["svc_params"] = parts[2]
-                        }
+			if len(parts) > 2 {
+				fieldMap["svc_params"] = parts[2]
+			}
 			break
 		}
 
