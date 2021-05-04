@@ -13,24 +13,24 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListAttackGroupAction(t *testing.T) {
+func TestApsec_ListAttackGroup(t *testing.T) {
 
-	result := GetAttackGroupActionsResponse{}
+	result := GetAttackGroupsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestAttackGroupAction/AttackGroupAction.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAttackGroup/AttackGroups.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetAttackGroupActionsRequest
+		params           GetAttackGroupsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetAttackGroupActionsResponse
+		expectedResponse *GetAttackGroupsResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetAttackGroupActionsRequest{
+			params: GetAttackGroupsRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -40,11 +40,11 @@ func TestApsec_ListAttackGroupAction(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups?includeConditionException=true",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetAttackGroupActionsRequest{
+			params: GetAttackGroupsRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -58,7 +58,7 @@ func TestApsec_ListAttackGroupAction(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups?includeConditionException=true",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -78,7 +78,7 @@ func TestApsec_ListAttackGroupAction(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetAttackGroupActions(
+			result, err := client.GetAttackGroups(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -94,24 +94,24 @@ func TestApsec_ListAttackGroupAction(t *testing.T) {
 	}
 }
 
-// Test AttackGroupAction
-func TestAppSec_GetAttackGroupAction(t *testing.T) {
+// Test AttackGroupConditionException
+func TestAppSec_GetAttackGroup(t *testing.T) {
 
-	result := GetAttackGroupActionResponse{}
+	result := GetAttackGroupResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestAttackGroupAction/AttackGroupAction.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAttackGroup/AttackGroup.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetAttackGroupActionRequest
+		params           GetAttackGroupRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetAttackGroupActionResponse
+		expectedResponse *GetAttackGroupResponse
 		withError        error
 	}{
 		"200 OK": {
-			params: GetAttackGroupActionRequest{
+			params: GetAttackGroupRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -119,11 +119,11 @@ func TestAppSec_GetAttackGroupAction(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/SQL",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/SQL?includeConditionException=true",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetAttackGroupActionRequest{
+			params: GetAttackGroupRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -136,7 +136,7 @@ func TestAppSec_GetAttackGroupAction(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error fetching match target"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/SQL",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/SQL?includeConditionException=true",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -156,7 +156,7 @@ func TestAppSec_GetAttackGroupAction(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetAttackGroupAction(context.Background(), test.params)
+			result, err := client.GetAttackGroup(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -167,29 +167,29 @@ func TestAppSec_GetAttackGroupAction(t *testing.T) {
 	}
 }
 
-// Test Update AttackGroupAction.
-func TestAppSec_UpdateAttackGroupAction(t *testing.T) {
-	result := UpdateAttackGroupActionResponse{}
+// Test Update AttackGroupConditionException.
+func TestAppSec_UpdateAttackGroup(t *testing.T) {
+	result := UpdateAttackGroupResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestAttackGroupAction/AttackGroupAction.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAttackGroup/AttackGroup.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := UpdateAttackGroupActionRequest{}
+	req := UpdateAttackGroupRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestAttackGroupAction/AttackGroupAction.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestAttackGroup/AttackGroup.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
-		params           UpdateAttackGroupActionRequest
+		params           UpdateAttackGroupRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *UpdateAttackGroupActionResponse
+		expectedResponse *UpdateAttackGroupResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdateAttackGroupActionRequest{
+			params: UpdateAttackGroupRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -201,10 +201,10 @@ func TestAppSec_UpdateAttackGroupAction(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/SQL",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/SQL/action-condition-exception",
 		},
 		"500 internal server error": {
-			params: UpdateAttackGroupActionRequest{
+			params: UpdateAttackGroupRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -217,7 +217,7 @@ func TestAppSec_UpdateAttackGroupAction(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error creating zone"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/SQL",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/attack-groups/SQL/action-condition-exception",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -238,7 +238,7 @@ func TestAppSec_UpdateAttackGroupAction(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateAttackGroupAction(
+			result, err := client.UpdateAttackGroup(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)

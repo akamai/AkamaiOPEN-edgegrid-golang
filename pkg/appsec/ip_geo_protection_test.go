@@ -13,43 +13,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListEvalRuleConditionException(t *testing.T) {
+func TestApsec_ListIPGeoProtections(t *testing.T) {
 
-	result := GetEvalRuleConditionExceptionResponse{}
+	result := GetIPGeoProtectionsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleConditionException/EvalRuleConditionException.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetEvalRuleConditionExceptionRequest
+		params           GetIPGeoProtectionsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetEvalRuleConditionExceptionResponse
+		expectedResponse *GetIPGeoProtectionsResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetEvalRuleConditionExceptionRequest{
+			params: GetIPGeoProtectionsRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				RuleID:   12345,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345/condition-exception",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetEvalRuleConditionExceptionRequest{
+			params: GetIPGeoProtectionsRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				RuleID:   12345,
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -60,7 +58,7 @@ func TestApsec_ListEvalRuleConditionException(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345/condition-exception",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -80,7 +78,7 @@ func TestApsec_ListEvalRuleConditionException(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetEvalRuleConditionException(
+			result, err := client.GetIPGeoProtections(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -96,40 +94,38 @@ func TestApsec_ListEvalRuleConditionException(t *testing.T) {
 	}
 }
 
-// Test EvalRuleConditionException
-func TestAppSec_GetEvalRuleConditionException(t *testing.T) {
+// Test IPGeoProtection
+func TestAppSec_GetIPGeoProtection(t *testing.T) {
 
-	result := GetEvalRuleConditionExceptionResponse{}
+	result := GetIPGeoProtectionResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleConditionException/EvalRuleConditionException.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetEvalRuleConditionExceptionRequest
+		params           GetIPGeoProtectionRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetEvalRuleConditionExceptionResponse
+		expectedResponse *GetIPGeoProtectionResponse
 		withError        error
 	}{
 		"200 OK": {
-			params: GetEvalRuleConditionExceptionRequest{
+			params: GetIPGeoProtectionRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				RuleID:   12345,
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345/condition-exception",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetEvalRuleConditionExceptionRequest{
+			params: GetIPGeoProtectionRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				RuleID:   12345,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
@@ -138,7 +134,7 @@ func TestAppSec_GetEvalRuleConditionException(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error fetching match target"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345/condition-exception",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -158,7 +154,7 @@ func TestAppSec_GetEvalRuleConditionException(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetEvalRuleConditionException(context.Background(), test.params)
+			result, err := client.GetIPGeoProtection(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -169,33 +165,32 @@ func TestAppSec_GetEvalRuleConditionException(t *testing.T) {
 	}
 }
 
-// Test Update EvalRuleConditionException.
-func TestAppSec_UpdateEvalRuleConditionException(t *testing.T) {
-	result := UpdateEvalRuleConditionExceptionResponse{}
+// Test Update IPGeoProtection.
+func TestAppSec_UpdateIPGeoProtection(t *testing.T) {
+	result := UpdateIPGeoProtectionResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleConditionException/EvalRuleConditionException.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := UpdateEvalRuleConditionExceptionRequest{}
+	req := UpdateIPGeoProtectionRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleConditionException/EvalRuleConditionException.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
-		params           UpdateEvalRuleConditionExceptionRequest
+		params           UpdateIPGeoProtectionRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *UpdateEvalRuleConditionExceptionResponse
+		expectedResponse *UpdateIPGeoProtectionResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdateEvalRuleConditionExceptionRequest{
+			params: UpdateIPGeoProtectionRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				RuleID:   12345,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -203,14 +198,13 @@ func TestAppSec_UpdateEvalRuleConditionException(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345/condition-exceptions",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 		},
 		"500 internal server error": {
-			params: UpdateEvalRuleConditionExceptionRequest{
+			params: UpdateIPGeoProtectionRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				RuleID:   12345,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
@@ -219,7 +213,7 @@ func TestAppSec_UpdateEvalRuleConditionException(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error creating zone"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345/condition-exceptions",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -240,7 +234,7 @@ func TestAppSec_UpdateEvalRuleConditionException(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateEvalRuleConditionException(
+			result, err := client.UpdateIPGeoProtection(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)

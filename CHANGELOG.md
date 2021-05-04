@@ -1,5 +1,27 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 3.0.0 (Jun 3, 2021)
+
+#### FEATURES/ENHANCEMENTS:
+* APPSEC
+  * The following have been added, together with their unit tests and test data:
+    * pkg/appsec/api_constraints_protection.go
+    * pkg/appsec/advanced_settings_pragma_header.go
+    * pkg/appsec/attack_group.go
+    * pkg/appsec/eval_rule.go
+    * pkg/appsec/rule.go
+    * pkg/appsec/ip_geo_protection.go
+
+#### BREAKING CHANGES:
+* APPSEC
+  * The following have been removed, togther with their unit tests and test data:
+    * pkg/appsec/attack_group_action.go
+    * pkg/appsec/attack_group_condition_exception.go
+    * pkg/appsec/eval_rule_action.go
+    * pkg/appsec/eval_rule_condition_exception.go
+    * pkg/appsec/rule_action.go
+    * pkg/appsec/rule_condition_exception.go
+
 ## 2.4.1 (Apr 19, 2021)
 
 #### BUG FIXES
