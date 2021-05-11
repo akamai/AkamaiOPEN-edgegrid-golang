@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 1.1.1 (May 11, 2021)
+
+#### BUG FIXES
+
+* DNSv2
+  * Fixed parsing SVCB, HTTPS rdata.
+
 ## 1.1.0 (Feb 23, 2021)
 
 #### FEATURES/ENHANCEMENTS:
