@@ -4,7 +4,7 @@
 
 #### BUG FIXES
 
-* DNS-v2
+* DNSv2
   * Fixed parsing SVCB, HTTPS rdata.
 
 ## 1.1.0 (Feb 23, 2021)
