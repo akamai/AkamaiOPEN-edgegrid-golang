@@ -589,6 +589,7 @@ case $ACTION in
     if [ "$forcetag" == "false" ]; then
       if  [ -n "$diff_dev" ] && [ -n "$diff" ] && [ -n "$diff_v2" ]; then
         echo "ERROR: Branch must be updated with develop, master, or v2 for final versions"
+      fi
       if [ -n "$diff" ]; then
         echo "ERROR: Branch must be updated with master for final versions"
         exit 1
