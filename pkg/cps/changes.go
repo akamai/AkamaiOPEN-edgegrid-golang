@@ -24,6 +24,8 @@ type (
 		// GetChangeLetsEncryptChallenges gets detailed information about Domain Validation challenges
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getallowedinputtypeforinfo
 		GetChangeLetsEncryptChallenges(context.Context, GetChangeRequest) (*DvChallenges, error)
+
+		AcknowledgeDVChallenges(context.Context, AcknowledgementRequest) error
 	}
 
 	// Change contains change status information
@@ -145,6 +147,20 @@ type (
 		UsedIP      string   `json:"usedIp"`
 	}
 
+	AcknowledgementRequest struct {
+		Acknowledgement
+		EnrollmentID int
+		ChangeID     int
+	}
+
+	Acknowledgement struct {
+		Acknowledgement string `json:"acknowledgement"`
+	}
+
+	AcknowledgementResponse struct {
+		Change string `json:"change"`
+	}
+
 	// AllowedInputType represents allowedInputTypeParam used for fetching and updating changes
 	AllowedInputType string
 )
@@ -160,6 +176,11 @@ const (
 	AllowedInputTypePreVerificationWarningsACK AllowedInputType = "pre-verification-warnings-ack"
 	// AllowedInputTypeThirdPartyCertAndTrustChain parameter value
 	AllowedInputTypeThirdPartyCertAndTrustChain AllowedInputType = "third-party-cert-and-trust-chain"
+)
+
+const (
+	AcknowledgementAcknowledge = "acknowledge"
+	AcknowledgementDeny        = "deny"
 )
 
 // AllowedInputContentTypeHeader maps content type headers to specific allowed input type params
@@ -211,6 +232,18 @@ func (c UpdateChangeRequest) Validate() error {
 	}.Filter()
 }
 
+func (a AcknowledgementRequest) Validate() error {
+	return validation.Errors{
+		"acknowledgement": validation.Validate(a.Acknowledgement),
+	}.Filter()
+}
+
+func (a Acknowledgement) Validate() error {
+	return validation.Errors{
+		"acknowledgement": validation.Validate(a.Acknowledgement, validation.Required, validation.In(AcknowledgementAcknowledge, AcknowledgementDeny)),
+	}.Filter()
+}
+
 // Validate validates Certificate
 func (c Certificate) Validate() error {
 	return validation.Errors{
@@ -227,6 +260,7 @@ var (
 	ErrUpdateChange = errors.New("updating change")
 	// ErrGetChangeLetsEncryptChallenges is returned when GetChangeLetsEncryptChallenges fails
 	ErrGetChangeLetsEncryptChallenges = errors.New("fetching change for lets-encrypt-challenges")
+	ErrAcknowledgeChange              = errors.New("acknowledge change")
 )
 
 func (c *cps) GetChangeStatus(ctx context.Context, params GetChangeStatusRequest) (*Change, error) {
@@ -377,4 +411,38 @@ func (c *cps) GetChangeLetsEncryptChallenges(ctx context.Context, params GetChan
 	}
 
 	return &rval, nil
+}
+
+func (c *cps) AcknowledgeDVChallenges(ctx context.Context, params AcknowledgementRequest) error {
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w: %s", ErrAcknowledgeChange, ErrStructValidation, err)
+	}
+
+	logger := c.Log(ctx)
+	logger.Debug("CreateEnrollment")
+
+	uri, err := url.Parse(fmt.Sprintf(
+		"/cps/v2/enrollments/%d/changes/%d/input/update/lets-encrypt-challenges-completed",
+		params.EnrollmentID, params.ChangeID))
+	if err != nil {
+		return fmt.Errorf("%w: parsing URL: %s", ErrAcknowledgeChange, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	if err != nil {
+		return fmt.Errorf("%w: failed to create request: %s", ErrAcknowledgeChange, err)
+	}
+	req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.acknowledgement.v1+json")
+
+	resp, err := c.Exec(req, nil, params.Acknowledgement)
+	if err != nil {
+		return fmt.Errorf("%w: request failed: %s", ErrAcknowledgeChange, err)
+	}
+
+	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%s: %w", ErrAcknowledgeChange, c.Error(resp))
+	}
+
+	return nil
 }

@@ -145,6 +145,7 @@ type (
 
 	// CreateEnrollmentResponse contains response body returned after successful enrollment creation
 	CreateEnrollmentResponse struct {
+		ID         int
 		Enrollment string   `json:"enrollment"`
 		Changes    []string `json:"changes"`
 	}
@@ -163,6 +164,7 @@ type (
 
 	// UpdateEnrollmentResponse contains response body returned after successful enrollment update
 	UpdateEnrollmentResponse struct {
+		ID         int
 		Enrollment string   `json:"enrollment"`
 		Changes    []string `json:"changes"`
 	}
@@ -187,11 +189,11 @@ type (
 
 const (
 	// OCSPStaplingOn parameter value
-	OCSPStaplingOn = "on"
+	OCSPStaplingOn OCSPStapling = "on"
 	// OCSPStaplingOff parameter value
-	OCSPStaplingOff = "off"
+	OCSPStaplingOff OCSPStapling = "off"
 	// OCSPStaplingNotSet parameter value
-	OCSPStaplingNotSet = "not-set"
+	OCSPStaplingNotSet OCSPStapling = "not-set"
 )
 
 // Validate performs validation on Enrollment
@@ -338,7 +340,7 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
 	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v9+json")
 
-	resp, err := c.Exec(req, &rval)
+	resp, err := c.Exec(req, &rval, params.Enrollment)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEnrollment, err)
 	}
@@ -346,6 +348,15 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%s: %w", ErrCreateEnrollment, c.Error(resp))
 	}
+	idStr, err := ResponseLinkParse(rval.Enrollment)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrInvalidResponseLink, err)
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, "could not parse enrollment ID to int", err)
+	}
+	rval.ID = id
 
 	return &rval, nil
 }
@@ -394,7 +405,7 @@ func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentReque
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
 	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v9+json")
 
-	resp, err := c.Exec(req, &rval)
+	resp, err := c.Exec(req, &rval, params.Enrollment)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEnrollment, err)
 	}
@@ -402,6 +413,15 @@ func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentReque
 	if resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateEnrollment, c.Error(resp))
 	}
+	idStr, err := ResponseLinkParse(rval.Enrollment)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrInvalidResponseLink, err)
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, "could not parse enrollment ID to int", err)
+	}
+	rval.ID = id
 
 	return &rval, nil
 }
