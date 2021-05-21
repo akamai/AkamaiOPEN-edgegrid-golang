@@ -3,11 +3,12 @@ package cps
 import (
 	"context"
 	"errors"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetEnrollment(t *testing.T) {
@@ -283,6 +284,7 @@ func TestCreateEnrollment(t *testing.T) {
 			expectedResponse: &CreateEnrollmentResponse{
 				Enrollment: "/cps-api/enrollments/1",
 				Changes:    []string{"/cps-api/enrollments/1/changes/10002"},
+				ID:         1,
 			},
 		},
 		"500 internal server error": {
@@ -310,7 +312,7 @@ func TestCreateEnrollment(t *testing.T) {
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
-	"type": "internal_error",
+  "type": "internal_error",
   "title": "Internal Server Error",
   "detail": "Error creating enrollment",
   "status": 500
@@ -326,6 +328,37 @@ func TestCreateEnrollment(t *testing.T) {
 		"validation error": {
 			request:   CreateEnrollmentRequest{},
 			withError: ErrStructValidation,
+		},
+		"invalid location": {
+			request: CreateEnrollmentRequest{
+				Enrollment: Enrollment{
+					AdminContact: &Contact{
+						Email: "r1d1@akamai.com",
+					},
+					CertificateType: "third-party",
+					CSR: &CSR{
+						CN: "www.example.com",
+					},
+					NetworkConfiguration: &NetworkConfiguration{},
+					Org:                  &Org{Name: "Akamai"},
+					RA:                   "third-party",
+					TechContact: &Contact{
+						Email: "r2d2@akamai.com",
+					},
+					ValidationType: "third-party",
+				},
+				ContractID:      "ctr-1",
+				DeployNotAfter:  "12-12-2021",
+				DeployNotBefore: "12-07-2020",
+			},
+			responseStatus: http.StatusAccepted,
+			responseBody: `
+{
+	"enrollment": "abc",
+	"changes": ["/cps-api/enrollments/1/changes/10002"]
+}`,
+			expectedPath: "/cps/v2/enrollments?contractId=ctr-1&deploy-not-after=12-12-2021&deploy-not-before=12-07-2020",
+			withError:    ErrInvalidLocation,
 		},
 	}
 
@@ -397,6 +430,7 @@ func TestUpdateEnrollment(t *testing.T) {
 			expectedResponse: &UpdateEnrollmentResponse{
 				Enrollment: "/cps-api/enrollments/1",
 				Changes:    []string{"/cps-api/enrollments/1/changes/10002"},
+				ID:         1,
 			},
 		},
 		"500 internal server error": {
@@ -440,6 +474,41 @@ func TestUpdateEnrollment(t *testing.T) {
 		"validation error": {
 			request:   UpdateEnrollmentRequest{},
 			withError: ErrStructValidation,
+		},
+		"invalid location URL": {
+			request: UpdateEnrollmentRequest{
+				EnrollmentID: 1,
+				Enrollment: Enrollment{
+					AdminContact: &Contact{
+						Email: "r1d1@akamai.com",
+					},
+					CertificateType: "third-party",
+					CSR: &CSR{
+						CN: "www.example.com",
+					},
+					NetworkConfiguration: &NetworkConfiguration{},
+					Org:                  &Org{Name: "Akamai"},
+					RA:                   "third-party",
+					TechContact: &Contact{
+						Email: "r2d2@akamai.com",
+					},
+					ValidationType: "third-party",
+				},
+				DeployNotAfter:            "12-12-2021",
+				DeployNotBefore:           "12-07-2020",
+				RenewalDateCheckOverride:  BoolPtr(true),
+				AllowCancelPendingChanges: BoolPtr(true),
+				AllowStagingBypass:        BoolPtr(true),
+				ForceRenewal:              BoolPtr(true),
+			},
+			responseStatus: http.StatusAccepted,
+			responseBody: `
+{
+	"enrollment": "abc",
+	"changes": ["/cps-api/enrollments/1/changes/10002"]
+}`,
+			expectedPath: "/cps/v2/enrollments/1?allow-cancel-pending-changes=true&allow-staging-bypass=true&deploy-not-after=12-12-2021&deploy-not-before=12-07-2020&force-renewal=true&renewal-date-check-override=true",
+			withError:    ErrInvalidLocation,
 		},
 	}
 

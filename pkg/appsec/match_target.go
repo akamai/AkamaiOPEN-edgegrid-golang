@@ -32,7 +32,7 @@ type (
 
 	// GetMatchTargetRequest is the argument for GetProperties
 	GetMatchTargetRequest struct {
-		ConfigID      int `json:"configId,omitempty"`
+		ConfigID      int `json:"configId"`
 		ConfigVersion int `json:"configVersion"`
 		TargetID      int `json:"targetId"`
 	}

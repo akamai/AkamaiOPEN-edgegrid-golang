@@ -4,28 +4,29 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	validation "github.com/go-ozzo/ozzo-validation"
 	"net/http"
 	"net/url"
+
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 type (
 	// Changes is a CPS change API interface
 	Changes interface {
 		// GetChangeStatus fetches change status for given enrollment and change ID
+		//
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getasinglechange
 		GetChangeStatus(context.Context, GetChangeStatusRequest) (*Change, error)
+
 		// CancelChange cancels a pending change
+		//
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#deleteasinglechange
 		CancelChange(context.Context, CancelChangeRequest) (*CancelChangeResponse, error)
+
 		// UpdateChange updates a pending change
+		//
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#postallowedinputtypeforupdate
 		UpdateChange(context.Context, UpdateChangeRequest) (*UpdateChangeResponse, error)
-		// GetChangeLetsEncryptChallenges gets detailed information about Domain Validation challenges
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getallowedinputtypeforinfo
-		GetChangeLetsEncryptChallenges(context.Context, GetChangeRequest) (*DvChallenges, error)
-
-		AcknowledgeDVChallenges(context.Context, AcknowledgementRequest) error
 	}
 
 	// Change contains change status information
@@ -107,58 +108,16 @@ type (
 		Change string `json:"change"`
 	}
 
-	// DvChallenges is an array of DV objects
-	DvChallenges struct {
-		DV []DV `json:"dv"`
-	}
-
-	// DV is a Domain Validation entity
-	DV struct {
-		Challenges         []Challenges `json:"challenges"`
-		Domain             string       `json:"domain"`
-		Error              string       `json:"error"`
-		Expires            string       `json:"expires"`
-		RequestTimestamp   string       `json:"requestTimestamp"`
-		Status             string       `json:"status"`
-		ValidatedTimestamp string       `json:"validatedTimestamp"`
-		ValidationStatus   string       `json:"validationStatus"`
-	}
-
-	// Challenges contains domain information of a specific domain to be validated
-	Challenges struct {
-		Error             string              `json:"error"`
-		FullPath          string              `json:"fullPath"`
-		RedirectFullPath  string              `json:"redirectFullPath"`
-		ResponseBody      string              `json:"responseBody"`
-		Status            string              `json:"status"`
-		Token             string              `json:"token"`
-		Type              string              `json:"type"`
-		ValidationRecords []ValidationRecords `json:"validationRecords"`
-	}
-
-	// ValidationRecords represents validation attempt
-	ValidationRecords struct {
-		Authorities []string `json:"authorities"`
-		Hostname    string   `json:"hostname"`
-		Port        string   `json:"port"`
-		ResolvedIP  []string `json:"resolvedIp"`
-		TriedIP     string   `json:"triedIp"`
-		URL         string   `json:"url"`
-		UsedIP      string   `json:"usedIp"`
-	}
-
+	// AcknowledgementRequest contains params and body required to send acknowledgement. It is the same for all acknowledgement types (dv, pre-verification-warnings etc.)
 	AcknowledgementRequest struct {
 		Acknowledgement
 		EnrollmentID int
 		ChangeID     int
 	}
 
+	// Acknowledgement is a request body of acknowledgement request
 	Acknowledgement struct {
 		Acknowledgement string `json:"acknowledgement"`
-	}
-
-	AcknowledgementResponse struct {
-		Change string `json:"change"`
 	}
 
 	// AllowedInputType represents allowedInputTypeParam used for fetching and updating changes
@@ -179,8 +138,10 @@ const (
 )
 
 const (
+	// AcknowledgementAcknowledge parameter value
 	AcknowledgementAcknowledge = "acknowledge"
-	AcknowledgementDeny        = "deny"
+	// AcknowledgementDeny parameter value
+	AcknowledgementDeny = "deny"
 )
 
 // AllowedInputContentTypeHeader maps content type headers to specific allowed input type params
@@ -232,12 +193,14 @@ func (c UpdateChangeRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate validates AcknowledgementRequest
 func (a AcknowledgementRequest) Validate() error {
 	return validation.Errors{
 		"acknowledgement": validation.Validate(a.Acknowledgement),
 	}.Filter()
 }
 
+// Validate validates Acknowledgement
 func (a Acknowledgement) Validate() error {
 	return validation.Errors{
 		"acknowledgement": validation.Validate(a.Acknowledgement, validation.Required, validation.In(AcknowledgementAcknowledge, AcknowledgementDeny)),
@@ -258,9 +221,6 @@ var (
 	ErrCancelChange = errors.New("canceling change")
 	// ErrUpdateChange is returned when UpdateChange fails
 	ErrUpdateChange = errors.New("updating change")
-	// ErrGetChangeLetsEncryptChallenges is returned when GetChangeLetsEncryptChallenges fails
-	ErrGetChangeLetsEncryptChallenges = errors.New("fetching change for lets-encrypt-challenges")
-	ErrAcknowledgeChange              = errors.New("acknowledge change")
 )
 
 func (c *cps) GetChangeStatus(ctx context.Context, params GetChangeStatusRequest) (*Change, error) {
@@ -374,75 +334,4 @@ func (c *cps) UpdateChange(ctx context.Context, params UpdateChangeRequest) (*Up
 	}
 
 	return &rval, nil
-}
-
-func (c *cps) GetChangeLetsEncryptChallenges(ctx context.Context, params GetChangeRequest) (*DvChallenges, error) {
-	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetChangeLetsEncryptChallenges, ErrStructValidation, err)
-	}
-
-	var rval DvChallenges
-
-	logger := c.Log(ctx)
-	logger.Debug("GetChangeLetsEncryptChallenges")
-
-	uri, err := url.Parse(fmt.Sprintf(
-		"/cps/v2/enrollments/%d/changes/%d/input/info/lets-encrypt-challenges",
-		params.EnrollmentID,
-		params.ChangeID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetChangeLetsEncryptChallenges, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetChangeLetsEncryptChallenges, err)
-	}
-	req.Header.Set("Accept", "application/vnd.akamai.cps.dv-challenges.v2+json")
-
-	resp, err := c.Exec(req, &rval)
-	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetChangeLetsEncryptChallenges, err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrGetChangeLetsEncryptChallenges, c.Error(resp))
-	}
-
-	return &rval, nil
-}
-
-func (c *cps) AcknowledgeDVChallenges(ctx context.Context, params AcknowledgementRequest) error {
-	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w: %s", ErrAcknowledgeChange, ErrStructValidation, err)
-	}
-
-	logger := c.Log(ctx)
-	logger.Debug("CreateEnrollment")
-
-	uri, err := url.Parse(fmt.Sprintf(
-		"/cps/v2/enrollments/%d/changes/%d/input/update/lets-encrypt-challenges-completed",
-		params.EnrollmentID, params.ChangeID))
-	if err != nil {
-		return fmt.Errorf("%w: parsing URL: %s", ErrAcknowledgeChange, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrAcknowledgeChange, err)
-	}
-	req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
-	req.Header.Set("Content-Type", "application/vnd.akamai.cps.acknowledgement.v1+json")
-
-	resp, err := c.Exec(req, nil, params.Acknowledgement)
-	if err != nil {
-		return fmt.Errorf("%w: request failed: %s", ErrAcknowledgeChange, err)
-	}
-
-	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("%s: %w", ErrAcknowledgeChange, c.Error(resp))
-	}
-
-	return nil
 }

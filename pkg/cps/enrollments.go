@@ -4,25 +4,33 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"net/http"
 	"net/url"
 	"strconv"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
 	// Enrollments is a CPS enrollments API interface
 	Enrollments interface {
 		// GetEnrollment fetches anrollment object with given ID
+		//
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getasingleenrollment
 		GetEnrollment(context.Context, GetEnrollmentRequest) (*Enrollment, error)
+
 		// CreateEnrollment creates a new enrollment
+		//
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#postenrollments
 		CreateEnrollment(context.Context, CreateEnrollmentRequest) (*CreateEnrollmentResponse, error)
+
 		// UpdateEnrollment updates a single enrollment entry with given ID
+		//
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#putasingleenrollment
 		UpdateEnrollment(context.Context, UpdateEnrollmentRequest) (*UpdateEnrollmentResponse, error)
+
 		// RemoveEnrollment removes an enrollment with given ID
+		//
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#deleteasingleenrollment
 		RemoveEnrollment(context.Context, RemoveEnrollmentRequest) (*RemoveEnrollmentResponse, error)
 	}
@@ -348,13 +356,9 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%s: %w", ErrCreateEnrollment, c.Error(resp))
 	}
-	idStr, err := ResponseLinkParse(rval.Enrollment)
+	id, err := GetIDFromLocation(rval.Enrollment)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrInvalidResponseLink, err)
-	}
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, "could not parse enrollment ID to int", err)
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrInvalidLocation, err)
 	}
 	rval.ID = id
 
@@ -413,13 +417,9 @@ func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentReque
 	if resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateEnrollment, c.Error(resp))
 	}
-	idStr, err := ResponseLinkParse(rval.Enrollment)
+	id, err := GetIDFromLocation(rval.Enrollment)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrInvalidResponseLink, err)
-	}
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, "could not parse enrollment ID to int", err)
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrInvalidLocation, err)
 	}
 	rval.ID = id
 
