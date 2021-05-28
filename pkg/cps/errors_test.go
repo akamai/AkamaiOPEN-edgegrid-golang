@@ -53,8 +53,8 @@ func TestNewError(t *testing.T) {
 				Request: req,
 			},
 			expected: &Error{
-				Title:      "Failed to unmarshal error body",
-				Detail:     "invalid character 'e' in literal true (expecting 'r')",
+				Title:      "test",
+				Detail:     "",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
