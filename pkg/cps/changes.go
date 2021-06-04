@@ -11,8 +11,8 @@ import (
 )
 
 type (
-	// Changes is a CPS change API interface
-	Changes interface {
+	// ChangeOperations is a CPS change API interface
+	ChangeOperations interface {
 		// GetChangeStatus fetches change status for given enrollment and change ID
 		//
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getasinglechange

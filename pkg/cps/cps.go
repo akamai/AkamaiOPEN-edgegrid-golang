@@ -15,7 +15,7 @@ type (
 	// CPS is the cps api interface
 	CPS interface {
 		Enrollments
-		Changes
+		ChangeOperations
 		DVChallenges
 		PreVerification
 	}
