@@ -47,7 +47,7 @@ type (
 		Name          string   `json:"name"`
 		ValueCase     bool     `json:"valueCase"`
 		ValueWildcard bool     `json:"valueWildcard"`
-		useHeaders    bool     `json:"useHeaders"`
+		UseHeaders    bool     `json:"useHeaders"`
 	}
 
 	UpdateAdvancedSettingsPragmaRequest struct {
