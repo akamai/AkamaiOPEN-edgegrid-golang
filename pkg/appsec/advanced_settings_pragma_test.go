@@ -201,8 +201,8 @@ func TestAppSec_UpdateAdvancedSettingsPragma(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`{"type": "internal_error","title": "Internal Server Error","detail": "Error creating AdvancedSettingsPragma"}`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
+			responseBody:   (`{"type": "internal_error","title": "Internal Server Error","detail": "Error creating AdvancedSettingsPragma"}`),
+			expectedPath:   "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",

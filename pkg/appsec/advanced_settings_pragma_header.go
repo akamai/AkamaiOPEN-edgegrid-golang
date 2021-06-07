@@ -34,34 +34,33 @@ type (
 	}
 
 	GetAdvancedSettingsPragmaResponse struct {
-		Action             string                `json:"action,,omitempty"`
-		ConditionOperator  string                `json:"conditionOperator,omitempty"`
-		ExcludeCondition   []ExcludeCondition     `json:"excludeCondition,omitempty"`
+		Action            string             `json:"action,,omitempty"`
+		ConditionOperator string             `json:"conditionOperator,omitempty"`
+		ExcludeCondition  []ExcludeCondition `json:"excludeCondition,omitempty"`
 	}
 
 	ExcludeCondition struct {
-		Type               string    `json:"type"`
-		PositiveMatch	   bool      `json:"positiveMatch"`
-		Header             string    `json:"header"`
-		Value              []string  `json:"value"`
-		Name               string    `json:"name"`
-		ValueCase          bool      `json:"valueCase"`
-		ValueWildcard	   bool      `json:"valueWildcard"`
-		useHeaders         bool      `json:"useHeaders"`
+		Type          string   `json:"type"`
+		PositiveMatch bool     `json:"positiveMatch"`
+		Header        string   `json:"header"`
+		Value         []string `json:"value"`
+		Name          string   `json:"name"`
+		ValueCase     bool     `json:"valueCase"`
+		ValueWildcard bool     `json:"valueWildcard"`
+		useHeaders    bool     `json:"useHeaders"`
 	}
 
 	UpdateAdvancedSettingsPragmaRequest struct {
-		ConfigID           int      `json:"-"`
-		Version            int      `json:"-"`
-		PolicyID           string 	`json:"-"`
-		JsonPayloadRaw 		json.RawMessage `json:"-"`
+		ConfigID       int             `json:"-"`
+		Version        int             `json:"-"`
+		PolicyID       string          `json:"-"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 	UpdateAdvancedSettingsPragmaResponse struct {
-		Action             string                `json:"action"`
-		ConditionOperator  string                `json:"conditionOperator"`
-		ExcludeCondition   []ExcludeCondition     `json:"excludeCondition"`
+		Action            string             `json:"action"`
+		ConditionOperator string             `json:"conditionOperator"`
+		ExcludeCondition  []ExcludeCondition `json:"excludeCondition"`
 	}
-
 )
 
 // Validate validates GetAdvancedSettingsPragmaRequest
@@ -151,7 +150,6 @@ func (p *appsec) UpdateAdvancedSettingsPragma(ctx context.Context, params Update
 			params.ConfigID,
 			params.Version)
 	}
-
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {

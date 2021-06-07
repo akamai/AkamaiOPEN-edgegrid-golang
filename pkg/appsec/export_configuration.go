@@ -172,8 +172,8 @@ type (
 					AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
 					Exception              *AttackGroupException          `json:"exception,omitempty"`
 				} `json:"attackGroupActions,omitempty"`
-				Evaluation *WebApplicationFirewallEvaluation `json:"evaluation,omitempty"`
-				ThreatIntel string `json:"threatIntel"`
+				Evaluation  *WebApplicationFirewallEvaluation `json:"evaluation,omitempty"`
+				ThreatIntel string                            `json:"threatIntel"`
 			} `json:"webApplicationFirewall"`
 			CustomRuleActions []struct {
 				Action string `json:"action"`
@@ -200,9 +200,9 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox       *SecurityPoliciesPenaltyBox `json:"penaltyBox,omitempty"`
-			SlowPost         *SlowPostexp                `json:"slowPost,omitempty"`
-			LoggingOverrides *LoggingOverridesexp        `json:"loggingOverrides,omitempty"`
+			PenaltyBox       *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
+			SlowPost         *SlowPostexp                       `json:"slowPost,omitempty"`
+			LoggingOverrides *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
 			PragmaHeader     *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
