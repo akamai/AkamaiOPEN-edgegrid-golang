@@ -119,7 +119,7 @@ type (
 )
 
 // Check Condition Exception is Empty
-func (r *GetRuleResponse) IsEmptyCodnitionException() bool {
+func (r *GetRuleResponse) IsEmptyConditionException() bool {
 
 	if r.ConditionException == nil {
 		return true

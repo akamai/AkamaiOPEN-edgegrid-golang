@@ -144,7 +144,7 @@ type (
 )
 
 // Check Condition Exception is Empty
-func (r GetAttackGroupResponse) IsEmptyCodnitionException() bool {
+func (r GetAttackGroupResponse) IsEmptyConditionException() bool {
 	if r.ConditionException == nil {
 		return true
 	}
