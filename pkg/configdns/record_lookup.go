@@ -409,19 +409,31 @@ func (p *dns) ParseRData(ctx context.Context, rtype string, rdata []string) map[
 
 	case "SVCB":
 		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
+			parts := strings.SplitN(rcontent, " ", 3)
+			// has to be at least two fields.
+			if len(parts) < 2 {
+				break
+			}
 			fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
 			fieldMap["target_name"] = parts[1]
-			fieldMap["svc_params"] = parts[2]
+			if len(parts) > 2 {
+				fieldMap["svc_params"] = parts[2]
+			}
 			break
 		}
 
 	case "HTTPS":
 		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
+			parts := strings.SplitN(rcontent, " ", 3)
+			// has to be at least two fields.
+			if len(parts) < 2 {
+				break
+			}
 			fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
 			fieldMap["target_name"] = parts[1]
-			fieldMap["svc_params"] = parts[2]
+			if len(parts) > 2 {
+				fieldMap["svc_params"] = parts[2]
+			}
 			break
 		}
 
