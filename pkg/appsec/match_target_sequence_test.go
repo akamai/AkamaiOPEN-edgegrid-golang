@@ -33,19 +33,21 @@ func TestApsec_ListMatchTargetSequence(t *testing.T) {
 			params: GetMatchTargetSequenceRequest{
 				ConfigID:      43253,
 				ConfigVersion: 15,
+				Type:          "website",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
 			params: GetMatchTargetSequenceRequest{
 				ConfigID:      43253,
 				ConfigVersion: 15,
+				Type:          "website",
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -56,7 +58,7 @@ func TestApsec_ListMatchTargetSequence(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -112,16 +114,18 @@ func TestAppSec_GetMatchTargetSequence(t *testing.T) {
 			params: GetMatchTargetSequenceRequest{
 				ConfigID:      43253,
 				ConfigVersion: 15,
+				Type:          "website",
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
 			params: GetMatchTargetSequenceRequest{
 				ConfigID:      43253,
 				ConfigVersion: 15,
+				Type:          "website",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
@@ -130,7 +134,7 @@ func TestAppSec_GetMatchTargetSequence(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error fetching match target"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -186,6 +190,7 @@ func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
 			params: UpdateMatchTargetSequenceRequest{
 				ConfigID:      43253,
 				ConfigVersion: 15,
+				Type:          "website",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -199,6 +204,7 @@ func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
 			params: UpdateMatchTargetSequenceRequest{
 				ConfigID:      43253,
 				ConfigVersion: 15,
+				Type:          "website",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`

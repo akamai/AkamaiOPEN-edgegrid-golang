@@ -13,43 +13,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListRuleAction(t *testing.T) {
+func TestApsec_ListEvalRule(t *testing.T) {
 
-	result := GetRuleActionResponse{}
+	result := GetEvalRulesResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestRuleAction/RuleAction.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRule/EvalRules.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetRuleActionRequest
+		params           GetEvalRulesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetRuleActionResponse
+		expectedResponse *GetEvalRulesResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetRuleActionRequest{
+			params: GetEvalRulesRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				RuleID:   12345,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules/12345",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules?includeConditionException=true",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetRuleActionRequest{
+			params: GetEvalRulesRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				RuleID:   12345,
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -60,7 +58,7 @@ func TestApsec_ListRuleAction(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules/12345",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules?includeConditionException=true",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -80,7 +78,7 @@ func TestApsec_ListRuleAction(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetRuleAction(
+			result, err := client.GetEvalRules(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -96,24 +94,24 @@ func TestApsec_ListRuleAction(t *testing.T) {
 	}
 }
 
-// Test RuleAction
-func TestAppSec_GetRuleAction(t *testing.T) {
+// Test EvalRule
+func TestAppSec_GetEvalRule(t *testing.T) {
 
-	result := GetRuleActionResponse{}
+	result := GetEvalRuleResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestRuleAction/RuleAction.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRule/EvalRule.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetRuleActionRequest
+		params           GetEvalRuleRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetRuleActionResponse
+		expectedResponse *GetEvalRuleResponse
 		withError        error
 	}{
 		"200 OK": {
-			params: GetRuleActionRequest{
+			params: GetEvalRuleRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -121,11 +119,11 @@ func TestAppSec_GetRuleAction(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules/12345",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345?includeConditionException=true",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetRuleActionRequest{
+			params: GetEvalRuleRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -138,7 +136,7 @@ func TestAppSec_GetRuleAction(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error fetching match target"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules/12345",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345?includeConditionException=true",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -158,7 +156,7 @@ func TestAppSec_GetRuleAction(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetRuleAction(context.Background(), test.params)
+			result, err := client.GetEvalRule(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -169,29 +167,29 @@ func TestAppSec_GetRuleAction(t *testing.T) {
 	}
 }
 
-// Test Update RuleAction.
-func TestAppSec_UpdateRuleAction(t *testing.T) {
-	result := UpdateRuleActionResponse{}
+// Test Update EvalRule.
+func TestAppSec_UpdateEvalRule(t *testing.T) {
+	result := UpdateEvalRuleResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestRuleAction/RuleAction.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRule/EvalRule.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := UpdateRuleActionRequest{}
+	req := UpdateEvalRuleRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestRuleAction/RuleAction.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestEvalRule/EvalRule.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
-		params           UpdateRuleActionRequest
+		params           UpdateEvalRuleRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *UpdateRuleActionResponse
+		expectedResponse *UpdateEvalRuleResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdateRuleActionRequest{
+			params: UpdateEvalRuleRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -203,10 +201,10 @@ func TestAppSec_UpdateRuleAction(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345/action-condition-exceptions",
 		},
 		"500 internal server error": {
-			params: UpdateRuleActionRequest{
+			params: UpdateEvalRuleRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -219,7 +217,7 @@ func TestAppSec_UpdateRuleAction(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error creating zone"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rules",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345/action-condition-exceptions",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -240,7 +238,7 @@ func TestAppSec_UpdateRuleAction(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateRuleAction(
+			result, err := client.UpdateEvalRule(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)

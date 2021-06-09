@@ -104,12 +104,10 @@ type (
 	}
 
 	UpdateSecurityPolicyRequest struct {
-		ConfigID        int    `json:"-"`
-		Version         int    `json:"-"`
-		PolicyID        string `json:"-"`
-		PolicyName      string `json:"policyName"`
-		DefaultSettings bool   `json:"defaultSettings,omitempty"`
-		PolicyPrefix    string `json:"policyPrefix"`
+		ConfigID   int    `json:"-"`
+		Version    int    `json:"-"`
+		PolicyID   string `json:"-"`
+		PolicyName string `json:"policyName"`
 	}
 
 	UpdateSecurityPolicyResponse struct {

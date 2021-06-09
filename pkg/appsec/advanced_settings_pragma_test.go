@@ -13,41 +13,39 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListEvalRuleActions(t *testing.T) {
+func TestApsec_ListAdvancedSettingsPragma(t *testing.T) {
 
-	result := GetEvalRuleActionsResponse{}
+	result := GetAdvancedSettingsPragmaResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleActions/EvalRuleAction.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetEvalRuleActionsRequest
+		params           GetAdvancedSettingsPragmaRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetEvalRuleActionsResponse
+		expectedResponse *GetAdvancedSettingsPragmaResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetEvalRuleActionsRequest{
+			params: GetAdvancedSettingsPragmaRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetEvalRuleActionsRequest{
+			params: GetAdvancedSettingsPragmaRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -55,14 +53,14 @@ func TestApsec_ListEvalRuleActions(t *testing.T) {
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching propertys",
+    "detail": "Error fetching AdvancedSettingsPragma",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching propertys",
+				Detail:     "Error fetching AdvancedSettingsPragma",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -78,7 +76,7 @@ func TestApsec_ListEvalRuleActions(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetEvalRuleActions(
+			result, err := client.GetAdvancedSettingsPragma(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -94,53 +92,49 @@ func TestApsec_ListEvalRuleActions(t *testing.T) {
 	}
 }
 
-// Test EvalRuleAction
-func TestAppSec_GetEvalRuleAction(t *testing.T) {
+// Test AdvancedSettingsPragma
+func TestAppSec_GetAdvancedSettingsPrama(t *testing.T) {
 
-	result := GetEvalRuleActionResponse{}
+	result := GetAdvancedSettingsPragmaResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleActions/EvalRuleAction.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetEvalRuleActionRequest
+		params           GetAdvancedSettingsPragmaRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetEvalRuleActionResponse
+		expectedResponse *GetAdvancedSettingsPragmaResponse
 		withError        error
 	}{
 		"200 OK": {
-			params: GetEvalRuleActionRequest{
+			params: GetAdvancedSettingsPragmaRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
-				RuleID:   12345,
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetEvalRuleActionRequest{
+			params: GetAdvancedSettingsPragmaRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
-				RuleID:   12345,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching match target"
+    "detail": "Error fetching AdvancedSettingsPragma"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching match target",
+				Detail:     "Error fetching AdvancedSettingsPragma",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -156,7 +150,7 @@ func TestAppSec_GetEvalRuleAction(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetEvalRuleAction(context.Background(), test.params)
+			result, err := client.GetAdvancedSettingsPragma(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -167,34 +161,31 @@ func TestAppSec_GetEvalRuleAction(t *testing.T) {
 	}
 }
 
-// Test Update EvalRuleAction.
-func TestAppSec_UpdateEvalRuleAction(t *testing.T) {
-	result := UpdateEvalRuleActionResponse{}
+// Test Update AdvancedSettingsPragma.
+func TestAppSec_UpdateAdvancedSettingsPragma(t *testing.T) {
+	result := UpdateAdvancedSettingsPragmaResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleActions/EvalRuleActionUpdate.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := UpdateEvalRuleActionRequest{}
+	req := UpdateAdvancedSettingsPragmaRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestEvalRuleActions/EvalRuleAction.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
-		params           UpdateEvalRuleActionRequest
+		params           UpdateAdvancedSettingsPragmaRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *UpdateEvalRuleActionResponse
+		expectedResponse *UpdateAdvancedSettingsPragmaResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdateEvalRuleActionRequest{
+			params: UpdateAdvancedSettingsPragmaRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
-				RuleID:   12345,
-				Action:   "alert",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -202,28 +193,20 @@ func TestAppSec_UpdateEvalRuleAction(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-ruleseval-rules/12345",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 		},
 		"500 internal server error": {
-			params: UpdateEvalRuleActionRequest{
+			params: UpdateAdvancedSettingsPragmaRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
-				RuleID:   12345,
-				Action:   "alert",
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating EvalRuleAction"
-}`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-rules/12345",
+			responseBody:   (`{"type": "internal_error","title": "Internal Server Error","detail": "Error creating AdvancedSettingsPragma"}`),
+			expectedPath:   "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error creating EvalRuleAction",
+				Detail:     "Error creating AdvancedSettingsPragma",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -240,7 +223,7 @@ func TestAppSec_UpdateEvalRuleAction(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateEvalRuleAction(
+			result, err := client.UpdateAdvancedSettingsPragma(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)

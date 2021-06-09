@@ -1,0 +1,152 @@
+{
+    "ruleActions": [
+        {
+            "action": "alert",
+            "id": 699989
+        },
+        {
+            "action": "none",
+            "id": 699990
+        },
+        {
+            "action": "alert",
+            "conditionException": {
+                "exception": {
+                    "headerCookieOrParamValues": [
+                        "value1",
+                        "value2"
+                    ],
+                    "specificHeaderCookieOrParamNameValue": {
+                        "name": "requestHeaderName",
+                        "selector": "REQUEST_HEADERS",
+                        "value": "requestHeaderValue"
+                    },
+                    "specificHeaderCookieOrParamNames": [
+                        {
+                            "names": [
+                                "v1",
+                                "v2"
+                            ],
+                            "selector": "REQUEST_HEADERS"
+                        },
+                        {
+                            "names": [
+                                "c1",
+                                "c2"
+                            ],
+                            "selector": "REQUEST_COOKIES"
+                        },
+                        {
+                            "names": [
+                                "r1",
+                                "r2"
+                            ],
+                            "selector": "ARGS"
+                        },
+                        {
+                            "names": [
+                                "j1",
+                                "j2"
+                            ],
+                            "selector": "JSON_PAIRS"
+                        },
+                        {
+                            "names": [
+                                "x1",
+                                "x2"
+                            ],
+                            "selector": "XML_PAIRS"
+                        }
+                    ],
+                    "specificHeaderCookieOrParamPrefix": {
+                        "prefix": "Header_Prefix",
+                        "selector": "XML_PAIRS"
+                    }
+                }
+            },
+            "id": 950001
+        },
+        {
+            "action": "alert",
+            "conditionException": {
+                "conditions": [
+                    {
+                        "type": "extensionMatch",
+                        "extensions": [
+                            "ex21",
+                            "ex22"
+                        ],
+                        "positiveMatch": true
+                    },
+                    {
+                        "type": "extensionMatch",
+                        "extensions": [
+                            "ext11",
+                            "ext12"
+                        ],
+                        "positiveMatch": true
+                    },
+                    {
+                        "type": "filenameMatch",
+                        "filenames": [
+                            "f11",
+                            "f12"
+                        ],
+                        "positiveMatch": true
+                    },
+                    {
+                        "type": "hostMatch",
+                        "hosts": [
+                            "h1.com",
+                            "h2.com"
+                        ],
+                        "positiveMatch": true
+                    },
+                    {
+                        "type": "ipMatch",
+                        "ips": [
+                            "11.11.11.11",
+                            "22.22.22.22"
+                        ],
+                        "positiveMatch": true,
+                        "useHeaders": true
+                    },
+                    {
+                        "type": "uriQueryMatch",
+                        "caseSensitive": true,
+                        "name": "queryString",
+                        "nameCase": true,
+                        "positiveMatch": true,
+                        "value": "queryValue",
+                        "wildcard": true
+                    },
+                    {
+                        "type": "requestHeaderMatch",
+                        "header": "Accept",
+                        "positiveMatch": true,
+                        "value": "json",
+                        "valueCase": true,
+                        "valueWildcard": true
+                    },
+                    {
+                        "type": "requestMethodMatch",
+                        "methods": [
+                            "GET",
+                            "POST"
+                        ],
+                        "positiveMatch": true
+                    },
+                    {
+                        "type": "pathMatch",
+                        "paths": [
+                            "/p1",
+                            "/p2"
+                        ],
+                        "positiveMatch": true
+                    }
+                ]
+            },
+            "id": 950908
+        }
+    ]
+}

@@ -47,7 +47,7 @@ type (
 	GetSlowPostProtectionSettingsResponse struct {
 		Action            string                                      `json:"action,omitempty"`
 		SlowRateThreshold *SlowPostProtectionSettingSlowRateThreshold `json:"slowRateThreshold,omitempty"`
-		DurationThreshold *SlowPostProtectionSettingDurationThreshold `json:"durationThreshold"`
+		DurationThreshold *SlowPostProtectionSettingDurationThreshold `json:"durationThreshold,omitempty"`
 	}
 
 	GetSlowPostProtectionSettingRequest struct {
@@ -67,7 +67,7 @@ type (
 	GetSlowPostProtectionSettingResponse struct {
 		Action            string                                      `json:"action,omitempty"`
 		SlowRateThreshold *SlowPostProtectionSettingSlowRateThreshold `json:"slowRateThreshold,omitempty"`
-		DurationThreshold SlowPostProtectionSettingDurationThreshold  `json:"durationThreshold"`
+		DurationThreshold *SlowPostProtectionSettingDurationThreshold `json:"durationThreshold,omitempty"`
 	}
 
 	UpdateSlowPostProtectionSettingRequest struct {

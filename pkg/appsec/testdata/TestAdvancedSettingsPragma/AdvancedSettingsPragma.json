@@ -1,0 +1,18 @@
+{
+    "action": "REMOVE",
+    "conditionOperator": "AND",
+    "excludeCondition": [
+        {
+            "header": "Connection",
+            "name": "bla",
+            "positiveMatch": false,
+            "type": "requestHeaderValueMatch",
+            "value": [
+                "PUT",
+                "GET"
+            ],
+            "valueCase": true,
+            "valueWildcard": true
+        }
+    ]
+}

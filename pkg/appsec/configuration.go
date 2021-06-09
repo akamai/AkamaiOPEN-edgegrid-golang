@@ -53,17 +53,15 @@ type (
 	}
 
 	GetConfigurationResponse struct {
-		Configurations []struct {
-			Description         string   `json:"description,omitempty"`
-			FileType            string   `json:"fileType,omitempty"`
-			ID                  int      `json:"id,omitempty"`
-			LatestVersion       int      `json:"latestVersion,omitempty"`
-			Name                string   `json:"name,omitempty"`
-			StagingVersion      int      `json:"stagingVersion,omitempty"`
-			TargetProduct       string   `json:"targetProduct,omitempty"`
-			ProductionHostnames []string `json:"productionHostnames,omitempty"`
-			ProductionVersion   int      `json:"productionVersion,omitempty"`
-		} `json:"configurations,omitempty"`
+		Description         string   `json:"description,omitempty"`
+		FileType            string   `json:"fileType,omitempty"`
+		ID                  int      `json:"id,omitempty"`
+		LatestVersion       int      `json:"latestVersion,omitempty"`
+		Name                string   `json:"name,omitempty"`
+		StagingVersion      int      `json:"stagingVersion,omitempty"`
+		TargetProduct       string   `json:"targetProduct,omitempty"`
+		ProductionHostnames []string `json:"productionHostnames,omitempty"`
+		ProductionVersion   int      `json:"productionVersion,omitempty"`
 	}
 
 	CreateConfigurationRequest struct {
@@ -137,19 +135,17 @@ func (p *appsec) GetConfiguration(ctx context.Context, params GetConfigurationRe
 	logger := p.Log(ctx)
 	logger.Debug("GetConfiguration")
 
-	var rval GetConfigurationResponse
+	var getConfigurationResponse GetConfigurationResponse
 
-	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d",
-		params.ConfigID,
-	)
+	configid := params.ConfigID
+	uri := fmt.Sprintf("/appsec/v1/configs/%d", configid)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create getconfiguration request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &getConfigurationResponse)
 	if err != nil {
 		return nil, fmt.Errorf("getproperties request failed: %w", err)
 	}
@@ -158,7 +154,7 @@ func (p *appsec) GetConfiguration(ctx context.Context, params GetConfigurationRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &getConfigurationResponse, nil
 
 }
 
