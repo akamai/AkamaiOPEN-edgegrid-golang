@@ -8,22 +8,16 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// ApiEndpoints represents a collection of ApiEndpoints
-//
-// See: ApiEndpoints.GetApiEndpoints()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// ApiEndpoints  contains operations available on ApiEndpoints  resource
-	// See: // appsec v1
+	// The ApiEndpoints interface supports retrieving the API endpoints associated with a security policy.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getapiendpoints
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#apiendpoint
 	ApiEndpoints interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getapiendpoints
 		GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequest) (*GetApiEndpointsResponse, error)
 	}
 
+	// GetApiEndpointsRequest is used to retrieve the endpoints associated with a security policy.
 	GetApiEndpointsRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -32,6 +26,7 @@ type (
 		ID       int    `json:"-"`
 	}
 
+	// GetApiEndpointsResponse is returned from a call to GetApiEndpoints.
 	GetApiEndpointsResponse struct {
 		APIEndpoints []struct {
 			ID               int      `json:"id"`
@@ -51,7 +46,7 @@ type (
 	}
 )
 
-// Validate validates GetApiEndpointsRequest
+// Validate validates a GetApiEndpointsRequest.
 func (v GetApiEndpointsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -87,12 +82,12 @@ func (p *appsec) GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequ
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getapiendpoints request: %w", err)
+		return nil, fmt.Errorf("failed to create GetApiEndpoints request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getapiendpoints  request failed: %w", err)
+		return nil, fmt.Errorf("GetApiEndpoints request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

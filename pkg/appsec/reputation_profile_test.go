@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListReputationProfile(t *testing.T) {
+func TestAppSec_ListReputationProfile(t *testing.T) {
 
 	result := GetReputationProfilesResponse{}
 
@@ -329,8 +329,8 @@ func TestAppSec_UpdateReputationProfile(t *testing.T) {
 	}
 }
 
-//Test delete ReputationProfile
-func TestAppSec_DeleteReputationProfile(t *testing.T) {
+// Test Remove ReputationProfile
+func TestAppSec_RemoveReputationProfile(t *testing.T) {
 
 	result := RemoveReputationProfileResponse{}
 

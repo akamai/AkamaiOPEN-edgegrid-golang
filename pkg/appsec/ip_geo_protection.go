@@ -8,24 +8,31 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// IPGEOProtection represents a collection of IPGEOProtection
-//
-// See: IPGEOProtection.GetIPGeoProtection()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// IPGeoProtection  contains operations available on IPGeo resource
-	// See: // appsec v1
+	// The IPGeoProtection interface supports retrieving and modifying the protections for a policy,
+	// and whether each is enabled or disabled.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getipgeoprotection
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	IPGeoProtection interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetIPGeoProtections(ctx context.Context, params GetIPGeoProtectionsRequest) (*GetIPGeoProtectionsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetIPGeoProtection(ctx context.Context, params GetIPGeoProtectionRequest) (*GetIPGeoProtectionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateIPGeoProtection(ctx context.Context, params UpdateIPGeoProtectionRequest) (*UpdateIPGeoProtectionResponse, error)
 	}
 
+	// GetIPGeoProtectionRequest is used to retrieve the IPGeo protection settings.
+	GetIPGeoProtectionRequest struct {
+		ConfigID                      int    `json:"-"`
+		Version                       int    `json:"-"`
+		PolicyID                      string `json:"-"`
+		ApplyApplicationLayerControls bool   `json:"applyNetworkLayerControls"`
+	}
+
+	// GetIPGeoProtectionResponse is returned from a call to GetIPGeoProtection.
 	GetIPGeoProtectionResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
@@ -36,13 +43,15 @@ type (
 		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
 	}
 
-	GetIPGeoProtectionRequest struct {
-		ConfigID                      int    `json:"-"`
-		Version                       int    `json:"-"`
-		PolicyID                      string `json:"-"`
-		ApplyApplicationLayerControls bool   `json:"applyNetworkLayerControls"`
+	// GetIPGeoProtectionsRequest is used to retrieve the IPGeo protection settings.
+	GetIPGeoProtectionsRequest struct {
+		ConfigID                  int    `json:"-"`
+		Version                   int    `json:"-"`
+		PolicyID                  string `json:"-"`
+		ApplyNetworkLayerControls bool   `json:"applyNetworkLayerControls"`
 	}
 
+	// GetIPGeoProtectionsResponse is returned from a call to GetIPGeoProtections.
 	GetIPGeoProtectionsResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
@@ -53,13 +62,7 @@ type (
 		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
 	}
 
-	GetIPGeoProtectionsRequest struct {
-		ConfigID                  int    `json:"-"`
-		Version                   int    `json:"-"`
-		PolicyID                  string `json:"-"`
-		ApplyNetworkLayerControls bool   `json:"applyNetworkLayerControls"`
-	}
-
+	// UpdateIPGeoProtectionResponse is used to modify the IPGeo protection settings.
 	UpdateIPGeoProtectionResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
@@ -70,6 +73,7 @@ type (
 		ApplySlowPostControls         bool `json:"applySlowPostControls"`
 	}
 
+	// UpdateIPGeoProtectionRequest is returned from a call to UpdateIPGeoProtection.
 	UpdateIPGeoProtectionRequest struct {
 		ConfigID                  int    `json:"-"`
 		Version                   int    `json:"-"`
@@ -78,7 +82,7 @@ type (
 	}
 )
 
-// Validate validates GetIPGeoProtectionRequest
+// Validate validates a GetIPGeoProtectionRequest.
 func (v GetIPGeoProtectionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -87,7 +91,7 @@ func (v GetIPGeoProtectionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetIPGeoProtectionsRequest
+// Validate validates a GetIPGeoProtectionsRequest.
 func (v GetIPGeoProtectionsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -96,7 +100,7 @@ func (v GetIPGeoProtectionsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateIPGeoProtectionRequest
+// Validate validates an UpdateIPGeoProtectionRequest.
 func (v UpdateIPGeoProtectionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -123,12 +127,12 @@ func (p *appsec) GetIPGeoProtection(ctx context.Context, params GetIPGeoProtecti
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getipgeoprotection request: %w", err)
+		return nil, fmt.Errorf("failed to create GetIPGeoProtection request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getipgeoprotection  request failed: %w", err)
+		return nil, fmt.Errorf("GetIPGeoProtection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -157,12 +161,12 @@ func (p *appsec) GetIPGeoProtections(ctx context.Context, params GetIPGeoProtect
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getipgeoprotections request: %w", err)
+		return nil, fmt.Errorf("failed to create GetIPGeoProtections request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getipgeoprotections request failed: %w", err)
+		return nil, fmt.Errorf("GetIPGeoProtections request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -172,12 +176,6 @@ func (p *appsec) GetIPGeoProtections(ctx context.Context, params GetIPGeoProtect
 	return &rval, nil
 
 }
-
-// Update will update a IPGeoProtection.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putipgeoprotection
 
 func (p *appsec) UpdateIPGeoProtection(ctx context.Context, params UpdateIPGeoProtectionRequest) (*UpdateIPGeoProtectionResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -196,13 +194,13 @@ func (p *appsec) UpdateIPGeoProtection(ctx context.Context, params UpdateIPGeoPr
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create IPGeoProtectionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateIPGeoProtection request: %w", err)
 	}
 
 	var rval UpdateIPGeoProtectionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create NetworkProtection request failed: %w", err)
+		return nil, fmt.Errorf("UpdateIPGeoProtection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

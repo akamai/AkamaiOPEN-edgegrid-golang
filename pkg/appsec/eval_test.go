@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListEval(t *testing.T) {
+func TestAppSec_ListEval(t *testing.T) {
 
 	result := GetEvalResponse{}
 

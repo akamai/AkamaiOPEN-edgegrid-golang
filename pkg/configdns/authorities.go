@@ -7,7 +7,7 @@ import (
 )
 
 type (
-	// Authoritiess contains operations available on Authorities data sources
+	// Authorities contains operations available on Authorities data sources
 	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getauthoritativenameserverdata
 	Authorities interface {
 		// GetAuthorities provides a list of structured read-only list of name serveers
@@ -20,17 +20,19 @@ type (
 		NewAuthorityResponse(context.Context, string) *AuthorityResponse
 	}
 
+	// Contract contains contractID and a list of currently assigned Akamai authoritative nameservers
 	Contract struct {
 		ContractID  string   `json:"contractId"`
 		Authorities []string `json:"authorities"`
 	}
 
+	// AuthorityResponse contains response with a list of one or more Contracts
 	AuthorityResponse struct {
 		Contracts []Contract `json:"contracts"`
 	}
 )
 
-func (p *dns) NewAuthorityResponse(ctx context.Context, contract string) *AuthorityResponse {
+func (p *dns) NewAuthorityResponse(ctx context.Context, _ string) *AuthorityResponse {
 
 	logger := p.Log(ctx)
 	logger.Debug("NewAuthorityResponse")

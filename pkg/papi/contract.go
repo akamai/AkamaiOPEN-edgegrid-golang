@@ -36,6 +36,7 @@ type (
 )
 
 var (
+	// ErrGetContracts represents error when fetching contracts fails
 	ErrGetContracts = errors.New("fetching contracts")
 )
 

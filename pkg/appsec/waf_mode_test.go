@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListWAFModes(t *testing.T) {
+func TestAppSec_ListWAFModes(t *testing.T) {
 
 	result := GetWAFModesResponse{}
 

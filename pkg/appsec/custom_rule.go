@@ -11,58 +11,58 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// CustomRule represents a collection of CustomRule
-//
-// See: CustomRule.GetCustomRule()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// CustomRule  contains operations available on CustomRule  resource
-	// See: // appsec v1
+	// The CustomRule interface supports creating, retrievinfg, modifying and removing custom rules
+	// for a configuration.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomrule
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#customrule
 	CustomRule interface {
+		//https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomrules
 		GetCustomRules(ctx context.Context, params GetCustomRulesRequest) (*GetCustomRulesResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getruleid
 		GetCustomRule(ctx context.Context, params GetCustomRuleRequest) (*GetCustomRuleResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postcustomrules
 		CreateCustomRule(ctx context.Context, params CreateCustomRuleRequest) (*CreateCustomRuleResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putruleid
 		UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRequest) (*UpdateCustomRuleResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deleteruleid
 		RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRequest) (*RemoveCustomRuleResponse, error)
 	}
 
+	// CustomRuleConditionsValue is a slice of strings used to indicate condition values in custom rule conditions.
 	CustomRuleConditionsValue []string
-	CustomRuleConditionsName  []string
 
-	CustomRuleResponse struct {
-		ID            int      `json:"id,omitempty"`
-		Name          string   `json:"name,omitempty"`
-		Description   string   `json:"description,omitempty"`
-		Version       int      `json:"-"`
-		RuleActivated bool     `json:"ruleActivated,omitempty"`
-		Tag           []string `json:"tag,omitempty"`
-		Conditions    []struct {
-			Type          string           `json:"type,omitempty"`
-			PositiveMatch bool             `json:"positiveMatch"`
-			Value         *json.RawMessage `json:"value,omitempty"`
-			ValueWildcard *json.RawMessage `json:"valueWildcard,omitempty"`
-			ValueCase     *json.RawMessage `json:"valueCase"`
-			NameWildcard  *json.RawMessage `json:"nameWildcard,omitempty"`
-			Name          *json.RawMessage `json:"name,omitempty"`
-			NameCase      *json.RawMessage `json:"nameCase"`
-		} `json:"conditions,omitempty"`
+	// CustomRuleConditionsName is a slice of strings used to indicate condition names in custom rule conditions.
+	CustomRuleConditionsName []string
+
+	// GetCustomRulesRequest is used to retrieve the custom rules for a configuration.
+	GetCustomRulesRequest struct {
+		ConfigID int `json:"configid,omitempty"`
+		ID       int `json:"-"`
 	}
 
-	CustomRulesResponse struct {
+	// GetCustomRulesResponse is returned from a call to GetCustomRules.
+	GetCustomRulesResponse struct {
 		CustomRules []struct {
-			ID      int    `json:"id,omitempty"`
-			Link    string `json:"link,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Status  string `json:"status,omitempty"`
-			Version int    `json:"version,omitempty"`
-		} `json:"customRules,omitempty"`
+			ID      int    `json:"id"`
+			Link    string `json:"link"`
+			Name    string `json:"name"`
+			Status  string `json:"status"`
+			Version int    `json:"version"`
+		} `json:"customRules"`
 	}
 
+	// GetCustomRuleRequest is used to retrieve the details of a custom rule.
+	GetCustomRuleRequest struct {
+		ConfigID int `json:"configid,omitempty"`
+		ID       int `json:"id,omitempty"`
+	}
+
+	// GetCustomRuleResponse is returned from a call to GetCustomRule.
 	GetCustomRuleResponse struct {
 		ID            int      `json:"-"`
 		Name          string   `json:"name"`
@@ -83,32 +83,14 @@ type (
 		} `json:"conditions"`
 	}
 
-	GetCustomRulesResponse struct {
-		CustomRules []struct {
-			ID      int    `json:"id"`
-			Link    string `json:"link"`
-			Name    string `json:"name"`
-			Status  string `json:"status"`
-			Version int    `json:"version"`
-		} `json:"customRules"`
-	}
-
-	GetCustomRulesRequest struct {
-		ConfigID int `json:"configid,omitempty"`
-		ID       int `json:"-"`
-	}
-
-	GetCustomRuleRequest struct {
-		ConfigID int `json:"configid,omitempty"`
-		ID       int `json:"id,omitempty"`
-	}
-
+	// CreateCustomRuleRequest is used to create a custom rule.
 	CreateCustomRuleRequest struct {
 		ConfigID       int             `json:"configid,omitempty"`
 		Version        int             `json:"version,omitempty"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
+	// CreateCustomRuleResponse is returned from a call to CreateCustomRule.
 	CreateCustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
 		Name          string   `json:"name"`
@@ -128,6 +110,7 @@ type (
 		} `json:"conditions"`
 	}
 
+	// UpdateCustomRuleRequest is used to modify an existing custom rule.
 	UpdateCustomRuleRequest struct {
 		ConfigID       int             `json:"configid,omitempty"`
 		ID             int             `json:"id,omitempty"`
@@ -135,6 +118,7 @@ type (
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
+	// UpdateCustomRuleResponse is returned from a call to UpdateCustomRule.
 	UpdateCustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
 		Name          string   `json:"name"`
@@ -154,11 +138,13 @@ type (
 		} `json:"conditions"`
 	}
 
+	// RemoveCustomRuleRequest is used to remove a custom rule.
 	RemoveCustomRuleRequest struct {
 		ConfigID int `json:"configid,omitempty"`
 		ID       int `json:"id,omitempty"`
 	}
 
+	// RemoveCustomRuleResponse is returned from a call to RemoveCustomRule.
 	RemoveCustomRuleResponse struct {
 		ID            int      `json:"id,omitempty"`
 		Name          string   `json:"name"`
@@ -179,6 +165,7 @@ type (
 	}
 )
 
+// UnmarshalJSON reads a CustomRuleConditionsValue from its data argument.
 func (c *CustomRuleConditionsValue) UnmarshalJSON(data []byte) error {
 	var nums interface{}
 	err := json.Unmarshal(data, &nums)
@@ -206,6 +193,7 @@ func (c *CustomRuleConditionsValue) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// UnmarshalJSON reads a CustomRuleConditionsName from its data argument.
 func (c *CustomRuleConditionsName) UnmarshalJSON(data []byte) error {
 	var nums interface{}
 	err := json.Unmarshal(data, &nums)
@@ -233,7 +221,7 @@ func (c *CustomRuleConditionsName) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// Validate validates GetCustomRuleRequest
+// Validate validates a GetCustomRuleRequest.
 func (v GetCustomRuleRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -241,21 +229,21 @@ func (v GetCustomRuleRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetCustomRulesRequest
+// Validate validates a GetCustomRulesRequest.
 func (v GetCustomRulesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 	}.Filter()
 }
 
-// Validate validates CreateCustomRuleRequest
+// Validate validates a CreateCustomRuleRequest.
 func (v CreateCustomRuleRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 	}.Filter()
 }
 
-// Validate validates UpdateCustomRuleRequest
+// Validate validates an UpdateCustomRuleRequest.
 func (v UpdateCustomRuleRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -263,7 +251,7 @@ func (v UpdateCustomRuleRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates RemoveCustomRuleRequest
+// Validate validates a RemoveCustomRuleRequest.
 func (v RemoveCustomRuleRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -288,12 +276,12 @@ func (p *appsec) GetCustomRule(ctx context.Context, params GetCustomRuleRequest)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getcustomrule request: %w", err)
+		return nil, fmt.Errorf("failed to create GetCustomRule request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("GetCustomRule request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -322,12 +310,12 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getcustomrules request: %w", err)
+		return nil, fmt.Errorf("failed to create GetCustomRules request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getcustomrules request failed: %w", err)
+		return nil, fmt.Errorf("GetCustomRules request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -349,12 +337,6 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 
 }
 
-// Update will update a CustomRule.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putcustomrule
-
 func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRequest) (*UpdateCustomRuleResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -371,14 +353,14 @@ func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create CustomRulerequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateCustomRule request: %w", err)
 	}
 
 	var rval UpdateCustomRuleResponse
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("create CustomRule request failed: %w", err)
+		return nil, fmt.Errorf("UpdateCustomRule request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -388,12 +370,6 @@ func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRe
 	return &rval, nil
 }
 
-// Create will create a new customrule.
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postcustomrule
 func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRequest) (*CreateCustomRuleResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -409,14 +385,14 @@ func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create customrule request: %w", err)
+		return nil, fmt.Errorf("failed to create CreateCustomRule request: %w", err)
 	}
 
 	var rval CreateCustomRuleResponse
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("create customrulerequest failed: %w", err)
+		return nil, fmt.Errorf("CreateCustomRule request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -426,13 +402,6 @@ func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRe
 	return &rval, nil
 
 }
-
-// Delete will delete a CustomRule
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletecustomrule
 
 func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRequest) (*RemoveCustomRuleResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -450,17 +419,17 @@ func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRe
 		params.ID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed parse url: %w", err)
+		return nil, fmt.Errorf("failed to parse url: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create delcustomrule request: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveCustomRule request: %w", err)
 	}
 
 	resp, err := p.Exec(req, nil)
 	if err != nil {
-		return nil, fmt.Errorf("delcustomrule request failed: %w", err)
+		return nil, fmt.Errorf("RemoveCustomRule request failed: %w", err)
 	}
 	logger.Debugf("RemoveCustomRule RESP CODE %v", resp.StatusCode)
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {

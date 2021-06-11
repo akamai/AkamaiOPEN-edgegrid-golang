@@ -9,23 +9,19 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// ConfigurationClone represents a collection of ConfigurationClone
-//
-// See: ConfigurationClone.GetConfigurationClone()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// ConfigurationClone  contains operations available on ConfigurationClone  resource
-	// See: // appsec v1
+	// The ConfigurationClone interface supports cloning an existing configuration and retrieving a configuration version.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationclone
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#configurationclone
 	ConfigurationClone interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationversion
 		GetConfigurationClone(ctx context.Context, params GetConfigurationCloneRequest) (*GetConfigurationCloneResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsummarylistofconfigurationversions
 		CreateConfigurationClone(ctx context.Context, params CreateConfigurationCloneRequest) (*CreateConfigurationCloneResponse, error)
 	}
 
+	// GetConfigurationCloneRequest is used to retrieve information about an existing security configuration.
 	GetConfigurationCloneRequest struct {
 		ConfigID     int       `json:"configId"`
 		ConfigName   string    `json:"configName"`
@@ -43,13 +39,7 @@ type (
 		} `json:"staging"`
 	}
 
-	CreateConfigurationCloneResponse struct {
-		ConfigID    int    `json:"configId"`
-		Version     int    `json:"version"`
-		Description string `json:"description"`
-		Name        string `json:"name"`
-	}
-
+	// GetConfigurationCloneResponse is returned from a call to GetConfigurationClone.
 	GetConfigurationCloneResponse struct {
 		ConfigID     int       `json:"configId"`
 		ConfigName   string    `json:"configName"`
@@ -67,11 +57,7 @@ type (
 		} `json:"staging"`
 	}
 
-	CreateConfigurationClonePost struct {
-		CreateFromVersion int  `json:"createFromVersion"`
-		RuleUpdate        bool `json:"ruleUpdate"`
-	}
-
+	// CreateConfigurationCloneRequest is used to clone an existing security configuration.
 	CreateConfigurationCloneRequest struct {
 		Name        string   `json:"name"`
 		Description string   `json:"description"`
@@ -83,9 +69,17 @@ type (
 			Version  int `json:"version"`
 		} `json:"createFrom"`
 	}
+
+	// CreateConfigurationCloneResponse is returned from a call to CreateConfigurationClone.
+	CreateConfigurationCloneResponse struct {
+		ConfigID    int    `json:"configId"`
+		Version     int    `json:"version"`
+		Description string `json:"description"`
+		Name        string `json:"name"`
+	}
 )
 
-// Validate validates GetConfigurationCloneRequest
+// Validate validates a GetConfigurationCloneRequest.
 func (v GetConfigurationCloneRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -93,7 +87,7 @@ func (v GetConfigurationCloneRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates CreateConfigurationCloneRequest
+// Validate validates a CreateConfigurationCloneRequest.
 func (v CreateConfigurationCloneRequest) Validate() error {
 	return validation.Errors{
 		"CreateFromConfigID": validation.Validate(v.CreateFrom.ConfigID, validation.Required),
@@ -117,12 +111,12 @@ func (p *appsec) GetConfigurationClone(ctx context.Context, params GetConfigurat
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getconfigurationclone request: %w", err)
+		return nil, fmt.Errorf("failed to create GetConfigurationClone request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("GetConfigurationClone request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -133,12 +127,6 @@ func (p *appsec) GetConfigurationClone(ctx context.Context, params GetConfigurat
 
 }
 
-/// Create will create a new configurationclone.
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postconfigurationclone
 func (p *appsec) CreateConfigurationClone(ctx context.Context, params CreateConfigurationCloneRequest) (*CreateConfigurationCloneResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -147,19 +135,18 @@ func (p *appsec) CreateConfigurationClone(ctx context.Context, params CreateConf
 	logger := p.Log(ctx)
 	logger.Debug("CreateConfigurationClone")
 
-	uri :=
-		"/appsec/v1/configs/"
+	uri := "/appsec/v1/configs/"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create configurationclone request: %w", err)
+		return nil, fmt.Errorf("failed to create CreateConfigurationClone request: %w", err)
 	}
 
 	var rval CreateConfigurationCloneResponse
 
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create configurationclonerequest failed: %w", err)
+		return nil, fmt.Errorf("CreateConfigurationClone request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

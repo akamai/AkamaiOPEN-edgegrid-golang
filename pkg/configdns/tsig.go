@@ -20,11 +20,11 @@ type (
 	// TSIGKeys contains operations available on TSIKeyG resource
 	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html
 	TSIGKeys interface {
-		// Return bare bones tsig key struct
+		// NewTsigKey returns bare bones tsig key struct
 		NewTsigKey(context.Context, string) *TSIGKey
-		// Return empty query string struct. No elements required.
+		// NewTsigQueryString returns empty query string struct. No elements required.
 		NewTsigQueryString(context.Context) *TSIGQueryString
-		// List TSIG Keys
+		// ListTsigKeys lists the TSIG keys used by zones that you are allowed to manage
 		// See:
 		ListTsigKeys(context.Context, *TSIGQueryString) (*TSIGReportResponse, error)
 		// GetTsigKeyZones retrieves DNS Zones using tsig key
@@ -33,20 +33,21 @@ type (
 		// GetTsigKeyAliases retrieves a DNS Zone's aliases
 		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#posttsigusedby
 		GetTsigKeyAliases(context.Context, string) (*ZoneNameListResponse, error)
-		// Bulk Zones tsig key update
+		// TsigKeyBulkUpdate updates Bulk Zones tsig key
 		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#posttsigbulkupdate
 		TsigKeyBulkUpdate(context.Context, *TSIGKeyBulkPost) error
-		// GetZoneKey retrieves a DNS Zone's key
+		// GetTsigKey retrieves a Tsig key for zone
 		// See:  https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getzonekey
 		GetTsigKey(context.Context, string) (*TSIGKeyResponse, error)
-		// Delete tsig key for zone
+		// DeleteTsigKey deletes tsig key for zone
 		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#deletezonekey
 		DeleteTsigKey(context.Context, string) error
-		// Update tsig key for zone
+		// UpdateTsigKey updates tsig key for zone
 		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#putzonekey
 		UpdateTsigKey(context.Context, *TSIGKey, string) error
 	}
 
+	// TSIGQueryString contains TSIG query parameters
 	TSIGQueryString struct {
 		ContractIds []string `json:"contractIds,omitempty"`
 		Search      string   `json:"search,omitempty"`
@@ -54,26 +55,30 @@ type (
 		Gid         int64    `json:"gid,omitempty"`
 	}
 
+	// TSIGKey contains TSIG key POST response
 	TSIGKey struct {
 		Name      string `json:"name"`
 		Algorithm string `json:"algorithm,omitempty"`
 		Secret    string `json:"secret,omitempty"`
 	}
-
+	// TSIGKeyResponse contains TSIG key GET response
 	TSIGKeyResponse struct {
 		TSIGKey
 		ZoneCount int64 `json:"zonesCount,omitempty"`
 	}
 
+	// TSIGKeyBulkPost contains TSIG key and a list of names of zones that should use the key. Used with update function.
 	TSIGKeyBulkPost struct {
 		Key   *TSIGKey `json:"key"`
 		Zones []string `json:"zones"`
 	}
 
+	// TSIGZoneAliases contains list of zone aliases
 	TSIGZoneAliases struct {
 		Aliases []string `json:"aliases"`
 	}
 
+	// TSIGReportMeta contains metadata for TSIGReport response
 	TSIGReportMeta struct {
 		TotalElements int64    `json:"totalElements"`
 		Search        string   `json:"search,omitempty"`
@@ -82,6 +87,7 @@ type (
 		SortBy        []string `json:"sortBy,omitempty"`
 	}
 
+	// TSIGReportResponse contains response with a list of the TSIG keys used by zones.
 	TSIGReportResponse struct {
 		Metadata *TSIGReportMeta    `json:"metadata"`
 		Keys     []*TSIGKeyResponse `json:"keys,omitempty"`
@@ -98,6 +104,7 @@ func (key *TSIGKey) Validate() error {
 	}.Filter()
 }
 
+// Validate validates TSIGKeyBulkPost
 func (bulk *TSIGKeyBulkPost) Validate() error {
 	return validation.Errors{
 		"Key":   validation.Validate(bulk.Key, validation.Required),

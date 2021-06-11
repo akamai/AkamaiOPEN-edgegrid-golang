@@ -80,7 +80,7 @@ func (p *dns) GetRecord(ctx context.Context, zone string, name string, recordTyp
 	return &rec, nil
 }
 
-func (p *dns) GetRecordList(ctx context.Context, zone string, name string, recordType string) (*RecordSetResponse, error) {
+func (p *dns) GetRecordList(ctx context.Context, zone string, _ string, recordType string) (*RecordSetResponse, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetRecordList")

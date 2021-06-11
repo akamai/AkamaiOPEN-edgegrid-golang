@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListCustomDeny(t *testing.T) {
+func TestAppSec_ListCustomDeny(t *testing.T) {
 
 	result := GetCustomDenyListResponse{}
 
@@ -329,8 +329,8 @@ func TestAppSec_UpdateCustomDeny(t *testing.T) {
 	}
 }
 
-//Test delete CustomDeny
-func TestAppSec_DeleteCustomDeny(t *testing.T) {
+// Test Remove CustomDeny
+func TestAppSec_RemoveCustomDeny(t *testing.T) {
 
 	result := RemoveCustomDenyResponse{}
 

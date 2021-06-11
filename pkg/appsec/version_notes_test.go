@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListVersionNotes(t *testing.T) {
+func TestAppSec_ListVersionNotes(t *testing.T) {
 
 	result := GetVersionNotesResponse{}
 

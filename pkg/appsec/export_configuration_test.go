@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListExportConfigurations(t *testing.T) {
+func TestAppSec_ListExportConfigurations(t *testing.T) {
 
 	result := GetExportConfigurationsResponse{}
 

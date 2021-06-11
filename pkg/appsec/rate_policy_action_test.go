@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListRatePolicyActions(t *testing.T) {
+func TestAppSec_ListRatePolicyActions(t *testing.T) {
 
 	result := GetRatePolicyActionsResponse{}
 

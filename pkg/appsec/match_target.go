@@ -10,131 +10,35 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// MatchTarget represents a collection of MatchTarget
-//
-// See: MatchTarget.GetMatchTarget()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// MatchTarget  contains operations available on MatchTarget  resource
-	// See: // appsec v1
+	// The MatchTarget interface supports creating, retrieving, updating and removing match targets.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmatchtarget
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#matchtarget
 	MatchTarget interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmatchtargets
 		GetMatchTargets(ctx context.Context, params GetMatchTargetsRequest) (*GetMatchTargetsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmatchtargetid
 		GetMatchTarget(ctx context.Context, params GetMatchTargetRequest) (*GetMatchTargetResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmatchtargetid
 		CreateMatchTarget(ctx context.Context, params CreateMatchTargetRequest) (*CreateMatchTargetResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putmatchtargetid
 		UpdateMatchTarget(ctx context.Context, params UpdateMatchTargetRequest) (*UpdateMatchTargetResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletematchtargetid
 		RemoveMatchTarget(ctx context.Context, params RemoveMatchTargetRequest) (*RemoveMatchTargetResponse, error)
 	}
 
-	// GetMatchTargetRequest is the argument for GetProperties
-	GetMatchTargetRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		TargetID      int `json:"targetId"`
-	}
-
-	// GetMatchTargetsRequest is the argument for GetProperties
+	// GetMatchTargetsRequest is used to retrieve the match targets for a configuration.
 	GetMatchTargetsRequest struct {
 		ConfigID      int `json:"configId"`
 		ConfigVersion int `json:"configVersion"`
 		TargetID      int `json:"targetId"`
 	}
 
-	// UpdateMatchTargetRequest is the argument for GetProperties
-	UpdateMatchTargetRequest struct {
-		ConfigID       int             `json:"configId"`
-		ConfigVersion  int             `json:"configVersion"`
-		JsonPayloadRaw json.RawMessage `json:"-"`
-		TargetID       int             `json:"targetId"`
-	}
-
-	// RemoveMatchTargetRequest is the argument for GetProperties
-	RemoveMatchTargetRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		TargetID      int `json:"targetId"`
-	}
-
-	// CreateMatchTargetRequest is the argument for GetProperties
-	CreateMatchTargetRequest struct {
-		Type           string          `json:"type"`
-		ConfigID       int             `json:"configId"`
-		ConfigVersion  int             `json:"configVersion"`
-		JsonPayloadRaw json.RawMessage `json:"-"`
-	}
-
-	// CreateMatchTargetResponse is the argument for GetProperties
-	CreateMatchTargetResponse struct {
-		MType string `json:"type"`
-		Apis  []struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"apis,omitempty"`
-		DefaultFile                  string           `json:"defaultFile"`
-		Hostnames                    []string         `json:"hostnames"`
-		IsNegativeFileExtensionMatch bool             `json:"isNegativeFileExtensionMatch"`
-		IsNegativePathMatch          *json.RawMessage `json:"isNegativePathMatch,omitempty"`
-		FilePaths                    []string         `json:"filePaths"`
-		FileExtensions               []string         `json:"fileExtensions"`
-		SecurityPolicy               struct {
-			PolicyID string `json:"policyId"`
-		} `json:"securityPolicy"`
-		Sequence           int `json:"-"`
-		TargetID           int `json:"targetId"`
-		BypassNetworkLists []struct {
-			Name string `json:"name"`
-			ID   string `json:"id"`
-		} `json:"bypassNetworkLists"`
-	}
-
-	//GetMatchTargetResponse ...
-	GetMatchTargetResponse struct {
-		Type string `json:"type,omitempty"`
-		Apis []struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"apis,omitempty"`
-		DefaultFile                  string           `json:"defaultFile,omitempty"`
-		Hostnames                    []string         `json:"hostnames,omitempty"`
-		IsNegativeFileExtensionMatch bool             `json:"isNegativeFileExtensionMatch,omitempty"`
-		IsNegativePathMatch          *json.RawMessage `json:"isNegativePathMatch,omitempty"`
-		FilePaths                    []string         `json:"filePaths,omitempty"`
-		FileExtensions               []string         `json:"fileExtensions,omitempty"`
-		SecurityPolicy               struct {
-			PolicyID string `json:"policyId,omitempty"`
-		} `json:"securityPolicy,omitempty"`
-		Sequence           int `json:"-"`
-		TargetID           int `json:"-"`
-		BypassNetworkLists []struct {
-			Name string `json:"name,omitempty"`
-			ID   string `json:"id,omitempty"`
-		} `json:"bypassNetworkLists,omitempty"`
-	}
-
-	AutoGenerated struct {
-		Type string `json:"type"`
-		Apis []struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"apis"`
-		BypassNetworkLists []struct {
-			ID   string `json:"id"`
-			Name string `json:"name"`
-		} `json:"bypassNetworkLists"`
-		ConfigID       int `json:"configId"`
-		ConfigVersion  int `json:"configVersion"`
-		SecurityPolicy struct {
-			PolicyID string `json:"policyId"`
-		} `json:"securityPolicy"`
-		Sequence int `json:"-"`
-		TargetID int `json:"targetId"`
-	}
-
-	// GetMatchTargetResponse ...
+	// GetMatchTargetsResponse is returned from a call to GetMatchTargets.
 	GetMatchTargetsResponse struct {
 		MatchTargets struct {
 			APITargets []struct {
@@ -180,7 +84,78 @@ type (
 		} `json:"matchTargets,omitempty"`
 	}
 
-	// UpdateMatchTargetResponse ...
+	// GetMatchTargetRequest is used to retrieve a match target.
+	GetMatchTargetRequest struct {
+		ConfigID      int `json:"configId"`
+		ConfigVersion int `json:"configVersion"`
+		TargetID      int `json:"targetId"`
+	}
+
+	// GetMatchTargetResponse is returned from a call to GetMatchTarget.
+	GetMatchTargetResponse struct {
+		Type string `json:"type,omitempty"`
+		Apis []struct {
+			ID   int    `json:"id"`
+			Name string `json:"name"`
+		} `json:"apis,omitempty"`
+		DefaultFile                  string           `json:"defaultFile,omitempty"`
+		Hostnames                    []string         `json:"hostnames,omitempty"`
+		IsNegativeFileExtensionMatch bool             `json:"isNegativeFileExtensionMatch,omitempty"`
+		IsNegativePathMatch          *json.RawMessage `json:"isNegativePathMatch,omitempty"`
+		FilePaths                    []string         `json:"filePaths,omitempty"`
+		FileExtensions               []string         `json:"fileExtensions,omitempty"`
+		SecurityPolicy               struct {
+			PolicyID string `json:"policyId,omitempty"`
+		} `json:"securityPolicy,omitempty"`
+		Sequence           int `json:"-"`
+		TargetID           int `json:"targetId"`
+		BypassNetworkLists []struct {
+			Name string `json:"name,omitempty"`
+			ID   string `json:"id,omitempty"`
+		} `json:"bypassNetworkLists,omitempty"`
+	}
+
+	// CreateMatchTargetRequest is used to create a match target.
+	CreateMatchTargetRequest struct {
+		Type           string          `json:"type"`
+		ConfigID       int             `json:"configId"`
+		ConfigVersion  int             `json:"configVersion"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
+	}
+
+	// CreateMatchTargetResponse is returned from a call to CreateMatchTarget.
+	CreateMatchTargetResponse struct {
+		MType string `json:"type"`
+		Apis  []struct {
+			ID   int    `json:"id"`
+			Name string `json:"name"`
+		} `json:"apis,omitempty"`
+		DefaultFile                  string           `json:"defaultFile"`
+		Hostnames                    []string         `json:"hostnames"`
+		IsNegativeFileExtensionMatch bool             `json:"isNegativeFileExtensionMatch"`
+		IsNegativePathMatch          *json.RawMessage `json:"isNegativePathMatch,omitempty"`
+		FilePaths                    []string         `json:"filePaths"`
+		FileExtensions               []string         `json:"fileExtensions"`
+		SecurityPolicy               struct {
+			PolicyID string `json:"policyId"`
+		} `json:"securityPolicy"`
+		Sequence           int `json:"-"`
+		TargetID           int `json:"targetId"`
+		BypassNetworkLists []struct {
+			Name string `json:"name"`
+			ID   string `json:"id"`
+		} `json:"bypassNetworkLists"`
+	}
+
+	// UpdateMatchTargetRequest is used to modify an existing match target.
+	UpdateMatchTargetRequest struct {
+		ConfigID       int             `json:"configId"`
+		ConfigVersion  int             `json:"configVersion"`
+		JsonPayloadRaw json.RawMessage `json:"-"`
+		TargetID       int             `json:"targetId"`
+	}
+
+	// UpdateMatchTargetResponse is returned from a call to UpdateMatchTarget.
 	UpdateMatchTargetResponse struct {
 		Type                         string           `json:"type"`
 		ConfigID                     int              `json:"configId"`
@@ -202,7 +177,14 @@ type (
 		} `json:"bypassNetworkLists"`
 	}
 
-	// RemoveMatchTargetResponse ...
+	// RemoveMatchTargetRequest is used to remove a match target.
+	RemoveMatchTargetRequest struct {
+		ConfigID      int `json:"configId"`
+		ConfigVersion int `json:"configVersion"`
+		TargetID      int `json:"targetId"`
+	}
+
+	// RemoveMatchTargetResponse is returned from a call to RemoveMatchTarget.
 	RemoveMatchTargetResponse struct {
 		Type                         string   `json:"type"`
 		ConfigID                     int      `json:"configId"`
@@ -224,18 +206,39 @@ type (
 		} `json:"bypassNetworkLists"`
 	}
 
-	// BypassNetworkList ...
+	// BypassNetworkList describes a network list used in the bypass network lists for the specified configuration.
 	BypassNetworkList struct {
 		Name string `json:"name"`
 		ID   string `json:"id"`
 	}
 
+	// Hostnames contains one or more hostnames.
 	Hostnames struct {
 		Hostnames string `json:"hostnames"`
 	}
+
+	// AutoGenerated is currently unused.
+	AutoGenerated struct {
+		Type string `json:"type"`
+		Apis []struct {
+			ID   int    `json:"id"`
+			Name string `json:"name"`
+		} `json:"apis"`
+		BypassNetworkLists []struct {
+			ID   string `json:"id"`
+			Name string `json:"name"`
+		} `json:"bypassNetworkLists"`
+		ConfigID       int `json:"configId"`
+		ConfigVersion  int `json:"configVersion"`
+		SecurityPolicy struct {
+			PolicyID string `json:"policyId"`
+		} `json:"securityPolicy"`
+		Sequence int `json:"-"`
+		TargetID int `json:"targetId"`
+	}
 )
 
-// Validate validates GetMatchTargetRequest
+// Validate validates a GetMatchTargetRequest.
 func (v GetMatchTargetRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
@@ -244,7 +247,7 @@ func (v GetMatchTargetRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetMatchTargetsRequest
+// Validate validates a GetMatchTargetsRequest.
 func (v GetMatchTargetsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
@@ -252,7 +255,7 @@ func (v GetMatchTargetsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates CreateMatchTargetRequest
+// Validate validates a CreateMatchTargetRequest.
 func (v CreateMatchTargetRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
@@ -260,7 +263,7 @@ func (v CreateMatchTargetRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateMatchTargetRequest
+// Validate validates an UpdateMatchTargetRequest.
 func (v UpdateMatchTargetRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
@@ -269,7 +272,7 @@ func (v UpdateMatchTargetRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates RemoveMatchTargetRequest
+// Validate validates a RemoveMatchTargetRequest.
 func (v RemoveMatchTargetRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
@@ -297,12 +300,12 @@ func (p *appsec) GetMatchTarget(ctx context.Context, params GetMatchTargetReques
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getmatchtarget request: %w", err)
+		return nil, fmt.Errorf("failed to create GetMatchTarget request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("GetMatchTarget request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -332,12 +335,12 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getmatchtargets request: %w", err)
+		return nil, fmt.Errorf("failed to create GetMatchTargets request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getmatchtargets request failed: %w", err)
+		return nil, fmt.Errorf("GetMatchTargets request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -362,12 +365,6 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 
 }
 
-// Update will update a MatchTarget.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putmatchtarget
-
 func (p *appsec) UpdateMatchTarget(ctx context.Context, params UpdateMatchTargetRequest) (*UpdateMatchTargetResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -385,14 +382,14 @@ func (p *appsec) UpdateMatchTarget(ctx context.Context, params UpdateMatchTarget
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create MatchTargetrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateMatchTarget request: %w", err)
 	}
 
 	var rval UpdateMatchTargetResponse
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("update MatchTarget request failed: %w", err)
+		return nil, fmt.Errorf("UpdateMatchTarget request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -402,12 +399,6 @@ func (p *appsec) UpdateMatchTarget(ctx context.Context, params UpdateMatchTarget
 	return &rval, nil
 }
 
-// Create will create a new matchtarget.
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postmatchtarget
 func (p *appsec) CreateMatchTarget(ctx context.Context, params CreateMatchTargetRequest) (*CreateMatchTargetResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -424,14 +415,14 @@ func (p *appsec) CreateMatchTarget(ctx context.Context, params CreateMatchTarget
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create matchtarget request: %w", err)
+		return nil, fmt.Errorf("failed to create CreateMatchTarget request: %w", err)
 	}
 
 	var rval CreateMatchTargetResponse
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("create matchtargetrequest failed: %w", err)
+		return nil, fmt.Errorf("CreateMatchTarget request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
@@ -441,13 +432,6 @@ func (p *appsec) CreateMatchTarget(ctx context.Context, params CreateMatchTarget
 	return &rval, nil
 
 }
-
-// Delete will delete a MatchTarget
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletematchtarget
 
 func (p *appsec) RemoveMatchTarget(ctx context.Context, params RemoveMatchTargetRequest) (*RemoveMatchTargetResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -467,18 +451,17 @@ func (p *appsec) RemoveMatchTarget(ctx context.Context, params RemoveMatchTarget
 	),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed parse url: %w", err)
+		return nil, fmt.Errorf("failed to parse url: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create delmatchtarget request: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveMatchTarget request: %w", err)
 	}
 
 	resp, errd := p.Exec(req, nil)
 	if errd != nil {
-		logger.Debug("No JSON on DELETE")
-		return nil, fmt.Errorf("delmatchtarget request failed: %w", err)
+		return nil, fmt.Errorf("RemoveMatchTarget request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListRatePolicies(t *testing.T) {
+func TestAppSec_ListRatePolicies(t *testing.T) {
 
 	result := GetRatePoliciesResponse{}
 
@@ -329,8 +329,8 @@ func TestAppSec_UpdateRatePolicy(t *testing.T) {
 	}
 }
 
-//Test delete RatePolicy
-func TestAppSec_DeleteRatePolicy(t *testing.T) {
+// Test Remove RatePolicy
+func TestAppSec_RemoveRatePolicy(t *testing.T) {
 
 	result := RemoveRatePolicyResponse{}
 

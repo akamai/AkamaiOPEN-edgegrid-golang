@@ -73,6 +73,7 @@ func (s SearchRequest) Validate() error {
 }
 
 var (
+	// ErrSearchProperties represents error when searching for properties fails
 	ErrSearchProperties = errors.New("searching for properties")
 )
 

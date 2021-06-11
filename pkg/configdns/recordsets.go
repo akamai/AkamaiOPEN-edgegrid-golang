@@ -15,7 +15,7 @@ var (
 	zoneRecordsetsWriteLock sync.Mutex
 )
 
-// Recordsets contains operations available on a recordsets
+// RecordSets contains operations available on a recordsets
 // See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html
 type RecordSets interface {
 	// NewRecordSetResponse returns new response object
@@ -31,7 +31,7 @@ type RecordSets interface {
 	UpdateRecordsets(context.Context, *Recordsets, string, ...bool) error
 }
 
-// Recordset Query args struct
+// RecordsetQueryArgs contains query parameters for recordset request
 type RecordsetQueryArgs struct {
 	Page     int
 	PageSize int
@@ -41,11 +41,12 @@ type RecordsetQueryArgs struct {
 	Types    string
 }
 
-// Recordsets Struct. Used for Create and Update Recordsets
+// Recordsets Struct. Used for Create and Update Recordsets. Contains a list of Recordset objects
 type Recordsets struct {
 	Recordsets []Recordset `json:"recordsets"`
 }
 
+// Recordset contains recordset metadata
 type Recordset struct {
 	Name  string   `json:"name"`
 	Type  string   `json:"type"`
@@ -53,6 +54,7 @@ type Recordset struct {
 	Rdata []string `json:"rdata"`
 } //`json:"recordsets"`
 
+// MetadataH contains metadata of RecordSet response
 type MetadataH struct {
 	LastPage      int  `json:"lastPage"`
 	Page          int  `json:"page"`
@@ -61,6 +63,7 @@ type MetadataH struct {
 	TotalElements int  `json:"totalElements"`
 } //`json:"metadata"`
 
+// RecordSetResponse contains a response with a list of recordsets
 type RecordSetResponse struct {
 	Metadata   MetadataH   `json:"metadata"`
 	Recordsets []Recordset `json:"recordsets"`
@@ -86,7 +89,7 @@ func (rs *Recordsets) Validate() error {
 	return nil
 }
 
-func (p *dns) NewRecordSetResponse(ctx context.Context, name string) *RecordSetResponse {
+func (p *dns) NewRecordSetResponse(_ context.Context, _ string) *RecordSetResponse {
 	recordset := &RecordSetResponse{}
 	return recordset
 }

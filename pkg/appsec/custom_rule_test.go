@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListCustomRules(t *testing.T) {
+func TestAppSec_ListCustomRules(t *testing.T) {
 
 	result := GetCustomRulesResponse{}
 
@@ -321,8 +321,8 @@ func TestAppSec_UpdateCustomRule(t *testing.T) {
 	}
 }
 
-//Test delete CustomRule
-func TestAppSec_DeleteCustomRule(t *testing.T) {
+// Test Remove CustomRule
+func TestAppSec_RemoveCustomRule(t *testing.T) {
 
 	result := RemoveCustomRuleResponse{}
 

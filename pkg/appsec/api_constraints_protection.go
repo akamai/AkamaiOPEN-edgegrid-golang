@@ -8,23 +8,28 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// RateProtection represents a collection of RateProtection
-//
-// See: RateProtection.GetRateProtection()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// RateProtection  contains operations available on RateProtection  resource
-	// See: // appsec v1
+	// The APIConstraintsProtection interface supports retrieving and updating API request constraints
+	// for a configuration and policy.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getrateprotection
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	APIConstraintsProtection interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getapirequestconstraints
 		GetAPIConstraintsProtection(ctx context.Context, params GetAPIConstraintsProtectionRequest) (*GetAPIConstraintsProtectionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putapirequestconstraints
 		UpdateAPIConstraintsProtection(ctx context.Context, params UpdateAPIConstraintsProtectionRequest) (*UpdateAPIConstraintsProtectionResponse, error)
 	}
 
+	// GetAPIConstraintsProtectionRequest is used to retrieve the API constraints protection setting.
+	GetAPIConstraintsProtectionRequest struct {
+		ConfigID            int    `json:"-"`
+		Version             int    `json:"-"`
+		PolicyID            string `json:"-"`
+		ApplyAPIConstraints bool   `json:"applyApiConstraints"`
+	}
+
+	// GetAPIConstraintsProtectionResponse is returned from a call to GetAPIConstraintsProtection.
 	GetAPIConstraintsProtectionResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
@@ -35,13 +40,15 @@ type (
 		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
 	}
 
-	GetAPIConstraintsProtectionRequest struct {
+	// UpdateAPIConstraintsProtectionRequest is used to modify the API constraints protection setting.
+	UpdateAPIConstraintsProtectionRequest struct {
 		ConfigID            int    `json:"-"`
 		Version             int    `json:"-"`
 		PolicyID            string `json:"-"`
 		ApplyAPIConstraints bool   `json:"applyApiConstraints"`
 	}
 
+	// UpdateAPIConstraintsProtectionResponse is returned from a call to UpdateAPIConstraintsProtection.
 	UpdateAPIConstraintsProtectionResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
@@ -51,16 +58,9 @@ type (
 		ApplyReputationControls       bool `json:"applyReputationControls"`
 		ApplySlowPostControls         bool `json:"applySlowPostControls"`
 	}
-
-	UpdateAPIConstraintsProtectionRequest struct {
-		ConfigID            int    `json:"-"`
-		Version             int    `json:"-"`
-		PolicyID            string `json:"-"`
-		ApplyAPIConstraints bool   `json:"applyApiConstraints"`
-	}
 )
 
-// Validate validates GetRateProtectionRequest
+// Validate validates a GetAPIConstraintsProtectionRequest.
 func (v GetAPIConstraintsProtectionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -69,7 +69,7 @@ func (v GetAPIConstraintsProtectionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateRateProtectionRequest
+// Validate validates an UpdateAPIConstraintsProtectionRequest.
 func (v UpdateAPIConstraintsProtectionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -96,12 +96,12 @@ func (p *appsec) GetAPIConstraintsProtection(ctx context.Context, params GetAPIC
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getAPIConstraintsProtection request: %w", err)
+		return nil, fmt.Errorf("failed to create GetAPIConstraintsProtection request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getAPIConstraintsProtection  request failed: %w", err)
+		return nil, fmt.Errorf("GetAPIConstraintsProtection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -111,12 +111,6 @@ func (p *appsec) GetAPIConstraintsProtection(ctx context.Context, params GetAPIC
 	return &rval, nil
 
 }
-
-// Update will update a RateProtection.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putrateprotection
 
 func (p *appsec) UpdateAPIConstraintsProtection(ctx context.Context, params UpdateAPIConstraintsProtectionRequest) (*UpdateAPIConstraintsProtectionResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -135,13 +129,13 @@ func (p *appsec) UpdateAPIConstraintsProtection(ctx context.Context, params Upda
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create RateProtectionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateAPIConstraintsProtection request: %w", err)
 	}
 
 	var rval UpdateAPIConstraintsProtectionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create APIConstraintsProtection request failed: %w", err)
+		return nil, fmt.Errorf("UpdateAPIConstraintsProtection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListMatchTargetSequence(t *testing.T) {
+func TestAppSec_ListMatchTargetSequence(t *testing.T) {
 
 	result := GetMatchTargetSequenceResponse{}
 

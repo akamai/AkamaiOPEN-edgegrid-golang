@@ -8,24 +8,23 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// RatePolicyAction represents a collection of RatePolicyAction
-//
-// See: RatePolicyAction.GetRatePolicyAction()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// RatePolicyAction  contains operations available on RatePolicyAction  resource
-	// See: // appsec v1
+	// The RatePolicyAction interface supports retrieving and modifying the action associated with
+	// a specified rate policy, or with all rate policies in a security policy.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getratepolicyaction
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#ratepolicyaction
 	RatePolicyAction interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getratepolicyactions
 		GetRatePolicyActions(ctx context.Context, params GetRatePolicyActionsRequest) (*GetRatePolicyActionsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getratepolicyactions
 		GetRatePolicyAction(ctx context.Context, params GetRatePolicyActionRequest) (*GetRatePolicyActionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putactionsperratepolicy
 		UpdateRatePolicyAction(ctx context.Context, params UpdateRatePolicyActionRequest) (*UpdateRatePolicyActionResponse, error)
 	}
 
+	// GetRatePolicyActionsRequest is used to retrieve a configuration's rate policies and their associated actions.
 	GetRatePolicyActionsRequest struct {
 		ConfigID     int    `json:"configId"`
 		Version      int    `json:"version"`
@@ -35,6 +34,7 @@ type (
 		Ipv6Action   string `json:"ipv6Action"`
 	}
 
+	// GetRatePolicyActionsResponse is returned from a call to GetRatePolicyActions.
 	GetRatePolicyActionsResponse struct {
 		RatePolicyActions []struct {
 			ID         int    `json:"id"`
@@ -43,6 +43,7 @@ type (
 		} `json:"ratePolicyActions,omitempty"`
 	}
 
+	// GetRatePolicyActionRequest is used to retrieve a configuration's rate policies and their associated actions.
 	GetRatePolicyActionRequest struct {
 		ConfigID   int    `json:"configId"`
 		Version    int    `json:"version"`
@@ -52,6 +53,7 @@ type (
 		Ipv6Action string `json:"ipv6Action"`
 	}
 
+	// GetRatePolicyActionResponse is returned from a call to GetRatePolicyAction.
 	GetRatePolicyActionResponse struct {
 		RatePolicyActions []struct {
 			ID         int    `json:"id"`
@@ -60,6 +62,7 @@ type (
 		} `json:"ratePolicyActions"`
 	}
 
+	// UpdateRatePolicyActionRequest is used to update the actions for a rate policy.
 	UpdateRatePolicyActionRequest struct {
 		ConfigID     int    `json:"-"`
 		Version      int    `json:"-"`
@@ -69,12 +72,14 @@ type (
 		Ipv6Action   string `json:"ipv6Action"`
 	}
 
+	// UpdateRatePolicyActionResponse is returned from a call to UpdateRatePolicy.
 	UpdateRatePolicyActionResponse struct {
 		ID         int    `json:"id"`
 		Ipv4Action string `json:"ipv4Action"`
 		Ipv6Action string `json:"ipv6Action"`
 	}
 
+	// RatePolicyActionPost is used to describe actions that may be taken as part of a rate policy.
 	RatePolicyActionPost struct {
 		ID         int    `json:"id"`
 		Ipv4Action string `json:"ipv4Action"`
@@ -82,7 +87,7 @@ type (
 	}
 )
 
-// Validate validates GetRatePolicyActionRequest
+// Validate validates a GetRatePolicyActionRequest.
 func (v GetRatePolicyActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -91,7 +96,7 @@ func (v GetRatePolicyActionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetRatePolicyActionsRequest
+// Validate validates a GetRatePolicyActionsRequest.
 func (v GetRatePolicyActionsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -100,7 +105,7 @@ func (v GetRatePolicyActionsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateRatePolicyActionRequest
+// Validate validates an UpdateRatePolicyActionRequest.
 func (v UpdateRatePolicyActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":     validation.Validate(v.ConfigID, validation.Required),
@@ -128,12 +133,12 @@ func (p *appsec) GetRatePolicyAction(ctx context.Context, params GetRatePolicyAc
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getratepolicyaction request: %w", err)
+		return nil, fmt.Errorf("failed to create GetRatePolicyAction request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getratepolicyaction  request failed: %w", err)
+		return nil, fmt.Errorf("GetRatePolicyAction request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -163,12 +168,12 @@ func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyA
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getratepolicyactions request: %w", err)
+		return nil, fmt.Errorf("failed to create GetRatePolicyActions request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getratepolicyactions request failed: %w", err)
+		return nil, fmt.Errorf("GetRatePolicyActions request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -190,12 +195,6 @@ func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyA
 
 }
 
-// Update will update a RatePolicyAction.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putratepolicyaction
-
 func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePolicyActionRequest) (*UpdateRatePolicyActionResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -214,13 +213,13 @@ func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePo
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create RatePolicyActionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateRatePolicyAction: %w", err)
 	}
 
 	var rval UpdateRatePolicyActionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create RatePolicyAction request failed: %w", err)
+		return nil, fmt.Errorf("UpdateRatePolicyAction request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

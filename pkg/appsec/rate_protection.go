@@ -8,24 +8,31 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// RateProtection represents a collection of RateProtection
-//
-// See: RateProtection.GetRateProtection()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// RateProtection  contains operations available on RateProtection  resource
-	// See: // appsec v1
+	// The RateProtection interface supports retrieving and updating rate controls for a configuration
+	// and policy.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getrateprotection
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	RateProtection interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetRateProtections(ctx context.Context, params GetRateProtectionsRequest) (*GetRateProtectionsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetRateProtection(ctx context.Context, params GetRateProtectionRequest) (*GetRateProtectionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateRateProtection(ctx context.Context, params UpdateRateProtectionRequest) (*UpdateRateProtectionResponse, error)
 	}
 
+	// GetRateProtectionRequest is used to retrieve the rate protection setting.
+	GetRateProtectionRequest struct {
+		ConfigID          int    `json:"-"`
+		Version           int    `json:"-"`
+		PolicyID          string `json:"-"`
+		ApplyRateControls bool   `json:"applyRateControls"`
+	}
+
+	// GetRateProtectionResponse is returned from a call to GetRateProtection.
 	GetRateProtectionResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
@@ -36,13 +43,15 @@ type (
 		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
 	}
 
-	GetRateProtectionRequest struct {
+	// GetRateProtectionsRequest is used to retrieve the rate protection setting.
+	GetRateProtectionsRequest struct {
 		ConfigID          int    `json:"-"`
 		Version           int    `json:"-"`
 		PolicyID          string `json:"-"`
 		ApplyRateControls bool   `json:"applyRateControls"`
 	}
 
+	// GetRateProtectionsResponse is returned from a call to GetRateProtection.
 	GetRateProtectionsResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
@@ -53,13 +62,15 @@ type (
 		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
 	}
 
-	GetRateProtectionsRequest struct {
+	// UpdateRateProtectionRequest is used to modify the rate protection setting.
+	UpdateRateProtectionRequest struct {
 		ConfigID          int    `json:"-"`
 		Version           int    `json:"-"`
 		PolicyID          string `json:"-"`
 		ApplyRateControls bool   `json:"applyRateControls"`
 	}
 
+	// UpdateRateProtectionResponse is returned from a call to UpdateRateProtection.
 	UpdateRateProtectionResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
@@ -69,16 +80,9 @@ type (
 		ApplyReputationControls       bool `json:"applyReputationControls"`
 		ApplySlowPostControls         bool `json:"applySlowPostControls"`
 	}
-
-	UpdateRateProtectionRequest struct {
-		ConfigID          int    `json:"-"`
-		Version           int    `json:"-"`
-		PolicyID          string `json:"-"`
-		ApplyRateControls bool   `json:"applyRateControls"`
-	}
 )
 
-// Validate validates GetRateProtectionRequest
+// Validate validates a GetRateProtectionRequest.
 func (v GetRateProtectionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -87,7 +91,7 @@ func (v GetRateProtectionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetRateProtectionsRequest
+// Validate validates a GetRateProtectionsRequest.
 func (v GetRateProtectionsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -96,7 +100,7 @@ func (v GetRateProtectionsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateRateProtectionRequest
+// Validate validates an UpdateRateProtectionRequest.
 func (v UpdateRateProtectionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -123,12 +127,12 @@ func (p *appsec) GetRateProtection(ctx context.Context, params GetRateProtection
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getrateprotection request: %w", err)
+		return nil, fmt.Errorf("failed to create GetRateProtection request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getrateprotection  request failed: %w", err)
+		return nil, fmt.Errorf("GetRateProtection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -157,12 +161,12 @@ func (p *appsec) GetRateProtections(ctx context.Context, params GetRateProtectio
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getrateprotections request: %w", err)
+		return nil, fmt.Errorf("failed to create GetRateProtections request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getrateprotections request failed: %w", err)
+		return nil, fmt.Errorf("GetRateProtections request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -172,12 +176,6 @@ func (p *appsec) GetRateProtections(ctx context.Context, params GetRateProtectio
 	return &rval, nil
 
 }
-
-// Update will update a RateProtection.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putrateprotection
 
 func (p *appsec) UpdateRateProtection(ctx context.Context, params UpdateRateProtectionRequest) (*UpdateRateProtectionResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -196,13 +194,13 @@ func (p *appsec) UpdateRateProtection(ctx context.Context, params UpdateRateProt
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create RateProtectionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateRateProtection request: %w", err)
 	}
 
 	var rval UpdateRateProtectionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create RateProtection request failed: %w", err)
+		return nil, fmt.Errorf("UpdateRateProtection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

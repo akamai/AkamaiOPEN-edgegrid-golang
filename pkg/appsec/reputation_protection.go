@@ -8,25 +8,34 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// ReputationProtection represents a collection of ReputationProtection
-//
-// See: ReputationProtection.GetReputationProtection()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// ReputationProtection  contains operations available on ReputationProtection  resource
-	// See: // appsec v1
+	// The ReputationProtection interface supports retrieving, modifying and removing reputation
+	// protection.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationprotection
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	ReputationProtection interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetReputationProtections(ctx context.Context, params GetReputationProtectionsRequest) (*GetReputationProtectionsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetReputationProtection(ctx context.Context, params GetReputationProtectionRequest) (*GetReputationProtectionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateReputationProtection(ctx context.Context, params UpdateReputationProtectionRequest) (*UpdateReputationProtectionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		RemoveReputationProtection(ctx context.Context, params RemoveReputationProtectionRequest) (*RemoveReputationProtectionResponse, error)
 	}
 
+	// GetReputationProtectionRequest is used to retrieve the reputation protection setting.
+	GetReputationProtectionRequest struct {
+		ConfigID                int    `json:"-"`
+		Version                 int    `json:"-"`
+		PolicyID                string `json:"-"`
+		ApplyReputationControls bool   `json:"applyReputationControls"`
+	}
+
+	// GetReputationProtectionResponse is returned from a call to GetReputationProtection.
 	GetReputationProtectionResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
@@ -37,13 +46,15 @@ type (
 		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
 	}
 
-	GetReputationProtectionRequest struct {
+	// GetReputationProtectionsRequest is used to retrieve the reputation protection setting.
+	GetReputationProtectionsRequest struct {
 		ConfigID                int    `json:"-"`
 		Version                 int    `json:"-"`
 		PolicyID                string `json:"-"`
 		ApplyReputationControls bool   `json:"applyReputationControls"`
 	}
 
+	// GetReputationProtectionsResponse is returned from a call to GetReputationProtection.
 	GetReputationProtectionsResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
@@ -54,13 +65,15 @@ type (
 		ApplySlowPostControls         bool `json:"applySlowPostControls"`
 	}
 
-	GetReputationProtectionsRequest struct {
+	// UpdateReputationProtectionRequest is used to modify the reputation protection setting.
+	UpdateReputationProtectionRequest struct {
 		ConfigID                int    `json:"-"`
 		Version                 int    `json:"-"`
 		PolicyID                string `json:"-"`
 		ApplyReputationControls bool   `json:"applyReputationControls"`
 	}
 
+	// UpdateReputationProtectionResponse is returned from a call to UpdateReputationProtection.
 	UpdateReputationProtectionResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
@@ -71,13 +84,15 @@ type (
 		ApplySlowPostControls         bool `json:"applySlowPostControls"`
 	}
 
-	UpdateReputationProtectionRequest struct {
+	// RemoveReputationProtectionRequest is used to remove the reputation protection settings.
+	RemoveReputationProtectionRequest struct {
 		ConfigID                int    `json:"-"`
 		Version                 int    `json:"-"`
 		PolicyID                string `json:"-"`
 		ApplyReputationControls bool   `json:"applyReputationControls"`
 	}
 
+	// RemoveReputationProtectionResponse is returned from a call to RemoveReputationProtection.
 	RemoveReputationProtectionResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
@@ -87,16 +102,9 @@ type (
 		ApplyReputationControls       bool `json:"applyReputationControls"`
 		ApplySlowPostControls         bool `json:"applySlowPostControls"`
 	}
-
-	RemoveReputationProtectionRequest struct {
-		ConfigID                int    `json:"-"`
-		Version                 int    `json:"-"`
-		PolicyID                string `json:"-"`
-		ApplyReputationControls bool   `json:"applyReputationControls"`
-	}
 )
 
-// Validate validates GetReputationProtectionRequest
+// Validate validates a GetReputationProtectionRequest.
 func (v GetReputationProtectionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -105,7 +113,7 @@ func (v GetReputationProtectionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetReputationProtectionsRequest
+// Validate validates a GetReputationProtectionsRequest.
 func (v GetReputationProtectionsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -114,7 +122,7 @@ func (v GetReputationProtectionsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateReputationProtectionRequest
+// Validate validates an UpdateReputationProtectionRequest.
 func (v UpdateReputationProtectionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -123,7 +131,7 @@ func (v UpdateReputationProtectionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates RemoveReputationProtectionRequest
+// Validate validates a RemoveReputationProtectionRequest.
 func (v RemoveReputationProtectionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -150,12 +158,12 @@ func (p *appsec) GetReputationProtection(ctx context.Context, params GetReputati
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getreputationprotection request: %w", err)
+		return nil, fmt.Errorf("failed to create GetReputationProtection request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getreputationprotection  request failed: %w", err)
+		return nil, fmt.Errorf("GetReputationProtection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -184,12 +192,12 @@ func (p *appsec) GetReputationProtections(ctx context.Context, params GetReputat
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getreputationprotections request: %w", err)
+		return nil, fmt.Errorf("failed to create GetReputationProtections request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getreputationprotections request failed: %w", err)
+		return nil, fmt.Errorf("GetReputationProtections request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -199,12 +207,6 @@ func (p *appsec) GetReputationProtections(ctx context.Context, params GetReputat
 	return &rval, nil
 
 }
-
-// Update will update a ReputationProtection.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationprotection
 
 func (p *appsec) UpdateReputationProtection(ctx context.Context, params UpdateReputationProtectionRequest) (*UpdateReputationProtectionResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -223,13 +225,13 @@ func (p *appsec) UpdateReputationProtection(ctx context.Context, params UpdateRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create ReputationProtectionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateReputationProtection request: %w", err)
 	}
 
 	var rval UpdateReputationProtectionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create ReputationProtection request failed: %w", err)
+		return nil, fmt.Errorf("UpdateReputationProtection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -238,12 +240,6 @@ func (p *appsec) UpdateReputationProtection(ctx context.Context, params UpdateRe
 
 	return &rval, nil
 }
-
-// Update will update a ReputationProtection.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationprotection
 
 func (p *appsec) RemoveReputationProtection(ctx context.Context, params RemoveReputationProtectionRequest) (*RemoveReputationProtectionResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -262,13 +258,13 @@ func (p *appsec) RemoveReputationProtection(ctx context.Context, params RemoveRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create ReputationProtectionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveReputationProtection request: %w", err)
 	}
 
 	var rval RemoveReputationProtectionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create ReputationProtection request failed: %w", err)
+		return nil, fmt.Errorf("RemoveReputationProtection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

@@ -117,8 +117,11 @@ func (cp CreateCPCode) Validate() error {
 }
 
 var (
+	// ErrGetCPCodes represents error when fetching CP Codes fails
 	ErrGetCPCodes   = errors.New("fetching CP Codes")
+	// ErrGetCPCode represents error when fetching CP Code fails
 	ErrGetCPCode    = errors.New("fetching CP Code")
+	// ErrCreateCPCode represents error when creating CP Code fails
 	ErrCreateCPCode = errors.New("creating CP Code")
 )
 

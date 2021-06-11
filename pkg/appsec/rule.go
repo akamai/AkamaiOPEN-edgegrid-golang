@@ -9,29 +9,80 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// Rule represents a collection of Rule, with Action and optional Condition/Exception information
-//
-// See: Rule.GetRule()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// Rule  contains operations available on Rule  resource
-	// See: // appsec v1
+	// The Rule interface supports retrieving and modifying the rules in a policy together with their
+	// actions, conditions and exceptions, or the action, condition and exceptions of a specific rule.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getRule
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#rule
 	Rule interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getrules
 		GetRules(ctx context.Context, params GetRulesRequest) (*GetRulesResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getruleaction
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getruleconditionexception
 		GetRule(ctx context.Context, params GetRuleRequest) (*GetRuleResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putruleaction
 		UpdateRule(ctx context.Context, params UpdateRuleRequest) (*UpdateRuleResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putruleconditionexception
+		UpdateRuleConditionException(ctx context.Context, params UpdateConditionExceptionRequest) (*UpdateConditionExceptionResponse, error)
 	}
 
+	// GetRulesRequest is used to retrieve the rules for a configuration and policy, together with their actions and condition and exception information.
+	GetRulesRequest struct {
+		ConfigID int    `json:"-"`
+		Version  int    `json:"-"`
+		PolicyID string `json:"-"`
+		RuleID   int    `json:"-"`
+	}
+
+	// GetRulesResponse is returned from a call to GetRules.
+	GetRulesResponse struct {
+		Rules []struct {
+			ID                 int                     `json:"id,omitempty"`
+			Action             string                  `json:"action,omitempty"`
+			ConditionException *RuleConditionException `json:"conditionException,omitempty"`
+		} `json:"ruleActions,omitempty"`
+	}
+
+	// GetRuleRequest is used to retrieve a rule together with its action and its condition and exception information.
+	GetRuleRequest struct {
+		ConfigID int    `json:"-"`
+		Version  int    `json:"-"`
+		PolicyID string `json:"-"`
+		RuleID   int    `json:"-"`
+	}
+
+	// GetRuleResponse is returned from a call to GetRule.
+	GetRuleResponse struct {
+		Action             string                  `json:"action,omitempty"`
+		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
+	}
+
+	// UpdateRuleRequest is used to modify the settings for a rule.
+	UpdateRuleRequest struct {
+		ConfigID       int             `json:"-"`
+		Version        int             `json:"-"`
+		PolicyID       string          `json:"-"`
+		RuleID         int             `json:"-"`
+		Action         string          `json:"action"`
+		JsonPayloadRaw json.RawMessage `json:"conditionException,omitempty"`
+	}
+
+	// UpdateRuleResponse is returned from a call to UpdateRule.
+	UpdateRuleResponse struct {
+		Action             string                  `json:"action,omitempty"`
+		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
+	}
+
+	// RuleConditionException is used to describe the conditions and exceptions for a rule.
 	RuleConditionException struct {
 		Conditions *RuleConditions `json:"conditions,omitempty"`
 		Exception  *RuleException  `json:"exception,omitempty"`
 	}
 
+	// RuleConditions is used to describe the conditions for a rule.
 	RuleConditions []struct {
 		Type          string   `json:"type,omitempty"`
 		Extensions    []string `json:"extensions,omitempty"`
@@ -52,6 +103,7 @@ type (
 		UseHeaders    bool     `json:"useHeaders,omitempty"`
 	}
 
+	// RuleException is used to describe the exceptions for a rule.
 	RuleException struct {
 		AnyHeaderCookieOrParam               []string                                 `json:"anyHeaderCookieOrParam,omitempty"`
 		HeaderCookieOrParamValues            []string                                 `json:"headerCookieOrParamValues,omitempty"`
@@ -60,74 +112,48 @@ type (
 		SpecificHeaderCookieOrParamPrefix    *SpecificHeaderCookieOrParamPrefixPtr    `json:"specificHeaderCookieOrParamPrefix,omitempty"`
 	}
 
+	// SpecificHeaderCookieOrParamNamesPtr is used as part of condition and exception information for a rule.
 	SpecificHeaderCookieOrParamNamesPtr []struct {
 		Names    []string `json:"names,omitempty"`
 		Selector string   `json:"selector,omitempty"`
 	}
 
+	// SpecificHeaderCookieOrParamPrefixPtr is used as part of condition and exception information for a rule.
 	SpecificHeaderCookieOrParamPrefixPtr struct {
 		Prefix   string `json:"prefix,omitempty"`
 		Selector string `json:"selector,omitempty"`
 	}
 
+	// SpecificHeaderCookieOrParamNameValuePtr is used as part of condition and exception information for a rule.
 	SpecificHeaderCookieOrParamNameValuePtr struct {
 		Name     string `json:"name,omitempty"`
 		Selector string `json:"selector,omitempty"`
 		Value    string `json:"value,omitempty"`
 	}
 
-	GetRuleRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
-		PolicyID string `json:"-"`
-		RuleID   int    `json:"-"`
+	// UpdateConditionExceptionRequest is used to update the condition and exception information for a rule.
+	UpdateConditionExceptionRequest struct {
+		ConfigID   int             `json:"-"`
+		Version    int             `json:"-"`
+		PolicyID   string          `json:"-"`
+		RuleID     int             `json:"-"`
+		Conditions *RuleConditions `json:"conditions,omitempty"`
+		Exception  *RuleException  `json:"exception,omitempty"`
 	}
 
-	GetRuleResponse struct {
-		Action             string                  `json:"action,omitempty"`
-		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
-	}
-
-	GetRulesRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
-		PolicyID string `json:"-"`
-		RuleID   int    `json:"-"`
-	}
-
-	GetRulesResponse struct {
-		Rules []struct {
-			ID                 int                     `json:"id,omitempty"`
-			Action             string                  `json:"action,omitempty"`
-			ConditionException *RuleConditionException `json:"conditionException,omitempty"`
-		} `json:"ruleActions,omitempty"`
-	}
-
-	UpdateRuleRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
-		PolicyID       string          `json:"-"`
-		RuleID         int             `json:"-"`
-		Action         string          `json:"action"`
-		JsonPayloadRaw json.RawMessage `json:"conditionException,omitempty"`
-	}
-
-	UpdateRuleResponse struct {
-		Action             string                  `json:"action,omitempty"`
-		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
+	// UpdateConditionExceptionResponse is returned from a call to UpdateConditionException.
+	UpdateConditionExceptionResponse struct {
+		Conditions *RuleConditions `json:"conditions,omitempty"`
+		Exception  *RuleException  `json:"exception,omitempty"`
 	}
 )
 
-// Check Condition Exception is Empty
+// IsEmptyConditionException checks whether a rule's condition and exception information is empty.
 func (r *GetRuleResponse) IsEmptyConditionException() bool {
-
-	if r.ConditionException == nil {
-		return true
-	}
-	return false
+	return r.ConditionException == nil
 }
 
-// Validate validates GetRuleRequest
+// Validate validates a GetRuleRequest.
 func (v GetRuleRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -137,7 +163,7 @@ func (v GetRuleRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetRulesRequest
+// Validate validates a GetRulesRequest.
 func (v GetRulesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -146,8 +172,18 @@ func (v GetRulesRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateRuleRequest
+// Validate validates an UpdateRuleRequest.
 func (v UpdateRuleRequest) Validate() error {
+	return validation.Errors{
+		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
+		"Version":  validation.Validate(v.Version, validation.Required),
+		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
+		"RuleID":   validation.Validate(v.RuleID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates an UpdateConditionExceptionRequest.
+func (v UpdateConditionExceptionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
@@ -175,12 +211,12 @@ func (p *appsec) GetRule(ctx context.Context, params GetRuleRequest) (*GetRuleRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getRule request: %w", err)
+		return nil, fmt.Errorf("failed to create GetRule request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getRule request failed: %w", err)
+		return nil, fmt.Errorf("GetRule request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -210,12 +246,12 @@ func (p *appsec) GetRules(ctx context.Context, params GetRulesRequest) (*GetRule
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getRules request: %w", err)
+		return nil, fmt.Errorf("failed to create GetRules request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getRules request failed: %w", err)
+		return nil, fmt.Errorf("GetRules request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -237,12 +273,6 @@ func (p *appsec) GetRules(ctx context.Context, params GetRulesRequest) (*GetRule
 
 }
 
-// Update will update a Rule.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putRule
-
 func (p *appsec) UpdateRule(ctx context.Context, params UpdateRuleRequest) (*UpdateRuleResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -261,13 +291,47 @@ func (p *appsec) UpdateRule(ctx context.Context, params UpdateRuleRequest) (*Upd
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create Rule request: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateRule request: %w", err)
 	}
 
 	var rval UpdateRuleResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create Rule request failed: %w", err)
+		return nil, fmt.Errorf("UpdateRule request failed: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return nil, p.Error(resp)
+	}
+
+	return &rval, nil
+}
+
+func (p *appsec) UpdateRuleConditionException(ctx context.Context, params UpdateConditionExceptionRequest) (*UpdateConditionExceptionResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	logger := p.Log(ctx)
+	logger.Debug("UpdateRuleConditionException")
+
+	putURL := fmt.Sprintf(
+		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules/%d/condition-exception",
+		params.ConfigID,
+		params.Version,
+		params.PolicyID,
+		params.RuleID,
+	)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create UpdateRuleConditionException request: %w", err)
+	}
+
+	var rval UpdateConditionExceptionResponse
+	resp, err := p.Exec(req, &rval, params)
+	if err != nil {
+		return nil, fmt.Errorf("UpdateRuleConditionException request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

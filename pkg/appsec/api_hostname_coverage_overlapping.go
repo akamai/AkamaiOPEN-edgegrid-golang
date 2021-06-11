@@ -8,28 +8,24 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// ApiHostnameCoverageOverlapping represents a collection of ApiHostnameCoverageOverlapping
-//
-// See: ApiHostnameCoverageOverlapping.GetApiHostnameCoverageOverlapping()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// ApiHostnameCoverageOverlapping  contains operations available on ApiHostnameCoverageOverlapping  resource
-	// See: // appsec v1
+	// The ApiHostnameCoverageOverlapping interface supports listing the configuration versions that
+	// contain a hostname also included in the given configuration version.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getapihostnamecoverageoverlapping
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#hostnameoverlap
 	ApiHostnameCoverageOverlapping interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#gethostnamecoverageoverlapping
 		GetApiHostnameCoverageOverlapping(ctx context.Context, params GetApiHostnameCoverageOverlappingRequest) (*GetApiHostnameCoverageOverlappingResponse, error)
 	}
 
+	// GetApiHostnameCoverageOverlappingRequest is used to retrieve the configuration versions that contain a hostname included in the current configuration version.
 	GetApiHostnameCoverageOverlappingRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		Hostname string `json:"-"`
 	}
 
+	// GetApiHostnameCoverageOverlappingResponse is returned from a call to GetApiHostnameCoverageOverlapping.
 	GetApiHostnameCoverageOverlappingResponse struct {
 		OverLappingList []struct {
 			ConfigID      int      `json:"configId"`
@@ -42,7 +38,7 @@ type (
 	}
 )
 
-// Validate validates GetApiHostnameCoverageOverlappingRequest
+// Validate validates a GetApiHostnameCoverageOverlappingRequest.
 func (v GetApiHostnameCoverageOverlappingRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -69,12 +65,12 @@ func (p *appsec) GetApiHostnameCoverageOverlapping(ctx context.Context, params G
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getapihostnamecoverageoverlapping request: %w", err)
+		return nil, fmt.Errorf("failed to create GetApiHostnameCoverageOverlapping request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getapihostnamecoverageoverlapping  request failed: %w", err)
+		return nil, fmt.Errorf("GetApiHostnameCoverageOverlapping request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

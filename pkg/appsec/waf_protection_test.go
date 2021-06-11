@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListWAFProtections(t *testing.T) {
+func TestAppSec_ListWAFProtections(t *testing.T) {
 
 	result := GetWAFProtectionsResponse{}
 

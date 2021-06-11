@@ -9,35 +9,39 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
-// NetworkList represents a collection of NetworkList
-//
-// See: NetworkList.GetNetworkList()
-// API Docs: // network_lists v2
-//
-// https://developer.akamai.com/api/cloud_security/network_lists/v2.html
-
 type (
-	// NetworkList  contains operations available on NetworkList  resource
-	// See: // network_lists v2
+	// The NetworkList interface supports creating, retrieving, modifying and removing network lists.
 	//
-	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getnetworklist
+	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#networklist
 	NetworkList interface {
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getlists
 		GetNetworkLists(ctx context.Context, params GetNetworkListsRequest) (*GetNetworkListsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getlist
 		GetNetworkList(ctx context.Context, params GetNetworkListRequest) (*GetNetworkListResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postlists
 		CreateNetworkList(ctx context.Context, params CreateNetworkListRequest) (*CreateNetworkListResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#putlist
 		UpdateNetworkList(ctx context.Context, params UpdateNetworkListRequest) (*UpdateNetworkListResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#deletelist
 		RemoveNetworkList(ctx context.Context, params RemoveNetworkListRequest) (*RemoveNetworkListResponse, error)
 	}
 
+	// GetNetworkListRequest contains request parameters for GetNetworkList method
 	GetNetworkListRequest struct {
 		UniqueID string `json:"-"`
 	}
 
+	// GetNetworkListsRequest contains request parameters for GetNetworkLists method
 	GetNetworkListsRequest struct {
 		Name string `json:"name"`
 		Type string `json:"type"`
 	}
 
+	// GetNetworkListsResponse contains response from GetNetworkLists method
 	GetNetworkListsResponse struct {
 		Links        *NetworkListsResponseLinks `json:"links,omitempty"`
 		NetworkLists []struct {
@@ -55,6 +59,7 @@ type (
 		} `json:"networkLists"`
 	}
 
+	// GetNetworkListResponse contains response from GetNetworkList method
 	GetNetworkListResponse struct {
 		Name            string   `json:"name"`
 		UniqueID        string   `json:"uniqueId"`
@@ -95,22 +100,29 @@ type (
 		} `json:"links"`
 	}
 
+	// CreateNetworkListRequest contains request parameters for CreateNetworkList method
 	CreateNetworkListRequest struct {
 		Name        string   `json:"name"`
 		Type        string   `json:"type"`
 		Description string   `json:"description"`
+		ContractID  string   `json:"contractId,omitempty"`
+		GroupID     int      `json:"groupId,omitempty"`
 		List        []string `json:"list"`
 	}
 
+	// UpdateNetworkListRequest contains request parameters for CreateNetworkLists method
 	UpdateNetworkListRequest struct {
 		Name        string   `json:"name"`
 		Type        string   `json:"type"`
 		Description string   `json:"description"`
+		ContractID  string   `json:"contractId,omitempty"`
+		GroupID     int      `json:"groupId,omitempty"`
 		SyncPoint   int      `json:"syncPoint"`
 		List        []string `json:"list"`
 		UniqueID    string   `json:"uniqueId"`
 	}
 
+	// UpdateNetworkListResponse contains response from CreateNetworkList method
 	UpdateNetworkListResponse struct {
 		Links struct {
 			Create struct {
@@ -159,18 +171,22 @@ type (
 		} `json:"networkLists"`
 	}
 
+	// RemoveNetworkListRequest contains request parameters for RemoveNetworkList method
 	RemoveNetworkListRequest struct {
 		UniqueID string `json:"-"`
 	}
 
+	// RemoveNetworkListResponse contains response from RemoveNetworkList method
 	RemoveNetworkListResponse struct {
 		Status    int    `json:"status"`
 		UniqueID  string `json:"uniqueId"`
 		SyncPoint int    `json:"syncPoint"`
 	}
 
+	// CreateNetworkListResponse contains response from CreateNetworkList method
 	CreateNetworkListResponse struct {
 		Name            string   `json:"name"`
+		Description     string   `json:"description,omitempty"`
 		UniqueID        string   `json:"uniqueId"`
 		SyncPoint       int      `json:"syncPoint"`
 		Type            string   `json:"type"`
@@ -208,15 +224,18 @@ type (
 		} `json:"links"`
 	}
 
+	// LinkInfo contains hypermedia link
 	LinkInfo struct {
 		Href   string `json:"href,omitempty"`
 		Method string `json:"method,omitempty"`
 	}
 
+	// NetworkListsResponseLinks contains LinkInfo
 	NetworkListsResponseLinks struct {
 		Create *LinkInfo `json:"create,omitempty"`
 	}
 
+	// NetworkListsLinks encapsulates the set of API hypermedia
 	NetworkListsLinks struct {
 		ActivateInProduction *LinkInfo `json:"activateInProduction,omitempty"`
 		ActivateInStaging    *LinkInfo `json:"activateInStaging,omitempty"`
@@ -277,7 +296,7 @@ func (p *networklists) GetNetworkList(ctx context.Context, params GetNetworkList
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %s", err.Error())
+		return nil, fmt.Errorf("getnetworklist request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -347,13 +366,13 @@ func (p *networklists) UpdateNetworkList(ctx context.Context, params UpdateNetwo
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create NetworkListrequest: %s", err.Error())
+		return nil, fmt.Errorf("failed to create update NetworkListrequest: %s", err.Error())
 	}
 
 	var rval UpdateNetworkListResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create NetworkList request failed: %s", err.Error())
+		return nil, fmt.Errorf("update NetworkList request failed: %s", err.Error())
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -422,7 +441,7 @@ func (p *networklists) RemoveNetworkList(ctx context.Context, params RemoveNetwo
 		params.UniqueID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed parse url: %s", err.Error())
+		return nil, fmt.Errorf("failed to parse url: %s", err.Error())
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
