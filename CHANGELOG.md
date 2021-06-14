@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.5.0 (Jun 16, 2021)
+## 2.5.0 (Jun 15, 2021)
 
 #### BREAKING CHANGES:
 * APPSEC
@@ -17,8 +17,12 @@
     * Fixed parsing SVCB, HTTPS rdata.
 
 #### FEATURES/ENHANCEMENTS:
-* CPS
-  * !!! TO BE ADDED !!!
+* [IMPORTANT] CPS - Added Certificate Provisioning API support
+  * Enrollments - create, read, update, delete enrollments
+  * Change status API - get change status, cancel change
+  * DV certificate API - get and acknowledge DV challenges
+  * Pre verification warnings - get and acknowledge pre verification warnings
+  
 * APPSEC
   * The following have been added, together with their unit tests and test data:
     * pkg/appsec/api_constraints_protection.go
