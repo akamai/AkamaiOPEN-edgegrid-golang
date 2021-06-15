@@ -1,0 +1,473 @@
+package cps
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
+	"strconv"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+)
+
+type (
+	// Enrollments is a CPS enrollments API interface
+	Enrollments interface {
+		// GetEnrollment fetches anrollment object with given ID
+		//
+		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getasingleenrollment
+		GetEnrollment(context.Context, GetEnrollmentRequest) (*Enrollment, error)
+
+		// CreateEnrollment creates a new enrollment
+		//
+		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#postenrollments
+		CreateEnrollment(context.Context, CreateEnrollmentRequest) (*CreateEnrollmentResponse, error)
+
+		// UpdateEnrollment updates a single enrollment entry with given ID
+		//
+		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#putasingleenrollment
+		UpdateEnrollment(context.Context, UpdateEnrollmentRequest) (*UpdateEnrollmentResponse, error)
+
+		// RemoveEnrollment removes an enrollment with given ID
+		//
+		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#deleteasingleenrollment
+		RemoveEnrollment(context.Context, RemoveEnrollmentRequest) (*RemoveEnrollmentResponse, error)
+	}
+
+	// Enrollment represents a CPS enrollment object. It is used both as a request body for enrollment creation and response body while fetching enrollment by ID
+	Enrollment struct {
+		AdminContact                   *Contact              `json:"adminContact"`
+		AutoRenewalStartTime           string                `json:"autoRenewalStartTime,omitempty"`
+		CertificateChainType           string                `json:"certificateChainType,omitempty"`
+		CertificateType                string                `json:"certificateType"`
+		ChangeManagement               bool                  `json:"changeManagement"`
+		CSR                            *CSR                  `json:"csr"`
+		EnableMultiStackedCertificates bool                  `json:"enableMultiStackedCertificates"`
+		Location                       string                `json:"location,omitempty"`
+		MaxAllowedSanNames             int                   `json:"maxAllowedSanNames,omitempty"`
+		MaxAllowedWildcardSanNames     int                   `json:"maxAllowedWildcardSanNames,omitempty"`
+		NetworkConfiguration           *NetworkConfiguration `json:"networkConfiguration"`
+		Org                            *Org                  `json:"org"`
+		PendingChanges                 []string              `json:"pendingChanges,omitempty"`
+		RA                             string                `json:"ra"`
+		SignatureAlgorithm             string                `json:"signatureAlgorithm,omitempty"`
+		TechContact                    *Contact              `json:"techContact"`
+		ThirdParty                     *ThirdParty           `json:"thirdParty,omitempty"`
+		ValidationType                 string                `json:"validationType"`
+	}
+
+	// Contact contains contact information
+	Contact struct {
+		AddressLineOne   string `json:"addressLineOne,omitempty"`
+		AddressLineTwo   string `json:"addressLineTwo,omitempty"`
+		City             string `json:"city,omitempty"`
+		Country          string `json:"country,omitempty"`
+		Email            string `json:"email,omitempty"`
+		FirstName        string `json:"firstName,omitempty"`
+		LastName         string `json:"lastName,omitempty"`
+		OrganizationName string `json:"organizationName,omitempty"`
+		Phone            string `json:"phone,omitempty"`
+		PostalCode       string `json:"postalCode,omitempty"`
+		Region           string `json:"region,omitempty"`
+		Title            string `json:"title,omitempty"`
+	}
+
+	// CSR is a Certificate Signing Request object
+	CSR struct {
+		C    string   `json:"c,omitempty"`
+		CN   string   `json:"cn"`
+		L    string   `json:"l,omitempty"`
+		O    string   `json:"o,omitempty"`
+		OU   string   `json:"ou,omitempty"`
+		SANS []string `json:"sans,omitempty"`
+		ST   string   `json:"st,omitempty"`
+	}
+
+	// NetworkConfiguration contains settings that specify any network information and TLS Metadata you want CPS to use to push the completed certificate to the network
+	NetworkConfiguration struct {
+		ClientMutualAuthentication *ClientMutualAuthentication `json:"clientMutualAuthentication,omitempty"`
+		DisallowedTLSVersions      []string                    `json:"disallowedTlsVersions,omitempty"`
+		DNSNameSettings            *DNSNameSettings            `json:"dnsNameSettings,omitempty"`
+		Geography                  string                      `json:"geography,omitempty"`
+		MustHaveCiphers            string                      `json:"mustHaveCiphers,omitempty"`
+		OCSPStapling               OCSPStapling                `json:"ocspStapling,omitempty"`
+		PreferredCiphers           string                      `json:"preferredCiphers,omitempty"`
+		QuicEnabled                bool                        `json:"quicEnabled"`
+		SecureNetwork              string                      `json:"secureNetwork,omitempty"`
+		SNIOnly                    bool                        `json:"sniOnly"`
+	}
+
+	// ClientMutualAuthentication specifies the trust chain that is used to verify client certificates and some configuration options
+	ClientMutualAuthentication struct {
+		AuthenticationOptions *AuthenticationOptions `json:"authenticationOptions,omitempty"`
+		SetID                 string                 `json:"setId,omitempty"`
+	}
+
+	// AuthenticationOptions contain the configuration options for the selected trust chain
+	AuthenticationOptions struct {
+		OCSP               *OCSP `json:"ocsp,omitempty"`
+		SendCAListToClient *bool `json:"sendCaListToClient,omitempty"`
+	}
+
+	// OCSP specifies whether you want to enable ocsp stapling for client certificates
+	OCSP struct {
+		Enabled *bool `json:"enabled,omitempty"`
+	}
+
+	// DNSNameSettings contain DNS name setting in given network configuration
+	DNSNameSettings struct {
+		CloneDNSNames bool     `json:"cloneDnsNames"`
+		DNSNames      []string `json:"dnsNames,omitempty"`
+	}
+
+	// Org represents organization information
+	Org struct {
+		AddressLineOne string `json:"addressLineOne,omitempty"`
+		AddressLineTwo string `json:"addressLineTwo,omitempty"`
+		City           string `json:"city,omitempty"`
+		Country        string `json:"country,omitempty"`
+		Name           string `json:"name,omitempty"`
+		Phone          string `json:"phone,omitempty"`
+		PostalCode     string `json:"postalCode,omitempty"`
+		Region         string `json:"region,omitempty"`
+	}
+
+	// ThirdParty specifies that you want to use a third party certificate
+	ThirdParty struct {
+		ExcludeSANS bool `json:"excludeSans"`
+	}
+
+	// GetEnrollmentRequest contains ID of an enrollment that is to be fetched with GetEnrollment
+	GetEnrollmentRequest struct {
+		EnrollmentID int
+	}
+
+	// CreateEnrollmentRequest contains request body and path parameters used to create an enrollment
+	CreateEnrollmentRequest struct {
+		Enrollment
+		ContractID      string
+		DeployNotAfter  string
+		DeployNotBefore string
+	}
+
+	// CreateEnrollmentResponse contains response body returned after successful enrollment creation
+	CreateEnrollmentResponse struct {
+		ID         int
+		Enrollment string   `json:"enrollment"`
+		Changes    []string `json:"changes"`
+	}
+
+	// UpdateEnrollmentRequest contains request body and path parameters used to update an enrollment
+	UpdateEnrollmentRequest struct {
+		Enrollment
+		EnrollmentID              int
+		AllowCancelPendingChanges *bool
+		AllowStagingBypass        *bool
+		DeployNotAfter            string
+		DeployNotBefore           string
+		ForceRenewal              *bool
+		RenewalDateCheckOverride  *bool
+	}
+
+	// UpdateEnrollmentResponse contains response body returned after successful enrollment update
+	UpdateEnrollmentResponse struct {
+		ID         int
+		Enrollment string   `json:"enrollment"`
+		Changes    []string `json:"changes"`
+	}
+
+	// RemoveEnrollmentRequest contains parameters necessary to send a RemoveEnrollment request
+	RemoveEnrollmentRequest struct {
+		EnrollmentID              int
+		AllowCancelPendingChanges *bool
+		DeployNotAfter            string
+		DeployNotBefore           string
+	}
+
+	// RemoveEnrollmentResponse contains response body returned after successful enrollment deletion
+	RemoveEnrollmentResponse struct {
+		Enrollment string   `json:"enrollment"`
+		Changes    []string `json:"changes"`
+	}
+
+	// OCSPStapling is used to enable OCSP stapling for an enrollment
+	OCSPStapling string
+)
+
+const (
+	// OCSPStaplingOn parameter value
+	OCSPStaplingOn OCSPStapling = "on"
+	// OCSPStaplingOff parameter value
+	OCSPStaplingOff OCSPStapling = "off"
+	// OCSPStaplingNotSet parameter value
+	OCSPStaplingNotSet OCSPStapling = "not-set"
+)
+
+// Validate performs validation on Enrollment
+func (e Enrollment) Validate() error {
+	return validation.Errors{
+		"adminContact":         validation.Validate(e.AdminContact, validation.Required),
+		"certificateType":      validation.Validate(e.CertificateType, validation.Required),
+		"csr":                  validation.Validate(e.CSR, validation.Required),
+		"networkConfiguration": validation.Validate(e.NetworkConfiguration, validation.Required),
+		"org":                  validation.Validate(e.Org, validation.Required),
+		"ra":                   validation.Validate(e.RA, validation.Required),
+		"techContact":          validation.Validate(e.TechContact, validation.Required),
+		"validationType":       validation.Validate(e.ValidationType, validation.Required),
+		"thirdParty":           validation.Validate(e.ThirdParty),
+	}.Filter()
+}
+
+// Validate performs validation on Enrollment
+func (c CSR) Validate() error {
+	return validation.Errors{
+		"cn": validation.Validate(c.CN, validation.Required),
+	}.Filter()
+}
+
+// Validate performs validation on ThirdParty
+func (t ThirdParty) Validate() error {
+	return validation.Errors{
+		"excludeSans": validation.Validate(t.ExcludeSANS, validation.Required),
+	}.Filter()
+}
+
+// Validate performs validation on NetworkConfiguration
+func (n NetworkConfiguration) Validate() error {
+	return validation.Errors{
+		"ocspStapling": validation.Validate(n.OCSPStapling, validation.In(OCSPStaplingOn, OCSPStaplingOff, OCSPStaplingNotSet)),
+	}.Filter()
+}
+
+// Validate performs validation on GetEnrollmentRequest
+func (e GetEnrollmentRequest) Validate() error {
+	return validation.Errors{
+		"enrollmentId": validation.Validate(e.EnrollmentID, validation.Required),
+	}.Filter()
+}
+
+// Validate performs validation on CreateEnrollmentRequest
+func (e CreateEnrollmentRequest) Validate() error {
+	return validation.Errors{
+		"enrollment": validation.Validate(e.Enrollment, validation.Required),
+		"contractId": validation.Validate(e.ContractID, validation.Required),
+	}.Filter()
+}
+
+// Validate performs validation on UpdateEnrollmentRequest
+func (e UpdateEnrollmentRequest) Validate() error {
+	return validation.Errors{
+		"enrollment":   validation.Validate(e.Enrollment, validation.Required),
+		"enrollmentId": validation.Validate(e.EnrollmentID, validation.Required),
+	}.Filter()
+}
+
+// Validate performs validation on RemoveEnrollmentRequest
+func (e RemoveEnrollmentRequest) Validate() error {
+	return validation.Errors{
+		"enrollmentId": validation.Validate(e.EnrollmentID, validation.Required),
+	}.Filter()
+}
+
+var (
+	// ErrGetEnrollment is returned when GetEnrollment fails
+	ErrGetEnrollment = errors.New("fetching enrollment")
+	// ErrCreateEnrollment is returned when CreateEnrollment fails
+	ErrCreateEnrollment = errors.New("create enrollment")
+	// ErrUpdateEnrollment is returned when UpdateEnrollment fails
+	ErrUpdateEnrollment = errors.New("update enrollment")
+	// ErrRemoveEnrollment is returned when RemoveEnrollment fails
+	ErrRemoveEnrollment = errors.New("remove enrollment")
+)
+
+func (c *cps) GetEnrollment(ctx context.Context, params GetEnrollmentRequest) (*Enrollment, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetEnrollment, ErrStructValidation, err)
+	}
+
+	var rval Enrollment
+
+	logger := c.Log(ctx)
+	logger.Debug("GetEnrollment")
+
+	uri, err := url.Parse(fmt.Sprintf(
+		"/cps/v2/enrollments/%d",
+		params.EnrollmentID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetEnrollment, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEnrollment, err)
+	}
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment.v9+json")
+
+	resp, err := c.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEnrollment, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrGetEnrollment, c.Error(resp))
+	}
+
+	return &rval, nil
+}
+
+func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentRequest) (*CreateEnrollmentResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrStructValidation, err)
+	}
+
+	var rval CreateEnrollmentResponse
+
+	logger := c.Log(ctx)
+	logger.Debug("CreateEnrollment")
+
+	uri, err := url.Parse(fmt.Sprintf(
+		"/cps/v2/enrollments?contractId=%s",
+		params.ContractID))
+	if err != nil {
+		return nil, fmt.Errorf("%w: parsing URL: %s", ErrCreateEnrollment, err)
+	}
+	query := uri.Query()
+	if params.DeployNotAfter != "" {
+		query.Add("deploy-not-after", params.DeployNotAfter)
+	}
+	if params.DeployNotBefore != "" {
+		query.Add("deploy-not-before", params.DeployNotBefore)
+	}
+	uri.RawQuery = query.Encode()
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateEnrollment, err)
+	}
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v9+json")
+
+	resp, err := c.Exec(req, &rval, params.Enrollment)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEnrollment, err)
+	}
+
+	if resp.StatusCode != http.StatusAccepted {
+		return nil, fmt.Errorf("%s: %w", ErrCreateEnrollment, c.Error(resp))
+	}
+	id, err := GetIDFromLocation(rval.Enrollment)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrInvalidLocation, err)
+	}
+	rval.ID = id
+
+	return &rval, nil
+}
+
+func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentRequest) (*UpdateEnrollmentResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrStructValidation, err)
+	}
+
+	var rval UpdateEnrollmentResponse
+
+	logger := c.Log(ctx)
+	logger.Debug("UpdateEnrollment")
+
+	uri, err := url.Parse(fmt.Sprintf(
+		"/cps/v2/enrollments/%d",
+		params.EnrollmentID))
+	if err != nil {
+		return nil, fmt.Errorf("%w: parsing URL: %s", ErrUpdateEnrollment, err)
+	}
+	query := uri.Query()
+	if params.AllowCancelPendingChanges != nil {
+		query.Add("allow-cancel-pending-changes", strconv.FormatBool(*params.AllowCancelPendingChanges))
+	}
+	if params.AllowStagingBypass != nil {
+		query.Add("allow-staging-bypass", strconv.FormatBool(*params.AllowStagingBypass))
+	}
+	if params.DeployNotAfter != "" {
+		query.Add("deploy-not-after", params.DeployNotAfter)
+	}
+	if params.DeployNotBefore != "" {
+		query.Add("deploy-not-before", params.DeployNotBefore)
+	}
+	if params.ForceRenewal != nil {
+		query.Add("force-renewal", strconv.FormatBool(*params.ForceRenewal))
+	}
+	if params.RenewalDateCheckOverride != nil {
+		query.Add("renewal-date-check-override", strconv.FormatBool(*params.RenewalDateCheckOverride))
+	}
+
+	uri.RawQuery = query.Encode()
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateEnrollment, err)
+	}
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v9+json")
+
+	resp, err := c.Exec(req, &rval, params.Enrollment)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEnrollment, err)
+	}
+
+	if resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrUpdateEnrollment, c.Error(resp))
+	}
+	id, err := GetIDFromLocation(rval.Enrollment)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrInvalidLocation, err)
+	}
+	rval.ID = id
+
+	return &rval, nil
+}
+
+func (c *cps) RemoveEnrollment(ctx context.Context, params RemoveEnrollmentRequest) (*RemoveEnrollmentResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrRemoveEnrollment, ErrStructValidation, err)
+	}
+
+	var rval RemoveEnrollmentResponse
+
+	logger := c.Log(ctx)
+	logger.Debug("RemoveEnrollment")
+
+	uri, err := url.Parse(fmt.Sprintf(
+		"/cps/v2/enrollments/%d",
+		params.EnrollmentID))
+	if err != nil {
+		return nil, fmt.Errorf("%w: parsing URL: %s", ErrRemoveEnrollment, err)
+	}
+	query := uri.Query()
+	if params.AllowCancelPendingChanges != nil {
+		query.Add("allow-cancel-pending-changes", strconv.FormatBool(*params.AllowCancelPendingChanges))
+	}
+	if params.DeployNotAfter != "" {
+		query.Add("deploy-not-after", params.DeployNotAfter)
+	}
+	if params.DeployNotBefore != "" {
+		query.Add("deploy-not-before", params.DeployNotBefore)
+	}
+
+	uri.RawQuery = query.Encode()
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrRemoveEnrollment, err)
+	}
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
+
+	resp, err := c.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrRemoveEnrollment, err)
+	}
+
+	if resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrRemoveEnrollment, c.Error(resp))
+	}
+
+	return &rval, nil
+}

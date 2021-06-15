@@ -328,6 +328,23 @@ func TestDns_ParseRData(t *testing.T) {
 				"target":  []string{"bar.com"},
 			},
 		},
+		"SVCB": {
+			rdata: []string{"0 svc4.example.com."},
+			expect: map[string]interface{}{
+				"target":       []string{},
+				"svc_priority": 0,
+				"target_name":  "svc4.example.com.",
+			},
+		},
+		"HTTPS": {
+			rdata: []string{"3 https.example.com. alpn=bar port=8080"},
+			expect: map[string]interface{}{
+				"target":       []string{},
+				"svc_priority": 3,
+				"target_name":  "https.example.com.",
+				"svc_params":   "alpn=bar port=8080",
+			},
+		},
 	}
 
 	for name, test := range tests {

@@ -67,10 +67,7 @@ type (
 		NetworkLists []string `json:"networkLists"`
 	}
 	RemoveBypassNetworkListsResponse struct {
-		NetworkLists []struct {
-			Name string `json:"name"`
-			ID   string `json:"id"`
-		} `json:"networkLists"`
+		NetworkLists []string `json:"networkLists"`
 	}
 )
 

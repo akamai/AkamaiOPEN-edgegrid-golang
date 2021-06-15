@@ -1,8 +1,40 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.5.0 (Jun 15, 2021)
+
+#### BREAKING CHANGES:
+* APPSEC
+  * The following have been removed, togther with their unit tests and test data:
+    * pkg/appsec/attack_group_action.go
+    * pkg/appsec/attack_group_condition_exception.go
+    * pkg/appsec/eval_rule_action.go
+    * pkg/appsec/eval_rule_condition_exception.go
+    * pkg/appsec/rule_action.go
+    * pkg/appsec/rule_condition_exception.go
+	
+#### BUG FIXES:
+* DNSv2
+    * Fixed parsing SVCB, HTTPS rdata.
+
+#### FEATURES/ENHANCEMENTS:
+* [IMPORTANT] CPS - Added Certificate Provisioning API support
+  * Enrollments - create, read, update, delete enrollments
+  * Change status API - get change status, cancel change
+  * DV certificate API - get and acknowledge DV challenges
+  * Pre verification warnings - get and acknowledge pre verification warnings
+  
+* APPSEC
+  * The following have been added, together with their unit tests and test data:
+    * pkg/appsec/api_constraints_protection.go
+    * pkg/appsec/advanced_settings_pragma_header.go
+    * pkg/appsec/attack_group.go
+    * pkg/appsec/eval_rule.go
+    * pkg/appsec/rule.go
+    * pkg/appsec/ip_geo_protection.go
+
 ## 2.4.1 (Apr 19, 2021)
 
-#### BUG FIXES
+#### BUG FIXES:
 
 * APPSEC
   * Suppress 'null' text on output of empty/false values

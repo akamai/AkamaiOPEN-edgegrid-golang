@@ -13,41 +13,39 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListMatchTargetSequence(t *testing.T) {
+func TestApsec_ListAdvancedSettingsPragma(t *testing.T) {
 
-	result := GetMatchTargetSequenceResponse{}
+	result := GetAdvancedSettingsPragmaResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetMatchTargetSequenceRequest
+		params           GetAdvancedSettingsPragmaRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetMatchTargetSequenceResponse
+		expectedResponse *GetAdvancedSettingsPragmaResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: GetAdvancedSettingsPragmaRequest{
+				ConfigID: 43253,
+				Version:  15,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: GetAdvancedSettingsPragmaRequest{
+				ConfigID: 43253,
+				Version:  15,
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -55,14 +53,14 @@ func TestApsec_ListMatchTargetSequence(t *testing.T) {
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching propertys",
+    "detail": "Error fetching AdvancedSettingsPragma",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching propertys",
+				Detail:     "Error fetching AdvancedSettingsPragma",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -78,7 +76,7 @@ func TestApsec_ListMatchTargetSequence(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetMatchTargetSequence(
+			result, err := client.GetAdvancedSettingsPragma(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -94,51 +92,49 @@ func TestApsec_ListMatchTargetSequence(t *testing.T) {
 	}
 }
 
-// Test MatchTargetSequence
-func TestAppSec_GetMatchTargetSequence(t *testing.T) {
+// Test AdvancedSettingsPragma
+func TestAppSec_GetAdvancedSettingsPrama(t *testing.T) {
 
-	result := GetMatchTargetSequenceResponse{}
+	result := GetAdvancedSettingsPragmaResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetMatchTargetSequenceRequest
+		params           GetAdvancedSettingsPragmaRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetMatchTargetSequenceResponse
+		expectedResponse *GetAdvancedSettingsPragmaResponse
 		withError        error
 	}{
 		"200 OK": {
-			params: GetMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: GetAdvancedSettingsPragmaRequest{
+				ConfigID: 43253,
+				Version:  15,
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: GetAdvancedSettingsPragmaRequest{
+				ConfigID: 43253,
+				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching match target"
+    "detail": "Error fetching AdvancedSettingsPragma"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching match target",
+				Detail:     "Error fetching AdvancedSettingsPragma",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -154,7 +150,7 @@ func TestAppSec_GetMatchTargetSequence(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetMatchTargetSequence(context.Background(), test.params)
+			result, err := client.GetAdvancedSettingsPragma(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -165,32 +161,31 @@ func TestAppSec_GetMatchTargetSequence(t *testing.T) {
 	}
 }
 
-// Test Update MatchTargetSequence.
-func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
-	result := UpdateMatchTargetSequenceResponse{}
+// Test Update AdvancedSettingsPragma.
+func TestAppSec_UpdateAdvancedSettingsPragma(t *testing.T) {
+	result := UpdateAdvancedSettingsPragmaResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := UpdateMatchTargetSequenceRequest{}
+	req := UpdateAdvancedSettingsPragmaRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
-		params           UpdateMatchTargetSequenceRequest
+		params           UpdateAdvancedSettingsPragmaRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *UpdateMatchTargetSequenceResponse
+		expectedResponse *UpdateAdvancedSettingsPragmaResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdateMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: UpdateAdvancedSettingsPragmaRequest{
+				ConfigID: 43253,
+				Version:  15,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -198,26 +193,20 @@ func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/%d",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 		},
 		"500 internal server error": {
-			params: UpdateMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: UpdateAdvancedSettingsPragmaRequest{
+				ConfigID: 43253,
+				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating zone"
-}`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/%d",
+			responseBody:   (`{"type": "internal_error","title": "Internal Server Error","detail": "Error creating AdvancedSettingsPragma"}`),
+			expectedPath:   "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error creating zone",
+				Detail:     "Error creating AdvancedSettingsPragma",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -234,7 +223,7 @@ func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateMatchTargetSequence(
+			result, err := client.UpdateAdvancedSettingsPragma(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)

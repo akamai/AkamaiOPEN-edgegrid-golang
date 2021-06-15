@@ -323,7 +323,8 @@ func (p *networklists) GetNetworkLists(ctx context.Context, params GetNetworkLis
 		}
 	}
 
-	return &rvalfiltered, nil}
+	return &rvalfiltered, nil
+}
 
 // Update will update a NetworkList.
 //

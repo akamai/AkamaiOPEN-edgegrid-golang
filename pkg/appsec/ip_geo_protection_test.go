@@ -13,41 +13,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListMatchTargetSequence(t *testing.T) {
+func TestApsec_ListIPGeoProtections(t *testing.T) {
 
-	result := GetMatchTargetSequenceResponse{}
+	result := GetIPGeoProtectionsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetMatchTargetSequenceRequest
+		params           GetIPGeoProtectionsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetMatchTargetSequenceResponse
+		expectedResponse *GetIPGeoProtectionsResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: GetIPGeoProtectionsRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: GetIPGeoProtectionsRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -58,7 +58,7 @@ func TestApsec_ListMatchTargetSequence(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -78,7 +78,7 @@ func TestApsec_ListMatchTargetSequence(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetMatchTargetSequence(
+			result, err := client.GetIPGeoProtections(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -94,38 +94,38 @@ func TestApsec_ListMatchTargetSequence(t *testing.T) {
 	}
 }
 
-// Test MatchTargetSequence
-func TestAppSec_GetMatchTargetSequence(t *testing.T) {
+// Test IPGeoProtection
+func TestAppSec_GetIPGeoProtection(t *testing.T) {
 
-	result := GetMatchTargetSequenceResponse{}
+	result := GetIPGeoProtectionResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetMatchTargetSequenceRequest
+		params           GetIPGeoProtectionRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetMatchTargetSequenceResponse
+		expectedResponse *GetIPGeoProtectionResponse
 		withError        error
 	}{
 		"200 OK": {
-			params: GetMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: GetIPGeoProtectionRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: GetIPGeoProtectionRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
@@ -134,7 +134,7 @@ func TestAppSec_GetMatchTargetSequence(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error fetching match target"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/sequence?type=website",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -154,7 +154,7 @@ func TestAppSec_GetMatchTargetSequence(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetMatchTargetSequence(context.Background(), test.params)
+			result, err := client.GetIPGeoProtection(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -165,32 +165,32 @@ func TestAppSec_GetMatchTargetSequence(t *testing.T) {
 	}
 }
 
-// Test Update MatchTargetSequence.
-func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
-	result := UpdateMatchTargetSequenceResponse{}
+// Test Update IPGeoProtection.
+func TestAppSec_UpdateIPGeoProtection(t *testing.T) {
+	result := UpdateIPGeoProtectionResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := UpdateMatchTargetSequenceRequest{}
+	req := UpdateIPGeoProtectionRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
-		params           UpdateMatchTargetSequenceRequest
+		params           UpdateIPGeoProtectionRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *UpdateMatchTargetSequenceResponse
+		expectedResponse *UpdateIPGeoProtectionResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdateMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: UpdateIPGeoProtectionRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -198,13 +198,13 @@ func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/%d",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 		},
 		"500 internal server error": {
-			params: UpdateMatchTargetSequenceRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				Type:          "website",
+			params: UpdateIPGeoProtectionRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
@@ -213,7 +213,7 @@ func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error creating zone"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/%d",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -234,7 +234,7 @@ func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateMatchTargetSequence(
+			result, err := client.UpdateIPGeoProtection(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)

@@ -18,13 +18,14 @@ type (
 		Activations
 		AdvancedSettingsLogging
 		AdvancedSettingsPrefetch
+		AdvancedSettingsPragma
 		ApiEndpoints
 		ApiHostnameCoverage
 		ApiHostnameCoverageOverlapping
 		ApiHostnameCoverageMatchTargets
 		ApiRequestConstraints
-		AttackGroupAction
-		AttackGroupConditionException
+		APIConstraintsProtection
+		AttackGroup
 		BypassNetworkLists
 		Configuration
 		ConfigurationClone
@@ -37,14 +38,12 @@ type (
 		Eval
 		EvalHost
 		EvalProtectHost
-		EvalRuleAction
-		EvalRuleConditionException
+		EvalRule
 		ExportConfiguration
 		FailoverHostnames
 		IPGeo
+		IPGeoProtection
 		ReputationAnalysis
-		RuleAction
-		RuleConditionException
 		MatchTarget
 		MatchTargetSequence
 		NetworkLayerProtection
@@ -56,6 +55,7 @@ type (
 		ReputationProfile
 		ReputationProfileAction
 		ReputationProtection
+		Rule
 		RuleUpgrade
 		SecurityPolicy
 		SecurityPolicyClone
