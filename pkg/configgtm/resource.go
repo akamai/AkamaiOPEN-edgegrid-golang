@@ -35,7 +35,7 @@ type Resources interface {
 	UpdateResource(context.Context, *Resource, string) (*ResponseStatus, error)
 }
 
-// ResourceInstance
+// ResourceInstance contains information about the resources that constrain the properties within the data center
 type ResourceInstance struct {
 	DatacenterId         int  `json:"datacenterId"`
 	UseDefaultLoadObject bool `json:"useDefaultLoadObject"`
@@ -66,12 +66,12 @@ type ResourceList struct {
 }
 
 // Validate validates Resource
-func (rsc *Resource) Validate() error {
+func (rsrc *Resource) Validate() error {
 
-	if len(rsc.Name) < 1 {
+	if len(rsrc.Name) < 1 {
 		return fmt.Errorf("Resource is missing Name")
 	}
-	if len(rsc.Type) < 1 {
+	if len(rsrc.Type) < 1 {
 		return fmt.Errorf("Resource is missing Type")
 	}
 
@@ -148,7 +148,7 @@ func (p *gtm) GetResource(ctx context.Context, name, domainName string) (*Resour
 	return &rsc, nil
 }
 
-// Create the resource identified by the receiver argument in the specified domain.
+// CreateResource creates the resource identified by the receiver argument in the specified domain.
 func (p *gtm) CreateResource(ctx context.Context, rsrc *Resource, domainName string) (*ResourceResponse, error) {
 
 	logger := p.Log(ctx)
@@ -159,7 +159,7 @@ func (p *gtm) CreateResource(ctx context.Context, rsrc *Resource, domainName str
 
 }
 
-// Update the resourceidentified in the receiver argument in the specified domain.
+// UpdateResource updates the resource identified in the receiver argument in the specified domain.
 func (p *gtm) UpdateResource(ctx context.Context, rsrc *Resource, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -174,7 +174,7 @@ func (p *gtm) UpdateResource(ctx context.Context, rsrc *Resource, domainName str
 
 }
 
-// Save Resource in given domain. Common path for Create and Update.
+// save is a methon that saves Resource in given domain. Common path for Create and Update.
 func (rsrc *Resource) save(ctx context.Context, p *gtm, domainName string) (*ResourceResponse, error) {
 
 	if err := rsrc.Validate(); err != nil {
@@ -202,7 +202,7 @@ func (rsrc *Resource) save(ctx context.Context, p *gtm, domainName string) (*Res
 
 }
 
-// Delete the resource identified in the receiver argument from the specified domain.
+// DeleteResource deletes the resource identified in the receiver argument from the specified domain.
 func (p *gtm) DeleteResource(ctx context.Context, rsrc *Resource, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)

@@ -24,11 +24,13 @@ type (
 		RemoveNetworkListSubscription(ctx context.Context, params RemoveNetworkListSubscriptionRequest) (*RemoveNetworkListSubscriptionResponse, error)
 	}
 
+	// GetNetworkListSubscriptionRequest contains request parameters for GetNetworkListSubscription
 	GetNetworkListSubscriptionRequest struct {
 		Recipients []string `json:"-"`
 		UniqueIds  []string `json:"-"`
 	}
 
+	// GetNetworkListSubscriptionResponse contains response from GetNetworkListSubscription
 	GetNetworkListSubscriptionResponse struct {
 		Links struct {
 			Create struct {
@@ -77,24 +79,29 @@ type (
 		} `json:"networkLists"`
 	}
 
+	// UpdateNetworkListSubscriptionRequest contains request parameters for UpdateNetworkListSubscription method
 	UpdateNetworkListSubscriptionRequest struct {
 		Recipients []string `json:"recipients"`
 		UniqueIds  []string `json:"uniqueIds"`
 	}
 
+	// UpdateNetworkListSubscriptionResponse contains response from UpdateNetworkListSubscription method
 	UpdateNetworkListSubscriptionResponse struct {
 		Empty string `json:"-"`
 	}
 
+	// RemoveNetworkListSubscriptionResponse contains response from RemoveNetworkListSubscription method
 	RemoveNetworkListSubscriptionResponse struct {
 		Empty string `json:"-"`
 	}
 
+	// RemoveNetworkListSubscriptionRequest contains request parameters for RemoveNetworkListSubscription method
 	RemoveNetworkListSubscriptionRequest struct {
 		Recipients []string `json:"recipients"`
 		UniqueIds  []string `json:"uniqueIds"`
 	}
 
+	// Recipients contains recipients
 	Recipients struct {
 		Recipients string `json:"notificationRecipients"`
 	}

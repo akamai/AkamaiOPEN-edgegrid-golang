@@ -16,7 +16,7 @@ type (
 		GetGroups(context.Context) (*GetGroupsResponse, error)
 	}
 
-	// Group  represents a property group resource
+	// Group represents a property group resource
 	Group struct {
 		GroupID       string   `json:"groupId"`
 		GroupName     string   `json:"groupName"`
@@ -24,13 +24,13 @@ type (
 		ContractIDs   []string `json:"contractIds"`
 	}
 
-	// GroupItems represents sub-compent of the group response
+	// GroupItems represents sub-component of the group response
 	GroupItems struct {
 		Items []*Group `json:"items"`
 	}
 
 	// GetGroupsResponse represents a collection of groups
-	// This is the reponse to the /papi/v1/groups request
+	// This is the response to the /papi/v1/groups request
 	GetGroupsResponse struct {
 		AccountID   string     `json:"accountId"`
 		AccountName string     `json:"accountName"`
@@ -39,6 +39,7 @@ type (
 )
 
 var (
+	// ErrGetGroups represents error when fetching groups fails
 	ErrGetGroups = errors.New("fetching groups")
 )
 

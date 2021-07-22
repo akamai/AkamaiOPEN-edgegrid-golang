@@ -43,16 +43,16 @@ type (
 		// GetMasterZoneFile retrieves master zone file
 		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getversionmasterzonefile
 		GetMasterZoneFile(context.Context, string) (string, error)
-		//  PostMasterZoneFile updates master zone file
+		// PostMasterZoneFile updates master zone file
 		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postmasterzonefile
 		PostMasterZoneFile(context.Context, string, string) error
 		// CreateZone
 		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postzones
 		CreateZone(context.Context, *ZoneCreate, ZoneQueryString, ...bool) error
-		// Create Changelist
+		// SaveChangelist
 		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postchangelists
 		SaveChangelist(context.Context, *ZoneCreate) error
-		// Save changelist for the Zone to create default NS SOA records
+		// SubmitChangelist submits changelist for the Zone to create default NS SOA records
 		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postchangelistsubmit
 		SubmitChangelist(context.Context, *ZoneCreate) error
 		// UpdateZone updates the Zone
@@ -89,11 +89,13 @@ type (
 		GetBulkZoneDeleteResult(context.Context, string) (*BulkDeleteResultResponse, error)
 	}
 
+	// ZoneQueryString contains zone query parameters
 	ZoneQueryString struct {
 		Contract string
 		Group    string
 	}
 
+	// ZoneCreate contains zone create request
 	ZoneCreate struct {
 		Zone                  string   `json:"zone"`
 		Type                  string   `json:"type"`
@@ -107,6 +109,7 @@ type (
 		ContractID            string   `json:"contractId,omitempty"`
 	}
 
+	// ZoneResponse contains zone create response
 	ZoneResponse struct {
 		Zone                  string   `json:"zone,omitempty"`
 		Type                  string   `json:"type,omitempty"`
@@ -126,7 +129,7 @@ type (
 		VersionId             string   `json:"versionId,omitempty"`
 	}
 
-	// Zone List Query args struct
+	// ZoneListQueryArgs contains parameters for List Zones query
 	ZoneListQueryArgs struct {
 		ContractIDs string
 		Page        int
@@ -137,6 +140,7 @@ type (
 		Types       string
 	}
 
+	// ListMetadata contains metadata for List Zones request
 	ListMetadata struct {
 		ContractIDs   []string `json:"contractIds"`
 		Page          int      `json:"page"`
@@ -145,11 +149,13 @@ type (
 		TotalElements int      `json:"totalElements"`
 	} //`json:"metadata"`
 
+	// ZoneListResponse contains response for List Zones request
 	ZoneListResponse struct {
 		Metadata *ListMetadata   `json:"metadata,omitempty"`
 		Zones    []*ZoneResponse `json:"zones,omitempty"`
 	}
 
+	// ChangeListResponse contains metadata about a change list
 	ChangeListResponse struct {
 		Zone             string `json:"zone,omitempty"`
 		ChangeTag        string `json:"changeTag,omitempty"`
@@ -158,24 +164,24 @@ type (
 		Stale            bool   `json:"stale,omitempty"`
 	}
 
-	// Zones List Response
+	// ZoneNameListResponse contains response with a list of zone's names and aliases
 	ZoneNameListResponse struct {
 		Zones   []string `json:"zones"`
 		Aliases []string `json:"aliases,omitempty"`
 	}
 
-	// returned list of Zone Names
+	// ZoneNamesResponse contains record set names for zone
 	ZoneNamesResponse struct {
 		Names []string `json:"names"`
 	}
 
-	// Recordset Types for Zone|Name Response
+	// ZoneNameTypesResponse contains record set types for zone
 	ZoneNameTypesResponse struct {
 		Types []string `json:"types"`
 	}
 )
 
-var zoneStructMap map[string]string = map[string]string{
+var zoneStructMap = map[string]string{
 	"Zone":                  "zone",
 	"Type":                  "type",
 	"Masters":               "masters",
@@ -206,7 +212,7 @@ func (p *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*Z
 	// construct GET url
 	getURL := fmt.Sprintf("/config-dns/v2/zones")
 	if len(queryArgs) > 1 {
-		return nil, fmt.Errorf("ListZones QueryArgs invalid.")
+		return nil, fmt.Errorf("ListZones QueryArgs invalid")
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)

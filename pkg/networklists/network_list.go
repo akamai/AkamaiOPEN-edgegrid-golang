@@ -29,15 +29,18 @@ type (
 		RemoveNetworkList(ctx context.Context, params RemoveNetworkListRequest) (*RemoveNetworkListResponse, error)
 	}
 
+	// GetNetworkListRequest contains request parameters for GetNetworkList method
 	GetNetworkListRequest struct {
 		UniqueID string `json:"-"`
 	}
 
+	// GetNetworkListsRequest contains request parameters for GetNetworkLists method
 	GetNetworkListsRequest struct {
 		Name string `json:"name"`
 		Type string `json:"type"`
 	}
 
+	// GetNetworkListsResponse contains response from GetNetworkLists method
 	GetNetworkListsResponse struct {
 		Links        *NetworkListsResponseLinks `json:"links,omitempty"`
 		NetworkLists []struct {
@@ -55,6 +58,7 @@ type (
 		} `json:"networkLists"`
 	}
 
+	// GetNetworkListResponse contains response from GetNetworkList method
 	GetNetworkListResponse struct {
 		Name            string   `json:"name"`
 		UniqueID        string   `json:"uniqueId"`
@@ -95,6 +99,7 @@ type (
 		} `json:"links"`
 	}
 
+	// CreateNetworkListRequest contains request parameters for CreateNetworkList method
 	CreateNetworkListRequest struct {
 		Name        string   `json:"name"`
 		Type        string   `json:"type"`
@@ -102,6 +107,7 @@ type (
 		List        []string `json:"list"`
 	}
 
+	// UpdateNetworkListRequest contains request parameters for CreateNetworkLists method
 	UpdateNetworkListRequest struct {
 		Name        string   `json:"name"`
 		Type        string   `json:"type"`
@@ -111,6 +117,7 @@ type (
 		UniqueID    string   `json:"uniqueId"`
 	}
 
+	// UpdateNetworkListResponse contains response from CreateNetworkList method
 	UpdateNetworkListResponse struct {
 		Links struct {
 			Create struct {
@@ -159,16 +166,19 @@ type (
 		} `json:"networkLists"`
 	}
 
+	// RemoveNetworkListRequest contains request parameters for RemoveNetworkList method
 	RemoveNetworkListRequest struct {
 		UniqueID string `json:"-"`
 	}
 
+	// RemoveNetworkListResponse contains response from RemoveNetworkList method
 	RemoveNetworkListResponse struct {
 		Status    int    `json:"status"`
 		UniqueID  string `json:"uniqueId"`
 		SyncPoint int    `json:"syncPoint"`
 	}
 
+	// CreateNetworkListResponse contains response from CreateNetworkList method
 	CreateNetworkListResponse struct {
 		Name            string   `json:"name"`
 		UniqueID        string   `json:"uniqueId"`
@@ -208,15 +218,18 @@ type (
 		} `json:"links"`
 	}
 
+	// LinkInfo contains hypermedia link
 	LinkInfo struct {
 		Href   string `json:"href,omitempty"`
 		Method string `json:"method,omitempty"`
 	}
 
+	// NetworkListsResponseLinks contains LinkInfo
 	NetworkListsResponseLinks struct {
 		Create *LinkInfo `json:"create,omitempty"`
 	}
 
+	// NetworkListsLinks encapsulates the set of API hypermedia
 	NetworkListsLinks struct {
 		ActivateInProduction *LinkInfo `json:"activateInProduction,omitempty"`
 		ActivateInStaging    *LinkInfo `json:"activateInStaging,omitempty"`

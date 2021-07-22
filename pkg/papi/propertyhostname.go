@@ -58,17 +58,20 @@ type (
 		CertStatus           CertStatusItem    `json:"certStatus,omitempty"`
 	}
 
+	// CertStatusItem contains information about certificate status for specific Hostname
 	CertStatusItem struct {
 		ValidationCname ValidationCname `json:"validationCname,omitempty"`
 		Staging         []StatusItem    `json:"staging,omitempty"`
 		Production      []StatusItem    `json:"production,omitempty"`
 	}
 
+	// ValidationCname is the CNAME record used to validate the certificate’s domain
 	ValidationCname struct {
 		Hostname string `json:"hostname,omitempty"`
 		Target   string `json:"target,omitempty"`
 	}
 
+	// StatusItem determines whether a hostname is capable of serving secure content over the staging or production network.
 	StatusItem struct {
 		Status string `json:"status,omitempty"`
 	}
@@ -121,7 +124,9 @@ func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
 }
 
 var (
+	// ErrGetPropertyVersionHostnames represents error when fetching hostnames fails
 	ErrGetPropertyVersionHostnames    = errors.New("fetching hostnames")
+	// ErrUpdatePropertyVersionHostnames represents error when updating hostnames fails
 	ErrUpdatePropertyVersionHostnames = errors.New("updating hostnames")
 )
 

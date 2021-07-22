@@ -28,6 +28,7 @@ type (
 		RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error)
 	}
 
+	// GetActivationsRequest contains request parameters for getting activation status
 	GetActivationsRequest struct {
 		UniqueID     string `json:"-"`
 		Action       string `json:"-"`
@@ -35,10 +36,12 @@ type (
 		ActivationID int    `json:"activationId"`
 	}
 
+	// GetActivationRequest contains request parameters for getting activation details
 	GetActivationRequest struct {
 		ActivationID int `json:"activationId"`
 	}
 
+	// GetActivationsResponse contains response with activation status
 	GetActivationsResponse struct {
 		ActivationID       int    `json:"activationId"`
 		ActivationComments string `json:"activationComments"`
@@ -74,6 +77,7 @@ type (
 		} `json:"links"`
 	}
 
+	// GetActivationResponse contains response with activation details
 	GetActivationResponse struct {
 		ActivationID     int       `json:"activationId"`
 		CreateDate       time.Time `json:"createDate"`
@@ -111,6 +115,7 @@ type (
 		} `json:"networkList"`
 	}
 
+	// CreateActivationsRequest contains request parameters for creating new activation
 	CreateActivationsRequest struct {
 		UniqueID               string   `json:"-"`
 		Action                 string   `json:"-"`
@@ -119,6 +124,7 @@ type (
 		NotificationRecipients []string `json:"notificationRecipients"`
 	}
 
+	// CreateActivationsResponse contains response after creating new activation
 	CreateActivationsResponse struct {
 		ActivationID       int    `json:"activationId"`
 		ActivationComments string `json:"activationComments"`
@@ -154,6 +160,7 @@ type (
 		} `json:"links"`
 	}
 
+	// RemoveActivationsRequest contains request parameters of Activation to deactivate
 	RemoveActivationsRequest struct {
 		UniqueID               string   `json:"-"`
 		ActivationID           int      `json:"-"`
@@ -163,6 +170,7 @@ type (
 		NotificationRecipients []string `json:"notificationRecipients"`
 	}
 
+	// RemoveActivationsResponse contains response of Activation deactivation
 	RemoveActivationsResponse struct {
 		ActivationID       int    `json:"activationId"`
 		ActivationComments string `json:"activationComments"`

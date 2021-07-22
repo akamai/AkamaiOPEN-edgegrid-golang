@@ -17,7 +17,7 @@ coverage:
 
 .PHONY: lint
 lint:
-	golint -set_exit_status ./...
+	revive -config config.toml ./...
 
 .PHONY: vet
 vet:
@@ -26,3 +26,7 @@ vet:
 .PHONY: fmt
 fmt:
 	go fmt ./...
+
+.PHONY: init
+init:
+	GO111MODULE=off go get github.com/mgechev/revive

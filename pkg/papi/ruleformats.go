@@ -28,6 +28,7 @@ type (
 )
 
 var (
+    // ErrGetRuleFormats represents error when fetching rule formats fails
 	ErrGetRuleFormats = errors.New("fetching rule formats")
 )
 

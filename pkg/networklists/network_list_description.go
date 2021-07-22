@@ -25,12 +25,14 @@ type (
 		UpdateNetworkListDescription(ctx context.Context, params UpdateNetworkListDescriptionRequest) (*UpdateNetworkListDescriptionResponse, error)
 	}
 
+	// GetNetworkListDescriptionRequest contains request parameters for GetNetworkListDescription method
 	GetNetworkListDescriptionRequest struct {
 		UniqueID    string `json:"uniqueId"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 	}
 
+	// GetNetworkListDescriptionResponse contains response from GetNetworkListDescription method
 	GetNetworkListDescriptionResponse struct {
 		Name            string   `json:"name"`
 		UniqueID        string   `json:"uniqueId"`
@@ -71,12 +73,14 @@ type (
 		} `json:"links"`
 	}
 
+	// UpdateNetworkListDescriptionRequest contains request parameters for UpdateNetworkListDescription method
 	UpdateNetworkListDescriptionRequest struct {
 		UniqueID    string `json:"-"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 	}
 
+	// UpdateNetworkListDescriptionResponse contains response from UpdateNetworkListDescription method
 	UpdateNetworkListDescriptionResponse struct {
 		Empty string `json:"-"`
 	}

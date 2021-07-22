@@ -165,13 +165,13 @@ func (p *gtm) UpdateAsMap(ctx context.Context, as *AsMap, domainName string) (*R
 }
 
 // Save AsMap in given domain. Common path for Create and Update.
-func (as *AsMap) save(ctx context.Context, p *gtm, domainName string) (*AsMapResponse, error) {
+func (asm *AsMap) save(ctx context.Context, p *gtm, domainName string) (*AsMapResponse, error) {
 
-	if err := as.Validate(); err != nil {
+	if err := asm.Validate(); err != nil {
 		return nil, fmt.Errorf("AsMap validation failed. %w", err)
 	}
 
-	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/as-maps/%s", domainName, as.Name)
+	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/as-maps/%s", domainName, asm.Name)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create AsMap request: %w", err)
@@ -179,7 +179,7 @@ func (as *AsMap) save(ctx context.Context, p *gtm, domainName string) (*AsMapRes
 
 	var mapresp AsMapResponse
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &mapresp, as)
+	resp, err := p.Exec(req, &mapresp, asm)
 	if err != nil {
 		return nil, fmt.Errorf("AsMap request failed: %w", err)
 	}

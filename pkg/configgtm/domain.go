@@ -87,6 +87,7 @@ type Domain struct {
 	EndUserMappingEnabled        bool            `json:"endUserMappingEnabled"`
 }
 
+// DomainsList contains a list of domain items
 type DomainsList struct {
 	DomainItems []*DomainItem `json:"items"`
 }
@@ -200,8 +201,8 @@ func (p *gtm) GetDomain(ctx context.Context, domainName string) (*Domain, error)
 	return &domain, nil
 }
 
-// Save method; Create or Update
-func (domain *Domain) save(ctx context.Context, p *gtm, queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
+// save method; Create or Update
+func (dom *Domain) save(ctx context.Context, p *gtm, queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
 
 	// set schema version
 	setVersionHeader(req, schemaVersion)
@@ -219,7 +220,7 @@ func (domain *Domain) save(ctx context.Context, p *gtm, queryArgs map[string]str
 	}
 
 	var dresp DomainResponse
-	resp, err := p.Exec(req, &dresp, domain)
+	resp, err := p.Exec(req, &dresp, dom)
 	if err != nil {
 		return nil, fmt.Errorf("Domain request failed: %w", err)
 	}
@@ -232,7 +233,7 @@ func (domain *Domain) save(ctx context.Context, p *gtm, queryArgs map[string]str
 
 }
 
-// Create is a method applied to a domain object resulting in creation.
+// CreateDomain is a method applied to a domain object resulting in creation.
 func (p *gtm) CreateDomain(ctx context.Context, domain *Domain, queryArgs map[string]string) (*DomainResponse, error) {
 
 	logger := p.Log(ctx)
@@ -253,7 +254,7 @@ func (p *gtm) CreateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 
 }
 
-// Update is a method applied to a domain object resulting in an update.
+// UpdateDomain is a method applied to a domain object resulting in an update.
 func (p *gtm) UpdateDomain(ctx context.Context, domain *Domain, queryArgs map[string]string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -277,7 +278,7 @@ func (p *gtm) UpdateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 	return stat.Status, err
 }
 
-// Delete is a method applied to a domain object resulting in removal.
+// DeleteDomain is a method applied to a domain object resulting in removal.
 func (p *gtm) DeleteDomain(ctx context.Context, domain *Domain) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -304,7 +305,7 @@ func (p *gtm) DeleteDomain(ctx context.Context, domain *Domain) (*ResponseStatus
 	return responseBody.Status, nil
 }
 
-// NullObjectAttributeStruct represents core and child null onject attributes
+// NullPerObjectAttributeStruct represents core and child null object attributes
 type NullPerObjectAttributeStruct struct {
 	CoreObjectFields  map[string]string
 	ChildObjectFields map[string]interface{} // NullObjectAttributeStruct
@@ -321,9 +322,10 @@ type NullFieldMapStruct struct {
 	AsMaps      map[string]NullPerObjectAttributeStruct // entries are asmaps
 }
 
+// ObjectMap represents ObjectMap datatype
 type ObjectMap map[string]interface{}
 
-// Retrieve map of null fields
+// NullFieldMap retrieves map of null fields
 func (p *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapStruct, error) {
 
 	logger := p.Log(ctx)

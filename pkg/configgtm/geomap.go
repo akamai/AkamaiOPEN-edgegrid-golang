@@ -35,7 +35,7 @@ type GeoMaps interface {
 	UpdateGeoMap(context.Context, *GeoMap, string) (*ResponseStatus, error)
 }
 
-// GeoAssigment represents a GTM geo assignment element
+// GeoAssignment represents a GTM geo assignment element
 type GeoAssignment struct {
 	DatacenterBase
 	Countries []string `json:"countries"`
