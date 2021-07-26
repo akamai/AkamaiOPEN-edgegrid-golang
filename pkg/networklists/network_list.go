@@ -96,19 +96,25 @@ type (
 	}
 
 	CreateNetworkListRequest struct {
-		Name        string   `json:"name"`
-		Type        string   `json:"type"`
-		Description string   `json:"description"`
-		List        []string `json:"list"`
+		Name               string   `json:"name"`
+		Type               string   `json:"type"`
+		Description        string   `json:"description"`
+		List               []string `json:"list"`
+		Group              int      `json:"groupId,omitempty"`
+		Contract           string   `json:"contractId,omitempty"`
+		AccessControlGroup string   `json:"accessControlGroup,omitempty"`
 	}
 
 	UpdateNetworkListRequest struct {
-		Name        string   `json:"name"`
-		Type        string   `json:"type"`
-		Description string   `json:"description"`
-		SyncPoint   int      `json:"syncPoint"`
-		List        []string `json:"list"`
-		UniqueID    string   `json:"uniqueId"`
+		Name               string   `json:"name"`
+		Type               string   `json:"type"`
+		Description        string   `json:"description"`
+		SyncPoint          int      `json:"syncPoint"`
+		List               []string `json:"list"`
+		UniqueID           string   `json:"uniqueId"`
+		Group              int      `json:"groupId,omitempty"`
+		Contract           string   `json:"contractId,omitempty"`
+		AccessControlGroup string   `json:"accessControlGroup,omitempty"`
 	}
 
 	UpdateNetworkListResponse struct {

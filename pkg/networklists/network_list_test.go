@@ -173,7 +173,7 @@ func TestNetworkList_CreateNetworkList(t *testing.T) {
 		headers          http.Header
 	}{
 		"201 Created": {
-			params: CreateNetworkListRequest{Name: "Test"},
+			params: CreateNetworkListRequest{Name: "Test", Group: 1234, Contract: "Test"},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -183,7 +183,7 @@ func TestNetworkList_CreateNetworkList(t *testing.T) {
 			expectedPath:     "/network-list/v2/network-lists",
 		},
 		"500 internal server error": {
-			params:         CreateNetworkListRequest{Name: "Test"},
+			params:         CreateNetworkListRequest{Name: "Test", Group: 1234, Contract: "Test"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -249,7 +249,7 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test"},
+			params: UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test", Group: 1234, Contract: "Test"},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -259,7 +259,83 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 			expectedPath:     "/network-list/v2/network-lists/Test",
 		},
 		"500 internal server error": {
-			params:         UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test"},
+			params:         UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test", Group: 1234, Contract: "Test"},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error updating networklist"
+}`,
+			expectedPath: "/network-list/v2/network-lists/Test",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error updating networklist",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, http.MethodPut, r.Method)
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				w.WriteHeader(test.responseStatus)
+				if len(test.responseBody) > 0 {
+					_, err := w.Write([]byte(test.responseBody))
+					assert.NoError(t, err)
+				}
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.UpdateNetworkList(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+// Test Update NetworkList with Access Control Group
+func TestNetworkList_UpdateNetworkListWithACG(t *testing.T) {
+	result := UpdateNetworkListResponse{}
+
+	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkList.json"))
+	json.Unmarshal([]byte(respData), &result)
+
+	req := UpdateNetworkListRequest{}
+
+	reqData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkList.json"))
+	json.Unmarshal([]byte(reqData), &req)
+
+	tests := map[string]struct {
+		params           UpdateNetworkListRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *UpdateNetworkListResponse
+		withError        error
+		headers          http.Header
+	}{
+		"200 Success": {
+			params: UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test", AccessControlGroup: "Test - Test.G1234"},
+			headers: http.Header{
+				"Content-Type": []string{"application/json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusCreated,
+			responseBody:     respData,
+			expectedResponse: &result,
+			expectedPath:     "/network-list/v2/network-lists/Test",
+		},
+		"500 internal server error": {
+			params:         UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test", AccessControlGroup: "Test - Test.G1234"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
