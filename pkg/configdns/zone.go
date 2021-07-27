@@ -548,7 +548,7 @@ func (p *dns) SubmitChangelist(ctx context.Context, zone *ZoneCreate) error {
 }
 
 // Save updates the Zone
-func (p *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, zonequerystring ZoneQueryString) error {
+func (p *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryString) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
@@ -592,7 +592,7 @@ func (p *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 }
 
 // Zone Delete.
-func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, zonequerystring ZoneQueryString) error {
+func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryString) error {
 	// remove all the records except for SOA
 	// which is required and save the zone
 

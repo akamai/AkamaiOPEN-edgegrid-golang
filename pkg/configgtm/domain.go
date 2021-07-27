@@ -202,7 +202,7 @@ func (p *gtm) GetDomain(ctx context.Context, domainName string) (*Domain, error)
 }
 
 // save method; Create or Update
-func (dom *Domain) save(ctx context.Context, p *gtm, queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
+func (dom *Domain) save(_ context.Context, p *gtm, queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
 
 	// set schema version
 	setVersionHeader(req, schemaVersion)

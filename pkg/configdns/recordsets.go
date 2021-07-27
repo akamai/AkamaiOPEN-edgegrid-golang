@@ -89,7 +89,7 @@ func (rs *Recordsets) Validate() error {
 	return nil
 }
 
-func (p *dns) NewRecordSetResponse(ctx context.Context, name string) *RecordSetResponse {
+func (p *dns) NewRecordSetResponse(_ context.Context, _ string) *RecordSetResponse {
 	recordset := &RecordSetResponse{}
 	return recordset
 }

@@ -32,7 +32,7 @@ type (
 	}
 )
 
-func (p *dns) NewAuthorityResponse(ctx context.Context, contract string) *AuthorityResponse {
+func (p *dns) NewAuthorityResponse(ctx context.Context, _ string) *AuthorityResponse {
 
 	logger := p.Log(ctx)
 	logger.Debug("NewAuthorityResponse")

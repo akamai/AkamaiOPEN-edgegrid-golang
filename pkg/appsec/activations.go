@@ -170,7 +170,7 @@ func (p *appsec) GetActivations(ctx context.Context, params GetActivationsReques
 // If acknowledgeWarnings is true and warnings are returned on the first attempt,
 // a second attempt is made, acknowledging the warnings.
 //
-func (p *appsec) CreateActivations(ctx context.Context, params CreateActivationsRequest, acknowledgeWarnings bool) (*CreateActivationsResponse, error) {
+func (p *appsec) CreateActivations(ctx context.Context, params CreateActivationsRequest, _ bool) (*CreateActivationsResponse, error) {
 	//func (activations *CreateActivationsResponse) SaveActivations(postpayload *ActivationsPost, acknowledgeWarnings bool, correlationid string) (*CreateActivationsResponse, error) {
 
 	logger := p.Log(ctx)

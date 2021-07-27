@@ -79,7 +79,7 @@ func (rsrc *Resource) Validate() error {
 }
 
 // NewResourceInstance instantiates a new ResourceInstance.
-func (p *gtm) NewResourceInstance(ctx context.Context, rsrc *Resource, dcID int) *ResourceInstance {
+func (p *gtm) NewResourceInstance(ctx context.Context, _ *Resource, dcID int) *ResourceInstance {
 
 	logger := p.Log(ctx)
 	logger.Debug("NewResourceInstance")

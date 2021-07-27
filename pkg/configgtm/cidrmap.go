@@ -127,7 +127,7 @@ func (p *gtm) GetCidrMap(ctx context.Context, name, domainName string) (*CidrMap
 }
 
 // NewCidrAssignment instantiate new Assignment struct
-func (p *gtm) NewCidrAssignment(ctx context.Context, cidr *CidrMap, dcid int, nickname string) *CidrAssignment {
+func (p *gtm) NewCidrAssignment(ctx context.Context, _ *CidrMap, dcid int, nickname string) *CidrAssignment {
 
 	logger := p.Log(ctx)
 	logger.Debug("NewCidrAssignment")

@@ -45,7 +45,7 @@ type (
 	}
 )
 
-func (p *appsec) GetApiHostnameCoverage(ctx context.Context, params GetApiHostnameCoverageRequest) (*GetApiHostnameCoverageResponse, error) {
+func (p *appsec) GetApiHostnameCoverage(ctx context.Context, _ GetApiHostnameCoverageRequest) (*GetApiHostnameCoverageResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("GetApiHostnameCoverage")
 

@@ -128,7 +128,7 @@ func (p *gtm) GetAsMap(ctx context.Context, name, domainName string) (*AsMap, er
 }
 
 // Instantiate new Assignment struct
-func (p *gtm) NewASAssignment(ctx context.Context, as *AsMap, dcID int, nickname string) *AsAssignment {
+func (p *gtm) NewASAssignment(ctx context.Context, _ *AsMap, dcID int, nickname string) *AsAssignment {
 
 	logger := p.Log(ctx)
 	logger.Debug("NewAssignment")

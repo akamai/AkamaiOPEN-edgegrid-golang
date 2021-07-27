@@ -158,7 +158,7 @@ func (p *appsec) GetConfiguration(ctx context.Context, params GetConfigurationRe
 
 }
 
-func (p *appsec) GetConfigurations(ctx context.Context, params GetConfigurationsRequest) (*GetConfigurationsResponse, error) {
+func (p *appsec) GetConfigurations(ctx context.Context, _ GetConfigurationsRequest) (*GetConfigurationsResponse, error) {
 
 	logger := p.Log(ctx)
 	logger.Debug("GetConfigurations")
