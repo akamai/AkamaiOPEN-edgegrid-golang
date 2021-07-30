@@ -13,51 +13,54 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// Test PolicyProtections
-func TestAppSec_GetPolicyProtections(t *testing.T) {
+func TestApsec_ListAdvancedSettingsEvasivePathMatch(t *testing.T) {
 
-	result := GetPolicyProtectionsResponse{}
+	result := GetAdvancedSettingsEvasivePathMatchResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsEvasivePathMatch/AdvancedSettingsEvasivePathMatch.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetPolicyProtectionsRequest
+		params           GetAdvancedSettingsEvasivePathMatchRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetPolicyProtectionsResponse
+		expectedResponse *GetAdvancedSettingsEvasivePathMatchResponse
 		withError        error
+		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetPolicyProtectionsRequest{
+			params: GetAdvancedSettingsEvasivePathMatchRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
-			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
+			responseBody:     string(respData),
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/evasive-path-match",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetPolicyProtectionsRequest{
+			params: GetAdvancedSettingsEvasivePathMatchRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
 			},
+			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
+			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching match target"
-}`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
+    "detail": "Error fetching AdvancedSettingsEvasivePathMatch",
+    "status": 500
+}`,
+			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/evasive-path-match",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching match target",
+				Detail:     "Error fetching AdvancedSettingsEvasivePathMatch",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -73,90 +76,12 @@ func TestAppSec_GetPolicyProtections(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetPolicyProtections(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
-		})
-	}
-}
-
-// Test Update PolicyProtections.
-func TestAppSec_UpdatePolicyProtections(t *testing.T) {
-	result := GetPolicyProtectionsResponse{}
-
-	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
-
-	req := UpdatePolicyProtectionsRequest{}
-
-	reqData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
-	json.Unmarshal([]byte(reqData), &req)
-
-	tests := map[string]struct {
-		params           UpdatePolicyProtectionsRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *GetPolicyProtectionsResponse
-		withError        error
-		headers          http.Header
-	}{
-		"200 Success": {
-			params: UpdatePolicyProtectionsRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
-			},
-			headers: http.Header{
-				"Content-Type": []string{"application/json;charset=UTF-8"},
-			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     respData,
-			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
-		},
-		"500 internal server error": {
-			params: UpdatePolicyProtectionsRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
-			},
-			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating zone"
-}`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error creating zone",
-				StatusCode: http.StatusInternalServerError,
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				if len(test.responseBody) > 0 {
-					_, err := w.Write([]byte(test.responseBody))
-					assert.NoError(t, err)
-				}
-			}))
-			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdatePolicyProtections(
+			result, err := client.GetAdvancedSettingsEvasivePathMatch(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.params)
+					session.WithContextHeaders(test.headers),
+				),
+				test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -167,32 +92,100 @@ func TestAppSec_UpdatePolicyProtections(t *testing.T) {
 	}
 }
 
-// Test Remove PolicyProtections.
-func TestAppSec_RemovePolicyProtections(t *testing.T) {
-	result := GetPolicyProtectionsResponse{}
+// Test AdvancedSettingsEvasivePathMatch
+func TestAppSec_GetAdvancedSettingsEvasivePathmatch(t *testing.T) {
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
+	result := GetAdvancedSettingsEvasivePathMatchResponse{}
+
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsEvasivePathMatch/AdvancedSettingsEvasivePathMatch.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := UpdatePolicyProtectionsRequest{}
-
-	reqData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
-	json.Unmarshal([]byte(reqData), &req)
-
 	tests := map[string]struct {
-		params           UpdatePolicyProtectionsRequest
+		params           GetAdvancedSettingsEvasivePathMatchRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetPolicyProtectionsResponse
+		expectedResponse *GetAdvancedSettingsEvasivePathMatchResponse
+		withError        error
+	}{
+		"200 OK": {
+			params: GetAdvancedSettingsEvasivePathMatchRequest{
+				ConfigID: 43253,
+				Version:  15,
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     respData,
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/evasive-path-match",
+			expectedResponse: &result,
+		},
+		"500 internal server error": {
+			params: GetAdvancedSettingsEvasivePathMatchRequest{
+				ConfigID: 43253,
+				Version:  15,
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: (`
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching AdvancedSettingsEvasivePathMatch"
+}`),
+			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/evasive-path-match",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching AdvancedSettingsEvasivePathMatch",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetAdvancedSettingsEvasivePathMatch(context.Background(), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+// Test Update AdvancedSettingsEvasivePathMatch.
+func TestAppSec_UpdateAdvancedSettingsEvasivePathMatch(t *testing.T) {
+	result := UpdateAdvancedSettingsEvasivePathMatchResponse{}
+
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsEvasivePathMatch/AdvancedSettingsEvasivePathMatch.json"))
+	json.Unmarshal([]byte(respData), &result)
+
+	req := UpdateAdvancedSettingsEvasivePathMatchRequest{}
+
+	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsEvasivePathMatch/AdvancedSettingsEvasivePathMatch.json"))
+	json.Unmarshal([]byte(reqData), &req)
+
+	tests := map[string]struct {
+		params           UpdateAdvancedSettingsEvasivePathMatchRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *UpdateAdvancedSettingsEvasivePathMatchResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: UpdatePolicyProtectionsRequest{
+			params: UpdateAdvancedSettingsEvasivePathMatchRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -200,26 +193,25 @@ func TestAppSec_RemovePolicyProtections(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/evasive-path-match",
 		},
 		"500 internal server error": {
-			params: UpdatePolicyProtectionsRequest{
+			params: UpdateAdvancedSettingsEvasivePathMatchRequest{
 				ConfigID: 43253,
 				Version:  15,
-				PolicyID: "AAAA_81230",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error creating zone"
+    "detail": "Error creating AdvancedSettingsEvasivePathMatch"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/evasive-path-match",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error creating zone",
+				Detail:     "Error creating AdvancedSettingsEvasivePathMatch",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -236,7 +228,7 @@ func TestAppSec_RemovePolicyProtections(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.RemovePolicyProtections(
+			result, err := client.UpdateAdvancedSettingsEvasivePathMatch(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)

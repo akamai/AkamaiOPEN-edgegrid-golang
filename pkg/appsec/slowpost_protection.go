@@ -12,6 +12,8 @@ type (
 	// The SlowPostProtection interface supports retrieving and updating slow post protection
 	// for a configuration and policy.
 	//
+	// Note: this interface is DEPRECATED and will be removed in a future release. Use the PolicyProtections interface instead.
+	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#slowpostprotection
 	SlowPostProtection interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
