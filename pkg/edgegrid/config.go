@@ -32,6 +32,8 @@ var (
 	ErrLoadingFile = errors.New("loading config file")
 	// ErrSectionDoesNotExist is returned when a section with provided name does not exist in edgerc
 	ErrSectionDoesNotExist = errors.New("provided config section does not exist")
+	// ErrHostContainsSlashAtTheEnd is returned when host has unnecessary '/' at the end
+	ErrHostContainsSlashAtTheEnd = errors.New("host must not contain '/' at the end")
 )
 
 type (
@@ -114,7 +116,7 @@ func WithEnv(env bool) Option {
 	}
 }
 
-// FromFile creates a config the configuration in standard INI forma
+// FromFile creates a config the configuration in standard INI format
 func (c *Config) FromFile(file string, section string) error {
 	var (
 		requiredOptions = []string{"host", "client_token", "client_secret", "access_token"}
@@ -138,6 +140,10 @@ func (c *Config) FromFile(file string, section string) error {
 	err = sec.MapTo(&c)
 	if err != nil {
 		return err
+	}
+
+	if strings.HasSuffix(c.Host, "/") {
+		return fmt.Errorf("%w: %q", ErrHostContainsSlashAtTheEnd, c.Host)
 	}
 
 	for _, opt := range requiredOptions {
@@ -183,6 +189,9 @@ func (c *Config) FromEnv(section string) error {
 		}
 		switch {
 		case opt == "HOST":
+			if strings.HasSuffix(val, "/") {
+				return fmt.Errorf("%w: %q", ErrHostContainsSlashAtTheEnd, val)
+			}
 			c.Host = val
 		case opt == "CLIENT_TOKEN":
 			c.ClientToken = val

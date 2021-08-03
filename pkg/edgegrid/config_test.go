@@ -57,6 +57,11 @@ func TestConfig_FromFile(t *testing.T) {
 			section:   "missing-access-token",
 			withError: ErrRequiredOptionEdgerc,
 		},
+		"invalid host with slash at the end": {
+			fileName:  "edgerc",
+			section:   "slash-at-the-end-of-host-value",
+			withError: ErrHostContainsSlashAtTheEnd,
+		},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -163,6 +168,16 @@ func TestConfig_FromEnv(t *testing.T) {
 				"AKAMAI_TEST_CLIENT_SECRET": "test-client-secret",
 			},
 			withError: ErrRequiredOptionEnv,
+		},
+		"custom section, slash at the end of host value": {
+			section: "test",
+			envs: map[string]string{
+				"AKAMAI_TEST_HOST":          "test-host/",
+				"AKAMAI_TEST_CLIENT_TOKEN":  "test-client-token",
+				"AKAMAI_TEST_CLIENT_SECRET": "test-client-secret",
+				"AKAMAI_TEST_ACCESS_TOKEN":  "test-access-token",
+			},
+			withError: ErrHostContainsSlashAtTheEnd,
 		},
 	}
 	for name, test := range tests {
