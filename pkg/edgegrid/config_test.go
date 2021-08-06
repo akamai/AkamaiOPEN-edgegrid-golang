@@ -57,11 +57,6 @@ func TestConfig_FromFile(t *testing.T) {
 			section:   "missing-access-token",
 			withError: ErrRequiredOptionEdgerc,
 		},
-		"invalid host with slash at the end": {
-			fileName:  "edgerc",
-			section:   "slash-at-the-end-of-host-value",
-			withError: ErrHostContainsSlashAtTheEnd,
-		},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -169,16 +164,6 @@ func TestConfig_FromEnv(t *testing.T) {
 			},
 			withError: ErrRequiredOptionEnv,
 		},
-		"custom section, slash at the end of host value": {
-			section: "test",
-			envs: map[string]string{
-				"AKAMAI_TEST_HOST":          "test-host/",
-				"AKAMAI_TEST_CLIENT_TOKEN":  "test-client-token",
-				"AKAMAI_TEST_CLIENT_SECRET": "test-client-secret",
-				"AKAMAI_TEST_ACCESS_TOKEN":  "test-access-token",
-			},
-			withError: ErrHostContainsSlashAtTheEnd,
-		},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -198,6 +183,54 @@ func TestConfig_FromEnv(t *testing.T) {
 			}
 			require.NoError(t, err)
 			assert.Equal(t, test.expected, cfg)
+		})
+	}
+}
+
+func TestConfig_Validate(t *testing.T) {
+	tests := map[string]struct {
+		fileName        string
+		section         string
+		expected        Config
+		errorIsExpected bool
+	}{
+		"invalid host from file with slash at the end": {
+			fileName: "edgerc",
+			section:  "slash-at-the-end-of-host-value",
+			expected: Config{
+				Host:         "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/",
+				ClientToken:  "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+				ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
+				AccessToken:  "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+				MaxBody:      131072,
+			},
+			errorIsExpected: true,
+		},
+		"valid host from file": {
+			fileName: "edgerc",
+			section:  "test",
+			expected: Config{
+				Host:         "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net",
+				ClientToken:  "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+				ClientSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=",
+				AccessToken:  "xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx",
+				MaxBody:      131072,
+			},
+			errorIsExpected: false,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			cfg := Config{}
+			_ = cfg.FromFile(fmt.Sprintf("test/%s", test.fileName), test.section)
+			err := cfg.Validate()
+			if err != nil && test.errorIsExpected == true {
+				assert.Equal(t, test.expected, cfg)
+				assert.True(t, errors.Is(err, ErrHostContainsSlashAtTheEnd))
+			} else {
+				assert.True(t, errors.Is(err, nil))
+			}
 		})
 	}
 }

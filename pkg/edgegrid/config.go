@@ -142,10 +142,6 @@ func (c *Config) FromFile(file string, section string) error {
 		return err
 	}
 
-	if strings.HasSuffix(c.Host, "/") {
-		return fmt.Errorf("%w: %q", ErrHostContainsSlashAtTheEnd, c.Host)
-	}
-
 	for _, opt := range requiredOptions {
 		if !(edgerc.Section(section).HasKey(opt)) {
 			return fmt.Errorf("%w: %q", ErrRequiredOptionEdgerc, opt)
@@ -189,9 +185,6 @@ func (c *Config) FromEnv(section string) error {
 		}
 		switch {
 		case opt == "HOST":
-			if strings.HasSuffix(val, "/") {
-				return fmt.Errorf("%w: %q", ErrHostContainsSlashAtTheEnd, val)
-			}
 			c.Host = val
 		case opt == "CLIENT_TOKEN":
 			c.ClientToken = val
@@ -221,4 +214,12 @@ func Timestamp(t time.Time) string {
 	local := time.FixedZone("GMT", 0)
 	t = t.In(local)
 	return t.Format("20060102T15:04:05-0700")
+}
+
+// Validate verifies that the host is not ending with the slash character
+func (c *Config) Validate() error {
+	if strings.HasSuffix(c.Host, "/") {
+		return fmt.Errorf("%w: %q", ErrHostContainsSlashAtTheEnd, c.Host)
+	}
+	return nil
 }
