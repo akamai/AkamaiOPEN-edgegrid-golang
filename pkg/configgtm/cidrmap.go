@@ -55,11 +55,11 @@ type CidrMapList struct {
 }
 
 // Validate validates CidrMap
-func (cid *CidrMap) Validate() error {
-	if len(cid.Name) < 1 {
+func (cidr *CidrMap) Validate() error {
+	if len(cidr.Name) < 1 {
 		return fmt.Errorf("CidrMap is missing Name")
 	}
-	if cid.DefaultDatacenter == nil {
+	if cidr.DefaultDatacenter == nil {
 		return fmt.Errorf("CidrMap is missing DefaultDatacenter")
 	}
 
@@ -76,7 +76,7 @@ func (p *gtm) NewCidrMap(ctx context.Context, name string) *CidrMap {
 	return cidrmap
 }
 
-// ListCidrMap retreieves all CidrMaps
+// ListCidrMaps retrieves all CidrMaps
 func (p *gtm) ListCidrMaps(ctx context.Context, domainName string) ([]*CidrMap, error) {
 
 	logger := p.Log(ctx)
@@ -126,8 +126,8 @@ func (p *gtm) GetCidrMap(ctx context.Context, name, domainName string) (*CidrMap
 	return &cidr, nil
 }
 
-// Instantiate new Assignment struct
-func (p *gtm) NewCidrAssignment(ctx context.Context, cidr *CidrMap, dcid int, nickname string) *CidrAssignment {
+// NewCidrAssignment instantiate new Assignment struct
+func (p *gtm) NewCidrAssignment(ctx context.Context, _ *CidrMap, dcid int, nickname string) *CidrAssignment {
 
 	logger := p.Log(ctx)
 	logger.Debug("NewCidrAssignment")
@@ -139,7 +139,7 @@ func (p *gtm) NewCidrAssignment(ctx context.Context, cidr *CidrMap, dcid int, ni
 	return cidrAssign
 }
 
-// Create CidrMap in provided domain
+// CreateCidrMap creates CidrMap in provided domain
 func (p *gtm) CreateCidrMap(ctx context.Context, cidr *CidrMap, domainName string) (*CidrMapResponse, error) {
 
 	logger := p.Log(ctx)
@@ -149,7 +149,7 @@ func (p *gtm) CreateCidrMap(ctx context.Context, cidr *CidrMap, domainName strin
 	return cidr.save(ctx, p, domainName)
 }
 
-// Update CidrMap in given domain
+// UpdateCidrMap updates CidrMap in given domain
 func (p *gtm) UpdateCidrMap(ctx context.Context, cidr *CidrMap, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -163,7 +163,7 @@ func (p *gtm) UpdateCidrMap(ctx context.Context, cidr *CidrMap, domainName strin
 	return stat.Status, err
 }
 
-// Save CidrMap in given domain. Common path for Create and Update.
+// save CidrMap in given domain. Common path for Create and Update.
 func (cidr *CidrMap) save(ctx context.Context, p *gtm, domainName string) (*CidrMapResponse, error) {
 
 	if err := cidr.Validate(); err != nil {
@@ -190,7 +190,7 @@ func (cidr *CidrMap) save(ctx context.Context, p *gtm, domainName string) (*Cidr
 	return &mapresp, nil
 }
 
-// Delete CidrMap method
+// DeleteCidrMap deletes CidrMap in provided domain
 func (p *gtm) DeleteCidrMap(ctx context.Context, cidr *CidrMap, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)

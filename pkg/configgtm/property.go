@@ -11,7 +11,7 @@ import (
 // Based on 1.4 Schema
 //
 
-// Propertiess contains operations available on a Property resource
+// Properties contains operations available on a Property resource
 // See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html
 type Properties interface {
 	// NewTrafficTarget is a method applied to a property object that instantiates a TrafficTarget object.
@@ -39,7 +39,7 @@ type Properties interface {
 	UpdateProperty(context.Context, *Property, string) (*ResponseStatus, error)
 }
 
-// TrafficTarget struc
+// TrafficTarget struct contains information about where to direct data center traffic
 type TrafficTarget struct {
 	DatacenterId int      `json:"datacenterId"`
 	Enabled      bool     `json:"enabled"`
@@ -49,12 +49,13 @@ type TrafficTarget struct {
 	HandoutCName string   `json:"handoutCName,omitempty"`
 }
 
-// HttpHeader struc
+// HttpHeader struct contains HTTP headers to send if the testObjectProtocol is http or https
 type HttpHeader struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
 }
 
+// LivenessTest contains configuration of liveness tests to determine whether your servers respond to requests
 type LivenessTest struct {
 	Name                          string        `json:"name"`
 	ErrorPenalty                  float64       `json:"errorPenalty,omitempty"`
@@ -83,7 +84,7 @@ type LivenessTest struct {
 	RecursionRequested            bool          `json:"recursionRequested"`
 }
 
-// StaticRRSet Struct
+// StaticRRSet contains static recordset
 type StaticRRSet struct {
 	Type  string   `json:"type"`
 	TTL   int      `json:"ttl"`
@@ -128,6 +129,7 @@ type Property struct {
 	LivenessTests             []*LivenessTest  `json:"livenessTests,omitempty"`
 }
 
+// PropertyList contains a list of property items
 type PropertyList struct {
 	PropertyItems []*Property `json:"items"`
 }
@@ -278,13 +280,13 @@ func (p *gtm) UpdateProperty(ctx context.Context, property *Property, domainName
 }
 
 // Save Property updates method
-func (property *Property) save(ctx context.Context, p *gtm, domainName string) (*PropertyResponse, error) {
+func (prop *Property) save(ctx context.Context, p *gtm, domainName string) (*PropertyResponse, error) {
 
-	if err := property.Validate(); err != nil {
+	if err := prop.Validate(); err != nil {
 		return nil, fmt.Errorf("Property validation failed. %w", err)
 	}
 
-	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/properties/%s", domainName, property.Name)
+	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/properties/%s", domainName, prop.Name)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Property request: %w", err)
@@ -292,7 +294,7 @@ func (property *Property) save(ctx context.Context, p *gtm, domainName string) (
 
 	var presp PropertyResponse
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &presp, property)
+	resp, err := p.Exec(req, &presp, prop)
 	if err != nil {
 		return nil, fmt.Errorf("Property request failed: %w", err)
 	}

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListReputationProtections(t *testing.T) {
+func TestAppSec_ListReputationProtections(t *testing.T) {
 
 	result := GetReputationProtectionsResponse{}
 

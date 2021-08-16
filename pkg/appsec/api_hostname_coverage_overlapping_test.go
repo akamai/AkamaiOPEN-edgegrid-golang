@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListApiHostnameCoverageOverlapping(t *testing.T) {
+func TestAppSec_ListApiHostnameCoverageOverlapping(t *testing.T) {
 
 	result := GetApiHostnameCoverageOverlappingResponse{}
 

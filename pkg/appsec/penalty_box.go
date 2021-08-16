@@ -8,24 +8,23 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// PenaltyBox represents a collection of PenaltyBox
-//
-// See: PenaltyBox.GetPenaltyBox()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// PenaltyBox  contains operations available on PenaltyBox  resource
-	// See: // appsec v1
+	// The PenaltyBox interface supports retrieving or modifying the penalty box settings for
+	// a specified security policy
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpenaltybox
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#penaltybox
 	PenaltyBox interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpenaltybox
 		GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequest) (*GetPenaltyBoxesResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpenaltybox
 		GetPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest) (*GetPenaltyBoxResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putpenaltybox
 		UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRequest) (*UpdatePenaltyBoxResponse, error)
 	}
 
+	// GetPenaltyBoxesRequest is used to retrieve the penalty box settings.
 	GetPenaltyBoxesRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -35,6 +34,13 @@ type (
 		Eval     string `json:"eval"`
 	}
 
+	// GetPenaltyBoxesResponse is returned from a call to GetPenaltyBoxes.
+	GetPenaltyBoxesResponse struct {
+		Action               string `json:"action,omitempty"`
+		PenaltyBoxProtection bool   `json:"penaltyBoxProtection,omitempty"`
+	}
+
+	// GetPenaltyBoxRequest is used to retrieve the penalty box settings.
 	GetPenaltyBoxRequest struct {
 		ConfigID             int    `json:"-"`
 		Version              int    `json:"-"`
@@ -43,16 +49,13 @@ type (
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
 	}
 
-	GetPenaltyBoxesResponse struct {
-		Action               string `json:"action,omitempty"`
-		PenaltyBoxProtection bool   `json:"penaltyBoxProtection,omitempty"`
-	}
-
+	// GetPenaltyBoxResponse is returned from a call to GetPenaltyBox.
 	GetPenaltyBoxResponse struct {
 		Action               string `json:"action"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection,omitempty"`
 	}
 
+	// UpdatePenaltyBoxRequest is used to modify the penalty box settings.
 	UpdatePenaltyBoxRequest struct {
 		ConfigID             int    `json:"-"`
 		Version              int    `json:"-"`
@@ -61,13 +64,14 @@ type (
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
 	}
 
+	// UpdatePenaltyBoxResponse is returned from a call to UpdatePenaltyBox.
 	UpdatePenaltyBoxResponse struct {
 		Action               string `json:"action"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
 	}
 )
 
-// Validate validates GetPenaltyBoxRequest
+// Validate validates a GetPenaltyBoxRequest.
 func (v GetPenaltyBoxRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -76,7 +80,7 @@ func (v GetPenaltyBoxRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetPenaltyBoxsRequest
+// Validate validates a GetPenaltyBoxsRequest.
 func (v GetPenaltyBoxesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -85,7 +89,7 @@ func (v GetPenaltyBoxesRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdatePenaltyBoxRequest
+// Validate validates an UpdatePenaltyBoxRequest.
 func (v UpdatePenaltyBoxRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -112,12 +116,12 @@ func (p *appsec) GetPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getpenaltybox request: %w", err)
+		return nil, fmt.Errorf("failed to create GetPenaltyBox request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getpenaltybox  request failed: %w", err)
+		return nil, fmt.Errorf("GetPenaltyBox request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -146,12 +150,12 @@ func (p *appsec) GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequ
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getpenaltyboxs request: %w", err)
+		return nil, fmt.Errorf("failed to create GetPenaltyBoxes request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getpenaltyboxs request failed: %w", err)
+		return nil, fmt.Errorf("GetPenaltyBoxes request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -161,12 +165,6 @@ func (p *appsec) GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequ
 	return &rval, nil
 
 }
-
-// Update will update a PenaltyBox.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putpenaltybox
 
 func (p *appsec) UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRequest) (*UpdatePenaltyBoxResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -185,13 +183,13 @@ func (p *appsec) UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create PenaltyBoxrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdatePenaltyBox: %w", err)
 	}
 
 	var rval UpdatePenaltyBoxResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create PenaltyBox request failed: %w", err)
+		return nil, fmt.Errorf("UpdatePenaltyBox request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

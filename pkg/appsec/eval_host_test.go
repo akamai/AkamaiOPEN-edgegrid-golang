@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListEvalHost(t *testing.T) {
+func TestAppSec_ListEvalHost(t *testing.T) {
 
 	result := GetEvalHostResponse{}
 

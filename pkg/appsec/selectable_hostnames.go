@@ -6,22 +6,18 @@ import (
 	"net/http"
 )
 
-// SelectableHostnames represents a collection of SelectableHostnames
-//
-// See: SelectableHostnames.GetSelectableHostnames()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// SelectableHostnames  contains operations available on SelectableHostnames  resource
-	// See: // appsec v1
+	// The SelectableHostnames interface supports retrieving the hostnames that a given configuration version
+	// has the ability to protect. Hostnames may show as error hosts when they aren’t currently available. for
+	// example, when a contract expires.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectablehostnames
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#selectablehostnames
 	SelectableHostnames interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectablehostnames
 		GetSelectableHostnames(ctx context.Context, params GetSelectableHostnamesRequest) (*GetSelectableHostnamesResponse, error)
 	}
 
+	// GetSelectableHostnamesRequest is used to retrieve the selectable hostnames for a configuration.
 	GetSelectableHostnamesRequest struct {
 		ConfigID   int    `json:"configId"`
 		Version    int    `json:"version"`
@@ -29,6 +25,7 @@ type (
 		GroupID    int    `json:"-"`
 	}
 
+	// GetSelectableHostnamesResponse is returned from a call to GetSelectableHostnames.
 	GetSelectableHostnamesResponse struct {
 		AvailableSet []struct {
 			ActiveInProduction     bool   `json:"activeInProduction,omitempty"`
@@ -67,12 +64,12 @@ func (p *appsec) GetSelectableHostnames(ctx context.Context, params GetSelectabl
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getselectablehostnames request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSelectableHostnames request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getselectablehostnames request failed: %w", err)
+		return nil, fmt.Errorf("GetSelectableHostnames request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

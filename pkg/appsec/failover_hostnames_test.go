@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListFailoverHostnames(t *testing.T) {
+func TestAppSec_ListFailoverHostnames(t *testing.T) {
 
 	result := GetFailoverHostnamesResponse{}
 

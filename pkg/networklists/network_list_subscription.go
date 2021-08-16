@@ -6,29 +6,28 @@ import (
 	"net/http"
 )
 
-// NetworkListSubscription represents a collection of NetworkListSubscription
-//
-// See: NetworkListSubscription.GetNetworkListSubscription()
-// API Docs: // network_lists v2
-//
-// https://developer.akamai.com/api/cloud_security/network_lists/v2.html
-
 type (
-	// NetworkListSubscription  contains operations available on NetworkListSubscription  resource
-	// See: // network_lists v2
+	// The NetworkListSubscription interface supports creating, modifying and removing network list subscriptions.
 	//
-	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getnetworklistsubscription
+	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#networklist
 	NetworkListSubscription interface {
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postsubscribe
 		GetNetworkListSubscription(ctx context.Context, params GetNetworkListSubscriptionRequest) (*GetNetworkListSubscriptionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postsubscribe
 		UpdateNetworkListSubscription(ctx context.Context, params UpdateNetworkListSubscriptionRequest) (*UpdateNetworkListSubscriptionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postunsubscribe
 		RemoveNetworkListSubscription(ctx context.Context, params RemoveNetworkListSubscriptionRequest) (*RemoveNetworkListSubscriptionResponse, error)
 	}
 
+	// GetNetworkListSubscriptionRequest contains request parameters for GetNetworkListSubscription
 	GetNetworkListSubscriptionRequest struct {
 		Recipients []string `json:"-"`
 		UniqueIds  []string `json:"-"`
 	}
 
+	// GetNetworkListSubscriptionResponse contains response from GetNetworkListSubscription
 	GetNetworkListSubscriptionResponse struct {
 		Links struct {
 			Create struct {
@@ -77,24 +76,29 @@ type (
 		} `json:"networkLists"`
 	}
 
+	// UpdateNetworkListSubscriptionRequest contains request parameters for UpdateNetworkListSubscription method
 	UpdateNetworkListSubscriptionRequest struct {
 		Recipients []string `json:"recipients"`
 		UniqueIds  []string `json:"uniqueIds"`
 	}
 
+	// UpdateNetworkListSubscriptionResponse contains response from UpdateNetworkListSubscription method
 	UpdateNetworkListSubscriptionResponse struct {
 		Empty string `json:"-"`
 	}
 
+	// RemoveNetworkListSubscriptionResponse contains response from RemoveNetworkListSubscription method
 	RemoveNetworkListSubscriptionResponse struct {
 		Empty string `json:"-"`
 	}
 
+	// RemoveNetworkListSubscriptionRequest contains request parameters for RemoveNetworkListSubscription method
 	RemoveNetworkListSubscriptionRequest struct {
 		Recipients []string `json:"recipients"`
 		UniqueIds  []string `json:"uniqueIds"`
 	}
 
+	// Recipients contains recipients
 	Recipients struct {
 		Recipients string `json:"notificationRecipients"`
 	}

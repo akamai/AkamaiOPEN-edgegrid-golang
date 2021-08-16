@@ -8,29 +8,27 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// RuleUpgrade represents a collection of RuleUpgrade
-//
-// See: RuleUpgrade.GetRuleUpgrade()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// RuleUpgrade  contains operations available on RuleUpgrade  resource
-	// See: // appsec v1
+	// The RuleUpgrade interface supports verifying changes in Kona rule sets, and upgrading to the
+	// latest rules.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getruleupgrade
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#upgrade
 	RuleUpgrade interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getupgradedetails
 		GetRuleUpgrade(ctx context.Context, params GetRuleUpgradeRequest) (*GetRuleUpgradeResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putrules
 		UpdateRuleUpgrade(ctx context.Context, params UpdateRuleUpgradeRequest) (*UpdateRuleUpgradeResponse, error)
 	}
 
+	// GetRuleUpgradeRequest is used to verify changes in the KRS rule sets.
 	GetRuleUpgradeRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
 	}
 
+	// GetRuleUpgradeResponse is returned from a call to GetRuleUpgrade.
 	GetRuleUpgradeResponse struct {
 		Current          string `json:"current,omitempty"`
 		Evaluating       string `json:"evaluating,omitempty"`
@@ -79,13 +77,16 @@ type (
 		} `json:"KRSToLatestUpdates,omitempty"`
 	}
 
+	// UpdateRuleUpgradeRequest is used to upgrade to the most recent version of the KRS rule set.
 	UpdateRuleUpgradeRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
 		Upgrade  bool   `json:"upgrade"`
+		Mode     string `json:"mode,omitempty"`
 	}
 
+	// UpdateRuleUpgradeResponse is returned from a call to UpdateRuleUpgrade.
 	UpdateRuleUpgradeResponse struct {
 		Current string `json:"current"`
 		Mode    string `json:"mode"`
@@ -93,7 +94,7 @@ type (
 	}
 )
 
-// Validate validates GetRuleUpgradeRequest
+// Validate validates a GetRuleUpgradeRequest.
 func (v GetRuleUpgradeRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -102,7 +103,7 @@ func (v GetRuleUpgradeRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateRuleUpgradeRequest
+// Validate validates an UpdateRuleUpgradeRequest.
 func (v UpdateRuleUpgradeRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -130,12 +131,12 @@ func (p *appsec) GetRuleUpgrade(ctx context.Context, params GetRuleUpgradeReques
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getruleupgrade request: %w", err)
+		return nil, fmt.Errorf("failed to create GetRuleUpgrade request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getruleupgrade  request failed: %w", err)
+		return nil, fmt.Errorf("GetRuleUpgrade request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -145,12 +146,6 @@ func (p *appsec) GetRuleUpgrade(ctx context.Context, params GetRuleUpgradeReques
 	return &rval, nil
 
 }
-
-// Update will update a RuleUpgrade.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putruleupgrade
 
 func (p *appsec) UpdateRuleUpgrade(ctx context.Context, params UpdateRuleUpgradeRequest) (*UpdateRuleUpgradeResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -169,13 +164,13 @@ func (p *appsec) UpdateRuleUpgrade(ctx context.Context, params UpdateRuleUpgrade
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create RuleUpgraderequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateRuleUpgrade request: %w", err)
 	}
 
 	var rval UpdateRuleUpgradeResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create RuleUpgrade request failed: %w", err)
+		return nil, fmt.Errorf("UpdateRuleUpgrade request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

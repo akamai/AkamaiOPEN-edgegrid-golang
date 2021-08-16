@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListRateProtections(t *testing.T) {
+func TestAppSec_ListRateProtections(t *testing.T) {
 
 	result := GetRateProtectionsResponse{}
 

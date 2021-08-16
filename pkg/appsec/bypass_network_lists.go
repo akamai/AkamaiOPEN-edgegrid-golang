@@ -8,29 +8,29 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// BypassNetworkLists represents a collection of BypassNetworkLists
-//
-// See: BypassNetworkLists.GetBypassNetworkLists()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// BypassNetworkLists  contains operations available on BypassNetworkLists  resource
-	// See: // appsec v1
+	// The BypassNetworkLists interface supports listing or modifying which network lists are
+	// used in the bypass network lists settings.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getbypassnetworklists
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#bypassnetworklist
 	BypassNetworkLists interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getbypassnetworklistsforawapconfigversion
 		GetBypassNetworkLists(ctx context.Context, params GetBypassNetworkListsRequest) (*GetBypassNetworkListsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putbypassnetworklistsforawapconfigversion
 		UpdateBypassNetworkLists(ctx context.Context, params UpdateBypassNetworkListsRequest) (*UpdateBypassNetworkListsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putbypassnetworklistsforawapconfigversion
 		RemoveBypassNetworkLists(ctx context.Context, params RemoveBypassNetworkListsRequest) (*RemoveBypassNetworkListsResponse, error)
 	}
 
+	// GetBypassNetworkListsRequest is used to list which network lists are used in the bypass network lists settings.
 	GetBypassNetworkListsRequest struct {
 		ConfigID int `json:"-"`
 		Version  int `json:"-"`
 	}
 
+	// GetBypassNetworkListsResponse is returned from a call to GetBypassNetworkLists.
 	GetBypassNetworkListsResponse struct {
 		NetworkLists []struct {
 			Name string `json:"name"`
@@ -38,12 +38,14 @@ type (
 		} `json:"networkLists"`
 	}
 
+	// UpdateBypassNetworkListsRequest is used to modify which network lists are used in the bypass network lists settings.
 	UpdateBypassNetworkListsRequest struct {
 		ConfigID     int      `json:"-"`
 		Version      int      `json:"-"`
 		NetworkLists []string `json:"networkLists"`
 	}
 
+	// UpdateBypassNetworkListsResponse is returned from a call to UpdateBypassNetworkLists.
 	UpdateBypassNetworkListsResponse struct {
 		Block       string `json:"block"`
 		GeoControls struct {
@@ -61,17 +63,20 @@ type (
 		} `json:"ipControls"`
 	}
 
+	// RemoveBypassNetworkListsRequest is used to modify which network lists are used in the bypass network lists settings.
 	RemoveBypassNetworkListsRequest struct {
 		ConfigID     int      `json:"-"`
 		Version      int      `json:"-"`
 		NetworkLists []string `json:"networkLists"`
 	}
+
+	// RemoveBypassNetworkListsResponse is returned from a call to RemoveBypassNetworkLists.
 	RemoveBypassNetworkListsResponse struct {
 		NetworkLists []string `json:"networkLists"`
 	}
 )
 
-// Validate validates GetBypassNetworkListsRequest
+// Validate validates a GetBypassNetworkListsRequest.
 func (v GetBypassNetworkListsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -79,7 +84,7 @@ func (v GetBypassNetworkListsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateBypassNetworkListsRequest
+// Validate validates an UpdateBypassNetworkListsRequest.
 func (v UpdateBypassNetworkListsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -87,7 +92,7 @@ func (v UpdateBypassNetworkListsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates RemoveBypassNetworkListsRequest
+// Validate validates a RemoveBypassNetworkListsRequest.
 func (v RemoveBypassNetworkListsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -113,12 +118,12 @@ func (p *appsec) GetBypassNetworkLists(ctx context.Context, params GetBypassNetw
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getbypassnetworklists request: %w", err)
+		return nil, fmt.Errorf("failed to create GetBypassNetworkLists request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getbypassnetworklists  request failed: %w", err)
+		return nil, fmt.Errorf("GetBypassNetworkLists request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -128,12 +133,6 @@ func (p *appsec) GetBypassNetworkLists(ctx context.Context, params GetBypassNetw
 	return &rval, nil
 
 }
-
-// Update will update a BypassNetworkLists.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putbypassnetworklists
 
 func (p *appsec) UpdateBypassNetworkLists(ctx context.Context, params UpdateBypassNetworkListsRequest) (*UpdateBypassNetworkListsResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -151,13 +150,13 @@ func (p *appsec) UpdateBypassNetworkLists(ctx context.Context, params UpdateBypa
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create BypassNetworkListsrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateBypassNetworkLists request: %w", err)
 	}
 
 	var rval UpdateBypassNetworkListsResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create BypassNetworkLists request failed: %w", err)
+		return nil, fmt.Errorf("UpdateBypassNetworkLists request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -166,12 +165,6 @@ func (p *appsec) UpdateBypassNetworkLists(ctx context.Context, params UpdateBypa
 
 	return &rval, nil
 }
-
-// Remove will Remove a BypassNetworkLists.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putbypassnetworklists
 
 func (p *appsec) RemoveBypassNetworkLists(ctx context.Context, params RemoveBypassNetworkListsRequest) (*RemoveBypassNetworkListsResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -189,13 +182,13 @@ func (p *appsec) RemoveBypassNetworkLists(ctx context.Context, params RemoveBypa
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create BypassNetworkListsrequest: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveBypassNetworkLists request: %w", err)
 	}
 
 	var rval RemoveBypassNetworkListsResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("remove BypassNetworkLists request failed: %w", err)
+		return nil, fmt.Errorf("RemoveBypassNetworkLists request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

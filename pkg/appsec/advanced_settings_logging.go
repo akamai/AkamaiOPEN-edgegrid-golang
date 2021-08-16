@@ -9,30 +9,38 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// AdvancedSettingsLogging represents a collection of AdvancedSettingsLogging
-//
-// See: AdvancedSettingsLogging.GetAdvancedSettingsLogging()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// AdvancedSettingsLogging  contains operations available on AdvancedSettingsLogging  resource
-	// See: // appsec v1
+	// The AdvancedSettingsLogging interface supports retrieving, updating or removing settings
+	// related to HTTP header logging.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getadvancedsettingslogging
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#headerlog
 	AdvancedSettingsLogging interface {
+		// AdvancedSettingsLogging lists the HTTP header logging settings for a configuration or policy. If
+		// the request specifies a policy, then the settings for that policy will be returned, otherwise the
+		// settings for the configuration will be returned.
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#gethttpheaderloggingforaconfiguration
 		GetAdvancedSettingsLogging(ctx context.Context, params GetAdvancedSettingsLoggingRequest) (*GetAdvancedSettingsLoggingResponse, error)
+
+		// UpdateAdvancedSettingsLogging enables, disables, or updates the HTTP header logging settings for a
+		// configuration or policy. If the request specifies a policy, then the settings for that policy will
+		// updated, otherwise the settings for the configuration will be updated.
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#puthttpheaderloggingforaconfiguration
 		UpdateAdvancedSettingsLogging(ctx context.Context, params UpdateAdvancedSettingsLoggingRequest) (*UpdateAdvancedSettingsLoggingResponse, error)
+
+		// RemoveAdvancedSettingsLogging disables HTTP header logging for a confguration or policy. If the request
+		// specifies a policy, then header logging will be disabled for that policy, otherwise logging will be
+		// disabled for the configuration.
 		RemoveAdvancedSettingsLogging(ctx context.Context, params RemoveAdvancedSettingsLoggingRequest) (*RemoveAdvancedSettingsLoggingResponse, error)
 	}
 
+	// GetAdvancedSettingsLoggingRequest is used to retrieve the HTTP header logging settings for a configuration or policy.
 	GetAdvancedSettingsLoggingRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		PolicyID string `json:"-"`
 	}
 
+	// GetAdvancedSettingsLoggingResponse is returned from a call to GetAdvancedSettingsLogging.
 	GetAdvancedSettingsLoggingResponse struct {
 		Override        json.RawMessage                  `json:"override,omitempty"`
 		AllowSampling   bool                             `json:"allowSampling"`
@@ -41,21 +49,25 @@ type (
 		StandardHeaders *AdvancedSettingsStandardHeaders `json:"standardHeaders,omitempty"`
 	}
 
+	// AdvancedSettingsCookies contains a list of cookie headers to be logged or not logged depending on the Type field.
 	AdvancedSettingsCookies struct {
 		Type   string   `json:"type"`
 		Values []string `json:"values,omitempty"`
 	}
 
+	// AdvancedSettingsCustomHeaders contains a list of custom headers to be logged or not logged depending on the Type field.
 	AdvancedSettingsCustomHeaders struct {
 		Type   string   `json:"type,omitempty"`
 		Values []string `json:"values,omitempty"`
 	}
 
+	// AdvancedSettingsStandardHeaders contains a list of standard headers to be logged or not logged depending on the Type field.
 	AdvancedSettingsStandardHeaders struct {
 		Type   string   `json:"type,omitempty"`
 		Values []string `json:"values,omitempty"`
 	}
 
+	// UpdateAdvancedSettingsLoggingRequest is used to update the HTTP header logging settings for a configuration or policy.
 	UpdateAdvancedSettingsLoggingRequest struct {
 		ConfigID       int             `json:"-"`
 		Version        int             `json:"-"`
@@ -63,6 +75,7 @@ type (
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
+	// UpdateAdvancedSettingsLoggingResponse is returned from a call to UpdateAdvancedSettingsLogging.
 	UpdateAdvancedSettingsLoggingResponse struct {
 		Override      bool `json:"override"`
 		AllowSampling bool `json:"allowSampling"`
@@ -79,6 +92,8 @@ type (
 			Values []string `json:"values,omitempty"`
 		} `json:"standardHeaders"`
 	}
+
+	// RemoveAdvancedSettingsLoggingRequest is used to disable HTTP header logging for a configuration or policy.
 	RemoveAdvancedSettingsLoggingRequest struct {
 		ConfigID      int    `json:"-"`
 		Version       int    `json:"-"`
@@ -87,6 +102,7 @@ type (
 		AllowSampling bool   `json:"allowSampling"`
 	}
 
+	// RemoveAdvancedSettingsLoggingResponse is returned from a call to RemoveAdvancedSettingsLogging.
 	RemoveAdvancedSettingsLoggingResponse struct {
 		Override      bool `json:"override"`
 		AllowSampling bool `json:"allowSampling"`
@@ -104,7 +120,7 @@ type (
 	}
 )
 
-// Validate validates GetAdvancedSettingsLoggingsRequest
+// Validate validates a GetAdvancedSettingsLoggingsRequest.
 func (v GetAdvancedSettingsLoggingRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -112,7 +128,7 @@ func (v GetAdvancedSettingsLoggingRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateAdvancedSettingsLoggingRequest
+// Validate validates an UpdateAdvancedSettingsLoggingRequest.
 func (v UpdateAdvancedSettingsLoggingRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -120,7 +136,7 @@ func (v UpdateAdvancedSettingsLoggingRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateAdvancedSettingsLoggingRequest
+// Validate validates a RemoveAdvancedSettingsLoggingRequest.
 func (v RemoveAdvancedSettingsLoggingRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -154,12 +170,12 @@ func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvan
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getadvancedsettingsloggings request: %w", err)
+		return nil, fmt.Errorf("failed to create GetAdvancedSettingsLogging request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getadvancedsettingsloggings request failed: %w", err)
+		return nil, fmt.Errorf("GetAdvancedSettingsLogging request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -169,12 +185,6 @@ func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvan
 	return &rval, nil
 
 }
-
-// Update will update a AdvancedSettingsLogging.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putadvancedsettingslogging
 
 func (p *appsec) UpdateAdvancedSettingsLogging(ctx context.Context, params UpdateAdvancedSettingsLoggingRequest) (*UpdateAdvancedSettingsLoggingResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -200,14 +210,14 @@ func (p *appsec) UpdateAdvancedSettingsLogging(ctx context.Context, params Updat
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create AdvancedSettingsLoggingrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateAdvancedSettingsLogging request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 	var rval UpdateAdvancedSettingsLoggingResponse
 	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("create AdvancedSettingsLogging request failed: %w", err)
+		return nil, fmt.Errorf("CreateAdvancedSettingsLogging request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -216,12 +226,6 @@ func (p *appsec) UpdateAdvancedSettingsLogging(ctx context.Context, params Updat
 
 	return &rval, nil
 }
-
-// Remove will update a AdvancedSettingsLogging.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putadvancedsettingslogging
 
 func (p *appsec) RemoveAdvancedSettingsLogging(ctx context.Context, params RemoveAdvancedSettingsLoggingRequest) (*RemoveAdvancedSettingsLoggingResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -247,14 +251,14 @@ func (p *appsec) RemoveAdvancedSettingsLogging(ctx context.Context, params Remov
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create AdvancedSettingsLoggingrequest: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveAdvancedSettingsLogging request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 	var rval RemoveAdvancedSettingsLoggingResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create AdvancedSettingsLogging request failed: %w", err)
+		return nil, fmt.Errorf("RemoveAdvancedSettingsLogging request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

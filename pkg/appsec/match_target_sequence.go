@@ -8,36 +8,32 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// MatchTargetSequence represents a collection of MatchTargetSequence
-//
-// See: MatchTargetSequence.GetMatchTargetSequence()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// MatchTargetSequence  contains operations available on MatchTargetSequence  resource
-	// See: // appsec v1
+	// The MatchTargetSequence interface supports querying and modifying the order of match targets.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmatchtargetsequence
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#matchtargetorder
 	MatchTargetSequence interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmatchtargets
 		GetMatchTargetSequence(ctx context.Context, params GetMatchTargetSequenceRequest) (*GetMatchTargetSequenceResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsequence
 		UpdateMatchTargetSequence(ctx context.Context, params UpdateMatchTargetSequenceRequest) (*UpdateMatchTargetSequenceResponse, error)
 	}
 
-	// GetMatchTargetSequence is the argument for GetProperties
+	// GetMatchTargetSequenceRequest is used to retrieve the sequence of match targets for a configuration.
 	GetMatchTargetSequenceRequest struct {
 		ConfigID      int    `json:"configId"`
 		ConfigVersion int    `json:"configVersion"`
 		Type          string `json:"type"`
 	}
 
+	// GetMatchTargetSequenceResponse is returned from a call to GetMatchTargetSequence.
 	GetMatchTargetSequenceResponse struct {
 		TargetSequence []MatchTargetItem `json:"targetSequence"`
 		Type           string            `json:"type"`
 	}
 
-	// UpdateMatchTargetRequest is the argument for GetProperties
+	// UpdateMatchTargetSequenceRequest UpdateMatchTargetSequenceRequest is used to modify an existing match target sequence.
 	UpdateMatchTargetSequenceRequest struct {
 		ConfigID       int               `json:"-"`
 		ConfigVersion  int               `json:"-"`
@@ -45,20 +41,20 @@ type (
 		Type           string            `json:"type"`
 	}
 
-	// UpdateMatchTargetResponse ...
+	// UpdateMatchTargetSequenceResponse is returned from a call to UpdateMatchTargetSequence.
 	UpdateMatchTargetSequenceResponse struct {
 		TargetSequence []MatchTargetItem `json:"targetSequence"`
 		Type           string            `json:"type"`
 	}
 
-	// BypassNetworkList ...
+	// MatchTargetItem describes a match target and its sequence number.
 	MatchTargetItem struct {
 		Sequence int `json:"sequence"`
 		TargetID int `json:"targetId"`
 	}
 )
 
-// Validate validates GetMatchTargetSequenceRequest
+// Validate validates a GetMatchTargetSequenceRequest.
 func (v GetMatchTargetSequenceRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
@@ -67,7 +63,7 @@ func (v GetMatchTargetSequenceRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateMatchTargetSequenceRequest
+// Validate validates an UpdateMatchTargetSequenceRequest.
 func (v UpdateMatchTargetSequenceRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
@@ -95,12 +91,12 @@ func (p *appsec) GetMatchTargetSequence(ctx context.Context, params GetMatchTarg
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getmatchtargetsequence request: %w", err)
+		return nil, fmt.Errorf("failed to create GetMatchTargetSequence request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("GetMatchTargetSequence request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -110,12 +106,6 @@ func (p *appsec) GetMatchTargetSequence(ctx context.Context, params GetMatchTarg
 	return &rval, nil
 
 }
-
-// Update will update a MatchTargetSequence.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putmatchtargetsequence
 
 func (p *appsec) UpdateMatchTargetSequence(ctx context.Context, params UpdateMatchTargetSequenceRequest) (*UpdateMatchTargetSequenceResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -133,13 +123,13 @@ func (p *appsec) UpdateMatchTargetSequence(ctx context.Context, params UpdateMat
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create MatchTargetSequencerequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateMatchTargetSequence request: %w", err)
 	}
 
 	var rval UpdateMatchTargetSequenceResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create MatchTargetSequence request failed: %w", err)
+		return nil, fmt.Errorf("UpdateMatchTargetSequence request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

@@ -26,3 +26,9 @@ access_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
 host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net
 client_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
 client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+
+[slash-at-the-end-of-host-value]
+host = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/
+client_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx
+client_secret = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=
+access_token = xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx

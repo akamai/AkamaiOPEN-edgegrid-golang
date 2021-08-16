@@ -1,5 +1,18 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.6.0 (Aug 16, 2021)
+
+#### BUG FIXES:
+* APPSEC
+  * Fix incorrect comments/URL references in inline documentation
+
+#### FEATURES/ENHANCEMENTS
+# APPSEC
+* Get an evaluation attack group's or risk score group's action
+
+# NETWORK LISTS
+* Support contract_id and group_id for network list create/update
+
 ## 2.5.0 (Jun 15, 2021)
 
 #### BREAKING CHANGES:

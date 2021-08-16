@@ -158,9 +158,13 @@ func (v RemovePropertyRequest) Validate() error {
 }
 
 var (
+	// ErrGetProperties represents error when fetching properties fails
 	ErrGetProperties  = errors.New("fetching properties")
+	// ErrGetProperty represents error when fetching property fails
 	ErrGetProperty    = errors.New("fetching property")
+	// ErrCreateProperty represents error when creating property fails
 	ErrCreateProperty = errors.New("creating property")
+	// ErrRemoveProperty represents error when removing property fails
 	ErrRemoveProperty = errors.New("removing property")
 )
 

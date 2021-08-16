@@ -9,12 +9,12 @@ import (
 )
 
 var (
-	// ErrBadRequest is returned when a required parameter is missing
+	// ErrBadRequest is returned when a required parameter is missing.
 	ErrBadRequest = errors.New("missing argument")
 )
 
 type (
-	// Error is a appsec error interface
+	// Error is an appsec error interface.
 	Error struct {
 		Type          string `json:"type"`
 		Title         string `json:"title"`
@@ -26,7 +26,6 @@ type (
 	}
 )
 
-// Error parses an error from the response
 func (p *appsec) Error(r *http.Response) error {
 	var e Error
 
@@ -52,11 +51,12 @@ func (p *appsec) Error(r *http.Response) error {
 	return &e
 }
 
+// Error returns a string formatted using a given title, type, and detail information.
 func (e *Error) Error() string {
 	return fmt.Sprintf("Title: %s; Type: %s; Detail: %s", e.Title, e.Type, e.Detail)
 }
 
-// Is handles error comparisons
+// Is handles error comparisons.
 func (e *Error) Is(target error) bool {
 	var t *Error
 	if !errors.As(target, &t) {

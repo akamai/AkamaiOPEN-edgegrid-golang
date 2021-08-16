@@ -46,6 +46,7 @@ type Records interface {
 	PadCoordinates(context.Context, string) string
 }
 
+// RecordBody contains request body for dns record
 type RecordBody struct {
 	Name       string `json:"name,omitempty"`
 	RecordType string `json:"type,omitempty"`

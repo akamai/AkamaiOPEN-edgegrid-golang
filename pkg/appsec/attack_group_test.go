@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListAttackGroup(t *testing.T) {
+func TestAppSec_ListAttackGroup(t *testing.T) {
 
 	result := GetAttackGroupsResponse{}
 

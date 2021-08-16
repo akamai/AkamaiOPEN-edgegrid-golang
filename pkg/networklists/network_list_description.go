@@ -8,29 +8,26 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
-// NetworkListDescription represents a collection of NetworkListDescription
-//
-// See: NetworkListDescription.GetNetworkListDescription()
-// API Docs: // network_lists v2
-//
-// https://developer.akamai.com/api/cloud_security/network_lists/v2.html
-
 type (
-	// NetworkListDescription  contains operations available on NetworkListDescription  resource
-	// See: // network_lists v2
+	// The NetworkListDescription interface supports retrieving and updating a network list's description.
 	//
-	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getnetworklistdescription
+	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#networklist
 	NetworkListDescription interface {
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getlist
 		GetNetworkListDescription(ctx context.Context, params GetNetworkListDescriptionRequest) (*GetNetworkListDescriptionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#putdetails
 		UpdateNetworkListDescription(ctx context.Context, params UpdateNetworkListDescriptionRequest) (*UpdateNetworkListDescriptionResponse, error)
 	}
 
+	// GetNetworkListDescriptionRequest contains request parameters for GetNetworkListDescription method
 	GetNetworkListDescriptionRequest struct {
 		UniqueID    string `json:"uniqueId"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 	}
 
+	// GetNetworkListDescriptionResponse contains response from GetNetworkListDescription method
 	GetNetworkListDescriptionResponse struct {
 		Name            string   `json:"name"`
 		UniqueID        string   `json:"uniqueId"`
@@ -71,12 +68,14 @@ type (
 		} `json:"links"`
 	}
 
+	// UpdateNetworkListDescriptionRequest contains request parameters for UpdateNetworkListDescription method
 	UpdateNetworkListDescriptionRequest struct {
 		UniqueID    string `json:"-"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 	}
 
+	// UpdateNetworkListDescriptionResponse contains response from UpdateNetworkListDescription method
 	UpdateNetworkListDescriptionResponse struct {
 		Empty string `json:"-"`
 	}

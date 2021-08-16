@@ -8,32 +8,30 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// VersionNotes represents a collection of VersionNotes
-//
-// See: VersionNotes.GetVersionNotes()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// VersionNotes  contains operations available on VersionNotes  resource
-	// See: // appsec v1
+	// The VersionNotes interface supports retrieving and modifying the version notes for a configuration and version.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getversionnotes
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#versionnotesgroup
 	VersionNotes interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getversionnotes
 		GetVersionNotes(ctx context.Context, params GetVersionNotesRequest) (*GetVersionNotesResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putversionnotes
 		UpdateVersionNotes(ctx context.Context, params UpdateVersionNotesRequest) (*UpdateVersionNotesResponse, error)
 	}
 
+	// GetVersionNotesRequest is used to retrieve the version notes for a configuration version.
 	GetVersionNotesRequest struct {
 		ConfigID int `json:"-"`
 		Version  int `json:"-"`
 	}
 
+	// GetVersionNotesResponse is returned from a call to GetVersionNotes.
 	GetVersionNotesResponse struct {
 		Notes string `json:"notes"`
 	}
 
+	// UpdateVersionNotesRequest is used to modify the version notes for a configuration version.
 	UpdateVersionNotesRequest struct {
 		ConfigID int `json:"-"`
 		Version  int `json:"-"`
@@ -41,12 +39,13 @@ type (
 		Notes string `json:"notes"`
 	}
 
+	// UpdateVersionNotesResponse is returned from a call to UpdateVersionNotes.
 	UpdateVersionNotesResponse struct {
 		Notes string `json:"notes"`
 	}
 )
 
-// Validate validates GetVersionNotesRequest
+// Validate validates a GetVersionNotesRequest.
 func (v GetVersionNotesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -54,7 +53,7 @@ func (v GetVersionNotesRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateVersionNotesRequest
+// Validate validates an UpdateVersionNotesRequest.
 func (v UpdateVersionNotesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -80,12 +79,12 @@ func (p *appsec) GetVersionNotes(ctx context.Context, params GetVersionNotesRequ
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getversionnotes request: %w", err)
+		return nil, fmt.Errorf("failed to create GetVersionNotes request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getversionnotes  request failed: %w", err)
+		return nil, fmt.Errorf("GetVersionNotes request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -95,12 +94,6 @@ func (p *appsec) GetVersionNotes(ctx context.Context, params GetVersionNotesRequ
 	return &rval, nil
 
 }
-
-// Update will update a VersionNotes.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putversionnotes
 
 func (p *appsec) UpdateVersionNotes(ctx context.Context, params UpdateVersionNotesRequest) (*UpdateVersionNotesResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -118,13 +111,13 @@ func (p *appsec) UpdateVersionNotes(ctx context.Context, params UpdateVersionNot
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create VersionNotesrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateVersionNotes request: %w", err)
 	}
 
 	var rval UpdateVersionNotesResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create VersionNotes request failed: %w", err)
+		return nil, fmt.Errorf("UpdateVersionNotes request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

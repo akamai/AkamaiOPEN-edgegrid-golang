@@ -8,63 +8,60 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// EvalProtectHost represents a collection of EvalProtectHost
-//
-// See: EvalProtectHost.GetEvalProtectHost()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// EvalProtectHost  contains operations available on EvalProtectHost  resource
-	// See: // appsec v1
+	// The EvalProtectHost interface supports retrieving the evaluation hostnames for a configuration and
+	// moving hostnames from evaluating to protected status.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevalprotecthost
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#evalhostname
 	EvalProtectHost interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevaluationhostnames
 		GetEvalProtectHosts(ctx context.Context, params GetEvalProtectHostsRequest) (*GetEvalProtectHostsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevaluationhostnames
 		GetEvalProtectHost(ctx context.Context, params GetEvalProtectHostRequest) (*GetEvalProtectHostResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putmoveevaluationhostnamestoprotection
 		UpdateEvalProtectHost(ctx context.Context, params UpdateEvalProtectHostRequest) (*UpdateEvalProtectHostResponse, error)
 	}
 
+	// GetEvalProtectHostRequest is used to call GetEvalProtectHost.
 	GetEvalProtectHostRequest struct {
 		ConfigID int `json:"-"`
 		Version  int `json:"-"`
 	}
+
+	// GetEvalProtectHostResponse is returned from a call to GetEvalProtectHost.
 	GetEvalProtectHostResponse struct {
 		Hostnames []string `json:"hostnames"`
 	}
 
+	// GetEvalProtectHostsRequest is used to call GetEvalProtectHosts.
 	GetEvalProtectHostsRequest struct {
 		ConfigID int `json:"-"`
 		Version  int `json:"-"`
 	}
 
+	// GetEvalProtectHostsResponse is returned from a call to GetEvalProtectHosts.
 	GetEvalProtectHostsResponse struct {
 		Hostnames []string `json:"hostnames"`
 	}
 
+	// UpdateEvalProtectHostRequest is used to call UpdateEvalProtectHost.
 	UpdateEvalProtectHostRequest struct {
 		ConfigID  int      `json:"-"`
 		Version   int      `json:"-"`
 		Hostnames []string `json:"hostnames"`
 	}
 
+	// UpdateEvalProtectHostResponse is returned from a call to UpdateEvalProtectHost.
 	UpdateEvalProtectHostResponse struct {
 		HostnameList []struct {
 			Hostname string `json:"hostname"`
 		} `json:"hostnameList"`
 	}
-
-	RemoveEvalProtectHostRequest struct {
-		ConfigID int `json:"-"`
-		Version  int `json:"-"`
-	}
-	RemoveEvalProtectHostResponse struct {
-		Action string `json:"action"`
-	}
 )
 
-// Validate validates GetEvalProtectHostRequest
+// Validate validates a GetEvalProtectHostRequest.
 func (v GetEvalProtectHostRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -72,7 +69,7 @@ func (v GetEvalProtectHostRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetEvalProtectHostsRequest
+// Validate validates a GetEvalProtectHostsRequest.
 func (v GetEvalProtectHostsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -80,7 +77,7 @@ func (v GetEvalProtectHostsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateEvalProtectHostRequest
+// Validate validates an UpdateEvalProtectHostRequest.
 func (v UpdateEvalProtectHostRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -105,12 +102,12 @@ func (p *appsec) GetEvalProtectHost(ctx context.Context, params GetEvalProtectHo
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getevalprotecthost request: %w", err)
+		return nil, fmt.Errorf("failed to create GetEvalProtectHost request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getevalprotecthost  request failed: %w", err)
+		return nil, fmt.Errorf("GetEvalProtectHost request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -138,12 +135,12 @@ func (p *appsec) GetEvalProtectHosts(ctx context.Context, params GetEvalProtectH
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getevalprotecthosts request: %w", err)
+		return nil, fmt.Errorf("failed to create GetEvalProtectHosts request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getevalprotecthosts request failed: %w", err)
+		return nil, fmt.Errorf("GetEvalProtectHosts request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -153,12 +150,6 @@ func (p *appsec) GetEvalProtectHosts(ctx context.Context, params GetEvalProtectH
 	return &rval, nil
 
 }
-
-// Update will update a EvalProtectHost.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putevalprotecthost
 
 func (p *appsec) UpdateEvalProtectHost(ctx context.Context, params UpdateEvalProtectHostRequest) (*UpdateEvalProtectHostResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -176,13 +167,13 @@ func (p *appsec) UpdateEvalProtectHost(ctx context.Context, params UpdateEvalPro
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create EvalProtectHostrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateEvalProtectHost request: %w", err)
 	}
 
 	var rval UpdateEvalProtectHostResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create EvalProtectHost request failed: %w", err)
+		return nil, fmt.Errorf("UpdateEvalProtectHost request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

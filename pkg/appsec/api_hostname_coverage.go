@@ -6,28 +6,24 @@ import (
 	"net/http"
 )
 
-// ApiHostnameCoverage represents a collection of ApiHostnameCoverage
-//
-// See: ApiHostnameCoverage.GetApiHostnameCoverage()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// ApiHostnameCoverage  contains operations available on ApiHostnameCoverage  resource
-	// See: // appsec v1
+	// The ApiHostnameCoverage interface supports retrieving hostnames with their current protections,
+	// activation statuses, and other summary information.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getapihostnamecoverage
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#hostnamecoverage
 	ApiHostnameCoverage interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#gethostnamecoverage
 		GetApiHostnameCoverage(ctx context.Context, params GetApiHostnameCoverageRequest) (*GetApiHostnameCoverageResponse, error)
 	}
 
+	// GetApiHostnameCoverageRequest is used to call GetApiHostnameCoverage.
 	GetApiHostnameCoverageRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		Hostname string `json:"-"`
 	}
 
+	// GetApiHostnameCoverageResponse is returned from a call to GetApiHostnameCoverage.
 	GetApiHostnameCoverageResponse struct {
 		HostnameCoverage []struct {
 			Configuration  *ConfigurationHostnameCoverage `json:"configuration,omitempty"`
@@ -38,6 +34,7 @@ type (
 		} `json:"hostnameCoverage"`
 	}
 
+	// ConfigurationHostnameCoverage describes a specific configuration version.
 	ConfigurationHostnameCoverage struct {
 		ID      int    `json:"id,omitempty"`
 		Name    string `json:"name,omitempty"`
@@ -45,23 +42,22 @@ type (
 	}
 )
 
-func (p *appsec) GetApiHostnameCoverage(ctx context.Context, params GetApiHostnameCoverageRequest) (*GetApiHostnameCoverageResponse, error) {
+func (p *appsec) GetApiHostnameCoverage(ctx context.Context, _ GetApiHostnameCoverageRequest) (*GetApiHostnameCoverageResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("GetApiHostnameCoverage")
 
 	var rval GetApiHostnameCoverageResponse
 
-	uri :=
-		"/appsec/v1/hostname-coverage"
+	uri := "/appsec/v1/hostname-coverage"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getapihostnamecoverage request: %w", err)
+		return nil, fmt.Errorf("failed to create GetApiHostnameCoverage request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getapihostnamecoverage  request failed: %w", err)
+		return nil, fmt.Errorf("GetApiHostnameCoverage request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

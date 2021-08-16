@@ -50,6 +50,7 @@ func (pr GetProductsRequest) Validate() error {
 }
 
 var (
+	// ErrGetProducts represents error when fetching products fails
 	ErrGetProducts = errors.New("fetching products")
 )
 

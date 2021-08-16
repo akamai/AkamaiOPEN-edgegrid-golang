@@ -8,24 +8,23 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// WAFMode represents a collection of WAFMode
-//
-// See: WAFMode.GetWAFMode()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// WAFMode  contains operations available on WAFMode  resource
-	// See: // appsec v1
+	// The WAFMode interface supports retrieving and modifying the mode setting that determines how
+	// rule sets are upgraded.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getwafmode
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#mode
 	WAFMode interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmode
 		GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*GetWAFModesResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmode
 		GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*GetWAFModeResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putmode
 		UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest) (*UpdateWAFModeResponse, error)
 	}
 
+	// GetWAFModesRequest is used to retrieve the setting that determines this mode how rules will be kept up to date.
 	GetWAFModesRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -35,6 +34,16 @@ type (
 		Eval     string `json:"eval"`
 	}
 
+	// GetWAFModesResponse is returned from a call to GetWAFModes.
+	GetWAFModesResponse struct {
+		Current    string `json:"current,omitempty"`
+		Mode       string `json:"mode,omitempty"`
+		Eval       string `json:"eval,omitempty"`
+		Evaluating string `json:"evaluating,omitempty"`
+		Expires    string `json:"expires,omitempty"`
+	}
+
+	// GetWAFModeRequest is used to retrieve the setting that determines this mode how rules will be kept up to date.
 	GetWAFModeRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -44,14 +53,7 @@ type (
 		Eval     string `json:"eval"`
 	}
 
-	GetWAFModesResponse struct {
-		Current    string `json:"current,omitempty"`
-		Mode       string `json:"mode,omitempty"`
-		Eval       string `json:"eval,omitempty"`
-		Evaluating string `json:"evaluating,omitempty"`
-		Expires    string `json:"expires,omitempty"`
-	}
-
+	// GetWAFModeResponse is returned from a call to GetWAFMode.
 	GetWAFModeResponse struct {
 		Current    string `json:"current,omitempty"`
 		Mode       string `json:"mode,omitempty"`
@@ -60,6 +62,7 @@ type (
 		Expires    string `json:"expires,omitempty"`
 	}
 
+	// UpdateWAFModeRequest is used to modify the setting that determines this mode how rules will be kept up to date.
 	UpdateWAFModeRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -69,13 +72,14 @@ type (
 		Eval     string `json:"-"`
 	}
 
+	// UpdateWAFModeResponse is returned from a call to UpdateWAFMode.
 	UpdateWAFModeResponse struct {
 		Current string `json:"current"`
 		Mode    string `json:"mode"`
 	}
 )
 
-// Validate validates GetWAFModeRequest
+// Validate validates a GetWAFModeRequest.
 func (v GetWAFModeRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -84,7 +88,7 @@ func (v GetWAFModeRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetWAFModesRequest
+// Validate validates a GetWAFModesRequest.
 func (v GetWAFModesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -93,7 +97,7 @@ func (v GetWAFModesRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateWAFModeRequest
+// Validate validates an UpdateWAFModeRequest.
 func (v UpdateWAFModeRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -120,12 +124,12 @@ func (p *appsec) GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*Get
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getwafmode request: %w", err)
+		return nil, fmt.Errorf("failed to create GetWAFMode request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getwafmode  request failed: %w", err)
+		return nil, fmt.Errorf("GetWAFMode request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -154,12 +158,12 @@ func (p *appsec) GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*G
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getwafmodes request: %w", err)
+		return nil, fmt.Errorf("failed to create GetWAFModes request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getwafmodes request failed: %w", err)
+		return nil, fmt.Errorf("GetWAFModes request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -169,12 +173,6 @@ func (p *appsec) GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*G
 	return &rval, nil
 
 }
-
-// Update will update a WAFMode.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putwafmode
 
 func (p *appsec) UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest) (*UpdateWAFModeResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -193,13 +191,13 @@ func (p *appsec) UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create WAFModerequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateWAFMode request: %w", err)
 	}
 
 	var rval UpdateWAFModeResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create WAFMode request failed: %w", err)
+		return nil, fmt.Errorf("UpdateWAFMode request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

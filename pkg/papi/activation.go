@@ -233,9 +233,13 @@ func (v CancelActivationRequest) Validate() error {
 }
 
 var (
+	// ErrCreateActivation represents error when creating activation fails
 	ErrCreateActivation = errors.New("creating activation")
+	// ErrGetActivations represents error when fetching activations fails
 	ErrGetActivations   = errors.New("fetching activations")
+	// ErrGetActivation represents error when fetching activation fails
 	ErrGetActivation    = errors.New("fetching activation")
+	// ErrCancelActivation represents error when canceling activation fails
 	ErrCancelActivation = errors.New("canceling activation")
 )
 

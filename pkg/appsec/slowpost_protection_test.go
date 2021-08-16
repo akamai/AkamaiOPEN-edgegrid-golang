@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListSlowPostProtections(t *testing.T) {
+func TestAppSec_ListSlowPostProtections(t *testing.T) {
 
 	result := GetSlowPostProtectionsResponse{}
 

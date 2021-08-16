@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListAdvancedSettingsLogging(t *testing.T) {
+func TestAppSec_ListAdvancedSettingsLogging(t *testing.T) {
 
 	result := GetAdvancedSettingsLoggingResponse{}
 

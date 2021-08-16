@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListPenaltyBoxes(t *testing.T) {
+func TestAppSec_ListPenaltyBoxes(t *testing.T) {
 
 	result := GetPenaltyBoxesResponse{}
 
