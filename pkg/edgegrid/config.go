@@ -32,6 +32,8 @@ var (
 	ErrLoadingFile = errors.New("loading config file")
 	// ErrSectionDoesNotExist is returned when a section with provided name does not exist in edgerc
 	ErrSectionDoesNotExist = errors.New("provided config section does not exist")
+	// ErrHostContainsSlashAtTheEnd is returned when host has unnecessary '/' at the end
+	ErrHostContainsSlashAtTheEnd = errors.New("host must not contain '/' at the end")
 )
 
 type (
@@ -114,7 +116,7 @@ func WithEnv(env bool) Option {
 	}
 }
 
-// FromFile creates a config the configuration in standard INI forma
+// FromFile creates a config the configuration in standard INI format
 func (c *Config) FromFile(file string, section string) error {
 	var (
 		requiredOptions = []string{"host", "client_token", "client_secret", "access_token"}
@@ -212,4 +214,12 @@ func Timestamp(t time.Time) string {
 	local := time.FixedZone("GMT", 0)
 	t = t.In(local)
 	return t.Format("20060102T15:04:05-0700")
+}
+
+// Validate verifies that the host is not ending with the slash character
+func (c *Config) Validate() error {
+	if strings.HasSuffix(c.Host, "/") {
+		return fmt.Errorf("%w: %q", ErrHostContainsSlashAtTheEnd, c.Host)
+	}
+	return nil
 }
