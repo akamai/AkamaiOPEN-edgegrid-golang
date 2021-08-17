@@ -26,7 +26,7 @@ func appendReqArgs(req *http.Request, queryArgs map[string]string) {
 
 // default schema version
 // TODO: retrieve from environment or elsewhere in Service Init
-var schemaVersion string = "1.4"
+var schemaVersion = "1.4"
 
 // internal method to set version. passed in as string
 func setVersionHeader(req *http.Request, version string) {
@@ -41,12 +41,12 @@ func setVersionHeader(req *http.Request, version string) {
 
 }
 
-// Instantiate new Default Datacenter Struct
+// NewDefaultDatacenter instantiates new Default Datacenter Struct
 func (p *gtm) NewDefaultDatacenter(dcid int) *DatacenterBase {
 	return &DatacenterBase{DatacenterId: dcid}
 }
 
-// response Status is returned on Create, Update or Delete operations for all entity types
+// ResponseStatus is returned on Create, Update or Delete operations for all entity types
 type ResponseStatus struct {
 	ChangeId              string  `json:"changeId,omitempty"`
 	Links                 *[]Link `json:"links,omitempty"`
@@ -63,55 +63,61 @@ func NewResponseStatus() *ResponseStatus {
 
 }
 
-// Generic response structs
+// ResponseBody is a generic response struct
 type ResponseBody struct {
 	Resource interface{}     `json:"resource"`
 	Status   *ResponseStatus `json:"status"`
 }
 
-// Response structs by Entity Type
+// DomainResponse contains a response after creating or updating Domain
 type DomainResponse struct {
 	Resource *Domain         `json:"resource"`
 	Status   *ResponseStatus `json:"status"`
 }
 
+// DatacenterResponse contains a response after creating or updating Datacenter
 type DatacenterResponse struct {
 	Status   *ResponseStatus `json:"status"`
 	Resource *Datacenter     `json:"resource"`
 }
 
+// PropertyResponse contains a response after creating or updating Property
 type PropertyResponse struct {
 	Resource *Property       `json:"resource"`
 	Status   *ResponseStatus `json:"status"`
 }
 
+// ResourceResponse contains a response after creating or updating Resource
 type ResourceResponse struct {
 	Resource *Resource       `json:"resource"`
 	Status   *ResponseStatus `json:"status"`
 }
 
+// CidrMapResponse contains a response after creating or updating CidrMap
 type CidrMapResponse struct {
 	Resource *CidrMap        `json:"resource"`
 	Status   *ResponseStatus `json:"status"`
 }
 
+// GeoMapResponse contains a response after creating or updating GeoMap
 type GeoMapResponse struct {
 	Resource *GeoMap         `json:"resource"`
 	Status   *ResponseStatus `json:"status"`
 }
 
+// AsMapResponse contains a response after creating or updating AsMap
 type AsMapResponse struct {
 	Resource *AsMap          `json:"resource"`
 	Status   *ResponseStatus `json:"status"`
 }
 
-// Probably THE most common type
+// Link is Probably THE most common type
 type Link struct {
 	Rel  string `json:"rel"`
 	Href string `json:"href"`
 }
 
-//
+// LoadObject contains information about the load reporting interface
 type LoadObject struct {
 	LoadObject     string   `json:"loadObject,omitempty"`
 	LoadObjectPort int      `json:"loadObjectPort,omitempty"`
@@ -123,6 +129,7 @@ func NewLoadObject() *LoadObject {
 	return &LoadObject{}
 }
 
+// DatacenterBase is a placeholder for default Datacenter
 type DatacenterBase struct {
 	Nickname     string `json:"nickname,omitempty"`
 	DatacenterId int    `json:"datacenterId"`

@@ -9,29 +9,32 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// AttackGroupConditionException represents a collection of AttackGroupConditionException
-//
-// See: AttackGroupConditionException.GetAttackGroupConditionException()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// AttackGroupConditionException  contains operations available on AttackGroupConditionException  resource
-	// See: // appsec v1
+	// The AttackGroup interface supports retrieving and updating attack groups along with their
+	// associated actions, conditions, and exceptions.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getattackgroupconditionexception
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#attackgroup
 	AttackGroup interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getattackgroups
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getattackgroupconditionexception
 		GetAttackGroups(ctx context.Context, params GetAttackGroupsRequest) (*GetAttackGroupsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getattackgroup
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getattackgroupconditionexception
 		GetAttackGroup(ctx context.Context, params GetAttackGroupRequest) (*GetAttackGroupResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putattackgroup
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putattackgroupconditionexception
 		UpdateAttackGroup(ctx context.Context, params UpdateAttackGroupRequest) (*UpdateAttackGroupResponse, error)
 	}
 
+	// AttackGroupConditionException describes an attack group's condition and exception information.
 	AttackGroupConditionException struct {
 		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
 		Exception              *AttackGroupException          `json:"exception,omitempty"`
 	}
 
+	// AttackGroupAdvancedExceptions describes an attack group's advanced exception information.
 	AttackGroupAdvancedExceptions struct {
 		ConditionOperator                       string                                                      `json:"conditionOperator,omitempty"`
 		Conditions                              *AttackGroupConditions                                      `json:"conditions,omitempty"`
@@ -40,6 +43,7 @@ type (
 		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesAdvanced `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
 	}
 
+	// AttackGroupConditions describes an attack group's condition information.
 	AttackGroupConditions []struct {
 		Type          string   `json:"type,omitempty"`
 		Extensions    []string `json:"extensions,omitempty"`
@@ -60,6 +64,7 @@ type (
 		UseHeaders    bool     `json:"useHeaders,omitempty"`
 	}
 
+	// AttackGroupAdvancedCriteria describes the hostname and path criteria used to limit the scope of an exception.
 	AttackGroupAdvancedCriteria []struct {
 		Hostnames []string `json:"hostnames,omitempty"`
 		Names     []string `json:"names,omitempty"`
@@ -67,6 +72,7 @@ type (
 		Values    []string `json:"values,omitempty"`
 	}
 
+	// AttackGroupSpecificHeaderCookieOrParamNameValAdvanced describes the excepted name-value pairs in a request.
 	AttackGroupSpecificHeaderCookieOrParamNameValAdvanced []struct {
 		Criteria    *AttackGroupAdvancedCriteria `json:"criteria,omitempty"`
 		NamesValues []struct {
@@ -78,6 +84,7 @@ type (
 		Wildcard      bool   `json:"wildcard"`
 	}
 
+	// AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesAdvanced describes the advanced exception members that allow you to conditionally exclude requests from inspection.
 	AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesAdvanced []struct {
 		Criteria *AttackGroupAdvancedCriteria `json:"criteria,omitempty"`
 		Names    []string                     `json:"names,omitempty"`
@@ -85,22 +92,26 @@ type (
 		Wildcard bool                         `json:"wildcard,omitempty"`
 	}
 
+	// AttackGroupHeaderCookieOrParamValuesAdvanced describes the list of excepted values in headers, cookies, or query parameters.
 	AttackGroupHeaderCookieOrParamValuesAdvanced []struct {
 		Criteria      *AttackGroupAdvancedCriteria `json:"criteria,omitempty"`
 		ValueWildcard bool                         `json:"valueWildcard"`
 		Values        []string                     `json:"values,omitempty"`
 	}
 
+	// AttackGroupException is used to describe an exception that can be used to conditionally exclude requests from inspection.
 	AttackGroupException struct {
 		SpecificHeaderCookieParamXMLOrJSONNames *AttackGroupSpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
 	}
 
+	// AttackGroupSpecificHeaderCookieParamXMLOrJSONNames describes the advanced exception members that can be used to conditionally exclude requests from inspection.
 	AttackGroupSpecificHeaderCookieParamXMLOrJSONNames []struct {
 		Names    []string `json:"names,omitempty"`
 		Selector string   `json:"selector,omitempty"`
 		Wildcard bool     `json:"wildcard,omitempty"`
 	}
 
+	// GetAttackGroupsRequest is used to retrieve a list of attack groups with their associated actions.
 	GetAttackGroupsRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -108,6 +119,7 @@ type (
 		Group    string `json:"group,omitempty"`
 	}
 
+	// GetAttackGroupsResponse is returned from a call to GetAttackGroups.
 	GetAttackGroupsResponse struct {
 		AttackGroups []struct {
 			Group              string                         `json:"group,omitempty"`
@@ -116,6 +128,7 @@ type (
 		} `json:"attackGroupActions,omitempty"`
 	}
 
+	// GetAttackGroupRequest is used to retrieve a list of attack groups with their associated actions.
 	GetAttackGroupRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -123,11 +136,13 @@ type (
 		Group    string `json:"group"`
 	}
 
+	// GetAttackGroupResponse is returned from a call to GetAttackGroup.
 	GetAttackGroupResponse struct {
 		Action             string                         `json:"action,omitempty"`
 		ConditionException *AttackGroupConditionException `json:"conditionException,omitempty"`
 	}
 
+	// UpdateAttackGroupRequest is used to modify what action to take when an attack group’s rule triggers.
 	UpdateAttackGroupRequest struct {
 		ConfigID       int             `json:"-"`
 		Version        int             `json:"-"`
@@ -137,21 +152,19 @@ type (
 		JsonPayloadRaw json.RawMessage `json:"conditionException,omitempty"`
 	}
 
+	// UpdateAttackGroupResponse is returned from a call to UpdateAttackGroup.
 	UpdateAttackGroupResponse struct {
 		Action             string                         `json:"action,omitempty"`
 		ConditionException *AttackGroupConditionException `json:"conditionException,omitempty"`
 	}
 )
 
-// Check Condition Exception is Empty
+// IsEmptyConditionException checks whether an attack group's ConditionException field is empty.
 func (r GetAttackGroupResponse) IsEmptyConditionException() bool {
-	if r.ConditionException == nil {
-		return true
-	}
-	return false
+	return r.ConditionException == nil
 }
 
-// Validate validates GetAttackGroupConditionExceptionRequest
+// Validate validates a GetAttackGroupConditionExceptionRequest.
 func (v GetAttackGroupRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -160,7 +173,7 @@ func (v GetAttackGroupRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetAttackGroupConditionExceptionsRequest
+// Validate validates a GetAttackGroupConditionExceptionsRequest.
 func (v GetAttackGroupsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -169,7 +182,7 @@ func (v GetAttackGroupsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateAttackGroupConditionExceptionRequest
+// Validate validates an UpdateAttackGroupConditionExceptionRequest.
 func (v UpdateAttackGroupRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -197,12 +210,12 @@ func (p *appsec) GetAttackGroup(ctx context.Context, params GetAttackGroupReques
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getattackgroup request: %w", err)
+		return nil, fmt.Errorf("failed to create GetAttackGroup request: %w", err)
 	}
 	logger.Debugf("BEFORE GetAttackGroup %v", rval)
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getattackgroup  request failed: %w", err)
+		return nil, fmt.Errorf("GetAttackGroup request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -232,12 +245,12 @@ func (p *appsec) GetAttackGroups(ctx context.Context, params GetAttackGroupsRequ
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getattackgroupconditionexceptions request: %w", err)
+		return nil, fmt.Errorf("failed to create GetAttackGroups request: %w", err)
 	}
 	logger.Debugf("BEFORE GetAttackGroupConditionException %v", rval)
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getattackgroupconditionexceptions request failed: %w", err)
+		return nil, fmt.Errorf("GetAttackGroups request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -258,12 +271,6 @@ func (p *appsec) GetAttackGroups(ctx context.Context, params GetAttackGroupsRequ
 
 }
 
-// Update will update a AttackGroupConditionException.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putattackgroupconditionexception
-
 func (p *appsec) UpdateAttackGroup(ctx context.Context, params UpdateAttackGroupRequest) (*UpdateAttackGroupResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -282,14 +289,14 @@ func (p *appsec) UpdateAttackGroup(ctx context.Context, params UpdateAttackGroup
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create AttackGroupRequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateAttackGroup request: %w", err)
 	}
 
 	var rval UpdateAttackGroupResponse
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create AttackGroup request failed: %w", err)
+		return nil, fmt.Errorf("UpdateAttackGroup request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

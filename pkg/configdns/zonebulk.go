@@ -6,15 +6,18 @@ import (
 	"net/http"
 )
 
+// BulkZonesCreate contains a list of one or more new Zones to create
 type BulkZonesCreate struct {
 	Zones []*ZoneCreate `json:"zones"`
 }
 
+// BulkZonesResponse contains response from bulk-create request
 type BulkZonesResponse struct {
 	RequestId      string `json:"requestId"`
 	ExpirationDate string `json:"expirationDate"`
 }
 
+// BulkStatusResponse contains current status of a running or completed bulk-create request
 type BulkStatusResponse struct {
 	RequestId      string `json:"requestId"`
 	ZonesSubmitted int    `json:"zonesSubmitted"`
@@ -24,17 +27,20 @@ type BulkStatusResponse struct {
 	ExpirationDate string `json:"expirationDate"`
 }
 
+// BulkFailedZone contains information about failed zone
 type BulkFailedZone struct {
 	Zone          string `json:"zone"`
 	FailureReason string `json:"failureReason"`
 }
 
+// BulkCreateResultResponse contains the response from a completed bulk-create request
 type BulkCreateResultResponse struct {
 	RequestId                string            `json:"requestId"`
 	SuccessfullyCreatedZones []string          `json:"successfullyCreatedZones"`
 	FailedZones              []*BulkFailedZone `json:"failedZones"`
 }
 
+// BulkDeleteResultResponse contains the response from a completed bulk-delete request
 type BulkDeleteResultResponse struct {
 	RequestId                string            `json:"requestId"`
 	SuccessfullyDeletedZones []string          `json:"successfullyDeletedZones"`

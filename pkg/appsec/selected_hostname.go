@@ -8,60 +8,65 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// SelectedHostname represents a collection of SelectedHostname
-//
-// See: SelectedHostname.GetSelectedHostname()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// SelectedHostname  contains operations available on SelectedHostname  resource
-	// See: // appsec v1
+	// The SelectedHostname interface supports retrieving and modifying the list of hostnames protected under
+	// a configuration.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectedhostname
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#selectedhostnames
 	SelectedHostname interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectedhostnames
 		GetSelectedHostnames(ctx context.Context, params GetSelectedHostnamesRequest) (*GetSelectedHostnamesResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectedhostnames
 		GetSelectedHostname(ctx context.Context, params GetSelectedHostnameRequest) (*GetSelectedHostnameResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putselectedhostnames
 		UpdateSelectedHostname(ctx context.Context, params UpdateSelectedHostnameRequest) (*UpdateSelectedHostnameResponse, error)
 	}
 
+	// GetSelectedHostnamesRequest is used to retrieve the selected hostnames for a configuration.
 	GetSelectedHostnamesRequest struct {
 		ConfigID     int        `json:"configId"`
 		Version      int        `json:"version"`
 		HostnameList []Hostname `json:"hostnameList"`
 	}
 
+	// GetSelectedHostnamesResponse is returned from a call to GetSelectedHostnames.
+	GetSelectedHostnamesResponse struct {
+		HostnameList []Hostname `json:"hostnameList,omitempty"`
+	}
+
+	// GetSelectedHostnameRequest is used to retrieve the selected hostnames for a configuration.
 	GetSelectedHostnameRequest struct {
 		ConfigID     int        `json:"configId"`
 		Version      int        `json:"version"`
 		HostnameList []Hostname `json:"hostnameList"`
 	}
 
-	GetSelectedHostnamesResponse struct {
-		HostnameList []Hostname `json:"hostnameList,omitempty"`
+	// GetSelectedHostnameResponse is returned from a call to GetSelectedHostname.
+	GetSelectedHostnameResponse struct {
+		HostnameList []Hostname `json:"hostnameList"`
 	}
 
+	// UpdateSelectedHostnameRequest is used to modify the selected hostnames for a configuration.
 	UpdateSelectedHostnameRequest struct {
 		ConfigID     int        `json:"configId"`
 		Version      int        `json:"version"`
 		HostnameList []Hostname `json:"hostnameList"`
 	}
 
+	// UpdateSelectedHostnameResponse is returned from a call to UpdateSelectedHostname.
 	UpdateSelectedHostnameResponse struct {
 		HostnameList []Hostname `json:"hostnameList"`
 	}
 
+	// Hostname describes a hostname that may be protected.
 	Hostname struct {
 		Hostname string `json:"hostname"`
 	}
-
-	GetSelectedHostnameResponse struct {
-		HostnameList []Hostname `json:"hostnameList"`
-	}
 )
 
-// Validate validates GetSelectedHostnameRequest
+// Validate validates a GetSelectedHostnameRequest.
 func (v GetSelectedHostnameRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -69,7 +74,7 @@ func (v GetSelectedHostnameRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetSelectedHostnamesRequest
+// Validate validates a GetSelectedHostnamesRequest.
 func (v GetSelectedHostnamesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -77,7 +82,7 @@ func (v GetSelectedHostnamesRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateSelectedHostnameRequest
+// Validate validates an UpdateSelectedHostnameRequest.
 func (v UpdateSelectedHostnameRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -102,12 +107,12 @@ func (p *appsec) GetSelectedHostname(ctx context.Context, params GetSelectedHost
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getselectedhostname request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSelectedHostname request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("GetSelectedHostname request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -135,12 +140,12 @@ func (p *appsec) GetSelectedHostnames(ctx context.Context, params GetSelectedHos
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getselectedhostnames request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSelectedHostnames request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getselectedhostnames request failed: %w", err)
+		return nil, fmt.Errorf("GetSelectedHostnames request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -150,12 +155,6 @@ func (p *appsec) GetSelectedHostnames(ctx context.Context, params GetSelectedHos
 	return &rval, nil
 
 }
-
-// Update will update a SelectedHostname.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putselectedhostname
 
 func (p *appsec) UpdateSelectedHostname(ctx context.Context, params UpdateSelectedHostnameRequest) (*UpdateSelectedHostnameResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -173,13 +172,13 @@ func (p *appsec) UpdateSelectedHostname(ctx context.Context, params UpdateSelect
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create SelectedHostnamerequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateSelectedHostname request: %w", err)
 	}
 
 	var rval UpdateSelectedHostnameResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create SelectedHostname request failed: %w", err)
+		return nil, fmt.Errorf("UpdateSelectedHostname request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

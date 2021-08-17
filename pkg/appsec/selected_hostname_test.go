@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListSelectedHostnames(t *testing.T) {
+func TestAppSec_ListSelectedHostnames(t *testing.T) {
 
 	result := GetSelectedHostnamesResponse{}
 

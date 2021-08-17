@@ -9,28 +9,31 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// Activations represents a collection of Activations
-//
-// See: Activations.GetActivations()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// Activations  contains operations available on Activations  resource
-	// See: // appsec v1
+	// The Activations interface supports the activation and deactivation of security configurations.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getactivations
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#activation
 	Activations interface {
+		// GetActivations returns the status of an activation.
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getactivationid
 		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
+
+		// CreateActivations activates a configuration. If acknowledgeWarnings is true and warnings are
+		// returned on the first attempt, a second attempt is made acknowledging the warnings.
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postactivations
 		CreateActivations(ctx context.Context, params CreateActivationsRequest, acknowledgeWarnings bool) (*CreateActivationsResponse, error)
+
+		// RemoveActivations deactivates a configuration.
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postactivations
 		RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error)
 	}
 
+	// GetActivationsRequest is used to request the status of an activation request.
 	GetActivationsRequest struct {
 		ActivationID int `json:"activationId"`
 	}
 
+	// GetActivationsResponse is returned from a call to GetActivations.
 	GetActivationsResponse struct {
 		DispatchCount     int          `json:"dispatchCount"`
 		ActivationID      int          `json:"activationId"`
@@ -48,6 +51,7 @@ type (
 		} `json:"activationConfigs"`
 	}
 
+	// CreateActivationsRequest is used to request activation or deactivation of a configuration.
 	CreateActivationsRequest struct {
 		Action             string   `json:"action"`
 		Network            string   `json:"network"`
@@ -59,6 +63,7 @@ type (
 		} `json:"activationConfigs"`
 	}
 
+	// CreateActivationsResponse is returned from a call to CreateActivations.
 	CreateActivationsResponse struct {
 		DispatchCount     int          `json:"dispatchCount"`
 		ActivationID      int          `json:"activationId"`
@@ -76,22 +81,13 @@ type (
 		} `json:"activationConfigs"`
 	}
 
-	ActivationsPost struct {
-		Action             string   `json:"action"`
-		Network            string   `json:"network"`
-		Note               string   `json:"note"`
-		NotificationEmails []string `json:"notificationEmails"`
-		ActivationConfigs  []struct {
-			ConfigID      int `json:"configId"`
-			ConfigVersion int `json:"configVersion"`
-		} `json:"activationConfigs"`
-	}
-
+	// ActivationConfigs describes a specific configuration version to be activated or deactivated.
 	ActivationConfigs struct {
 		ConfigID      int `json:"configId"`
 		ConfigVersion int `json:"configVersion"`
 	}
 
+	// RemoveActivationsRequest is used to request deactivation of one or more configurations.
 	RemoveActivationsRequest struct {
 		ActivationID       int      `json:"-"`
 		Action             string   `json:"action"`
@@ -104,6 +100,7 @@ type (
 		} `json:"activationConfigs"`
 	}
 
+	// RemoveActivationsResponse is returned from a call to RemoveActivations.
 	RemoveActivationsResponse struct {
 		DispatchCount     int          `json:"dispatchCount"`
 		ActivationID      int          `json:"activationId"`
@@ -122,18 +119,13 @@ type (
 	}
 )
 
-// Validate validates GetActivationsRequest
+// Validate validates a GetActivationsRequest.
 func (v GetActivationsRequest) Validate() error {
 	return validation.Errors{
 		"activationid": validation.Validate(v.ActivationID, validation.Required),
 	}.Filter()
 }
 
-// GetActivations populates  *Activations with it's related Activations
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
 func (p *appsec) GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -150,12 +142,12 @@ func (p *appsec) GetActivations(ctx context.Context, params GetActivationsReques
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getactivations request: %w", err)
+		return nil, fmt.Errorf("failed to create GetActivations request: %w", err)
 	}
 
 	resp, errp := p.Exec(req, &rval)
 	if errp != nil {
-		return nil, fmt.Errorf("getactivations request failed: %w", errp)
+		return nil, fmt.Errorf("GetActivations request failed: %w", errp)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -165,14 +157,7 @@ func (p *appsec) GetActivations(ctx context.Context, params GetActivationsReques
 	return &rval, nil
 }
 
-// Save activates a given Configuration
-//
-// If acknowledgeWarnings is true and warnings are returned on the first attempt,
-// a second attempt is made, acknowledging the warnings.
-//
-func (p *appsec) CreateActivations(ctx context.Context, params CreateActivationsRequest, acknowledgeWarnings bool) (*CreateActivationsResponse, error) {
-	//func (activations *CreateActivationsResponse) SaveActivations(postpayload *ActivationsPost, acknowledgeWarnings bool, correlationid string) (*CreateActivationsResponse, error) {
-
+func (p *appsec) CreateActivations(ctx context.Context, params CreateActivationsRequest, _ bool) (*CreateActivationsResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("CreateActivations")
 
@@ -180,14 +165,14 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create activation request: %w", err)
+		return nil, fmt.Errorf("failed to create CreateActivations request: %w", err)
 	}
 
 	var rval CreateActivationsResponse
 
 	_, err = p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create activationrequest failed: %w", err)
+		return nil, fmt.Errorf("CreateActivations request failed: %w", err)
 	}
 
 	var rvalget CreateActivationsResponse
@@ -199,12 +184,12 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 
 	req, err = http.NewRequestWithContext(ctx, http.MethodGet, uriget, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get activation request: %w", err)
+		return nil, fmt.Errorf("failed to create GetActivation request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rvalget)
 	if err != nil {
-		return nil, fmt.Errorf("get activation request failed: %w", err)
+		return nil, fmt.Errorf("GetActivation request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -215,29 +200,23 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 
 }
 
-// Delete will delete a Activations
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deleteactivations
 func (p *appsec) RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error) {
 
 	logger := p.Log(ctx)
-	logger.Debug("CreateRatePolicy")
+	logger.Debug("RemoveActivations")
 
 	uri := "/appsec/v1/activations"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create remove activation request: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveActivations request: %w", err)
 	}
 
 	var rval RemoveActivationsResponse
 
 	_, errp := p.Exec(req, &rval, params)
 	if errp != nil {
-		return nil, fmt.Errorf("remove activationrequest failed: %w", errp)
+		return nil, fmt.Errorf("RemoveActivations request failed: %w", errp)
 	}
 
 	return &rval, nil
@@ -253,30 +232,40 @@ type NetworkValue string
 type StatusValue string
 
 const (
-	// ActivationTypeActivate Activation.ActivationType value ACTIVATE
+
+	// ActivationTypeActivate is used to activate a configuration.
 	ActivationTypeActivate ActivationValue = "ACTIVATE"
-	// ActivationTypeDeactivate Activation.ActivationType value DEACTIVATE
+
+	// ActivationTypeDeactivate is used to deactivate a configuration.
 	ActivationTypeDeactivate ActivationValue = "DEACTIVATE"
 
-	// NetworkProduction Activation.Network value PRODUCTION
+	// NetworkProduction is used to activate/deactivate a configuration in the production network.
 	NetworkProduction NetworkValue = "PRODUCTION"
-	// NetworkStaging Activation.Network value STAGING
+
+	// NetworkStaging is used to activate/deactivate a configuration in the staging network.
 	NetworkStaging NetworkValue = "STAGING"
 
-	// StatusActive Activation.Status value ACTIVE
+	// StatusActive indicates that a configuration has been activated.
 	StatusActive StatusValue = "ACTIVATED"
-	// StatusInactive Activation.Status value INACTIVE
+
+	// StatusInactive indicates that a configuration is inactive.
 	StatusInactive StatusValue = "INACTIVE"
-	// StatusPending Activation.Status value RECEIVED
+
+	// StatusPending indicates that an activation/deactivation request has been received.
 	StatusPending StatusValue = "RECEIVED"
-	// StatusAborted Activation.Status value ABORTED
+
+	// StatusAborted indicates that an activation/deactivation request has been aborted.
 	StatusAborted StatusValue = "ABORTED"
-	// StatusFailed Activation.Status value FAILED
+
+	// StatusFailed indicates that an activation/deactivation request has failed.
 	StatusFailed StatusValue = "FAILED"
-	// StatusDeactivated Activation.Status value DEACTIVATED
+
+	// StatusDeactivated indicates that an configuration has been deactivated.
 	StatusDeactivated StatusValue = "DEACTIVATED"
-	// StatusPendingDeactivation Activation.Status value PENDING_DEACTIVATION
+
+	// StatusPendingDeactivation indicates that a deactivation request is in progress.
 	StatusPendingDeactivation StatusValue = "PENDING_DEACTIVATION"
-	// StatusNew Activation.Status value NEW
+
+	// StatusNew indicates that a deactivation request is new.
 	StatusNew StatusValue = "NEW"
 )

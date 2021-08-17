@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListIPGeoProtections(t *testing.T) {
+func TestAppSec_ListIPGeoProtections(t *testing.T) {
 
 	result := GetIPGeoProtectionsResponse{}
 

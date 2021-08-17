@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListConfigurationVersionClone(t *testing.T) {
+func TestAppSec_ListConfigurationVersionClone(t *testing.T) {
 
 	result := GetConfigurationVersionCloneResponse{}
 

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListApiEndpoints(t *testing.T) {
+func TestAppSec_ListApiEndpoints(t *testing.T) {
 
 	result := GetApiEndpointsResponse{}
 

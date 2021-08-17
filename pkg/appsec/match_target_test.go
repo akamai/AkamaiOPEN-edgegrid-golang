@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListMatchTargets(t *testing.T) {
+func TestAppSec_ListMatchTargets(t *testing.T) {
 
 	result := GetMatchTargetsResponse{}
 
@@ -329,8 +329,8 @@ func TestAppSec_UpdateMatchTarget(t *testing.T) {
 	}
 }
 
-//Test delete MatchTarget
-func TestAppSec_DeleteMatchTarget(t *testing.T) {
+// Test Remove MatchTarget
+func TestAppSec_RemoveMatchTarget(t *testing.T) {
 
 	result := RemoveMatchTargetResponse{}
 

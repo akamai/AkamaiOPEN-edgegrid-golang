@@ -1,3 +1,6 @@
+# Tools versions
+golangci-lint-version = v1.41.1
+
 .PHONY: all
 all: fmt lint vet coverage
 
@@ -17,7 +20,8 @@ coverage:
 
 .PHONY: lint
 lint:
-	golint -set_exit_status ./...
+	@echo "==> Checking source code against golangci-lint"
+	@$$(go env GOPATH)/bin/golangci-lint run
 
 .PHONY: vet
 vet:
@@ -26,3 +30,8 @@ vet:
 .PHONY: fmt
 fmt:
 	go fmt ./...
+
+.PHONY: init
+init:
+	@echo Installing golangci-lint
+	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin $(golangci-lint-version)

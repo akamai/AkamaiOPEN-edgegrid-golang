@@ -9,23 +9,20 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// AdvancedSettingsPragma represents a collection of AdvancedSettingsPragma
-//
-// See: AdvancedSettingsPragma.GetAdvancedSettingsPragma()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// AdvancedSettingsPragma  contains operations available on AdvancedSettingsPragma  resource
-	// See: // appsec v1
+	// The AdvancedSettingsPragma interface supports retrieving or modifying the pragma header
+	// excluded conditions for a configuration or policy.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpragmaheaderconfiguration
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#pragmaheader
 	AdvancedSettingsPragma interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpragmaheaderconfiguration
 		GetAdvancedSettingsPragma(ctx context.Context, params GetAdvancedSettingsPragmaRequest) (*GetAdvancedSettingsPragmaResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putpragmaheaderconfiguration
 		UpdateAdvancedSettingsPragma(ctx context.Context, params UpdateAdvancedSettingsPragmaRequest) (*UpdateAdvancedSettingsPragmaResponse, error)
 	}
 
+	// GetAdvancedSettingsPragmaRequest is used to retrieve the pragma settings for a security policy.
 	GetAdvancedSettingsPragmaRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -33,12 +30,14 @@ type (
 		Group    string `json:"group"`
 	}
 
+	// GetAdvancedSettingsPragmaResponse is returned from a call to GetAdvancedSettingsPragma.
 	GetAdvancedSettingsPragmaResponse struct {
 		Action            string             `json:"action,,omitempty"`
 		ConditionOperator string             `json:"conditionOperator,omitempty"`
 		ExcludeCondition  []ExcludeCondition `json:"excludeCondition,omitempty"`
 	}
 
+	// ExcludeCondition describes the pragma header's excluded conditions.
 	ExcludeCondition struct {
 		Type          string   `json:"type"`
 		PositiveMatch bool     `json:"positiveMatch"`
@@ -50,12 +49,15 @@ type (
 		UseHeaders    bool     `json:"useHeaders"`
 	}
 
+	// UpdateAdvancedSettingsPragmaRequest is used to modify the pragma settings for a security policy.
 	UpdateAdvancedSettingsPragmaRequest struct {
 		ConfigID       int             `json:"-"`
 		Version        int             `json:"-"`
 		PolicyID       string          `json:"-"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
+
+	// UpdateAdvancedSettingsPragmaResponse is returned from a call to UpdateAdvancedSettingsPragma.
 	UpdateAdvancedSettingsPragmaResponse struct {
 		Action            string             `json:"action"`
 		ConditionOperator string             `json:"conditionOperator"`
@@ -63,7 +65,7 @@ type (
 	}
 )
 
-// Validate validates GetAdvancedSettingsPragmaRequest
+// Validate validates a GetAdvancedSettingsPragmaRequest.
 func (v GetAdvancedSettingsPragmaRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -71,7 +73,7 @@ func (v GetAdvancedSettingsPragmaRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateAdvancedSettingsPragmaRequest
+// Validate validates an UpdateAdvancedSettingsPragmaRequest.
 func (v UpdateAdvancedSettingsPragmaRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -105,14 +107,14 @@ func (p *appsec) GetAdvancedSettingsPragma(ctx context.Context, params GetAdvanc
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get getadvancedsettingpragma request: %w", err)
+		return nil, fmt.Errorf("failed to create GetAdvancedSettingsPragma request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getadvancedsettingspragma request failed: %w", err)
+		return nil, fmt.Errorf("GetAdvancedSettingsPragma request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -122,12 +124,6 @@ func (p *appsec) GetAdvancedSettingsPragma(ctx context.Context, params GetAdvanc
 	return &rval, nil
 
 }
-
-// Update will update a AdvancedSettingsPragma.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putadvancedsettingsprefetch
 
 func (p *appsec) UpdateAdvancedSettingsPragma(ctx context.Context, params UpdateAdvancedSettingsPragmaRequest) (*UpdateAdvancedSettingsPragmaResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -153,13 +149,13 @@ func (p *appsec) UpdateAdvancedSettingsPragma(ctx context.Context, params Update
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create AdvancedSettingsPragmarequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateAdvancedSettingsPragma request: %w", err)
 	}
 
 	var rval UpdateAdvancedSettingsPragmaResponse
 	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("create AdvancedSettingsPragma request failed: %w", err)
+		return nil, fmt.Errorf("UpdateAdvancedSettingsPragma request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

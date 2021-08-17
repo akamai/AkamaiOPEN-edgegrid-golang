@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListSecurityPolicyClone(t *testing.T) {
+func TestAppSec_ListSecurityPolicyClone(t *testing.T) {
 
 	result := GetSecurityPolicyCloneResponse{}
 

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListAdvancedSettingsPragma(t *testing.T) {
+func TestAppSec_ListAdvancedSettingsPragma(t *testing.T) {
 
 	result := GetAdvancedSettingsPragmaResponse{}
 

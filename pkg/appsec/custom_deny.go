@@ -12,39 +12,38 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// CustomDeny represents a collection of CustomDeny
-//
-// See: CustomDeny.GetCustomDeny()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// CustomDeny  contains operations available on CustomDeny  resource
-	// See: // appsec v1
+	// The CustomDeny interface supports creating, retrievinfg, modifying and removing custom deny actions
+	// for a configuration.
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#customdeny
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomdeny
 	CustomDeny interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomdeny
 		GetCustomDenyList(ctx context.Context, params GetCustomDenyListRequest) (*GetCustomDenyListResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomdenyaction
 		GetCustomDeny(ctx context.Context, params GetCustomDenyRequest) (*GetCustomDenyResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postcustomdeny
 		CreateCustomDeny(ctx context.Context, params CreateCustomDenyRequest) (*CreateCustomDenyResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putcustomdenyaction
 		UpdateCustomDeny(ctx context.Context, params UpdateCustomDenyRequest) (*UpdateCustomDenyResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletecustomdenyaction
 		RemoveCustomDeny(ctx context.Context, params RemoveCustomDenyRequest) (*RemoveCustomDenyResponse, error)
 	}
 
 	customDenyID string
 
-	GetCustomDenyResponse struct {
-		Description string       `json:"description,omitempty"`
-		Name        string       `json:"name"`
-		ID          customDenyID `json:"-"`
-		Parameters  []struct {
-			DisplayName string `json:"-"`
-			Name        string `json:"name"`
-			Value       string `json:"value"`
-		} `json:"parameters"`
+	// GetCustomDenyListRequest is used to retrieve the custom deny actions for a configuration.
+	GetCustomDenyListRequest struct {
+		ConfigID int    `json:"configId"`
+		Version  int    `json:"version"`
+		ID       string `json:"id,omitempty"`
 	}
 
+	// GetCustomDenyListResponse is returned from a call to GetCustomDenyList.
 	GetCustomDenyListResponse struct {
 		CustomDenyList []struct {
 			Description string       `json:"description,omitempty"`
@@ -58,24 +57,33 @@ type (
 		} `json:"customDenyList"`
 	}
 
-	GetCustomDenyListRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
-		ID       string `json:"id,omitempty"`
-	}
-
+	// GetCustomDenyRequest is used to retrieve a specific custom deny action.
 	GetCustomDenyRequest struct {
 		ConfigID int    `json:"configId"`
 		Version  int    `json:"version"`
 		ID       string `json:"id,omitempty"`
 	}
 
+	// GetCustomDenyResponse is returned from a call to GetCustomDeny.
+	GetCustomDenyResponse struct {
+		Description string       `json:"description,omitempty"`
+		Name        string       `json:"name"`
+		ID          customDenyID `json:"-"`
+		Parameters  []struct {
+			DisplayName string `json:"-"`
+			Name        string `json:"name"`
+			Value       string `json:"value"`
+		} `json:"parameters"`
+	}
+
+	// CreateCustomDenyRequest is used to create a new custom deny action for a specific configuration.
 	CreateCustomDenyRequest struct {
 		ConfigID       int             `json:"-"`
 		Version        int             `json:"-"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
+	// CreateCustomDenyResponse is returned from a call to CreateCustomDeny.
 	CreateCustomDenyResponse struct {
 		Description string       `json:"description,omitempty"`
 		Name        string       `json:"name"`
@@ -87,6 +95,7 @@ type (
 		} `json:"parameters"`
 	}
 
+	// UpdateCustomDenyRequest is used to details for a specific custom deny action.
 	UpdateCustomDenyRequest struct {
 		ConfigID       int             `json:"-"`
 		Version        int             `json:"-"`
@@ -94,6 +103,7 @@ type (
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
+	// UpdateCustomDenyResponse is returned from a call to UpdateCustomDeny.
 	UpdateCustomDenyResponse struct {
 		Description string       `json:"description,omitempty"`
 		Name        string       `json:"name"`
@@ -105,17 +115,20 @@ type (
 		} `json:"parameters"`
 	}
 
+	// RemoveCustomDenyRequest is used to remove an existing custom deny action.
 	RemoveCustomDenyRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
 		ID       string `json:"id,omitempty"`
 	}
 
+	// RemoveCustomDenyResponse is returned from a call to RemoveCustomDeny.
 	RemoveCustomDenyResponse struct {
 		Empty string `json:"-"`
 	}
 )
 
+// UnmarshalJSON reads a customDenyID struct from its data argument.
 func (c *customDenyID) UnmarshalJSON(data []byte) error {
 	var nums interface{}
 	err := json.Unmarshal(data, &nums)
@@ -135,7 +148,7 @@ func (c *customDenyID) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// Validate validates GetCustomDenyRequest
+// Validate validates a GetCustomDenyRequest.
 func (v GetCustomDenyRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -144,7 +157,7 @@ func (v GetCustomDenyRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetCustomDenysRequest
+// Validate validates a GetCustomDenysRequest.
 func (v GetCustomDenyListRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -152,7 +165,7 @@ func (v GetCustomDenyListRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates CreateCustomDenyRequest
+// Validate validates a CreateCustomDenyRequest.
 func (v CreateCustomDenyRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -160,7 +173,7 @@ func (v CreateCustomDenyRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateCustomDenyRequest
+// Validate validates an UpdateCustomDenyRequest.
 func (v UpdateCustomDenyRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -169,7 +182,7 @@ func (v UpdateCustomDenyRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates RemoveCustomDenyRequest
+// Validate validates a RemoveCustomDenyRequest.
 func (v RemoveCustomDenyRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -196,12 +209,12 @@ func (p *appsec) GetCustomDeny(ctx context.Context, params GetCustomDenyRequest)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getcustomdeny request: %w", err)
+		return nil, fmt.Errorf("failed to create GetCustomDeny request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("GetCustomDeny request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -231,12 +244,12 @@ func (p *appsec) GetCustomDenyList(ctx context.Context, params GetCustomDenyList
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getcustomdenylist request: %w", err)
+		return nil, fmt.Errorf("failed to create GetlustomDenyList request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getcustomdenylist request failed: %w", err)
+		return nil, fmt.Errorf("GetCustomDenyList request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -257,12 +270,6 @@ func (p *appsec) GetCustomDenyList(ctx context.Context, params GetCustomDenyList
 
 }
 
-// Update will update a CustomDeny.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putcustomdeny
-
 func (p *appsec) UpdateCustomDeny(ctx context.Context, params UpdateCustomDenyRequest) (*UpdateCustomDenyResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -280,14 +287,14 @@ func (p *appsec) UpdateCustomDeny(ctx context.Context, params UpdateCustomDenyRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create CustomDenyrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateCustomDeny request: %w", err)
 	}
 
 	var rval UpdateCustomDenyResponse
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("create CustomDeny request failed: %w", err)
+		return nil, fmt.Errorf("UpdateCustomDeny request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -297,12 +304,6 @@ func (p *appsec) UpdateCustomDeny(ctx context.Context, params UpdateCustomDenyRe
 	return &rval, nil
 }
 
-// Create will create a new customdeny.
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postcustomdeny
 func (p *appsec) CreateCustomDeny(ctx context.Context, params CreateCustomDenyRequest) (*CreateCustomDenyResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -319,14 +320,14 @@ func (p *appsec) CreateCustomDeny(ctx context.Context, params CreateCustomDenyRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create customdeny request: %w", err)
+		return nil, fmt.Errorf("failed to create CreateCustomDeny request: %w", err)
 	}
 
 	var rval CreateCustomDenyResponse
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("create customdenyrequest failed: %w", err)
+		return nil, fmt.Errorf("CreateCustomDeny request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -336,13 +337,6 @@ func (p *appsec) CreateCustomDeny(ctx context.Context, params CreateCustomDenyRe
 	return &rval, nil
 
 }
-
-// Delete will delete a CustomDeny
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletecustomdeny
 
 func (p *appsec) RemoveCustomDeny(ctx context.Context, params RemoveCustomDenyRequest) (*RemoveCustomDenyResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -361,17 +355,17 @@ func (p *appsec) RemoveCustomDeny(ctx context.Context, params RemoveCustomDenyRe
 		params.ID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed parse url: %w", err)
+		return nil, fmt.Errorf("failed to parse url: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create delcustomdeny request: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveCustomDeny request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("delcustomdeny request failed: %w", err)
+		return nil, fmt.Errorf("RemoveCustomDeny request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {

@@ -6,27 +6,22 @@ import (
 	"net/http"
 )
 
-// ConfigurationVersion represents a collection of ConfigurationVersion
-//
-// See: ConfigurationVersion.GetConfigurationVersion()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// ConfigurationVersion  contains operations available on ConfigurationVersion  resource
-	// See: // appsec v1
+	// The ConfigurationVersion interface supports retrieving the versions of a configuration.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationversion
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#configuration
 	ConfigurationVersion interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsummarylistofconfigurationversions
 		GetConfigurationVersions(ctx context.Context, params GetConfigurationVersionsRequest) (*GetConfigurationVersionsResponse, error)
 	}
 
+	// GetConfigurationVersionsRequest is used to retrieve the versions of a security configuration.
 	GetConfigurationVersionsRequest struct {
 		ConfigID      int `json:"configId"`
 		ConfigVersion int `json:"configVersion"`
 	}
 
+	// GetConfigurationVersionsResponse is returned from a call to GetConfigurationVersions.
 	GetConfigurationVersionsResponse struct {
 		ConfigID           int    `json:"configId,omitempty"`
 		ConfigName         string `json:"configName,omitempty"`
@@ -61,12 +56,12 @@ func (p *appsec) GetConfigurationVersions(ctx context.Context, params GetConfigu
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getconfigurationversions request: %w", err)
+		return nil, fmt.Errorf("failed to create GetConfigurationVersions request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getconfigurationversions request failed: %w", err)
+		return nil, fmt.Errorf("GetConfigurationVersions request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

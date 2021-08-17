@@ -8,24 +8,23 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// CustomRuleAction represents a collection of CustomRuleAction
-//
-// See: CustomRuleAction.GetCustomRuleAction()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// CustomRuleAction  contains operations available on CustomRuleAction  resource
-	// See: // appsec v1
+	// The CustomRuleAction interface supports retrieving and updating the actions for the custom
+	// rules of a configuration, or for a specific custom rule.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomruleaction
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#customruleactions
 	CustomRuleAction interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomruleactions
 		GetCustomRuleActions(ctx context.Context, params GetCustomRuleActionsRequest) (*GetCustomRuleActionsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomruleactions
 		GetCustomRuleAction(ctx context.Context, params GetCustomRuleActionRequest) (*GetCustomRuleActionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putactionruleid
 		UpdateCustomRuleAction(ctx context.Context, params UpdateCustomRuleActionRequest) (*UpdateCustomRuleActionResponse, error)
 	}
 
+	// GetCustomRuleActionsRequest is used to retrieve the custom rule actions for a configuration.
 	GetCustomRuleActionsRequest struct {
 		ConfigID int    `json:"configId"`
 		Version  int    `json:"version"`
@@ -33,6 +32,7 @@ type (
 		RuleID   int    `json:"ruleId"`
 	}
 
+	// GetCustomRuleActionsResponse is returned from a call to GetCustomRuleActions.
 	GetCustomRuleActionsResponse []struct {
 		Action                string `json:"action,omitempty"`
 		CanUseAdvancedActions bool   `json:"canUseAdvancedActions,omitempty"`
@@ -41,6 +41,7 @@ type (
 		RuleID                int    `json:"ruleId,omitempty"`
 	}
 
+	// GetCustomRuleActionRequest is used to retrieve the action for a custom rule.
 	GetCustomRuleActionRequest struct {
 		ConfigID int    `json:"configId"`
 		Version  int    `json:"version"`
@@ -48,6 +49,7 @@ type (
 		RuleID   int    `json:"ruleId"`
 	}
 
+	// GetCustomRuleActionResponse is returned from a call to GetCustomRuleAction.
 	GetCustomRuleActionResponse struct {
 		Action                string `json:"action,omitempty"`
 		CanUseAdvancedActions bool   `json:"canUseAdvancedActions,omitempty"`
@@ -56,6 +58,7 @@ type (
 		RuleID                int    `json:"ruleId,omitempty"`
 	}
 
+	// UpdateCustomRuleActionRequest is used to modify an existing custom rule.
 	UpdateCustomRuleActionRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -64,6 +67,7 @@ type (
 		Action   string `json:"action"`
 	}
 
+	// UpdateCustomRuleActionResponse is returned from a call to UpdateCustomRuleAction.
 	UpdateCustomRuleActionResponse struct {
 		Action                string `json:"action"`
 		CanUseAdvancedActions bool   `json:"canUseAdvancedActions"`
@@ -73,7 +77,7 @@ type (
 	}
 )
 
-// Validate validates GetCustomRuleActionRequest
+// Validate validates a GetCustomRuleActionRequest.
 func (v GetCustomRuleActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -82,7 +86,7 @@ func (v GetCustomRuleActionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetCustomRuleActionsRequest
+// Validate validates a GetCustomRuleActionsRequest.
 func (v GetCustomRuleActionsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -91,7 +95,7 @@ func (v GetCustomRuleActionsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateCustomRuleActionRequest
+// Validate validates an UpdateCustomRuleActionRequest.
 func (v UpdateCustomRuleActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -119,14 +123,14 @@ func (p *appsec) GetCustomRuleAction(ctx context.Context, params GetCustomRuleAc
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getcustomruleaction request: %w", err)
+		return nil, fmt.Errorf("failed to create GetCustomRuleAction request: %w", err)
 	}
 
 	var rvals GetCustomRuleActionsResponse
 
 	resp, err := p.Exec(req, &rvals)
 	if err != nil {
-		return nil, fmt.Errorf("getcustomruleaction request failed: %w", err)
+		return nil, fmt.Errorf("GetCustomRuleAction request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -163,12 +167,12 @@ func (p *appsec) GetCustomRuleActions(ctx context.Context, params GetCustomRuleA
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getcustomruleactions request: %w", err)
+		return nil, fmt.Errorf("failed to create GetCustomRuleActions request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getcustomruleactions request failed: %w", err)
+		return nil, fmt.Errorf("GetCustomRuleActions request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -188,12 +192,6 @@ func (p *appsec) GetCustomRuleActions(ctx context.Context, params GetCustomRuleA
 
 }
 
-// Update will update a CustomRuleAction.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putcustomruleaction
-
 func (p *appsec) UpdateCustomRuleAction(ctx context.Context, params UpdateCustomRuleActionRequest) (*UpdateCustomRuleActionResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -212,13 +210,13 @@ func (p *appsec) UpdateCustomRuleAction(ctx context.Context, params UpdateCustom
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create CustomRuleActionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateCustomRuleAction request: %w", err)
 	}
 
 	var rval UpdateCustomRuleActionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create CustomRuleAction request failed: %w", err)
+		return nil, fmt.Errorf("UpdateCustomRuleAction request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {

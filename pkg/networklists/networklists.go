@@ -1,4 +1,4 @@
-// Package networklist provides access to the Akamai Networklist APIs
+// Package networklists provides access to the Akamai Networklist APIs
 package networklists
 
 import (
@@ -13,7 +13,7 @@ var (
 )
 
 type (
-	// NETWORKLIST is the networklist api interface
+	// NTWRKLISTS is the networklist api interface
 	NTWRKLISTS interface {
 		Activations
 		NetworkList

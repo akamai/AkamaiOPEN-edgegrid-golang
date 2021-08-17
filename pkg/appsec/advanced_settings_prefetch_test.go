@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListAdvancedSettingsPrefetch(t *testing.T) {
+func TestAppSec_ListAdvancedSettingsPrefetch(t *testing.T) {
 
 	result := GetAdvancedSettingsPrefetchResponse{}
 

@@ -8,24 +8,23 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// ReputationProfileAction represents a collection of ReputationProfileAction
-//
-// See: ReputationProfileAction.GetReputationProfileAction()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// ReputationProfileAction  contains operations available on ReputationProfileAction  resource
-	// See: // appsec v1
+	// The ReputationProfileAction interface supports retrieving and modifying the action associated with
+	// a specified reputation profile, or with all reputation profiles in a security policy.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationprofileaction
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#reputationprofileactiongroup
 	ReputationProfileAction interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationprofileactions
 		GetReputationProfileActions(ctx context.Context, params GetReputationProfileActionsRequest) (*GetReputationProfileActionsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationprofileaction
 		GetReputationProfileAction(ctx context.Context, params GetReputationProfileActionRequest) (*GetReputationProfileActionResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationprofileaction
 		UpdateReputationProfileAction(ctx context.Context, params UpdateReputationProfileActionRequest) (*UpdateReputationProfileActionResponse, error)
 	}
 
+	// GetReputationProfileActionsRequest is used to retrieve the list of reputation profiles and their associated actions.
 	GetReputationProfileActionsRequest struct {
 		ConfigID            int    `json:"configId"`
 		Version             int    `json:"version"`
@@ -34,6 +33,7 @@ type (
 		Action              string `json:"action"`
 	}
 
+	// GetReputationProfileActionsResponse is returned from a call to GetReputationProfileActions.
 	GetReputationProfileActionsResponse struct {
 		ReputationProfiles []struct {
 			Action string `json:"action,omitempty"`
@@ -41,6 +41,7 @@ type (
 		} `json:"reputationProfiles,omitempty"`
 	}
 
+	// GetReputationProfileActionRequest is used to retrieve the details for a specific reputation profile.
 	GetReputationProfileActionRequest struct {
 		ConfigID            int    `json:"configId"`
 		Version             int    `json:"version"`
@@ -49,10 +50,12 @@ type (
 		Action              string `json:"action"`
 	}
 
+	// GetReputationProfileActionResponse is returned from a call to GetReputationProfileAction.
 	GetReputationProfileActionResponse struct {
 		Action string `json:"action,omitempty"`
 	}
 
+	// UpdateReputationProfileActionRequest is used to modify the details for a specific reputation profile.
 	UpdateReputationProfileActionRequest struct {
 		ConfigID            int    `json:"-"`
 		Version             int    `json:"-"`
@@ -61,16 +64,18 @@ type (
 		Action              string `json:"action"`
 	}
 
+	// UpdateReputationProfileActionResponse is returned from a call to UpdateReputationProfileAction.
 	UpdateReputationProfileActionResponse struct {
 		Action string `json:"action"`
 	}
 
+	// ReputationProfileActionPost is currently unused.
 	ReputationProfileActionPost struct {
 		Action string `json:"action"`
 	}
 )
 
-// Validate validates GetReputationProfileActionRequest
+// Validate validates a GetReputationProfileActionRequest.
 func (v GetReputationProfileActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -79,7 +84,7 @@ func (v GetReputationProfileActionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetReputationProfileActionsRequest
+// Validate validates a GetReputationProfileActionsRequest.
 func (v GetReputationProfileActionsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -88,7 +93,7 @@ func (v GetReputationProfileActionsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateReputationProfileActionRequest
+// Validate validates an UpdateReputationProfileActionRequest.
 func (v UpdateReputationProfileActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":            validation.Validate(v.ConfigID, validation.Required),
@@ -117,12 +122,12 @@ func (p *appsec) GetReputationProfileAction(ctx context.Context, params GetReput
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getreputationprofileaction request: %w", err)
+		return nil, fmt.Errorf("failed to create GetReputationProfileAction request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getreputationprofileaction  request failed: %w", err)
+		return nil, fmt.Errorf("GetReputationProfileAction request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -152,12 +157,12 @@ func (p *appsec) GetReputationProfileActions(ctx context.Context, params GetRepu
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getreputationprofileactions request: %w", err)
+		return nil, fmt.Errorf("failed to create GetReputationProfileActions request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getreputationprofileactions request failed: %w", err)
+		return nil, fmt.Errorf("GetReputationProfileActions request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -179,12 +184,6 @@ func (p *appsec) GetReputationProfileActions(ctx context.Context, params GetRepu
 
 }
 
-// Update will update a ReputationProfileAction.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationprofileaction
-
 func (p *appsec) UpdateReputationProfileAction(ctx context.Context, params UpdateReputationProfileActionRequest) (*UpdateReputationProfileActionResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -203,13 +202,13 @@ func (p *appsec) UpdateReputationProfileAction(ctx context.Context, params Updat
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create ReputationProfileActionrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateReputationProfileAction request: %w", err)
 	}
 
 	var rval UpdateReputationProfileActionResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create ReputationProfileAction request failed: %w", err)
+		return nil, fmt.Errorf("UpdateReputationProfileAction request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

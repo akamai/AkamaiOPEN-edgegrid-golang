@@ -9,25 +9,25 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
-// Activations represents a collection of Activations
-//
-// See: Activations.GetActivations()
-// API Docs: // network_lists v2
-//
-// https://developer.akamai.com/api/cloud_security/network_lists/v2.html
-
 type (
-	// Activations  contains operations available on Activations  resource
-	// See: // network_lists v2
+	// The Activations interface supports activating and deactivating network lists.
 	//
-	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getactivations
+	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#activationrequest
 	Activations interface {
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getactivationstatus
 		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getactivationstatus
 		GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postactivate
 		CreateActivations(ctx context.Context, params CreateActivationsRequest) (*CreateActivationsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postactivate
 		RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error)
 	}
 
+	// GetActivationsRequest contains request parameters for getting activation status
 	GetActivationsRequest struct {
 		UniqueID     string `json:"-"`
 		Action       string `json:"-"`
@@ -35,10 +35,12 @@ type (
 		ActivationID int    `json:"activationId"`
 	}
 
+	// GetActivationRequest contains request parameters for getting activation details
 	GetActivationRequest struct {
 		ActivationID int `json:"activationId"`
 	}
 
+	// GetActivationsResponse contains response with activation status
 	GetActivationsResponse struct {
 		ActivationID       int    `json:"activationId"`
 		ActivationComments string `json:"activationComments"`
@@ -74,6 +76,7 @@ type (
 		} `json:"links"`
 	}
 
+	// GetActivationResponse contains response with activation details
 	GetActivationResponse struct {
 		ActivationID     int       `json:"activationId"`
 		CreateDate       time.Time `json:"createDate"`
@@ -111,6 +114,7 @@ type (
 		} `json:"networkList"`
 	}
 
+	// CreateActivationsRequest contains request parameters for creating new activation
 	CreateActivationsRequest struct {
 		UniqueID               string   `json:"-"`
 		Action                 string   `json:"-"`
@@ -119,6 +123,7 @@ type (
 		NotificationRecipients []string `json:"notificationRecipients"`
 	}
 
+	// CreateActivationsResponse contains response after creating new activation
 	CreateActivationsResponse struct {
 		ActivationID       int    `json:"activationId"`
 		ActivationComments string `json:"activationComments"`
@@ -154,6 +159,7 @@ type (
 		} `json:"links"`
 	}
 
+	// RemoveActivationsRequest contains request parameters of Activation to deactivate
 	RemoveActivationsRequest struct {
 		UniqueID               string   `json:"-"`
 		ActivationID           int      `json:"-"`
@@ -163,6 +169,7 @@ type (
 		NotificationRecipients []string `json:"notificationRecipients"`
 	}
 
+	// RemoveActivationsResponse contains response of Activation deactivation
 	RemoveActivationsResponse struct {
 		ActivationID       int    `json:"activationId"`
 		ActivationComments string `json:"activationComments"`

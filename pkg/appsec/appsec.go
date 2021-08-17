@@ -36,6 +36,7 @@ type (
 		CustomRule
 		CustomRuleAction
 		Eval
+		EvalGroup
 		EvalHost
 		EvalProtectHost
 		EvalRule
@@ -65,9 +66,11 @@ type (
 		SiemSettings
 		SlowPostProtectionSetting
 		SlowPostProtection
+		ThreatIntel
 		VersionNotes
 		WAFMode
 		WAFProtection
+		WAPSelectedHostnames
 	}
 
 	appsec struct {

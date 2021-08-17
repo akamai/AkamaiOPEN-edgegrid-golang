@@ -6,32 +6,27 @@ import (
 	"net/http"
 )
 
-// SiemDefinitions represents a collection of SiemDefinitions
-//
-// See: SiemDefinitions.GetSiemDefinitions()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// SiemDefinitions  contains operations available on SiemDefinitions  resource
-	// See: // appsec v1
+	// The SiemDefinitions interface supports retrieving the available SIEM versions.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsiemdefinitions
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#siem
 	SiemDefinitions interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsiemversions
 		GetSiemDefinitions(ctx context.Context, params GetSiemDefinitionsRequest) (*GetSiemDefinitionsResponse, error)
 	}
 
+	// GetSiemDefinitionsRequest is used to retrieve the available SIEM versions.
+	GetSiemDefinitionsRequest struct {
+		ID                 int    `json:"id"`
+		SiemDefinitionName string `json:"name"`
+	}
+
+	// GetSiemDefinitionsResponse is returned from a call to GetSiemDefinitions.
 	GetSiemDefinitionsResponse struct {
 		SiemDefinitions []struct {
 			ID   int    `json:"id"`
 			Name string `json:"name"`
 		} `json:"siemDefinitions"`
-	}
-
-	GetSiemDefinitionsRequest struct {
-		ID                 int    `json:"id"`
-		SiemDefinitionName string `json:"name"`
 	}
 )
 
@@ -47,12 +42,12 @@ func (p *appsec) GetSiemDefinitions(ctx context.Context, params GetSiemDefinitio
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getsiemdefinitions request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSiemDefinitions request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getsiemdefinitions  request failed: %w", err)
+		return nil, fmt.Errorf("GetSiemDefinitions request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

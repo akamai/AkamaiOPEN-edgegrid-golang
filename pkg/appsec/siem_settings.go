@@ -8,24 +8,28 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// SiemSettings represents a collection of SiemSettings
-//
-// See: SiemSettings.GetSiemSettings()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// SiemSettings  contains operations available on SiemSettings  resource
-	// See: // appsec v1
+	// The SiemSettings interface supports retrieving, modifying and removing the SIEM settings for a configuration.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsiemsettings
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#siem
 	SiemSettings interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsiemsettings
 		GetSiemSettings(ctx context.Context, params GetSiemSettingsRequest) (*GetSiemSettingsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsiemsettings
 		UpdateSiemSettings(ctx context.Context, params UpdateSiemSettingsRequest) (*UpdateSiemSettingsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsiemsettings
 		RemoveSiemSettings(ctx context.Context, params RemoveSiemSettingsRequest) (*RemoveSiemSettingsResponse, error)
 	}
 
+	// GetSiemSettingsRequest is used to retrieve the SIEM settings for a configuration.
+	GetSiemSettingsRequest struct {
+		ConfigID int `json:"-"`
+		Version  int `json:"-"`
+	}
+
+	// GetSiemSettingsResponse is returned from a call to GetSiemSettings.
 	GetSiemSettingsResponse struct {
 		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
 		EnableSiem              bool     `json:"enableSiem"`
@@ -34,11 +38,13 @@ type (
 		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
 	}
 
-	GetSiemSettingsRequest struct {
+	// GetSiemSettingRequest is used to retrieve the SIEM settings for a configuration.
+	GetSiemSettingRequest struct {
 		ConfigID int `json:"-"`
 		Version  int `json:"-"`
 	}
 
+	// GetSiemSettingResponse is returned from a call to GetSiemSettings.
 	GetSiemSettingResponse struct {
 		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
 		EnableSiem              bool     `json:"enableSiem"`
@@ -47,19 +53,7 @@ type (
 		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
 	}
 
-	GetSiemSettingRequest struct {
-		ConfigID int `json:"-"`
-		Version  int `json:"-"`
-	}
-
-	UpdateSiemSettingsResponse struct {
-		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
-		EnableSiem              bool     `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
-		SiemDefinitionID        int      `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
-	}
-
+	// UpdateSiemSettingsRequest is used to modify the SIEM settings for a configuration.
 	UpdateSiemSettingsRequest struct {
 		ConfigID                int      `json:"-"`
 		Version                 int      `json:"-"`
@@ -70,7 +64,8 @@ type (
 		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
 	}
 
-	RemoveSiemSettingsResponse struct {
+	// UpdateSiemSettingsResponse is returned from a call to UpdateSiemSettings.
+	UpdateSiemSettingsResponse struct {
 		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
 		EnableSiem              bool     `json:"enableSiem"`
 		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
@@ -78,6 +73,7 @@ type (
 		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
 	}
 
+	// RemoveSiemSettingsRequest is used to remove the SIEM settings for a configuration.
 	RemoveSiemSettingsRequest struct {
 		ConfigID                int      `json:"-"`
 		Version                 int      `json:"-"`
@@ -87,9 +83,18 @@ type (
 		SiemDefinitionID        int      `json:"-"`
 		FirewallPolicyIds       []string `json:"-"`
 	}
+
+	// RemoveSiemSettingsResponse is returned from a call to RemoveSiemSettings.
+	RemoveSiemSettingsResponse struct {
+		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
+		EnableSiem              bool     `json:"enableSiem"`
+		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
+		SiemDefinitionID        int      `json:"siemDefinitionId"`
+		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
+	}
 )
 
-// Validate validates GetSiemSettingsRequest
+// Validate validates a GetSiemSettingsRequest.
 func (v GetSiemSettingsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -97,7 +102,7 @@ func (v GetSiemSettingsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateSiemSettingsRequest
+// Validate validates an UpdateSiemSettingsRequest.
 func (v UpdateSiemSettingsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -105,7 +110,7 @@ func (v UpdateSiemSettingsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateSiemSettingsRequest
+// Validate validates an UpdateSiemSettingsRequest.
 func (v RemoveSiemSettingsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -131,12 +136,12 @@ func (p *appsec) GetSiemSettings(ctx context.Context, params GetSiemSettingsRequ
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getsiemsettings request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSiemSettings request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getsiemsettings  request failed: %w", err)
+		return nil, fmt.Errorf("GetSiemSettings request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -146,12 +151,6 @@ func (p *appsec) GetSiemSettings(ctx context.Context, params GetSiemSettingsRequ
 	return &rval, nil
 
 }
-
-// Update will update a SiemSettings.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsiemsettings
 
 func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettingsRequest) (*UpdateSiemSettingsResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -169,13 +168,13 @@ func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettin
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create SiemSettingsrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateSiemSettings request: %w", err)
 	}
 
 	var rval UpdateSiemSettingsResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create SiemSettings request failed: %w", err)
+		return nil, fmt.Errorf("UpdateSiemSettings request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -185,19 +184,13 @@ func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettin
 	return &rval, nil
 }
 
-// Remove will Remove a SiemSettings.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsiemsettings
-
 func (p *appsec) RemoveSiemSettings(ctx context.Context, params RemoveSiemSettingsRequest) (*RemoveSiemSettingsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("UpdateSiemSettings")
+	logger.Debug("RemoveSiemSettings")
 
 	putURL := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/siem",
@@ -207,13 +200,13 @@ func (p *appsec) RemoveSiemSettings(ctx context.Context, params RemoveSiemSettin
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create Remove SiemSettingsrequest: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveSiemSettings request: %w", err)
 	}
 
 	var rval RemoveSiemSettingsResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("remove SiemSettings request failed: %w", err)
+		return nil, fmt.Errorf("RemoveSiemSettings request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

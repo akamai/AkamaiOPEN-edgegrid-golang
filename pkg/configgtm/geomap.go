@@ -35,7 +35,7 @@ type GeoMaps interface {
 	UpdateGeoMap(context.Context, *GeoMap, string) (*ResponseStatus, error)
 }
 
-// GeoAssigment represents a GTM geo assignment element
+// GeoAssignment represents a GTM geo assignment element
 type GeoAssignment struct {
 	DatacenterBase
 	Countries []string `json:"countries"`
@@ -128,7 +128,7 @@ func (p *gtm) GetGeoMap(ctx context.Context, name, domainName string) (*GeoMap, 
 }
 
 // Instantiate new Assignment struct
-func (p *gtm) NewGeoAssignment(ctx context.Context, geo *GeoMap, dcID int, nickname string) *GeoAssignment {
+func (p *gtm) NewGeoAssignment(ctx context.Context, _ *GeoMap, dcID int, nickname string) *GeoAssignment {
 
 	logger := p.Log(ctx)
 	logger.Debug("NewGeoAssignment")

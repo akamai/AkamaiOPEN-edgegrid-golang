@@ -8,24 +8,23 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// SlowPostProtectionSetting represents a collection of SlowPostProtectionSetting
-//
-// See: SlowPostProtectionSetting.GetSlowPostProtectionSetting()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// SlowPostProtectionSetting  contains operations available on SlowPostProtectionSetting  resource
-	// See: // appsec v1
+	// The SlowPostProtectionSetting interface supports retrieving and modifying the slow POST protection
+	// settings for a specific configuration.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getslowpostprotectionsetting
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#slowpostprotection
 	SlowPostProtectionSetting interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getslowpostprotectionsettings
 		GetSlowPostProtectionSettings(ctx context.Context, params GetSlowPostProtectionSettingsRequest) (*GetSlowPostProtectionSettingsResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getslowpostprotectionsettings
 		GetSlowPostProtectionSetting(ctx context.Context, params GetSlowPostProtectionSettingRequest) (*GetSlowPostProtectionSettingResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putslowpostprotectionsettings
 		UpdateSlowPostProtectionSetting(ctx context.Context, params UpdateSlowPostProtectionSettingRequest) (*UpdateSlowPostProtectionSettingResponse, error)
 	}
 
+	// GetSlowPostProtectionSettingsRequest is used to retrieve the slow post protection settings for a configuration.
 	GetSlowPostProtectionSettingsRequest struct {
 		ConfigID          int                                         `json:"configId"`
 		Version           int                                         `json:"version"`
@@ -35,21 +34,14 @@ type (
 		DurationThreshold *SlowPostProtectionSettingDurationThreshold `json:"durationThreshold,omitempty"`
 	}
 
-	SlowPostProtectionSettingSlowRateThreshold struct {
-		Rate   int `json:"rate"`
-		Period int `json:"period"`
-	}
-
-	SlowPostProtectionSettingDurationThreshold struct {
-		Timeout int `json:"timeout"`
-	}
-
+	// GetSlowPostProtectionSettingsResponse is returned from a call to GetSlowPostProtectionSettings.
 	GetSlowPostProtectionSettingsResponse struct {
 		Action            string                                      `json:"action,omitempty"`
 		SlowRateThreshold *SlowPostProtectionSettingSlowRateThreshold `json:"slowRateThreshold,omitempty"`
 		DurationThreshold *SlowPostProtectionSettingDurationThreshold `json:"durationThreshold,omitempty"`
 	}
 
+	// GetSlowPostProtectionSettingRequest is used to retrieve the slow post protection settings for a configuration.
 	GetSlowPostProtectionSettingRequest struct {
 		ConfigID          int    `json:"configId"`
 		Version           int    `json:"version"`
@@ -64,12 +56,14 @@ type (
 		} `json:"durationThreshold"`
 	}
 
+	// GetSlowPostProtectionSettingResponse is returned from a call to GetSlowPostProtectionSetting.
 	GetSlowPostProtectionSettingResponse struct {
 		Action            string                                      `json:"action,omitempty"`
 		SlowRateThreshold *SlowPostProtectionSettingSlowRateThreshold `json:"slowRateThreshold,omitempty"`
 		DurationThreshold *SlowPostProtectionSettingDurationThreshold `json:"durationThreshold,omitempty"`
 	}
 
+	// UpdateSlowPostProtectionSettingRequest is used to modify the slow post protection settings for a configuration.
 	UpdateSlowPostProtectionSettingRequest struct {
 		ConfigID          int    `json:"configId"`
 		Version           int    `json:"version"`
@@ -84,6 +78,7 @@ type (
 		} `json:"durationThreshold"`
 	}
 
+	// UpdateSlowPostProtectionSettingResponse is returned from a call to UpdateSlowPostProtection.
 	UpdateSlowPostProtectionSettingResponse struct {
 		Action            string `json:"action"`
 		SlowRateThreshold struct {
@@ -94,9 +89,22 @@ type (
 			Timeout int `json:"timeout"`
 		} `json:"durationThreshold"`
 	}
+
+	// SlowPostProtectionSettingSlowRateThreshold describes the average rate in bytes per second over a specified period of time before an action
+	// (alert or abort) in the policy triggers.
+	SlowPostProtectionSettingSlowRateThreshold struct {
+		Rate   int `json:"rate"`
+		Period int `json:"period"`
+	}
+
+	// SlowPostProtectionSettingDurationThreshold describes the length of time in seconds within which the first eight kilobytes of the POST body must be transferred to
+	// avoid applying the action specified in the policy.
+	SlowPostProtectionSettingDurationThreshold struct {
+		Timeout int `json:"timeout"`
+	}
 )
 
-// Validate validates GetSlowPostProtectionSettingRequest
+// Validate validates a GetSlowPostProtectionSettingRequest.
 func (v GetSlowPostProtectionSettingRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -105,7 +113,7 @@ func (v GetSlowPostProtectionSettingRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetSlowPostProtectionSettingsRequest
+// Validate validates a GetSlowPostProtectionSettingsRequest.
 func (v GetSlowPostProtectionSettingsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -114,7 +122,7 @@ func (v GetSlowPostProtectionSettingsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateSlowPostProtectionSettingRequest
+// Validate validates an UpdateSlowPostProtectionSettingRequest.
 func (v UpdateSlowPostProtectionSettingRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -141,12 +149,12 @@ func (p *appsec) GetSlowPostProtectionSetting(ctx context.Context, params GetSlo
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getslowpostprotectionsetting request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSlowPostProtectionSetting request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("GetSlowPostProtectionSetting request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -175,12 +183,12 @@ func (p *appsec) GetSlowPostProtectionSettings(ctx context.Context, params GetSl
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getslowpostprotectionsettings request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSlowPostProtectionSettings request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getslowpostprotectionsettings request failed: %w", err)
+		return nil, fmt.Errorf("GetSlowPostProtectionSettings request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -190,12 +198,6 @@ func (p *appsec) GetSlowPostProtectionSettings(ctx context.Context, params GetSl
 	return &rval, nil
 
 }
-
-// Update will update a SlowPostProtectionSetting.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putslowpostprotectionsetting
 
 func (p *appsec) UpdateSlowPostProtectionSetting(ctx context.Context, params UpdateSlowPostProtectionSettingRequest) (*UpdateSlowPostProtectionSettingResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -214,13 +216,13 @@ func (p *appsec) UpdateSlowPostProtectionSetting(ctx context.Context, params Upd
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create SlowPostProtectionSettingrequest: %w", err)
+		return nil, fmt.Errorf("failed to create update UpdateSlowPostProtectionSetting request: %w", err)
 	}
 
 	var rval UpdateSlowPostProtectionSettingResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create SlowPostProtectionSetting request failed: %w", err)
+		return nil, fmt.Errorf("UpdateSlowPostProtectionSetting request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

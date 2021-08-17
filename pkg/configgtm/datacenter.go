@@ -67,6 +67,7 @@ type Datacenter struct {
 	Virtual                       bool        `json:"virtual"`
 }
 
+// DatacenterList contains a list of Datacenters
 type DatacenterList struct {
 	DatacenterItems []*Datacenter `json:"items"`
 }
@@ -166,9 +167,14 @@ func (p *gtm) CreateDatacenter(ctx context.Context, dc *Datacenter, domainName s
 	return &dcresp, nil
 }
 
-var MapDefaultDC int = 5400
-var Ipv4DefaultDC int = 5401
-var Ipv6DefaultDC int = 5402
+var (
+	// MapDefaultDC is a default Datacenter ID for Maps
+	MapDefaultDC = 5400
+	// Ipv4DefaultDC is a default Datacenter ID for IPv4
+	Ipv4DefaultDC = 5401
+	// Ipv6DefaultDC is a default Datacenter ID for IPv6
+	Ipv6DefaultDC = 5402
+)
 
 // Create Default Datacenter for Maps
 func (p *gtm) CreateMapsDefaultDatacenter(ctx context.Context, domainName string) (*Datacenter, error) {
@@ -207,13 +213,13 @@ func createDefaultDC(ctx context.Context, p *gtm, defaultID int, domainName stri
 	dc, err := p.GetDatacenter(ctx, defaultID, domainName)
 	if err == nil {
 		return dc, err
-	} else {
-		apiError, ok := err.(*Error)
-		//if !strings.Contains(err.Error(), "not found") || !strings.Contains(err.Error(), "Datacenter") {
-		if !ok || apiError.StatusCode != http.StatusNotFound {
-			return nil, err
-		}
 	}
+	apiError, ok := err.(*Error)
+	//if !strings.Contains(err.Error(), "not found") || !strings.Contains(err.Error(), "Datacenter") {
+	if !ok || apiError.StatusCode != http.StatusNotFound {
+		return nil, err
+	}
+
 	defaultURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/", domainName)
 	switch defaultID {
 	case MapDefaultDC:

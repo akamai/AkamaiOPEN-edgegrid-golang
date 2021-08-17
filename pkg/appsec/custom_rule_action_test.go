@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListCustomRuleActions(t *testing.T) {
+func TestAppSec_ListCustomRuleActions(t *testing.T) {
 
 	result := GetCustomRuleActionsResponse{}
 

@@ -10,29 +10,27 @@ import (
 	"time"
 )
 
-// ExportConfiguration represents a collection of ExportConfiguration
-//
-// See: ExportConfiguration.GetExportConfiguration()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// ExportConfiguration  contains operations available on ExportConfiguration  resource
-	// See: // appsec v1
+	// The ExportConfiguration interface supports exporting comprehensive details about a security
+	// configuration version. This operation returns more data than Get configuration version details,
+	// including rate and security policies, rules, hostnames, and numerous additional settings.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getexportconfiguration
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#export
 	ExportConfiguration interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationversionexport
 		GetExportConfigurations(ctx context.Context, params GetExportConfigurationsRequest) (*GetExportConfigurationsResponse, error)
 	}
 
+	// ConditionsValue is a slice of strings that describe conditions.
 	ConditionsValue []string
 
+	// GetExportConfigurationsRequest is used to call GetExportConfigurations.
 	GetExportConfigurationsRequest struct {
 		ConfigID int `json:"configId"`
 		Version  int `json:"version"`
 	}
 
+	// GetExportConfigurationsResponse is returned from a call to GetExportConfigurations.
 	GetExportConfigurationsResponse struct {
 		ConfigID   int    `json:"configId"`
 		ConfigName string `json:"configName"`
@@ -208,38 +206,57 @@ type (
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
 		CustomDenyList  *CustomDenyListexp  `json:"customDenyList,omitempty"`
+		Evaluating      struct {
+			SecurityPolicies []struct {
+				EffectiveSecurityControls struct {
+					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
+					ApplyRateControls             bool `json:"applyRateControls,omitempty"`
+					ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
+				}
+				Hostnames        []string `json:"hostnames,omitempty"`
+				SecurityPolicyID string   `json:"id"`
+			}
+		} `json:"evaluating"`
 	}
 
+	// RatePoliciesPath is returned as part of GetExportConfigurationsResponse.
 	RatePoliciesPath struct {
 		PositiveMatch bool                    `json:"positiveMatch"`
 		Values        *RatePoliciesPathValues `json:"values,omitempty"`
 	}
 
-	//TODO fails export
+	// ReputationProfileActionsexp is returned as part of GetExportConfigurationsResponse.
 	ReputationProfileActionsexp []struct {
 		Action string `json:"action"`
 		ID     int    `json:"id"`
 	}
-	//TODO fails export
+
+	// RatePolicyActionsexp is returned as part of GetExportConfigurationsResponse.
 	RatePolicyActionsexp []struct {
 		ID         int    `json:"id"`
 		Ipv4Action string `json:"ipv4Action"`
 		Ipv6Action string `json:"ipv6Action"`
 	}
+
+	// SlowRateThresholdExp is returned as part of GetExportConfigurationsResponse.
 	SlowRateThresholdExp struct {
 		Period int `json:"period"`
 		Rate   int `json:"rate"`
 	}
 
+	// DurationThresholdExp is returned as part of GetExportConfigurationsResponse.
 	DurationThresholdExp struct {
 		Timeout int `json:"timeout"`
 	}
 
+	// SlowPostexp is returned as part of GetExportConfigurationsResponse.
 	SlowPostexp struct {
 		Action            string                `json:"action"`
 		SlowRateThreshold *SlowRateThresholdExp `json:"slowRateThreshold,omitempty"`
 		DurationThreshold *DurationThresholdExp `json:"durationThreshold,omitempty"`
 	}
+
+	// AdvancedOptionsexp is returned as part of GetExportConfigurationsResponse.
 	AdvancedOptionsexp struct {
 		Logging  *Loggingexp `json:"logging"`
 		Prefetch struct {
@@ -250,6 +267,8 @@ type (
 		} `json:"prefetch"`
 		PragmaHeader *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
 	}
+
+	// CustomDenyListexp is returned as part of GetExportConfigurationsResponse.
 	CustomDenyListexp []struct {
 		Description string `json:"description,omitempty"`
 		Name        string `json:"name"`
@@ -260,11 +279,14 @@ type (
 			Value       string `json:"value"`
 		} `json:"parameters"`
 	}
-	//TODO breaks export
+
+	// CustomRuleActionsexp  is returned as part of GetExportConfigurationsResponse.
 	CustomRuleActionsexp []struct {
 		Action string `json:"action"`
 		ID     int    `json:"id"`
 	}
+
+	// Siemexp is returned as part of GetExportConfigurationsResponse.
 	Siemexp struct {
 		EnableForAllPolicies    bool     `json:"enableForAllPolicies,omitempty"`
 		EnableSiem              bool     `json:"enableSiem"`
@@ -272,11 +294,14 @@ type (
 		FirewallPolicyIds       []string `json:"firewallPolicyIds,omitempty"`
 		SiemDefinitionID        int      `json:"siemDefinitionId,omitempty"`
 	}
-	//TODO nfails export
+
+	// PenaltyBoxexp is returned as part of GetExportConfigurationsResponse.
 	PenaltyBoxexp struct {
 		Action               string `json:"action"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
 	}
+
+	// APIRequestConstraintsexp is returned as part of GetExportConfigurationsResponse.
 	APIRequestConstraintsexp struct {
 		Action       string `json:"action,omitempty"`
 		APIEndpoints []struct {
@@ -284,7 +309,8 @@ type (
 			ID     int    `json:"id"`
 		} `json:"apiEndpoints,omitempty"`
 	}
-	//TODO breaks export
+
+	// Evaluationexp is returned as part of GetExportConfigurationsResponse.
 	Evaluationexp struct {
 		AttackGroupActions []struct {
 			Action string `json:"action"`
@@ -300,6 +326,8 @@ type (
 		} `json:"ruleActions"`
 		RulesetVersionID int `json:"rulesetVersionId"`
 	}
+
+	// ConditionReputationProfile is returned as part of GetExportConfigurationsResponse.
 	ConditionReputationProfile struct {
 		AtomicConditions *AtomicConditionsexp `json:"atomicConditions,omitempty"`
 		CanDelete        bool                 `json:"-"`
@@ -311,6 +339,7 @@ type (
 		Version          int64                `json:"-"`
 	}
 
+	// HeaderCookieOrParamValuesattackgroup is returned as part of GetExportConfigurationsResponse.
 	HeaderCookieOrParamValuesattackgroup []struct {
 		Criteria []struct {
 			Hostnames []string `json:"hostnames,omitempty"`
@@ -321,12 +350,14 @@ type (
 		Values        []string `json:"values,omitempty"`
 	}
 
+	// SpecificHeaderCookieOrParamNameValueexp is returned as part of GetExportConfigurationsResponse.
 	SpecificHeaderCookieOrParamNameValueexp struct {
 		Name     *json.RawMessage `json:"name,omitempty"`
 		Selector string           `json:"selector,omitempty"`
 		Value    *json.RawMessage `json:"value,omitempty"`
 	}
 
+	// AtomicConditionsexp is returned as part of GetExportConfigurationsResponse.
 	AtomicConditionsexp []struct {
 		CheckIps      *json.RawMessage `json:"checkIps,omitempty"`
 		ClassName     string           `json:"className,omitempty"`
@@ -341,6 +372,7 @@ type (
 		Host          []string         `json:"host,omitempty"`
 	}
 
+	// Loggingexp is returned as part of GetExportConfigurationsResponse.
 	Loggingexp struct {
 		AllowSampling bool `json:"allowSampling"`
 		Cookies       struct {
@@ -357,6 +389,7 @@ type (
 		} `json:"standardHeaders"`
 	}
 
+	// LoggingOverridesexp is returned as part of GetExportConfigurationsResponse.
 	LoggingOverridesexp struct {
 		AllowSampling bool `json:"allowSampling"`
 		Cookies       struct {
@@ -374,6 +407,7 @@ type (
 		} `json:"standardHeaders"`
 	}
 
+	// ConditionsExp is returned as part of GetExportConfigurationsResponse.
 	ConditionsExp []struct {
 		Type          string           `json:"type"`
 		PositiveMatch bool             `json:"positiveMatch"`
@@ -385,10 +419,10 @@ type (
 		ValueWildcard *json.RawMessage `json:"valueWildcard,omitempty"`
 	}
 
-	RatePoliciesFileExtensionsValues []string
-
+	// RatePoliciesPathValues is returned as part of GetExportConfigurationsResponse.
 	RatePoliciesPathValues []string
 
+	// RatePoliciesQueryParameters is returned as part of GetExportConfigurationsResponse.
 	RatePoliciesQueryParameters []struct {
 		Name          string                             `json:"name"`
 		PositiveMatch bool                               `json:"positiveMatch"`
@@ -396,13 +430,16 @@ type (
 		Values        *RatePoliciesQueryParametersValues `json:"values,omitempty"`
 	}
 
+	// RatePoliciesQueryParametersValues is returned as part of GetExportConfigurationsResponse.
 	RatePoliciesQueryParametersValues []string
 
+	// SecurityPoliciesPenaltyBox is returned as part of GetExportConfigurationsResponse.
 	SecurityPoliciesPenaltyBox struct {
 		Action               string `json:"action,omitempty"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection,omitempty"`
 	}
 
+	// WebApplicationFirewallEvaluation is returned as part of GetExportConfigurationsResponse.
 	WebApplicationFirewallEvaluation struct {
 		AttackGroupActions []struct {
 			Action string `json:"action"`
@@ -418,6 +455,8 @@ type (
 		} `json:"ruleActions,omitempty"`
 		RulesetVersionID int `json:"rulesetVersionId"`
 	}
+
+	// RulesetsRules is returned as part of GetExportConfigurationsResponse.
 	RulesetsRules []struct {
 		ID                  int      `json:"id"`
 		InspectRequestBody  bool     `json:"inspectRequestBody"`
@@ -429,10 +468,14 @@ type (
 		Title               string   `json:"title"`
 		AttackGroups        []string `json:"attackGroups,omitempty"`
 	}
+
+	// ClientReputationReputationProfileActions is returned as part of GetExportConfigurationsResponse.
 	ClientReputationReputationProfileActions []struct {
 		Action string `json:"action"`
 		ID     int    `json:"id"`
 	}
+
+	// SecurityPoliciesRatePolicyActions is returned as part of GetExportConfigurationsResponse.
 	SecurityPoliciesRatePolicyActions []struct {
 		ID         int    `json:"id"`
 		Ipv4Action string `json:"ipv4Action"`
@@ -440,6 +483,7 @@ type (
 	}
 )
 
+// UnmarshalJSON reads a ConditionsValue struct from its data argument.
 func (c *ConditionsValue) UnmarshalJSON(data []byte) error {
 	var nums interface{}
 	err := json.Unmarshal(data, &nums)
@@ -481,12 +525,12 @@ func (p *appsec) GetExportConfigurations(ctx context.Context, params GetExportCo
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getexportconfigurations request: %w", err)
+		return nil, fmt.Errorf("failed to create GetExportConfigurations request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getexportconfigurations request failed: %w", err)
+		return nil, fmt.Errorf("GetExportConfigurations request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

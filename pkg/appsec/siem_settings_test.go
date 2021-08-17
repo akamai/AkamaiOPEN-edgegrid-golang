@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListSiemSettings(t *testing.T) {
+func TestAppSec_ListSiemSettings(t *testing.T) {
 
 	result := GetSiemSettingsResponse{}
 

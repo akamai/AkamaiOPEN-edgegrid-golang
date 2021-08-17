@@ -8,29 +8,29 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// SecurityPolicyClone represents a collection of SecurityPolicyClone
-//
-// See: SecurityPolicyClone.GetSecurityPolicyClone()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// SecurityPolicyClone  contains operations available on SecurityPolicyClone  resource
-	// See: // appsec v1
+	// The SecurityPolicyClone interface supports cloning an existing security policy and retrieving
+	// existing security policies.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicyclone
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#securitypolicyclone
 	SecurityPolicyClone interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicies
 		GetSecurityPolicyClones(ctx context.Context, params GetSecurityPolicyClonesRequest) (*GetSecurityPolicyClonesResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicies
 		GetSecurityPolicyClone(ctx context.Context, params GetSecurityPolicyCloneRequest) (*GetSecurityPolicyCloneResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsecuritypolicies
 		CreateSecurityPolicyClone(ctx context.Context, params CreateSecurityPolicyCloneRequest) (*CreateSecurityPolicyCloneResponse, error)
 	}
 
+	// GetSecurityPolicyClonesRequest is used to retrieve the available security policies.
 	GetSecurityPolicyClonesRequest struct {
 		ConfigID int `json:"configId"`
 		Version  int `json:"version"`
 	}
 
+	// GetSecurityPolicyClonesResponse is returned from a call to GetSecurityPolicyClones.
 	GetSecurityPolicyClonesResponse struct {
 		ConfigID int `json:"configId"`
 		Version  int `json:"version"`
@@ -50,12 +50,14 @@ type (
 		} `json:"policies"`
 	}
 
+	// GetSecurityPolicyCloneRequest is used to retrieve a security policy.
 	GetSecurityPolicyCloneRequest struct {
 		ConfigID int    `json:"configId"`
 		Version  int    `json:"version"`
 		PolicyID string `json:"policyId"`
 	}
 
+	// GetSecurityPolicyCloneResponse is returned from a call to GetSecurityPolicyClone.
 	GetSecurityPolicyCloneResponse struct {
 		ConfigID               int    `json:"configId,omitempty"`
 		PolicyID               string `json:"policyId,omitempty"`
@@ -72,6 +74,7 @@ type (
 		Version int `json:"version,omitempty"`
 	}
 
+	// CreateSecurityPolicyCloneRequest is used to clone a security policy.
 	CreateSecurityPolicyCloneRequest struct {
 		ConfigID                 int    `json:"configId"`
 		Version                  int    `json:"version"`
@@ -80,6 +83,7 @@ type (
 		PolicyPrefix             string `json:"policyPrefix"`
 	}
 
+	// CreateSecurityPolicyCloneResponse is returned from a call to CreateSecurityPolicyClone.
 	CreateSecurityPolicyCloneResponse struct {
 		HasRatePolicyWithAPIKey bool   `json:"hasRatePolicyWithApiKey"`
 		PolicyID                string `json:"policyId"`
@@ -95,12 +99,14 @@ type (
 		}
 	}
 
+	// SecurityPolicyCloneResponse is currently unused.
 	SecurityPolicyCloneResponse struct {
 		ConfigID int        `json:"configId"`
 		Policies []Policies `json:"policies"`
 		Version  int        `json:"version"`
 	}
 
+	// Policies is used as part of a description of available security policies.
 	Policies struct {
 		HasRatePolicyWithAPIKey bool   `json:"hasRatePolicyWithApiKey"`
 		PolicyID                string `json:"policyId"`
@@ -116,12 +122,14 @@ type (
 		}
 	}
 
+	// CreateSecurityPolicyClonePost is currently unused.
 	CreateSecurityPolicyClonePost struct {
 		CreateFromSecurityPolicy string `json:"createFromSecurityPolicy"`
 		PolicyName               string `json:"policyName"`
 		PolicyPrefix             string `json:"policyPrefix"`
 	}
 
+	// CreateSecurityPolicyClonePostResponse is currently unused.
 	CreateSecurityPolicyClonePostResponse struct {
 		ConfigID               int    `json:"configId"`
 		PolicyID               string `json:"policyId"`
@@ -139,7 +147,7 @@ type (
 	}
 )
 
-// Validate validates GetSecurityPolicyCloneRequest
+// Validate validates a GetSecurityPolicyCloneRequest.
 func (v GetSecurityPolicyCloneRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -147,7 +155,7 @@ func (v GetSecurityPolicyCloneRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetSecurityPolicyClonesRequest
+// Validate validates a GetSecurityPolicyClonesRequest.
 func (v GetSecurityPolicyClonesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -155,7 +163,7 @@ func (v GetSecurityPolicyClonesRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates CreateSecurityPolicyCloneRequest
+// Validate validates a CreateSecurityPolicyCloneRequest.
 func (v CreateSecurityPolicyCloneRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -174,7 +182,6 @@ func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityP
 	var rvals GetSecurityPolicyCloneResponse
 
 	uri := fmt.Sprintf(
-		//	"/appsec/v1/configs/%d/versions/%d/security-policies?notMatched=false&detail=true",
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s",
 		params.ConfigID,
 		params.Version,
@@ -182,12 +189,12 @@ func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityP
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getsecuritypolicyclone request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSecurityPolicyClone request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rvals)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("GetSecurityPolicyClone request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -215,12 +222,12 @@ func (p *appsec) GetSecurityPolicyClones(ctx context.Context, params GetSecurity
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getsecuritypolicyclone request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSecurityPolicyClones request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("gGetSecurityPolicyClone request failed: %w", err)
+		return nil, fmt.Errorf("GetSecurityPolicyClones request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -231,12 +238,6 @@ func (p *appsec) GetSecurityPolicyClones(ctx context.Context, params GetSecurity
 
 }
 
-/// Create will create a new securitypolicyclone.
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsecuritypolicyclone
 func (p *appsec) CreateSecurityPolicyClone(ctx context.Context, params CreateSecurityPolicyCloneRequest) (*CreateSecurityPolicyCloneResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -252,14 +253,14 @@ func (p *appsec) CreateSecurityPolicyClone(ctx context.Context, params CreateSec
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create securitypolicyclone request: %w", err)
+		return nil, fmt.Errorf("failed to create CreateSecurityPolicyClone request: %w", err)
 	}
 
 	var rval CreateSecurityPolicyCloneResponse
 
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create securitypolicyclonerequest failed: %w", err)
+		return nil, fmt.Errorf("CreateSecurityPolicyClone request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

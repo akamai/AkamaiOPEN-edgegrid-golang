@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestApsec_ListApiRequestConstraints(t *testing.T) {
+func TestAppSec_ListApiRequestConstraints(t *testing.T) {
 
 	result := GetApiRequestConstraintsResponse{}
 

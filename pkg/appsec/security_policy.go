@@ -9,32 +9,35 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// SecurityPolicy represents a collection of SecurityPolicy
-//
-// See: SecurityPolicy.GetSecurityPolicy()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// SecurityPolicy  contains operations available on SecurityPolicy  resource
-	// See: // appsec v1
+	// The SecurityPolicy interface supports creating, retrieving, modifying and removing security policies.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicy
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#securitypolicy
 	SecurityPolicy interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicies
 		GetSecurityPolicies(ctx context.Context, params GetSecurityPoliciesRequest) (*GetSecurityPoliciesResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicy
 		GetSecurityPolicy(ctx context.Context, params GetSecurityPolicyRequest) (*GetSecurityPolicyResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsecuritypolicies
 		CreateSecurityPolicy(ctx context.Context, params CreateSecurityPolicyRequest) (*CreateSecurityPolicyResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsecuritypolicy
 		UpdateSecurityPolicy(ctx context.Context, params UpdateSecurityPolicyRequest) (*UpdateSecurityPolicyResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletesecuritypolicy
 		RemoveSecurityPolicy(ctx context.Context, params RemoveSecurityPolicyRequest) (*RemoveSecurityPolicyResponse, error)
 	}
 
+	// GetSecurityPoliciesRequest is used to retrieve the security policies for a configuration.
 	GetSecurityPoliciesRequest struct {
 		ConfigID   int    `json:"configId"`
 		Version    int    `json:"version"`
 		PolicyName string `json:"-"`
 	}
 
+	// GetSecurityPoliciesResponse is returned from a call to GetSecurityPolicies.
 	GetSecurityPoliciesResponse struct {
 		ConfigID int `json:"configId,omitempty"`
 		Version  int `json:"version,omitempty"`
@@ -54,12 +57,14 @@ type (
 		} `json:"policies,omitempty"`
 	}
 
+	// GetSecurityPolicyRequest is used to retrieve information about a security policy.
 	GetSecurityPolicyRequest struct {
 		ConfigID int    `json:"configId"`
 		Version  int    `json:"version"`
 		PolicyID string `json:"policyId"`
 	}
 
+	// GetSecurityPolicyResponse is returned from a call to GetSecurityPolicy.
 	GetSecurityPolicyResponse struct {
 		ConfigID               int    `json:"configId,omitempty"`
 		PolicyID               string `json:"policyId,omitempty"`
@@ -77,6 +82,7 @@ type (
 		Version int `json:"version,omitempty"`
 	}
 
+	// CreateSecurityPolicyRequest is used to create a ecurity policy.
 	CreateSecurityPolicyRequest struct {
 		ConfigID        int    `json:"-"`
 		Version         int    `json:"-"`
@@ -86,6 +92,7 @@ type (
 		DefaultSettings bool   `json:"defaultSettings"`
 	}
 
+	// CreateSecurityPolicyResponse is returned from a call to CreateSecurityPolicy.
 	CreateSecurityPolicyResponse struct {
 		ConfigID               int    `json:"configId"`
 		PolicyID               string `json:"policyId"`
@@ -103,6 +110,7 @@ type (
 		Version int `json:"version"`
 	}
 
+	// UpdateSecurityPolicyRequest is used to modify a security policy.
 	UpdateSecurityPolicyRequest struct {
 		ConfigID   int    `json:"-"`
 		Version    int    `json:"-"`
@@ -110,6 +118,7 @@ type (
 		PolicyName string `json:"policyName"`
 	}
 
+	// UpdateSecurityPolicyResponse is returned from a call to UpdateSecurityPolicy.
 	UpdateSecurityPolicyResponse struct {
 		ConfigID               int    `json:"configId"`
 		PolicyID               string `json:"policyId"`
@@ -127,12 +136,14 @@ type (
 		Version int `json:"version"`
 	}
 
+	// RemoveSecurityPolicyRequest is used to remove a security policy.
 	RemoveSecurityPolicyRequest struct {
 		ConfigID int    `json:"configId"`
 		Version  int    `json:"version"`
 		PolicyID string `json:"policyId"`
 	}
 
+	// RemoveSecurityPolicyResponse is returned from a call to RemoveSecurityPolicy.
 	RemoveSecurityPolicyResponse struct {
 		ConfigID               int    `json:"configId"`
 		PolicyID               string `json:"policyId"`
@@ -150,7 +161,7 @@ type (
 	}
 )
 
-// Validate validates GetSecurityPolicyRequest
+// Validate validates a GetSecurityPolicyRequest.
 func (v GetSecurityPolicyRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -158,7 +169,7 @@ func (v GetSecurityPolicyRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetSecurityPolicysRequest
+// Validate validates a GetSecurityPolicysRequest.
 func (v GetSecurityPoliciesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -166,7 +177,7 @@ func (v GetSecurityPoliciesRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates CreateSecurityPolicyRequest
+// Validate validates a CreateSecurityPolicyRequest.
 func (v CreateSecurityPolicyRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -174,7 +185,7 @@ func (v CreateSecurityPolicyRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateSecurityPolicyRequest
+// Validate validates an UpdateSecurityPolicyRequest.
 func (v UpdateSecurityPolicyRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -183,7 +194,7 @@ func (v UpdateSecurityPolicyRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates RemoveSecurityPolicyRequest
+// Validate validates a RemoveSecurityPolicyRequest.
 func (v RemoveSecurityPolicyRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -207,12 +218,12 @@ func (p *appsec) GetSecurityPolicies(ctx context.Context, params GetSecurityPoli
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getsecuritypolicies request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSecurityPolicies request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getsecuritypolicies request failed: %w", err)
+		return nil, fmt.Errorf("GetSecurityPolicies request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -249,12 +260,12 @@ func (p *appsec) GetSecurityPolicy(ctx context.Context, params GetSecurityPolicy
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getsecuritypolicies request: %w", err)
+		return nil, fmt.Errorf("failed to create GetSecurityPolicy request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getsecuritypolicies request failed: %w", err)
+		return nil, fmt.Errorf("GetSecurityPolicy request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -264,12 +275,6 @@ func (p *appsec) GetSecurityPolicy(ctx context.Context, params GetSecurityPolicy
 	return &rval, nil
 
 }
-
-// Update will update a SecurityPolicy.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsecuritypolicy
 
 func (p *appsec) UpdateSecurityPolicy(ctx context.Context, params UpdateSecurityPolicyRequest) (*UpdateSecurityPolicyResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -288,13 +293,13 @@ func (p *appsec) UpdateSecurityPolicy(ctx context.Context, params UpdateSecurity
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create SecurityPolicyrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateSecurityPolicy request: %w", err)
 	}
 
 	var rval UpdateSecurityPolicyResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create SecurityPolicy request failed: %w", err)
+		return nil, fmt.Errorf("UpdateSecurityPolicy request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -304,12 +309,6 @@ func (p *appsec) UpdateSecurityPolicy(ctx context.Context, params UpdateSecurity
 	return &rval, nil
 }
 
-// Create will create a new securitypolicy.
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsecuritypolicy
 func (p *appsec) CreateSecurityPolicy(ctx context.Context, params CreateSecurityPolicyRequest) (*CreateSecurityPolicyResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -325,14 +324,14 @@ func (p *appsec) CreateSecurityPolicy(ctx context.Context, params CreateSecurity
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create securitypolicy request: %w", err)
+		return nil, fmt.Errorf("failed to create CreateSecurityPolicy request: %w", err)
 	}
 
 	var rval CreateSecurityPolicyResponse
 
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create securitypolicyrequest failed: %w", err)
+		return nil, fmt.Errorf("CreateSecurityPolicy request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -342,13 +341,6 @@ func (p *appsec) CreateSecurityPolicy(ctx context.Context, params CreateSecurity
 	return &rval, nil
 
 }
-
-// Delete will delete a SecurityPolicy
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletesecuritypolicy
 
 func (p *appsec) RemoveSecurityPolicy(ctx context.Context, params RemoveSecurityPolicyRequest) (*RemoveSecurityPolicyResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -367,17 +359,17 @@ func (p *appsec) RemoveSecurityPolicy(ctx context.Context, params RemoveSecurity
 		params.PolicyID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed parse url: %w", err)
+		return nil, fmt.Errorf("failed to parse url: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create delsecuritypolicy request: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveSecurityPolicy request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("delsecuritypolicy request failed: %w", err)
+		return nil, fmt.Errorf("RemoveSecurityPolicy request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {

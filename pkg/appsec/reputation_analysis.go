@@ -8,24 +8,30 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// ReputationAnalysis represents a collection of ReputationAnalysis
-//
-// See: ReputationAnalysis.GetReputationAnalysis()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// ReputationAnalysis  contains operations available on ReputationAnalysis  resource
-	// See: // appsec v1
+	// The ReputationAnalysis interface supports retrieving and modifying the reputation analysis
+	// settings for a configuration and policy.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationanalysis
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#reputationanalysis
 	ReputationAnalysis interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationanalysis
 		GetReputationAnalysis(ctx context.Context, params GetReputationAnalysisRequest) (*GetReputationAnalysisResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationanalysis
 		UpdateReputationAnalysis(ctx context.Context, params UpdateReputationAnalysisRequest) (*UpdateReputationAnalysisResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationanalysis
 		RemoveReputationAnalysis(ctx context.Context, params RemoveReputationAnalysisRequest) (*RemoveReputationAnalysisResponse, error)
 	}
 
+	// GetReputationAnalysisRequest is used to retrieve the reputation analysis settings for a security policy.
+	GetReputationAnalysisRequest struct {
+		ConfigID int    `json:"configId"`
+		Version  int    `json:"version"`
+		PolicyID string `json:"policyId"`
+	}
+
+	// GetReputationAnalysisResponse is returned from a call to GetReputationAnalysis.
 	GetReputationAnalysisResponse struct {
 		ConfigID                           int    `json:"-"`
 		Version                            int    `json:"-"`
@@ -34,22 +40,7 @@ type (
 		ForwardSharedIPToHTTPHeaderAndSIEM bool   `json:"forwardSharedIPToHTTPHeaderAndSIEM"`
 	}
 
-	UpdateReputationAnalysisResponse struct {
-		ForwardToHTTPHeader                bool `json:"forwardToHTTPHeader"`
-		ForwardSharedIPToHTTPHeaderAndSIEM bool `json:"forwardSharedIPToHTTPHeaderAndSIEM"`
-	}
-
-	RemoveReputationAnalysisResponse struct {
-		ForwardToHTTPHeader                bool `json:"forwardToHTTPHeader"`
-		ForwardSharedIPToHTTPHeaderAndSIEM bool `json:"forwardSharedIPToHTTPHeaderAndSIEM"`
-	}
-
-	GetReputationAnalysisRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
-		PolicyID string `json:"policyId"`
-	}
-
+	// UpdateReputationAnalysisRequest is used to modify the reputation analysis settings for a security poliyc.
 	UpdateReputationAnalysisRequest struct {
 		ConfigID                           int    `json:"-"`
 		Version                            int    `json:"-"`
@@ -57,6 +48,14 @@ type (
 		ForwardToHTTPHeader                bool   `json:"forwardToHTTPHeader"`
 		ForwardSharedIPToHTTPHeaderAndSIEM bool   `json:"forwardSharedIPToHTTPHeaderAndSIEM"`
 	}
+
+	// UpdateReputationAnalysisResponse is returned from a call to UpdateReputationAnalysis.
+	UpdateReputationAnalysisResponse struct {
+		ForwardToHTTPHeader                bool `json:"forwardToHTTPHeader"`
+		ForwardSharedIPToHTTPHeaderAndSIEM bool `json:"forwardSharedIPToHTTPHeaderAndSIEM"`
+	}
+
+	// RemoveReputationAnalysisRequest is used to remove the reputation analysis settings for a security policy.
 	RemoveReputationAnalysisRequest struct {
 		ConfigID                           int    `json:"-"`
 		Version                            int    `json:"-"`
@@ -64,9 +63,15 @@ type (
 		ForwardToHTTPHeader                bool   `json:"forwardToHTTPHeader"`
 		ForwardSharedIPToHTTPHeaderAndSIEM bool   `json:"forwardSharedIPToHTTPHeaderAndSIEM"`
 	}
+
+	// RemoveReputationAnalysisResponse is returned from a call to RemoveReputationAnalysis.
+	RemoveReputationAnalysisResponse struct {
+		ForwardToHTTPHeader                bool `json:"forwardToHTTPHeader"`
+		ForwardSharedIPToHTTPHeaderAndSIEM bool `json:"forwardSharedIPToHTTPHeaderAndSIEM"`
+	}
 )
 
-// Validate validates GetReputationAnalysisRequest
+// Validate validates a GetReputationAnalysisRequest.
 func (v GetReputationAnalysisRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -75,7 +80,7 @@ func (v GetReputationAnalysisRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateReputationAnalysisRequest
+// Validate validates an UpdateReputationAnalysisRequest.
 func (v UpdateReputationAnalysisRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -84,7 +89,7 @@ func (v UpdateReputationAnalysisRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates RemoveReputationAnalysisRequest
+// Validate validates a RemoveReputationAnalysisRequest.
 func (v RemoveReputationAnalysisRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -111,12 +116,12 @@ func (p *appsec) GetReputationAnalysis(ctx context.Context, params GetReputation
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getreputationanalysis request: %w", err)
+		return nil, fmt.Errorf("failed to create GetReputationAnalysis request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getproperties request failed: %w", err)
+		return nil, fmt.Errorf("GetReputationAnalysis request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -126,12 +131,6 @@ func (p *appsec) GetReputationAnalysis(ctx context.Context, params GetReputation
 	return &rval, nil
 
 }
-
-// Update will update a ReputationAnalysis.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationanalysis
 
 func (p *appsec) UpdateReputationAnalysis(ctx context.Context, params UpdateReputationAnalysisRequest) (*UpdateReputationAnalysisResponse, error) {
 	if err := params.Validate(); err != nil {
@@ -150,13 +149,13 @@ func (p *appsec) UpdateReputationAnalysis(ctx context.Context, params UpdateRepu
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create ReputationAnalysisrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateReputationAnalysis request: %w", err)
 	}
 
 	var rval UpdateReputationAnalysisResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create ReputationAnalysis request failed: %w", err)
+		return nil, fmt.Errorf("UpdateReputationAnalysis request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -165,13 +164,6 @@ func (p *appsec) UpdateReputationAnalysis(ctx context.Context, params UpdateRepu
 
 	return &rval, nil
 }
-
-// Delete will delete a ReputationAnalysis
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletereputationanalysis
 
 func (p *appsec) RemoveReputationAnalysis(ctx context.Context, params RemoveReputationAnalysisRequest) (*RemoveReputationAnalysisResponse, error) {
 
@@ -189,12 +181,12 @@ func (p *appsec) RemoveReputationAnalysis(ctx context.Context, params RemoveRepu
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create ReputationAnalysisrequest: %w", err)
+		return nil, fmt.Errorf("failed to create RemoveReputationAnalysis request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("delreputationanalysis request failed: %w", err)
+		return nil, fmt.Errorf("RemoveReputationAnalysis request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

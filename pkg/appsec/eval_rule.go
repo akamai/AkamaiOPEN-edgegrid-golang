@@ -9,24 +9,23 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// EvalRule represents a collection of EvalRule
-//
-// See: EvalRule.GetEvalRule()
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
-
 type (
-	// EvalRule  contains operations available on EvalRule  resource
-	// See: // appsec v1
+	// The EvalRule interface supports retrieving and modifying the rules available for
+	// evaluation and their actions, or the action of a specific rule.
 	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevalruleconditionexception
+	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#evalrule
 	EvalRule interface {
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevalrules
 		GetEvalRules(ctx context.Context, params GetEvalRulesRequest) (*GetEvalRulesResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevalrule
 		GetEvalRule(ctx context.Context, params GetEvalRuleRequest) (*GetEvalRuleResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putevalrule
 		UpdateEvalRule(ctx context.Context, params UpdateEvalRuleRequest) (*UpdateEvalRuleResponse, error)
 	}
 
+	// GetEvalRulesRequest is used to retrieve the rules available for evaluation and their actions.
 	GetEvalRulesRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -34,6 +33,7 @@ type (
 		RuleID   int    `json:"-"`
 	}
 
+	// GetEvalRulesResponse is returned from a call to GetEvalRules.
 	GetEvalRulesResponse struct {
 		Rules []struct {
 			ID                 int                     `json:"id,omitempty"`
@@ -42,6 +42,7 @@ type (
 		} `json:"evalRuleActions,omitempty"`
 	}
 
+	// GetEvalRuleRequest is used to retrieve a rule available for evaluation and its action.
 	GetEvalRuleRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -49,11 +50,13 @@ type (
 		RuleID   int    `json:"ruleId"`
 	}
 
+	// GetEvalRuleResponse is returned from a call to GetEvalRule.
 	GetEvalRuleResponse struct {
 		Action             string                  `json:"action,omitempty"`
 		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
 	}
 
+	// UpdateEvalRuleRequest is used to modify a rule available for evaluation and its action.
 	UpdateEvalRuleRequest struct {
 		ConfigID       int             `json:"-"`
 		Version        int             `json:"-"`
@@ -63,22 +66,19 @@ type (
 		JsonPayloadRaw json.RawMessage `json:"conditionException,omitempty"`
 	}
 
+	// UpdateEvalRuleResponse is returned from a call to UpdateEvalRule.
 	UpdateEvalRuleResponse struct {
 		Action             string                  `json:"action,omitempty"`
 		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
 	}
 )
 
-// Check Condition Exception is Empty
+// IsEmptyConditionException checks whether the ConditionException field is empty.
 func (r *GetEvalRuleResponse) IsEmptyConditionException() bool {
-
-	if r.ConditionException == nil {
-		return true
-	}
-	return false
+	return r.ConditionException == nil
 }
 
-// Validate validates GetEvalRuleRequest
+// Validate validates a GetEvalRuleRequest.
 func (v GetEvalRuleRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -88,7 +88,7 @@ func (v GetEvalRuleRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetEvalRulesRequest
+// Validate validates a GetEvalRulesRequest.
 func (v GetEvalRulesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -97,7 +97,7 @@ func (v GetEvalRulesRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateEvalRuleRequest
+// Validate validates an UpdateEvalRuleRequest.
 func (v UpdateEvalRuleRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -126,12 +126,12 @@ func (p *appsec) GetEvalRule(ctx context.Context, params GetEvalRuleRequest) (*G
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getevalruleconditionexception request: %w", err)
+		return nil, fmt.Errorf("failed to create GetEvalRule request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getevalruleconditionexception request failed: %w", err)
+		return nil, fmt.Errorf("GetEvalRule request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -161,12 +161,12 @@ func (p *appsec) GetEvalRules(ctx context.Context, params GetEvalRulesRequest) (
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getevalruleconditionexceptions request: %w", err)
+		return nil, fmt.Errorf("failed to create GetEvalRules request: %w", err)
 	}
 
 	resp, err := p.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("getevalruleconditionexceptions request failed: %w", err)
+		return nil, fmt.Errorf("GetEvalRules request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -187,12 +187,6 @@ func (p *appsec) GetEvalRules(ctx context.Context, params GetEvalRulesRequest) (
 
 }
 
-// Update will update a EvalRule.
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putevalruleconditionexception
-
 func (p *appsec) UpdateEvalRule(ctx context.Context, params UpdateEvalRuleRequest) (*UpdateEvalRuleResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -211,14 +205,14 @@ func (p *appsec) UpdateEvalRule(ctx context.Context, params UpdateEvalRuleReques
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create EvalRulerequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateEvalRule request: %w", err)
 	}
 
 	var rval UpdateEvalRuleResponse
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
-		return nil, fmt.Errorf("create EvalRule request failed: %w", err)
+		return nil, fmt.Errorf("UpdateEvalRule request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
