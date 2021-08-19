@@ -16,6 +16,7 @@ type (
 	Cloudlets interface {
 		LoadBalancer
 		Policies
+		PolicyVersions
 	}
 
 	cloudlets struct {
