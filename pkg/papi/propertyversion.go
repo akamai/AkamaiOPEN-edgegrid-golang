@@ -209,17 +209,17 @@ func (v GetFeaturesRequest) Validate() error {
 
 var (
 	// ErrGetPropertyVersions represents error when fetching property versions fails
-	ErrGetPropertyVersions   = errors.New("fetching property versions")
+	ErrGetPropertyVersions = errors.New("fetching property versions")
 	// ErrGetPropertyVersion represents error when fetching property version fails
-	ErrGetPropertyVersion    = errors.New("fetching property version")
+	ErrGetPropertyVersion = errors.New("fetching property version")
 	// ErrGetLatestVersion represents error when fetching latest property version fails
-	ErrGetLatestVersion      = errors.New("fetching latest property version")
+	ErrGetLatestVersion = errors.New("fetching latest property version")
 	// ErrCreatePropertyVersion represents error when creating property version fails
 	ErrCreatePropertyVersion = errors.New("creating property version")
 	// ErrGetAvailableBehaviors represents error when fetching available behaviors fails
 	ErrGetAvailableBehaviors = errors.New("fetching available behaviors")
 	// ErrGetAvailableCriteria represents error when fetching available criteria fails
-	ErrGetAvailableCriteria  = errors.New("fetching available criteria")
+	ErrGetAvailableCriteria = errors.New("fetching available criteria")
 )
 
 // GetPropertyVersions returns list of property versions for give propertyID, contractID and groupID

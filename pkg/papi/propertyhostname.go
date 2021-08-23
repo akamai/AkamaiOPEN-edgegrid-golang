@@ -125,7 +125,7 @@ func (ch UpdatePropertyVersionHostnamesRequest) Validate() error {
 
 var (
 	// ErrGetPropertyVersionHostnames represents error when fetching hostnames fails
-	ErrGetPropertyVersionHostnames    = errors.New("fetching hostnames")
+	ErrGetPropertyVersionHostnames = errors.New("fetching hostnames")
 	// ErrUpdatePropertyVersionHostnames represents error when updating hostnames fails
 	ErrUpdatePropertyVersionHostnames = errors.New("updating hostnames")
 )

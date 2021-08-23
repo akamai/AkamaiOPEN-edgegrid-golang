@@ -215,7 +215,7 @@ func (v RuleVariable) Validate() error {
 
 var (
 	// ErrGetRuleTree represents error when fetching rule tree fails
-	ErrGetRuleTree    = errors.New("fetching rule tree")
+	ErrGetRuleTree = errors.New("fetching rule tree")
 	// ErrUpdateRuleTree represents error when updating rule tree fails
 	ErrUpdateRuleTree = errors.New("updating rule tree")
 )
