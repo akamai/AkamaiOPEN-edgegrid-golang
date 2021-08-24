@@ -13,6 +13,7 @@ var (
 type (
 	// DS is the ds api interface
 	DS interface {
+		Activation
 	}
 
 	ds struct {
