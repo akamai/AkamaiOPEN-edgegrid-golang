@@ -1,6 +1,7 @@
 package cloudlets
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -61,6 +62,42 @@ func TestNewError(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			res := Client(sess).(*cloudlets).Error(test.response)
 			assert.Equal(t, test.expected, res)
+		})
+	}
+}
+
+func TestAs(t *testing.T) {
+	someErrorMarshalled, _ := json.Marshal("some error")
+	tests := map[string]struct {
+		err      Error
+		target   Error
+		expected bool
+	}{
+		"different error code": {
+			err:      Error{StatusCode: 404},
+			target:   Error{StatusCode: 401},
+			expected: false,
+		},
+		"same error code": {
+			err:      Error{StatusCode: 404},
+			target:   Error{StatusCode: 404},
+			expected: true,
+		},
+		"same error code and error message": {
+			err:      Error{StatusCode: 404, Errors: someErrorMarshalled},
+			target:   Error{StatusCode: 404, Errors: someErrorMarshalled},
+			expected: true,
+		},
+		"same error code and different error message": {
+			err:      Error{StatusCode: 404, Errors: someErrorMarshalled},
+			target:   Error{StatusCode: 404},
+			expected: false,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, test.err.Is(&test.target), test.expected)
 		})
 	}
 }
