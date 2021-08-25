@@ -32,7 +32,7 @@ type (
 		// UpdatePolicy updates policy
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#putpolicy
-		UpdatePolicy(context.Context, UpdatePolicyRequest, int64) (*Policy, error)
+		UpdatePolicy(context.Context, UpdatePolicyRequest) (*Policy, error)
 	}
 
 	// Policy is response returned by GetPolicy or UpdatePolicy
@@ -94,26 +94,32 @@ type (
 		GroupID      int64  `json:"groupId,omitempty"`
 	}
 
-	// UpdatePolicyRequest describes the body of the update policy request
-	UpdatePolicyRequest struct {
+	// UpdatePolicy describes the body of the update policy request
+	UpdatePolicy struct {
 		Name         string `json:"name,omitempty"`
 		Description  string `json:"description,omitempty"`
 		PropertyName string `json:"propertyName,omitempty"`
 		GroupID      int64  `json:"groupId,omitempty"`
 		Deleted      bool   `json:"deleted,omitempty"`
 	}
+
+	// UpdatePolicyRequest describes the parameters for the update policy request
+	UpdatePolicyRequest struct {
+		UpdatePolicy
+		PolicyID int64
+	}
 )
 
 const (
-	// StatusActive ...
+	// StatusActive represents active value
 	StatusActive Status = "active"
-	// StatusInactive ...
+	// StatusInactive represents inactive value
 	StatusInactive Status = "inactive"
-	// StatusPending ...
+	// StatusPending represents pending value
 	StatusPending Status = "pending"
-	// StatusFailed ...
+	// StatusFailed represents failed value
 	StatusFailed Status = "failed"
-	// StatusDeactivated ...
+	// StatusDeactivated represents deactivated value
 	StatusDeactivated Status = "deactivated"
 )
 
@@ -239,7 +245,7 @@ func (c *cloudlets) RemovePolicy(ctx context.Context, policyID int64) error {
 	return nil
 }
 
-func (c *cloudlets) UpdatePolicy(ctx context.Context, params UpdatePolicyRequest, policyID int64) (*Policy, error) {
+func (c *cloudlets) UpdatePolicy(ctx context.Context, params UpdatePolicyRequest) (*Policy, error) {
 	logger := c.Log(ctx)
 	logger.Debug("UpdatePolicy")
 
@@ -249,7 +255,7 @@ func (c *cloudlets) UpdatePolicy(ctx context.Context, params UpdatePolicyRequest
 
 	uri, err := url.Parse(fmt.Sprintf(
 		"/cloudlets/api/v2/policies/%d",
-		policyID),
+		params.PolicyID),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdatePolicy, err)
@@ -262,7 +268,7 @@ func (c *cloudlets) UpdatePolicy(ctx context.Context, params UpdatePolicyRequest
 
 	var result Policy
 
-	resp, err := c.Exec(req, &result, params)
+	resp, err := c.Exec(req, &result, params.UpdatePolicy)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePolicy, err)
 	}

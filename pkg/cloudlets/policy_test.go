@@ -348,7 +348,6 @@ func TestDeletePolicy(t *testing.T) {
 func TestUpdatePolicy(t *testing.T) {
 	tests := map[string]struct {
 		request          UpdatePolicyRequest
-		policyID         int64
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -357,11 +356,13 @@ func TestUpdatePolicy(t *testing.T) {
 	}{
 		"201 created": {
 			request: UpdatePolicyRequest{
-				GroupID:     35730,
-				Name:        "TestName1Updated",
-				Description: "Description",
+				UpdatePolicy: UpdatePolicy{
+					GroupID:     35730,
+					Name:        "TestName1Updated",
+					Description: "Description",
+				},
+				PolicyID: 276858,
 			},
-			policyID:       276858,
 			responseStatus: http.StatusOK,
 			responseBody: `{
     "activations": [],
@@ -401,8 +402,11 @@ func TestUpdatePolicy(t *testing.T) {
 		},
 		"500 internal server error": {
 			request: UpdatePolicyRequest{
-				GroupID: 35730,
-				Name:    "TestName1Updated",
+				UpdatePolicy: UpdatePolicy{
+					GroupID: 35730,
+					Name:    "TestName1Updated",
+				},
+				PolicyID: 276858,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -412,7 +416,6 @@ func TestUpdatePolicy(t *testing.T) {
   "detail": "Error creating enrollment",
   "status": 500
 }`,
-			policyID:     276858,
 			expectedPath: "/cloudlets/api/v2/policies/276858",
 			withError: &Error{
 				Type:       "internal_error",
@@ -424,7 +427,9 @@ func TestUpdatePolicy(t *testing.T) {
 		"validation error": {
 			expectedPath: "/cloudlets/api/v2/policies/0",
 			request: UpdatePolicyRequest{
-				Name: "A B",
+				UpdatePolicy: UpdatePolicy{
+					Name: "A B",
+				},
 			},
 			withError: ErrStructValidation,
 		},
@@ -440,7 +445,7 @@ func TestUpdatePolicy(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdatePolicy(context.Background(), test.request, test.policyID)
+			result, err := client.UpdatePolicy(context.Background(), test.request)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
