@@ -181,10 +181,21 @@ func (p *appsec) UpdateAdvancedSettingsEvasivePathMatch(ctx context.Context, par
 // https://developer.akamai.com/api/cloud_security/application_security/v1.html#putadvancedsettingsEvasivePathMatch
 
 func (p *appsec) RemoveAdvancedSettingsEvasivePathMatch(ctx context.Context, params RemoveAdvancedSettingsEvasivePathMatchRequest) (*RemoveAdvancedSettingsEvasivePathMatchResponse, error) {
-	_, err := p.RemoveAdvancedSettingsEvasivePathMatch(ctx, params)
-	if err != nil {
-		return nil, fmt.Errorf("RemoveAdvancedSettingsEvasivePathMatch request failed: %w", err)
+	request := UpdateAdvancedSettingsEvasivePathMatchRequest{
+		ConfigID:        params.ConfigID,
+		Version:         params.Version,
+		PolicyID:        params.PolicyID,
+		EnablePathMatch: false,
 	}
-	response := RemoveAdvancedSettingsEvasivePathMatchResponse{}
+	_, err := p.UpdateAdvancedSettingsEvasivePathMatch(ctx, request)
+	if err != nil {
+		return nil, fmt.Errorf("UpdateAdvancedSettingsEvasivePathMatch request failed: %w", err)
+	}
+	response := RemoveAdvancedSettingsEvasivePathMatchResponse{
+		ConfigID:        params.ConfigID,
+		Version:         params.Version,
+		PolicyID:        params.PolicyID,
+		EnablePathMatch: false,
+	}
 	return &response, nil
 }
