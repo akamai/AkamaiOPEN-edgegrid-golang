@@ -17,6 +17,7 @@ type (
 		GetEvalHosts(ctx context.Context, params GetEvalHostsRequest) (*GetEvalHostsResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevaluationhostnames
+		// Note: this method is DEPRECATED and will be removed in a future release.
 		GetEvalHost(ctx context.Context, params GetEvalHostRequest) (*GetEvalHostResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putevaluationhostnames
@@ -27,12 +28,14 @@ type (
 	}
 
 	// GetEvalHostRequest is used to retrieve the evaluation hostnames for a configuration.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetEvalHostRequest struct {
 		ConfigID int `json:"-"`
 		Version  int `json:"-"`
 	}
 
 	// GetEvalHostResponse is returned from a call to GetEvalHost.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetEvalHostResponse struct {
 		Hostnames []string `json:"hostnames"`
 	}
@@ -76,6 +79,7 @@ type (
 )
 
 // Validate validates a GetEvalHostRequest.
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (v GetEvalHostRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -107,6 +111,7 @@ func (v RemoveEvalHostRequest) Validate() error {
 	}.Filter()
 }
 
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (p *appsec) GetEvalHost(ctx context.Context, params GetEvalHostRequest) (*GetEvalHostResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

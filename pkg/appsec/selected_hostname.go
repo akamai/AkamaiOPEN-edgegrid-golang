@@ -18,10 +18,15 @@ type (
 		GetSelectedHostnames(ctx context.Context, params GetSelectedHostnamesRequest) (*GetSelectedHostnamesResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectedhostnames
+		// Note: this method is DEPRECATED and will be removed in a future release.
 		GetSelectedHostname(ctx context.Context, params GetSelectedHostnameRequest) (*GetSelectedHostnameResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putselectedhostnames
+		// Note: this method is DEPRECATED and will be removed in a future release. Use UpdateSelectedHostnames instead.
 		UpdateSelectedHostname(ctx context.Context, params UpdateSelectedHostnameRequest) (*UpdateSelectedHostnameResponse, error)
+
+		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putselectedhostnames
+		UpdateSelectedHostnames(ctx context.Context, params UpdateSelectedHostnamesRequest) (*UpdateSelectedHostnamesResponse, error)
 	}
 
 	// GetSelectedHostnamesRequest is used to retrieve the selected hostnames for a configuration.
@@ -37,6 +42,7 @@ type (
 	}
 
 	// GetSelectedHostnameRequest is used to retrieve the selected hostnames for a configuration.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetSelectedHostnameRequest struct {
 		ConfigID     int        `json:"configId"`
 		Version      int        `json:"version"`
@@ -44,11 +50,25 @@ type (
 	}
 
 	// GetSelectedHostnameResponse is returned from a call to GetSelectedHostname.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetSelectedHostnameResponse struct {
 		HostnameList []Hostname `json:"hostnameList"`
 	}
 
+	// UpdateSelectedHostnamesRequest is used to modify the selected hostnames for a configuration.
+	UpdateSelectedHostnamesRequest struct {
+		ConfigID     int        `json:"configId"`
+		Version      int        `json:"version"`
+		HostnameList []Hostname `json:"hostnameList"`
+	}
+
+	// UpdateSelectedHostnamesResponse is returned from a call to UpdateSelectedHostnames.
+	UpdateSelectedHostnamesResponse struct {
+		HostnameList []Hostname `json:"hostnameList"`
+	}
+
 	// UpdateSelectedHostnameRequest is used to modify the selected hostnames for a configuration.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	UpdateSelectedHostnameRequest struct {
 		ConfigID     int        `json:"configId"`
 		Version      int        `json:"version"`
@@ -56,6 +76,7 @@ type (
 	}
 
 	// UpdateSelectedHostnameResponse is returned from a call to UpdateSelectedHostname.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	UpdateSelectedHostnameResponse struct {
 		HostnameList []Hostname `json:"hostnameList"`
 	}
@@ -67,6 +88,7 @@ type (
 )
 
 // Validate validates a GetSelectedHostnameRequest.
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (v GetSelectedHostnameRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -82,7 +104,16 @@ func (v GetSelectedHostnamesRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate validates an UpdateSelectedHostnamesRequest.
+func (v UpdateSelectedHostnamesRequest) Validate() error {
+	return validation.Errors{
+		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
+		"Version":  validation.Validate(v.Version, validation.Required),
+	}.Filter()
+}
+
 // Validate validates an UpdateSelectedHostnameRequest.
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (v UpdateSelectedHostnameRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -90,6 +121,7 @@ func (v UpdateSelectedHostnameRequest) Validate() error {
 	}.Filter()
 }
 
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (p *appsec) GetSelectedHostname(ctx context.Context, params GetSelectedHostnameRequest) (*GetSelectedHostnameResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -156,6 +188,39 @@ func (p *appsec) GetSelectedHostnames(ctx context.Context, params GetSelectedHos
 
 }
 
+func (p *appsec) UpdateSelectedHostnames(ctx context.Context, params UpdateSelectedHostnamesRequest) (*UpdateSelectedHostnamesResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	logger := p.Log(ctx)
+	logger.Debug("UpdateSelectedHostnames")
+
+	putURL := fmt.Sprintf(
+		"/appsec/v1/configs/%d/versions/%d/selected-hostnames",
+		params.ConfigID,
+		params.Version,
+	)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create UpdateSelectedHostnames request: %w", err)
+	}
+
+	var rval UpdateSelectedHostnamesResponse
+	resp, err := p.Exec(req, &rval, params)
+	if err != nil {
+		return nil, fmt.Errorf("UpdateSelectedHostnames request failed: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return nil, p.Error(resp)
+	}
+
+	return &rval, nil
+}
+
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (p *appsec) UpdateSelectedHostname(ctx context.Context, params UpdateSelectedHostnameRequest) (*UpdateSelectedHostnameResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

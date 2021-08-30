@@ -15,6 +15,7 @@ type (
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#mode
 	WAFMode interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmode
+		// Note: this method is DEPRECATED and will be removed in a future release.
 		GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*GetWAFModesResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmode
@@ -25,6 +26,7 @@ type (
 	}
 
 	// GetWAFModesRequest is used to retrieve the setting that determines this mode how rules will be kept up to date.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetWAFModesRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -35,6 +37,7 @@ type (
 	}
 
 	// GetWAFModesResponse is returned from a call to GetWAFModes.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetWAFModesResponse struct {
 		Current    string `json:"current,omitempty"`
 		Mode       string `json:"mode,omitempty"`
@@ -89,6 +92,7 @@ func (v GetWAFModeRequest) Validate() error {
 }
 
 // Validate validates a GetWAFModesRequest.
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (v GetWAFModesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -140,6 +144,7 @@ func (p *appsec) GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*Get
 
 }
 
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (p *appsec) GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*GetWAFModesResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

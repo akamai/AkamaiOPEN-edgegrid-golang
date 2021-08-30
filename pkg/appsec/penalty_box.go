@@ -15,6 +15,7 @@ type (
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#penaltybox
 	PenaltyBox interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpenaltybox
+		// Note: this method is DEPRECATED and will be removed in a future release.
 		GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequest) (*GetPenaltyBoxesResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpenaltybox
@@ -25,6 +26,7 @@ type (
 	}
 
 	// GetPenaltyBoxesRequest is used to retrieve the penalty box settings.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetPenaltyBoxesRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -35,6 +37,7 @@ type (
 	}
 
 	// GetPenaltyBoxesResponse is returned from a call to GetPenaltyBoxes.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetPenaltyBoxesResponse struct {
 		Action               string `json:"action,omitempty"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection,omitempty"`
@@ -80,7 +83,8 @@ func (v GetPenaltyBoxRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates a GetPenaltyBoxsRequest.
+// Validate validates a GetPenaltyBoxesRequest.
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (v GetPenaltyBoxesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -132,6 +136,7 @@ func (p *appsec) GetPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest)
 
 }
 
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (p *appsec) GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequest) (*GetPenaltyBoxesResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

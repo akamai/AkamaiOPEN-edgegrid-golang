@@ -18,16 +18,19 @@ type (
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#configurationclone
 	ConfigurationVersionClone interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationversion
+		// Note: this method is DEPRECATED and will be removed in a future release.
 		GetConfigurationVersionClone(ctx context.Context, params GetConfigurationVersionCloneRequest) (*GetConfigurationVersionCloneResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsummarylistofconfigurationversions
 		CreateConfigurationVersionClone(ctx context.Context, params CreateConfigurationVersionCloneRequest) (*CreateConfigurationVersionCloneResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deleteconfigurationversion
+		// Note: this method is DEPRECATED and will be removed in a future release.
 		RemoveConfigurationVersionClone(ctx context.Context, params RemoveConfigurationVersionCloneRequest) (*RemoveConfigurationVersionCloneResponse, error)
 	}
 
 	// GetConfigurationVersionCloneRequest is used to retrieve information about an existing configuration version.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetConfigurationVersionCloneRequest struct {
 		ConfigID     int       `json:"configId"`
 		ConfigName   string    `json:"configName"`
@@ -46,6 +49,7 @@ type (
 	}
 
 	// GetConfigurationVersionCloneResponse is returned from a call to GetConfigurationVersionClone.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetConfigurationVersionCloneResponse struct {
 		ConfigID     int       `json:"configId"`
 		ConfigName   string    `json:"configName"`
@@ -89,18 +93,21 @@ type (
 	}
 
 	// RemoveConfigurationVersionCloneRequest is used to remove an existing configuration version.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	RemoveConfigurationVersionCloneRequest struct {
 		ConfigID int `json:"-"`
 		Version  int `json:"-"`
 	}
 
 	// RemoveConfigurationVersionCloneResponse is returned from a call to RemoveConfigurationVersionClone.
+	// Note: this struct is DEPRECATED and will be removed in a future release.
 	RemoveConfigurationVersionCloneResponse struct {
 		Empty string `json:"-"`
 	}
 )
 
 // Validate validates a GetConfigurationCloneRequest.
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (v GetConfigurationVersionCloneRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -108,7 +115,7 @@ func (v GetConfigurationVersionCloneRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates a GetConfigurationCloneRequest.
+// Validate validates a CreateConfigurationCloneRequest.
 func (v CreateConfigurationVersionCloneRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -116,7 +123,8 @@ func (v CreateConfigurationVersionCloneRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates a GetConfigurationCloneRequest.
+// Validate validates a RemoveConfigurationCloneRequest.
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (v RemoveConfigurationVersionCloneRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -124,6 +132,7 @@ func (v RemoveConfigurationVersionCloneRequest) Validate() error {
 	}.Filter()
 }
 
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (p *appsec) GetConfigurationVersionClone(ctx context.Context, params GetConfigurationVersionCloneRequest) (*GetConfigurationVersionCloneResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -187,6 +196,7 @@ func (p *appsec) CreateConfigurationVersionClone(ctx context.Context, params Cre
 
 }
 
+// Note: this method is DEPRECATED and will be removed in a future release.
 func (p *appsec) RemoveConfigurationVersionClone(ctx context.Context, params RemoveConfigurationVersionCloneRequest) (*RemoveConfigurationVersionCloneResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
