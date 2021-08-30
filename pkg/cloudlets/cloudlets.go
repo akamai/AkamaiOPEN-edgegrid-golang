@@ -14,6 +14,7 @@ var (
 type (
 	// Cloudlets is the api interface for cloudlets
 	Cloudlets interface {
+		LoadBalancer
 		Policies
 	}
 
