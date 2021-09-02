@@ -15,6 +15,7 @@ type (
 	// Cloudlets is the api interface for cloudlets
 	Cloudlets interface {
 		LoadBalancer
+		LoadBalancerVersions
 		Policies
 		PolicyVersions
 		PolicyVersionActivation
