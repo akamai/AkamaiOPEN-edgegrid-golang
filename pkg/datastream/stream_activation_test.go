@@ -17,7 +17,7 @@ func TestDs_ActivateStream(t *testing.T) {
 		responseBody     string
 		expectedPath     string
 		expectedResponse *ActivateStreamResponse
-		withError        func(*testing.T, error)
+		withError        error
 	}{
 		"202 accepted": {
 			request:        ActivateStreamRequest{StreamID: 3},
@@ -39,10 +39,41 @@ func TestDs_ActivateStream(t *testing.T) {
 			},
 		},
 		"validation error": {
-			request: ActivateStreamRequest{},
-			withError: func(t *testing.T, err error) {
-				want := ErrStructValidation
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			request:   ActivateStreamRequest{},
+			withError: ErrStructValidation,
+		},
+		"400 bad request": {
+			request:        ActivateStreamRequest{StreamID: 123},
+			responseStatus: http.StatusBadRequest,
+			responseBody: `
+{
+	"type": "bad-request",
+	"title": "Bad Request",
+	"detail": "",
+	"instance": "df22bc0f-ca8d-4bdb-afea-ffdeef819e22",
+	"statusCode": 400,
+	"errors": [
+		{
+			"type": "bad-request",
+			"title": "Bad Request",
+			"detail": "Stream does not exist. Please provide valid stream."
+		}
+	]
+}
+`,
+			expectedPath: "/datastream-config-api/v1/log/streams/123/activate",
+			withError: &Error{
+				Type:       "bad-request",
+				Title:      "Bad Request",
+				Instance:   "df22bc0f-ca8d-4bdb-afea-ffdeef819e22",
+				StatusCode: http.StatusBadRequest,
+				Errors: []RequestErrors{
+					{
+						Type:   "bad-request",
+						Title:  "Bad Request",
+						Detail: "Stream does not exist. Please provide valid stream.",
+					},
+				},
 			},
 		},
 	}
@@ -59,7 +90,7 @@ func TestDs_ActivateStream(t *testing.T) {
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivateStream(context.Background(), test.request)
 			if test.withError != nil {
-				test.withError(t, err)
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
 			}
 			require.NoError(t, err)
@@ -75,7 +106,7 @@ func TestDs_DeactivateStream(t *testing.T) {
 		responseBody     string
 		expectedPath     string
 		expectedResponse *DeactivateStreamResponse
-		withError        func(*testing.T, error)
+		withError        error
 	}{
 		"202 accepted": {
 			request:        DeactivateStreamRequest{StreamID: 3},
@@ -97,10 +128,41 @@ func TestDs_DeactivateStream(t *testing.T) {
 			},
 		},
 		"validation error": {
-			request: DeactivateStreamRequest{},
-			withError: func(t *testing.T, err error) {
-				want := ErrStructValidation
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			request:   DeactivateStreamRequest{},
+			withError: ErrStructValidation,
+		},
+		"400 bad request": {
+			request:        DeactivateStreamRequest{StreamID: 123},
+			responseStatus: http.StatusBadRequest,
+			responseBody: `
+{
+	"type": "bad-request",
+	"title": "Bad Request",
+	"detail": "",
+	"instance": "df22bc0f-ca8d-4bdb-afea-ffdeef819e22",
+	"statusCode": 400,
+	"errors": [
+		{
+			"type": "bad-request",
+			"title": "Bad Request",
+			"detail": "Stream does not exist. Please provide valid stream."
+		}
+	]
+}
+`,
+			expectedPath: "/datastream-config-api/v1/log/streams/123/deactivate",
+			withError: &Error{
+				Type:       "bad-request",
+				Title:      "Bad Request",
+				Instance:   "df22bc0f-ca8d-4bdb-afea-ffdeef819e22",
+				StatusCode: http.StatusBadRequest,
+				Errors: []RequestErrors{
+					{
+						Type:   "bad-request",
+						Title:  "Bad Request",
+						Detail: "Stream does not exist. Please provide valid stream.",
+					},
+				},
 			},
 		},
 	}
@@ -117,7 +179,7 @@ func TestDs_DeactivateStream(t *testing.T) {
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeactivateStream(context.Background(), test.request)
 			if test.withError != nil {
-				test.withError(t, err)
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
 			}
 			require.NoError(t, err)
@@ -133,7 +195,7 @@ func TestDs_GetActivationHistory(t *testing.T) {
 		responseBody     string
 		expectedPath     string
 		expectedResponse []ActivationHistoryEntry
-		withError        func(*testing.T, error)
+		withError        error
 	}{
 		"200 OK": {
 			request:        GetActivationHistoryRequest{StreamID: 3},
@@ -175,10 +237,41 @@ func TestDs_GetActivationHistory(t *testing.T) {
 			},
 		},
 		"validation error": {
-			request: GetActivationHistoryRequest{},
-			withError: func(t *testing.T, err error) {
-				want := ErrStructValidation
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			request:   GetActivationHistoryRequest{},
+			withError: ErrStructValidation,
+		},
+		"400 bad request": {
+			request:        GetActivationHistoryRequest{StreamID: 123},
+			responseStatus: http.StatusBadRequest,
+			responseBody: `
+{
+	"type": "bad-request",
+	"title": "Bad Request",
+	"detail": "",
+	"instance": "df22bc0f-ca8d-4bdb-afea-ffdeef819e22",
+	"statusCode": 400,
+	"errors": [
+		{
+			"type": "bad-request",
+			"title": "Bad Request",
+			"detail": "Stream does not exist. Please provide valid stream."
+		}
+	]
+}
+`,
+			expectedPath: "/datastream-config-api/v1/log/streams/123/activationHistory",
+			withError: &Error{
+				Type:       "bad-request",
+				Title:      "Bad Request",
+				Instance:   "df22bc0f-ca8d-4bdb-afea-ffdeef819e22",
+				StatusCode: http.StatusBadRequest,
+				Errors: []RequestErrors{
+					{
+						Type:   "bad-request",
+						Title:  "Bad Request",
+						Detail: "Stream does not exist. Please provide valid stream.",
+					},
+				},
 			},
 		},
 	}
@@ -195,7 +288,7 @@ func TestDs_GetActivationHistory(t *testing.T) {
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetActivationHistory(context.Background(), test.request)
 			if test.withError != nil {
-				test.withError(t, err)
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
 			}
 			require.NoError(t, err)

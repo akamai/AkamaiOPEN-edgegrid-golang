@@ -14,6 +14,7 @@ type (
 	// DS is the ds api interface
 	DS interface {
 		Activation
+		Stream
 	}
 
 	ds struct {
@@ -37,4 +38,9 @@ func Client(sess session.Session, opts ...Option) DS {
 		opt(c)
 	}
 	return c
+}
+
+// DelimiterTypePtr returns the address of the DelimiterType
+func DelimiterTypePtr(d DelimiterType) *DelimiterType {
+	return &d
 }

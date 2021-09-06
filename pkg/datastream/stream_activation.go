@@ -33,19 +33,13 @@ type (
 		StreamVersionKey StreamVersionKey `json:"streamVersionKey"`
 	}
 
-	// StreamVersionKey contains stream details
-	StreamVersionKey struct {
-		StreamID        int `json:"streamId"`
-		StreamVersionID int `json:"streamVersionId"`
-	}
-
 	// ActivationHistoryEntry contains single ActivationHistory item
 	ActivationHistoryEntry struct {
 		CreatedBy       string `json:"createdBy"`
 		CreatedDate     string `json:"createdDate"`
 		IsActive        bool   `json:"isActive"`
-		StreamID        int    `json:"streamId"`
-		StreamVersionID int    `json:"streamVersionId"`
+		StreamID        int64  `json:"streamId"`
+		StreamVersionID int64  `json:"streamVersionId"`
 	}
 
 	// DeactivateStreamResponse contains response body returned after successful stream activation
@@ -53,7 +47,7 @@ type (
 
 	// ActivateStreamRequest contains parameters necessary to send a ActivateStream request
 	ActivateStreamRequest struct {
-		StreamID int
+		StreamID int64
 	}
 
 	// DeactivateStreamRequest contains parameters necessary to send a DeactivateStream request
@@ -94,12 +88,12 @@ var (
 )
 
 func (d *ds) ActivateStream(ctx context.Context, params ActivateStreamRequest) (*ActivateStreamResponse, error) {
+	logger := d.Log(ctx)
+	logger.Debug("ActivateStream")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrActivateStream, ErrStructValidation, err)
 	}
-
-	logger := d.Log(ctx)
-	logger.Debug("ActivateStream")
 
 	uri, err := url.Parse(fmt.Sprintf(
 		"/datastream-config-api/v1/log/streams/%d/activate",
@@ -127,12 +121,12 @@ func (d *ds) ActivateStream(ctx context.Context, params ActivateStreamRequest) (
 }
 
 func (d *ds) DeactivateStream(ctx context.Context, params DeactivateStreamRequest) (*DeactivateStreamResponse, error) {
+	logger := d.Log(ctx)
+	logger.Debug("DeactivateStream")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrDeactivateStream, ErrStructValidation, err)
 	}
-
-	logger := d.Log(ctx)
-	logger.Debug("DeactivateStream")
 
 	uri, err := url.Parse(fmt.Sprintf(
 		"/datastream-config-api/v1/log/streams/%d/deactivate",
@@ -160,12 +154,12 @@ func (d *ds) DeactivateStream(ctx context.Context, params DeactivateStreamReques
 }
 
 func (d *ds) GetActivationHistory(ctx context.Context, params GetActivationHistoryRequest) ([]ActivationHistoryEntry, error) {
+	logger := d.Log(ctx)
+	logger.Debug("GetActivationHistory")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetActivationHistory, ErrStructValidation, err)
 	}
-
-	logger := d.Log(ctx)
-	logger.Debug("GetActivationHistory")
 
 	uri, err := url.Parse(fmt.Sprintf(
 		"/datastream-config-api/v1/log/streams/%d/activationHistory",

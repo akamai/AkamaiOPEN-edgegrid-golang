@@ -11,15 +11,20 @@ import (
 type (
 	// Error is a ds error interface
 	Error struct {
-		Type          string          `json:"type"`
-		Title         string          `json:"title"`
-		Detail        string          `json:"detail"`
-		Instance      string          `json:"instance,omitempty"`
-		BehaviorName  string          `json:"behaviorName,omitempty"`
-		ErrorLocation string          `json:"errorLocation,omitempty"`
-		StatusCode    int             `json:"statusCode,omitempty"`
-		Errors        json.RawMessage `json:"errors,omitempty"`
-		Warnings      json.RawMessage `json:"warnings,omitempty"`
+		Type       string          `json:"type"`
+		Title      string          `json:"title"`
+		Detail     string          `json:"detail"`
+		Instance   string          `json:"instance"`
+		StatusCode int             `json:"statusCode"`
+		Errors     []RequestErrors `json:"errors"`
+	}
+
+	// RequestErrors is an optional errors array that lists potentially more than one problem detected in the request
+	RequestErrors struct {
+		Type     string `json:"type"`
+		Title    string `json:"title"`
+		Instance string `json:"instance,omitempty"`
+		Detail   string `json:"detail"`
 	}
 )
 
