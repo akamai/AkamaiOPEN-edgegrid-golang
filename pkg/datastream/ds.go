@@ -14,6 +14,7 @@ type (
 	// DS is the ds api interface
 	DS interface {
 		Activation
+		Properties
 		Stream
 	}
 
