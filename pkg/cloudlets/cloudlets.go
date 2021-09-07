@@ -17,6 +17,7 @@ type (
 		LoadBalancer
 		Policies
 		PolicyVersions
+		PolicyVersionActivation
 	}
 
 	cloudlets struct {

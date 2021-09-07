@@ -47,7 +47,7 @@ type (
 		LastModifiedBy   string       `json:"lastModifiedBy"`
 		LastModifiedDate float64      `json:"lastModifiedDate"`
 		Activations      []Activation `json:"activations"`
-		CloudletId       int64        `json:"cloudletId"`
+		CloudletID       int64        `json:"cloudletId"`
 		CloudletCode     string       `json:"cloudletCode"`
 		APIVersion       string       `json:"apiVersion"`
 		Deleted          bool         `json:"deleted"`

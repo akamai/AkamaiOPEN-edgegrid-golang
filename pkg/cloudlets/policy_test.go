@@ -91,7 +91,7 @@ func TestGetPolicy(t *testing.T) {
 				Location:         "/cloudlets/api/v2/policies/1001",
 				APIVersion:       "2.0",
 				PolicyID:         1001,
-				CloudletId:       99,
+				CloudletID:       99,
 				CloudletCode:     "CC",
 				GroupID:          1234,
 				Name:             "CookieCutter",
@@ -228,7 +228,7 @@ func TestCreatePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				APIVersion:       "2.0",
 				CloudletCode:     "ER",
-				CloudletId:       0,
+				CloudletID:       0,
 				CreateDate:       1629299944251,
 				CreatedBy:        "agrebenk",
 				Deleted:          false,
@@ -386,7 +386,7 @@ func TestUpdatePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				APIVersion:       "2.0",
 				CloudletCode:     "ER",
-				CloudletId:       0,
+				CloudletID:       0,
 				CreateDate:       1629299944251,
 				CreatedBy:        "agrebenk",
 				Deleted:          false,
