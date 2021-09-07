@@ -205,7 +205,6 @@ type (
 			SlowPost         *SlowPostexp                       `json:"slowPost,omitempty"`
 			LoggingOverrides *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
 			PragmaHeader     *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -403,7 +402,6 @@ type (
 			SlowPost         *SlowPostexp                       `json:"slowPost,omitempty"`
 			LoggingOverrides *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
 			PragmaHeader     *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -461,7 +459,6 @@ type (
 	// AdvancedOptionsexp is returned as part of GetExportConfigurationResponse.
 	AdvancedOptionsexp struct {
 		Logging  *Loggingexp `json:"logging"`
-		EvasivePathMatch *EvasivePathMatchexp `json:"evasivePathMatch,omitempty"`
 		Prefetch struct {
 			AllExtensions      bool     `json:"allExtensions"`
 			EnableAppLayer     bool     `json:"enableAppLayer"`
@@ -608,10 +605,6 @@ type (
 			Type   string   `json:"type"`
 			Values []string `json:"values,omitempty"`
 		} `json:"standardHeaders"`
-	}
-
-	EvasivePathMatchexp struct {
-		EnablePathMatch   bool   `json:"enabled"`
 	}
 
 	// ConditionsExp is returned as part of GetExportConfigurationResponse.
