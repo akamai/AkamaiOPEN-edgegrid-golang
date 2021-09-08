@@ -21,6 +21,11 @@ type (
 		//
 		// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#getpropertiesbygroup
 		GetPropertiesByGroup(context.Context, GetPropertiesByGroupRequest) ([]Property, error)
+
+		// GetDatasetFields returns groups of data set fields available in the template.
+		//
+		// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#gettemplatename
+		GetDatasetFields(context.Context, GetDatasetFieldsRequest) ([]DataSets, error)
 	}
 
 	// GetPropertiesRequest contains parameters necessary to send a GetProperties request
@@ -32,6 +37,11 @@ type (
 	// GetPropertiesByGroupRequest contains parameters necessary to send a GetPropertiesByGroup request
 	GetPropertiesByGroupRequest struct {
 		GroupId int
+	}
+
+	// GetDatasetFieldsRequest contains parameters necessary to send a GetDatasetFields request
+	GetDatasetFieldsRequest struct {
+		TemplateName TemplateName
 	}
 )
 
@@ -50,11 +60,20 @@ func (r GetPropertiesByGroupRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate performs validation on GetDatasetFieldsRequest
+func (r GetDatasetFieldsRequest) Validate() error {
+	return validation.Errors{
+		"TemplateName": validation.Validate(r.TemplateName, validation.Required, validation.In(TemplateNameEdgeLogs)),
+	}.Filter()
+}
+
 var (
 	// ErrGetProperties is returned when GetProperties fails
 	ErrGetProperties = errors.New("list properties")
 	// ErrGetPropertiesByGroup is returned when GetPropertiesByGroup fails
 	ErrGetPropertiesByGroup = errors.New("list properties by group")
+	// ErrGetDatasetFields is returned when GetDatasetFields fails
+	ErrGetDatasetFields = errors.New("list data set fields")
 )
 
 func (d *ds) GetProperties(ctx context.Context, params GetPropertiesRequest) ([]Property, error) {
@@ -118,6 +137,39 @@ func (d *ds) GetPropertiesByGroup(ctx context.Context, params GetPropertiesByGro
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPropertiesByGroup, d.Error(resp))
+	}
+
+	return rval, nil
+}
+
+func (d *ds) GetDatasetFields(ctx context.Context, params GetDatasetFieldsRequest) ([]DataSets, error) {
+	logger := d.Log(ctx)
+	logger.Debug("GetDatasetFields")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetDatasetFields, ErrStructValidation, err)
+	}
+
+	uri, err := url.Parse(fmt.Sprintf(
+		"/datastream-config-api/v1/log/datasets/template/%s",
+		params.TemplateName))
+	if err != nil {
+		return nil, fmt.Errorf("%w: parsing URL: %s", ErrGetDatasetFields, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetDatasetFields, err)
+	}
+
+	var rval []DataSets
+	resp, err := d.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetDatasetFields, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrGetDatasetFields, d.Error(resp))
 	}
 
 	return rval, nil
