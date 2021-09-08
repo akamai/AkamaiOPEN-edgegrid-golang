@@ -55,14 +55,6 @@ type (
 		Warnings         []Warning       `json:"warnings,omitempty"`
 	}
 
-	// Warning represents warning information regarding the request
-	Warning struct {
-		Detail      string `json:"detail"`
-		Title       string `json:"title"`
-		Type        string `json:"type"`
-		JSONPointer string `json:"jsonPointer"`
-	}
-
 	// GetPolicyVersionRequest describes the parameters needed to get policy version
 	GetPolicyVersionRequest struct {
 		PolicyID  int64

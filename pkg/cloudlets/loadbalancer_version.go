@@ -64,15 +64,6 @@ type (
 		Timeout                     float64           `json:"timeout,omitempty"`
 	}
 
-	// Warning represents warning information regarding the request
-	Warning struct {
-		Detail      string `json:"detail,omitempty"`
-		JSONPointer string `json:"jsonPointer,omitempty"`
-		Status      int    `json:"status,omitempty"`
-		Title       string `json:"title,omitempty"`
-		Type        string `json:"type,omitempty"`
-	}
-
 	// BalancingType is a type for BalancingType field
 	BalancingType string
 
