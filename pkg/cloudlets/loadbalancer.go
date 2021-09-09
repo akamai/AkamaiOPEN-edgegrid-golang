@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"net/http"
 	"net/url"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
@@ -15,26 +16,32 @@ type (
 		// ListOrigins lists all origins of specified type for the current account
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getloadbalancingconfigs
-		ListOrigins(context.Context, ListOriginsRequest) (Origins, error)
+		ListOrigins(context.Context, ListOriginsRequest) ([]OriginResponse, error)
 
-		// GetOrigin gets specific origin by originID
+		// GetOrigin gets specific origin by originID.
+		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getorigin
 		GetOrigin(context.Context, string) (*Origin, error)
+
+		// CreateOrigin creates configuration for an origin.
+		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
+		//
+		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#postloadbalancingconfigs
+		CreateOrigin(ctx context.Context, params LoadBalancerOriginRequest) (*Origin, error)
+
+		// UpdateOrigin creates configuration for an origin.
+		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
+		//
+		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#putloadbalancingconfig
+		UpdateOrigin(ctx context.Context, params LoadBalancerOriginRequest) (*Origin, error)
 	}
 
-	// Origin is a response returned by GetOrigin
-	Origin struct {
-		OriginID    string     `json:"originId"`
-		Hostname    string     `json:"hostname"`
-		Type        OriginType `json:"type"`
-		Checksum    string     `json:"checksum"`
-		Description string     `json:"description"`
-		Akamaized   bool       `json:"akamaized"`
+	// OriginResponse is an Origin returned in ListOrigins
+	OriginResponse struct {
+		Hostname string `json:"hostname"`
+		Origin   Origin
 	}
-
-	// Origins is a response returned by ListOrigins
-	Origins []Origin
 
 	// OriginType is a type for Origin Type
 	OriginType string
@@ -42,6 +49,21 @@ type (
 	// ListOriginsRequest describes the parameters of the ListOrigins request
 	ListOriginsRequest struct {
 		Type OriginType
+	}
+
+	// LoadBalancerOriginRequest describes the body of the create origin request
+	LoadBalancerOriginRequest struct {
+		OriginID    string `json:"originId"`
+		Description string `json:"description,omitempty"`
+	}
+
+	// Origin is a response returned by CreateOrigin
+	Origin struct {
+		OriginID    string     `json:"originId"`
+		Description string     `json:"description"`
+		Akamaized   bool       `json:"akamaized"`
+		Checksum    string     `json:"checksum"`
+		Type        OriginType `json:"type"`
 	}
 )
 
@@ -61,6 +83,10 @@ var (
 	ErrListOrigins = errors.New("list origins")
 	// ErrGetOrigin is returned when GetOrigin fails
 	ErrGetOrigin = errors.New("get origin")
+	// ErrCreateOrigin is returned when CreateOrigin fails
+	ErrCreateOrigin = errors.New("create origin")
+	// ErrUpdateOrigin is returned when UpdateOrigin fails
+	ErrUpdateOrigin = errors.New("update origin")
 )
 
 // Validate validates ListOriginsRequest
@@ -70,7 +96,14 @@ func (v ListOriginsRequest) Validate() error {
 	}.Filter()
 }
 
-func (c *cloudlets) ListOrigins(ctx context.Context, params ListOriginsRequest) (Origins, error) {
+// Validate validates LoadBalancerOriginRequest
+func (v LoadBalancerOriginRequest) Validate() error {
+	return validation.Errors{
+		"OriginID": validation.Validate(v.OriginID, validation.Required),
+	}.Filter()
+}
+
+func (c *cloudlets) ListOrigins(ctx context.Context, params ListOriginsRequest) ([]OriginResponse, error) {
 	logger := c.Log(ctx)
 	logger.Debug("ListOrigins")
 
@@ -93,7 +126,7 @@ func (c *cloudlets) ListOrigins(ctx context.Context, params ListOriginsRequest) 
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListOrigins, err)
 	}
 
-	var result Origins
+	var result []OriginResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListOrigins, err)
@@ -128,6 +161,70 @@ func (c *cloudlets) GetOrigin(ctx context.Context, originID string) (*Origin, er
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetOrigin, c.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func (c *cloudlets) CreateOrigin(ctx context.Context, params LoadBalancerOriginRequest) (*Origin, error) {
+	logger := c.Log(ctx)
+	logger.Debug("CreateOrigin")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateOrigin, ErrStructValidation, err)
+	}
+
+	uri, err := url.Parse("/cloudlets/api/v2/origins")
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateOrigin, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateOrigin, err)
+	}
+
+	var result Origin
+
+	resp, err := c.Exec(req, &result, params)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateOrigin, err)
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, fmt.Errorf("%s: %w", ErrCreateOrigin, c.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func (c *cloudlets) UpdateOrigin(ctx context.Context, params LoadBalancerOriginRequest) (*Origin, error) {
+	logger := c.Log(ctx)
+	logger.Debug("UpdateOrigin")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateOrigin, ErrStructValidation, err)
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s", params.OriginID))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateOrigin, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateOrigin, err)
+	}
+
+	var result Origin
+
+	resp, err := c.Exec(req, &result, params.Description)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateOrigin, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrUpdateOrigin, c.Error(resp))
 	}
 
 	return &result, nil

@@ -354,7 +354,7 @@ func TestUpdatePolicy(t *testing.T) {
 		expectedResponse *Policy
 		withError        error
 	}{
-		"201 created": {
+		"200 updated": {
 			request: UpdatePolicyRequest{
 				UpdatePolicy: UpdatePolicy{
 					GroupID:     35730,

@@ -3,11 +3,12 @@ package cloudlets
 import (
 	"context"
 	"errors"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestListOrigins(t *testing.T) {
@@ -16,151 +17,184 @@ func TestListOrigins(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse Origins
+		expectedResponse []OriginResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
 			originType:     ListOriginsRequest{},
 			responseStatus: http.StatusOK,
-			responseBody: `
-[
-	{
-		"description": "ALB1",
-		"hostname": "",
-		"originId": "alb1",
-		"type": "APPLICATION_LOAD_BALANCER",
-		"akamaized": false
-	},
-	{
-		"description": "",
-		"hostname": "",
-		"originId": "alb2",
-		"type": "APPLICATION_LOAD_BALANCER",
-		"akamaized": false
-	},
-	{
-		"description": "",
-		"hostname": "dc1.foo.com",
-		"originId": "dc1",
-		"type": "CUSTOMER",
-		"akamaized": false
-	},
-	{
-		"description": "",
-		"hostname": "dc2.foo.com",
-		"originId": "dc2",
-		"type": "CUSTOMER",
-		"akamaized": true
-	},
-	{
-		"description": "",
-		"hostname": "download.akamai.com/12345",
-		"originId": "ns1",
-		"type": "NETSTORAGE",
-		"akamaized": true
-	},
-	{
-		"description": "",
-		"hostname": "download.akamai.com/12345",
-		"originId": "ns2",
-		"type": "NETSTORAGE",
-		"akamaized": true
-	}
-]`,
+			responseBody: `[
+				{
+					
+					"hostname": "",
+					"origin": {
+						"description": "ALB1",
+						"originId": "alb1",
+						"type": "APPLICATION_LOAD_BALANCER",
+						"akamaized": false
+					}
+				},
+				{
+					"hostname": "",
+					"origin": {
+						"description": "",
+						"originId": "alb2",
+						"type": "APPLICATION_LOAD_BALANCER",
+						"akamaized": false
+					}
+				},
+				{
+					"hostname": "dc1.foo.com",
+					"origin": {
+						"description": "",
+						"originId": "dc1",
+						"type": "CUSTOMER",
+						"akamaized": false
+					}
+				},
+				{
+					
+					"hostname": "dc2.foo.com",
+					"origin": {
+						"description": "",
+						"originId": "dc2",
+						"type": "CUSTOMER",
+						"akamaized": true
+					}
+				},
+				{
+					"hostname": "download.akamai.com/12345",
+					"origin": {
+						"description": "",
+						"originId": "ns1",
+						"type": "NETSTORAGE",
+						"akamaized": true
+					}
+				},
+				{
+					
+					"hostname": "download.akamai.com/12345",
+					"origin": {
+						"description": "",
+						"originId": "ns2",
+						"type": "NETSTORAGE",
+						"akamaized": true
+					}
+				}
+			]`,
 			expectedPath: "/cloudlets/api/v2/origins",
-			expectedResponse: Origins{
+			expectedResponse: []OriginResponse{
 				{
-					Description: "ALB1",
-					Hostname:    "",
-					OriginID:    "alb1",
-					Type:        "APPLICATION_LOAD_BALANCER",
-					Akamaized:   false,
+					Hostname: "",
+					Origin: Origin{
+						OriginID:    "alb1",
+						Description: "ALB1",
+						Type:        "APPLICATION_LOAD_BALANCER",
+						Akamaized:   false,
+					},
 				},
 				{
-					Description: "",
-					Hostname:    "",
-					OriginID:    "alb2",
-					Type:        "APPLICATION_LOAD_BALANCER",
-					Akamaized:   false,
+					Hostname: "",
+					Origin: Origin{
+						Description: "",
+						OriginID:    "alb2",
+						Type:        "APPLICATION_LOAD_BALANCER",
+						Akamaized:   false,
+					},
 				},
 				{
-					Description: "",
-					Hostname:    "dc1.foo.com",
-					OriginID:    "dc1",
-					Type:        "CUSTOMER",
-					Akamaized:   false,
+					Hostname: "dc1.foo.com",
+					Origin: Origin{
+						Description: "",
+						OriginID:    "dc1",
+						Type:        "CUSTOMER",
+						Akamaized:   false,
+					},
 				},
 				{
-					Description: "",
-					Hostname:    "dc2.foo.com",
-					OriginID:    "dc2",
-					Type:        "CUSTOMER",
-					Akamaized:   true,
+					Hostname: "dc2.foo.com",
+					Origin: Origin{
+						Description: "",
+						OriginID:    "dc2",
+						Type:        "CUSTOMER",
+						Akamaized:   true,
+					},
 				},
 				{
-					Description: "",
-					Hostname:    "download.akamai.com/12345",
-					OriginID:    "ns1",
-					Type:        "NETSTORAGE",
-					Akamaized:   true,
+					Hostname: "download.akamai.com/12345",
+					Origin: Origin{
+						Description: "",
+						OriginID:    "ns1",
+						Type:        "NETSTORAGE",
+						Akamaized:   true,
+					},
 				},
 				{
-					Description: "",
-					Hostname:    "download.akamai.com/12345",
-					OriginID:    "ns2",
-					Type:        "NETSTORAGE",
-					Akamaized:   true,
+					Hostname: "download.akamai.com/12345",
+					Origin: Origin{
+						Description: "",
+						OriginID:    "ns2",
+						Type:        "NETSTORAGE",
+						Akamaized:   true,
+					},
 				},
 			},
 		},
 		"200 ok with param": {
 			originType:     ListOriginsRequest{Type: OriginTypeCustomer},
 			responseStatus: http.StatusOK,
-			responseBody: `
-[
-	{
-		"description": "",
-		"hostname": "dc1.foo.com",
-		"originId": "dc1",
-		"type": "CUSTOMER",
-		"akamaized": false
-	},
-	{
-		"description": "",
-		"hostname": "dc2.foo.com",
-		"originId": "dc2",
-		"type": "CUSTOMER",
-		"akamaized": true
-	}
-]`,
-			expectedPath: "/cloudlets/api/v2/origins?type=CUSTOMER",
-			expectedResponse: Origins{
+			responseBody: `[
 				{
-					Description: "",
-					Hostname:    "dc1.foo.com",
-					OriginID:    "dc1",
-					Type:        "CUSTOMER",
-					Akamaized:   false,
+					"hostname": "dc1.foo.com",
+					"origin": {
+						"description": "",
+						"originId": "dc1",
+						"type": "CUSTOMER",
+						"akamaized": false
+					}
 				},
 				{
-					Description: "",
-					Hostname:    "dc2.foo.com",
-					OriginID:    "dc2",
-					Type:        "CUSTOMER",
-					Akamaized:   true,
+					
+					"hostname": "dc2.foo.com",
+					"origin": {
+						"description": "",
+						"originId": "dc2",
+						"type": "CUSTOMER",
+						"akamaized": true
+					}
+				}
+			]`,
+			expectedPath: "/cloudlets/api/v2/origins?type=CUSTOMER",
+			expectedResponse: []OriginResponse{
+				{
+					Hostname: "dc1.foo.com",
+					Origin: Origin{
+						Description: "",
+						OriginID:    "dc1",
+						Type:        "CUSTOMER",
+						Akamaized:   false,
+					},
+				},
+				{
+					Hostname: "dc2.foo.com",
+					Origin: Origin{
+						Description: "",
+						OriginID:    "dc2",
+						Type:        "CUSTOMER",
+						Akamaized:   true,
+					},
 				},
 			},
 		},
 		"500 internal server error": {
 			originType:     ListOriginsRequest{},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-{
-	"type": "internal_error",
-   "title": "Internal Server Error",
-   "detail": "Error making request",
-   "status": 500
-}`,
+			responseBody: `{
+				"type": "internal_error",
+			   	"title": "Internal Server Error",
+			   	"detail": "Error making request",
+			   	"status": 500
+			}`,
 			expectedPath: "/cloudlets/api/v2/origins",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -207,13 +241,12 @@ func TestGetOrigin(t *testing.T) {
 		"200 OK": {
 			originID:       "alb1",
 			responseStatus: http.StatusOK,
-			responseBody: `
-{
-	"description": "ALB1",
-	"originId": "alb1",
-	"type": "APPLICATION_LOAD_BALANCER",
-	"checksum": "abcdefg1111hijklmn22222fff76yae3"
-}`,
+			responseBody: `{
+				"description": "ALB1",
+				"originId": "alb1",
+				"type": "APPLICATION_LOAD_BALANCER",
+				"checksum": "abcdefg1111hijklmn22222fff76yae3"
+			}`,
 			expectedPath: "/cloudlets/api/v2/origins/alb1",
 			expectedResponse: &Origin{
 				Description: "ALB1",
@@ -225,13 +258,12 @@ func TestGetOrigin(t *testing.T) {
 		"500 internal server error": {
 			originID:       "ALB1",
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-{
-	"type": "internal_error",
-   "title": "Internal Server Error",
-   "detail": "Error making request",
-   "status": 500
-}`,
+			responseBody: `{
+				"type": "internal_error",
+			   	"title": "Internal Server Error",
+			   	"detail": "Error making request",
+			   	"status": 500
+			}`,
 			expectedPath: "/cloudlets/api/v2/origins/ALB1",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -258,6 +290,177 @@ func TestGetOrigin(t *testing.T) {
 			result, err := client.GetOrigin(context.Background(), test.originID)
 			if test.withError != nil {
 				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestCreateOrigin(t *testing.T) {
+	tests := map[string]struct {
+		request          LoadBalancerOriginRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *Origin
+		withError        error
+	}{
+		"201 created": {
+			request: LoadBalancerOriginRequest{
+				OriginID:    "first",
+				Description: "create first Origin",
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+			   "originId": "first",
+			   "akamaized": true,
+			   "checksum": "9c0fc1f3e9ea7eb2e090f2bf53709e45",
+			   "description": "create first Origin",
+			   "type": "APPLICATION_LOAD_BALANCER"
+			}`,
+			expectedPath: "/cloudlets/api/v2/origins",
+			expectedResponse: &Origin{
+				OriginID:    "first",
+				Description: "create first Origin",
+				Akamaized:   true,
+				Type:        OriginTypeApplicationLoadBalancer,
+				Checksum:    "9c0fc1f3e9ea7eb2e090f2bf53709e45",
+			},
+		},
+		"500 internal server error": {
+			request: LoadBalancerOriginRequest{
+				OriginID:    "second",
+				Description: "create second Origin",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+				{
+				  "type": "internal_error",
+				  "title": "Internal Server Error",
+				  "detail": "Error creating enrollment",
+				  "status": 500 
+				}`,
+			expectedPath: "/cloudlets/api/v2/origins",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating enrollment",
+				StatusCode: http.StatusInternalServerError,
+			},
+			expectedResponse: &Origin{
+				OriginID:    "first",
+				Description: "create first Origin",
+				Akamaized:   false,
+				Type:        OriginTypeApplicationLoadBalancer,
+				Checksum:    "9c0fc1f3e9ea7eb2e090f2bf53709e45",
+			},
+		},
+		"validation error": {
+			request:   LoadBalancerOriginRequest{},
+			withError: ErrStructValidation,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPost, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.CreateOrigin(context.Background(), test.request)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestUpdateOrigin(t *testing.T) {
+	tests := map[string]struct {
+		request          LoadBalancerOriginRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *Origin
+		withError        error
+	}{
+		"200 updated": {
+			request: LoadBalancerOriginRequest{
+				OriginID:    "first",
+				Description: "update first Origin",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `{
+			   "originId": "first",
+			   "akamaized": true,
+			   "checksum": "9c0fc1f3e9ea7eb2e090f2bf53709e45",
+			   "description": "update first Origin",
+			   "type": "APPLICATION_LOAD_BALANCER"
+			}`,
+			expectedPath: "/cloudlets/api/v2/origins/first",
+			expectedResponse: &Origin{
+				OriginID:    "first",
+				Description: "update first Origin",
+				Akamaized:   true,
+				Type:        OriginTypeApplicationLoadBalancer,
+				Checksum:    "9c0fc1f3e9ea7eb2e090f2bf53709e45",
+			},
+		},
+		"500 internal server error": {
+			request: LoadBalancerOriginRequest{
+				OriginID:    "second",
+				Description: "create second Origin",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+				{
+				  "type": "internal_error",
+				  "title": "Internal Server Error",
+				  "detail": "Error creating enrollment",
+				  "status": 500 
+				}`,
+			expectedPath: "/cloudlets/api/v2/origins/second",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating enrollment",
+				StatusCode: http.StatusInternalServerError,
+			},
+			expectedResponse: &Origin{
+				OriginID:    "second",
+				Description: "update first Origin",
+				Akamaized:   false,
+				Type:        OriginTypeApplicationLoadBalancer,
+				Checksum:    "9c0fc1f3e9ea7eb2e090f2bf53709e45",
+			},
+		},
+		"validation error": {
+			request:   LoadBalancerOriginRequest{},
+			withError: ErrStructValidation,
+		},
+	}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.UpdateOrigin(context.Background(), test.request)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
 			}
 			require.NoError(t, err)
