@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -14,6 +15,11 @@ import (
 type (
 	// Policies is a cloudlets policies API interface
 	Policies interface {
+		// ListPolicies lists policies
+		//
+		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicies
+		ListPolicies(context.Context, ListPoliciesRequest) ([]Policy, error)
+
 		// GetPolicy gets policy by policyID
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicy
@@ -103,6 +109,14 @@ type (
 		Deleted      bool   `json:"deleted,omitempty"`
 	}
 
+	// ListPoliciesRequest describes the parameters for the list policies request
+	ListPoliciesRequest struct {
+		CloudletID     *int64
+		IncludeDeleted bool
+		Offset         int
+		PageSize       *int
+	}
+
 	// UpdatePolicyRequest describes the parameters for the update policy request
 	UpdatePolicyRequest struct {
 		UpdatePolicy
@@ -149,6 +163,8 @@ func (v UpdatePolicyRequest) Validate() error {
 }
 
 var (
+	// ErrListPolicies is returned when ListPolicies fails
+	ErrListPolicies = errors.New("list policies")
 	// ErrGetPolicy is returned when GetPolicy fails
 	ErrGetPolicy = errors.New("get policy")
 	// ErrCreatePolicy is returned when CreatePolicy fails
@@ -158,6 +174,44 @@ var (
 	// ErrUpdatePolicy is returned when UpdatePolicy fails
 	ErrUpdatePolicy = errors.New("update policy")
 )
+
+func (c *cloudlets) ListPolicies(ctx context.Context, params ListPoliciesRequest) ([]Policy, error) {
+	logger := c.Log(ctx)
+	logger.Debug("ListPolicies")
+
+	uri, err := url.Parse("/cloudlets/api/v2/policies")
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPolicies, err)
+	}
+
+	q := uri.Query()
+	if params.CloudletID != nil {
+		q.Add("cloudletId", fmt.Sprintf("%d", *params.CloudletID))
+	}
+	if params.PageSize != nil {
+		q.Add("pageSize", fmt.Sprintf("%d", *params.PageSize))
+	}
+	q.Add("offset", fmt.Sprintf("%d", params.Offset))
+	q.Add("includeDeleted", strconv.FormatBool(params.IncludeDeleted))
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPolicies, err)
+	}
+
+	var result []Policy
+	resp, err := c.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListPolicies, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListPolicies, c.Error(resp))
+	}
+
+	return result, nil
+}
 
 func (c *cloudlets) GetPolicy(ctx context.Context, policyID int64) (*Policy, error) {
 	logger := c.Log(ctx)
@@ -195,7 +249,7 @@ func (c *cloudlets) CreatePolicy(ctx context.Context, params CreatePolicyRequest
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreatePolicy, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies"))
+	uri, err := url.Parse("/cloudlets/api/v2/policies")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreatePolicy, err)
 	}

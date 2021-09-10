@@ -9,9 +9,157 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/cloudlets/tools"
+
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
+
+func TestListPolicyVersions(t *testing.T) {
+	tests := map[string]struct {
+		request          ListPolicyVersionsRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse []PolicyVersion
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			request: ListPolicyVersionsRequest{
+				PolicyID: 284823,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+[
+    {
+        "activations": [],
+        "createDate": 1631191583350,
+        "createdBy": "jsmith",
+        "deleted": false,
+        "description": "some string",
+        "lastModifiedBy": "jsmith",
+        "lastModifiedDate": 1631191583350,
+        "location": "/cloudlets/api/v2/policies/284823/versions/2",
+        "matchRuleFormat": "1.0",
+        "matchRules": null,
+        "policyId": 284823,
+        "revisionId": 4824132,
+        "rulesLocked": false,
+        "version": 2
+    },
+    {
+        "activations": [],
+        "createDate": 1631190136935,
+        "createdBy": "jsmith",
+        "deleted": false,
+        "description": null,
+        "lastModifiedBy": "jsmith",
+        "lastModifiedDate": 1631190136935,
+        "location": "/cloudlets/api/v2/policies/284823/versions/1",
+        "matchRuleFormat": "1.0",
+        "matchRules": null,
+        "policyId": 284823,
+        "revisionId": 4824129,
+        "rulesLocked": false,
+        "version": 1
+    }
+]`,
+			expectedPath: "/cloudlets/api/v2/policies/284823/versions?includeActivations=false&includeDeleted=false&includeRules=false&offset=0",
+			expectedResponse: []PolicyVersion{
+				{
+					Activations:      []*Activation{},
+					CreateDate:       1631191583350,
+					CreatedBy:        "jsmith",
+					Deleted:          false,
+					Description:      "some string",
+					LastModifiedBy:   "jsmith",
+					LastModifiedDate: 1631191583350,
+					Location:         "/cloudlets/api/v2/policies/284823/versions/2",
+					MatchRuleFormat:  "1.0",
+					MatchRules:       nil,
+					PolicyID:         284823,
+					RevisionID:       4824132,
+					RulesLocked:      false,
+					Version:          2,
+				},
+				{
+					Activations:      []*Activation{},
+					CreateDate:       1631190136935,
+					CreatedBy:        "jsmith",
+					Deleted:          false,
+					Description:      "",
+					LastModifiedBy:   "jsmith",
+					LastModifiedDate: 1631190136935,
+					Location:         "/cloudlets/api/v2/policies/284823/versions/1",
+					MatchRuleFormat:  "1.0",
+					MatchRules:       nil,
+					PolicyID:         284823,
+					RevisionID:       4824129,
+					RulesLocked:      false,
+					Version:          1,
+				},
+			},
+		},
+		"200 OK with params": {
+			request: ListPolicyVersionsRequest{
+				PolicyID:           284823,
+				IncludeRules:       true,
+				IncludeDeleted:     true,
+				IncludeActivations: true,
+				Offset:             2,
+				PageSize:           tools.IntPtr(3),
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+[]`,
+			expectedPath:     "/cloudlets/api/v2/policies/284823/versions?includeActivations=true&includeDeleted=true&includeRules=true&offset=2&pageSize=3",
+			expectedResponse: []PolicyVersion{},
+		},
+		"500 internal server error": {
+			request: ListPolicyVersionsRequest{
+				PolicyID: 284823,
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+   "title": "Internal Server Error",
+   "detail": "Error making request",
+   "status": 500
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/284823/versions?includeActivations=false&includeDeleted=false&includeRules=false&offset=0",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error making request",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListPolicyVersions(context.Background(), test.request)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
 
 func TestGetPolicyVersion(t *testing.T) {
 	tests := map[string]struct {
@@ -33,10 +181,10 @@ func TestGetPolicyVersion(t *testing.T) {
 {
     "activations": [],
     "createDate": 1629299944291,
-    "createdBy": "agrebenk",
+    "createdBy": "jsmith",
     "deleted": false,
     "description": null,
-    "lastModifiedBy": "agrebenk",
+    "lastModifiedBy": "jsmith",
     "lastModifiedDate": 1629299944291,
     "location": "/cloudlets/api/v2/policies/276858/versions/1",
     "matchRuleFormat": "1.0",
@@ -50,10 +198,10 @@ func TestGetPolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				Activations:      []*Activation{},
 				CreateDate:       1629299944291,
-				CreatedBy:        "agrebenk",
+				CreatedBy:        "jsmith",
 				Deleted:          false,
 				Description:      "",
-				LastModifiedBy:   "agrebenk",
+				LastModifiedBy:   "jsmith",
 				LastModifiedDate: 1629299944291,
 				Location:         "/cloudlets/api/v2/policies/276858/versions/1",
 				MatchRuleFormat:  "1.0",
@@ -131,10 +279,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 {
     "activations": [],
     "createDate": 1629812554924,
-    "createdBy": "agrebenk",
+    "createdBy": "jsmith",
     "deleted": false,
     "description": "Description for the policy",
-    "lastModifiedBy": "agrebenk",
+    "lastModifiedBy": "jsmith",
     "lastModifiedDate": 1629812554924,
     "location": "/cloudlets/api/v2/policies/276858/versions/2",
     "matchRuleFormat": "1.0",
@@ -148,10 +296,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				Activations:      []*Activation{},
 				CreateDate:       1629812554924,
-				CreatedBy:        "agrebenk",
+				CreatedBy:        "jsmith",
 				Deleted:          false,
 				Description:      "Description for the policy",
-				LastModifiedBy:   "agrebenk",
+				LastModifiedBy:   "jsmith",
 				LastModifiedDate: 1629812554924,
 				Location:         "/cloudlets/api/v2/policies/276858/versions/2",
 				MatchRuleFormat:  "1.0",
@@ -221,10 +369,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 {
     "activations": [],
     "createDate": 1629981546401,
-    "createdBy": "agrebenk",
+    "createdBy": "jsmith",
     "deleted": false,
     "description": null,
-    "lastModifiedBy": "agrebenk",
+    "lastModifiedBy": "jsmith",
     "lastModifiedDate": 1629981546401,
     "location": "/cloudlets/api/v2/policies/279628/versions/2",
     "matchRuleFormat": "1.0",
@@ -290,10 +438,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				Activations:      []*Activation{},
 				CreateDate:       1629981546401,
-				CreatedBy:        "agrebenk",
+				CreatedBy:        "jsmith",
 				Deleted:          false,
 				Description:      "",
-				LastModifiedBy:   "agrebenk",
+				LastModifiedBy:   "jsmith",
 				LastModifiedDate: 1629981546401,
 				Location:         "/cloudlets/api/v2/policies/279628/versions/2",
 				MatchRuleFormat:  "1.0",
@@ -400,10 +548,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 		{
 		    "activations": [],
 		    "createDate": 1630489884742,
-		    "createdBy": "agrebenk",
+		    "createdBy": "jsmith",
 		    "deleted": false,
 		    "description": "New version 1630480693371",
-		    "lastModifiedBy": "agrebenk",
+		    "lastModifiedBy": "jsmith",
 		    "lastModifiedDate": 1630489884742,
 		    "location": "/cloudlets/api/v2/policies/139743/versions/796",
 		    "matchRuleFormat": "1.0",
@@ -450,10 +598,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				Activations:      []*Activation{},
 				CreateDate:       1630489884742,
-				CreatedBy:        "agrebenk",
+				CreatedBy:        "jsmith",
 				Deleted:          false,
 				Description:      "New version 1630480693371",
-				LastModifiedBy:   "agrebenk",
+				LastModifiedBy:   "jsmith",
 				LastModifiedDate: 1630489884742,
 				Location:         "/cloudlets/api/v2/policies/139743/versions/796",
 				MatchRuleFormat:  "1.0",
@@ -537,10 +685,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 {
     "activations": [],
     "createDate": 1630506044027,
-    "createdBy": "agrebenk",
+    "createdBy": "jsmith",
     "deleted": false,
     "description": "New version 1630480693371",
-    "lastModifiedBy": "agrebenk",
+    "lastModifiedBy": "jsmith",
     "lastModifiedDate": 1630506044027,
     "location": "/cloudlets/api/v2/policies/139743/versions/797",
     "matchRuleFormat": "1.0",
@@ -583,10 +731,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				Activations:      []*Activation{},
 				CreateDate:       1630506044027,
-				CreatedBy:        "agrebenk",
+				CreatedBy:        "jsmith",
 				Deleted:          false,
 				Description:      "New version 1630480693371",
-				LastModifiedBy:   "agrebenk",
+				LastModifiedBy:   "jsmith",
 				LastModifiedDate: 1630506044027,
 				Location:         "/cloudlets/api/v2/policies/139743/versions/797",
 				MatchRuleFormat:  "1.0",
@@ -666,10 +814,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 {
     "activations": [],
     "createDate": 1630507099511,
-    "createdBy": "agrebenk",
+    "createdBy": "jsmith",
     "deleted": false,
     "description": "New version 1630480693371",
-    "lastModifiedBy": "agrebenk",
+    "lastModifiedBy": "jsmith",
     "lastModifiedDate": 1630507099511,
     "location": "/cloudlets/api/v2/policies/139743/versions/798",
     "matchRuleFormat": "1.0",
@@ -713,10 +861,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				Activations:      []*Activation{},
 				CreateDate:       1630507099511,
-				CreatedBy:        "agrebenk",
+				CreatedBy:        "jsmith",
 				Deleted:          false,
 				Description:      "New version 1630480693371",
-				LastModifiedBy:   "agrebenk",
+				LastModifiedBy:   "jsmith",
 				LastModifiedDate: 1630507099511,
 				Location:         "/cloudlets/api/v2/policies/139743/versions/798",
 				MatchRuleFormat:  "1.0",
@@ -763,7 +911,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:          0,
 							End:            0,
 							Type:           "erMatchRule",
-							UseRelativeUrl: "copy_scheme_hostname",
+							UseRelativeURL: "copy_scheme_hostname",
 							Name:           "rul3",
 							StatusCode:     307,
 							RedirectURL:    "/abc/sss",
@@ -796,7 +944,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:                  0,
 							End:                    0,
 							Type:                   "erMatchRule",
-							UseRelativeUrl:         "none",
+							UseRelativeURL:         "none",
 							Name:                   "rule 2",
 							MatchURL:               "ddd.aaa",
 							RedirectURL:            "sss.com",
@@ -816,7 +964,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							RedirectURL:              "/ddd",
 							UseIncomingQueryString:   false,
 							UseIncomingSchemeAndHost: true,
-							UseRelativeUrl:           "copy_scheme_hostname",
+							UseRelativeURL:           "copy_scheme_hostname",
 						},
 					},
 				},
@@ -826,10 +974,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 			responseBody: `{
     "activations": [],
     "createDate": 1629981355165,
-    "createdBy": "agrebenk",
+    "createdBy": "jsmith",
     "deleted": false,
     "description": null,
-    "lastModifiedBy": "agrebenk",
+    "lastModifiedBy": "jsmith",
     "lastModifiedDate": 1629981355165,
     "location": "/cloudlets/api/v2/policies/276858/versions/6",
     "matchRuleFormat": "1.0",
@@ -911,10 +1059,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				Activations:      []*Activation{},
 				CreateDate:       1629981355165,
-				CreatedBy:        "agrebenk",
+				CreatedBy:        "jsmith",
 				Deleted:          false,
 				Description:      "",
-				LastModifiedBy:   "agrebenk",
+				LastModifiedBy:   "jsmith",
 				LastModifiedDate: 1629981355165,
 				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
 				MatchRuleFormat:  "1.0",
@@ -936,7 +1084,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						StatusCode:               307,
 						UseIncomingQueryString:   false,
 						UseIncomingSchemeAndHost: true,
-						UseRelativeUrl:           "copy_scheme_hostname",
+						UseRelativeURL:           "copy_scheme_hostname",
 						Matches: []MatchCriteriaER{
 							{
 								CaseSensitive: true,
@@ -973,7 +1121,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						Start:                  0,
 						StatusCode:             301,
 						UseIncomingQueryString: true,
-						UseRelativeUrl:         "none",
+						UseRelativeURL:         "none",
 					},
 					&MatchRuleER{
 						Type:                     "erMatchRule",
@@ -988,7 +1136,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						StatusCode:               301,
 						UseIncomingQueryString:   false,
 						UseIncomingSchemeAndHost: true,
-						UseRelativeUrl:           "copy_scheme_hostname",
+						UseRelativeURL:           "copy_scheme_hostname",
 					},
 				},
 			},
@@ -1128,10 +1276,10 @@ func TestUpdatePolicyVersion(t *testing.T) {
 {
     "activations": [],
     "createDate": 1629817335218,
-    "createdBy": "agrebenk",
+    "createdBy": "jsmith",
     "deleted": false,
     "description": "Updated description",
-    "lastModifiedBy": "agrebenk",
+    "lastModifiedBy": "jsmith",
     "lastModifiedDate": 1629821693867,
     "location": "/cloudlets/api/v2/policies/276858/versions/5",
     "matchRuleFormat": "1.0",
@@ -1144,10 +1292,10 @@ func TestUpdatePolicyVersion(t *testing.T) {
 			expectedPath: "/cloudlets/api/v2/policies/276858/versions/5",
 			expectedResponse: &PolicyVersion{
 				CreateDate:       1629817335218,
-				CreatedBy:        "agrebenk",
+				CreatedBy:        "jsmith",
 				Deleted:          false,
 				Description:      "Updated description",
-				LastModifiedBy:   "agrebenk",
+				LastModifiedBy:   "jsmith",
 				LastModifiedDate: 1629821693867,
 				Location:         "/cloudlets/api/v2/policies/276858/versions/5",
 				Activations:      []*Activation{},
@@ -1213,10 +1361,10 @@ func TestUpdatePolicyVersion(t *testing.T) {
 {
     "activations": [],
     "createDate": 1629981546401,
-    "createdBy": "agrebenk",
+    "createdBy": "jsmith",
     "deleted": false,
     "description": "Updated description",
-    "lastModifiedBy": "agrebenk",
+    "lastModifiedBy": "jsmith",
     "lastModifiedDate": 1630414029735,
     "location": "/cloudlets/api/v2/policies/279628/versions/2",
     "matchRuleFormat": "1.0",
@@ -1290,10 +1438,10 @@ func TestUpdatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				Activations:      []*Activation{},
 				CreateDate:       1629981546401,
-				CreatedBy:        "agrebenk",
+				CreatedBy:        "jsmith",
 				Deleted:          false,
 				Description:      "Updated description",
-				LastModifiedBy:   "agrebenk",
+				LastModifiedBy:   "jsmith",
 				LastModifiedDate: 1630414029735,
 				Location:         "/cloudlets/api/v2/policies/279628/versions/2",
 				MatchRuleFormat:  "1.0",

@@ -15,6 +15,11 @@ import (
 type (
 	// PolicyVersions is a cloudlets policy versions API interface
 	PolicyVersions interface {
+		// ListPolicyVersions lists policy versions by policyID
+		//
+		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicyversions
+		ListPolicyVersions(context.Context, ListPolicyVersionsRequest) ([]PolicyVersion, error)
+
 		// GetPolicyVersion gets policy version by policyID and version
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicyversion
@@ -53,6 +58,16 @@ type (
 		MatchRuleFormat  MatchRuleFormat `json:"matchRuleFormat"`
 		Deleted          bool            `json:"deleted,omitempty"`
 		Warnings         []Warning       `json:"warnings,omitempty"`
+	}
+
+	// ListPolicyVersionsRequest describes the parameters needed to list policy versions
+	ListPolicyVersionsRequest struct {
+		PolicyID           int64
+		IncludeRules       bool
+		IncludeDeleted     bool
+		IncludeActivations bool
+		Offset             int
+		PageSize           *int
 	}
 
 	// GetPolicyVersionRequest describes the parameters needed to get policy version
@@ -135,7 +150,7 @@ type (
 		ID                       int64             `json:"id,omitempty"`
 		Matches                  []MatchCriteriaER `json:"matches,omitempty"`
 		AkaRuleID                string            `json:"akaRuleId,omitempty"`
-		UseRelativeUrl           string            `json:"useRelativeUrl"`
+		UseRelativeURL           string            `json:"useRelativeUrl"`
 		StatusCode               int               `json:"statusCode"`
 		RedirectURL              string            `json:"redirectURL"`
 		MatchURL                 string            `json:"matchURL,omitempty"`
@@ -247,6 +262,14 @@ const (
 	ObjectMatchValueObjectTypeSubtypeObject ObjectMatchValueObjectTypeSubtype = "object"
 )
 
+// Validate validates ListPolicyVersionsRequest
+func (c ListPolicyVersionsRequest) Validate() error {
+	return validation.Errors{
+		"PolicyID": validation.Validate(c.PolicyID, validation.Required),
+		"Offset":   validation.Validate(c.Offset, validation.Min(0)),
+	}.Filter()
+}
+
 // Validate validates CreatePolicyVersionRequest
 func (c CreatePolicyVersionRequest) Validate() error {
 	return validation.Errors{
@@ -279,7 +302,7 @@ func (m MatchRuleER) Validate() error {
 		"End":            validation.Validate(m.End, validation.Min(0)),
 		"MatchURL":       validation.Validate(m.MatchURL, validation.Length(0, 8192)),
 		"RedirectURL":    validation.Validate(m.RedirectURL, validation.Required, validation.Length(1, 8192)),
-		"UseRelativeUrl": validation.Validate(m.UseRelativeUrl, validation.Required, validation.In("none", "copy_scheme_hostname", "relative_url")),
+		"UseRelativeURL": validation.Validate(m.UseRelativeURL, validation.Required, validation.In("none", "copy_scheme_hostname", "relative_url")),
 		"StatusCode":     validation.Validate(m.StatusCode, validation.Required, validation.In(301, 302, 303, 307, 308)),
 		"Location":       validation.Validate(m.Location, validation.Empty),
 		"Matches":        validation.Validate(m.Matches),
@@ -334,14 +357,16 @@ func (o UpdatePolicyVersionRequest) Validate() error {
 }
 
 var (
+	// ErrListPolicyVersions is returned when ListPolicyVersions fails
+	ErrListPolicyVersions = errors.New("list policy versions")
 	// ErrGetPolicyVersion is returned when GetPolicyVersion fails
-	ErrGetPolicyVersion = errors.New("get policy")
+	ErrGetPolicyVersion = errors.New("get policy versions")
 	// ErrCreatePolicyVersion is returned when CreatePolicyVersion fails
-	ErrCreatePolicyVersion = errors.New("create policy")
+	ErrCreatePolicyVersion = errors.New("create policy versions")
 	// ErrDeletePolicyVersion is returned when DeletePolicyVersion fails
-	ErrDeletePolicyVersion = errors.New("delete policy")
+	ErrDeletePolicyVersion = errors.New("delete policy versions")
 	// ErrUpdatePolicyVersion is returned when UpdatePolicyVersion fails
-	ErrUpdatePolicyVersion = errors.New("update policy")
+	ErrUpdatePolicyVersion = errors.New("update policy versions")
 )
 
 func (m MatchRuleALB) cloudletType() string {
@@ -449,6 +474,47 @@ func (m *MatchCriteriaALB) UnmarshalJSON(b []byte) error {
 	m.ObjectMatchValue = convertedObjectMatchValue
 
 	return nil
+}
+
+func (c *cloudlets) ListPolicyVersions(ctx context.Context, params ListPolicyVersionsRequest) ([]PolicyVersion, error) {
+	logger := c.Log(ctx)
+	logger.Debug("ListPolicyVersions")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListPolicyVersions, ErrStructValidation, err)
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/versions", params.PolicyID))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPolicyVersions, err)
+	}
+
+	q := uri.Query()
+	q.Add("offset", fmt.Sprintf("%d", params.Offset))
+	q.Add("includeRules", strconv.FormatBool(params.IncludeRules))
+	q.Add("includeDeleted", strconv.FormatBool(params.IncludeDeleted))
+	q.Add("includeActivations", strconv.FormatBool(params.IncludeActivations))
+	if params.PageSize != nil {
+		q.Add("pageSize", fmt.Sprintf("%d", *params.PageSize))
+	}
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPolicyVersions, err)
+	}
+
+	var result []PolicyVersion
+	resp, err := c.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListPolicyVersions, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListPolicyVersions, c.Error(resp))
+	}
+
+	return result, nil
 }
 
 func (c *cloudlets) GetPolicyVersion(ctx context.Context, params GetPolicyVersionRequest) (*PolicyVersion, error) {
