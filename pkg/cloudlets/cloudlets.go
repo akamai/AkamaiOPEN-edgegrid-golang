@@ -16,6 +16,7 @@ type (
 	Cloudlets interface {
 		LoadBalancer
 		LoadBalancerVersions
+		LoadBalancerActivation
 		Policies
 		PolicyVersions
 		PolicyVersionActivation

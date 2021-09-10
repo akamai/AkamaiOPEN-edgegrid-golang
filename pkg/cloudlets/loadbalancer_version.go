@@ -80,7 +80,7 @@ type (
 		LastModifiedDate string            `json:"lastModifiedDate,omitempty"`
 		LivenessSettings *LivenessSettings `json:"livenessSettings,omitempty"`
 		OriginID         string            `json:"originID,omitempty"`
-		Version          int               `json:"version,omitempty"`
+		Version          int64             `json:"version,omitempty"`
 		Warnings         []Warning         `json:"warnings,omitempty"`
 	}
 
@@ -101,7 +101,7 @@ type (
 	UpdateLoadBalancerVersionRequest struct {
 		OriginID            string
 		ShouldValidate      bool
-		Version             int
+		Version             int64
 		LoadBalancerVersion LoadBalancerVersion
 	}
 )
