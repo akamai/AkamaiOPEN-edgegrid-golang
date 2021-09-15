@@ -93,7 +93,7 @@ type (
 	// GetLoadBalancerVersionRequest describes the parameters needed to get load balancer version
 	GetLoadBalancerVersionRequest struct {
 		OriginID       string
-		Version        int
+		Version        int64
 		ShouldValidate bool
 	}
 

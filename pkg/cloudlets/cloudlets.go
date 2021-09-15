@@ -18,6 +18,7 @@ type (
 		LoadBalancerVersions
 		LoadBalancerActivation
 		Policies
+		PolicyProperty
 		PolicyVersions
 		PolicyVersionActivation
 	}
