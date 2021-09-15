@@ -27,59 +27,47 @@ func TestListOrigins(t *testing.T) {
 				{
 					
 					"hostname": "",
-					"origin": {
-						"description": "ALB1",
-						"originId": "alb1",
-						"type": "APPLICATION_LOAD_BALANCER",
-						"akamaized": false
-					}
+					"description": "ALB1",
+					"originId": "alb1",
+					"type": "APPLICATION_LOAD_BALANCER",
+					"akamaized": false
 				},
 				{
 					"hostname": "",
-					"origin": {
-						"description": "",
-						"originId": "alb2",
-						"type": "APPLICATION_LOAD_BALANCER",
-						"akamaized": false
-					}
+					"description": "",
+					"originId": "alb2",
+					"type": "APPLICATION_LOAD_BALANCER",
+					"akamaized": false
 				},
 				{
 					"hostname": "dc1.foo.com",
-					"origin": {
-						"description": "",
-						"originId": "dc1",
-						"type": "CUSTOMER",
-						"akamaized": false
-					}
+					"description": "",
+					"originId": "dc1",
+					"type": "CUSTOMER",
+					"akamaized": false
 				},
 				{
 					
 					"hostname": "dc2.foo.com",
-					"origin": {
-						"description": "",
-						"originId": "dc2",
-						"type": "CUSTOMER",
-						"akamaized": true
-					}
+					"description": "",
+					"originId": "dc2",
+					"type": "CUSTOMER",
+					"akamaized": true
 				},
 				{
 					"hostname": "download.akamai.com/12345",
-					"origin": {
-						"description": "",
-						"originId": "ns1",
-						"type": "NETSTORAGE",
-						"akamaized": true
-					}
+					"description": "",
+					"originId": "ns1",
+					"type": "NETSTORAGE",
+					"akamaized": true
 				},
 				{
 					
 					"hostname": "download.akamai.com/12345",
-					"origin": {
-						"description": "",
-						"originId": "ns2",
-						"type": "NETSTORAGE",
-						"akamaized": true
-					}
+					"description": "",
+					"originId": "ns2",
+					"type": "NETSTORAGE",
+					"akamaized": true
 				}
 			]`,
 			expectedPath: "/cloudlets/api/v2/origins",
@@ -146,22 +134,18 @@ func TestListOrigins(t *testing.T) {
 			responseBody: `[
 				{
 					"hostname": "dc1.foo.com",
-					"origin": {
-						"description": "",
-						"originId": "dc1",
-						"type": "CUSTOMER",
-						"akamaized": false
-					}
+					"description": "",
+					"originId": "dc1",
+					"type": "CUSTOMER",
+					"akamaized": false
 				},
 				{
 					
 					"hostname": "dc2.foo.com",
-					"origin": {
-						"description": "",
-						"originId": "dc2",
-						"type": "CUSTOMER",
-						"akamaized": true
-					}
+					"description": "",
+					"originId": "dc2",
+					"type": "CUSTOMER",
+					"akamaized": true
 				}
 			]`,
 			expectedPath: "/cloudlets/api/v2/origins?type=CUSTOMER",

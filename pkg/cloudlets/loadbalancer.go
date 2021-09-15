@@ -40,7 +40,7 @@ type (
 	// OriginResponse is an Origin returned in ListOrigins
 	OriginResponse struct {
 		Hostname string `json:"hostname"`
-		Origin   Origin
+		Origin
 	}
 
 	// OriginType is a type for Origin Type
