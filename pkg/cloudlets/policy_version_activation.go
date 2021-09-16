@@ -39,8 +39,8 @@ type (
 
 	// ActivatePolicyVersionRequestBody is the body content for an ActivatePolicyVersionRequest
 	ActivatePolicyVersionRequestBody struct {
-		Network                 VersionActivationNetwork
-		AdditionalPropertyNames []string
+		Network                 VersionActivationNetwork `json:"network"`
+		AdditionalPropertyNames []string                 `json:"additionalPropertyNames,omitempty"`
 	}
 
 	// PolicyVersionActivation is a cloudlets PolicyVersionActivation API interface
