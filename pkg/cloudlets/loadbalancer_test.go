@@ -434,6 +434,25 @@ func TestUpdateOrigin(t *testing.T) {
 			request:   LoadBalancerOriginRequest{},
 			withError: ErrStructValidation,
 		},
+		"validation error -  OriginID exceeds max length, it is 64": {
+			request: LoadBalancerOriginRequest{
+				OriginID: "ExceedMaxLenghtExceedMaxLenghtExceedMaxLenghtExceedMaxLenghtExce",
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error - OriginID value less than min, it is 1": {
+			request: LoadBalancerOriginRequest{
+				OriginID: "E",
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error - Description exceeds max length, it is 256": {
+			request: LoadBalancerOriginRequest{
+				OriginID:    "first",
+				Description: "Test for creating APPLICATION_LOAD_BALANCER origin type, Test for creating APPLICATION_LOAD_BALANCER origin type, Test for creating APPLICATION_LOAD_BALANCER origin type, Test for creating APPLICATION_LOAD_BALANCER origin type,Test for creating exceed valu",
+			},
+			withError: ErrStructValidation,
+		},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {

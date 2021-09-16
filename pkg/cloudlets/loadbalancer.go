@@ -99,7 +99,8 @@ func (v ListOriginsRequest) Validate() error {
 // Validate validates LoadBalancerOriginRequest
 func (v LoadBalancerOriginRequest) Validate() error {
 	return validation.Errors{
-		"OriginID": validation.Validate(v.OriginID, validation.Required),
+		"OriginID":    validation.Validate(v.OriginID, validation.Required, validation.Length(2, 63)),
+		"Description": validation.Validate(v.Description, validation.Length(0, 255)),
 	}.Filter()
 }
 
