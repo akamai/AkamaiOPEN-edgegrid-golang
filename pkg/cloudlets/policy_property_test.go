@@ -13,7 +13,7 @@ import (
 
 func TestGetPolicyProperties(t *testing.T) {
 	tests := map[string]struct {
-		policyID         string
+		policyID         int64
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -21,7 +21,7 @@ func TestGetPolicyProperties(t *testing.T) {
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
-			policyID:       "11754",
+			policyID:       11754,
 			responseStatus: http.StatusOK,
 			responseBody: `
 				{
@@ -174,7 +174,7 @@ func TestGetPolicyProperties(t *testing.T) {
 			},
 		},
 		"500 Internal Server Error": {
-			policyID:       "11754",
+			policyID:       11754,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 				{

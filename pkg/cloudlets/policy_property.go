@@ -14,7 +14,7 @@ type (
 		// GetPolicyProperties gets all the associated properties by the policyID
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicyproperties
-		GetPolicyProperties(context.Context, string) (GetPolicyPropertiesResponse, error)
+		GetPolicyProperties(context.Context, int64) (GetPolicyPropertiesResponse, error)
 	}
 
 	// GetPolicyPropertiesResponse contains response data for GetPolicyProperties
@@ -55,11 +55,11 @@ var (
 )
 
 // GetPolicyProperties gets all the associated properties by the policyID
-func (c *cloudlets) GetPolicyProperties(ctx context.Context, policyID string) (GetPolicyPropertiesResponse, error) {
+func (c *cloudlets) GetPolicyProperties(ctx context.Context, policyID int64) (GetPolicyPropertiesResponse, error) {
 	logger := c.Log(ctx)
 	logger.Debug("GetPolicyProperties")
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%s/properties", policyID))
+	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/properties", policyID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPolicyProperties, err)
 	}
