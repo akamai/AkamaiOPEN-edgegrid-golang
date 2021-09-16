@@ -3,6 +3,7 @@ package cloudlets
 import (
 	"context"
 	"errors"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -370,19 +371,21 @@ func TestCreateOrigin(t *testing.T) {
 
 func TestUpdateOrigin(t *testing.T) {
 	tests := map[string]struct {
-		request          LoadBalancerOriginRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *Origin
-		withError        error
+		request             LoadBalancerOriginRequest
+		expectedRequestBody string
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *Origin
+		withError           error
 	}{
 		"200 updated": {
 			request: LoadBalancerOriginRequest{
 				OriginID:    "first",
 				Description: "update first Origin",
 			},
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"description":"update first Origin"}`,
+			responseStatus:      http.StatusOK,
 			responseBody: `{
 			   "originId": "first",
 			   "akamaized": true,
@@ -440,6 +443,12 @@ func TestUpdateOrigin(t *testing.T) {
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
+
+				if len(test.expectedRequestBody) > 0 {
+					body, err := ioutil.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.Equal(t, test.expectedRequestBody, string(body))
+				}
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateOrigin(context.Background(), test.request)

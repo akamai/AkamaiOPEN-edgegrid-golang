@@ -53,7 +53,7 @@ type (
 
 	// LoadBalancerOriginRequest describes the body of the create origin request
 	LoadBalancerOriginRequest struct {
-		OriginID    string `json:"originId"`
+		OriginID    string `json:"-"`
 		Description string `json:"description,omitempty"`
 	}
 
@@ -218,7 +218,7 @@ func (c *cloudlets) UpdateOrigin(ctx context.Context, params LoadBalancerOriginR
 
 	var result Origin
 
-	resp, err := c.Exec(req, &result, params.Description)
+	resp, err := c.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateOrigin, err)
 	}
