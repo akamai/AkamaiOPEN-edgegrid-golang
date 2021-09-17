@@ -643,3 +643,170 @@ func TestUpdateLoadBalancerVersion(t *testing.T) {
 		})
 	}
 }
+
+func TestListLoadBalancerVersions(t *testing.T) {
+	tests := map[string]struct {
+		listLoadBalancerVersionsRequest ListLoadBalancerVersionsRequest
+		responseStatus                  int
+		responseBody                    string
+		expectedPath                    string
+		expectedResponse                []LoadBalancerVersion
+		withError                       func(*testing.T, error)
+	}{
+		"200 OK": {
+			listLoadBalancerVersionsRequest: ListLoadBalancerVersionsRequest{
+				OriginID: "clorigin3",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `[
+				{
+					"createdBy": "jjones",
+					"createdDate": "2015-10-08T11:42:18.690Z",
+					"dataCenters": [
+						{
+							"cloudService": false,
+							"livenessHosts": [
+								"clorigin3.www.example.com"
+							],
+							"latitude": 102.78108,
+							"longitude": -116.07064,
+							"continent": "NA",
+							"country": "US",
+							"originId": "clorigin3",
+							"percent": 100.0
+						}
+					],
+					"deleted": false,
+					"description": "Test load balancing configuration.",
+					"immutable": false,
+					"lastModifiedBy": "jsmith",
+					"lastModifiedDate": "2016-05-02T00:40:02.237Z",
+					"livenessSettings": {
+						"hostHeader": "clorigin3.www.example.com",
+						"path": "/status",
+						"port": 443,
+						"protocol": "HTTPS"
+					},
+					"originId": "clorigin3",
+					"version": 2
+				},
+				{
+					"createdBy": "jjones",
+					"createdDate": "2015-10-08T11:42:18.690Z",
+					"dataCenters": [
+						{
+							"cloudService": false,
+							"livenessHosts": [
+								"clorigin3.www.example.com"
+							],
+							"latitude": 102.78108,
+							"longitude": -116.07064,
+							"continent": "NA",
+							"country": "US",
+							"originId": "clorigin3",
+							"percent": 100.0
+						}
+					],
+					"deleted": false,
+					"description": "Test load balancing configuration.",
+					"immutable": false,
+					"lastModifiedBy": "jsmith",
+					"lastModifiedDate": "2016-05-02T00:40:02.237Z",
+					"livenessSettings": {
+						"hostHeader": "clorigin3.www.example.com",
+						"path": "/status",
+						"port": 443,
+						"protocol": "HTTPS"
+					},
+					"originId": "clorigin3",
+					"version": 1
+				}
+			]`,
+			expectedPath: "/cloudlets/api/v2/origins/clorigin3/versions?includeModel=true",
+			expectedResponse: []LoadBalancerVersion{
+				{
+					CreatedBy:   "jjones",
+					CreatedDate: "2015-10-08T11:42:18.690Z",
+					DataCenters: []DataCenter{
+						{
+							CloudService: false,
+							LivenessHosts: []string{
+								"clorigin3.www.example.com",
+							},
+							Latitude:  102.78108,
+							Longitude: -116.07064,
+							Continent: "NA",
+							Country:   "US",
+							OriginID:  "clorigin3",
+							Percent:   100.0,
+						},
+					},
+					Deleted:          false,
+					Description:      "Test load balancing configuration.",
+					Immutable:        false,
+					LastModifiedBy:   "jsmith",
+					LastModifiedDate: "2016-05-02T00:40:02.237Z",
+					OriginID:         "clorigin3",
+					LivenessSettings: &LivenessSettings{
+						HostHeader: "clorigin3.www.example.com",
+						Path:       "/status",
+						Port:       443,
+						Protocol:   "HTTPS",
+					},
+					Version: 2,
+				},
+				{
+					CreatedBy:   "jjones",
+					CreatedDate: "2015-10-08T11:42:18.690Z",
+					DataCenters: []DataCenter{
+						{
+							CloudService: false,
+							LivenessHosts: []string{
+								"clorigin3.www.example.com",
+							},
+							Latitude:  102.78108,
+							Longitude: -116.07064,
+							Continent: "NA",
+							Country:   "US",
+							OriginID:  "clorigin3",
+							Percent:   100.0,
+						},
+					},
+					Deleted:          false,
+					Description:      "Test load balancing configuration.",
+					Immutable:        false,
+					LastModifiedBy:   "jsmith",
+					LastModifiedDate: "2016-05-02T00:40:02.237Z",
+					OriginID:         "clorigin3",
+					LivenessSettings: &LivenessSettings{
+						HostHeader: "clorigin3.www.example.com",
+						Path:       "/status",
+						Port:       443,
+						Protocol:   "HTTPS",
+					},
+					Version: 1,
+				},
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListLoadBalancerVersions(context.Background(), test.listLoadBalancerVersionsRequest)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}

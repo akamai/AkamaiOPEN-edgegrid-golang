@@ -29,6 +29,11 @@ type (
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#putloadbalancingconfigversion
 		UpdateLoadBalancerVersion(context.Context, UpdateLoadBalancerVersionRequest) (*LoadBalancerVersion, error)
+
+		// ListLoadBalancerVersions lists all versions of Origin with type APPLICATION_LOAD_BALANCER
+		//
+		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getloadbalancingversions
+		ListLoadBalancerVersions(context.Context, ListLoadBalancerVersionsRequest) ([]LoadBalancerVersion, error)
 	}
 
 	// DataCenter represents the dataCenter field of load balancer version
@@ -104,6 +109,11 @@ type (
 		Version             int64
 		LoadBalancerVersion LoadBalancerVersion
 	}
+
+	// ListLoadBalancerVersionsRequest describes the parameters needed to list load balancer versions
+	ListLoadBalancerVersionsRequest struct {
+		OriginID string
+	}
 )
 
 const (
@@ -120,6 +130,8 @@ var (
 	ErrGetLoadBalancerVersion = errors.New("get origin version")
 	// ErrUpdateLoadBalancerVersion is returned when UpdateLoadBalancerVersion fails
 	ErrUpdateLoadBalancerVersion = errors.New("update origin version")
+	// ErrListLoadBalancerVersions is returned when ListLoadBalancerVersions fails
+	ErrListLoadBalancerVersions = errors.New("list origin versions")
 )
 
 // Validate validates DataCenter
@@ -217,6 +229,13 @@ func (v UpdateLoadBalancerVersionRequest) Validate() error {
 		"OriginID":            validation.Validate(v.OriginID, validation.Length(2, 62)),
 		"Version":             validation.Validate(v.Version, validation.Min(0)),
 		"LoadBalancerVersion": validation.Validate(v.LoadBalancerVersion),
+	}.Filter()
+}
+
+// Validate validates ListLoadBalancerVersionsRequest
+func (v ListLoadBalancerVersionsRequest) Validate() error {
+	return validation.Errors{
+		"OriginID": validation.Validate(v.OriginID, validation.Required, validation.Length(2, 62)),
 	}.Filter()
 }
 
@@ -323,4 +342,35 @@ func (c *cloudlets) UpdateLoadBalancerVersion(ctx context.Context, params Update
 	}
 
 	return &result, nil
+}
+
+func (c *cloudlets) ListLoadBalancerVersions(ctx context.Context, params ListLoadBalancerVersionsRequest) ([]LoadBalancerVersion, error) {
+	logger := c.Log(ctx)
+	logger.Debug("ListLoadBalancerVersions")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListLoadBalancerVersions, ErrStructValidation, err)
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/versions?includeModel=true", params.OriginID))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListLoadBalancerVersions, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListLoadBalancerVersions, err)
+	}
+
+	var result []LoadBalancerVersion
+	resp, err := c.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListLoadBalancerVersions, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListLoadBalancerVersions, c.Error(resp))
+	}
+
+	return result, nil
 }
