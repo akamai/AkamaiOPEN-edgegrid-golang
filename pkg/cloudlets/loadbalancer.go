@@ -28,13 +28,13 @@ type (
 		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#postloadbalancingconfigs
-		CreateOrigin(ctx context.Context, params LoadBalancerOriginRequest) (*Origin, error)
+		CreateOrigin(context.Context, LoadBalancerOriginCreateRequest) (*Origin, error)
 
 		// UpdateOrigin creates configuration for an origin.
 		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#putloadbalancingconfig
-		UpdateOrigin(ctx context.Context, params LoadBalancerOriginRequest) (*Origin, error)
+		UpdateOrigin(context.Context, LoadBalancerOriginUpdateRequest) (*Origin, error)
 	}
 
 	// OriginResponse is an Origin returned in ListOrigins
@@ -51,9 +51,20 @@ type (
 		Type OriginType
 	}
 
-	// LoadBalancerOriginRequest describes the body of the create origin request
-	LoadBalancerOriginRequest struct {
-		OriginID    string `json:"-"`
+	// LoadBalancerOriginCreateRequest describes the parameters of the create origin request
+	LoadBalancerOriginCreateRequest struct {
+		OriginID string `json:"originId"`
+		Description
+	}
+
+	// LoadBalancerOriginUpdateRequest describes the parameters of the update origin request
+	LoadBalancerOriginUpdateRequest struct {
+		OriginID string
+		Description
+	}
+
+	// Description describes description for the Origin
+	Description struct {
 		Description string `json:"description,omitempty"`
 	}
 
@@ -96,11 +107,19 @@ func (v ListOriginsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates LoadBalancerOriginRequest
-func (v LoadBalancerOriginRequest) Validate() error {
+// Validate validates LoadBalancerOriginCreateRequest
+func (v LoadBalancerOriginCreateRequest) Validate() error {
 	return validation.Errors{
 		"OriginID":    validation.Validate(v.OriginID, validation.Required, validation.Length(2, 63)),
-		"Description": validation.Validate(v.Description, validation.Length(0, 255)),
+		"Description": validation.Validate(v.Description.Description, validation.Length(0, 255)),
+	}.Filter()
+}
+
+// Validate validates LoadBalancerOriginUpdateRequest
+func (v LoadBalancerOriginUpdateRequest) Validate() error {
+	return validation.Errors{
+		"OriginID":    validation.Validate(v.OriginID, validation.Required, validation.Length(2, 63)),
+		"Description": validation.Validate(v.Description.Description, validation.Length(0, 255)),
 	}.Filter()
 }
 
@@ -167,7 +186,7 @@ func (c *cloudlets) GetOrigin(ctx context.Context, originID string) (*Origin, er
 	return &result, nil
 }
 
-func (c *cloudlets) CreateOrigin(ctx context.Context, params LoadBalancerOriginRequest) (*Origin, error) {
+func (c *cloudlets) CreateOrigin(ctx context.Context, params LoadBalancerOriginCreateRequest) (*Origin, error) {
 	logger := c.Log(ctx)
 	logger.Debug("CreateOrigin")
 
@@ -199,7 +218,7 @@ func (c *cloudlets) CreateOrigin(ctx context.Context, params LoadBalancerOriginR
 	return &result, nil
 }
 
-func (c *cloudlets) UpdateOrigin(ctx context.Context, params LoadBalancerOriginRequest) (*Origin, error) {
+func (c *cloudlets) UpdateOrigin(ctx context.Context, params LoadBalancerOriginUpdateRequest) (*Origin, error) {
 	logger := c.Log(ctx)
 	logger.Debug("UpdateOrigin")
 
@@ -219,7 +238,7 @@ func (c *cloudlets) UpdateOrigin(ctx context.Context, params LoadBalancerOriginR
 
 	var result Origin
 
-	resp, err := c.Exec(req, &result, params)
+	resp, err := c.Exec(req, &result, params.Description)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateOrigin, err)
 	}
