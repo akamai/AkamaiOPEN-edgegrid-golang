@@ -87,14 +87,14 @@ type (
 	CreatePolicyVersion struct {
 		Description     string          `json:"description,omitempty"`
 		MatchRuleFormat MatchRuleFormat `json:"matchRuleFormat,omitempty"`
-		MatchRules      MatchRules      `json:"matchRules,omitempty"`
+		MatchRules      MatchRules      `json:"matchRules"`
 	}
 
 	// UpdatePolicyVersion describes the body of the update policy version request
 	UpdatePolicyVersion struct {
 		Description     string          `json:"description,omitempty"`
 		MatchRuleFormat MatchRuleFormat `json:"matchRuleFormat,omitempty"`
-		MatchRules      MatchRules      `json:"matchRules,omitempty"`
+		MatchRules      MatchRules      `json:"matchRules"`
 		Deleted         bool            `json:"deleted"`
 	}
 
