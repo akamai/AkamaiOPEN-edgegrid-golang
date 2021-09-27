@@ -45,6 +45,7 @@ type (
 	// GetAttackGroupRecommendationsResponse is returned from a call to GetAttackGroupRecommendations.
 	GetAttackGroupRecommendationsResponse AttackGroupRecommendation
 
+	// AttackGroupRecommendation is used to describe a recommendation.
 	AttackGroupRecommendation struct {
 		Description string `json:"description,omitempty"`
 		Evidence *Evidences `json:"evidences,omitempty"`
@@ -52,6 +53,7 @@ type (
 		Group       string `json:"group,omitempty"`
 	}
 
+	// Evidences is used to describe evidences for a recommendation.
 	Evidences []struct{
 		HostEvidences []string `json:"hostEvidences,omitempty"`
 		PathEvidences []string `json:"pathEvidences,omitempty"`
