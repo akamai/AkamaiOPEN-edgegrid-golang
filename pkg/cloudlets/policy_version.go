@@ -367,6 +367,10 @@ var (
 	ErrDeletePolicyVersion = errors.New("delete policy versions")
 	// ErrUpdatePolicyVersion is returned when UpdatePolicyVersion fails
 	ErrUpdatePolicyVersion = errors.New("update policy versions")
+	// ErrUnmarshallMatchCriteriaALB is returned when unmarshalling of MatchCriteriaALB fails
+	ErrUnmarshallMatchCriteriaALB = errors.New("unmarshalling MatchCriteriaALB")
+	// ErrUnmarshallMatchRules is returned when unmarshalling of MatchRules fails
+	ErrUnmarshallMatchRules = errors.New("unmarshalling MatchRules")
 )
 
 func (m MatchRuleALB) cloudletType() string {
@@ -388,31 +392,31 @@ var matchRuleHandlers = map[string]func() MatchRule{
 func (m *MatchRules) UnmarshalJSON(b []byte) error {
 	data := make([]map[string]interface{}, 0)
 	if err := json.Unmarshal(b, &data); err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchRules, err)
 	}
 	for _, matchRule := range data {
 		cloudletType, ok := matchRule["type"]
 		if !ok {
-			return fmt.Errorf("match rule entry should contain 'type' field")
+			return fmt.Errorf("%w: match rule entry should contain 'type' field", ErrUnmarshallMatchRules)
 		}
 		cloudletTypeName, ok := cloudletType.(string)
 		if !ok {
-			return fmt.Errorf("'type' field on match rule entry should be a string")
+			return fmt.Errorf("%w: 'type' field on match rule entry should be a string", ErrUnmarshallMatchRules)
 		}
 		byteArr, err := json.Marshal(matchRule)
 		if err != nil {
-			return err
+			return fmt.Errorf("%w: %s", ErrUnmarshallMatchRules, err)
 		}
 
 		matchRuleType, ok := matchRuleHandlers[cloudletTypeName]
 		if !ok {
-			return fmt.Errorf("unsupported match rule type: %s", cloudletTypeName)
+			return fmt.Errorf("%w: unsupported match rule type: %s", ErrUnmarshallMatchRules, cloudletTypeName)
 		}
 		var dst MatchRule
 		dst = matchRuleType()
 		err = json.Unmarshal(byteArr, dst)
 		if err != nil {
-			return err
+			return fmt.Errorf("%w: %s", ErrUnmarshallMatchRules, err)
 		}
 		*m = append(*m, dst)
 	}
@@ -435,41 +439,41 @@ func (m *MatchCriteriaALB) UnmarshalJSON(b []byte) error {
 	// populate common attributes using default json unmarshaler using aliased type
 	err := json.Unmarshal(b, (*matchCriteriaALB)(m))
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaALB, err)
 	}
 	if m.ObjectMatchValue == nil {
 		return nil
 	}
 	objectMatchValue, ok := m.ObjectMatchValue.(interface{})
 	if !ok {
-		return fmt.Errorf("object match value should be of type 'interface{}', but was %T", m.ObjectMatchValue)
+		return fmt.Errorf("%w: objectMatchValue should be of type 'interface{}', but was '%T'", ErrUnmarshallMatchCriteriaALB, m.ObjectMatchValue)
 	}
 
 	objectMatchValueMap, ok := objectMatchValue.(map[string]interface{})
 	if !ok {
-		return fmt.Errorf("structure of ObjectMatchValue should be the map, but was %T", objectMatchValue)
+		return fmt.Errorf("%w: structure of objectMatchValue should be 'map', but was '%T'", ErrUnmarshallMatchCriteriaALB, objectMatchValue)
 	}
 	objectMatchValueType, ok := objectMatchValueMap["type"]
 	if !ok {
-		return fmt.Errorf("object should contain 'type' field")
+		return fmt.Errorf("%w: objectMatchValue should contain 'type' field", ErrUnmarshallMatchCriteriaALB)
 	}
 	objectMatchValueTypeName, ok := objectMatchValueType.(string)
 	if !ok {
-		return fmt.Errorf("'type' should be a string")
+		return fmt.Errorf("%w: 'type' should be a string", ErrUnmarshallMatchCriteriaALB)
 	}
 
 	createObjectMatchValue, ok := objectMatchValueHandlers[objectMatchValueTypeName]
 	if !ok {
-		return fmt.Errorf("ObjectMatchValue. UnmarshalJSON: unexpected type: %s", objectMatchValueTypeName)
+		return fmt.Errorf("%w: objectMatchValue has unexpected type: '%s'", ErrUnmarshallMatchCriteriaALB, objectMatchValueTypeName)
 	}
 	convertedObjectMatchValue := createObjectMatchValue()
 	marshal, err := json.Marshal(objectMatchValue)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaALB, err)
 	}
 	err = json.Unmarshal(marshal, convertedObjectMatchValue)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaALB, err)
 	}
 	m.ObjectMatchValue = convertedObjectMatchValue
 

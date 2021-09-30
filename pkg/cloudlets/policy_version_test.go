@@ -1673,7 +1673,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 			},
 		},
 		"invalid object value type": {
-			withError: errors.New("ObjectMatchValue. UnmarshalJSON: unexpected type: foo"),
+			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: objectMatchValue has unexpected type: 'foo'"),
 			responseBody: `
 	[
         {
@@ -1699,7 +1699,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 		},
 		"wrong type for object value type": {
-			withError: errors.New("'type' should be a string"),
+			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: 'type' should be a string"),
 			responseBody: `
 	[
         {
@@ -1725,7 +1725,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 		},
 		"missing object value type": {
-			withError: errors.New("object should contain 'type' field"),
+			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: objectMatchValue should contain 'type' field"),
 			responseBody: `
 	[
         {
@@ -1750,7 +1750,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 		},
 		"invalid object value": {
-			withError: errors.New("structure of ObjectMatchValue should be the map, but was string"),
+			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: structure of objectMatchValue should be 'map', but was 'string'"),
 			responseBody: `
 	[
         {
@@ -1778,10 +1778,10 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
         }
     ]
 `,
-			withError: errors.New("unsupported match rule type: apMatchRule"),
+			withError: errors.New("unmarshalling MatchRules: unsupported match rule type: apMatchRule"),
 		},
 		"invalid type": {
-			withError: errors.New("'type' field on match rule entry should be a string"),
+			withError: errors.New("unmarshalling MatchRules: 'type' field on match rule entry should be a string"),
 			responseBody: `
 	[
         {
@@ -1801,7 +1801,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 		},
 		"missing type": {
-			withError: errors.New("match rule entry should contain 'type' field"),
+			withError: errors.New("unmarshalling MatchRules: match rule entry should contain 'type' field"),
 			responseBody: `
 	[
         {
