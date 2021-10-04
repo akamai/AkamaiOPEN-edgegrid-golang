@@ -139,7 +139,7 @@ func (v DataCenter) Validate() error {
 	return validation.Errors{
 		"Continent":     validation.Validate(v.Continent, validation.Required, validation.In("AF", "AS", "EU", "NA", "OC", "OT", "SA")),
 		"Country":       validation.Validate(v.Country, validation.Required, validation.Length(2, 2)),
-		"Hostname":      validation.Validate(v.Hostname, validation.Max(256)),
+		"Hostname":      validation.Validate(v.Hostname, validation.Length(0, 256)),
 		"Latitude":      validation.Validate(v.Latitude, validation.Required, validation.Min(-180.0), validation.Max(180.0)),
 		"LivenessHosts": validation.Validate(v.LivenessHosts, validation.Length(1, 0)), // max is 0, it means there is no upper bound for the length
 		"Longitude":     validation.Validate(v.Longitude, validation.Required, validation.Min(-180.0), validation.Max(180.0)),

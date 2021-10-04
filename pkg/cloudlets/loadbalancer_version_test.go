@@ -31,6 +31,7 @@ func TestCreateLoadBalancerVersion(t *testing.T) {
 					DataCenters: []DataCenter{
 						{
 							CloudService: false,
+							Hostname:     "clorigin.example.com",
 							LivenessHosts: []string{
 								"clorigin3.www.example.com",
 							},
@@ -74,6 +75,7 @@ func TestCreateLoadBalancerVersion(t *testing.T) {
     "dataCenters": [
         {
             "cloudService": false,
+			"hostname": "clorigin.example.com",
             "livenessHosts": [
                 "clorigin3.www.example.com"
             ],
@@ -116,6 +118,7 @@ func TestCreateLoadBalancerVersion(t *testing.T) {
 				DataCenters: []DataCenter{
 					{
 						CloudService: false,
+						Hostname:     "clorigin.example.com",
 						LivenessHosts: []string{
 							"clorigin3.www.example.com",
 						},
@@ -454,6 +457,7 @@ func TestUpdateLoadBalancerVersion(t *testing.T) {
 					DataCenters: []DataCenter{
 						{
 							CloudService: false,
+							Hostname:     "clorigin.example.com",
 							LivenessHosts: []string{
 								"clorigin3.www.example.com",
 							},
@@ -492,6 +496,7 @@ func TestUpdateLoadBalancerVersion(t *testing.T) {
     "dataCenters": [
         {
             "cloudService": false,
+			"hostname": "clorigin.example.com",
             "livenessHosts": [
                 "clorigin3.www.example.com"
             ],
@@ -530,6 +535,7 @@ func TestUpdateLoadBalancerVersion(t *testing.T) {
 				DataCenters: []DataCenter{
 					{
 						CloudService: false,
+						Hostname:     "clorigin.example.com",
 						LivenessHosts: []string{
 							"clorigin3.www.example.com",
 						},
