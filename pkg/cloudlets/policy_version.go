@@ -134,6 +134,7 @@ type (
 		Location        string             `json:"location,omitempty"`
 		MatchesAlways   bool               `json:"matchesAlways"`
 		ForwardSettings ForwardSettings    `json:"forwardSettings"`
+		Disabled        bool               `json:"disabled,omitempty"`
 	}
 
 	// ForwardSettings represents forward settings
@@ -157,6 +158,7 @@ type (
 		Location                 string            `json:"location,omitempty"`
 		UseIncomingQueryString   bool              `json:"useIncomingQueryString"`
 		UseIncomingSchemeAndHost bool              `json:"useIncomingSchemeAndHost"`
+		Disabled                 bool              `json:"disabled,omitempty"`
 	}
 
 	// MatchCriteriaALB represents a match criteria resource for match rule for cloudlet ALB
