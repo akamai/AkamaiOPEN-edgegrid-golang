@@ -76,10 +76,14 @@ type (
 		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
 	}
 
+	// AdvancedExceptions is used to describe advanced exceptions used in Adaptive Security Engine(ASE) rules.
+	AdvancedExceptions AttackGroupAdvancedExceptions
+
 	// RuleConditionException is used to describe the conditions and exceptions for a rule.
 	RuleConditionException struct {
 		Conditions *RuleConditions `json:"conditions,omitempty"`
 		Exception  *RuleException  `json:"exception,omitempty"`
+		AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
 	}
 
 	// RuleConditions is used to describe the conditions for a rule.
@@ -103,6 +107,7 @@ type (
 		UseHeaders    bool     `json:"useHeaders,omitempty"`
 	}
 
+
 	// RuleException is used to describe the exceptions for a rule.
 	RuleException struct {
 		AnyHeaderCookieOrParam               []string                                 `json:"anyHeaderCookieOrParam,omitempty"`
@@ -110,6 +115,7 @@ type (
 		SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValuePtr `json:"specificHeaderCookieOrParamNameValue,omitempty"`
 		SpecificHeaderCookieOrParamNames     *SpecificHeaderCookieOrParamNamesPtr     `json:"specificHeaderCookieOrParamNames,omitempty"`
 		SpecificHeaderCookieOrParamPrefix    *SpecificHeaderCookieOrParamPrefixPtr    `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+		SpecificHeaderCookieParamXMLOrJSONNames *SpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
 	}
 
 	// SpecificHeaderCookieOrParamNamesPtr is used as part of condition and exception information for a rule.
@@ -130,6 +136,10 @@ type (
 		Selector string `json:"selector,omitempty"`
 		Value    string `json:"value,omitempty"`
 	}
+
+	// SpecificHeaderCookieParamXMLOrJSONNames is used as part of condition and exception information for an ASE rule.
+	SpecificHeaderCookieParamXMLOrJSONNames AttackGroupSpecificHeaderCookieParamXMLOrJSONNames
+
 
 	// UpdateConditionExceptionRequest is used to update the condition and exception information for a rule.
 	UpdateConditionExceptionRequest struct {

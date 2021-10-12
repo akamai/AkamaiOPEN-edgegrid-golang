@@ -130,7 +130,7 @@ func TestAppSec_GetAttackGroupRecommendations(t *testing.T) {
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				Group:"XSS",
+				Group:    "XSS",
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -176,6 +176,3 @@ func TestAppSec_GetAttackGroupRecommendations(t *testing.T) {
 		})
 	}
 }
-
-
-
