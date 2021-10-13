@@ -162,5 +162,5 @@ const (
 	VersionActivationNetworkStaging VersionActivationNetwork = "staging"
 
 	// VersionActivationNetworkProduction is the production network
-	VersionActivationNetworkProduction VersionActivationNetwork = "production"
+	VersionActivationNetworkProduction VersionActivationNetwork = "prod"
 )
