@@ -1,5 +1,15 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.7.0 (Oct 19, 2021)
+
+#### FEATURES/ENHANCEMENTS:
+* [IMPORTANT] Added DataStream API support
+  * Stream operations
+  * Stream activation operations
+  * Read access to various DataStream properties
+* Added HAPI v1 support
+  * Delete edge hostname
+
 ## 2.6.0 (Aug 16, 2021)
 
 #### BUG FIXES:
