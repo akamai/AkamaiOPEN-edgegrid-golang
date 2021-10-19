@@ -230,11 +230,13 @@ type (
 		Method string `json:"method,omitempty"`
 	}
 
+	// nolint:revive
 	// NetworkListsResponseLinks contains LinkInfo
 	NetworkListsResponseLinks struct {
 		Create *LinkInfo `json:"create,omitempty"`
 	}
 
+	// nolint:revive
 	// NetworkListsLinks encapsulates the set of API hypermedia
 	NetworkListsLinks struct {
 		ActivateInProduction *LinkInfo `json:"activateInProduction,omitempty"`
