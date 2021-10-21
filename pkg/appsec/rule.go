@@ -149,13 +149,11 @@ type (
 		RuleID     int             `json:"-"`
 		Conditions *RuleConditions `json:"conditions,omitempty"`
 		Exception  *RuleException  `json:"exception,omitempty"`
+		AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
 	}
 
 	// UpdateConditionExceptionResponse is returned from a call to UpdateConditionException.
-	UpdateConditionExceptionResponse struct {
-		Conditions *RuleConditions `json:"conditions,omitempty"`
-		Exception  *RuleException  `json:"exception,omitempty"`
-	}
+	UpdateConditionExceptionResponse RuleConditionException
 )
 
 // IsEmptyConditionException checks whether a rule's condition and exception information is empty.
