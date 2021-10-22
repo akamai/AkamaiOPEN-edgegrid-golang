@@ -231,10 +231,8 @@ func TestGetPolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "erMatchRule",
-            "akaRuleId": "a58392a7a43f19a3",
             "end": 0,
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/276858/versions/6/rules/a58392a7a43f19a3",
             "matchURL": null,
             "disabled": true,
             "name": "rul3",
@@ -269,10 +267,8 @@ func TestGetPolicyVersion(t *testing.T) {
 				MatchRules: MatchRules{
 					&MatchRuleER{
 						Type:                     "erMatchRule",
-						AkaRuleID:                "a58392a7a43f19a3",
 						End:                      0,
 						ID:                       0,
-						Location:                 "/cloudlets/api/v2/policies/276858/versions/6/rules/a58392a7a43f19a3",
 						MatchURL:                 "",
 						Name:                     "rul3",
 						RedirectURL:              "/abc/sss",
@@ -305,10 +301,8 @@ func TestGetPolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "albMatchRule",
-            "akaRuleId": "a58392a7a43f19a3",
             "end": 0,
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/276858/versions/6/rules/a58392a7a43f19a3",
             "matchURL": null,
             "disabled": true,
             "name": "rul3",
@@ -338,10 +332,8 @@ func TestGetPolicyVersion(t *testing.T) {
 				MatchRules: MatchRules{
 					&MatchRuleALB{
 						Type:      "albMatchRule",
-						AkaRuleID: "a58392a7a43f19a3",
 						End:       0,
 						ID:        0,
-						Location:  "/cloudlets/api/v2/policies/276858/versions/6/rules/a58392a7a43f19a3",
 						MatchURL:  "",
 						Name:      "rul3",
 						Start:     0,
@@ -369,10 +361,8 @@ func TestGetPolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "erMatchRule",
-            "akaRuleId": "a58392a7a43f19a3",
             "end": 0,
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/276858/versions/6/rules/a58392a7a43f19a3",
             "matchURL": null,
             "name": "rul3",
             "redirectURL": "/abc/sss",
@@ -406,10 +396,8 @@ func TestGetPolicyVersion(t *testing.T) {
 				MatchRules: MatchRules{
 					&MatchRuleER{
 						Type:                     "erMatchRule",
-						AkaRuleID:                "a58392a7a43f19a3",
 						End:                      0,
 						ID:                       0,
-						Location:                 "/cloudlets/api/v2/policies/276858/versions/6/rules/a58392a7a43f19a3",
 						MatchURL:                 "",
 						Name:                     "rul3",
 						RedirectURL:              "/abc/sss",
@@ -442,10 +430,8 @@ func TestGetPolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "albMatchRule",
-            "akaRuleId": "a58392a7a43f19a3",
             "end": 0,
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/276858/versions/6/rules/a58392a7a43f19a3",
             "matchURL": null,
             "name": "rul3",
             "start": 0
@@ -474,10 +460,8 @@ func TestGetPolicyVersion(t *testing.T) {
 				MatchRules: MatchRules{
 					&MatchRuleALB{
 						Type:      "albMatchRule",
-						AkaRuleID: "a58392a7a43f19a3",
 						End:       0,
 						ID:        0,
-						Location:  "/cloudlets/api/v2/policies/276858/versions/6/rules/a58392a7a43f19a3",
 						MatchURL:  "",
 						Name:      "rul3",
 						Start:     0,
@@ -653,13 +637,11 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "albMatchRule",
-            "akaRuleId": "8a57dcbd5565cc9a",
             "end": 0,
             "forwardSettings": {
                 "originId": "alb_test_krk_dc1_only"
             },
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/279628/versions/2/rules/8a57dcbd5565cc9a",
             "matchURL": null,
             "matches": [
                 {
@@ -682,13 +664,11 @@ func TestCreatePolicyVersion(t *testing.T) {
         },
         {
             "type": "albMatchRule",
-            "akaRuleId": "c018ee7c534b568c",
             "end": 0,
             "forwardSettings": {
                 "originId": "alb_test_krk_0_100"
             },
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/279628/versions/2/rules/c018ee7c534b568c",
             "matchURL": null,
             "matches": [
                 {
@@ -722,13 +702,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 				MatchRules: MatchRules{
 					&MatchRuleALB{
 						Type:      "albMatchRule",
-						AkaRuleID: "8a57dcbd5565cc9a",
 						End:       0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_dc1_only",
 						},
 						ID:       0,
-						Location: "/cloudlets/api/v2/policies/279628/versions/2/rules/8a57dcbd5565cc9a",
 						MatchURL: "",
 						Matches: []MatchCriteriaALB{
 							{
@@ -751,13 +729,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 					},
 					&MatchRuleALB{
 						Type:      "albMatchRule",
-						AkaRuleID: "c018ee7c534b568c",
 						End:       0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_0_100",
 						},
 						ID:       0,
-						Location: "/cloudlets/api/v2/policies/279628/versions/2/rules/c018ee7c534b568c",
 						MatchURL: "",
 						Matches: []MatchCriteriaALB{
 							{
@@ -832,13 +808,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 		    "matchRules": [
 		        {
 		            "type": "albMatchRule",
-		            "akaRuleId": "93869097f18722c9",
 		            "end": 0,
 		            "forwardSettings": {
 		                "originId": "alb_test_krk_mutable"
 		            },
 		            "id": 0,
-		            "location": "/cloudlets/api/v2/policies/139743/versions/796/rules/93869097f18722c9",
 		            "matchURL": null,
 		            "matches": [
 		                {
@@ -882,13 +856,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 				MatchRules: MatchRules{
 					&MatchRuleALB{
 						Type:      "albMatchRule",
-						AkaRuleID: "93869097f18722c9",
 						End:       0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_mutable",
 						},
 						ID:       0,
-						Location: "/cloudlets/api/v2/policies/139743/versions/796/rules/93869097f18722c9",
 						MatchURL: "",
 						Matches: []MatchCriteriaALB{
 							{
@@ -969,13 +941,11 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "albMatchRule",
-            "akaRuleId": "43776ac25e98e869",
             "end": 0,
             "forwardSettings": {
                 "originId": "alb_test_krk_mutable"
             },
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/139743/versions/797/rules/43776ac25e98e869",
             "matchURL": null,
             "matches": [
                 {
@@ -1015,13 +985,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 				MatchRules: MatchRules{
 					&MatchRuleALB{
 						Type:      "albMatchRule",
-						AkaRuleID: "43776ac25e98e869",
 						End:       0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_mutable",
 						},
 						ID:       0,
-						Location: "/cloudlets/api/v2/policies/139743/versions/797/rules/43776ac25e98e869",
 						MatchURL: "",
 						Matches: []MatchCriteriaALB{
 							{
@@ -1098,13 +1066,11 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "albMatchRule",
-            "akaRuleId": "69ace82d9db2ce48",
             "end": 0,
             "forwardSettings": {
                 "originId": "alb_test_krk_mutable"
             },
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/139743/versions/798/rules/69ace82d9db2ce48",
             "matchURL": null,
             "matches": [
                 {
@@ -1145,13 +1111,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 				MatchRules: MatchRules{
 					&MatchRuleALB{
 						Type:      "albMatchRule",
-						AkaRuleID: "69ace82d9db2ce48",
 						End:       0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_mutable",
 						},
 						ID:       0,
-						Location: "/cloudlets/api/v2/policies/139743/versions/798/rules/69ace82d9db2ce48",
 						MatchURL: "",
 						Matches: []MatchCriteriaALB{
 							{
@@ -1233,7 +1197,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:                    0,
 							End:                      0,
 							MatchURL:                 "abc.com",
-							AkaRuleID:                "e1969ed65202167f",
 							StatusCode:               301,
 							RedirectURL:              "/ddd",
 							UseIncomingQueryString:   false,
@@ -1258,10 +1221,8 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "erMatchRule",
-            "akaRuleId": "a58392a7a43f19a3",
             "end": 0,
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/276858/versions/6/rules/a58392a7a43f19a3",
             "matchURL": null,
             "matches": [
                 {
@@ -1296,10 +1257,8 @@ func TestCreatePolicyVersion(t *testing.T) {
         },
         {
             "type": "erMatchRule",
-            "akaRuleId": "e38515c6542d2ed8",
             "end": 0,
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/276858/versions/6/rules/e38515c6542d2ed8",
             "matchURL": "ddd.aaa",
             "name": "rule 2",
             "redirectURL": "sss.com",
@@ -1310,10 +1269,8 @@ func TestCreatePolicyVersion(t *testing.T) {
         },
         {
             "type": "erMatchRule",
-            "akaRuleId": "e1969ed65202167f",
             "end": 0,
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/276858/versions/6/rules/e1969ed65202167f",
             "matchURL": "abc.com",
             "name": "r1",
             "redirectURL": "/ddd",
@@ -1347,10 +1304,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 				MatchRules: MatchRules{
 					&MatchRuleER{
 						Type:                     "erMatchRule",
-						AkaRuleID:                "a58392a7a43f19a3",
 						End:                      0,
 						ID:                       0,
-						Location:                 "/cloudlets/api/v2/policies/276858/versions/6/rules/a58392a7a43f19a3",
 						MatchURL:                 "",
 						Name:                     "rul3",
 						RedirectURL:              "/abc/sss",
@@ -1385,10 +1340,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 					},
 					&MatchRuleER{
 						Type:                   "erMatchRule",
-						AkaRuleID:              "e38515c6542d2ed8",
 						End:                    0,
 						ID:                     0,
-						Location:               "/cloudlets/api/v2/policies/276858/versions/6/rules/e38515c6542d2ed8",
 						MatchURL:               "ddd.aaa",
 						Name:                   "rule 2",
 						RedirectURL:            "sss.com",
@@ -1399,10 +1352,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 					},
 					&MatchRuleER{
 						Type:                     "erMatchRule",
-						AkaRuleID:                "e1969ed65202167f",
 						End:                      0,
 						ID:                       0,
-						Location:                 "/cloudlets/api/v2/policies/276858/versions/6/rules/e1969ed65202167f",
 						MatchURL:                 "abc.com",
 						Name:                     "r1",
 						RedirectURL:              "/ddd",
@@ -1645,13 +1596,11 @@ func TestUpdatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "albMatchRule",
-            "akaRuleId": "80842d2cb25ccede",
             "end": 2,
             "forwardSettings": {
                 "originId": "alb_test_krk_dc1_only"
             },
             "id": 10,
-            "location": "/cloudlets/api/v2/policies/279628/versions/2/rules/80842d2cb25ccede",
             "matchURL": null,
             "matches": [
                 {
@@ -1667,13 +1616,11 @@ func TestUpdatePolicyVersion(t *testing.T) {
         },
         {
             "type": "albMatchRule",
-            "akaRuleId": "c018ee7c534b568c",
             "end": 0,
             "forwardSettings": {
                 "originId": "alb_test_krk_0_100"
             },
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/279628/versions/2/rules/c018ee7c534b568c",
             "matchURL": null,
             "matches": [
                 {
@@ -1722,13 +1669,11 @@ func TestUpdatePolicyVersion(t *testing.T) {
 				MatchRules: MatchRules{
 					&MatchRuleALB{
 						Type:      "albMatchRule",
-						AkaRuleID: "80842d2cb25ccede",
 						End:       2,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_dc1_only",
 						},
 						ID:       10,
-						Location: "/cloudlets/api/v2/policies/279628/versions/2/rules/80842d2cb25ccede",
 						MatchURL: "",
 						Matches: []MatchCriteriaALB{
 							{
@@ -1744,13 +1689,11 @@ func TestUpdatePolicyVersion(t *testing.T) {
 					},
 					&MatchRuleALB{
 						Type:      "albMatchRule",
-						AkaRuleID: "c018ee7c534b568c",
 						End:       0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_0_100",
 						},
 						ID:       0,
-						Location: "/cloudlets/api/v2/policies/279628/versions/2/rules/c018ee7c534b568c",
 						MatchURL: "",
 						Matches: []MatchCriteriaALB{
 							{
@@ -1849,13 +1792,11 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 	[
         {
             "type": "albMatchRule",
-            "akaRuleId": "8a57dcbd5565cc9a",
             "end": 0,
             "forwardSettings": {
                 "originId": "alb_test_krk_dc1_only"
             },
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/279628/versions/2/rules/8a57dcbd5565cc9a",
             "matchURL": null,
             "matches": [
                 {
@@ -1899,13 +1840,11 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 			expectedObject: MatchRules{
 				&MatchRuleALB{
 					Type:      "albMatchRule",
-					AkaRuleID: "8a57dcbd5565cc9a",
 					End:       0,
 					ForwardSettings: ForwardSettings{
 						OriginID: "alb_test_krk_dc1_only",
 					},
 					ID:       0,
-					Location: "/cloudlets/api/v2/policies/279628/versions/2/rules/8a57dcbd5565cc9a",
 					MatchURL: "",
 					Matches: []MatchCriteriaALB{
 						{

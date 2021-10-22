@@ -129,9 +129,7 @@ type (
 		End             int                `json:"end,omitempty"`
 		ID              int64              `json:"id,omitempty"`
 		Matches         []MatchCriteriaALB `json:"matches,omitempty"`
-		AkaRuleID       string             `json:"akaRuleId,omitempty"`
 		MatchURL        string             `json:"matchURL,omitempty"`
-		Location        string             `json:"location,omitempty"`
 		MatchesAlways   bool               `json:"matchesAlways"`
 		ForwardSettings ForwardSettings    `json:"forwardSettings"`
 		Disabled        bool               `json:"disabled,omitempty"`
@@ -150,12 +148,10 @@ type (
 		End                      int               `json:"end,omitempty"`
 		ID                       int64             `json:"id,omitempty"`
 		Matches                  []MatchCriteriaER `json:"matches,omitempty"`
-		AkaRuleID                string            `json:"akaRuleId,omitempty"`
 		UseRelativeURL           string            `json:"useRelativeUrl"`
 		StatusCode               int               `json:"statusCode"`
 		RedirectURL              string            `json:"redirectURL"`
 		MatchURL                 string            `json:"matchURL,omitempty"`
-		Location                 string            `json:"location,omitempty"`
 		UseIncomingQueryString   bool              `json:"useIncomingQueryString"`
 		UseIncomingSchemeAndHost bool              `json:"useIncomingSchemeAndHost"`
 		Disabled                 bool              `json:"disabled,omitempty"`
@@ -290,7 +286,6 @@ func (m MatchRuleALB) Validate() error {
 		"End":                      validation.Validate(m.End, validation.Min(0)),
 		"MatchURL":                 validation.Validate(m.MatchURL, validation.Length(0, 8192)),
 		"ForwardSettings.OriginID": validation.Validate(m.ForwardSettings.OriginID, validation.Required, validation.Length(0, 8192)),
-		"Location":                 validation.Validate(m.Location, validation.Empty),
 		"Matches":                  validation.Validate(m.Matches),
 	}.Filter()
 }
@@ -306,7 +301,6 @@ func (m MatchRuleER) Validate() error {
 		"RedirectURL":    validation.Validate(m.RedirectURL, validation.Required, validation.Length(1, 8192)),
 		"UseRelativeURL": validation.Validate(m.UseRelativeURL, validation.Required, validation.In("none", "copy_scheme_hostname", "relative_url")),
 		"StatusCode":     validation.Validate(m.StatusCode, validation.Required, validation.In(301, 302, 303, 307, 308)),
-		"Location":       validation.Validate(m.Location, validation.Empty),
 		"Matches":        validation.Validate(m.Matches),
 	}.Filter()
 }
