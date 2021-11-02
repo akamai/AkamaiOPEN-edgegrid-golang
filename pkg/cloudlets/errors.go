@@ -11,9 +11,9 @@ import (
 type (
 	// Error is a cloudlets error interface
 	Error struct {
-		Type          string          `json:"type"`
-		Title         string          `json:"title"`
-		Detail        string          `json:"detail"`
+		Type          string          `json:"type,omitempty"`
+		Title         string          `json:"title,omitempty"`
+		Detail        string          `json:"detail,omitempty"`
 		Instance      string          `json:"instance,omitempty"`
 		BehaviorName  string          `json:"behaviorName,omitempty"`
 		ErrorLocation string          `json:"errorLocation,omitempty"`

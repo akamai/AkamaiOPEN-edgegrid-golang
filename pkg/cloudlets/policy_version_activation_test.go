@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -131,7 +132,7 @@ func TestActivatePolicyVersion(t *testing.T) {
 		uri                string
 		responseBody       string
 		expectedActivation PolicyActivation
-		withError          error
+		withError          *regexp.Regexp
 	}{
 		"200 Policy version activation": {
 			responseStatus: http.StatusOK,
@@ -159,7 +160,7 @@ func TestActivatePolicyVersion(t *testing.T) {
 		},
 		"any request validation error": {
 			parameters: ActivatePolicyVersionRequest{},
-			withError:  ErrStructValidation,
+			withError:  regexp.MustCompile(ErrStructValidation.Error()),
 		},
 		"any kind of server error": {
 			responseStatus: http.StatusInternalServerError,
@@ -171,7 +172,40 @@ func TestActivatePolicyVersion(t *testing.T) {
 					AdditionalPropertyNames: []string{"www.rc-cloudlet.com"},
 				},
 			},
-			withError: ErrActivatePolicyVersion,
+			withError: regexp.MustCompile(ErrActivatePolicyVersion.Error()),
+		},
+		"property name not existing": {
+			responseStatus: http.StatusBadRequest,
+			parameters: ActivatePolicyVersionRequest{
+				PolicyID: 1234,
+				Version:  1,
+				RequestBody: ActivatePolicyVersionRequestBody{
+					Network:                 VersionActivationNetworkStaging,
+					AdditionalPropertyNames: []string{"www.rc-cloudlet.com"},
+				},
+			},
+			withError: regexp.MustCompile(`"Requested propertyName \\"XYZ\\" does not exist"`),
+			responseBody: `
+				{
+					"detail": "Requested propertyName \"XYZ\" does not exist",
+					"errorCode": -1,
+					"errorMessage": "Requested property Name \"XYZ\" does not exist",
+					"instance": "s8dsf8sf8df8",
+					"stackTrace": "java.lang.IllegalArgumentException: Requested property Name \"XYZ\" does not exist\n\tat com.akamai..."
+				}
+			`,
+		},
+		"empty property names": {
+			responseStatus: http.StatusBadRequest,
+			parameters: ActivatePolicyVersionRequest{
+				PolicyID: 1234,
+				Version:  1,
+				RequestBody: ActivatePolicyVersionRequestBody{
+					Network:                 VersionActivationNetworkStaging,
+					AdditionalPropertyNames: []string{},
+				},
+			},
+			withError: regexp.MustCompile(`struct validation: RequestBody.AdditionalPropertyNames: cannot be blank`),
 		},
 	}
 
@@ -186,7 +220,7 @@ func TestActivatePolicyVersion(t *testing.T) {
 			client := mockAPIClient(t, mockServer)
 			err := client.ActivatePolicyVersion(context.Background(), test.parameters)
 			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				assert.True(t, test.withError.MatchString(err.Error()), "want: %s; got: %s", test.withError, err)
 				return
 			}
 			require.NoError(t, err)

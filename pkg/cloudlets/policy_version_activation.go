@@ -79,8 +79,9 @@ func (r ListPolicyActivationsRequest) Validate() error {
 // Validate validates ActivatePolicyVersionRequest
 func (r ActivatePolicyVersionRequest) Validate() error {
 	return validation.Errors{
-		"PolicyID": validation.Validate(r.PolicyID, validation.Required),
-		"Version":  validation.Validate(r.Version, validation.Required),
+		"PolicyID":                            validation.Validate(r.PolicyID, validation.Required),
+		"Version":                             validation.Validate(r.Version, validation.Required),
+		"RequestBody.AdditionalPropertyNames": validation.Validate(r.RequestBody.AdditionalPropertyNames, validation.Required),
 		"RequestBody.Network": validation.Validate(
 			r.RequestBody.Network,
 			validation.In(VersionActivationNetworkStaging, VersionActivationNetworkProduction),
@@ -151,7 +152,7 @@ func (c *cloudlets) ActivatePolicyVersion(ctx context.Context, params ActivatePo
 	}
 
 	if response.StatusCode >= http.StatusBadRequest {
-		return fmt.Errorf("%w: %d", ErrActivatePolicyVersion, response.StatusCode)
+		return fmt.Errorf("%w: %s", ErrActivatePolicyVersion, c.Error(response))
 	}
 
 	return nil
