@@ -43,21 +43,21 @@ type (
 
 	// PolicyVersion is response returned by GetPolicyVersion, CreatePolicyVersion or UpdatePolicyVersion
 	PolicyVersion struct {
-		Location         string          `json:"location"`
-		RevisionID       int64           `json:"revisionId"`
-		PolicyID         int64           `json:"policyId"`
-		Version          int64           `json:"version"`
-		Description      string          `json:"description"`
-		CreatedBy        string          `json:"createdBy"`
-		CreateDate       int             `json:"createDate"`
-		LastModifiedBy   string          `json:"lastModifiedBy"`
-		LastModifiedDate int             `json:"lastModifiedDate"`
-		RulesLocked      bool            `json:"rulesLocked"`
-		Activations      []*Activation   `json:"activations"`
-		MatchRules       MatchRules      `json:"matchRules"`
-		MatchRuleFormat  MatchRuleFormat `json:"matchRuleFormat"`
-		Deleted          bool            `json:"deleted,omitempty"`
-		Warnings         []Warning       `json:"warnings,omitempty"`
+		Location         string             `json:"location"`
+		RevisionID       int64              `json:"revisionId"`
+		PolicyID         int64              `json:"policyId"`
+		Version          int64              `json:"version"`
+		Description      string             `json:"description"`
+		CreatedBy        string             `json:"createdBy"`
+		CreateDate       int                `json:"createDate"`
+		LastModifiedBy   string             `json:"lastModifiedBy"`
+		LastModifiedDate int                `json:"lastModifiedDate"`
+		RulesLocked      bool               `json:"rulesLocked"`
+		Activations      []PolicyActivation `json:"activations"`
+		MatchRules       MatchRules         `json:"matchRules"`
+		MatchRuleFormat  MatchRuleFormat    `json:"matchRuleFormat"`
+		Deleted          bool               `json:"deleted,omitempty"`
+		Warnings         []Warning          `json:"warnings,omitempty"`
 	}
 
 	// ListPolicyVersionsRequest describes the parameters needed to list policy versions
@@ -98,15 +98,15 @@ type (
 		Deleted         bool            `json:"deleted"`
 	}
 
-	// UpdatePolicyVersionRequest describes the parameters of the update policy version request
-	UpdatePolicyVersionRequest struct {
-		UpdatePolicyVersion
+	// DeletePolicyVersionRequest describes the parameters of the delete policy version request
+	DeletePolicyVersionRequest struct {
 		PolicyID int64
 		Version  int64
 	}
 
-	// DeletePolicyVersionRequest describes the parameters of the delete policy version request
-	DeletePolicyVersionRequest struct {
+	// UpdatePolicyVersionRequest describes the parameters of the update policy version request
+	UpdatePolicyVersionRequest struct {
+		UpdatePolicyVersion
 		PolicyID int64
 		Version  int64
 	}
@@ -408,8 +408,7 @@ func (m *MatchRules) UnmarshalJSON(b []byte) error {
 		if !ok {
 			return fmt.Errorf("%w: unsupported match rule type: %s", ErrUnmarshallMatchRules, cloudletTypeName)
 		}
-		var dst MatchRule
-		dst = matchRuleType()
+		dst := matchRuleType()
 		err = json.Unmarshal(byteArr, dst)
 		if err != nil {
 			return fmt.Errorf("%w: %s", ErrUnmarshallMatchRules, err)

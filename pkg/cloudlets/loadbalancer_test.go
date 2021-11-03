@@ -272,7 +272,7 @@ func TestGetOrigin(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetOrigin(context.Background(), test.originID)
+			result, err := client.GetOrigin(context.Background(), GetOriginRequest{OriginID: test.originID})
 			if test.withError != nil {
 				test.withError(t, err)
 				return
@@ -285,7 +285,7 @@ func TestGetOrigin(t *testing.T) {
 
 func TestCreateOrigin(t *testing.T) {
 	tests := map[string]struct {
-		request             LoadBalancerOriginCreateRequest
+		request             CreateOriginRequest
 		expectedRequestBody string
 		responseStatus      int
 		responseBody        string
@@ -294,7 +294,7 @@ func TestCreateOrigin(t *testing.T) {
 		withError           error
 	}{
 		"201 created": {
-			request: LoadBalancerOriginCreateRequest{
+			request: CreateOriginRequest{
 				OriginID:    "first",
 				Description: Description{"create first Origin"},
 			},
@@ -317,7 +317,7 @@ func TestCreateOrigin(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			request: LoadBalancerOriginCreateRequest{
+			request: CreateOriginRequest{
 				OriginID:    "second",
 				Description: Description{"create second Origin"},
 			},
@@ -345,7 +345,7 @@ func TestCreateOrigin(t *testing.T) {
 			},
 		},
 		"validation error": {
-			request:   LoadBalancerOriginCreateRequest{},
+			request:   CreateOriginRequest{},
 			withError: ErrStructValidation,
 		},
 	}
@@ -379,23 +379,23 @@ func TestCreateOrigin(t *testing.T) {
 
 func TestCreateOriginValidation(t *testing.T) {
 	tests := map[string]struct {
-		request   LoadBalancerOriginCreateRequest
+		request   CreateOriginRequest
 		withError error
 	}{
 		"validation error -  OriginID exceeds max length, which is 63": {
-			request: LoadBalancerOriginCreateRequest{
+			request: CreateOriginRequest{
 				OriginID: "ExceedMaxLenghtExceedMaxLenghtExceedMaxLenghtExceedMaxLenghtExce",
 			},
 			withError: ErrStructValidation,
 		},
 		"validation error - OriginID value less than min, which is 2": {
-			request: LoadBalancerOriginCreateRequest{
+			request: CreateOriginRequest{
 				OriginID: "E",
 			},
 			withError: ErrStructValidation,
 		},
 		"validation error - Description exceeds max length, which is 255": {
-			request: LoadBalancerOriginCreateRequest{
+			request: CreateOriginRequest{
 				OriginID: "first",
 				Description: Description{
 					"Test for creating APPLICATION_LOAD_BALANCER origin type, Test for creating APPLICATION_LOAD_BALANCER origin type, Test for creating APPLICATION_LOAD_BALANCER origin type, Test for creating APPLICATION_LOAD_BALANCER origin type,Test for creating exceed valu",
@@ -416,7 +416,7 @@ func TestCreateOriginValidation(t *testing.T) {
 
 func TestUpdateOrigin(t *testing.T) {
 	tests := map[string]struct {
-		request             LoadBalancerOriginUpdateRequest
+		request             UpdateOriginRequest
 		expectedRequestBody string
 		responseStatus      int
 		responseBody        string
@@ -425,7 +425,7 @@ func TestUpdateOrigin(t *testing.T) {
 		withError           error
 	}{
 		"200 updated": {
-			request: LoadBalancerOriginUpdateRequest{
+			request: UpdateOriginRequest{
 				OriginID:    "first",
 				Description: Description{"update first Origin"},
 			},
@@ -448,7 +448,7 @@ func TestUpdateOrigin(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			request: LoadBalancerOriginUpdateRequest{
+			request: UpdateOriginRequest{
 				OriginID:    "second",
 				Description: Description{"create second Origin"},
 			},
@@ -476,7 +476,7 @@ func TestUpdateOrigin(t *testing.T) {
 			},
 		},
 		"validation error": {
-			request:   LoadBalancerOriginUpdateRequest{},
+			request:   UpdateOriginRequest{},
 			withError: ErrStructValidation,
 		},
 	}
@@ -509,23 +509,23 @@ func TestUpdateOrigin(t *testing.T) {
 
 func TestUpdateOriginValidation(t *testing.T) {
 	tests := map[string]struct {
-		request   LoadBalancerOriginUpdateRequest
+		request   UpdateOriginRequest
 		withError error
 	}{
 		"validation error -  OriginID exceeds max length, which is 63": {
-			request: LoadBalancerOriginUpdateRequest{
+			request: UpdateOriginRequest{
 				OriginID: "ExceedMaxLenghtExceedMaxLenghtExceedMaxLenghtExceedMaxLenghtExce",
 			},
 			withError: ErrStructValidation,
 		},
 		"validation error - OriginID value less than min, which is 2": {
-			request: LoadBalancerOriginUpdateRequest{
+			request: UpdateOriginRequest{
 				OriginID: "E",
 			},
 			withError: ErrStructValidation,
 		},
 		"validation error - Description exceeds max length, which is 255": {
-			request: LoadBalancerOriginUpdateRequest{
+			request: UpdateOriginRequest{
 				OriginID: "first",
 				Description: Description{
 					"Test for creating APPLICATION_LOAD_BALANCER origin type, Test for creating APPLICATION_LOAD_BALANCER origin type, Test for creating APPLICATION_LOAD_BALANCER origin type, Test for creating APPLICATION_LOAD_BALANCER origin type,Test for creating exceed valu",

@@ -68,7 +68,7 @@ func TestListPolicies(t *testing.T) {
             {
                 "serviceVersion": null,
                 "apiVersion": "2.0",
-                "network": "test",
+                "network": "STAGING",
                 "policyInfo": {
                     "policyId": 1001,
                     "name": "CookieCutter",
@@ -105,7 +105,7 @@ func TestListPolicies(t *testing.T) {
 					CreateDate:       1400535431324,
 					LastModifiedBy:   "sjones",
 					LastModifiedDate: 1441829042000,
-					Activations: []Activation{
+					Activations: []PolicyActivation{
 						{
 							APIVersion: "2.0",
 							Network:    "prod",
@@ -129,7 +129,7 @@ func TestListPolicies(t *testing.T) {
 						},
 						{
 							APIVersion: "2.0",
-							Network:    "test",
+							Network:    "staging",
 							PolicyInfo: PolicyInfo{
 								PolicyID:       1001,
 								Name:           "CookieCutter",
@@ -262,7 +262,7 @@ func TestGetPolicy(t *testing.T) {
             {
                 "serviceVersion": null,
                 "apiVersion": "2.0",
-                "network": "test",
+                "network": "staging",
                 "policyInfo": {
                     "policyId": 1001,
                     "name": "CookieCutter",
@@ -297,7 +297,7 @@ func TestGetPolicy(t *testing.T) {
 				CreateDate:       1400535431324,
 				LastModifiedBy:   "sjones",
 				LastModifiedDate: 1441829042000,
-				Activations: []Activation{
+				Activations: []PolicyActivation{
 					{
 						APIVersion: "2.0",
 						Network:    "prod",
@@ -321,7 +321,7 @@ func TestGetPolicy(t *testing.T) {
 					},
 					{
 						APIVersion: "2.0",
-						Network:    "test",
+						Network:    "staging",
 						PolicyInfo: PolicyInfo{
 							PolicyID:       1001,
 							Name:           "CookieCutter",
@@ -376,7 +376,7 @@ func TestGetPolicy(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetPolicy(context.Background(), test.policyID)
+			result, err := client.GetPolicy(context.Background(), GetPolicyRequest{PolicyID: test.policyID})
 			if test.withError != nil {
 				test.withError(t, err)
 				return
@@ -436,7 +436,7 @@ func TestCreatePolicy(t *testing.T) {
 				Location:         "/cloudlets/api/v2/policies/276858",
 				Name:             "TestName1",
 				PolicyID:         276858,
-				Activations:      []Activation{},
+				Activations:      []PolicyActivation{},
 			},
 		},
 		"500 internal server error": {
@@ -532,7 +532,7 @@ func TestDeletePolicy(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.RemovePolicy(context.Background(), test.policyID)
+			err := client.RemovePolicy(context.Background(), RemovePolicyRequest{PolicyID: test.policyID})
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -594,7 +594,7 @@ func TestUpdatePolicy(t *testing.T) {
 				Location:         "/cloudlets/api/v2/policies/276858",
 				Name:             "TestName1Updated",
 				PolicyID:         276858,
-				Activations:      []Activation{},
+				Activations:      []PolicyActivation{},
 			},
 		},
 		"500 internal server error": {

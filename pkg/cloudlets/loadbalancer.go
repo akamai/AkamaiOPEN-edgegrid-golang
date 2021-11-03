@@ -11,8 +11,8 @@ import (
 )
 
 type (
-	// LoadBalancer is a cloudlets LoadBalancer API interface
-	LoadBalancer interface {
+	// LoadBalancers is a cloudlets LoadBalancer API interface
+	LoadBalancers interface {
 		// ListOrigins lists all origins of specified type for the current account
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getloadbalancingconfigs
@@ -22,19 +22,19 @@ type (
 		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getorigin
-		GetOrigin(context.Context, string) (*Origin, error)
+		GetOrigin(context.Context, GetOriginRequest) (*Origin, error)
 
 		// CreateOrigin creates configuration for an origin.
 		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#postloadbalancingconfigs
-		CreateOrigin(context.Context, LoadBalancerOriginCreateRequest) (*Origin, error)
+		CreateOrigin(context.Context, CreateOriginRequest) (*Origin, error)
 
 		// UpdateOrigin creates configuration for an origin.
 		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#putloadbalancingconfig
-		UpdateOrigin(context.Context, LoadBalancerOriginUpdateRequest) (*Origin, error)
+		UpdateOrigin(context.Context, UpdateOriginRequest) (*Origin, error)
 	}
 
 	// OriginResponse is an Origin returned in ListOrigins
@@ -51,14 +51,19 @@ type (
 		Type OriginType
 	}
 
-	// LoadBalancerOriginCreateRequest describes the parameters of the create origin request
-	LoadBalancerOriginCreateRequest struct {
+	// GetOriginRequest describes the parameters of the get origins request
+	GetOriginRequest struct {
+		OriginID string
+	}
+
+	// CreateOriginRequest describes the parameters of the create origin request
+	CreateOriginRequest struct {
 		OriginID string `json:"originId"`
 		Description
 	}
 
-	// LoadBalancerOriginUpdateRequest describes the parameters of the update origin request
-	LoadBalancerOriginUpdateRequest struct {
+	// UpdateOriginRequest describes the parameters of the update origin request
+	UpdateOriginRequest struct {
 		OriginID string
 		Description
 	}
@@ -107,16 +112,16 @@ func (v ListOriginsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates LoadBalancerOriginCreateRequest
-func (v LoadBalancerOriginCreateRequest) Validate() error {
+// Validate validates CreateOriginRequest
+func (v CreateOriginRequest) Validate() error {
 	return validation.Errors{
 		"OriginID":    validation.Validate(v.OriginID, validation.Required, validation.Length(2, 63)),
 		"Description": validation.Validate(v.Description.Description, validation.Length(0, 255)),
 	}.Filter()
 }
 
-// Validate validates LoadBalancerOriginUpdateRequest
-func (v LoadBalancerOriginUpdateRequest) Validate() error {
+// Validate validates UpdateOriginRequest
+func (v UpdateOriginRequest) Validate() error {
 	return validation.Errors{
 		"OriginID":    validation.Validate(v.OriginID, validation.Required, validation.Length(2, 63)),
 		"Description": validation.Validate(v.Description.Description, validation.Length(0, 255)),
@@ -159,11 +164,11 @@ func (c *cloudlets) ListOrigins(ctx context.Context, params ListOriginsRequest) 
 	return result, nil
 }
 
-func (c *cloudlets) GetOrigin(ctx context.Context, originID string) (*Origin, error) {
+func (c *cloudlets) GetOrigin(ctx context.Context, params GetOriginRequest) (*Origin, error) {
 	logger := c.Log(ctx)
 	logger.Debug("GetOrigin")
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s", originID))
+	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s", params.OriginID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetOrigin, err)
 	}
@@ -186,7 +191,7 @@ func (c *cloudlets) GetOrigin(ctx context.Context, originID string) (*Origin, er
 	return &result, nil
 }
 
-func (c *cloudlets) CreateOrigin(ctx context.Context, params LoadBalancerOriginCreateRequest) (*Origin, error) {
+func (c *cloudlets) CreateOrigin(ctx context.Context, params CreateOriginRequest) (*Origin, error) {
 	logger := c.Log(ctx)
 	logger.Debug("CreateOrigin")
 
@@ -218,7 +223,7 @@ func (c *cloudlets) CreateOrigin(ctx context.Context, params LoadBalancerOriginC
 	return &result, nil
 }
 
-func (c *cloudlets) UpdateOrigin(ctx context.Context, params LoadBalancerOriginUpdateRequest) (*Origin, error) {
+func (c *cloudlets) UpdateOrigin(ctx context.Context, params UpdateOriginRequest) (*Origin, error) {
 	logger := c.Log(ctx)
 	logger.Debug("UpdateOrigin")
 

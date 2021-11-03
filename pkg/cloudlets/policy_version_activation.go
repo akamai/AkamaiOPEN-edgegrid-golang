@@ -1,6 +1,7 @@
 package cloudlets
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -11,41 +12,8 @@ import (
 )
 
 type (
-	// VersionActivationNetwork is the activation network value
-	VersionActivationNetwork string
-
-	// PolicyActivation is returned by ListPolicyActivations
-	PolicyActivation struct {
-		Network      VersionActivationNetwork `json:"network,omitempty"`
-		APIVersion   string                   `json:"apiVersion,omitempty"`
-		PolicyInfo   PolicyInfo               `json:"policyInfo"`
-		PropertyInfo PropertyInfo             `json:"propertyInfo"`
-	}
-
-	// ListPolicyActivationsRequest contains the request parameters for ListPolicyActivations
-	ListPolicyActivationsRequest struct {
-		PolicyID     int64
-		Network      VersionActivationNetwork
-		PropertyName string
-	}
-
-	// ActivatePolicyVersionRequest contains the request parameters for ActivatePolicyVersion
-	ActivatePolicyVersionRequest struct {
-		PolicyID    int64
-		Async       bool
-		Version     int64
-		RequestBody ActivatePolicyVersionRequestBody
-	}
-
-	// ActivatePolicyVersionRequestBody is the body content for an ActivatePolicyVersionRequest
-	ActivatePolicyVersionRequestBody struct {
-		Network                 VersionActivationNetwork `json:"network"`
-		AdditionalPropertyNames []string                 `json:"additionalPropertyNames,omitempty"`
-	}
-
-	// PolicyVersionActivation is a cloudlets PolicyVersionActivation API interface
-	PolicyVersionActivation interface {
-
+	// PolicyVersionActivations is a cloudlets PolicyVersionActivations API interface
+	PolicyVersionActivations interface {
 		// ListPolicyActivations returns the complete activation history for the selected policy in reverse chronological order.
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicyactivations
@@ -56,6 +24,30 @@ type (
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#postpolicyversionactivations
 		ActivatePolicyVersion(context.Context, ActivatePolicyVersionRequest) error
 	}
+
+	// ListPolicyActivationsRequest contains the request parameters for ListPolicyActivations
+	ListPolicyActivationsRequest struct {
+		PolicyID     int64
+		Network      PolicyActivationNetwork
+		PropertyName string
+	}
+
+	// ActivatePolicyVersionRequest contains the request parameters for ActivatePolicyVersion
+	ActivatePolicyVersionRequest struct {
+		PolicyID int64
+		Async    bool
+		Version  int64
+		PolicyVersionActivation
+	}
+
+	// PolicyVersionActivation is the body content for an ActivatePolicyVersion request
+	PolicyVersionActivation struct {
+		Network                 PolicyActivationNetwork `json:"network"`
+		AdditionalPropertyNames []string                `json:"additionalPropertyNames,omitempty"`
+	}
+
+	// PolicyActivationNetwork is the activation network type for policy
+	PolicyActivationNetwork string
 )
 
 var (
@@ -65,13 +57,20 @@ var (
 	ErrActivatePolicyVersion = errors.New("activate policy version")
 )
 
+const (
+	// PolicyActivationNetworkStaging is the staging network for policy
+	PolicyActivationNetworkStaging PolicyActivationNetwork = "staging"
+	// PolicyActivationNetworkProduction is the production network for policy
+	PolicyActivationNetworkProduction PolicyActivationNetwork = "prod"
+)
+
 // Validate validates ListPolicyActivationsRequest
 func (r ListPolicyActivationsRequest) Validate() error {
 	return validation.Errors{
 		"PolicyID": validation.Validate(r.PolicyID, validation.Required),
 		"Network": validation.Validate(
 			r.Network,
-			validation.In(VersionActivationNetworkStaging, VersionActivationNetworkProduction),
+			validation.In(PolicyActivationNetworkStaging, PolicyActivationNetworkProduction),
 		),
 	}.Filter()
 }
@@ -79,14 +78,29 @@ func (r ListPolicyActivationsRequest) Validate() error {
 // Validate validates ActivatePolicyVersionRequest
 func (r ActivatePolicyVersionRequest) Validate() error {
 	return validation.Errors{
-		"PolicyID":                            validation.Validate(r.PolicyID, validation.Required),
-		"Version":                             validation.Validate(r.Version, validation.Required),
-		"RequestBody.AdditionalPropertyNames": validation.Validate(r.RequestBody.AdditionalPropertyNames, validation.Required),
-		"RequestBody.Network": validation.Validate(
-			r.RequestBody.Network,
-			validation.In(VersionActivationNetworkStaging, VersionActivationNetworkProduction),
+		"PolicyID": validation.Validate(r.PolicyID, validation.Required),
+		"Version":  validation.Validate(r.Version, validation.Required),
+		"PolicyVersionActivation.AdditionalPropertyNames": validation.Validate(r.PolicyVersionActivation.AdditionalPropertyNames, validation.Required),
+		"PolicyVersionActivation.Network": validation.Validate(
+			r.PolicyVersionActivation.Network,
+			validation.In(PolicyActivationNetworkStaging, PolicyActivationNetworkProduction),
 		),
 	}.Filter()
+}
+
+// UnmarshalJSON unifies json network field into well defined values
+func (n *PolicyActivationNetwork) UnmarshalJSON(data []byte) error {
+	d := bytes.Trim(data, "\"")
+
+	switch string(d) {
+	case "STAGING", "staging":
+		*n = PolicyActivationNetworkStaging
+	case "PRODUCTION", "production", "prod":
+		*n = PolicyActivationNetworkProduction
+	default:
+		return fmt.Errorf("cannot unmarshall PolicyActivationNetwork: %q", d)
+	}
+	return nil
 }
 
 func (c *cloudlets) ListPolicyActivations(ctx context.Context, params ListPolicyActivationsRequest) ([]PolicyActivation, error) {
@@ -147,7 +161,7 @@ func (c *cloudlets) ActivatePolicyVersion(ctx context.Context, params ActivatePo
 		return fmt.Errorf("%w: failed to create POST request: %s", ErrActivatePolicyVersion, err)
 	}
 
-	response, err := c.Exec(req, nil, params.RequestBody)
+	response, err := c.Exec(req, nil, params.PolicyVersionActivation)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrActivatePolicyVersion, err)
 	}
@@ -158,11 +172,3 @@ func (c *cloudlets) ActivatePolicyVersion(ctx context.Context, params ActivatePo
 
 	return nil
 }
-
-const (
-	// VersionActivationNetworkStaging is the staging network
-	VersionActivationNetworkStaging VersionActivationNetwork = "staging"
-
-	// VersionActivationNetworkProduction is the production network
-	VersionActivationNetworkProduction VersionActivationNetwork = "prod"
-)

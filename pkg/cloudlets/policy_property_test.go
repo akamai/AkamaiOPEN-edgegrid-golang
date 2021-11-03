@@ -17,7 +17,7 @@ func TestGetPolicyProperties(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse GetPolicyPropertiesResponse
+		expectedResponse map[string]PolicyProperty
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
@@ -99,8 +99,8 @@ func TestGetPolicyProperties(t *testing.T) {
 				}
 			`,
 			expectedPath: "/cloudlets/api/v2/policies/11754/properties",
-			expectedResponse: GetPolicyPropertiesResponse{
-				"www.myproperty.com": AssociateProperty{
+			expectedResponse: map[string]PolicyProperty{
+				"www.myproperty.com": PolicyProperty{
 					GroupID: 40498,
 					ID:      179120478,
 					Name:    "www.myproperty.com",
@@ -207,7 +207,7 @@ func TestGetPolicyProperties(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetPolicyProperties(context.Background(), test.policyID)
+			result, err := client.GetPolicyProperties(context.Background(), GetPolicyPropertiesRequest{PolicyID: test.policyID})
 			if test.withError != nil {
 				test.withError(t, err)
 				return
@@ -229,7 +229,7 @@ func TestCloudlets_DeletePolicyProperty(t *testing.T) {
 			params: DeletePolicyPropertyRequest{
 				PolicyID:   1234,
 				PropertyID: 5678,
-				Network:    VersionActivationNetworkProduction,
+				Network:    PolicyActivationNetworkProduction,
 			},
 			responseStatus: http.StatusNoContent,
 			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?async=true&network=prod",
@@ -238,7 +238,7 @@ func TestCloudlets_DeletePolicyProperty(t *testing.T) {
 			params: DeletePolicyPropertyRequest{
 				PolicyID:   1234,
 				PropertyID: 5678,
-				Network:    VersionActivationNetworkStaging,
+				Network:    PolicyActivationNetworkStaging,
 			},
 			responseStatus: http.StatusNoContent,
 			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?async=true&network=staging",
@@ -254,14 +254,14 @@ func TestCloudlets_DeletePolicyProperty(t *testing.T) {
 		"nok validation property": {
 			params: DeletePolicyPropertyRequest{
 				PolicyID: 1234,
-				Network:  VersionActivationNetworkProduction,
+				Network:  PolicyActivationNetworkProduction,
 			},
 			withError: ErrStructValidation,
 		},
 		"nok validation policy": {
 			params: DeletePolicyPropertyRequest{
 				PropertyID: 1234,
-				Network:    VersionActivationNetworkProduction,
+				Network:    PolicyActivationNetworkProduction,
 			},
 			withError: ErrStructValidation,
 		},
@@ -269,7 +269,7 @@ func TestCloudlets_DeletePolicyProperty(t *testing.T) {
 			params: DeletePolicyPropertyRequest{
 				PolicyID:   1234,
 				PropertyID: 5678,
-				Network:    VersionActivationNetworkProduction,
+				Network:    PolicyActivationNetworkProduction,
 			},
 			responseStatus: http.StatusInternalServerError,
 			withError:      ErrDeletePolicyProperty,

@@ -12,91 +12,79 @@ import (
 )
 
 type (
-	// LoadBalancerActivation is a cloudlets LoadBalancer Activation API interface
-	LoadBalancerActivation interface {
-		// GetLoadBalancerActivations fetches activations with the most recent listed first
+	// LoadBalancerActivations is a cloudlets LoadBalancer Activation API interface
+	LoadBalancerActivations interface {
+		// ListLoadBalancerActivations fetches activations with the most recent listed first
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getloadbalancingconfigactivations
-		GetLoadBalancerActivations(context.Context, string) (ActivationsList, error)
+		ListLoadBalancerActivations(context.Context, ListLoadBalancerActivationsRequest) ([]LoadBalancerActivation, error)
 
-		// ActivateLoadBalancerVersion activates the load balacing version
+		// ActivateLoadBalancerVersion activates the load balancing version
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#postloadbalancingconfigactivations
-		ActivateLoadBalancerVersion(context.Context, ActivateLoadBalancerVersionRequest) (*ActivationResponse, error)
+		ActivateLoadBalancerVersion(context.Context, ActivateLoadBalancerVersionRequest) (*LoadBalancerActivation, error)
 	}
 
-	// ActivationRequestParams contains Request body parameters for ActivateLoadBalancerVersionRequest
-	ActivationRequestParams struct {
-		Network ActivationNetwork `json:"network"`
-		DryRun  bool              `json:"dryrun,omitempty"`
-		Version int64             `json:"version"`
+	// ListLoadBalancerActivationsRequest contains request parameters for ListLoadBalancerActivations
+	ListLoadBalancerActivationsRequest struct {
+		OriginID string
 	}
 
 	// ActivateLoadBalancerVersionRequest contains request parameters for LoadBalancer version activation
 	ActivateLoadBalancerVersionRequest struct {
-		OriginID          string
-		Async             bool
-		ActivationRequest ActivationRequestParams
+		OriginID string
+		Async    bool
+		LoadBalancerVersionActivation
 	}
 
-	// ActivationResponse contains response data for a single LB Version Activation
-	ActivationResponse struct {
-		ActivatedBy   string            `json:"activatedBy,omitempty"`
-		ActivatedDate string            `json:"activatedDate,omitempty"`
-		Network       ActivationNetwork `json:"network"`
-		OriginID      string            `json:"originId,omitempty"`
-		Status        ActivationStatus  `json:"status,omitempty"`
-		DryRun        bool              `json:"dryrun,omitempty"`
-		Version       int64             `json:"version"`
+	// LoadBalancerVersionActivation contains request parameters for ActivateLoadBalancerVersionRequest
+	LoadBalancerVersionActivation struct {
+		Network LoadBalancerActivationNetwork `json:"network"`
+		DryRun  bool                          `json:"dryrun,omitempty"`
+		Version int64                         `json:"version"`
 	}
 
-	// ActivationsList is the response for GetLoadBalancerActivations
-	ActivationsList []ActivationResponse
+	// LoadBalancerActivation contains response data for a single LB Version Activation
+	LoadBalancerActivation struct {
+		ActivatedBy   string                        `json:"activatedBy,omitempty"`
+		ActivatedDate string                        `json:"activatedDate,omitempty"`
+		Network       LoadBalancerActivationNetwork `json:"network"`
+		OriginID      string                        `json:"originId,omitempty"`
+		Status        LoadBalancerActivationStatus  `json:"status,omitempty"`
+		DryRun        bool                          `json:"dryrun,omitempty"`
+		Version       int64                         `json:"version"`
+	}
 
-	// ActivationStatus is an LoadBalancer activation status value
-	ActivationStatus string
+	//LoadBalancerActivationNetwork is the activation network type for load balancer
+	LoadBalancerActivationNetwork string
 
-	//ActivationNetwork is the Network value
-	ActivationNetwork string
+	// LoadBalancerActivationStatus is an activation status type for load balancer
+	LoadBalancerActivationStatus string
 )
 
 const (
-	// ActivationStatusActive is an activation that is currently active
-	ActivationStatusActive ActivationStatus = "active"
+	// LoadBalancerActivationStatusActive is an activation that is currently active
+	LoadBalancerActivationStatusActive LoadBalancerActivationStatus = "active"
+	// LoadBalancerActivationStatusDeactivated is an activation that is deactivated
+	LoadBalancerActivationStatusDeactivated LoadBalancerActivationStatus = "deactivated"
+	// LoadBalancerActivationStatusInactive is an activation that is not active
+	LoadBalancerActivationStatusInactive LoadBalancerActivationStatus = "inactive"
+	// LoadBalancerActivationStatusPending is status of a pending activation
+	LoadBalancerActivationStatusPending LoadBalancerActivationStatus = "pending"
+	// LoadBalancerActivationStatusFailed is status of a failed activation
+	LoadBalancerActivationStatusFailed LoadBalancerActivationStatus = "failed"
 
-	// ActivationStatusInactive is an activation that is deactivated
-	ActivationStatusDeactivated ActivationStatus = "deactivated"
-
-	// ActivationStatusInactive is an activation that is not active
-	ActivationStatusInactive ActivationStatus = "inactive"
-
-	// ActivationStatusPending is status of a pending activation
-	ActivationStatusPending ActivationStatus = "pending"
-
-	// ActivationStatusPending is status of a failed activation
-	ActivationStatusFailed ActivationStatus = "failed"
-
-	// ActivationNetworkStaging is the staging network
-	ActivationNetworkStaging ActivationNetwork = "STAGING"
-
-	// ActivationNetworkProduction is the production network
-	ActivationNetworkProduction ActivationNetwork = "PRODUCTION"
-
-	// ActivationNetworkProd is the production network
-	ActivationNetworkProd ActivationNetwork = "prod"
-
-	// ActivationNetworkProductionLowCase is the production network
-	ActivationNetworkProductionLowCase ActivationNetwork = "production"
-
-	// ActivationNetworkStagingLowCase is the staging network
-	ActivationNetworkStagingLowCase ActivationNetwork = "staging"
+	// LoadBalancerActivationNetworkStaging is the staging network value for load balancer
+	LoadBalancerActivationNetworkStaging LoadBalancerActivationNetwork = "STAGING"
+	// LoadBalancerActivationNetworkProduction is the production network value for load balancer
+	LoadBalancerActivationNetworkProduction LoadBalancerActivationNetwork = "PRODUCTION"
 )
 
 var (
-	// ErrGetLoadBalancerActivations is returned when GetLoadBalancerActivations fails
-	ErrGetLoadBalancerActivations = errors.New("get load balancing activations")
+	// ErrListLoadBalancerActivations is returned when ListLoadBalancerActivations fails
+	ErrListLoadBalancerActivations = errors.New("list load balancer activations")
 	// ErrActivateLoadBalancerVersion is returned when ActivateLoadBalancerVersion fails
-	ErrActivateLoadBalancerVersion = errors.New("activate load balancing version")
+	ErrActivateLoadBalancerVersion = errors.New("activate load balancer version")
 )
 
 // Validate validates ActivateLoadBalancerVersionRequest
@@ -106,45 +94,44 @@ func (v ActivateLoadBalancerVersionRequest) Validate() error {
 	}.Filter()
 }
 
-//Validate validates ActivationRequestParams Struct
-func (v ActivationRequestParams) Validate() error {
+//Validate validates LoadBalancerVersionActivation Struct
+func (v LoadBalancerVersionActivation) Validate() error {
 	return validation.Errors{
-		"Network": validation.Validate(v.Network, validation.In(ActivationNetworkStaging, ActivationNetworkProduction,
-			ActivationNetworkProd, ActivationNetworkProductionLowCase, ActivationNetworkStagingLowCase)),
+		"Network": validation.Validate(v.Network, validation.In(LoadBalancerActivationNetworkStaging, LoadBalancerActivationNetworkProduction)),
 		"Version": validation.Validate(v.Version, validation.Min(0)),
 	}.Filter()
 }
 
-// GetLoadBalancerActivations fetches activations with the most recent listed first
-func (c *cloudlets) GetLoadBalancerActivations(ctx context.Context, originID string) (ActivationsList, error) {
+// ListLoadBalancerActivations fetches activations with the most recent listed first
+func (c *cloudlets) ListLoadBalancerActivations(ctx context.Context, params ListLoadBalancerActivationsRequest) ([]LoadBalancerActivation, error) {
 	logger := c.Log(ctx)
-	logger.Debug("GetLoadBalancerActivations")
+	logger.Debug("ListLoadBalancerActivations")
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/activations", originID))
+	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/activations", params.OriginID))
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetLoadBalancerActivations, err)
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListLoadBalancerActivations, err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetLoadBalancerActivations, err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListLoadBalancerActivations, err)
 	}
 
-	var result ActivationsList
+	var result []LoadBalancerActivation
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetLoadBalancerActivations, err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListLoadBalancerActivations, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrGetLoadBalancerActivations, c.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrListLoadBalancerActivations, c.Error(resp))
 	}
 
 	return result, nil
 }
 
 // ActivateLoadBalancerVersion activates the load balacing version
-func (c *cloudlets) ActivateLoadBalancerVersion(ctx context.Context, params ActivateLoadBalancerVersionRequest) (*ActivationResponse, error) {
+func (c *cloudlets) ActivateLoadBalancerVersion(ctx context.Context, params ActivateLoadBalancerVersionRequest) (*LoadBalancerActivation, error) {
 	logger := c.Log(ctx)
 	logger.Debug("ActivateLoadBalancerVersion")
 
@@ -166,9 +153,9 @@ func (c *cloudlets) ActivateLoadBalancerVersion(ctx context.Context, params Acti
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrActivateLoadBalancerVersion, err)
 	}
 
-	var result ActivationResponse
+	var result LoadBalancerActivation
 
-	resp, err := c.Exec(req, &result, params.ActivationRequest)
+	resp, err := c.Exec(req, &result, params.LoadBalancerVersionActivation)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateLoadBalancerVersion, err)
 	}

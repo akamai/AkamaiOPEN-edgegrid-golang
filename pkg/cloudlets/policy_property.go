@@ -11,22 +11,24 @@ import (
 )
 
 type (
-	// PolicyProperty interface is a cloudlets API interface for policy associated properties
-	PolicyProperty interface {
+	// PolicyProperties interface is a cloudlets API interface for policy associated properties
+	PolicyProperties interface {
 		// GetPolicyProperties gets all the associated properties by the policyID
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicyproperties
-		GetPolicyProperties(context.Context, int64) (GetPolicyPropertiesResponse, error)
+		GetPolicyProperties(context.Context, GetPolicyPropertiesRequest) (map[string]PolicyProperty, error)
 
 		// DeletePolicyProperty removes a property from a policy activation associated_properties list
 		DeletePolicyProperty(context.Context, DeletePolicyPropertyRequest) error
 	}
 
-	// GetPolicyPropertiesResponse contains response data for GetPolicyProperties
-	GetPolicyPropertiesResponse map[string]AssociateProperty
+	// GetPolicyPropertiesRequest contains request parameters for GetPolicyPropertiesRequest
+	GetPolicyPropertiesRequest struct {
+		PolicyID int64
+	}
 
-	// AssociateProperty contains the response data for a single property
-	AssociateProperty struct {
+	// PolicyProperty contains the response data for a single property
+	PolicyProperty struct {
 		GroupID       int64         `json:"groupId"`
 		ID            int64         `json:"id"`
 		Name          string        `json:"name"`
@@ -44,6 +46,7 @@ type (
 		ReferencedPolicies []string                   `json:"referencedPolicies"`
 	}
 
+	//nolint:revive
 	// CloudletsOrigin is the type for CloudletsOrigins in NetworkStatus
 	CloudletsOrigin struct {
 		OriginID    string     `json:"id"`
@@ -57,7 +60,7 @@ type (
 	DeletePolicyPropertyRequest struct {
 		PolicyID   int64
 		PropertyID int64
-		Network    VersionActivationNetwork
+		Network    PolicyActivationNetwork
 	}
 )
 
@@ -77,11 +80,11 @@ func (r DeletePolicyPropertyRequest) Validate() error {
 }
 
 // GetPolicyProperties gets all the associated properties by the policyID
-func (c *cloudlets) GetPolicyProperties(ctx context.Context, policyID int64) (GetPolicyPropertiesResponse, error) {
+func (c *cloudlets) GetPolicyProperties(ctx context.Context, params GetPolicyPropertiesRequest) (map[string]PolicyProperty, error) {
 	logger := c.Log(ctx)
 	logger.Debug("GetPolicyProperties")
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/properties", policyID))
+	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/properties", params.PolicyID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPolicyProperties, err)
 	}
@@ -91,7 +94,7 @@ func (c *cloudlets) GetPolicyProperties(ctx context.Context, policyID int64) (Ge
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicyProperties, err)
 	}
 
-	var result GetPolicyPropertiesResponse
+	var result map[string]PolicyProperty
 	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicyProperties, err)

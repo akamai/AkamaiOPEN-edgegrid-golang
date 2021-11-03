@@ -55,12 +55,12 @@ func TestListPolicyActivations(t *testing.T) {
 			]`,
 			expectedResponse: []PolicyActivation{{
 				APIVersion: "2.0",
-				Network:    VersionActivationNetworkStaging,
+				Network:    PolicyActivationNetworkStaging,
 				PropertyInfo: PropertyInfo{
 					Name:           "www.rc-cloudlet.com",
 					Version:        0,
 					GroupID:        40498,
-					Status:         StatusInactive,
+					Status:         PolicyActivationStatusInactive,
 					ActivatedBy:    "",
 					ActivationDate: 0,
 				},
@@ -68,7 +68,7 @@ func TestListPolicyActivations(t *testing.T) {
 					PolicyID:       2962,
 					Name:           "RequestControlPolicy",
 					Version:        1,
-					Status:         StatusActive,
+					Status:         PolicyActivationStatusActive,
 					StatusDetail:   "File successfully deployed to Akamai's network",
 					ActivatedBy:    "jsmith",
 					ActivationDate: 1427428800000,
@@ -153,7 +153,7 @@ func TestActivatePolicyVersion(t *testing.T) {
 		responseStatus     int
 		uri                string
 		responseBody       string
-		expectedActivation PolicyActivation
+		expectedActivation PolicyVersionActivation
 		withError          *regexp.Regexp
 	}{
 		"200 Policy version activation": {
@@ -161,8 +161,8 @@ func TestActivatePolicyVersion(t *testing.T) {
 			parameters: ActivatePolicyVersionRequest{
 				PolicyID: 1234,
 				Version:  1,
-				RequestBody: ActivatePolicyVersionRequestBody{
-					Network:                 VersionActivationNetworkStaging,
+				PolicyVersionActivation: PolicyVersionActivation{
+					Network:                 PolicyActivationNetworkStaging,
 					AdditionalPropertyNames: []string{"www.rc-cloudlet.com"},
 				},
 			},
@@ -189,8 +189,8 @@ func TestActivatePolicyVersion(t *testing.T) {
 			parameters: ActivatePolicyVersionRequest{
 				PolicyID: 1234,
 				Version:  1,
-				RequestBody: ActivatePolicyVersionRequestBody{
-					Network:                 VersionActivationNetworkStaging,
+				PolicyVersionActivation: PolicyVersionActivation{
+					Network:                 PolicyActivationNetworkStaging,
 					AdditionalPropertyNames: []string{"www.rc-cloudlet.com"},
 				},
 			},
@@ -201,8 +201,8 @@ func TestActivatePolicyVersion(t *testing.T) {
 			parameters: ActivatePolicyVersionRequest{
 				PolicyID: 1234,
 				Version:  1,
-				RequestBody: ActivatePolicyVersionRequestBody{
-					Network:                 VersionActivationNetworkStaging,
+				PolicyVersionActivation: PolicyVersionActivation{
+					Network:                 PolicyActivationNetworkStaging,
 					AdditionalPropertyNames: []string{"www.rc-cloudlet.com"},
 				},
 			},
@@ -222,12 +222,12 @@ func TestActivatePolicyVersion(t *testing.T) {
 			parameters: ActivatePolicyVersionRequest{
 				PolicyID: 1234,
 				Version:  1,
-				RequestBody: ActivatePolicyVersionRequestBody{
-					Network:                 VersionActivationNetworkStaging,
+				PolicyVersionActivation: PolicyVersionActivation{
+					Network:                 PolicyActivationNetworkStaging,
 					AdditionalPropertyNames: []string{},
 				},
 			},
-			withError: regexp.MustCompile(`struct validation: RequestBody.AdditionalPropertyNames: cannot be blank`),
+			withError: regexp.MustCompile(`struct validation: PolicyVersionActivation.AdditionalPropertyNames: cannot be blank`),
 		},
 	}
 

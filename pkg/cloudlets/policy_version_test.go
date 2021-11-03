@@ -67,7 +67,7 @@ func TestListPolicyVersions(t *testing.T) {
 			expectedPath: "/cloudlets/api/v2/policies/284823/versions?includeActivations=false&includeDeleted=false&includeRules=false&offset=0",
 			expectedResponse: []PolicyVersion{
 				{
-					Activations:      []*Activation{},
+					Activations:      []PolicyActivation{},
 					CreateDate:       1631191583350,
 					CreatedBy:        "jsmith",
 					Deleted:          false,
@@ -83,7 +83,7 @@ func TestListPolicyVersions(t *testing.T) {
 					Version:          2,
 				},
 				{
-					Activations:      []*Activation{},
+					Activations:      []PolicyActivation{},
 					CreateDate:       1631190136935,
 					CreatedBy:        "jsmith",
 					Deleted:          false,
@@ -196,7 +196,7 @@ func TestGetPolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/api/v2/policies/276858/versions/1?omitRules=true",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1629299944291,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -251,7 +251,7 @@ func TestGetPolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/api/v2/policies/276858/versions/6?omitRules=false",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1629981355165,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -316,7 +316,7 @@ func TestGetPolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/api/v2/policies/276858/versions/6?omitRules=false",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1629981355165,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -331,13 +331,13 @@ func TestGetPolicyVersion(t *testing.T) {
 				Version:          6,
 				MatchRules: MatchRules{
 					&MatchRuleALB{
-						Type:      "albMatchRule",
-						End:       0,
-						ID:        0,
-						MatchURL:  "",
-						Name:      "rul3",
-						Start:     0,
-						Disabled:  true,
+						Type:     "albMatchRule",
+						End:      0,
+						ID:       0,
+						MatchURL: "",
+						Name:     "rul3",
+						Start:    0,
+						Disabled: true,
 					},
 				},
 			},
@@ -380,7 +380,7 @@ func TestGetPolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/api/v2/policies/276858/versions/6?omitRules=false",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1629981355165,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -444,7 +444,7 @@ func TestGetPolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/api/v2/policies/276858/versions/6?omitRules=false",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1629981355165,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -459,13 +459,13 @@ func TestGetPolicyVersion(t *testing.T) {
 				Version:          6,
 				MatchRules: MatchRules{
 					&MatchRuleALB{
-						Type:      "albMatchRule",
-						End:       0,
-						ID:        0,
-						MatchURL:  "",
-						Name:      "rul3",
-						Start:     0,
-						Disabled:  false,
+						Type:     "albMatchRule",
+						End:      0,
+						ID:       0,
+						MatchURL: "",
+						Name:     "rul3",
+						Start:    0,
+						Disabled: false,
 					},
 				},
 			},
@@ -552,7 +552,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1629812554924,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -690,7 +690,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1629981546401,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -701,8 +701,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 				MatchRuleFormat:  "1.0",
 				MatchRules: MatchRules{
 					&MatchRuleALB{
-						Type:      "albMatchRule",
-						End:       0,
+						Type: "albMatchRule",
+						End:  0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_dc1_only",
 						},
@@ -728,8 +728,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 						Start: 0,
 					},
 					&MatchRuleALB{
-						Type:      "albMatchRule",
-						End:       0,
+						Type: "albMatchRule",
+						End:  0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_0_100",
 						},
@@ -844,7 +844,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 		}`,
 			expectedPath: "/cloudlets/api/v2/policies/139743/versions",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1630489884742,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -855,8 +855,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 				MatchRuleFormat:  "1.0",
 				MatchRules: MatchRules{
 					&MatchRuleALB{
-						Type:      "albMatchRule",
-						End:       0,
+						Type: "albMatchRule",
+						End:  0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_mutable",
 						},
@@ -973,7 +973,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/api/v2/policies/139743/versions",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1630506044027,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -984,8 +984,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 				MatchRuleFormat:  "1.0",
 				MatchRules: MatchRules{
 					&MatchRuleALB{
-						Type:      "albMatchRule",
-						End:       0,
+						Type: "albMatchRule",
+						End:  0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_mutable",
 						},
@@ -1099,7 +1099,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/api/v2/policies/139743/versions",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1630507099511,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -1110,8 +1110,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 				MatchRuleFormat:  "1.0",
 				MatchRules: MatchRules{
 					&MatchRuleALB{
-						Type:      "albMatchRule",
-						End:       0,
+						Type: "albMatchRule",
+						End:  0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_mutable",
 						},
@@ -1288,7 +1288,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1629981355165,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -1523,7 +1523,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 				LastModifiedBy:   "jsmith",
 				LastModifiedDate: 1629821693867,
 				Location:         "/cloudlets/api/v2/policies/276858/versions/5",
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				MatchRules:       nil,
 				MatchRuleFormat:  "1.0",
 				PolicyID:         276858,
@@ -1657,7 +1657,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 `,
 			expectedPath: "/cloudlets/api/v2/policies/276858/versions/5",
 			expectedResponse: &PolicyVersion{
-				Activations:      []*Activation{},
+				Activations:      []PolicyActivation{},
 				CreateDate:       1629981546401,
 				CreatedBy:        "jsmith",
 				Deleted:          false,
@@ -1668,8 +1668,8 @@ func TestUpdatePolicyVersion(t *testing.T) {
 				MatchRuleFormat:  "1.0",
 				MatchRules: MatchRules{
 					&MatchRuleALB{
-						Type:      "albMatchRule",
-						End:       2,
+						Type: "albMatchRule",
+						End:  2,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_dc1_only",
 						},
@@ -1688,8 +1688,8 @@ func TestUpdatePolicyVersion(t *testing.T) {
 						Start: 1,
 					},
 					&MatchRuleALB{
-						Type:      "albMatchRule",
-						End:       0,
+						Type: "albMatchRule",
+						End:  0,
 						ForwardSettings: ForwardSettings{
 							OriginID: "alb_test_krk_0_100",
 						},
@@ -1839,8 +1839,8 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 			expectedObject: MatchRules{
 				&MatchRuleALB{
-					Type:      "albMatchRule",
-					End:       0,
+					Type: "albMatchRule",
+					End:  0,
 					ForwardSettings: ForwardSettings{
 						OriginID: "alb_test_krk_dc1_only",
 					},

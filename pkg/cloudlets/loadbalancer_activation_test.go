@@ -17,7 +17,7 @@ func TestGetLoadBalancerActivations(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse ActivationsList
+		expectedResponse []LoadBalancerActivation
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
@@ -44,21 +44,21 @@ func TestGetLoadBalancerActivations(t *testing.T) {
 				]
 			`,
 			expectedPath: "/cloudlets/api/v2/origins/clorigin1/activations",
-			expectedResponse: ActivationsList{
+			expectedResponse: []LoadBalancerActivation{
 				{
 					ActivatedBy:   "jjones",
 					ActivatedDate: "2016-05-03T18:41:34.251Z",
-					Network:       ActivationNetworkProduction,
+					Network:       LoadBalancerActivationNetworkProduction,
 					OriginID:      "clorigin1",
-					Status:        ActivationStatusActive,
+					Status:        LoadBalancerActivationStatusActive,
 					Version:       1,
 				},
 				{
 					ActivatedBy:   "ejnovak",
 					ActivatedDate: "2016-04-07T18:41:34.461Z",
-					Network:       ActivationNetworkStaging,
+					Network:       LoadBalancerActivationNetworkStaging,
 					OriginID:      "clorigin1",
-					Status:        ActivationStatusActive,
+					Status:        LoadBalancerActivationStatusActive,
 					Version:       2,
 				},
 			},
@@ -97,7 +97,7 @@ func TestGetLoadBalancerActivations(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetLoadBalancerActivations(context.Background(), test.originID)
+			result, err := client.ListLoadBalancerActivations(context.Background(), ListLoadBalancerActivationsRequest{OriginID: test.originID})
 			if test.withError != nil {
 				test.withError(t, err)
 				return
@@ -114,15 +114,15 @@ func TestActivateLoadBalancerVersion(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ActivationResponse
+		expectedResponse *LoadBalancerActivation
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
 			params: ActivateLoadBalancerVersionRequest{
 				OriginID: "clorigin1",
 				Async:    false,
-				ActivationRequest: ActivationRequestParams{
-					Network: ActivationNetworkProduction,
+				LoadBalancerVersionActivation: LoadBalancerVersionActivation{
+					Network: LoadBalancerActivationNetworkProduction,
 					DryRun:  false,
 					Version: 1,
 				},
@@ -140,12 +140,12 @@ func TestActivateLoadBalancerVersion(t *testing.T) {
 				}
 			`,
 			expectedPath: "/cloudlets/api/v2/origins/clorigin1/activations?async=false",
-			expectedResponse: &ActivationResponse{
+			expectedResponse: &LoadBalancerActivation{
 				ActivatedBy:   "jjones",
 				ActivatedDate: "2016-04-07T18:41:34.251Z",
-				Network:       ActivationNetworkProduction,
+				Network:       LoadBalancerActivationNetworkProduction,
 				OriginID:      "clorigin1",
-				Status:        ActivationStatusActive,
+				Status:        LoadBalancerActivationStatusActive,
 				Version:       1,
 				DryRun:        false,
 			},
@@ -154,8 +154,8 @@ func TestActivateLoadBalancerVersion(t *testing.T) {
 			params: ActivateLoadBalancerVersionRequest{
 				OriginID: "clorigin1",
 				Async:    false,
-				ActivationRequest: ActivationRequestParams{
-					Network: ActivationNetworkStaging,
+				LoadBalancerVersionActivation: LoadBalancerVersionActivation{
+					Network: LoadBalancerActivationNetworkStaging,
 					DryRun:  false,
 					Version: 1,
 				},
@@ -184,8 +184,8 @@ func TestActivateLoadBalancerVersion(t *testing.T) {
 			params: ActivateLoadBalancerVersionRequest{
 				OriginID: "",
 				Async:    false,
-				ActivationRequest: ActivationRequestParams{
-					Network: ActivationNetworkStaging,
+				LoadBalancerVersionActivation: LoadBalancerVersionActivation{
+					Network: LoadBalancerActivationNetworkStaging,
 					DryRun:  false,
 					Version: 1,
 				},

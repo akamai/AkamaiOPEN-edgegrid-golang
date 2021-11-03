@@ -23,7 +23,7 @@ type (
 		// GetPolicy gets policy by policyID
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicy
-		GetPolicy(context.Context, int64) (*Policy, error)
+		GetPolicy(context.Context, GetPolicyRequest) (*Policy, error)
 
 		// CreatePolicy creates policy
 		//
@@ -33,7 +33,7 @@ type (
 		// RemovePolicy removes policy
 		//
 		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#deletepolicy
-		RemovePolicy(context.Context, int64) error
+		RemovePolicy(context.Context, RemovePolicyRequest) error
 
 		// UpdatePolicy updates policy
 		//
@@ -43,53 +43,58 @@ type (
 
 	// Policy is response returned by GetPolicy or UpdatePolicy
 	Policy struct {
-		Location         string       `json:"location"`
-		PolicyID         int64        `json:"policyId"`
-		GroupID          int64        `json:"groupId"`
-		Name             string       `json:"name"`
-		Description      string       `json:"description"`
-		CreatedBy        string       `json:"createdBy"`
-		CreateDate       float64      `json:"createDate"`
-		LastModifiedBy   string       `json:"lastModifiedBy"`
-		LastModifiedDate float64      `json:"lastModifiedDate"`
-		Activations      []Activation `json:"activations"`
-		CloudletID       int64        `json:"cloudletId"`
-		CloudletCode     string       `json:"cloudletCode"`
-		APIVersion       string       `json:"apiVersion"`
-		Deleted          bool         `json:"deleted"`
+		Location         string             `json:"location"`
+		PolicyID         int64              `json:"policyId"`
+		GroupID          int64              `json:"groupId"`
+		Name             string             `json:"name"`
+		Description      string             `json:"description"`
+		CreatedBy        string             `json:"createdBy"`
+		CreateDate       float64            `json:"createDate"`
+		LastModifiedBy   string             `json:"lastModifiedBy"`
+		LastModifiedDate float64            `json:"lastModifiedDate"`
+		Activations      []PolicyActivation `json:"activations"`
+		CloudletID       int64              `json:"cloudletId"`
+		CloudletCode     string             `json:"cloudletCode"`
+		APIVersion       string             `json:"apiVersion"`
+		Deleted          bool               `json:"deleted"`
 	}
 
-	// Activation represents a policy activation resource
-	Activation struct {
-		APIVersion   string       `json:"apiVersion"`
-		Network      string       `json:"network"`
-		PolicyInfo   PolicyInfo   `json:"policyInfo"`
-		PropertyInfo PropertyInfo `json:"propertyInfo"`
+	// PolicyActivation represents a policy activation resource
+	PolicyActivation struct {
+		APIVersion   string                  `json:"apiVersion"`
+		Network      PolicyActivationNetwork `json:"network"`
+		PolicyInfo   PolicyInfo              `json:"policyInfo"`
+		PropertyInfo PropertyInfo            `json:"propertyInfo"`
 	}
 
 	// PolicyInfo represents a policy info resource
 	PolicyInfo struct {
-		PolicyID       int64  `json:"policyId"`
-		Name           string `json:"name"`
-		Version        int64  `json:"version"`
-		Status         Status `json:"status"`
-		StatusDetail   string `json:"statusDetail,omitempty"`
-		ActivatedBy    string `json:"activatedBy"`
-		ActivationDate int64  `json:"activationDate"`
+		PolicyID       int64                  `json:"policyId"`
+		Name           string                 `json:"name"`
+		Version        int64                  `json:"version"`
+		Status         PolicyActivationStatus `json:"status"`
+		StatusDetail   string                 `json:"statusDetail,omitempty"`
+		ActivatedBy    string                 `json:"activatedBy"`
+		ActivationDate int64                  `json:"activationDate"`
 	}
 
 	// PropertyInfo represents a property info resource
 	PropertyInfo struct {
-		Name           string `json:"name"`
-		Version        int64  `json:"version"`
-		GroupID        int64  `json:"groupId"`
-		Status         Status `json:"status"`
-		ActivatedBy    string `json:"activatedBy"`
-		ActivationDate int64  `json:"activationDate"`
+		Name           string                 `json:"name"`
+		Version        int64                  `json:"version"`
+		GroupID        int64                  `json:"groupId"`
+		Status         PolicyActivationStatus `json:"status"`
+		ActivatedBy    string                 `json:"activatedBy"`
+		ActivationDate int64                  `json:"activationDate"`
 	}
 
-	// Status is an activation status value
-	Status string
+	// PolicyActivationStatus is an activation status type for policy
+	PolicyActivationStatus string
+
+	// GetPolicyRequest describes the body of the get policy request
+	GetPolicyRequest struct {
+		PolicyID int64
+	}
 
 	// CreatePolicyRequest describes the body of the create policy request
 	CreatePolicyRequest struct {
@@ -122,19 +127,24 @@ type (
 		UpdatePolicy
 		PolicyID int64
 	}
+
+	// RemovePolicyRequest describes the body of the remove policy request
+	RemovePolicyRequest struct {
+		PolicyID int64
+	}
 )
 
 const (
-	// StatusActive represents active value
-	StatusActive Status = "active"
-	// StatusInactive represents inactive value
-	StatusInactive Status = "inactive"
-	// StatusPending represents pending value
-	StatusPending Status = "pending"
-	// StatusFailed represents failed value
-	StatusFailed Status = "failed"
-	// StatusDeactivated represents deactivated value
-	StatusDeactivated Status = "deactivated"
+	// PolicyActivationStatusActive is an activation that is currently active
+	PolicyActivationStatusActive PolicyActivationStatus = "active"
+	// PolicyActivationStatusDeactivated is an activation that is deactivated
+	PolicyActivationStatusDeactivated PolicyActivationStatus = "deactivated"
+	// PolicyActivationStatusInactive is an activation that is not active
+	PolicyActivationStatusInactive PolicyActivationStatus = "inactive"
+	// PolicyActivationStatusPending is status of a pending activation
+	PolicyActivationStatusPending PolicyActivationStatus = "pending"
+	// PolicyActivationStatusFailed is status of a failed activation
+	PolicyActivationStatusFailed PolicyActivationStatus = "failed"
 )
 
 var nameRegexp = regexp.MustCompile("^[a-z_A-Z0-9]+$")
@@ -213,13 +223,13 @@ func (c *cloudlets) ListPolicies(ctx context.Context, params ListPoliciesRequest
 	return result, nil
 }
 
-func (c *cloudlets) GetPolicy(ctx context.Context, policyID int64) (*Policy, error) {
+func (c *cloudlets) GetPolicy(ctx context.Context, params GetPolicyRequest) (*Policy, error) {
 	logger := c.Log(ctx)
 	logger.Debug("GetPolicy")
 
 	var result Policy
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d", policyID))
+	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d", params.PolicyID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPolicy, err)
 	}
@@ -273,11 +283,11 @@ func (c *cloudlets) CreatePolicy(ctx context.Context, params CreatePolicyRequest
 	return &result, nil
 }
 
-func (c *cloudlets) RemovePolicy(ctx context.Context, policyID int64) error {
+func (c *cloudlets) RemovePolicy(ctx context.Context, params RemovePolicyRequest) error {
 	logger := c.Log(ctx)
 	logger.Debug("RemovePolicy")
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d", policyID))
+	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d", params.PolicyID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to parse url: %s", ErrRemovePolicy, err)
 	}

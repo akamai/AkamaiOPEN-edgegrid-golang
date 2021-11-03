@@ -14,13 +14,13 @@ var (
 type (
 	// Cloudlets is the api interface for cloudlets
 	Cloudlets interface {
-		LoadBalancer
+		LoadBalancers
 		LoadBalancerVersions
-		LoadBalancerActivation
+		LoadBalancerActivations
 		Policies
-		PolicyProperty
+		PolicyProperties
 		PolicyVersions
-		PolicyVersionActivation
+		PolicyVersionActivations
 	}
 
 	cloudlets struct {
