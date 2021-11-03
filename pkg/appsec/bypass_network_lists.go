@@ -27,8 +27,9 @@ type (
 
 	// GetBypassNetworkListsRequest is used to list which network lists are used in the bypass network lists settings.
 	GetBypassNetworkListsRequest struct {
-		ConfigID int `json:"-"`
-		Version  int `json:"-"`
+		ConfigID int    `json:"-"`
+		Version  int    `json:"-"`
+		PolicyID string `json:"policyId"`
 	}
 
 	// GetBypassNetworkListsResponse is returned from a call to GetBypassNetworkLists.
@@ -43,6 +44,7 @@ type (
 	UpdateBypassNetworkListsRequest struct {
 		ConfigID     int      `json:"-"`
 		Version      int      `json:"-"`
+		PolicyID     string   `json:"policyId"`
 		NetworkLists []string `json:"networkLists"`
 	}
 
@@ -69,6 +71,7 @@ type (
 	RemoveBypassNetworkListsRequest struct {
 		ConfigID     int      `json:"-"`
 		Version      int      `json:"-"`
+		PolicyID     string   `json:"policyId"`
 		NetworkLists []string `json:"networkLists"`
 	}
 
@@ -110,15 +113,25 @@ func (p *appsec) GetBypassNetworkLists(ctx context.Context, params GetBypassNetw
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("GetBypassNetworkLists")
+	logger.Debugf("GetBypassNetworkLists(%+v)", params)
 
 	var rval GetBypassNetworkListsResponse
 
-	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/bypass-network-lists",
-		params.ConfigID,
-		params.Version,
-	)
+	var uri string
+	if params.PolicyID == "" {
+		uri = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/bypass-network-lists",
+			params.ConfigID,
+			params.Version,
+		)
+	} else {
+		uri = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/%s/bypass-network-lists",
+			params.ConfigID,
+			params.Version,
+			params.PolicyID,
+		)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -144,13 +157,23 @@ func (p *appsec) UpdateBypassNetworkLists(ctx context.Context, params UpdateBypa
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("UpdateBypassNetworkLists")
+	logger.Debugf("UpdateBypassNetworkLists(%+v)", params)
 
-	putURL := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/bypass-network-lists",
-		params.ConfigID,
-		params.Version,
-	)
+	var putURL string
+	if params.PolicyID == "" {
+		putURL = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/bypass-network-lists",
+			params.ConfigID,
+			params.Version,
+		)
+	} else {
+		putURL = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/%s/bypass-network-lists",
+			params.ConfigID,
+			params.Version,
+			params.PolicyID,
+		)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
@@ -177,13 +200,23 @@ func (p *appsec) RemoveBypassNetworkLists(ctx context.Context, params RemoveBypa
 	}
 
 	logger := p.Log(ctx)
-	logger.Debug("RemoveBypassNetworkLists")
+	logger.Debugf("RemoveBypassNetworkLists(%+v)", params)
 
-	putURL := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/bypass-network-lists",
-		params.ConfigID,
-		params.Version,
-	)
+	var putURL string
+	if params.PolicyID == "" {
+		putURL = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/bypass-network-lists",
+			params.ConfigID,
+			params.Version,
+		)
+	} else {
+		putURL = fmt.Sprintf(
+			"/appsec/v1/configs/%d/versions/%d/%s/bypass-network-lists",
+			params.ConfigID,
+			params.Version,
+			params.PolicyID,
+		)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
