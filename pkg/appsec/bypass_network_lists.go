@@ -126,7 +126,7 @@ func (p *appsec) GetBypassNetworkLists(ctx context.Context, params GetBypassNetw
 		)
 	} else {
 		uri = fmt.Sprintf(
-			"/appsec/v1/configs/%d/versions/%d/%s/bypass-network-lists",
+			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/bypass-network-lists",
 			params.ConfigID,
 			params.Version,
 			params.PolicyID,
@@ -168,7 +168,7 @@ func (p *appsec) UpdateBypassNetworkLists(ctx context.Context, params UpdateBypa
 		)
 	} else {
 		putURL = fmt.Sprintf(
-			"/appsec/v1/configs/%d/versions/%d/%s/bypass-network-lists",
+			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/bypass-network-lists",
 			params.ConfigID,
 			params.Version,
 			params.PolicyID,
@@ -211,7 +211,7 @@ func (p *appsec) RemoveBypassNetworkLists(ctx context.Context, params RemoveBypa
 		)
 	} else {
 		putURL = fmt.Sprintf(
-			"/appsec/v1/configs/%d/versions/%d/%s/bypass-network-lists",
+			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/bypass-network-lists",
 			params.ConfigID,
 			params.Version,
 			params.PolicyID,
