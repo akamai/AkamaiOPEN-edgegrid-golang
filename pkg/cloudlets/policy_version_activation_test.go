@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestListPropertyActivations(t *testing.T) {
+func TestListPolicyActivations(t *testing.T) {
 	tests := map[string]struct {
 		parameters       ListPolicyActivationsRequest
 		uri              string
@@ -74,6 +74,28 @@ func TestListPropertyActivations(t *testing.T) {
 					ActivationDate: 1427428800000,
 				},
 			}},
+		},
+		"empty Network should not appear in uri query": {
+			parameters: ListPolicyActivationsRequest{
+				PropertyName: "www.rc-cloudlet.com",
+				Network:      "",
+				PolicyID:     1234,
+			},
+			responseBody:     `[]`,
+			expectedResponse: []PolicyActivation{},
+			responseStatus:   http.StatusOK,
+			uri:              "/cloudlets/api/v2/policies/1234/activations?propertyName=www.rc-cloudlet.com",
+		},
+		"empty PropertyName should not appear in uri query": {
+			parameters: ListPolicyActivationsRequest{
+				PropertyName: "",
+				Network:      "staging",
+				PolicyID:     1234,
+			},
+			responseBody:     `[]`,
+			expectedResponse: []PolicyActivation{},
+			responseStatus:   http.StatusOK,
+			uri:              "/cloudlets/api/v2/policies/1234/activations?network=staging",
 		},
 		"not valid network": {
 			parameters: ListPolicyActivationsRequest{

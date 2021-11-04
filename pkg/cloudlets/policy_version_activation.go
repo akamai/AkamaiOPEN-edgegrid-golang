@@ -101,13 +101,14 @@ func (c *cloudlets) ListPolicyActivations(ctx context.Context, params ListPolicy
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPolicyActivations, err)
 	}
 
-	if params.Network != "" || params.PropertyName != "" {
-		q := uri.Query()
+	q := uri.Query()
+	if params.Network != "" {
 		q.Set("network", string(params.Network))
-		q.Set("propertyName", params.PropertyName)
-
-		uri.RawQuery = q.Encode()
 	}
+	if params.PropertyName != "" {
+		q.Set("propertyName", params.PropertyName)
+	}
+	uri.RawQuery = q.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
