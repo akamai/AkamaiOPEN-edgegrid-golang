@@ -217,3 +217,83 @@ func TestGetPolicyProperties(t *testing.T) {
 		})
 	}
 }
+
+func TestCloudlets_DeletePolicyProperty(t *testing.T) {
+	tests := map[string]struct {
+		params         DeletePolicyPropertyRequest
+		responseStatus int
+		withError      error
+		expectedURL    string
+	}{
+		"ok deletion prod": {
+			params: DeletePolicyPropertyRequest{
+				PolicyID:   1234,
+				PropertyID: 5678,
+				Network:    VersionActivationNetworkProduction,
+			},
+			responseStatus: http.StatusNoContent,
+			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?network=prod",
+		},
+		"ok deletion staging": {
+			params: DeletePolicyPropertyRequest{
+				PolicyID:   1234,
+				PropertyID: 5678,
+				Network:    VersionActivationNetworkStaging,
+			},
+			responseStatus: http.StatusNoContent,
+			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?network=staging",
+		},
+		"ok deletion no network": {
+			params: DeletePolicyPropertyRequest{
+				PolicyID:   1234,
+				PropertyID: 5678,
+			},
+			responseStatus: http.StatusNoContent,
+			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678",
+		},
+		"nok validation property": {
+			params: DeletePolicyPropertyRequest{
+				PolicyID: 1234,
+				Network:  VersionActivationNetworkProduction,
+			},
+			withError: ErrStructValidation,
+		},
+		"nok validation policy": {
+			params: DeletePolicyPropertyRequest{
+				PropertyID: 1234,
+				Network:    VersionActivationNetworkProduction,
+			},
+			withError: ErrStructValidation,
+		},
+		"internal server error": {
+			params: DeletePolicyPropertyRequest{
+				PolicyID:   1234,
+				PropertyID: 5678,
+				Network:    VersionActivationNetworkProduction,
+			},
+			responseStatus: http.StatusInternalServerError,
+			withError:      ErrDeletePolicyProperty,
+			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?network=prod",
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedURL, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(test.responseStatus)
+			}))
+			client := mockAPIClient(t, mockServer)
+
+			err := client.DeletePolicyProperty(context.Background(), test.params)
+
+			if test.withError != nil {
+				require.Error(t, err)
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
