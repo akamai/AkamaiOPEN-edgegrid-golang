@@ -116,12 +116,12 @@ func (c *cloudlets) DeletePolicyProperty(ctx context.Context, params DeletePolic
 		return fmt.Errorf("%w: failed to parse url: %s", ErrDeletePolicyProperty, err.Error())
 	}
 
+	q := uri.Query()
+	q.Set("async", "true")
 	if params.Network != "" {
-		q := uri.Query()
 		q.Set("network", string(params.Network))
-
-		uri.RawQuery = q.Encode()
 	}
+	uri.RawQuery = q.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {

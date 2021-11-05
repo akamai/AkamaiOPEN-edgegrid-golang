@@ -232,7 +232,7 @@ func TestCloudlets_DeletePolicyProperty(t *testing.T) {
 				Network:    VersionActivationNetworkProduction,
 			},
 			responseStatus: http.StatusNoContent,
-			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?network=prod",
+			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?async=true&network=prod",
 		},
 		"ok deletion staging": {
 			params: DeletePolicyPropertyRequest{
@@ -241,7 +241,7 @@ func TestCloudlets_DeletePolicyProperty(t *testing.T) {
 				Network:    VersionActivationNetworkStaging,
 			},
 			responseStatus: http.StatusNoContent,
-			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?network=staging",
+			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?async=true&network=staging",
 		},
 		"ok deletion no network": {
 			params: DeletePolicyPropertyRequest{
@@ -249,7 +249,7 @@ func TestCloudlets_DeletePolicyProperty(t *testing.T) {
 				PropertyID: 5678,
 			},
 			responseStatus: http.StatusNoContent,
-			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678",
+			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?async=true",
 		},
 		"nok validation property": {
 			params: DeletePolicyPropertyRequest{
@@ -273,7 +273,7 @@ func TestCloudlets_DeletePolicyProperty(t *testing.T) {
 			},
 			responseStatus: http.StatusInternalServerError,
 			withError:      ErrDeletePolicyProperty,
-			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?network=prod",
+			expectedURL:    "/cloudlets/api/v2/policies/1234/properties/5678?async=true&network=prod",
 		},
 	}
 
