@@ -164,6 +164,7 @@ type (
 					ID               int             `json:"id"`
 					RulesetVersionID int             `json:"rulesetVersionId"`
 					Conditions       *RuleConditions `json:"conditions,omitempty"`
+					AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
 					Exception        *RuleException  `json:"exception,omitempty"`
 				} `json:"ruleActions,omitempty"`
 				AttackGroupActions []struct {
@@ -652,6 +653,7 @@ type (
 			ID         int             `json:"id"`
 			Conditions *RuleConditions `json:"conditions,omitempty"`
 			Exception  *RuleException  `json:"exception,omitempty"`
+			AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
 		} `json:"ruleActions,omitempty"`
 		RulesetVersionID int `json:"rulesetVersionId"`
 	}

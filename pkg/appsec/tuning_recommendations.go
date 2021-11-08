@@ -37,9 +37,9 @@ type (
 
 	// GetTuningRecommendationsResponse is returned from a call to GetTuningRecommendations.
 	GetTuningRecommendationsResponse struct {
-		AttackGroupRecommendations []AttackGroupRecommendation  `json:"attackGroupRecommendations,omitempty"`
-		EvaluationPeriodStart time.Time       `json:"evaluationPeriodStart,omitempty"`
-		EvaluationPeriodEnd   time.Time       `json:"evaluationPeriodEnd,omitempty"`
+		AttackGroupRecommendations []AttackGroupRecommendation `json:"attackGroupRecommendations,omitempty"`
+		EvaluationPeriodStart      time.Time                   `json:"evaluationPeriodStart,omitempty"`
+		EvaluationPeriodEnd        time.Time                   `json:"evaluationPeriodEnd,omitempty"`
 	}
 
 	// GetAttackGroupRecommendationsResponse is returned from a call to GetAttackGroupRecommendations.
@@ -47,19 +47,18 @@ type (
 
 	// AttackGroupRecommendation is used to describe a recommendation.
 	AttackGroupRecommendation struct {
-		Description string `json:"description,omitempty"`
-		Evidence *Evidences `json:"evidences,omitempty"`
+		Description string                `json:"description,omitempty"`
+		Evidence    *Evidences            `json:"evidences,omitempty"`
 		Exception   *AttackGroupException `json:"exception,omitempty"`
-		Group       string `json:"group,omitempty"`
+		Group       string                `json:"group,omitempty"`
 	}
 
 	// Evidences is used to describe evidences for a recommendation.
-	Evidences []struct{
-		HostEvidences []string `json:"hostEvidences,omitempty"`
-		PathEvidences []string `json:"pathEvidences,omitempty"`
+	Evidences []struct {
+		HostEvidences     []string `json:"hostEvidences,omitempty"`
+		PathEvidences     []string `json:"pathEvidences,omitempty"`
 		UserDataEvidences []string `json:"userDataEvidences,omitempty"`
 	}
-
 )
 
 // Validate validates a GetTuningRecommendationsRequest.
@@ -77,11 +76,11 @@ func (v GetAttackGroupRecommendationsRequest) Validate() error {
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
 		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-		"Group": validation.Validate(v.Group, validation.Required),
+		"Group":    validation.Validate(v.Group, validation.Required),
 	}.Filter()
 }
 
-func (p *appsec)  GetTuningRecommendations(ctx context.Context, params GetTuningRecommendationsRequest) (*GetTuningRecommendationsResponse, error) {
+func (p *appsec) GetTuningRecommendations(ctx context.Context, params GetTuningRecommendationsRequest) (*GetTuningRecommendationsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
@@ -118,8 +117,7 @@ func (p *appsec)  GetTuningRecommendations(ctx context.Context, params GetTuning
 
 }
 
-
-func (p *appsec)  GetAttackGroupRecommendations(ctx context.Context, params GetAttackGroupRecommendationsRequest) (*GetAttackGroupRecommendationsResponse, error) {
+func (p *appsec) GetAttackGroupRecommendations(ctx context.Context, params GetAttackGroupRecommendationsRequest) (*GetAttackGroupRecommendationsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
@@ -156,4 +154,3 @@ func (p *appsec)  GetAttackGroupRecommendations(ctx context.Context, params GetA
 	return &rval, nil
 
 }
-
