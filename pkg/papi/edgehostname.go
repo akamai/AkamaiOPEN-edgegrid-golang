@@ -177,9 +177,9 @@ func (eh GetEdgeHostnameRequest) Validate() error {
 
 var (
 	// ErrGetEdgeHostnames represents error when fetching edge hostnames fails
-	ErrGetEdgeHostnames   = errors.New("fetching edge hostnames")
+	ErrGetEdgeHostnames = errors.New("fetching edge hostnames")
 	// ErrGetEdgeHostname represents error when fetching edge hostname fails
-	ErrGetEdgeHostname    = errors.New("fetching edge hostname")
+	ErrGetEdgeHostname = errors.New("fetching edge hostname")
 	// ErrCreateEdgeHostname represents error when creating edge hostname fails
 	ErrCreateEdgeHostname = errors.New("creating edge hostname")
 )

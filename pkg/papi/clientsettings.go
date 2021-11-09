@@ -28,7 +28,7 @@ type (
 
 var (
 	// ErrGetClientSettings represents error when fetching client setting fails
-	ErrGetClientSettings    = errors.New("fetching client settings")
+	ErrGetClientSettings = errors.New("fetching client settings")
 	// ErrUpdateClientSettings represents error when updating client setting fails
 	ErrUpdateClientSettings = errors.New("updating client settings")
 )

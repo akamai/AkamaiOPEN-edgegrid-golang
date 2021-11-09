@@ -3,6 +3,7 @@ package papi
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -567,6 +568,53 @@ func TestPapi_GetRuleTree(t *testing.T) {
 				assert.Contains(t, err.Error(), "ValidateMode")
 			},
 		},
+		"Accept header with latest ruleFormat": {
+			params: GetRuleTreeRequest{
+				PropertyID:      "1",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+				ValidateMode:    "fast",
+				ValidateRules:   false,
+				RuleFormat:      "latest",
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     "{}",
+			expectedPath:     "/papi/v1/properties/1/versions/2/rules?contractId=contract&groupId=group&validateMode=fast&validateRules=false",
+			expectedResponse: &GetRuleTreeResponse{},
+		},
+		"Accept header with versioned ruleFormat": {
+			params: GetRuleTreeRequest{
+				PropertyID:      "1",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+				ValidateMode:    "fast",
+				ValidateRules:   false,
+				RuleFormat:      "v2021-01-01",
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     "{}",
+			expectedPath:     "/papi/v1/properties/1/versions/2/rules?contractId=contract&groupId=group&validateMode=fast&validateRules=false",
+			expectedResponse: &GetRuleTreeResponse{},
+		},
+		"Accept header with invalid ruleFormat": {
+			params: GetRuleTreeRequest{
+				PropertyID:      "1",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+				ValidateMode:    "fast",
+				ValidateRules:   false,
+				RuleFormat:      "invalid",
+			},
+			responseStatus: http.StatusUnsupportedMediaType,
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "RuleFormat")
+			},
+		},
 	}
 
 	for name, test := range tests {
@@ -576,6 +624,9 @@ func TestPapi_GetRuleTree(t *testing.T) {
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
+				if test.params.RuleFormat != "" {
+					assert.Equal(t, r.Header.Get("Accept"), fmt.Sprintf("application/vnd.akamai.papirules.%s+json", test.params.RuleFormat))
+				}
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
