@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	"net/http"
 	"net/url"
 
@@ -66,26 +67,30 @@ const (
 
 // Validate validates ListPolicyActivationsRequest
 func (r ListPolicyActivationsRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"PolicyID": validation.Validate(r.PolicyID, validation.Required),
 		"Network": validation.Validate(
 			r.Network,
-			validation.In(PolicyActivationNetworkStaging, PolicyActivationNetworkProduction),
+			validation.In(PolicyActivationNetworkStaging, PolicyActivationNetworkProduction).Error(
+				fmt.Sprintf("value '%s' is invalid. Must be one of: 'staging', 'prod' or '' (empty)", (&r).Network)),
 		),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates ActivatePolicyVersionRequest
 func (r ActivatePolicyVersionRequest) Validate() error {
-	return validation.Errors{
-		"PolicyID": validation.Validate(r.PolicyID, validation.Required),
-		"Version":  validation.Validate(r.Version, validation.Required),
-		"PolicyVersionActivation.AdditionalPropertyNames": validation.Validate(r.PolicyVersionActivation.AdditionalPropertyNames, validation.Required),
-		"PolicyVersionActivation.Network": validation.Validate(
+	errs := validation.Errors{
+		"PolicyID":                            validation.Validate(r.PolicyID, validation.Required),
+		"Version":                             validation.Validate(r.Version, validation.Required),
+		"RequestBody.AdditionalPropertyNames": validation.Validate(r.PolicyVersionActivation.AdditionalPropertyNames, validation.Required),
+		"RequestBody.Network": validation.Validate(
 			r.PolicyVersionActivation.Network,
-			validation.In(PolicyActivationNetworkStaging, PolicyActivationNetworkProduction),
+			validation.In(PolicyActivationNetworkStaging, PolicyActivationNetworkProduction).Error(
+				fmt.Sprintf("value '%s' is invalid. Must be one of: 'staging', 'prod' or '' (empty)", (&r).PolicyVersionActivation.Network)),
 		),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // UnmarshalJSON unifies json network field into well defined values
@@ -107,7 +112,7 @@ func (c *cloudlets) ListPolicyActivations(ctx context.Context, params ListPolicy
 	c.Log(ctx).Debug("ListPolicyActivations")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListPolicyActivations, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrListPolicyActivations, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/activations", params.PolicyID))
@@ -146,7 +151,7 @@ func (c *cloudlets) ActivatePolicyVersion(ctx context.Context, params ActivatePo
 	c.Log(ctx).Debug("ActivatePolicyVersion")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w: %s", ErrActivatePolicyVersion, ErrStructValidation, err)
+		return fmt.Errorf("%s: %w:\n%s", ErrActivatePolicyVersion, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(

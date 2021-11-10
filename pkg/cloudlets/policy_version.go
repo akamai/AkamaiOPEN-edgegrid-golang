@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -262,25 +263,29 @@ const (
 
 // Validate validates ListPolicyVersionsRequest
 func (c ListPolicyVersionsRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"PolicyID": validation.Validate(c.PolicyID, validation.Required),
 		"Offset":   validation.Validate(c.Offset, validation.Min(0)),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates CreatePolicyVersionRequest
 func (c CreatePolicyVersionRequest) Validate() error {
-	return validation.Errors{
-		"Description":     validation.Validate(c.Description, validation.Length(0, 255)),
-		"MatchRuleFormat": validation.Validate(c.MatchRuleFormat, validation.In(MatchRuleFormat10)),
-		"MatchRules":      validation.Validate(c.MatchRules, validation.Length(0, 5000)),
-	}.Filter()
+	errs := validation.Errors{
+		"Description": validation.Validate(c.Description, validation.Length(0, 255)),
+		"MatchRuleFormat": validation.Validate(c.MatchRuleFormat, validation.In(MatchRuleFormat10).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: '1.0' or '' (empty)", (&c).MatchRuleFormat))),
+		"MatchRules": validation.Validate(c.MatchRules, validation.Length(0, 5000)),
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates MatchRuleALB
 func (m MatchRuleALB) Validate() error {
 	return validation.Errors{
-		"Type":                     validation.Validate(m.Type, validation.In(MatchRuleTypeALB)),
+		"Type": validation.Validate(m.Type, validation.In(MatchRuleTypeALB).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'albMatchRule' or '' (empty)", (&m).Type))),
 		"Name":                     validation.Validate(m.Name, validation.Length(0, 8192)),
 		"Start":                    validation.Validate(m.Start, validation.Min(0)),
 		"End":                      validation.Validate(m.End, validation.Min(0)),
@@ -293,15 +298,18 @@ func (m MatchRuleALB) Validate() error {
 // Validate validates MatchRuleER
 func (m MatchRuleER) Validate() error {
 	return validation.Errors{
-		"Type":           validation.Validate(m.Type, validation.Required, validation.In(MatchRuleTypeER)),
-		"Name":           validation.Validate(m.Name, validation.Length(0, 8192)),
-		"Start":          validation.Validate(m.Start, validation.Min(0)),
-		"End":            validation.Validate(m.End, validation.Min(0)),
-		"MatchURL":       validation.Validate(m.MatchURL, validation.Length(0, 8192)),
-		"RedirectURL":    validation.Validate(m.RedirectURL, validation.Required, validation.Length(1, 8192)),
-		"UseRelativeURL": validation.Validate(m.UseRelativeURL, validation.Required, validation.In("none", "copy_scheme_hostname", "relative_url")),
-		"StatusCode":     validation.Validate(m.StatusCode, validation.Required, validation.In(301, 302, 303, 307, 308)),
-		"Matches":        validation.Validate(m.Matches),
+		"Type": validation.Validate(m.Type, validation.Required, validation.In(MatchRuleTypeER).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'erMatchRule' or '' (empty)", (&m).Type))),
+		"Name":        validation.Validate(m.Name, validation.Length(0, 8192)),
+		"Start":       validation.Validate(m.Start, validation.Min(0)),
+		"End":         validation.Validate(m.End, validation.Min(0)),
+		"MatchURL":    validation.Validate(m.MatchURL, validation.Length(0, 8192)),
+		"RedirectURL": validation.Validate(m.RedirectURL, validation.Required, validation.Length(1, 8192)),
+		"UseRelativeURL": validation.Validate(m.UseRelativeURL, validation.Required, validation.In("none", "copy_scheme_hostname", "relative_url").Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'none', 'copy_scheme_hostname' or 'relative_url'", (&m).UseRelativeURL))),
+		"StatusCode": validation.Validate(m.StatusCode, validation.Required, validation.In(301, 302, 303, 307, 308).Error(
+			fmt.Sprintf("value '%d' is invalid. Must be one of: 301, 302, 303, 307 or 308", (&m).StatusCode))),
+		"Matches": validation.Validate(m.Matches),
 	}.Filter()
 }
 
@@ -309,10 +317,14 @@ func (m MatchRuleER) Validate() error {
 func (m MatchCriteriaALB) Validate() error {
 	return validation.Errors{
 		"MatchType": validation.Validate(m.MatchType, validation.In("clientip", "continent", "cookie", "countrycode",
-			"deviceCharacteristics", "extension", "header", "hostname", "method", "path", "protocol", "proxy", "query", "regioncode", "range")),
-		"MatchValue":       validation.Validate(m.MatchValue, validation.Length(0, 8192), validation.Required.When(m.ObjectMatchValue == nil)),
-		"MatchOperator":    validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals)),
-		"CheckIPs":         validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders)),
+			"deviceCharacteristics", "extension", "header", "hostname", "method", "path", "protocol", "proxy", "query", "regioncode", "range").Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'clientip', 'continent', 'cookie', 'countrycode', 'deviceCharacteristics', "+
+				"'extension', 'header', 'hostname', 'method', 'path', 'protocol', 'proxy', 'query', 'regioncode', 'range' or '' (empty)", (&m).MatchType))),
+		"MatchValue": validation.Validate(m.MatchValue, validation.Length(0, 8192), validation.Required.When(m.ObjectMatchValue == nil)),
+		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
+		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
 		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == "")),
 	}.Filter()
 }
@@ -321,17 +333,22 @@ func (m MatchCriteriaALB) Validate() error {
 func (m MatchCriteriaER) Validate() error {
 	return validation.Errors{
 		"MatchType": validation.Validate(m.MatchType, validation.In("header", "hostname", "path", "extension", "query",
-			"regex", "cookie", "deviceCharacteristics", "clientip", "continent", "countrycode", "regioncode", "protocol", "method", "proxy")),
-		"MatchValue":    validation.Validate(m.MatchValue, validation.Length(0, 8192)),
-		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals)),
-		"CheckIPs":      validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders)),
+			"regex", "cookie", "deviceCharacteristics", "clientip", "continent", "countrycode", "regioncode", "protocol", "method", "proxy").Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'header', 'hostname', 'path', 'extension', 'query', 'regex', 'cookie', "+
+				"'deviceCharacteristics', 'clientip', 'continent', 'countrycode', 'regioncode', 'protocol', 'method', 'proxy' or '' (empty)", (&m).MatchType))),
+		"MatchValue": validation.Validate(m.MatchValue, validation.Length(0, 8192)),
+		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
+		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
 	}.Filter()
 }
 
 // Validate validates ObjectMatchValueRangeOrSimpleSubtype
 func (o ObjectMatchValueRangeOrSimpleSubtype) Validate() error {
 	return validation.Errors{
-		"Type": validation.Validate(o.Type, validation.In(ObjectMatchValueRangeOrSimpleTypeSubtypeRange, ObjectMatchValueRangeOrSimpleTypeSubtypeSimple)),
+		"Type": validation.Validate(o.Type, validation.In(ObjectMatchValueRangeOrSimpleTypeSubtypeRange, ObjectMatchValueRangeOrSimpleTypeSubtypeSimple).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'range', 'simple' or '' (empty)", (&o).Type))),
 	}.Filter()
 }
 
@@ -339,17 +356,20 @@ func (o ObjectMatchValueRangeOrSimpleSubtype) Validate() error {
 func (o ObjectMatchValueObjectSubtype) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(o.Name, validation.Required, validation.Length(0, 8192)),
-		"Type": validation.Validate(o.Type, validation.Required, validation.In(ObjectMatchValueObjectTypeSubtypeObject)),
+		"Type": validation.Validate(o.Type, validation.Required, validation.In(ObjectMatchValueObjectTypeSubtypeObject).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be: 'object'", (&o).Type))),
 	}.Filter()
 }
 
 // Validate validates UpdatePolicyVersionRequest
 func (o UpdatePolicyVersionRequest) Validate() error {
-	return validation.Errors{
-		"Description":     validation.Validate(o.Description, validation.Length(0, 255)),
-		"MatchRuleFormat": validation.Validate(o.MatchRuleFormat, validation.In(MatchRuleFormat10)),
-		"MatchRules":      validation.Validate(o.MatchRules, validation.Length(0, 5000)),
-	}.Filter()
+	errs := validation.Errors{
+		"Description": validation.Validate(o.Description, validation.Length(0, 255)),
+		"MatchRuleFormat": validation.Validate(o.MatchRuleFormat, validation.In(MatchRuleFormat10).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: '1.0' or '' (empty)", (&o).MatchRuleFormat))),
+		"MatchRules": validation.Validate(o.MatchRules, validation.Length(0, 5000)),
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 var (
@@ -480,7 +500,7 @@ func (c *cloudlets) ListPolicyVersions(ctx context.Context, params ListPolicyVer
 	logger.Debug("ListPolicyVersions")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListPolicyVersions, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrListPolicyVersions, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/versions", params.PolicyID))
@@ -556,7 +576,7 @@ func (c *cloudlets) CreatePolicyVersion(ctx context.Context, params CreatePolicy
 	logger.Debug("CreatePolicyVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreatePolicyVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreatePolicyVersion, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/versions", params.PolicyID))
@@ -614,7 +634,7 @@ func (c *cloudlets) UpdatePolicyVersion(ctx context.Context, params UpdatePolicy
 	logger.Debug("UpdatePolicyVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdatePolicyVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdatePolicyVersion, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/versions/%d", params.PolicyID, params.Version))

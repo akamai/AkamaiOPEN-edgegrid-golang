@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	"net/http"
 	"net/url"
 
@@ -107,25 +108,29 @@ var (
 
 // Validate validates ListOriginsRequest
 func (v ListOriginsRequest) Validate() error {
-	return validation.Errors{
-		"Type": validation.Validate(v.Type, validation.In(OriginTypeCustomer, OriginTypeApplicationLoadBalancer, OriginTypeNetStorage, OriginTypeAll)),
-	}.Filter()
+	errs := validation.Errors{
+		"Type": validation.Validate(v.Type, validation.In(OriginTypeCustomer, OriginTypeApplicationLoadBalancer, OriginTypeNetStorage, OriginTypeAll).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CUSTOMER', 'APPLICATION_LOAD_BALANCER', 'NETSTORAGE' or '' (empty)", (&v).Type))),
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates CreateOriginRequest
 func (v CreateOriginRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"OriginID":    validation.Validate(v.OriginID, validation.Required, validation.Length(2, 63)),
 		"Description": validation.Validate(v.Description.Description, validation.Length(0, 255)),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates UpdateOriginRequest
 func (v UpdateOriginRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"OriginID":    validation.Validate(v.OriginID, validation.Required, validation.Length(2, 63)),
 		"Description": validation.Validate(v.Description.Description, validation.Length(0, 255)),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 func (c *cloudlets) ListOrigins(ctx context.Context, params ListOriginsRequest) ([]OriginResponse, error) {
@@ -133,7 +138,7 @@ func (c *cloudlets) ListOrigins(ctx context.Context, params ListOriginsRequest) 
 	logger.Debug("ListOrigins")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListOrigins, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrListOrigins, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse("/cloudlets/api/v2/origins")
@@ -196,7 +201,7 @@ func (c *cloudlets) CreateOrigin(ctx context.Context, params CreateOriginRequest
 	logger.Debug("CreateOrigin")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateOrigin, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateOrigin, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse("/cloudlets/api/v2/origins")
@@ -228,7 +233,7 @@ func (c *cloudlets) UpdateOrigin(ctx context.Context, params UpdateOriginRequest
 	logger.Debug("UpdateOrigin")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateOrigin, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateOrigin, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s", params.OriginID))

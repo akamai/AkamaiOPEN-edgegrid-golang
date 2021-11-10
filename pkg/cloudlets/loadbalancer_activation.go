@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -89,15 +90,18 @@ var (
 
 // Validate validates ActivateLoadBalancerVersionRequest
 func (v ActivateLoadBalancerVersionRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"OriginID": validation.Validate(v.OriginID, validation.Required),
-	}.Filter()
+		"Params":   validation.Validate(v.LoadBalancerVersionActivation),
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 //Validate validates LoadBalancerVersionActivation Struct
 func (v LoadBalancerVersionActivation) Validate() error {
 	return validation.Errors{
-		"Network": validation.Validate(v.Network, validation.In(LoadBalancerActivationNetworkStaging, LoadBalancerActivationNetworkProduction)),
+		"Network": validation.Validate(v.Network, validation.In(LoadBalancerActivationNetworkStaging, LoadBalancerActivationNetworkProduction).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'STAGING', 'PRODUCTION' or '' (empty)", (&v).Network))),
 		"Version": validation.Validate(v.Version, validation.Min(0)),
 	}.Filter()
 }
@@ -136,7 +140,7 @@ func (c *cloudlets) ActivateLoadBalancerVersion(ctx context.Context, params Acti
 	logger.Debug("ActivateLoadBalancerVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrActivateLoadBalancerVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrActivateLoadBalancerVersion, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/activations", params.OriginID))

@@ -227,7 +227,7 @@ func TestActivatePolicyVersion(t *testing.T) {
 					AdditionalPropertyNames: []string{},
 				},
 			},
-			withError: regexp.MustCompile(`struct validation: PolicyVersionActivation.AdditionalPropertyNames: cannot be blank`),
+			withError: regexp.MustCompile("struct validation:\nRequestBody.AdditionalPropertyNames: cannot be blank"),
 		},
 	}
 

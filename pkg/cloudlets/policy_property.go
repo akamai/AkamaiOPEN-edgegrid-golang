@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	"net/http"
 	"net/url"
 
@@ -73,10 +74,11 @@ var (
 
 // Validate validates DeletePolicyPropertyRequest
 func (r DeletePolicyPropertyRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"PolicyID":   validation.Validate(r.PolicyID, validation.Required),
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // GetPolicyProperties gets all the associated properties by the policyID
@@ -111,7 +113,7 @@ func (c *cloudlets) DeletePolicyProperty(ctx context.Context, params DeletePolic
 	c.Log(ctx).Debug("DeletePolicyProperty")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w: %s", ErrDeletePolicyProperty, ErrStructValidation, err)
+		return fmt.Errorf("%s: %w:\n%s", ErrDeletePolicyProperty, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/properties/%d", params.PolicyID, params.PropertyID))

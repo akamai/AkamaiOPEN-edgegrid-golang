@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	"net/http"
 	"net/url"
 	"strings"
@@ -137,7 +138,8 @@ var (
 // Validate validates DataCenter
 func (v DataCenter) Validate() error {
 	return validation.Errors{
-		"Continent":     validation.Validate(v.Continent, validation.Required, validation.In("AF", "AS", "EU", "NA", "OC", "OT", "SA")),
+		"Continent": validation.Validate(v.Continent, validation.Required, validation.In("AF", "AS", "EU", "NA", "OC", "OT", "SA").Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'AF', 'AS', 'EU', 'NA', 'OC', 'OT' or 'SA'", (&v).Continent))),
 		"Country":       validation.Validate(v.Country, validation.Required, validation.Length(2, 2)),
 		"Hostname":      validation.Validate(v.Hostname, validation.Length(0, 256)),
 		"Latitude":      validation.Validate(v.Latitude, validation.Required, validation.Min(-180.0), validation.Max(180.0)),
@@ -171,8 +173,9 @@ func (v LivenessSettings) Validate() error {
 		"Path": validation.Validate(v.Path,
 			validation.When(v.Protocol == "HTTP" || v.Protocol == "HTTPS", validation.Required, validation.Length(1, 256)),
 		),
-		"Port":     validation.Validate(v.Port, validation.Required, validation.Min(1), validation.Max(65535)),
-		"Protocol": validation.Validate(v.Protocol, validation.Required, validation.In("HTTP", "HTTPS", "TCP", "TCPS")),
+		"Port": validation.Validate(v.Port, validation.Required, validation.Min(1), validation.Max(65535)),
+		"Protocol": validation.Validate(v.Protocol, validation.Required, validation.In("HTTP", "HTTPS", "TCP", "TCPS").Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'HTTP', 'HTTPS', 'TCP' or 'TCPS'", (&v).Protocol))),
 		"RequestString": validation.Validate(v.RequestString,
 			validation.When(v.Protocol == "TCP" || v.Protocol == "TCPS", validation.Required),
 		),
@@ -196,7 +199,8 @@ func (v Warning) Validate() error {
 // Validate validates LoadBalancerVersion
 func (v LoadBalancerVersion) Validate() error {
 	return validation.Errors{
-		"BalancingType":    validation.Validate(v.BalancingType, validation.In(BalancingTypeWeighted, BalancingTypePerformance)),
+		"BalancingType": validation.Validate(v.BalancingType, validation.In(BalancingTypeWeighted, BalancingTypePerformance).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'WEIGHTED', 'PERFORMANCE' or '' (empty)", (&v).BalancingType))),
 		"CreatedDate":      validation.Validate(v.CreatedDate, validation.Date(time.RFC3339)),
 		"DataCenters":      validation.Validate(v.DataCenters, validation.Length(1, 199)),
 		"LastModifiedDate": validation.Validate(v.LastModifiedDate, validation.Date(time.RFC3339)),
@@ -209,34 +213,38 @@ func (v LoadBalancerVersion) Validate() error {
 
 // Validate validates CreateLoadBalancerVersionRequest
 func (v CreateLoadBalancerVersionRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"OriginID":            validation.Validate(v.OriginID, validation.Length(2, 62)),
 		"LoadBalancerVersion": validation.Validate(v.LoadBalancerVersion),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates GetLoadBalancerVersionRequest
 func (v GetLoadBalancerVersionRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"OriginID": validation.Validate(v.OriginID, validation.Length(2, 62)),
 		"Version":  validation.Validate(v.Version, validation.Min(0)),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates UpdateLoadBalancerVersionRequest
 func (v UpdateLoadBalancerVersionRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"OriginID":            validation.Validate(v.OriginID, validation.Length(2, 62)),
 		"Version":             validation.Validate(v.Version, validation.Min(0)),
 		"LoadBalancerVersion": validation.Validate(v.LoadBalancerVersion),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates ListLoadBalancerVersionsRequest
 func (v ListLoadBalancerVersionsRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"OriginID": validation.Validate(v.OriginID, validation.Required, validation.Length(2, 62)),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 func (c *cloudlets) CreateLoadBalancerVersion(ctx context.Context, params CreateLoadBalancerVersionRequest) (*LoadBalancerVersion, error) {
@@ -244,7 +252,7 @@ func (c *cloudlets) CreateLoadBalancerVersion(ctx context.Context, params Create
 	logger.Debug("CreateLoadBalancerVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateLoadBalancerVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateLoadBalancerVersion, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/versions", params.OriginID))
@@ -275,7 +283,7 @@ func (c *cloudlets) GetLoadBalancerVersion(ctx context.Context, params GetLoadBa
 	logger.Debug("GetLoadBalancerVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetLoadBalancerVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetLoadBalancerVersion, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/versions/%d", params.OriginID, params.Version))
@@ -312,7 +320,7 @@ func (c *cloudlets) UpdateLoadBalancerVersion(ctx context.Context, params Update
 	logger.Debug("UpdateLoadBalancerVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateLoadBalancerVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateLoadBalancerVersion, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/versions/%d", params.OriginID, params.Version))
@@ -349,7 +357,7 @@ func (c *cloudlets) ListLoadBalancerVersions(ctx context.Context, params ListLoa
 	logger.Debug("ListLoadBalancerVersions")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListLoadBalancerVersions, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrListLoadBalancerVersions, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/versions?includeModel=true", params.OriginID))
