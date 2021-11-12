@@ -100,6 +100,7 @@ func TestListPolicyVersions(t *testing.T) {
 				},
 			},
 		},
+
 		"200 OK with params": {
 			request: ListPolicyVersionsRequest{
 				PolicyID:           284823,
@@ -282,6 +283,7 @@ func TestGetPolicyVersion(t *testing.T) {
 				},
 			},
 		},
+
 		"200 OK, ALB with disabled rule": {
 			request: GetPolicyVersionRequest{
 				PolicyID: 276858,
@@ -470,6 +472,7 @@ func TestGetPolicyVersion(t *testing.T) {
 				},
 			},
 		},
+
 		"500 internal server error": {
 			request: GetPolicyVersionRequest{
 				PolicyID: 1,
@@ -602,6 +605,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						&MatchRuleALB{
 							Matches: []MatchCriteriaALB{
 								{
+
 									MatchType:     "protocol",
 									MatchValue:    "http",
 									MatchOperator: "equals",
@@ -710,6 +714,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						MatchURL: "",
 						Matches: []MatchCriteriaALB{
 							{
+
 								CaseSensitive: false,
 								MatchOperator: "equals",
 								MatchType:     "protocol",
@@ -766,13 +771,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 								{
 									MatchOperator: "equals",
 									MatchType:     "header",
-									ObjectMatchValue: ObjectMatchValueObjectSubtype{
+									ObjectMatchValue: ObjectMatchValueObject{
 										Type: "object",
 										Name: "ALB",
 										Options: &Options{
-											Value: []interface{}{
-												"y",
-											},
+											Value:            []string{"y"},
 											ValueHasWildcard: true,
 										},
 									},
@@ -868,13 +871,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 								MatchOperator: "equals",
 								MatchType:     "header",
 								Negate:        false,
-								ObjectMatchValue: &ObjectMatchValueObjectSubtype{
+								ObjectMatchValue: &ObjectMatchValueObject{
 									Type: "object",
 									Name: "ALB",
 									Options: &Options{
-										Value: []interface{}{
-											"y",
-										},
+										Value:            []string{"y"},
 										ValueHasWildcard: true,
 									},
 								},
@@ -906,9 +907,9 @@ func TestCreatePolicyVersion(t *testing.T) {
 									MatchOperator: "equals",
 									MatchType:     "method",
 									Negate:        false,
-									ObjectMatchValue: ObjectMatchValueRangeOrSimpleSubtype{
+									ObjectMatchValue: ObjectMatchValueSimple{
 										Type:  "simple",
-										Value: []interface{}{"GET"},
+										Value: []string{"GET"},
 									},
 								},
 							},
@@ -997,11 +998,9 @@ func TestCreatePolicyVersion(t *testing.T) {
 								MatchOperator: "equals",
 								MatchType:     "method",
 								Negate:        false,
-								ObjectMatchValue: &ObjectMatchValueRangeOrSimpleSubtype{
-									Type: "simple",
-									Value: []interface{}{
-										"GET",
-									},
+								ObjectMatchValue: &ObjectMatchValueSimple{
+									Type:  "simple",
+									Value: []string{"GET"},
 								},
 							},
 						},
@@ -1031,9 +1030,9 @@ func TestCreatePolicyVersion(t *testing.T) {
 									MatchOperator: "equals",
 									MatchType:     "range",
 									Negate:        false,
-									ObjectMatchValue: ObjectMatchValueRangeOrSimpleSubtype{
+									ObjectMatchValue: ObjectMatchValueRange{
 										Type:  "range",
-										Value: []interface{}{1, 50},
+										Value: []int64{1, 50},
 									},
 								},
 							},
@@ -1123,9 +1122,9 @@ func TestCreatePolicyVersion(t *testing.T) {
 								MatchOperator: "equals",
 								MatchType:     "range",
 								Negate:        false,
-								ObjectMatchValue: &ObjectMatchValueRangeOrSimpleSubtype{
+								ObjectMatchValue: &ObjectMatchValueRange{
 									Type:  "range",
-									Value: []interface{}{float64(1), float64(50)},
+									Value: []int64{1, 50},
 								},
 							},
 						},
@@ -1316,25 +1315,25 @@ func TestCreatePolicyVersion(t *testing.T) {
 						UseRelativeURL:           "copy_scheme_hostname",
 						Matches: []MatchCriteriaER{
 							{
-								CaseSensitive: true,
-								MatchOperator: "equals",
 								MatchType:     "hostname",
 								MatchValue:    "3333.dom",
+								MatchOperator: "equals",
+								CaseSensitive: true,
 								Negate:        false,
 							},
 							{
-								CaseSensitive: false,
-								MatchOperator: "equals",
 								MatchType:     "cookie",
 								MatchValue:    "cookie=cookievalue",
+								MatchOperator: "equals",
 								Negate:        false,
+								CaseSensitive: false,
 							},
 							{
-								CaseSensitive: false,
-								MatchOperator: "equals",
 								MatchType:     "extension",
 								MatchValue:    "txt",
+								MatchOperator: "equals",
 								Negate:        false,
+								CaseSensitive: false,
 							},
 						},
 					},
@@ -1365,6 +1364,297 @@ func TestCreatePolicyVersion(t *testing.T) {
 					},
 				},
 			},
+		},
+
+		"201 created, complex ER with objectMatchValue - simple": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleER{
+							Start:          0,
+							End:            0,
+							Type:           "erMatchRule",
+							UseRelativeURL: "copy_scheme_hostname",
+							Name:           "rul3",
+							StatusCode:     307,
+							RedirectURL:    "/abc/sss",
+							ID:             0,
+							Matches: []MatchCriteriaER{
+								{
+									CaseSensitive: true,
+									MatchOperator: "equals",
+									MatchType:     "method",
+									Negate:        false,
+									ObjectMatchValue: ObjectMatchValueSimple{
+										Type:  "simple",
+										Value: []string{"GET"},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "erMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": null,
+            "matches": [
+                {
+                    "caseSensitive": true,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                }
+            ],
+            "name": "rul3",
+            "redirectURL": "/abc/sss",
+            "start": 0,
+            "statusCode": 307,
+            "useIncomingQueryString": false,
+            "useIncomingSchemeAndHost": true,
+            "useRelativeUrl": "copy_scheme_hostname"
+        }
+    ],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleER{
+						Type:                     "erMatchRule",
+						End:                      0,
+						ID:                       0,
+						MatchURL:                 "",
+						Name:                     "rul3",
+						RedirectURL:              "/abc/sss",
+						Start:                    0,
+						StatusCode:               307,
+						UseIncomingQueryString:   false,
+						UseIncomingSchemeAndHost: true,
+						UseRelativeURL:           "copy_scheme_hostname",
+						Matches: []MatchCriteriaER{
+							{
+								CaseSensitive: true,
+								MatchOperator: "equals",
+								MatchType:     "method",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueSimple{
+									Type:  "simple",
+									Value: []string{"GET"},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		"201 created, complex ER with objectMatchValue - object": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleER{
+							Start:          0,
+							End:            0,
+							Type:           "erMatchRule",
+							UseRelativeURL: "copy_scheme_hostname",
+							Name:           "rul3",
+							StatusCode:     307,
+							RedirectURL:    "/abc/sss",
+							ID:             0,
+							Matches: []MatchCriteriaER{
+								{
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: ObjectMatchValueObject{
+										Type: "object",
+										Name: "ER",
+										Options: &Options{
+											Value: []string{
+												"text/html*",
+												"text/css*",
+												"application/x-javascript*",
+											},
+											ValueHasWildcard: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "erMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": null,
+            "matches": [
+                {
+                    "matchOperator": "equals",
+                    "matchType": "hostname",
+                    "negate": false,
+					"objectMatchValue": {
+						"type": "object",
+						"name": "ER",
+						"options": {
+							"value": [
+								"text/html*",
+                                "text/css*",
+                                "application/x-javascript*"
+							],
+							"valueHasWildcard": true
+						}
+					}
+                }
+            ],
+            "name": "rul3",
+            "redirectURL": "/abc/sss",
+            "start": 0,
+            "statusCode": 307,
+            "useIncomingQueryString": false,
+            "useIncomingSchemeAndHost": true,
+            "useRelativeUrl": "copy_scheme_hostname"
+        }
+    ],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleER{
+						Type:                     "erMatchRule",
+						End:                      0,
+						ID:                       0,
+						MatchURL:                 "",
+						Name:                     "rul3",
+						RedirectURL:              "/abc/sss",
+						Start:                    0,
+						StatusCode:               307,
+						UseIncomingQueryString:   false,
+						UseIncomingSchemeAndHost: true,
+						UseRelativeURL:           "copy_scheme_hostname",
+						Matches: []MatchCriteriaER{
+							{
+								MatchOperator: "equals",
+								MatchType:     "hostname",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueObject{
+									Type: "object",
+									Name: "ER",
+									Options: &Options{
+										Value: []string{
+											"text/html*",
+											"text/css*",
+											"application/x-javascript*",
+										},
+										ValueHasWildcard: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		"validation error, complex ER with unavailable objectMatchValue type - range": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleER{
+							Start:          0,
+							End:            0,
+							Type:           "erMatchRule",
+							UseRelativeURL: "copy_scheme_hostname",
+							Name:           "rul3",
+							StatusCode:     307,
+							RedirectURL:    "/abc/sss",
+							ID:             0,
+							Matches: []MatchCriteriaER{
+								{
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: ObjectMatchValueRange{
+										Type:  "range",
+										Value: []int64{1, 50},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
 		},
 
 		"500 internal server error": {
@@ -1436,6 +1726,7 @@ func TestDeletePolicyVersion(t *testing.T) {
 			responseBody:   "",
 			expectedPath:   "/cloudlets/api/v2/policies/276858/versions/5",
 		},
+
 		"500 internal server error": {
 			request: DeletePolicyVersionRequest{
 				PolicyID: 1,
@@ -1728,6 +2019,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
+
 		"500 internal server error": {
 			request: UpdatePolicyVersionRequest{
 				PolicyID: 276858,
@@ -1859,12 +2151,9 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 							MatchOperator: "equals",
 							MatchType:     "range",
 							Negate:        false,
-							ObjectMatchValue: &ObjectMatchValueRangeOrSimpleSubtype{
-								Type: "range",
-								Value: []interface{}{
-									float64(1),
-									float64(50),
-								},
+							ObjectMatchValue: &ObjectMatchValueRange{
+								Type:  "range",
+								Value: []int64{1, 50},
 							},
 						},
 						{
@@ -1872,11 +2161,9 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 							MatchOperator: "equals",
 							MatchType:     "method",
 							Negate:        false,
-							ObjectMatchValue: &ObjectMatchValueRangeOrSimpleSubtype{
-								Type: "simple",
-								Value: []interface{}{
-									"GET",
-								},
+							ObjectMatchValue: &ObjectMatchValueSimple{
+								Type:  "simple",
+								Value: []string{"GET"},
 							},
 						},
 					},
@@ -1885,7 +2172,8 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 				},
 			},
 		},
-		"invalid object value type": {
+
+		"invalid objectMatchValue type for ALB - range": {
 			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: objectMatchValue has unexpected type: 'foo'"),
 			responseBody: `
 	[
@@ -1911,6 +2199,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
     ]
 `,
 		},
+
 		"wrong type for object value type": {
 			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: 'type' should be a string"),
 			responseBody: `
@@ -1937,6 +2226,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
     ]
 `,
 		},
+
 		"missing object value type": {
 			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: objectMatchValue should contain 'type' field"),
 			responseBody: `
@@ -1962,6 +2252,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
     ]
 `,
 		},
+
 		"invalid object value": {
 			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: structure of objectMatchValue should be 'map', but was 'string'"),
 			responseBody: `
@@ -1983,7 +2274,8 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
     ]
 `,
 		},
-		"invalid MarchRuleAP": {
+
+		"invalid MatchRuleAP": {
 			responseBody: `
 	[
         {
@@ -1993,6 +2285,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 			withError: errors.New("unmarshalling MatchRules: unsupported match rule type: apMatchRule"),
 		},
+
 		"invalid type": {
 			withError: errors.New("unmarshalling MatchRules: 'type' field on match rule entry should be a string"),
 			responseBody: `
@@ -2003,6 +2296,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
     ]
 `,
 		},
+
 		"invalid JSON": {
 			withError: errors.New("unexpected end of JSON input"),
 			responseBody: `
@@ -2013,11 +2307,40 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
     
 `,
 		},
+
 		"missing type": {
 			withError: errors.New("unmarshalling MatchRules: match rule entry should contain 'type' field"),
 			responseBody: `
 	[
         {
+        }
+    ]
+`,
+		},
+
+		"invalid objectMatchValue type for ER - range": {
+			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaER: objectMatchValue has unexpected type: 'range'"),
+			responseBody: `
+	[
+        {
+            "type": "erMatchRule",
+            "matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "range",
+                        "value": [
+                            1,
+                            50
+                        ]
+                    }
+                }
+            ],
+            "name": "Rule3",
+            "start": 0
         }
     ]
 `,

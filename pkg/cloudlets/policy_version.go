@@ -158,9 +158,8 @@ type (
 		Disabled                 bool              `json:"disabled,omitempty"`
 	}
 
-	// MatchCriteriaALB represents a match criteria resource for match rule for cloudlet ALB
-	// ObjectMatchValue can contain ObjectMatchValueObjectSubtype or ObjectMatchValueRangeOrSimpleSubtype
-	MatchCriteriaALB struct {
+	// MatchCriteria represents a match criteria resource for match rule for cloudlet
+	MatchCriteria struct {
 		MatchType        string        `json:"matchType,omitempty"`
 		MatchValue       string        `json:"matchValue,omitempty"`
 		MatchOperator    MatchOperator `json:"matchOperator,omitempty"`
@@ -170,37 +169,41 @@ type (
 		ObjectMatchValue interface{}   `json:"objectMatchValue,omitempty"`
 	}
 
+	// MatchCriteriaALB represents a match criteria resource for match rule for cloudlet ALB
+	// ObjectMatchValue can contain ObjectMatchValueObject, ObjectMatchValueSimple or ObjectMatchValueRange
+	MatchCriteriaALB MatchCriteria
+
 	// MatchCriteriaER represents a match criteria resource for match rule for cloudlet ER
-	MatchCriteriaER struct {
-		MatchType     string        `json:"matchType,omitempty"`
-		MatchValue    string        `json:"matchValue,omitempty"`
-		MatchOperator MatchOperator `json:"matchOperator,omitempty"`
-		CaseSensitive bool          `json:"caseSensitive"`
-		Negate        bool          `json:"negate"`
-		CheckIPs      CheckIPs      `json:"checkIPs,omitempty"`
+	// ObjectMatchValue can contain ObjectMatchValueObject or ObjectMatchValueSimple
+	MatchCriteriaER MatchCriteria
+
+	// ObjectMatchValueObject represents an object match value resource for match criteria of type object
+	ObjectMatchValueObject struct {
+		Name              string                     `json:"name"`
+		Type              ObjectMatchValueObjectType `json:"type"`
+		NameCaseSensitive bool                       `json:"nameCaseSensitive"`
+		NameHasWildcard   bool                       `json:"nameHasWildcard"`
+		Options           *Options                   `json:"options,omitempty"`
 	}
 
-	// ObjectMatchValueObjectSubtype represents an object match value resource for match criteria
-	ObjectMatchValueObjectSubtype struct {
-		Name              string                            `json:"name"`
-		Type              ObjectMatchValueObjectTypeSubtype `json:"type"`
-		NameCaseSensitive bool                              `json:"nameCaseSensitive"`
-		NameHasWildcard   bool                              `json:"nameHasWildcard"`
-		Options           *Options                          `json:"options,omitempty"`
+	// ObjectMatchValueSimple represents an object match value resource for match criteria of type simple
+	ObjectMatchValueSimple struct {
+		Type  ObjectMatchValueSimpleType `json:"type"`
+		Value []string                   `json:"value,omitempty"`
 	}
 
-	// ObjectMatchValueRangeOrSimpleSubtype represents a match value resource for match criteria
-	ObjectMatchValueRangeOrSimpleSubtype struct {
-		Type  ObjectMatchValueRangeOrSimpleTypeSubtype `json:"type"`
-		Value interface{}                              `json:"value,omitempty"`
+	// ObjectMatchValueRange represents an object match value resource for match criteria of type range
+	ObjectMatchValueRange struct {
+		Type  ObjectMatchValueRangeType `json:"type"`
+		Value []int64                   `json:"value,omitempty"`
 	}
 
-	// Options represents an option resource for ObjectMatchValueObjectSubtype
+	// Options represents an option resource for ObjectMatchValueObject
 	Options struct {
-		Value              interface{} `json:"value,omitempty"`
-		ValueHasWildcard   bool        `json:"valueHasWildcard,omitempty"`
-		ValueCaseSensitive bool        `json:"valueCaseSensitive,omitempty"`
-		ValueEscaped       bool        `json:"valueEscaped,omitempty"`
+		Value              []string `json:"value,omitempty"`
+		ValueHasWildcard   bool     `json:"valueHasWildcard,omitempty"`
+		ValueCaseSensitive bool     `json:"valueCaseSensitive,omitempty"`
+		ValueEscaped       bool     `json:"valueEscaped,omitempty"`
 	}
 
 	//MatchRuleType enum type
@@ -211,10 +214,12 @@ type (
 	MatchOperator string
 	// CheckIPs enum type
 	CheckIPs string
-	// ObjectMatchValueRangeOrSimpleTypeSubtype enum type
-	ObjectMatchValueRangeOrSimpleTypeSubtype string
-	// ObjectMatchValueObjectTypeSubtype enum type
-	ObjectMatchValueObjectTypeSubtype string
+	// ObjectMatchValueRangeType enum type
+	ObjectMatchValueRangeType string
+	// ObjectMatchValueSimpleType enum type
+	ObjectMatchValueSimpleType string
+	// ObjectMatchValueObjectType enum type
+	ObjectMatchValueObjectType string
 )
 
 const (
@@ -250,15 +255,12 @@ const (
 )
 
 const (
-	// ObjectMatchValueRangeOrSimpleTypeSubtypeRange represents range option
-	ObjectMatchValueRangeOrSimpleTypeSubtypeRange ObjectMatchValueRangeOrSimpleTypeSubtype = "range"
-	// ObjectMatchValueRangeOrSimpleTypeSubtypeSimple represents simple option
-	ObjectMatchValueRangeOrSimpleTypeSubtypeSimple ObjectMatchValueRangeOrSimpleTypeSubtype = "simple"
-)
-
-const (
-	// ObjectMatchValueObjectTypeSubtypeObject represents object option
-	ObjectMatchValueObjectTypeSubtypeObject ObjectMatchValueObjectTypeSubtype = "object"
+	// Range represents range option
+	Range ObjectMatchValueRangeType = "range"
+	// Simple represents simple option
+	Simple ObjectMatchValueSimpleType = "simple"
+	// Object represents object option
+	Object ObjectMatchValueObjectType = "object"
 )
 
 // Validate validates ListPolicyVersionsRequest
@@ -325,8 +327,20 @@ func (m MatchCriteriaALB) Validate() error {
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
 		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
-		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == "")),
+		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == ""), validation.By(objectMatchValueALBValidation)),
 	}.Filter()
+}
+
+func objectMatchValueALBValidation(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	switch value.(type) {
+	case ObjectMatchValueObject, ObjectMatchValueSimple, ObjectMatchValueRange:
+		return nil
+	default:
+		return errors.New(fmt.Sprintf("type %T is invalid. Must be one of: 'simple', 'range' or 'object'", value))
+	}
 }
 
 // Validate validates MatchCriteriaER
@@ -341,22 +355,43 @@ func (m MatchCriteriaER) Validate() error {
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
 		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
+		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == ""), validation.By(objectMatchValueERValidation)),
 	}.Filter()
 }
 
-// Validate validates ObjectMatchValueRangeOrSimpleSubtype
-func (o ObjectMatchValueRangeOrSimpleSubtype) Validate() error {
+func objectMatchValueERValidation(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	switch value.(type) {
+	case ObjectMatchValueObject, ObjectMatchValueSimple:
+		return nil
+	default:
+		return errors.New(fmt.Sprintf("type %T is invalid. Must be one of: 'simple' or 'object'", value))
+	}
+}
+
+// Validate validates ObjectMatchValueRange
+func (o ObjectMatchValueRange) Validate() error {
 	return validation.Errors{
-		"Type": validation.Validate(o.Type, validation.In(ObjectMatchValueRangeOrSimpleTypeSubtypeRange, ObjectMatchValueRangeOrSimpleTypeSubtypeSimple).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'range', 'simple' or '' (empty)", (&o).Type))),
+		"Type": validation.Validate(o.Type, validation.In(Range).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be: 'range'", (&o).Type))),
 	}.Filter()
 }
 
-// Validate validates ObjectMatchValueObjectSubtype
-func (o ObjectMatchValueObjectSubtype) Validate() error {
+// Validate validates ObjectMatchValueSimple
+func (o ObjectMatchValueSimple) Validate() error {
+	return validation.Errors{
+		"Type": validation.Validate(o.Type, validation.In(Simple).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be: 'simple'", (&o).Type))),
+	}.Filter()
+}
+
+// Validate validates ObjectMatchValueObject
+func (o ObjectMatchValueObject) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(o.Name, validation.Required, validation.Length(0, 8192)),
-		"Type": validation.Validate(o.Type, validation.Required, validation.In(ObjectMatchValueObjectTypeSubtypeObject).Error(
+		"Type": validation.Validate(o.Type, validation.Required, validation.In(Object).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be: 'object'", (&o).Type))),
 	}.Filter()
 }
@@ -385,6 +420,8 @@ var (
 	ErrUpdatePolicyVersion = errors.New("update policy versions")
 	// ErrUnmarshallMatchCriteriaALB is returned when unmarshalling of MatchCriteriaALB fails
 	ErrUnmarshallMatchCriteriaALB = errors.New("unmarshalling MatchCriteriaALB")
+	// ErrUnmarshallMatchCriteriaER is returned when unmarshalling of MatchCriteriaER fails
+	ErrUnmarshallMatchCriteriaER = errors.New("unmarshalling MatchCriteriaER")
 	// ErrUnmarshallMatchRules is returned when unmarshalling of MatchRules fails
 	ErrUnmarshallMatchRules = errors.New("unmarshalling MatchRules")
 )
@@ -438,15 +475,15 @@ func (m *MatchRules) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// objectMatchValueHandlers contains mapping between name of the type for ObjectMatchValue and its implementation
+// objectALBMatchValueHandlers contains mapping between name of the type for ObjectMatchValue and its implementation
 // It makes the UnmarshalJSON more compact and easier to support more types
-var objectMatchValueHandlers = map[string]func() interface{}{
-	"object": func() interface{} { return &ObjectMatchValueObjectSubtype{} },
-	"range":  func() interface{} { return &ObjectMatchValueRangeOrSimpleSubtype{} },
-	"simple": func() interface{} { return &ObjectMatchValueRangeOrSimpleSubtype{} },
+var objectALBMatchValueHandlers = map[string]func() interface{}{
+	"object": func() interface{} { return &ObjectMatchValueObject{} },
+	"range":  func() interface{} { return &ObjectMatchValueRange{} },
+	"simple": func() interface{} { return &ObjectMatchValueSimple{} },
 }
 
-// UnmarshalJSON helps to un-marshall field ObjectMatchValue of MatchCriteriaALB as proper instance of *ObjectMatchValueObjectSubtype or *ObjectMatchValueRangeOrSimpleSubtype
+// UnmarshalJSON helps to un-marshall field ObjectMatchValue of MatchCriteriaALB as proper instance of *ObjectMatchValueObject, *ObjectMatchValueSimple or *ObjectMatchValueRange
 func (m *MatchCriteriaALB) UnmarshalJSON(b []byte) error {
 	// matchCriteriaALB is an alias for MatchCriteriaALB for un-marshalling purposes
 	type matchCriteriaALB MatchCriteriaALB
@@ -477,7 +514,7 @@ func (m *MatchCriteriaALB) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("%w: 'type' should be a string", ErrUnmarshallMatchCriteriaALB)
 	}
 
-	createObjectMatchValue, ok := objectMatchValueHandlers[objectMatchValueTypeName]
+	createObjectMatchValue, ok := objectALBMatchValueHandlers[objectMatchValueTypeName]
 	if !ok {
 		return fmt.Errorf("%w: objectMatchValue has unexpected type: '%s'", ErrUnmarshallMatchCriteriaALB, objectMatchValueTypeName)
 	}
@@ -489,6 +526,62 @@ func (m *MatchCriteriaALB) UnmarshalJSON(b []byte) error {
 	err = json.Unmarshal(marshal, convertedObjectMatchValue)
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaALB, err)
+	}
+	m.ObjectMatchValue = convertedObjectMatchValue
+
+	return nil
+}
+
+// objectERMatchValueHandlers contains mapping between name of the type for ObjectMatchValue and its implementation
+// It makes the UnmarshalJSON more compact and easier to support more types
+var objectERMatchValueHandlers = map[string]func() interface{}{
+	"object": func() interface{} { return &ObjectMatchValueObject{} },
+	"simple": func() interface{} { return &ObjectMatchValueSimple{} },
+}
+
+// UnmarshalJSON helps to un-marshall field ObjectMatchValue of MatchCriteriaER as proper instance of *ObjectMatchValueObject or *ObjectMatchValueSimple
+func (m *MatchCriteriaER) UnmarshalJSON(b []byte) error {
+	// matchCriteriaER is an alias for MatchCriteriaER for un-marshalling purposes
+	type matchCriteriaER MatchCriteriaER
+
+	// populate common attributes using default json unmarshaler using aliased type
+	err := json.Unmarshal(b, (*matchCriteriaER)(m))
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaER, err)
+	}
+	if m.ObjectMatchValue == nil {
+		return nil
+	}
+	objectMatchValue, ok := m.ObjectMatchValue.(interface{})
+	if !ok {
+		return fmt.Errorf("%w: objectMatchValue should be of type 'interface{}', but was '%T'", ErrUnmarshallMatchCriteriaER, m.ObjectMatchValue)
+	}
+
+	objectMatchValueMap, ok := objectMatchValue.(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("%w: structure of objectMatchValue should be 'map', but was '%T'", ErrUnmarshallMatchCriteriaER, objectMatchValue)
+	}
+	objectMatchValueType, ok := objectMatchValueMap["type"]
+	if !ok {
+		return fmt.Errorf("%w: objectMatchValue should contain 'type' field", ErrUnmarshallMatchCriteriaER)
+	}
+	objectMatchValueTypeName, ok := objectMatchValueType.(string)
+	if !ok {
+		return fmt.Errorf("%w: 'type' should be a string", ErrUnmarshallMatchCriteriaER)
+	}
+
+	createObjectMatchValue, ok := objectERMatchValueHandlers[objectMatchValueTypeName]
+	if !ok {
+		return fmt.Errorf("%w: objectMatchValue has unexpected type: '%s'", ErrUnmarshallMatchCriteriaER, objectMatchValueTypeName)
+	}
+	convertedObjectMatchValue := createObjectMatchValue()
+	marshal, err := json.Marshal(objectMatchValue)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaER, err)
+	}
+	err = json.Unmarshal(marshal, convertedObjectMatchValue)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaER, err)
 	}
 	m.ObjectMatchValue = convertedObjectMatchValue
 
