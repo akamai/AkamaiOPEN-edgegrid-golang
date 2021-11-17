@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.8.0 (Nov. 24, 2021)
+
+#### FEATURES/ENHANCEMENTS:
+# APPSEC
+* Add support for advanced exceptions in ASE rules
+* Update bypass-network-list datasource and resource for multi-policy WAP
+
 ## 2.7.0 (Oct 19, 2021)
 
 #### FEATURES/ENHANCEMENTS:

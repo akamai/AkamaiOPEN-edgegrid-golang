@@ -15,7 +15,6 @@ type (
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#configurationclone
 	ConfigurationClone interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationversion
-		// Note: this method is DEPRECATED and will be removed in a future release.
 		GetConfigurationClone(ctx context.Context, params GetConfigurationCloneRequest) (*GetConfigurationCloneResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsummarylistofconfigurationversions
@@ -23,7 +22,6 @@ type (
 	}
 
 	// GetConfigurationCloneRequest is used to retrieve information about an existing security configuration.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetConfigurationCloneRequest struct {
 		ConfigID     int       `json:"configId"`
 		ConfigName   string    `json:"configName"`
@@ -42,7 +40,6 @@ type (
 	}
 
 	// GetConfigurationCloneResponse is returned from a call to GetConfigurationClone.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetConfigurationCloneResponse struct {
 		ConfigID     int       `json:"configId"`
 		ConfigName   string    `json:"configName"`
@@ -83,7 +80,6 @@ type (
 )
 
 // Validate validates a GetConfigurationCloneRequest.
-// Note: this method is DEPRECATED and will be removed in a future release.
 func (v GetConfigurationCloneRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -98,7 +94,6 @@ func (v CreateConfigurationCloneRequest) Validate() error {
 	}.Filter()
 }
 
-// Note: this method is DEPRECATED and will be removed in a future release.
 func (p *appsec) GetConfigurationClone(ctx context.Context, params GetConfigurationCloneRequest) (*GetConfigurationCloneResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

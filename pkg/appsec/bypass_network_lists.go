@@ -21,7 +21,6 @@ type (
 		UpdateBypassNetworkLists(ctx context.Context, params UpdateBypassNetworkListsRequest) (*UpdateBypassNetworkListsResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putbypassnetworklistsforawapconfigversion
-		// Note: this method is DEPRECATED and will be removed in a future release.
 		RemoveBypassNetworkLists(ctx context.Context, params RemoveBypassNetworkListsRequest) (*RemoveBypassNetworkListsResponse, error)
 	}
 
@@ -67,7 +66,7 @@ type (
 	}
 
 	// RemoveBypassNetworkListsRequest is used to modify which network lists are used in the bypass network lists settings.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
+	// Deprecated: this struct will be removed in a future release.
 	RemoveBypassNetworkListsRequest struct {
 		ConfigID     int      `json:"-"`
 		Version      int      `json:"-"`
@@ -76,7 +75,7 @@ type (
 	}
 
 	// RemoveBypassNetworkListsResponse is returned from a call to RemoveBypassNetworkLists.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
+	// Deprecated: this struct will be removed in a future release.
 	RemoveBypassNetworkListsResponse struct {
 		NetworkLists []string `json:"networkLists"`
 	}
@@ -99,7 +98,7 @@ func (v UpdateBypassNetworkListsRequest) Validate() error {
 }
 
 // Validate validates a RemoveBypassNetworkListsRequest.
-// Note: this method is DEPRECATED and will be removed in a future release.
+// Deprecated: this method will be removed in a future release.
 func (v RemoveBypassNetworkListsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -193,7 +192,7 @@ func (p *appsec) UpdateBypassNetworkLists(ctx context.Context, params UpdateBypa
 	return &rval, nil
 }
 
-// Note: this method is DEPRECATED and will be removed in a future release.
+// Deprecated: this method will be removed in a future release.
 func (p *appsec) RemoveBypassNetworkLists(ctx context.Context, params RemoveBypassNetworkListsRequest) (*RemoveBypassNetworkListsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

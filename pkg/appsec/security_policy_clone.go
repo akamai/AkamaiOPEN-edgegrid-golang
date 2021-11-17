@@ -15,11 +15,9 @@ type (
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#securitypolicyclone
 	SecurityPolicyClone interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicies
-		// Note: this method is DEPRECATED and will be removed in a future release.
 		GetSecurityPolicyClones(ctx context.Context, params GetSecurityPolicyClonesRequest) (*GetSecurityPolicyClonesResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicies
-		// Note: this method is DEPRECATED and will be removed in a future release.
 		GetSecurityPolicyClone(ctx context.Context, params GetSecurityPolicyCloneRequest) (*GetSecurityPolicyCloneResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsecuritypolicies
@@ -27,14 +25,12 @@ type (
 	}
 
 	// GetSecurityPolicyClonesRequest is used to retrieve the available security policies.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetSecurityPolicyClonesRequest struct {
 		ConfigID int `json:"configId"`
 		Version  int `json:"version"`
 	}
 
 	// GetSecurityPolicyClonesResponse is returned from a call to GetSecurityPolicyClones.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetSecurityPolicyClonesResponse struct {
 		ConfigID int `json:"configId"`
 		Version  int `json:"version"`
@@ -55,7 +51,6 @@ type (
 	}
 
 	// GetSecurityPolicyCloneRequest is used to retrieve a security policy.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetSecurityPolicyCloneRequest struct {
 		ConfigID int    `json:"configId"`
 		Version  int    `json:"version"`
@@ -63,7 +58,6 @@ type (
 	}
 
 	// GetSecurityPolicyCloneResponse is returned from a call to GetSecurityPolicyClone.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
 	GetSecurityPolicyCloneResponse struct {
 		ConfigID               int    `json:"configId,omitempty"`
 		PolicyID               string `json:"policyId,omitempty"`
@@ -106,7 +100,6 @@ type (
 	}
 
 	// SecurityPolicyCloneResponse is currently unused.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
 	SecurityPolicyCloneResponse struct {
 		ConfigID int        `json:"configId"`
 		Policies []Policies `json:"policies"`
@@ -130,7 +123,6 @@ type (
 	}
 
 	// CreateSecurityPolicyClonePost is currently unused.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
 	CreateSecurityPolicyClonePost struct {
 		CreateFromSecurityPolicy string `json:"createFromSecurityPolicy"`
 		PolicyName               string `json:"policyName"`
@@ -156,7 +148,6 @@ type (
 )
 
 // Validate validates a GetSecurityPolicyCloneRequest.
-// Note: this method is DEPRECATED and will be removed in a future release.
 func (v GetSecurityPolicyCloneRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -165,7 +156,6 @@ func (v GetSecurityPolicyCloneRequest) Validate() error {
 }
 
 // Validate validates a GetSecurityPolicyClonesRequest.
-// Note: this method is DEPRECATED and will be removed in a future release.
 func (v GetSecurityPolicyClonesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -181,7 +171,6 @@ func (v CreateSecurityPolicyCloneRequest) Validate() error {
 	}.Filter()
 }
 
-// Note: this method is DEPRECATED and will be removed in a future release.
 func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityPolicyCloneRequest) (*GetSecurityPolicyCloneResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -216,7 +205,6 @@ func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityP
 
 }
 
-// Note: this method is DEPRECATED and will be removed in a future release.
 func (p *appsec) GetSecurityPolicyClones(ctx context.Context, params GetSecurityPolicyClonesRequest) (*GetSecurityPolicyClonesResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

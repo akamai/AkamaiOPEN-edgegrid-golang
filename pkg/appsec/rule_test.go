@@ -325,7 +325,6 @@ func TestAppSec_UpdateRuleConditionException(t *testing.T) {
 	}
 }
 
-
 // Test Update ASE Rule.
 func TestAppSec_UpdateRuleAdvancedConditionException(t *testing.T) {
 	result := UpdateConditionExceptionResponse{}

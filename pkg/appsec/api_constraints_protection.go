@@ -12,7 +12,7 @@ type (
 	// The APIConstraintsProtection interface supports retrieving and updating API request constraints
 	// for a configuration and policy.
 	//
-	// Note: this interface is DEPRECATED and will be removed in a future release. Use the PolicyProtections interface instead.
+	// Deprecated: this interface will be removed in a future release. Use the PolicyProtections interface instead.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	APIConstraintsProtection interface {

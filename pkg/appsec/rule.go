@@ -81,8 +81,8 @@ type (
 
 	// RuleConditionException is used to describe the conditions and exceptions for a rule.
 	RuleConditionException struct {
-		Conditions *RuleConditions `json:"conditions,omitempty"`
-		Exception  *RuleException  `json:"exception,omitempty"`
+		Conditions             *RuleConditions     `json:"conditions,omitempty"`
+		Exception              *RuleException      `json:"exception,omitempty"`
 		AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
 	}
 
@@ -107,14 +107,13 @@ type (
 		UseHeaders    bool     `json:"useHeaders,omitempty"`
 	}
 
-
 	// RuleException is used to describe the exceptions for a rule.
 	RuleException struct {
-		AnyHeaderCookieOrParam               []string                                 `json:"anyHeaderCookieOrParam,omitempty"`
-		HeaderCookieOrParamValues            []string                                 `json:"headerCookieOrParamValues,omitempty"`
-		SpecificHeaderCookieOrParamNameValue *SpecificHeaderCookieOrParamNameValuePtr `json:"specificHeaderCookieOrParamNameValue,omitempty"`
-		SpecificHeaderCookieOrParamNames     *SpecificHeaderCookieOrParamNamesPtr     `json:"specificHeaderCookieOrParamNames,omitempty"`
-		SpecificHeaderCookieOrParamPrefix    *SpecificHeaderCookieOrParamPrefixPtr    `json:"specificHeaderCookieOrParamPrefix,omitempty"`
+		AnyHeaderCookieOrParam                  []string                                 `json:"anyHeaderCookieOrParam,omitempty"`
+		HeaderCookieOrParamValues               []string                                 `json:"headerCookieOrParamValues,omitempty"`
+		SpecificHeaderCookieOrParamNameValue    *SpecificHeaderCookieOrParamNameValuePtr `json:"specificHeaderCookieOrParamNameValue,omitempty"`
+		SpecificHeaderCookieOrParamNames        *SpecificHeaderCookieOrParamNamesPtr     `json:"specificHeaderCookieOrParamNames,omitempty"`
+		SpecificHeaderCookieOrParamPrefix       *SpecificHeaderCookieOrParamPrefixPtr    `json:"specificHeaderCookieOrParamPrefix,omitempty"`
 		SpecificHeaderCookieParamXMLOrJSONNames *SpecificHeaderCookieParamXMLOrJSONNames `json:"specificHeaderCookieParamXmlOrJsonNames,omitempty"`
 	}
 
@@ -140,15 +139,14 @@ type (
 	// SpecificHeaderCookieParamXMLOrJSONNames is used as part of condition and exception information for an ASE rule.
 	SpecificHeaderCookieParamXMLOrJSONNames AttackGroupSpecificHeaderCookieParamXMLOrJSONNames
 
-
 	// UpdateConditionExceptionRequest is used to update the condition and exception information for a rule.
 	UpdateConditionExceptionRequest struct {
-		ConfigID   int             `json:"-"`
-		Version    int             `json:"-"`
-		PolicyID   string          `json:"-"`
-		RuleID     int             `json:"-"`
-		Conditions *RuleConditions `json:"conditions,omitempty"`
-		Exception  *RuleException  `json:"exception,omitempty"`
+		ConfigID               int                 `json:"-"`
+		Version                int                 `json:"-"`
+		PolicyID               string              `json:"-"`
+		RuleID                 int                 `json:"-"`
+		Conditions             *RuleConditions     `json:"conditions,omitempty"`
+		Exception              *RuleException      `json:"exception,omitempty"`
 		AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
 	}
 

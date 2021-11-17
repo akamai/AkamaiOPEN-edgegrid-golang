@@ -16,7 +16,7 @@ import (
 // Test PolicyProtections
 func TestAppSec_GetPolicyProtections(t *testing.T) {
 
-	result := GetPolicyProtectionsResponse{}
+	result := PolicyProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
@@ -26,7 +26,7 @@ func TestAppSec_GetPolicyProtections(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetPolicyProtectionsResponse
+		expectedResponse *PolicyProtectionsResponse
 		withError        error
 	}{
 		"200 OK": {
@@ -86,7 +86,7 @@ func TestAppSec_GetPolicyProtections(t *testing.T) {
 
 // Test Update PolicyProtections.
 func TestAppSec_UpdatePolicyProtections(t *testing.T) {
-	result := GetPolicyProtectionsResponse{}
+	result := PolicyProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
@@ -101,7 +101,7 @@ func TestAppSec_UpdatePolicyProtections(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetPolicyProtectionsResponse
+		expectedResponse *PolicyProtectionsResponse
 		withError        error
 		headers          http.Header
 	}{
@@ -169,7 +169,7 @@ func TestAppSec_UpdatePolicyProtections(t *testing.T) {
 
 // Test Remove PolicyProtections.
 func TestAppSec_RemovePolicyProtections(t *testing.T) {
-	result := GetPolicyProtectionsResponse{}
+	result := PolicyProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
@@ -184,7 +184,7 @@ func TestAppSec_RemovePolicyProtections(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetPolicyProtectionsResponse
+		expectedResponse *PolicyProtectionsResponse
 		withError        error
 		headers          http.Header
 	}{

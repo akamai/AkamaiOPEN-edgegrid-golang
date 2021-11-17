@@ -18,7 +18,7 @@ type (
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#export
 	ExportConfiguration interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationversionexport
-		// Note: this method is DEPRECATED and will be removed in a future release. Use GetExportConfiguration instead.
+		// Deprecated: this method will be removed in a future release. Use GetExportConfiguration instead.
 		GetExportConfigurations(ctx context.Context, params GetExportConfigurationsRequest) (*GetExportConfigurationsResponse, error)
 
 		GetExportConfiguration(ctx context.Context, params GetExportConfigurationRequest) (*GetExportConfigurationResponse, error)
@@ -160,12 +160,12 @@ type (
 			} `json:"securityControls"`
 			WebApplicationFirewall struct {
 				RuleActions []struct {
-					Action           string          `json:"action"`
-					ID               int             `json:"id"`
-					RulesetVersionID int             `json:"rulesetVersionId"`
-					Conditions       *RuleConditions `json:"conditions,omitempty"`
+					Action                 string              `json:"action"`
+					ID                     int                 `json:"id"`
+					RulesetVersionID       int                 `json:"rulesetVersionId"`
+					Conditions             *RuleConditions     `json:"conditions,omitempty"`
 					AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
-					Exception        *RuleException  `json:"exception,omitempty"`
+					Exception              *RuleException      `json:"exception,omitempty"`
 				} `json:"ruleActions,omitempty"`
 				AttackGroupActions []struct {
 					Action                 string                         `json:"action"`
@@ -224,14 +224,14 @@ type (
 	}
 
 	// GetExportConfigurationsRequest is used to call GetExportConfigurations.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
+	// Deprecated: this struct will be removed in a future release.
 	GetExportConfigurationsRequest struct {
 		ConfigID int `json:"configId"`
 		Version  int `json:"version"`
 	}
 
 	// GetExportConfigurationsResponse is returned from a call to GetExportConfigurations.
-	// Note: this struct is DEPRECATED and will be removed in a future release.
+	// Deprecated: this struct will be removed in a future release.
 	GetExportConfigurationsResponse struct {
 		ConfigID   int    `json:"configId"`
 		ConfigName string `json:"configName"`
@@ -649,10 +649,10 @@ type (
 		EvaluationID      int `json:"evaluationId"`
 		EvaluationVersion int `json:"evaluationVersion"`
 		RuleActions       []struct {
-			Action     string          `json:"action"`
-			ID         int             `json:"id"`
-			Conditions *RuleConditions `json:"conditions,omitempty"`
-			Exception  *RuleException  `json:"exception,omitempty"`
+			Action                 string              `json:"action"`
+			ID                     int                 `json:"id"`
+			Conditions             *RuleConditions     `json:"conditions,omitempty"`
+			Exception              *RuleException      `json:"exception,omitempty"`
 			AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
 		} `json:"ruleActions,omitempty"`
 		RulesetVersionID int `json:"rulesetVersionId"`
@@ -743,7 +743,7 @@ func (p *appsec) GetExportConfiguration(ctx context.Context, params GetExportCon
 
 }
 
-// Note: this method is DEPRECATED and will be removed in a future release.
+// Deprecated: this method will be removed in a future release.
 func (p *appsec) GetExportConfigurations(ctx context.Context, params GetExportConfigurationsRequest) (*GetExportConfigurationsResponse, error) {
 
 	logger := p.Log(ctx)

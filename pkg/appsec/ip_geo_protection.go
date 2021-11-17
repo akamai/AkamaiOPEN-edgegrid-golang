@@ -12,7 +12,7 @@ type (
 	// The IPGeoProtection interface supports retrieving and modifying the protections for a policy,
 	// and whether each is enabled or disabled.
 	//
-	// Note: this interface is DEPRECATED and will be removed in a future release. Use the PolicyProtections interface instead.
+	// Deprecated: this interface will be removed in a future release. Use the PolicyProtections interface instead.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	IPGeoProtection interface {

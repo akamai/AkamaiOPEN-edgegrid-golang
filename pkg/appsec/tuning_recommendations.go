@@ -27,7 +27,7 @@ type (
 		PolicyID string `json:"-"`
 	}
 
-	//  GetAttackGroupRecommendationsRequest is used to retrieve tuning recommendations for a specific attack group.
+	// GetAttackGroupRecommendationsRequest is used to retrieve tuning recommendations for a specific attack group.
 	GetAttackGroupRecommendationsRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -89,9 +89,8 @@ func (p *appsec) GetTuningRecommendations(ctx context.Context, params GetTuningR
 	logger.Debug("GetTuningRecommendations")
 
 	var rval GetTuningRecommendationsResponse
-	var uri string
 
-	uri = fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations?standardException=true",
 		params.ConfigID,
 		params.Version,
@@ -126,9 +125,8 @@ func (p *appsec) GetAttackGroupRecommendations(ctx context.Context, params GetAt
 	logger.Debug("GetAttackGroupRecommendations")
 
 	var rval GetAttackGroupRecommendationsResponse
-	var uri string
 
-	uri = fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations/attack-groups/%s?standardException=true",
 		params.ConfigID,
 		params.Version,
