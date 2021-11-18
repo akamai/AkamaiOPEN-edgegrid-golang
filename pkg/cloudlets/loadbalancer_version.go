@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

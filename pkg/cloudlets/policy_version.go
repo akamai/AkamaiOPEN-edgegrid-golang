@@ -340,7 +340,7 @@ func objectMatchValueALBValidation(value interface{}) error {
 	case *ObjectMatchValueObject, *ObjectMatchValueSimple, *ObjectMatchValueRange:
 		return nil
 	default:
-		return errors.New(fmt.Sprintf("type %T is invalid. Must be one of: 'simple', 'range' or 'object'", value))
+		return fmt.Errorf("type %T is invalid. Must be one of: 'simple', 'range' or 'object'", value)
 	}
 }
 
@@ -368,7 +368,7 @@ func objectMatchValueERValidation(value interface{}) error {
 	case *ObjectMatchValueObject, *ObjectMatchValueSimple:
 		return nil
 	default:
-		return errors.New(fmt.Sprintf("type %T is invalid. Must be one of: 'simple' or 'object'", value))
+		return fmt.Errorf("type %T is invalid. Must be one of: 'simple' or 'object'", value)
 	}
 }
 
