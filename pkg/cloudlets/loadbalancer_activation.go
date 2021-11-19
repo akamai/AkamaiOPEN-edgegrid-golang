@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -28,7 +29,11 @@ type (
 
 	// ListLoadBalancerActivationsRequest contains request parameters for ListLoadBalancerActivations
 	ListLoadBalancerActivationsRequest struct {
-		OriginID string
+		OriginID   string
+		Network    LoadBalancerActivationNetwork
+		LatestOnly bool
+		PageSize   *int64
+		Page       *int64
 	}
 
 	// ActivateLoadBalancerVersionRequest contains request parameters for LoadBalancer version activation
@@ -79,6 +84,11 @@ const (
 	LoadBalancerActivationNetworkStaging LoadBalancerActivationNetwork = "STAGING"
 	// LoadBalancerActivationNetworkProduction is the production network value for load balancer
 	LoadBalancerActivationNetworkProduction LoadBalancerActivationNetwork = "PRODUCTION"
+
+	// NetworkParamStaging is the staging network param value for ListLoadBalancerActivationsRequest
+	NetworkParamStaging LoadBalancerActivationNetwork = "staging"
+	// NetworkParamProduction is the production network param value for ListLoadBalancerActivationsRequest
+	NetworkParamProduction LoadBalancerActivationNetwork = "prod"
 )
 
 var (
@@ -97,11 +107,21 @@ func (v ActivateLoadBalancerVersionRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(errs)
 }
 
+// Validate validates ListLoadBalancerActivationsRequest
+func (v ListLoadBalancerActivationsRequest) Validate() error {
+	errs := validation.Errors{
+		"OriginID": validation.Validate(v.OriginID, validation.Required),
+		"Network": validation.Validate(v.Network, validation.In(NetworkParamStaging, NetworkParamProduction).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s' or '' (empty)", v.Network, NetworkParamStaging, NetworkParamProduction))),
+	}
+	return edgegriderr.ParseValidationErrors(errs)
+}
+
 //Validate validates LoadBalancerVersionActivation Struct
 func (v LoadBalancerVersionActivation) Validate() error {
 	return validation.Errors{
 		"Network": validation.Validate(v.Network, validation.In(LoadBalancerActivationNetworkStaging, LoadBalancerActivationNetworkProduction).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'STAGING', 'PRODUCTION' or '' (empty)", (&v).Network))),
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'STAGING', 'PRODUCTION' or '' (empty)", v.Network))),
 		"Version": validation.Validate(v.Version, validation.Min(0)),
 	}.Filter()
 }
@@ -111,10 +131,29 @@ func (c *cloudlets) ListLoadBalancerActivations(ctx context.Context, params List
 	logger := c.Log(ctx)
 	logger.Debug("ListLoadBalancerActivations")
 
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrListLoadBalancerActivations, ErrStructValidation, err)
+	}
+
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/activations", params.OriginID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListLoadBalancerActivations, err)
 	}
+
+	q := uri.Query()
+	if params.Network != "" {
+		q.Add("network", fmt.Sprintf("%s", params.Network))
+	}
+	if params.PageSize != nil {
+		q.Add("pageSize", fmt.Sprintf("%d", *params.PageSize))
+	}
+	if params.Page != nil {
+		q.Add("page", fmt.Sprintf("%d", *params.Page))
+	}
+	if params.LatestOnly != false {
+		q.Add("latestOnly", fmt.Sprintf("%s", strconv.FormatBool(params.LatestOnly)))
+	}
+	uri.RawQuery = q.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {

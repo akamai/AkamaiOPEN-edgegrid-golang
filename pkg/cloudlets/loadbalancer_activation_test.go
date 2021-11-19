@@ -7,12 +7,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/cloudlets/tools"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetLoadBalancerActivations(t *testing.T) {
 	tests := map[string]struct {
+		params           ListLoadBalancerActivationsRequest
 		originID         string
 		responseStatus   int
 		responseBody     string
@@ -21,7 +24,9 @@ func TestGetLoadBalancerActivations(t *testing.T) {
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
-			originID:       "clorigin1",
+			params: ListLoadBalancerActivationsRequest{
+				OriginID: "clorigin1",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 				[
@@ -63,8 +68,59 @@ func TestGetLoadBalancerActivations(t *testing.T) {
 				},
 			},
 		},
+		"200 OK with optional params": {
+			params: ListLoadBalancerActivationsRequest{
+				OriginID:   "clorigin1",
+				Network:    "prod",
+				LatestOnly: true,
+				PageSize:   tools.Int64Ptr(3),
+				Page:       tools.Int64Ptr(1),
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+				[
+					{
+						"activatedBy": "jjones",
+						"activatedDate": "2016-05-03T18:41:34.251Z",
+						"network": "PRODUCTION",
+						"originId": "clorigin1",
+						"status": "active",
+						"version": 1
+					},
+					{
+						"activatedBy": "ejnovak",
+						"activatedDate": "2016-05-07T18:41:34.461Z",
+						"network": "PRODUCTION",
+						"originId": "clorigin1",
+						"status": "deactivated",
+						"version": 2
+					}
+				]
+			`,
+			expectedPath: "/cloudlets/api/v2/origins/clorigin1/activations?latestOnly=true&network=prod&page=1&pageSize=3",
+			expectedResponse: []LoadBalancerActivation{
+				{
+					ActivatedBy:   "jjones",
+					ActivatedDate: "2016-05-03T18:41:34.251Z",
+					Network:       LoadBalancerActivationNetworkProduction,
+					OriginID:      "clorigin1",
+					Status:        LoadBalancerActivationStatusActive,
+					Version:       1,
+				},
+				{
+					ActivatedBy:   "ejnovak",
+					ActivatedDate: "2016-05-07T18:41:34.461Z",
+					Network:       LoadBalancerActivationNetworkProduction,
+					OriginID:      "clorigin1",
+					Status:        LoadBalancerActivationStatusDeactivated,
+					Version:       2,
+				},
+			},
+		},
 		"500 Internal Server Error": {
-			originID:       "clorigin1",
+			params: ListLoadBalancerActivationsRequest{
+				OriginID: "clorigin1",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 				{
@@ -85,6 +141,17 @@ func TestGetLoadBalancerActivations(t *testing.T) {
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
+		"Validation Errors": {
+			params: ListLoadBalancerActivationsRequest{
+				Network: "PRODUCTION",
+			},
+			responseStatus: http.StatusInternalServerError,
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Network: value 'PRODUCTION' is invalid. Must be one of: 'staging', 'prod' or '' (empty)", "want: %s; got: %s", ErrStructValidation, err)
+				assert.Containsf(t, err.Error(), "OriginID: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
 	}
 
 	for name, test := range tests {
@@ -97,7 +164,7 @@ func TestGetLoadBalancerActivations(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListLoadBalancerActivations(context.Background(), ListLoadBalancerActivationsRequest{OriginID: test.originID})
+			result, err := client.ListLoadBalancerActivations(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
