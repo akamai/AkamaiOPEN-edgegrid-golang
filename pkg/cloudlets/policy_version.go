@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -336,7 +337,7 @@ func objectMatchValueALBValidation(value interface{}) error {
 		return nil
 	}
 	switch value.(type) {
-	case ObjectMatchValueObject, ObjectMatchValueSimple, ObjectMatchValueRange:
+	case *ObjectMatchValueObject, *ObjectMatchValueSimple, *ObjectMatchValueRange:
 		return nil
 	default:
 		return errors.New(fmt.Sprintf("type %T is invalid. Must be one of: 'simple', 'range' or 'object'", value))
@@ -364,7 +365,7 @@ func objectMatchValueERValidation(value interface{}) error {
 		return nil
 	}
 	switch value.(type) {
-	case ObjectMatchValueObject, ObjectMatchValueSimple:
+	case *ObjectMatchValueObject, *ObjectMatchValueSimple:
 		return nil
 	default:
 		return errors.New(fmt.Sprintf("type %T is invalid. Must be one of: 'simple' or 'object'", value))

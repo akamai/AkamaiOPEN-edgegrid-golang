@@ -771,7 +771,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 								{
 									MatchOperator: "equals",
 									MatchType:     "header",
-									ObjectMatchValue: ObjectMatchValueObject{
+									ObjectMatchValue: &ObjectMatchValueObject{
 										Type: "object",
 										Name: "ALB",
 										Options: &Options{
@@ -907,7 +907,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 									MatchOperator: "equals",
 									MatchType:     "method",
 									Negate:        false,
-									ObjectMatchValue: ObjectMatchValueSimple{
+									ObjectMatchValue: &ObjectMatchValueSimple{
 										Type:  "simple",
 										Value: []string{"GET"},
 									},
@@ -1030,7 +1030,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 									MatchOperator: "equals",
 									MatchType:     "range",
 									Negate:        false,
-									ObjectMatchValue: ObjectMatchValueRange{
+									ObjectMatchValue: &ObjectMatchValueRange{
 										Type:  "range",
 										Value: []int64{1, 50},
 									},
@@ -1385,7 +1385,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 									MatchOperator: "equals",
 									MatchType:     "method",
 									Negate:        false,
-									ObjectMatchValue: ObjectMatchValueSimple{
+									ObjectMatchValue: &ObjectMatchValueSimple{
 										Type:  "simple",
 										Value: []string{"GET"},
 									},
@@ -1504,7 +1504,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 									MatchOperator: "equals",
 									MatchType:     "header",
 									Negate:        false,
-									ObjectMatchValue: ObjectMatchValueObject{
+									ObjectMatchValue: &ObjectMatchValueObject{
 										Type: "object",
 										Name: "ER",
 										Options: &Options{
@@ -1643,7 +1643,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 									MatchOperator: "equals",
 									MatchType:     "header",
 									Negate:        false,
-									ObjectMatchValue: ObjectMatchValueRange{
+									ObjectMatchValue: &ObjectMatchValueRange{
 										Type:  "range",
 										Value: []int64{1, 50},
 									},
