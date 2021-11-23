@@ -46,7 +46,7 @@ func TestListGeoMaps(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps").
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "items" : [ {
                         "assignments": [ {
@@ -85,7 +85,7 @@ func TestGetGeoMap(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps/"+GtmTestGeoMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "assignments": [ {
                                 "countries": [ "GB", "IE" ],
@@ -123,7 +123,7 @@ func TestGetBadGeoMap(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps/"+badName).
 		HeaderPresent("Authorization").
 		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                 }`)
 
@@ -144,7 +144,7 @@ func TestCreateGeoMap(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps/"+GtmTestGeoMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                         "assignments": [ {
@@ -197,7 +197,7 @@ func TestUpdateGeoMap(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps/"+GtmTestGeoMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                         "assignments": [ {
@@ -247,7 +247,7 @@ func TestDeleteGeoMap(t *testing.T) {
 		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/geographic-maps/"+GtmTestGeoMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                     },

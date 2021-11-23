@@ -3,14 +3,15 @@ package configgtm
 import (
 	"errors"
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"strconv"
 	"strings"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
 //
 // Handle Operations on gtm datacenters
-// Based on 1.4 schema
+// Based on 1.5 schema
 //
 
 // Datacenter represents a GTM datacenter

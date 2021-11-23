@@ -8,7 +8,7 @@ import (
 
 //
 // Support gtm domain properties thru Edgegrid
-// Based on 1.4 Schema
+// Based on 1.5 Schema
 //
 
 // TrafficTarget struc
@@ -53,6 +53,8 @@ type LivenessTest struct {
 	AnswersRequired               bool          `json:"answersRequired"`
 	ResourceType                  string        `json:"resourceType,omitempty"`
 	RecursionRequested            bool          `json:"recursionRequested"`
+	HttpMethod                    string        `json:"httpMethod,omitempty"`
+	HttpRequestBody               string        `json:"httpRequestBody,omitempty"`
 }
 
 // StaticRRSet Struct

@@ -8,7 +8,7 @@ import (
 
 //
 // Handle Operations on gtm asmaps
-// Based on 1.4 schema
+// Based on 1.5 schema
 //
 
 // AsAssignment represents a GTM asmap assignment structure

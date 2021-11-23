@@ -77,7 +77,7 @@ func TestListProperties(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/properties").
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "items": [ {
                         "backupCName" : null,
@@ -153,7 +153,7 @@ func TestGetProperty(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/properties/"+GtmTestProperty).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "backupCName" : null,
                         "backupIp" : null,
@@ -170,7 +170,24 @@ func TestGetProperty(t *testing.T) {
                         "healthMultiplier" : null,
                         "healthThreshold" : null,
                         "lastModified" : "2019-06-14T19:46:17.818+00:00",
-                        "livenessTests" : [ ],
+                        "livenessTests" : [  {
+                            "name": "liveness-1",
+                            "peerCertificateVerification": false,
+                            "testInterval": 30,
+                            "testObject": "/healthz",
+                            "httpError3xx": true,
+                            "httpError4xx": true,
+                            "httpError5xx": true,
+                            "disabled": false,
+                            "testObjectProtocol": "HTTP",
+                            "testObjectPort": 80,
+                            "httpHeaders": [ {
+                                "name": "Host",
+                                "value": "example.com"
+                            } ],
+                            "answersRequired": true,
+                            "httpMethod": "POST"
+                        }  ],
                         "loadImbalancePercentage" : null,
                         "mapName" : null,
                         "maxUnreachablePenalty" : null,
@@ -220,7 +237,7 @@ func TestGetBadProperty(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/properties/"+boguspropertyname).
 		HeaderPresent("Authorization").
 		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                }`)
 	Init(config)
@@ -239,7 +256,7 @@ func TestCreateProperty(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/properties/"+GtmTestProperty).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                         "backupCName" : null,
@@ -257,7 +274,24 @@ func TestCreateProperty(t *testing.T) {
                         "healthMultiplier" : null,
                         "healthThreshold" : null,
                         "lastModified" : "2019-06-14T19:46:17.818+00:00",
-                        "livenessTests" : [ ],
+                        "livenessTests" : [  {
+                            "name": "liveness-1",
+                            "peerCertificateVerification": false,
+                            "testInterval": 30,
+                            "testObject": "/healthz",
+                            "httpError3xx": true,
+                            "httpError4xx": true,
+                            "httpError5xx": true,
+                            "disabled": false,
+                            "testObjectProtocol": "HTTP",
+                            "testObjectPort": 80,
+                            "httpHeaders": [ {
+                                "name": "Host",
+                                "value": "example.com"
+                            } ],
+                            "answersRequired": true,
+                            "httpMethod": "POST"
+                        }  ],
                         "loadImbalancePercentage" : null,
                         "mapName" : null,
                         "maxUnreachablePenalty" : null,
@@ -328,7 +362,7 @@ func TestUpdateProperty(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/properties/"+GtmTestProperty).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                         "backupCName" : null,
@@ -346,7 +380,24 @@ func TestUpdateProperty(t *testing.T) {
                         "healthMultiplier" : null,
                         "healthThreshold" : null,
                         "lastModified" : "2019-06-14T19:46:17.818+00:00",
-                        "livenessTests" : [ ],
+                        livenessTests" : [  {
+                            "name": "liveness-1",
+                            "peerCertificateVerification": false,
+                            "testInterval": 30,
+                            "testObject": "/healthz",
+                            "httpError3xx": true,
+                            "httpError4xx": true,
+                            "httpError5xx": true,
+                            "disabled": false,
+                            "testObjectProtocol": "HTTP",
+                            "testObjectPort": 80,
+                            "httpHeaders": [ {
+                                "name": "Host",
+                                "value": "example.com"
+                            } ],
+                            "answersRequired": true,
+                            "httpMethod": "POST"
+                        }  ],
                         "loadImbalancePercentage" : null,
                         "mapName" : null,
                         "maxUnreachablePenalty" : null,
@@ -408,7 +459,7 @@ func TestDeleteProperty(t *testing.T) {
 		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/properties/"+GtmTestProperty).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                }`)
 	Init(config)

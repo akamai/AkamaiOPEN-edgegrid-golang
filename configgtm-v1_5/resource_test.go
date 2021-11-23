@@ -55,7 +55,7 @@ func TestListResources(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/resources").
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "items" : [ {
                                 "aggregationType" : "median",
@@ -101,7 +101,7 @@ func TestGetResource(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/resources/"+GtmTestResource).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "aggregationType" : "median",
                         "constrainedProperty" : null,
@@ -141,7 +141,7 @@ func TestGetBadResource(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/resources/somebadname").
 		HeaderPresent("Authorization").
 		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         }`)
 
@@ -162,7 +162,7 @@ func TestCreateResource(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/resources/"+GtmTestResource).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "resource" : {
                                 "aggregationType" : "median",
@@ -233,7 +233,7 @@ func TestUpdateResource(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/resources/"+GtmTestResource).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "resource" : {
                                 "aggregationType" : "median",
@@ -295,7 +295,7 @@ func TestDeleteResource(t *testing.T) {
 		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/resources/"+GtmTestResource).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "resource" : null,
                         "status" : {

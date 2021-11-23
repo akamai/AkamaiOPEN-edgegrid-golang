@@ -59,7 +59,7 @@ func TestGetAsMap(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "assignments": [ {
                                         "asNumbers": [ 12222, 16702, 17334 ],
@@ -101,7 +101,7 @@ func TestGetBadAsMap(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+badName).
 		HeaderPresent("Authorization").
 		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                 }`)
 
@@ -122,7 +122,7 @@ func TestCreateAsMap(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                         "assignments": [ {
@@ -179,7 +179,7 @@ func TestUpdateAsMap(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                         "assignments": [ {
@@ -233,7 +233,7 @@ func TestDeleteAsMap(t *testing.T) {
 		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/as-maps/"+GtmTestAsMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                     },

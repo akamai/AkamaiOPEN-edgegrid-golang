@@ -8,7 +8,7 @@ import (
 
 //
 // Handle Operations on gtm cidrmaps
-// Based on 1.4 schema
+// Based on 1.5 schema
 //
 
 //CidrAssignment represents a GTM cidr assignment element

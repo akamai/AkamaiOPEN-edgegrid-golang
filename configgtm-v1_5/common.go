@@ -7,7 +7,7 @@ import (
 
 //
 // Common data types and methods
-// Based on 1.3 schemas
+// Based on 1.5 schemas
 //
 
 // Append url args to req

@@ -51,7 +51,7 @@ func TestListCidrMaps(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps").
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "items" : [ {
                                "assignments": [ {
@@ -95,7 +95,7 @@ func TestGetCidrMap(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps/"+GtmTestCidrMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                                "assignments": [ {
                                        "blocks": [ "1.2.3.0/24" ],
@@ -138,7 +138,7 @@ func TestGetBadCidrMap(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps/"+badName).
 		HeaderPresent("Authorization").
 		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                 }`)
 
@@ -159,7 +159,7 @@ func TestCreateCidrMap(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps/"+GtmTestCidrMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                                "assignments": [ {
@@ -217,7 +217,7 @@ func TestUpdateCidrMap(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps/"+GtmTestCidrMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                                "assignments": [ {
@@ -272,7 +272,7 @@ func TestDeleteCidrMap(t *testing.T) {
 		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/cidr-maps/"+GtmTestCidrMap).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                     "resource" : {
                     },

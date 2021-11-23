@@ -173,7 +173,7 @@ func TestListDomains(t *testing.T) {
 		Get("/config-gtm/v1/domains").
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "items" : [ {
                                 "name" : "gtmdomtest.akadns.net",
@@ -210,7 +210,7 @@ func TestGetDomain(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                           "cidrMaps": [], 
                           "datacenters": [
@@ -450,7 +450,7 @@ func TestGetBadDomain(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+baddomainname).
 		HeaderPresent("Authorization").
 		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                 }`)
 
@@ -471,7 +471,7 @@ func TestCreateDomain(t *testing.T) {
 		Post("/config-gtm/v1/domains/").
 		HeaderPresent("Authorization").
 		Reply(201).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "resource" : {
                                 "cnameCoalescingEnabled" : false,
@@ -581,7 +581,7 @@ func TestUpdateDomain(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain).
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "resource" : {
                                 "cnameCoalescingEnabled" : false,
@@ -761,7 +761,7 @@ func TestDeleteDomain(t *testing.T) {
                 Delete("/config-gtm/v1/domains/"+gtmTestDomain).
                 HeaderPresent("Authorization").
                 Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+                SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
                 BodyString(`{
                         "resource" : null,
                         "status" : {

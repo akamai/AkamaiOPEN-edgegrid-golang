@@ -2,12 +2,13 @@ package configgtm
 
 import (
 	"fmt"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
 //
 // Handle Operations on gtm resources
-// Based on 1.4 schema
+// Based on 1.5 schema
 //
 
 // ResourceInstance

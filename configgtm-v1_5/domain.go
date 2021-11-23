@@ -2,16 +2,17 @@ package configgtm
 
 import (
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"net/http"
 	"reflect"
 	"strings"
 	"unicode"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
 //
 // Support gtm domains thru Edgegrid
-// Based on 1.4 Schema
+// Based on 1.5 Schema
 //
 
 // The Domain data structure represents a GTM domain

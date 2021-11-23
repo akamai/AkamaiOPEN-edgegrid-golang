@@ -55,7 +55,7 @@ func TestListDatacenters(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters").
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "items" : [ {
                                 "datacenterId" : 3131,
@@ -111,7 +111,7 @@ func TestGetDatacenter(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/3131").
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                                 "datacenterId" : 3131,
                                 "nickname" : "testDC1",
@@ -156,7 +156,7 @@ func TestGetBadDatacenter(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/9999").
 		HeaderPresent("Authorization").
 		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                 }`)
 
@@ -177,7 +177,7 @@ func TestCreateDatacenter(t *testing.T) {
 		Post("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters").
 		HeaderPresent("Authorization").
 		Reply(201).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "resource" : {
                                 "datacenterId" : 3131,
@@ -234,7 +234,7 @@ func TestUpdateDatacenter(t *testing.T) {
 		Put("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/3131").
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "resource" : {
                                 "datacenterId" : 3131,
@@ -292,7 +292,7 @@ func TestDeleteDatacenter(t *testing.T) {
 		Delete("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/3131").
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "resource" : {
                         },
@@ -326,14 +326,14 @@ func TestCreateMapsDefaultDatacenter(t *testing.T) {
 		Get("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/5400").
 		HeaderPresent("Authorization").
 		Reply(404).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8")
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8")
 
 	mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/" + gtmTestDomain + "/datacenters/default-datacenter-for-maps")
 	mock.
 		Post("/config-gtm/v1/domains/"+gtmTestDomain+"/datacenters/default-datacenter-for-maps").
 		HeaderPresent("Authorization").
 		Reply(200).
-		SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
+		SetHeader("Content-Type", "application/vnd.config-gtm.v1.5+json;charset=UTF-8").
 		BodyString(`{
                         "resource" : {
                                 "datacenterId" : 5400,

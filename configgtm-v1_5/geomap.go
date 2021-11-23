@@ -8,7 +8,7 @@ import (
 
 //
 // Handle Operations on gtm geomaps
-// Based on 1.4 schema
+// Based on 1.5 schema
 //
 
 // GeoAssigment represents a GTM geo assignment element
