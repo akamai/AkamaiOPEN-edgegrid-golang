@@ -2,13 +2,14 @@ package datastream
 
 import (
 	"context"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewError(t *testing.T) {

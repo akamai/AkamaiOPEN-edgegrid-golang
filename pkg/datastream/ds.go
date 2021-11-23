@@ -2,6 +2,7 @@ package datastream
 
 import (
 	"errors"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
 )
 

@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/datastream/tools"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/datastream/tools"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDs_GetStream(t *testing.T) {

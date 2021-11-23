@@ -3,10 +3,11 @@ package edgegrid
 import (
 	"errors"
 	"fmt"
-	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+	"github.com/tj/assert"
 )
 
 func TestConfig_FromFile(t *testing.T) {
