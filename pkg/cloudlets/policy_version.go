@@ -150,7 +150,7 @@ type (
 		End                      int               `json:"end,omitempty"`
 		ID                       int64             `json:"id,omitempty"`
 		Matches                  []MatchCriteriaER `json:"matches,omitempty"`
-		UseRelativeURL           string            `json:"useRelativeUrl"`
+		UseRelativeURL           string            `json:"useRelativeUrl,omitempty"`
 		StatusCode               int               `json:"statusCode"`
 		RedirectURL              string            `json:"redirectURL"`
 		MatchURL                 string            `json:"matchURL,omitempty"`
@@ -308,8 +308,8 @@ func (m MatchRuleER) Validate() error {
 		"End":         validation.Validate(m.End, validation.Min(0)),
 		"MatchURL":    validation.Validate(m.MatchURL, validation.Length(0, 8192)),
 		"RedirectURL": validation.Validate(m.RedirectURL, validation.Required, validation.Length(1, 8192)),
-		"UseRelativeURL": validation.Validate(m.UseRelativeURL, validation.Required, validation.In("none", "copy_scheme_hostname", "relative_url").Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'none', 'copy_scheme_hostname' or 'relative_url'", (&m).UseRelativeURL))),
+		"UseRelativeURL": validation.Validate(m.UseRelativeURL, validation.In("none", "copy_scheme_hostname", "relative_url").Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'none', 'copy_scheme_hostname', 'relative_url' or '' (empty)", (&m).UseRelativeURL))),
 		"StatusCode": validation.Validate(m.StatusCode, validation.Required, validation.In(301, 302, 303, 307, 308).Error(
 			fmt.Sprintf("value '%d' is invalid. Must be one of: 301, 302, 303, 307 or 308", (&m).StatusCode))),
 		"Matches": validation.Validate(m.Matches),
