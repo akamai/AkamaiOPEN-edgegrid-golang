@@ -67,6 +67,7 @@ type (
 		SlowPostProtectionSetting
 		SlowPostProtection
 		ThreatIntel
+		TuningRecommendations
 		VersionNotes
 		WAFMode
 		WAFProtection

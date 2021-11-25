@@ -15,6 +15,7 @@ type (
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#evalmode
 	Eval interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmode
+		// Deprecated: this method will be removed in a future release. Use GetEval instead.
 		GetEvals(ctx context.Context, params GetEvalsRequest) (*GetEvalsResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmode
@@ -28,6 +29,7 @@ type (
 	}
 
 	// GetEvalsRequest is used to retrieve the mode setting that conveys how rules will be kept up to date.
+	// Deprecated: this struct will be removed in a future release.
 	GetEvalsRequest struct {
 		ConfigID int    `json:"-"`
 		Version  int    `json:"-"`
@@ -38,6 +40,7 @@ type (
 	}
 
 	// GetEvalsResponse is returned from a call to GetEvalsResponse.
+	// Deprecated: this struct will be removed in a future release.
 	GetEvalsResponse struct {
 		Current    string `json:"current,omitempty"`
 		Mode       string `json:"mode,omitempty"`
@@ -110,6 +113,7 @@ func (v GetEvalRequest) Validate() error {
 }
 
 // Validate validates a GetEvalsRequest.
+// Deprecated: this method will be removed in a future release.
 func (v GetEvalsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -170,6 +174,7 @@ func (p *appsec) GetEval(ctx context.Context, params GetEvalRequest) (*GetEvalRe
 
 }
 
+// Deprecated: this method will be removed in a future release.
 func (p *appsec) GetEvals(ctx context.Context, params GetEvalsRequest) (*GetEvalsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

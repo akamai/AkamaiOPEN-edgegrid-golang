@@ -1,0 +1,21 @@
+{
+  "advancedExceptions": {
+    "specificHeaderCookieOrParamNameValue": [
+      {
+        "namesValues": [
+          {
+            "names": [
+              "jsonval"
+            ],
+            "values": [
+              "jsonparam"
+            ]
+          }
+        ],
+        "selector": "JSON_PAIRS",
+        "valueWildcard": true,
+        "wildcard": true
+      }
+    ]
+  }
+}

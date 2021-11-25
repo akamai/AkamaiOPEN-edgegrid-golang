@@ -13,39 +13,41 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAppSec_ListExportConfiguration(t *testing.T) {
+func TestAppSec_GetTuningRecommendations(t *testing.T) {
 
-	result := GetExportConfigurationResponse{}
+	result := GetTuningRecommendationsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestExportConfiguration/ExportConfiguration.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestTuningRecommendations/Recommendations.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetExportConfigurationRequest
+		params           GetTuningRecommendationsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetExportConfigurationResponse
+		expectedResponse *GetTuningRecommendationsResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetExportConfigurationRequest{
+			params: GetTuningRecommendationsRequest{
 				ConfigID: 43253,
 				Version:  15,
+				PolicyID: "AAAA_81230",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/export/configs/43253/versions/15",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations?standardException=true",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetExportConfigurationRequest{
+			params: GetTuningRecommendationsRequest{
 				ConfigID: 43253,
 				Version:  15,
+				PolicyID: "AAAA_81230",
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -56,7 +58,7 @@ func TestAppSec_ListExportConfiguration(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/export/configs/43253/versions/15",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations?standardException=true",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -76,7 +78,7 @@ func TestAppSec_ListExportConfiguration(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetExportConfiguration(
+			result, err := client.GetTuningRecommendations(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
@@ -92,39 +94,43 @@ func TestAppSec_ListExportConfiguration(t *testing.T) {
 	}
 }
 
-func TestAppSec_ListExportConfigurations(t *testing.T) {
+func TestAppSec_GetAttackGroupRecommendations(t *testing.T) {
 
-	result := GetExportConfigurationsResponse{}
+	result := GetAttackGroupRecommendationsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestExportConfiguration/ExportConfiguration.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestTuningRecommendations/AttackGroupRecommendations.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetExportConfigurationsRequest
+		params           GetAttackGroupRecommendationsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetExportConfigurationsResponse
+		expectedResponse *GetAttackGroupRecommendationsResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetExportConfigurationsRequest{
+			params: GetAttackGroupRecommendationsRequest{
 				ConfigID: 43253,
 				Version:  15,
+				PolicyID: "AAAA_81230",
+				Group:    "XSS",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/export/configs/43253/versions/15",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations/attack-groups/XSS?standardException=true",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetExportConfigurationsRequest{
+			params: GetAttackGroupRecommendationsRequest{
 				ConfigID: 43253,
 				Version:  15,
+				PolicyID: "AAAA_81230",
+				Group:    "XSS",
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -135,7 +141,7 @@ func TestAppSec_ListExportConfigurations(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/export/configs/43253/versions/15",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations/attack-groups/XSS?standardException=true",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -155,7 +161,7 @@ func TestAppSec_ListExportConfigurations(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetExportConfigurations(
+			result, err := client.GetAttackGroupRecommendations(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),
