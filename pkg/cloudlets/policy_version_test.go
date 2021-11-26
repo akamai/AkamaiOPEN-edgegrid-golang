@@ -2,7 +2,6 @@ package cloudlets
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -1802,6 +1801,185 @@ func TestCreatePolicyVersion(t *testing.T) {
 			withError: ErrStructValidation,
 		},
 
+		"201 created, complex VP with objectMatchValue - simple": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleVP{
+							Start:              0,
+							End:                0,
+							Type:               "vpMatchRule",
+							Name:               "rul3",
+							PassThroughPercent: -1,
+							ID:                 0,
+							Matches: []MatchCriteriaVP{
+								{
+									CaseSensitive: true,
+									MatchOperator: "equals",
+									MatchType:     "method",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueSimple{
+										Type:  "simple",
+										Value: []string{"GET"},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "vpMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": null,
+            "matches": [
+                {
+                    "caseSensitive": true,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                }
+            ],
+            "name": "rul3",
+            "start": 0,
+            "useIncomingQueryString": false,
+			"passThroughPercent": -1
+        }
+    ],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleVP{
+						Type:                   "vpMatchRule",
+						End:                    0,
+						ID:                     0,
+						MatchURL:               "",
+						Name:                   "rul3",
+						PassThroughPercent:     -1,
+						Start:                  0,
+						UseIncomingQueryString: false,
+						Matches: []MatchCriteriaVP{
+							{
+								CaseSensitive: true,
+								MatchOperator: "equals",
+								MatchType:     "method",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueSimple{
+									Type:  "simple",
+									Value: []string{"GET"},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		"validation error, complex VP with unavailable objectMatchValue type - range": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleVP{
+							Start:              0,
+							End:                0,
+							Type:               "vpMatchRule",
+							PassThroughPercent: 50.50,
+							Name:               "rul3",
+							ID:                 0,
+							Matches: []MatchCriteriaVP{
+								{
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueRange{
+										Type:  "range",
+										Value: []int64{1, 50},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
+		},
+
+		"validation error, simple VP missing passThrughPercent": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleVP{
+							Start: 0,
+							End:   0,
+							Type:  "vpMatchRule",
+							Name:  "rul3",
+							ID:    0,
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
+		},
+
+		"validation error, simple VP passThrughPercent out of range": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleVP{
+							Start:              0,
+							End:                0,
+							Type:               "vpMatchRule",
+							PassThroughPercent: 101,
+							Name:               "rul3",
+							ID:                 0,
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
+		},
+
 		"500 internal server error": {
 			request: CreatePolicyVersionRequest{
 				PolicyID: 1,
@@ -2214,295 +2392,6 @@ func TestUpdatePolicyVersion(t *testing.T) {
 			}
 			require.NoError(t, err)
 			assert.Equal(t, test.expectedResponse, result)
-		})
-	}
-}
-
-func TestUnmarshalJSONMatchRules(t *testing.T) {
-	tests := map[string]struct {
-		withError      error
-		responseBody   string
-		expectedObject MatchRules
-	}{
-		"valid MarchRuleALB": {
-			responseBody: `
-	[
-        {
-            "type": "albMatchRule",
-            "end": 0,
-            "forwardSettings": {
-                "originId": "alb_test_krk_dc1_only"
-            },
-            "id": 0,
-            "matchURL": null,
-            "matches": [
-                {
-                    "caseSensitive": false,
-                    "matchOperator": "equals",
-                    "matchType": "protocol",
-                    "matchValue": "https",
-                    "negate": false
-                },
-                {
-                    "caseSensitive": false,
-                    "matchOperator": "equals",
-                    "matchType": "range",
-                    "negate": false,
-                    "objectMatchValue": {
-                        "type": "range",
-                        "value": [
-                            1,
-                            50
-                        ]
-                    }
-                },
-                {
-                    "caseSensitive": false,
-                    "matchOperator": "equals",
-                    "matchType": "method",
-                    "negate": false,
-                    "objectMatchValue": {
-                        "type": "simple",
-                        "value": [
-                            "GET"
-                        ]
-                    }
-                }
-            ],
-            "name": "Rule3",
-            "start": 0
-        }
-    ]
-`,
-			expectedObject: MatchRules{
-				&MatchRuleALB{
-					Type: "albMatchRule",
-					End:  0,
-					ForwardSettings: ForwardSettings{
-						OriginID: "alb_test_krk_dc1_only",
-					},
-					ID:       0,
-					MatchURL: "",
-					Matches: []MatchCriteriaALB{
-						{
-							CaseSensitive: false,
-							MatchOperator: "equals",
-							MatchType:     "protocol",
-							MatchValue:    "https",
-							Negate:        false,
-						},
-						{
-							CaseSensitive: false,
-							MatchOperator: "equals",
-							MatchType:     "range",
-							Negate:        false,
-							ObjectMatchValue: &ObjectMatchValueRange{
-								Type:  "range",
-								Value: []int64{1, 50},
-							},
-						},
-						{
-							CaseSensitive: false,
-							MatchOperator: "equals",
-							MatchType:     "method",
-							Negate:        false,
-							ObjectMatchValue: &ObjectMatchValueSimple{
-								Type:  "simple",
-								Value: []string{"GET"},
-							},
-						},
-					},
-					Name:  "Rule3",
-					Start: 0,
-				},
-			},
-		},
-
-		"invalid objectMatchValue type for ALB - range": {
-			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: objectMatchValue has unexpected type: 'foo'"),
-			responseBody: `
-	[
-        {
-            "type": "albMatchRule",
-            "matches": [
-                {
-                    "caseSensitive": false,
-                    "matchOperator": "equals",
-                    "matchType": "method",
-                    "negate": false,
-                    "objectMatchValue": {
-                        "type": "foo",
-                        "value": [
-                            "GET"
-                        ]
-                    }
-                }
-            ],
-            "name": "Rule3",
-            "start": 0
-        }
-    ]
-`,
-		},
-
-		"wrong type for object value type": {
-			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: 'type' should be a string"),
-			responseBody: `
-	[
-        {
-            "type": "albMatchRule",
-            "matches": [
-                {
-                    "caseSensitive": false,
-                    "matchOperator": "equals",
-                    "matchType": "method",
-                    "negate": false,
-                    "objectMatchValue": {
-                        "type": 1,
-                        "value": [
-                            "GET"
-                        ]
-                    }
-                }
-            ],
-            "name": "Rule3",
-            "start": 0
-        }
-    ]
-`,
-		},
-
-		"missing object value type": {
-			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: objectMatchValue should contain 'type' field"),
-			responseBody: `
-	[
-        {
-            "type": "albMatchRule",
-            "matches": [
-                {
-                    "caseSensitive": false,
-                    "matchOperator": "equals",
-                    "matchType": "method",
-                    "negate": false,
-                    "objectMatchValue": {
-                        "value": [
-                            "GET"
-                        ]
-                    }
-                }
-            ],
-            "name": "Rule3",
-            "start": 0
-        }
-    ]
-`,
-		},
-
-		"invalid object value": {
-			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaALB: structure of objectMatchValue should be 'map', but was 'string'"),
-			responseBody: `
-	[
-        {
-            "type": "albMatchRule",
-            "matches": [
-                {
-                    "caseSensitive": false,
-                    "matchOperator": "equals",
-                    "matchType": "method",
-                    "negate": false,
-                    "objectMatchValue": ""
-                }
-            ],
-            "name": "Rule3",
-            "start": 0
-        }
-    ]
-`,
-		},
-
-		"invalid MatchRuleAP": {
-			responseBody: `
-	[
-        {
-            "type": "apMatchRule"
-        }
-    ]
-`,
-			withError: errors.New("unmarshalling MatchRules: unsupported match rule type: apMatchRule"),
-		},
-
-		"invalid type": {
-			withError: errors.New("unmarshalling MatchRules: 'type' field on match rule entry should be a string"),
-			responseBody: `
-	[
-        {
-            "type": 1
-        }
-    ]
-`,
-		},
-
-		"invalid JSON": {
-			withError: errors.New("unexpected end of JSON input"),
-			responseBody: `
-	[
-        {
-            "type": "albMatchRule"
-        }
-    
-`,
-		},
-
-		"missing type": {
-			withError: errors.New("unmarshalling MatchRules: match rule entry should contain 'type' field"),
-			responseBody: `
-	[
-        {
-        }
-    ]
-`,
-		},
-
-		"invalid objectMatchValue type for ER - range": {
-			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaER: objectMatchValue has unexpected type: 'range'"),
-			responseBody: `
-	[
-        {
-            "type": "erMatchRule",
-            "matches": [
-                {
-                    "caseSensitive": false,
-                    "matchOperator": "equals",
-                    "matchType": "method",
-                    "negate": false,
-                    "objectMatchValue": {
-                        "type": "range",
-                        "value": [
-                            1,
-                            50
-                        ]
-                    }
-                }
-            ],
-            "name": "Rule3",
-            "start": 0
-        }
-    ]
-`,
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			var matchRules MatchRules
-			err := json.Unmarshal([]byte(test.responseBody), &matchRules)
-
-			if test.withError != nil {
-				assert.Equal(t, test.withError.Error(), err.Error())
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedObject, matchRules)
 		})
 	}
 }
