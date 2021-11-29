@@ -3,14 +3,15 @@ package datastream
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
-	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/stretchr/testify/require"
+	"github.com/tj/assert"
 )
 
 func mockAPIClient(t *testing.T, mockServer *httptest.Server) DS {

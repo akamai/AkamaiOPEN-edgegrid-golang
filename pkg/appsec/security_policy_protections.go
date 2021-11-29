@@ -15,38 +15,20 @@ type (
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	PolicyProtections interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
-		GetPolicyProtections(ctx context.Context, params GetPolicyProtectionsRequest) (*GetPolicyProtectionsResponse, error)
+		GetPolicyProtections(ctx context.Context, params GetPolicyProtectionsRequest) (*PolicyProtectionsResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
-		UpdatePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*UpdatePolicyProtectionsResponse, error)
+		UpdatePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
-		RemovePolicyProtections(ctx context.Context, params RemovePolicyProtectionsRequest) (*RemovePolicyProtectionsResponse, error)
+		RemovePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error)
 	}
 
 	// GetPolicyProtectionsRequest is used to retrieve the policy protection setting.
 	GetPolicyProtectionsRequest struct {
-		ConfigID                      int    `json:"-"`
-		Version                       int    `json:"-"`
-		PolicyID                      string `json:"-"`
-		ApplyAPIConstraints           bool   `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool   `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool   `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool   `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool   `json:"applyRateControls"`
-		ApplyReputationControls       bool   `json:"applyReputationControls"`
-		ApplySlowPostControls         bool   `json:"applySlowPostControls"`
-	}
-
-	// GetPolicyProtectionsResponse is returned from a call to GetPolicyProtections.
-	GetPolicyProtectionsResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
+		ConfigID int    `json:"-"`
+		Version  int    `json:"-"`
+		PolicyID string `json:"-"`
 	}
 
 	// UpdatePolicyProtectionsRequest is used to modify the policy protection setting.
@@ -63,18 +45,8 @@ type (
 		ApplySlowPostControls         bool   `json:"applySlowPostControls"`
 	}
 
-	// UpdatePolicyProtectionsResponse is returned from a call to UpdatePolicyProtections.
-	UpdatePolicyProtectionsResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
-
 	// RemovePolicyProtectionsRequest is used to remove the policy protection setting.
+	// Deprecated: this struct will be removed in a future release.
 	RemovePolicyProtectionsRequest struct {
 		ConfigID                      int    `json:"-"`
 		Version                       int    `json:"-"`
@@ -88,8 +60,8 @@ type (
 		ApplySlowPostControls         bool   `json:"applySlowPostControls"`
 	}
 
-	// RemovePolicyProtectionsResponse is returned from a call to RemovePolicyProtections.
-	RemovePolicyProtectionsResponse struct {
+	// PolicyProtectionsResponse is returned from GetPolicyProtections, UpdatePolicyProtections, and RemovePolicyProtections.
+	PolicyProtectionsResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
 		ApplyBotmanControls           bool `json:"applyBotmanControls"`
@@ -127,7 +99,7 @@ func (v RemovePolicyProtectionsRequest) Validate() error {
 	}.Filter()
 }
 
-func (p *appsec) GetPolicyProtections(ctx context.Context, params GetPolicyProtectionsRequest) (*GetPolicyProtectionsResponse, error) {
+func (p *appsec) GetPolicyProtections(ctx context.Context, params GetPolicyProtectionsRequest) (*PolicyProtectionsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
@@ -135,7 +107,7 @@ func (p *appsec) GetPolicyProtections(ctx context.Context, params GetPolicyProte
 	logger := p.Log(ctx)
 	logger.Debug("GetPolicyProtections")
 
-	var rval GetPolicyProtectionsResponse
+	var rval PolicyProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -161,7 +133,7 @@ func (p *appsec) GetPolicyProtections(ctx context.Context, params GetPolicyProte
 
 }
 
-func (p *appsec) UpdatePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*UpdatePolicyProtectionsResponse, error) {
+func (p *appsec) UpdatePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
@@ -181,7 +153,7 @@ func (p *appsec) UpdatePolicyProtections(ctx context.Context, params UpdatePolic
 		return nil, fmt.Errorf("failed to create UpdatePolicyProtections request: %w", err)
 	}
 
-	var rval UpdatePolicyProtectionsResponse
+	var rval PolicyProtectionsResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdatePolicyProtections request failed: %w", err)
@@ -194,7 +166,7 @@ func (p *appsec) UpdatePolicyProtections(ctx context.Context, params UpdatePolic
 	return &rval, nil
 }
 
-func (p *appsec) RemovePolicyProtections(ctx context.Context, params RemovePolicyProtectionsRequest) (*RemovePolicyProtectionsResponse, error) {
+func (p *appsec) RemovePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
@@ -214,7 +186,7 @@ func (p *appsec) RemovePolicyProtections(ctx context.Context, params RemovePolic
 		return nil, fmt.Errorf("failed to create RemovePolicyProtections request: %w", err)
 	}
 
-	var rval RemovePolicyProtectionsResponse
+	var rval PolicyProtectionsResponse
 	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
 		return nil, fmt.Errorf("RemovePolicyProtections request failed: %w", err)

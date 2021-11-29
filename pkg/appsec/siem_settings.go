@@ -20,6 +20,7 @@ type (
 		UpdateSiemSettings(ctx context.Context, params UpdateSiemSettingsRequest) (*UpdateSiemSettingsResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsiemsettings
+		// Deprecated: this method will be removed in a future release.
 		RemoveSiemSettings(ctx context.Context, params RemoveSiemSettingsRequest) (*RemoveSiemSettingsResponse, error)
 	}
 
@@ -74,6 +75,7 @@ type (
 	}
 
 	// RemoveSiemSettingsRequest is used to remove the SIEM settings for a configuration.
+	// Deprecated: this struct will be removed in a future release.
 	RemoveSiemSettingsRequest struct {
 		ConfigID                int      `json:"-"`
 		Version                 int      `json:"-"`
@@ -85,6 +87,7 @@ type (
 	}
 
 	// RemoveSiemSettingsResponse is returned from a call to RemoveSiemSettings.
+	// Deprecated: this struct will be removed in a future release.
 	RemoveSiemSettingsResponse struct {
 		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
 		EnableSiem              bool     `json:"enableSiem"`
@@ -110,7 +113,8 @@ func (v UpdateSiemSettingsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates an UpdateSiemSettingsRequest.
+// Validate validates a RemoveSiemSettingsRequest.
+// Deprecated: this method will be removed in a future release.
 func (v RemoveSiemSettingsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -184,6 +188,7 @@ func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettin
 	return &rval, nil
 }
 
+// Deprecated: this method will be removed in a future release.
 func (p *appsec) RemoveSiemSettings(ctx context.Context, params RemoveSiemSettingsRequest) (*RemoveSiemSettingsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

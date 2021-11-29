@@ -18,6 +18,7 @@ type (
 		GetSlowPostProtectionSettings(ctx context.Context, params GetSlowPostProtectionSettingsRequest) (*GetSlowPostProtectionSettingsResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getslowpostprotectionsettings
+		// Deprecated: this method will be removed in a future release. Use GetSlowPostProtectionSettings instead.
 		GetSlowPostProtectionSetting(ctx context.Context, params GetSlowPostProtectionSettingRequest) (*GetSlowPostProtectionSettingResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putslowpostprotectionsettings
@@ -42,6 +43,7 @@ type (
 	}
 
 	// GetSlowPostProtectionSettingRequest is used to retrieve the slow post protection settings for a configuration.
+	// Deprecated: this struct will be removed in a future release.
 	GetSlowPostProtectionSettingRequest struct {
 		ConfigID          int    `json:"configId"`
 		Version           int    `json:"version"`
@@ -57,6 +59,7 @@ type (
 	}
 
 	// GetSlowPostProtectionSettingResponse is returned from a call to GetSlowPostProtectionSetting.
+	// Deprecated: this struct will be removed in a future release.
 	GetSlowPostProtectionSettingResponse struct {
 		Action            string                                      `json:"action,omitempty"`
 		SlowRateThreshold *SlowPostProtectionSettingSlowRateThreshold `json:"slowRateThreshold,omitempty"`
@@ -114,6 +117,7 @@ func (v GetSlowPostProtectionSettingRequest) Validate() error {
 }
 
 // Validate validates a GetSlowPostProtectionSettingsRequest.
+// Deprecated: this method will be removed in a future release.
 func (v GetSlowPostProtectionSettingsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -131,6 +135,7 @@ func (v UpdateSlowPostProtectionSettingRequest) Validate() error {
 	}.Filter()
 }
 
+// Deprecated: this method will be removed in a future release.
 func (p *appsec) GetSlowPostProtectionSetting(ctx context.Context, params GetSlowPostProtectionSettingRequest) (*GetSlowPostProtectionSettingResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

@@ -16,7 +16,7 @@ import (
 // Test PolicyProtections
 func TestAppSec_GetPolicyProtections(t *testing.T) {
 
-	result := GetPolicyProtectionsResponse{}
+	result := PolicyProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
@@ -26,7 +26,7 @@ func TestAppSec_GetPolicyProtections(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetPolicyProtectionsResponse
+		expectedResponse *PolicyProtectionsResponse
 		withError        error
 	}{
 		"200 OK": {
@@ -86,7 +86,7 @@ func TestAppSec_GetPolicyProtections(t *testing.T) {
 
 // Test Update PolicyProtections.
 func TestAppSec_UpdatePolicyProtections(t *testing.T) {
-	result := UpdatePolicyProtectionsResponse{}
+	result := PolicyProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
@@ -101,7 +101,7 @@ func TestAppSec_UpdatePolicyProtections(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *UpdatePolicyProtectionsResponse
+		expectedResponse *PolicyProtectionsResponse
 		withError        error
 		headers          http.Header
 	}{
@@ -169,27 +169,27 @@ func TestAppSec_UpdatePolicyProtections(t *testing.T) {
 
 // Test Remove PolicyProtections.
 func TestAppSec_RemovePolicyProtections(t *testing.T) {
-	result := RemovePolicyProtectionsResponse{}
+	result := PolicyProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
 	json.Unmarshal([]byte(respData), &result)
 
-	req := RemovePolicyProtectionsRequest{}
+	req := UpdatePolicyProtectionsRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
-		params           RemovePolicyProtectionsRequest
+		params           UpdatePolicyProtectionsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *RemovePolicyProtectionsResponse
+		expectedResponse *PolicyProtectionsResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			params: RemovePolicyProtectionsRequest{
+			params: UpdatePolicyProtectionsRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
@@ -203,7 +203,7 @@ func TestAppSec_RemovePolicyProtections(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",
 		},
 		"500 internal server error": {
-			params: RemovePolicyProtectionsRequest{
+			params: UpdatePolicyProtectionsRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",

@@ -11,6 +11,8 @@ import (
 type (
 	// The NetworkLayerProtection interface supports retrieving, modifying and removing network layer protection.
 	//
+	// Deprecated: this interface will be removed in a future release. Use the PolicyProtections interface instead.
+	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	NetworkLayerProtection interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections

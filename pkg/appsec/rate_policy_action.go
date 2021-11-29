@@ -18,6 +18,7 @@ type (
 		GetRatePolicyActions(ctx context.Context, params GetRatePolicyActionsRequest) (*GetRatePolicyActionsResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getratepolicyactions
+		// Deprecated: this method will be removed in a future release. Use GetRatePolicyActions instead.
 		GetRatePolicyAction(ctx context.Context, params GetRatePolicyActionRequest) (*GetRatePolicyActionResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putactionsperratepolicy
@@ -44,6 +45,7 @@ type (
 	}
 
 	// GetRatePolicyActionRequest is used to retrieve a configuration's rate policies and their associated actions.
+	// Deprecated: this struct will be removed in a future release.
 	GetRatePolicyActionRequest struct {
 		ConfigID   int    `json:"configId"`
 		Version    int    `json:"version"`
@@ -54,6 +56,7 @@ type (
 	}
 
 	// GetRatePolicyActionResponse is returned from a call to GetRatePolicyAction.
+	// Deprecated: this struct will be removed in a future release.
 	GetRatePolicyActionResponse struct {
 		RatePolicyActions []struct {
 			ID         int    `json:"id"`
@@ -88,6 +91,7 @@ type (
 )
 
 // Validate validates a GetRatePolicyActionRequest.
+// Deprecated: this method will be removed in a future release.
 func (v GetRatePolicyActionRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -115,6 +119,7 @@ func (v UpdateRatePolicyActionRequest) Validate() error {
 	}.Filter()
 }
 
+// Deprecated: this method will be removed in a future release.
 func (p *appsec) GetRatePolicyAction(ctx context.Context, params GetRatePolicyActionRequest) (*GetRatePolicyActionResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

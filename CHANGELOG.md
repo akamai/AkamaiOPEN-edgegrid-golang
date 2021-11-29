@@ -1,5 +1,19 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.8.0 (Nov. 29, 2021)
+
+#### FEATURES/ENHANCEMENTS:
+* [IMPORTANT] Added Cloudlets API support
+  * Policy (Application Load Balancer) -  create, read, update, delete policy
+  * Policy (Edge Redirector) -  create, read, update, delete policy
+  * Policy activation - create, read
+  * Application Load Balancer configuration - create, update, read
+  * Activation for Application Load Balancer configuration - create, read
+
+* APPSEC
+  * Add support for advanced exceptions in ASE rules
+  * Update bypass-network-list datasource and resource for multi-policy WAP
+
 ## 2.7.0 (Oct 19, 2021)
 
 #### FEATURES/ENHANCEMENTS:
@@ -17,11 +31,11 @@
   * Fix incorrect comments/URL references in inline documentation
 
 #### FEATURES/ENHANCEMENTS
-# APPSEC
-* Get an evaluation attack group's or risk score group's action
+* APPSEC
+  * Get an evaluation attack group's or risk score group's action
 
-# NETWORK LISTS
-* Support contract_id and group_id for network list create/update
+* NETWORK LISTS
+  * Support contract_id and group_id for network list create/update
 
 ## 2.5.0 (Jun 15, 2021)
 

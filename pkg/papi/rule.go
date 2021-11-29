@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -30,6 +31,7 @@ type (
 		GroupID         string
 		ValidateMode    string
 		ValidateRules   bool
+		RuleFormat      string
 	}
 
 	// GetRuleTreeResponse contains data returned by performing GET /rules request
@@ -150,12 +152,15 @@ const (
 	RuleCriteriaMustSatisfyAny RuleCriteriaMustSatisfy = "any"
 )
 
+var validRuleFormat = regexp.MustCompile("^(latest|v\\d{4}-\\d{2}-\\d{2})$")
+
 // Validate validates GetRuleTreeRequest struct
 func (r GetRuleTreeRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":      validation.Validate(r.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(r.PropertyVersion, validation.Required),
 		"ValidateMode":    validation.Validate(r.ValidateMode, validation.In(RuleValidateModeFast, RuleValidateModeFull)),
+		"RuleFormat":      validation.Validate(r.RuleFormat, validation.Match(validRuleFormat)),
 	}.Filter()
 }
 
@@ -244,6 +249,10 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetRuleTree, err)
+	}
+
+	if params.RuleFormat != "" {
+		req.Header.Set("Accept", fmt.Sprintf("application/vnd.akamai.papirules.%s+json", params.RuleFormat))
 	}
 
 	var rules GetRuleTreeResponse

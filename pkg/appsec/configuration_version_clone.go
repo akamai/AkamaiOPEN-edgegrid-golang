@@ -108,7 +108,7 @@ func (v GetConfigurationVersionCloneRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates a GetConfigurationCloneRequest.
+// Validate validates a CreateConfigurationCloneRequest.
 func (v CreateConfigurationVersionCloneRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
@@ -116,7 +116,7 @@ func (v CreateConfigurationVersionCloneRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates a GetConfigurationCloneRequest.
+// Validate validates a RemoveConfigurationCloneRequest.
 func (v RemoveConfigurationVersionCloneRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
