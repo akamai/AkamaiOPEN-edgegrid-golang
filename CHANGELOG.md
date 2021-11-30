@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.8.0 (Nov. 29, 2021)
+## 2.8.1 (Nov. 30, 2021)
 
 #### FEATURES/ENHANCEMENTS:
 * [IMPORTANT] Added Cloudlets API support
