@@ -13,7 +13,9 @@ var (
 
 type (
 	// Edgeworkers is the api interface for edgeworkers
-	Edgeworkers interface{}
+	Edgeworkers interface {
+		ResourceTiers
+	}
 
 	edgeworkers struct {
 		session.Session
