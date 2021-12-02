@@ -471,7 +471,74 @@ func TestGetPolicyVersion(t *testing.T) {
 				},
 			},
 		},
-
+		"200 OK, FR with disabled rule": {
+			request: GetPolicyVersionRequest{
+				PolicyID: 276858,
+				Version:  6,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [{
+        "type": "frMatchRule",
+        "disabled": true,
+        "end": 0,
+        "id": 0,
+        "matchURL": null,
+        "forwardSettings": {
+            "pathAndQS": "/test_images/simpleimg.jpg",
+            "useIncomingQueryString": true,
+			"originId": "1234"
+		},
+        "name": "rule 1",
+        "start": 0
+    }],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions/6?omitRules=false",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleFR{
+						Name:     "rule 1",
+						Type:     "frMatchRule",
+						Start:    0,
+						End:      0,
+						ID:       0,
+						MatchURL: "",
+						ForwardSettings: ForwardSettingsFR{
+							PathAndQS:              "/test_images/simpleimg.jpg",
+							UseIncomingQueryString: true,
+							OriginID:               "1234",
+						},
+						Disabled: true,
+					},
+				},
+			},
+		},
 		"500 internal server error": {
 			request: GetPolicyVersionRequest{
 				PolicyID: 1,
@@ -596,7 +663,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:   0,
 							Type:  "albMatchRule",
 							Name:  "Rule3",
-							ForwardSettings: ForwardSettings{
+							ForwardSettings: ForwardSettingsALB{
 								OriginID: "alb_test_krk_dc1_only",
 							},
 							ID: 0,
@@ -616,7 +683,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:   0,
 							Type:  "albMatchRule",
 							Name:  "Rule1",
-							ForwardSettings: ForwardSettings{
+							ForwardSettings: ForwardSettingsALB{
 								OriginID: "alb_test_krk_0_100",
 							},
 							ID: 0,
@@ -706,7 +773,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 					&MatchRuleALB{
 						Type: "albMatchRule",
 						End:  0,
-						ForwardSettings: ForwardSettings{
+						ForwardSettings: ForwardSettingsALB{
 							OriginID: "alb_test_krk_dc1_only",
 						},
 						ID:       0,
@@ -734,7 +801,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 					&MatchRuleALB{
 						Type: "albMatchRule",
 						End:  0,
-						ForwardSettings: ForwardSettings{
+						ForwardSettings: ForwardSettingsALB{
 							OriginID: "alb_test_krk_0_100",
 						},
 						ID:       0,
@@ -785,7 +852,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:   0,
 							Type:  "albMatchRule",
 							Name:  "alb rule",
-							ForwardSettings: ForwardSettings{
+							ForwardSettings: ForwardSettingsALB{
 								OriginID: "alb_test_krk_mutable",
 							},
 							ID:            0,
@@ -859,7 +926,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 					&MatchRuleALB{
 						Type: "albMatchRule",
 						End:  0,
-						ForwardSettings: ForwardSettings{
+						ForwardSettings: ForwardSettingsALB{
 							OriginID: "alb_test_krk_mutable",
 						},
 						ID:       0,
@@ -916,7 +983,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:   0,
 							Type:  "albMatchRule",
 							Name:  "alb rule",
-							ForwardSettings: ForwardSettings{
+							ForwardSettings: ForwardSettingsALB{
 								OriginID: "alb_test_krk_mutable",
 							},
 							ID:            0,
@@ -986,7 +1053,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 					&MatchRuleALB{
 						Type: "albMatchRule",
 						End:  0,
-						ForwardSettings: ForwardSettings{
+						ForwardSettings: ForwardSettingsALB{
 							OriginID: "alb_test_krk_mutable",
 						},
 						ID:       0,
@@ -1039,7 +1106,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:   0,
 							Type:  "albMatchRule",
 							Name:  "alb rule",
-							ForwardSettings: ForwardSettings{
+							ForwardSettings: ForwardSettingsALB{
 								OriginID: "alb_test_krk_mutable",
 							},
 							ID:            0,
@@ -1110,7 +1177,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 					&MatchRuleALB{
 						Type: "albMatchRule",
 						End:  0,
-						ForwardSettings: ForwardSettings{
+						ForwardSettings: ForwardSettingsALB{
 							OriginID: "alb_test_krk_mutable",
 						},
 						ID:       0,
@@ -1800,7 +1867,496 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
-
+		"201 created, complex FR": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleFR{
+							Start: 0,
+							End:   0,
+							Type:  "frMatchRule",
+							Name:  "rul3",
+							ID:    0,
+							Matches: []MatchCriteriaFR{
+								{
+									MatchType:     "hostname",
+									MatchValue:    "3333.dom",
+									MatchOperator: "equals",
+									CaseSensitive: true,
+									Negate:        false,
+								},
+								{
+									MatchType:     "cookie",
+									MatchValue:    "cookie=cookievalue",
+									MatchOperator: "equals",
+									Negate:        false,
+									CaseSensitive: false,
+								},
+								{
+									MatchType:     "extension",
+									MatchValue:    "txt",
+									MatchOperator: "equals",
+									Negate:        false,
+									CaseSensitive: false,
+								},
+							},
+							ForwardSettings: ForwardSettingsFR{
+								PathAndQS:              "/test_images/simpleimg.jpg",
+								UseIncomingQueryString: true,
+								OriginID:               "1234",
+							},
+						},
+						&MatchRuleFR{
+							Name:     "rule 1",
+							Type:     "frMatchRule",
+							Start:    0,
+							End:      0,
+							ID:       0,
+							MatchURL: "ddd.aaa",
+							ForwardSettings: ForwardSettingsFR{
+								PathAndQS:              "/test_images/simpleimg.jpg",
+								UseIncomingQueryString: true,
+								OriginID:               "1234",
+							},
+						},
+						&MatchRuleFR{
+							Name:     "rule 2",
+							Type:     "frMatchRule",
+							Start:    0,
+							End:      0,
+							ID:       0,
+							MatchURL: "abc.com",
+							ForwardSettings: ForwardSettingsFR{
+								PathAndQS:              "/test_images/otherimage.jpg",
+								UseIncomingQueryString: true,
+								OriginID:               "1234",
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "frMatchRule",
+            "akaRuleId": "893947a3d5a85c1b",
+            "end": 0,
+            "forwardSettings": {
+                "pathAndQS": "/test_images/otherimage.jpg",
+                "useIncomingQueryString": true,
+				"originId": "1234"
+            },
+            "id": 0,
+            "location": "/cloudlets/api/v2/policies/276858/versions/1/rules/893947a3d5a85c1b",
+            "matchURL": null,
+            "matches": [
+                {
+                    "caseSensitive": true,
+                    "matchOperator": "equals",
+                    "matchType": "hostname",
+                    "matchValue": "3333.dom",
+                    "negate": false
+                },
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "cookie",
+                    "matchValue": "cookie=cookievalue",
+                    "negate": false
+                },
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "extension",
+                    "matchValue": "txt",
+                    "negate": false
+                }
+            ],
+            "name": "rul3",
+            "start": 0
+        },
+        {
+            "type": "frMatchRule",
+            "akaRuleId": "aa379d230efcded0",
+            "end": 0,
+            "forwardSettings": {
+                "pathAndQS": "/test_images/simpleimg.jpg",
+                "useIncomingQueryString": true,
+				"originId": "1234"
+            },
+            "id": 0,
+            "location": "/cloudlets/api/v2/policies/276858/versions/1/rules/aa379d230efcded0",
+            "matchURL": "ddd.aaa",
+            "name": "rule 1",
+            "start": 0
+        },
+        {
+            "type": "frMatchRule",
+            "akaRuleId": "1afe03d843996766",
+            "end": 0,
+            "forwardSettings": {
+                "pathAndQS": "/test_images/otherimage.jpg",
+                "useIncomingQueryString": true,
+				"originId": "1234"
+            },
+            "id": 0,
+            "location": "/cloudlets/api/v2/policies/276858/versions/1/rules/1afe03d843996766",
+            "matchURL": "abc.com",
+            "name": "rule 2",
+            "start": 0
+        }
+    ],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleFR{
+						Type:     "frMatchRule",
+						End:      0,
+						ID:       0,
+						MatchURL: "",
+						Name:     "rul3",
+						Start:    0,
+						Matches: []MatchCriteriaFR{
+							{
+								MatchType:     "hostname",
+								MatchValue:    "3333.dom",
+								MatchOperator: "equals",
+								CaseSensitive: true,
+								Negate:        false,
+							},
+							{
+								MatchType:     "cookie",
+								MatchValue:    "cookie=cookievalue",
+								MatchOperator: "equals",
+								Negate:        false,
+								CaseSensitive: false,
+							},
+							{
+								MatchType:     "extension",
+								MatchValue:    "txt",
+								MatchOperator: "equals",
+								Negate:        false,
+								CaseSensitive: false,
+							},
+						},
+						ForwardSettings: ForwardSettingsFR{
+							PathAndQS:              "/test_images/otherimage.jpg",
+							UseIncomingQueryString: true,
+							OriginID:               "1234",
+						},
+					},
+					&MatchRuleFR{
+						Name:     "rule 1",
+						Type:     "frMatchRule",
+						Start:    0,
+						End:      0,
+						ID:       0,
+						MatchURL: "ddd.aaa",
+						ForwardSettings: ForwardSettingsFR{
+							PathAndQS:              "/test_images/simpleimg.jpg",
+							UseIncomingQueryString: true,
+							OriginID:               "1234",
+						},
+					},
+					&MatchRuleFR{
+						Name:     "rule 2",
+						Type:     "frMatchRule",
+						Start:    0,
+						End:      0,
+						ID:       0,
+						MatchURL: "abc.com",
+						ForwardSettings: ForwardSettingsFR{
+							PathAndQS:              "/test_images/otherimage.jpg",
+							UseIncomingQueryString: true,
+							OriginID:               "1234",
+						},
+					},
+				},
+			},
+		},
+		"201 created, complex FR with objectMatchValue - object": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					Description:     "New version 1630480693371",
+					MatchRuleFormat: "1.0",
+					MatchRules: MatchRules{
+						&MatchRuleFR{
+							ForwardSettings: ForwardSettingsFR{},
+							Matches: []MatchCriteriaFR{
+								{
+									CaseSensitive: false,
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueObject{
+										Type:              "object",
+										Name:              "Accept",
+										NameCaseSensitive: false,
+										NameHasWildcard:   false,
+										Options: &Options{
+											Value:              []string{"asd", "qwe"},
+											ValueHasWildcard:   false,
+											ValueCaseSensitive: true,
+											ValueEscaped:       false,
+										},
+									},
+								},
+							},
+							Start: 0,
+							End:   0,
+							Type:  "frMatchRule",
+							Name:  "rul3",
+							ID:    0,
+						},
+					},
+				},
+				PolicyID: 139743,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+    "activations": [],
+    "createDate": 1630507099511,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": "New version 1630480693371",
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1630507099511,
+    "location": "/cloudlets/api/v2/policies/139743/versions/798",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "frMatchRule",
+            "akaRuleId": "f2168e71692e6d9f",
+            "end": 0,
+            "forwardSettings": {},
+            "id": 0,
+            "matchURL": null,
+            "matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "header",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "object",
+                        "name": "Accept",
+                        "options": {
+                            "value": [
+                                "asd",
+                                "qwe"
+                            ],
+                            "valueCaseSensitive": true
+                        }
+                    }
+                }
+            ],
+            "name": "rul3",
+            "start": 0
+        }
+    ],
+	"policyId": 139743,
+    "revisionId": 4819450,
+    "rulesLocked": false,
+    "version": 798
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/139743/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1630507099511,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "New version 1630480693371",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1630507099511,
+				Location:         "/cloudlets/api/v2/policies/139743/versions/798",
+				MatchRuleFormat:  "1.0",
+				MatchRules: MatchRules{
+					&MatchRuleFR{
+						ForwardSettings: ForwardSettingsFR{},
+						Matches: []MatchCriteriaFR{
+							{
+								CaseSensitive: false,
+								MatchOperator: "equals",
+								MatchType:     "header",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueObject{
+									Name:              "Accept",
+									Type:              "object",
+									NameCaseSensitive: false,
+									NameHasWildcard:   false,
+									Options: &Options{
+										Value:              []string{"asd", "qwe"},
+										ValueHasWildcard:   false,
+										ValueCaseSensitive: true,
+										ValueEscaped:       false,
+									},
+								},
+							},
+						},
+						Start: 0,
+						End:   0,
+						Type:  "frMatchRule",
+						Name:  "rul3",
+						ID:    0,
+					},
+				},
+				PolicyID:    139743,
+				RevisionID:  4819450,
+				RulesLocked: false,
+				Version:     798,
+			},
+		},
+		"201 created, complex FR with objectMatchValue - simple": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					Description:     "New version 1630480693371",
+					MatchRuleFormat: "1.0",
+					MatchRules: MatchRules{
+						&MatchRuleFR{
+							ForwardSettings: ForwardSettingsFR{
+								PathAndQS:              "/test_images/otherimage.jpg",
+								UseIncomingQueryString: true,
+							},
+							Matches: []MatchCriteriaFR{
+								{
+									CaseSensitive: false,
+									MatchOperator: "equals",
+									MatchType:     "method",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueSimple{
+										Type:  "simple",
+										Value: []string{"GET"},
+									},
+								},
+							},
+							Start: 0,
+							End:   0,
+							Type:  "frMatchRule",
+							Name:  "rul3",
+							ID:    0,
+						},
+					},
+				},
+				PolicyID: 139743,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+    "activations": [],
+    "createDate": 1630507099511,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": "New version 1630480693371",
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1630507099511,
+    "location": "/cloudlets/api/v2/policies/139743/versions/798",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "frMatchRule",
+            "akaRuleId": "f2168e71692e6d9f",
+            "end": 0,
+            "forwardSettings": {
+                "pathAndQS": "/test_images/otherimage.jpg",
+                "useIncomingQueryString": true
+            },
+            "id": 0,
+            "matchURL": null,
+            "matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                }
+			],
+            "name": "rul3",
+            "start": 0
+        }
+    ],
+	"policyId": 139743,
+    "revisionId": 4819450,
+    "rulesLocked": false,
+    "version": 798
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/139743/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1630507099511,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "New version 1630480693371",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1630507099511,
+				Location:         "/cloudlets/api/v2/policies/139743/versions/798",
+				MatchRuleFormat:  "1.0",
+				MatchRules: MatchRules{
+					&MatchRuleFR{
+						ForwardSettings: ForwardSettingsFR{
+							PathAndQS:              "/test_images/otherimage.jpg",
+							UseIncomingQueryString: true,
+						},
+						Matches: []MatchCriteriaFR{
+							{
+								CaseSensitive: false,
+								MatchOperator: "equals",
+								MatchType:     "method",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueSimple{
+									Type:  "simple",
+									Value: []string{"GET"},
+								},
+							},
+						},
+						Start: 0,
+						End:   0,
+						Type:  "frMatchRule",
+						Name:  "rul3",
+						ID:    0,
+					},
+				},
+				PolicyID:    139743,
+				RevisionID:  4819450,
+				RulesLocked: false,
+				Version:     798,
+			},
+		},
 		"201 created, complex VP with objectMatchValue - simple": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -1979,7 +2535,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
-
 		"500 internal server error": {
 			request: CreatePolicyVersionRequest{
 				PolicyID: 1,
@@ -2166,7 +2721,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 							End:   2,
 							Type:  "albMatchRule",
 							Name:  "Rule3",
-							ForwardSettings: ForwardSettings{
+							ForwardSettings: ForwardSettingsALB{
 								OriginID: "alb_test_krk_dc1_only",
 							},
 							ID: 0,
@@ -2185,7 +2740,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 							End:   0,
 							Type:  "albMatchRule",
 							Name:  "Rule1",
-							ForwardSettings: ForwardSettings{
+							ForwardSettings: ForwardSettingsALB{
 								OriginID: "alb_test_krk_0_100",
 							},
 							ID: 0,
@@ -2284,7 +2839,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 					&MatchRuleALB{
 						Type: "albMatchRule",
 						End:  2,
-						ForwardSettings: ForwardSettings{
+						ForwardSettings: ForwardSettingsALB{
 							OriginID: "alb_test_krk_dc1_only",
 						},
 						ID:       10,
@@ -2304,7 +2859,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 					&MatchRuleALB{
 						Type: "albMatchRule",
 						End:  0,
-						ForwardSettings: ForwardSettings{
+						ForwardSettings: ForwardSettingsALB{
 							OriginID: "alb_test_krk_0_100",
 						},
 						ID:       0,

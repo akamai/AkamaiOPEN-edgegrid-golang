@@ -69,7 +69,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 				&MatchRuleALB{
 					Type: "albMatchRule",
 					End:  0,
-					ForwardSettings: ForwardSettings{
+					ForwardSettings: ForwardSettingsALB{
 						OriginID: "alb_test_krk_dc1_only",
 					},
 					ID:       0,
@@ -280,6 +280,98 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
         }
     ]
 `,
+		},
+		"invalid objectMatchValue type for FR - range": {
+			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaFR: objectMatchValue has unexpected type: 'range'"),
+			responseBody: `
+	[
+        {
+            "type": "frMatchRule",
+            "matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "range",
+                        "value": [
+                            1,
+                            50
+                        ]
+                    }
+                }
+            ],
+            "name": "Rule3",
+            "start": 0
+        }
+    ]
+`,
+		},
+		"valid MatchRuleFR": {
+			responseBody: `
+	[
+        {
+            "type": "frMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": null,
+			"forwardSettings": {},
+			"matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "protocol",
+                    "matchValue": "https",
+                    "negate": false
+                },
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                }
+            ],
+            "name": "Rule3",
+            "start": 0
+        }
+    ]
+`,
+			expectedObject: MatchRules{
+				&MatchRuleFR{
+					Type:     "frMatchRule",
+					End:      0,
+					ID:       0,
+					MatchURL: "",
+					Matches: []MatchCriteriaFR{
+						{
+							CaseSensitive: false,
+							MatchOperator: "equals",
+							MatchType:     "protocol",
+							MatchValue:    "https",
+							Negate:        false,
+						},
+						{
+							CaseSensitive: false,
+							MatchOperator: "equals",
+							MatchType:     "method",
+							Negate:        false,
+							ObjectMatchValue: &ObjectMatchValueSimple{
+								Type:  "simple",
+								Value: []string{"GET"},
+							},
+						},
+					},
+					Name:  "Rule3",
+					Start: 0,
+				},
+			},
 		},
 
 		"invalid objectMatchValue type for VP - range": {
