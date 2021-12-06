@@ -254,6 +254,34 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 		},
 
+		"invalid objectMatchValue type for CD - range": {
+			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaCD: objectMatchValue has unexpected type: 'range'"),
+			responseBody: `
+	[
+        {
+            "type": "cdMatchRule",
+            "matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "range",
+                        "value": [
+                            1,
+                            50
+                        ]
+                    }
+                }
+            ],
+            "name": "Rule3",
+            "start": 0
+        }
+    ]
+`,
+		},
+
 		"invalid objectMatchValue type for ER - range": {
 			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaER: objectMatchValue has unexpected type: 'range'"),
 			responseBody: `
@@ -281,6 +309,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
     ]
 `,
 		},
+
 		"invalid objectMatchValue type for FR - range": {
 			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaFR: objectMatchValue has unexpected type: 'range'"),
 			responseBody: `
@@ -308,6 +337,80 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
     ]
 `,
 		},
+
+		"valid MatchRuleCD": {
+			responseBody: `
+	[
+        {
+            "type": "cdMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": null,
+            "forwardSettings": {
+                "originId": "fr_test_krk_dc2",
+                "percent": 62
+            },
+			"matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "protocol",
+                    "matchValue": "https",
+                    "negate": false
+                },
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                }
+            ],
+            "name": "Rule3",
+            "start": 0
+        }
+    ]
+`,
+			expectedObject: MatchRules{
+				&MatchRuleCD{
+					Type:     "cdMatchRule",
+					End:      0,
+					ID:       0,
+					MatchURL: "",
+					Matches: []MatchCriteriaCD{
+						{
+							CaseSensitive: false,
+							MatchOperator: "equals",
+							MatchType:     "protocol",
+							MatchValue:    "https",
+							Negate:        false,
+						},
+						{
+							CaseSensitive: false,
+							MatchOperator: "equals",
+							MatchType:     "method",
+							Negate:        false,
+							ObjectMatchValue: &ObjectMatchValueSimple{
+								Type:  "simple",
+								Value: []string{"GET"},
+							},
+						},
+					},
+					Name:  "Rule3",
+					Start: 0,
+					ForwardSettings: ForwardSettingsCD{
+						OriginID: "fr_test_krk_dc2",
+						Percent:  62,
+					},
+				},
+			},
+		},
+
 		"valid MatchRuleFR": {
 			responseBody: `
 	[

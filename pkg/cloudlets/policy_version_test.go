@@ -343,6 +343,99 @@ func TestGetPolicyVersion(t *testing.T) {
 				},
 			},
 		},
+		"200 OK, CD rule": {
+			request: GetPolicyVersionRequest{
+				PolicyID: 276858,
+				Version:  6,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1638547203265,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1638547203265,
+    "location": "/cloudlets/api/v2/policies/325401/versions/3",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "cdMatchRule",
+            "akaRuleId": "b151ca68e51f5a61",
+            "end": 0,
+            "forwardSettings": {
+                "originId": "fr_test_krk_dc2",
+                "percent": 11
+            },
+            "id": 0,
+            "location": "/cloudlets/api/v2/policies/325401/versions/3/rules/b151ca68e51f5a61",
+            "matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                }
+            ],
+            "name": "rule 1",
+            "start": 0
+        }
+    ],
+    "policyId": 325401,
+    "revisionId": 4888857,
+    "rulesLocked": false,
+    "version": 3
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions/6?omitRules=false",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1638547203265,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1638547203265,
+				Location:         "/cloudlets/api/v2/policies/325401/versions/3",
+				MatchRuleFormat:  "1.0",
+				MatchRules: MatchRules{
+					&MatchRuleCD{
+						Type: "cdMatchRule",
+						End:  0,
+						ForwardSettings: ForwardSettingsCD{
+							OriginID: "fr_test_krk_dc2",
+							Percent:  11,
+						},
+						ID: 0,
+						Matches: []MatchCriteriaCD{
+							{
+								CaseSensitive: false,
+								MatchOperator: "equals",
+								MatchType:     "method",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueSimple{
+									Type: "simple",
+									Value: []string{
+										"GET"},
+								},
+							},
+						},
+						Name:  "rule 1",
+						Start: 0,
+					},
+				},
+				PolicyID:    325401,
+				RevisionID:  4888857,
+				RulesLocked: false,
+				Version:     3,
+			},
+		},
 		"200 OK, ER rule with disabled=false": {
 			request: GetPolicyVersionRequest{
 				PolicyID: 276858,
@@ -1206,6 +1299,575 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 		},
 
+		"201 created, complex CD": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleCD{
+							Start: 0,
+							End:   0,
+							Type:  "cdMatchRule",
+							Name:  "rul3",
+							ID:    0,
+							ForwardSettings: ForwardSettingsCD{
+								OriginID: "some_origin",
+								Percent:  10,
+							},
+							Matches: []MatchCriteriaCD{
+								{
+									MatchType:     "hostname",
+									MatchValue:    "3333.dom",
+									MatchOperator: "equals",
+									CaseSensitive: true,
+									Negate:        false,
+								},
+								{
+									MatchType:     "cookie",
+									MatchValue:    "cookie=cookievalue",
+									MatchOperator: "equals",
+									Negate:        false,
+									CaseSensitive: false,
+								},
+								{
+									MatchType:     "extension",
+									MatchValue:    "txt",
+									MatchOperator: "equals",
+									Negate:        false,
+									CaseSensitive: false,
+								},
+							},
+						},
+						&MatchRuleCD{
+							Start:    0,
+							End:      0,
+							Type:     "cdMatchRule",
+							Name:     "rule 2",
+							MatchURL: "ddd.aaa",
+							ID:       0,
+							ForwardSettings: ForwardSettingsCD{
+								OriginID: "some_origin",
+								Percent:  10,
+							},
+						},
+						&MatchRuleCD{
+							Type:     "cdMatchRule",
+							ID:       0,
+							Name:     "r1",
+							Start:    0,
+							End:      0,
+							MatchURL: "abc.com",
+							ForwardSettings: ForwardSettingsCD{
+								OriginID: "some_origin",
+								Percent:  10,
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "cdMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": null,
+            "matches": [
+                {
+                    "caseSensitive": true,
+                    "matchOperator": "equals",
+                    "matchType": "hostname",
+                    "matchValue": "3333.dom",
+                    "negate": false
+                },
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "cookie",
+                    "matchValue": "cookie=cookievalue",
+                    "negate": false
+                },
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "extension",
+                    "matchValue": "txt",
+                    "negate": false
+                }
+            ],
+            "name": "rul3",
+            "redirectURL": "/abc/sss",
+            "start": 0,
+            "forwardSettings": {
+                "originId": "some_origin",
+                "percent": 10
+            }
+        },
+        {
+            "type": "cdMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": "ddd.aaa",
+            "name": "rule 2",
+            "redirectURL": "sss.com",
+            "start": 0,
+            "statusCode": 301,
+            "useIncomingQueryString": true,
+            "useRelativeUrl": "none"
+        },
+        {
+            "type": "cdMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": "abc.com",
+            "name": "r1",
+            "redirectURL": "/ddd",
+            "start": 0,
+            "statusCode": 301,
+            "useIncomingQueryString": false,
+            "useIncomingSchemeAndHost": true,
+            "useRelativeUrl": "copy_scheme_hostname"
+        }
+    ],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleCD{
+						Type:     "cdMatchRule",
+						End:      0,
+						ID:       0,
+						MatchURL: "",
+						Name:     "rul3",
+						Start:    0,
+						ForwardSettings: ForwardSettingsCD{
+							OriginID: "some_origin",
+							Percent:  10,
+						},
+						Matches: []MatchCriteriaCD{
+							{
+								MatchType:     "hostname",
+								MatchValue:    "3333.dom",
+								MatchOperator: "equals",
+								CaseSensitive: true,
+								Negate:        false,
+							},
+							{
+								MatchType:     "cookie",
+								MatchValue:    "cookie=cookievalue",
+								MatchOperator: "equals",
+								Negate:        false,
+								CaseSensitive: false,
+							},
+							{
+								MatchType:     "extension",
+								MatchValue:    "txt",
+								MatchOperator: "equals",
+								Negate:        false,
+								CaseSensitive: false,
+							},
+						},
+					},
+					&MatchRuleCD{
+						Type:     "cdMatchRule",
+						End:      0,
+						ID:       0,
+						MatchURL: "ddd.aaa",
+						Name:     "rule 2",
+						Start:    0,
+					},
+					&MatchRuleCD{
+						Type:     "cdMatchRule",
+						End:      0,
+						ID:       0,
+						MatchURL: "abc.com",
+						Name:     "r1",
+						Start:    0,
+					},
+				},
+			},
+		},
+		"201 created, complex CD with objectMatchValue - simple": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleCD{
+							Start: 0,
+							End:   0,
+							Type:  "cdMatchRule",
+							Name:  "rul3",
+							ID:    0,
+							ForwardSettings: ForwardSettingsCD{
+								OriginID: "some_origin",
+								Percent:  10,
+							},
+							Matches: []MatchCriteriaCD{
+								{
+									CaseSensitive: true,
+									MatchOperator: "equals",
+									MatchType:     "method",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueSimple{
+										Type:  "simple",
+										Value: []string{"GET"},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "cdMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": null,
+            "matches": [
+                {
+                    "caseSensitive": true,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                }
+            ],
+            "name": "rul3",
+            "redirectURL": "/abc/sss",
+            "start": 0,
+            "forwardSettings": {
+                "originId": "some_origin",
+                "percent": 10
+            }
+        }
+    ],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleCD{
+						Type:     "cdMatchRule",
+						End:      0,
+						ID:       0,
+						MatchURL: "",
+						Name:     "rul3",
+						Start:    0,
+						ForwardSettings: ForwardSettingsCD{
+							OriginID: "some_origin",
+							Percent:  10,
+						},
+						Matches: []MatchCriteriaCD{
+							{
+								CaseSensitive: true,
+								MatchOperator: "equals",
+								MatchType:     "method",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueSimple{
+									Type:  "simple",
+									Value: []string{"GET"},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"201 created, complex CD with objectMatchValue - object": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleCD{
+							Start: 0,
+							End:   0,
+							Type:  "cdMatchRule",
+							Name:  "rul3",
+							ID:    0,
+							ForwardSettings: ForwardSettingsCD{
+								OriginID: "some_origin",
+								Percent:  10,
+							},
+							Matches: []MatchCriteriaCD{
+								{
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueObject{
+										Type: "object",
+										Name: "CD",
+										Options: &Options{
+											Value: []string{
+												"text/html*",
+												"text/css*",
+												"application/x-javascript*",
+											},
+											ValueHasWildcard: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "cdMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": null,
+            "matches": [
+                {
+                    "matchOperator": "equals",
+                    "matchType": "hostname",
+                    "negate": false,
+					"objectMatchValue": {
+						"type": "object",
+						"name": "CD",
+						"options": {
+							"value": [
+								"text/html*",
+                                "text/css*",
+                                "application/x-javascript*"
+							],
+							"valueHasWildcard": true
+						}
+					}
+                }
+            ],
+            "name": "rul3",
+            "redirectURL": "/abc/sss",
+            "start": 0,
+            "forwardSettings": {
+                "originId": "some_origin",
+                "percent": 10
+            }
+        }
+    ],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleCD{
+						Type:     "cdMatchRule",
+						End:      0,
+						ID:       0,
+						MatchURL: "",
+						Name:     "rul3",
+						Start:    0,
+						ForwardSettings: ForwardSettingsCD{
+							OriginID: "some_origin",
+							Percent:  10,
+						},
+						Matches: []MatchCriteriaCD{
+							{
+								MatchOperator: "equals",
+								MatchType:     "hostname",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueObject{
+									Type: "object",
+									Name: "CD",
+									Options: &Options{
+										Value: []string{
+											"text/html*",
+											"text/css*",
+											"application/x-javascript*",
+										},
+										ValueHasWildcard: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"validation error, complex CD with unavailable objectMatchValue type - range": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleCD{
+							Start: 0,
+							End:   0,
+							Type:  "cdMatchRule",
+							Name:  "rul3",
+							ID:    0,
+							ForwardSettings: ForwardSettingsCD{
+								OriginID: "some_origin",
+								Percent:  10,
+							},
+							Matches: []MatchCriteriaCD{
+								{
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueRange{
+										Type:  "range",
+										Value: []int64{1, 50},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error, complex CD missing forwardSettings": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleCD{
+							Start: 0,
+							End:   0,
+							Type:  "cdMatchRule",
+							Name:  "rul3",
+							ID:    0,
+							ForwardSettings: ForwardSettingsCD{
+								OriginID: "some_origin",
+								Percent:  10,
+							},
+							Matches: []MatchCriteriaCD{
+								{
+									MatchType:     "hostname",
+									MatchValue:    "3333.dom",
+									MatchOperator: "equals",
+									CaseSensitive: true,
+									Negate:        false,
+								},
+								{
+									MatchType:     "cookie",
+									MatchValue:    "cookie=cookievalue",
+									MatchOperator: "equals",
+									Negate:        false,
+									CaseSensitive: false,
+								},
+								{
+									MatchType:     "extension",
+									MatchValue:    "txt",
+									MatchOperator: "equals",
+									Negate:        false,
+									CaseSensitive: false,
+								},
+							},
+						},
+						&MatchRuleCD{
+							Start:    0,
+							End:      0,
+							Type:     "cdMatchRule",
+							Name:     "rule 2",
+							MatchURL: "ddd.aaa",
+							ID:       0,
+						},
+						&MatchRuleCD{
+							Type:     "cdMatchRule",
+							ID:       0,
+							Name:     "r1",
+							Start:    0,
+							End:      0,
+							MatchURL: "abc.com",
+							ForwardSettings: ForwardSettingsCD{
+								OriginID: "some_origin",
+								Percent:  10,
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
+		},
+
 		"201 created, complex ER": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -1431,7 +2093,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
-
 		"201 created, complex ER with objectMatchValue - simple": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -1551,7 +2212,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
-
 		"201 created, complex ER with objectMatchValue - object": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -1690,7 +2350,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
-
 		"201 created, ER with empty/no useRelativeURL": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -1835,7 +2494,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
-
 		"validation error, complex ER with unavailable objectMatchValue type - range": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -1867,6 +2525,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
+
 		"201 created, complex FR": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -2357,6 +3016,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 				Version:     798,
 			},
 		},
+
 		"201 created, complex VP with objectMatchValue - simple": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -2468,7 +3128,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
-
 		"validation error, complex VP with unavailable objectMatchValue type - range": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -2498,8 +3157,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
-
-		"validation error, simple VP missing passThrughPercent": {
+		"validation error, simple VP missing passThroughPercent": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
 					MatchRules: MatchRules{
@@ -2516,8 +3174,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
-
-		"validation error, simple VP passThrughPercent out of range": {
+		"validation error, simple VP passThroughPercent out of range": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
 					MatchRules: MatchRules{
@@ -2535,6 +3192,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
+
 		"500 internal server error": {
 			request: CreatePolicyVersionRequest{
 				PolicyID: 1,

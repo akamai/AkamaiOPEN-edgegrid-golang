@@ -38,6 +38,26 @@ type (
 		OriginID string `json:"originId"`
 	}
 
+	// MatchRuleCD represents a match rule resource for create or update resource
+	MatchRuleCD struct {
+		Name            string            `json:"name,omitempty"`
+		Type            MatchRuleType     `json:"type,omitempty"`
+		Start           int               `json:"start,omitempty"`
+		End             int               `json:"end,omitempty"`
+		ID              int64             `json:"id,omitempty"`
+		Matches         []MatchCriteriaCD `json:"matches,omitempty"`
+		MatchURL        string            `json:"matchURL,omitempty"`
+		ForwardSettings ForwardSettingsCD `json:"forwardSettings"`
+		Disabled        bool              `json:"disabled,omitempty"`
+		MatchesAlways   bool              `json:"matchesAlways"`
+	}
+
+	// ForwardSettingsCD represents forward settings for CD aka PR
+	ForwardSettingsCD struct {
+		OriginID string `json:"originId"`
+		Percent  int    `json:"percent"`
+	}
+
 	// MatchRuleER represents a match rule resource for create or update resource
 	MatchRuleER struct {
 		Name                     string            `json:"name,omitempty"`
@@ -104,6 +124,10 @@ type (
 	// ObjectMatchValue can contain ObjectMatchValueObject, ObjectMatchValueSimple or ObjectMatchValueRange
 	MatchCriteriaALB MatchCriteria
 
+	// MatchCriteriaCD represents a match criteria resource for match rule for cloudlet CD aka PR
+	// ObjectMatchValue can contain ObjectMatchValueObject or ObjectMatchValueSimple
+	MatchCriteriaCD MatchCriteria
+
 	// MatchCriteriaER represents a match criteria resource for match rule for cloudlet ER
 	// ObjectMatchValue can contain ObjectMatchValueObject or ObjectMatchValueSimple
 	MatchCriteriaER MatchCriteria
@@ -164,6 +188,8 @@ type (
 const (
 	// MatchRuleTypeALB represents rule type for ALB cloudlets
 	MatchRuleTypeALB MatchRuleType = "albMatchRule"
+	// MatchRuleTypeCD represents rule type for CD aka PR cloudlets
+	MatchRuleTypeCD MatchRuleType = "cdMatchRule"
 	// MatchRuleTypeER represents rule type for ER cloudlets
 	MatchRuleTypeER MatchRuleType = "erMatchRule"
 	// MatchRuleTypeFR represents rule type for FR cloudlets
@@ -175,8 +201,6 @@ const (
 const (
 	// MatchRuleFormat10 represents default match rule format
 	MatchRuleFormat10 MatchRuleFormat = "1.0"
-	// MatchRuleFormatDefault represents default match rule format
-	MatchRuleFormatDefault = MatchRuleFormat10
 )
 
 const (
@@ -216,6 +240,22 @@ func (m MatchRuleALB) Validate() error {
 		"End":                      validation.Validate(m.End, validation.Min(0)),
 		"MatchURL":                 validation.Validate(m.MatchURL, validation.Length(0, 8192)),
 		"ForwardSettings.OriginID": validation.Validate(m.ForwardSettings.OriginID, validation.Required, validation.Length(0, 8192)),
+		"Matches":                  validation.Validate(m.Matches),
+	}.Filter()
+}
+
+// Validate validates MatchRuleCD
+func (m MatchRuleCD) Validate() error {
+	return validation.Errors{
+		"Type": validation.Validate(m.Type, validation.Required, validation.In(MatchRuleTypeCD).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be: 'cdMatchRule'", (&m).Type))),
+		"Name":                     validation.Validate(m.Name, validation.Length(0, 8192)),
+		"Start":                    validation.Validate(m.Start, validation.Min(0)),
+		"End":                      validation.Validate(m.End, validation.Min(0)),
+		"MatchURL":                 validation.Validate(m.MatchURL, validation.Length(0, 8192)),
+		"ForwardSettings":          validation.Validate(m.ForwardSettings, validation.Required),
+		"ForwardSettings.OriginID": validation.Validate(m.ForwardSettings.OriginID, validation.Required, validation.Length(0, 8192)),
+		"ForwardSettings.Percent":  validation.Validate(m.ForwardSettings.Percent, validation.Required, validation.Min(1), validation.Max(100)),
 		"Matches":                  validation.Validate(m.Matches),
 	}.Filter()
 }
@@ -281,6 +321,23 @@ func (m MatchCriteriaALB) Validate() error {
 		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
 		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == ""), validation.By(objectMatchValueSimpleOrRangeOrObjectValidation)),
+	}.Filter()
+}
+
+// Validate validates MatchCriteriaCD
+func (m MatchCriteriaCD) Validate() error {
+	return validation.Errors{
+		"MatchType": validation.Validate(m.MatchType, validation.In("header", "hostname", "path", "extension",
+			"query", "cookie", "deviceCharacteristics", "clientip", "continent", "countrycode", "regioncode", "protocol",
+			"method", "proxy").Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'header', 'hostname', 'path', 'extension', 'query', 'cookie', "+
+				"'deviceCharacteristics', 'clientip', 'continent', 'countrycode', 'regioncode', 'protocol', 'method', 'proxy'", (&m).MatchType))),
+		"MatchValue": validation.Validate(m.MatchValue, validation.Length(0, 8192)),
+		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
+		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
+		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == ""), validation.By(objectMatchValueSimpleOrObjectValidation)),
 	}.Filter()
 }
 
@@ -384,6 +441,8 @@ func (o ObjectMatchValueObject) Validate() error {
 var (
 	// ErrUnmarshallMatchCriteriaALB is returned when unmarshalling of MatchCriteriaALB fails
 	ErrUnmarshallMatchCriteriaALB = errors.New("unmarshalling MatchCriteriaALB")
+	// ErrUnmarshallMatchCriteriaCD is returned when unmarshalling of MatchCriteriaCD fails
+	ErrUnmarshallMatchCriteriaCD = errors.New("unmarshalling MatchCriteriaCD")
 	// ErrUnmarshallMatchCriteriaER is returned when unmarshalling of MatchCriteriaER fails
 	ErrUnmarshallMatchCriteriaER = errors.New("unmarshalling MatchCriteriaER")
 	// ErrUnmarshallMatchCriteriaFR is returned when unmarshalling of MatchCriteriaFR fails
@@ -396,6 +455,10 @@ var (
 
 func (m MatchRuleALB) cloudletType() string {
 	return "albMatchRule"
+}
+
+func (m MatchRuleCD) cloudletType() string {
+	return "cdMatchRule"
 }
 
 func (m MatchRuleER) cloudletType() string {
@@ -414,6 +477,7 @@ func (m MatchRuleVP) cloudletType() string {
 // It makes the UnmarshalJSON more compact and easier to support more cloudlet types
 var matchRuleHandlers = map[string]func() MatchRule{
 	"albMatchRule": func() MatchRule { return &MatchRuleALB{} },
+	"cdMatchRule":  func() MatchRule { return &MatchRuleCD{} },
 	"erMatchRule":  func() MatchRule { return &MatchRuleER{} },
 	"frMatchRule":  func() MatchRule { return &MatchRuleFR{} },
 	"vpMatchRule":  func() MatchRule { return &MatchRuleVP{} },
@@ -487,6 +551,45 @@ func (m *MatchCriteriaALB) UnmarshalJSON(b []byte) error {
 	convertedObjectMatchValue, err := convertObjectMatchValue(m.ObjectMatchValue, createObjectMatchValue())
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaALB, err)
+	}
+	m.ObjectMatchValue = convertedObjectMatchValue
+
+	return nil
+}
+
+// objectCDMatchValueHandlers contains mapping between name of the type for ObjectMatchValue and its implementation
+// It makes the UnmarshalJSON more compact and easier to support more types
+var objectCDMatchValueHandlers = map[string]func() interface{}{
+	"object": func() interface{} { return &ObjectMatchValueObject{} },
+	"simple": func() interface{} { return &ObjectMatchValueSimple{} },
+}
+
+// UnmarshalJSON helps to un-marshall field ObjectMatchValue of MatchCriteriaCD as proper instance of *ObjectMatchValueObject or *ObjectMatchValueSimple
+func (m *MatchCriteriaCD) UnmarshalJSON(b []byte) error {
+	// matchCriteriaCD is an alias for MatchCriteriaCD for un-marshalling purposes
+	type matchCriteriaCD MatchCriteriaCD
+
+	// populate common attributes using default json unmarshaler using aliased type
+	err := json.Unmarshal(b, (*matchCriteriaCD)(m))
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaCD, err)
+	}
+	if m.ObjectMatchValue == nil {
+		return nil
+	}
+
+	objectMatchValueTypeName, err := getObjectMatchValueType(m.ObjectMatchValue)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaCD, err)
+	}
+
+	createObjectMatchValue, ok := objectCDMatchValueHandlers[objectMatchValueTypeName]
+	if !ok {
+		return fmt.Errorf("%w: objectMatchValue has unexpected type: '%s'", ErrUnmarshallMatchCriteriaCD, objectMatchValueTypeName)
+	}
+	convertedObjectMatchValue, err := convertObjectMatchValue(m.ObjectMatchValue, createObjectMatchValue())
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaCD, err)
 	}
 	m.ObjectMatchValue = convertedObjectMatchValue
 
