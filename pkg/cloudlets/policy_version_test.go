@@ -3128,6 +3128,243 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
+
+		"201 created, complex AP with objectMatchValue - simple": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleAP{
+							Start:              0,
+							End:                0,
+							Type:               "apMatchRule",
+							Name:               "rul3",
+							PassThroughPercent: -1,
+							ID:                 0,
+							Matches: []MatchCriteriaAP{
+								{
+									CaseSensitive: true,
+									MatchOperator: "equals",
+									MatchType:     "method",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueSimple{
+										Type:  "simple",
+										Value: []string{"GET"},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "apMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": null,
+            "matches": [
+                {
+                    "caseSensitive": true,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                }
+            ],
+            "name": "rul3",
+            "start": 0,
+            "useIncomingQueryString": false,
+			"passThroughPercent": -1
+        }
+    ],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleAP{
+						Type:                   "apMatchRule",
+						End:                    0,
+						ID:                     0,
+						MatchURL:               "",
+						Name:                   "rul3",
+						PassThroughPercent:     -1,
+						Start:                  0,
+						UseIncomingQueryString: false,
+						Matches: []MatchCriteriaAP{
+							{
+								CaseSensitive: true,
+								MatchOperator: "equals",
+								MatchType:     "method",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueSimple{
+									Type:  "simple",
+									Value: []string{"GET"},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		"201 created, complex AP with objectMatchValue - object": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleAP{
+							Start:                  0,
+							End:                    0,
+							Type:                   "apMatchRule",
+							Name:                   "rul3",
+							PassThroughPercent:     -1,
+							ID:                     0,
+							UseIncomingQueryString: false,
+							Matches: []MatchCriteriaAP{
+								{
+									CaseSensitive: false,
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueObject{
+										Type: "object",
+										Name: "AP",
+										Options: &Options{
+											Value:            []string{"y"},
+											ValueHasWildcard: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "apMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchURL": null,
+            "matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "header",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "object",
+                        "name": "AP",
+						"options": {
+                            "value": [
+                                "y"
+                            ],
+                            "valueHasWildcard": true
+                        }
+                    }
+                }
+            ],
+            "name": "rul3",
+            "start": 0,
+			"useIncomingQueryString": false,
+			"passThroughPercent": -1
+        }
+    ],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleAP{
+						Type:               "apMatchRule",
+						End:                0,
+						ID:                 0,
+						MatchURL:           "",
+						Name:               "rul3",
+						PassThroughPercent: -1,
+						Start:              0,
+						Matches: []MatchCriteriaAP{
+							{
+								CaseSensitive: false,
+								MatchOperator: "equals",
+								MatchType:     "header",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueObject{
+									Type: "object",
+									Name: "AP",
+									Options: &Options{
+										Value:            []string{"y"},
+										ValueHasWildcard: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+
 		"validation error, complex VP with unavailable objectMatchValue type - range": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -3157,6 +3394,37 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
+
+		"validation error, complex AP with unavailable objectMatchValue type - range": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleAP{
+							Start:              0,
+							End:                0,
+							Type:               "apMatchRule",
+							PassThroughPercent: 50.50,
+							Name:               "rul3",
+							ID:                 0,
+							Matches: []MatchCriteriaAP{
+								{
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueRange{
+										Type:  "range",
+										Value: []int64{1, 50},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
+		},
+
 		"validation error, simple VP missing passThroughPercent": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -3174,6 +3442,25 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
+
+		"validation error, simple AP missing passThrughPercent": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleAP{
+							Start: 0,
+							End:   0,
+							Type:  "apMatchRule",
+							Name:  "rul3",
+							ID:    0,
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
+		},
+
 		"validation error, simple VP passThroughPercent out of range": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -3182,6 +3469,25 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "vpMatchRule",
+							PassThroughPercent: 101,
+							Name:               "rul3",
+							ID:                 0,
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
+		},
+
+		"validation error, simple AP passThroughPercent out of range": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleAP{
+							Start:              0,
+							End:                0,
+							Type:               "apMatchRule",
 							PassThroughPercent: 101,
 							Name:               "rul3",
 							ID:                 0,

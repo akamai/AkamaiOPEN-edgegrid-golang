@@ -211,15 +211,15 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 		},
 
-		"invalid MatchRuleAP": {
+		"invalid MatchRuleXX": {
 			responseBody: `
 	[
         {
-            "type": "apMatchRule"
+            "type": "xxMatchRule"
         }
     ]
 `,
-			withError: errors.New("unmarshalling MatchRules: unsupported match rule type: apMatchRule"),
+			withError: errors.New("unmarshalling MatchRules: unsupported match rule type: xxMatchRule"),
 		},
 
 		"invalid type": {
@@ -504,6 +504,33 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
     ]
 `,
 		},
+		"invalid objectMatchValue type for AP - range": {
+			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaAP: objectMatchValue has unexpected type: 'range'"),
+			responseBody: `
+	[
+        {
+            "type": "apMatchRule",
+            "matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "range",
+                        "value": [
+                            1,
+                            50
+                        ]
+                    }
+                }
+            ],
+            "name": "Rule3",
+            "start": 0
+        }
+    ]
+`,
+		},
 
 		"valid MatchRuleVP": {
 			responseBody: `
@@ -548,6 +575,72 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 					ID:                 0,
 					MatchURL:           "",
 					Matches: []MatchCriteriaVP{
+						{
+							CaseSensitive: false,
+							MatchOperator: "equals",
+							MatchType:     "protocol",
+							MatchValue:    "https",
+							Negate:        false,
+						},
+						{
+							CaseSensitive: false,
+							MatchOperator: "equals",
+							MatchType:     "method",
+							Negate:        false,
+							ObjectMatchValue: &ObjectMatchValueSimple{
+								Type:  "simple",
+								Value: []string{"GET"},
+							},
+						},
+					},
+					Name:  "Rule3",
+					Start: 0,
+				},
+			},
+		},
+		"valid MatchRuleAP": {
+			responseBody: `
+	[
+        {
+            "type": "apMatchRule",
+            "end": 0,
+            "passThroughPercent": 50.50,
+            "id": 0,
+            "matchURL": null,
+			"matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "protocol",
+                    "matchValue": "https",
+                    "negate": false
+                },
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                }
+            ],
+            "name": "Rule3",
+            "start": 0
+        }
+    ]
+`,
+			expectedObject: MatchRules{
+				&MatchRuleAP{
+					Type:               "apMatchRule",
+					End:                0,
+					PassThroughPercent: 50.50,
+					ID:                 0,
+					MatchURL:           "",
+					Matches: []MatchCriteriaAP{
 						{
 							CaseSensitive: false,
 							MatchOperator: "equals",
