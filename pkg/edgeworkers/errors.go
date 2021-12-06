@@ -12,12 +12,18 @@ type (
 	// Error is an edgeworkers error implementation
 	// For details on possible error types, refer to: https://techdocs.akamai.com/edgeworkers/reference/api-errors
 	Error struct {
-		Type      string `json:"type,omitempty"`
-		Title     string `json:"title,omitempty"`
-		Detail    string `json:"detail,omitempty"`
-		Instance  string `json:"instance,omitempty"`
-		Status    int    `json:"status,omitempty"`
-		ErrorCode string `json:"errorCode,omitempty"`
+		Type        string `json:"type,omitempty"`
+		Title       string `json:"title,omitempty"`
+		Detail      string `json:"detail,omitempty"`
+		Instance    string `json:"instance,omitempty"`
+		Status      int    `json:"status,omitempty"`
+		ErrorCode   string `json:"errorCode,omitempty"`
+		Method      string `json:"method,omitempty"`
+		ServerIP    string `json:"serverIp,omitempty"`
+		ClientIP    string `json:"clientIp,omitempty"`
+		RequestID   string `json:"requestId,omitempty"`
+		RequestTime string `json:"requestTime,omitempty"`
+		AuthzRealm  string `json:"authzRealm,omitempty"`
 	}
 )
 

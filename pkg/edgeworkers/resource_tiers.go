@@ -70,9 +70,9 @@ func (r GetResourceTierRequest) Validate() error {
 
 var (
 	// ErrListResourceTiers is returned in case an error occurs on ListResourceTiers operation
-	ErrListResourceTiers = errors.New("listing resource tiers")
+	ErrListResourceTiers = errors.New("list resource tiers")
 	// ErrGetResourceTier is returned in case an error occurs on GetResourceTier operation
-	ErrGetResourceTier = errors.New("getting resource tier")
+	ErrGetResourceTier = errors.New("get a resource tier")
 )
 
 func (e *edgeworkers) ListResourceTiers(ctx context.Context, params ListResourceTiersRequest) (*ListResourceTiersResponse, error) {
