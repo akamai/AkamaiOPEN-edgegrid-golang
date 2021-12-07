@@ -14,6 +14,7 @@ var (
 type (
 	// Edgeworkers is the api interface for edgeworkers
 	Edgeworkers interface {
+		EdgeWorkerIDs
 		PermissionGroups
 		Properties
 		ResourceTiers
