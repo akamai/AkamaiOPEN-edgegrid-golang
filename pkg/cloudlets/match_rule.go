@@ -40,16 +40,16 @@ type (
 
 	// MatchRuleAP represents an API Prioritization match rule resource for create or update
 	MatchRuleAP struct {
-		Disabled               bool              `json:"disabled,omitempty"`
+		Name                   string            `json:"name,omitempty"`
+		Type                   MatchRuleType     `json:"type,omitempty"`
+		Start                  int               `json:"start,omitempty"`
 		End                    int               `json:"end,omitempty"`
 		ID                     int64             `json:"id,omitempty"`
 		Matches                []MatchCriteriaAP `json:"matches,omitempty"`
 		MatchURL               string            `json:"matchURL,omitempty"`
-		Name                   string            `json:"name,omitempty"`
-		PassThroughPercent     float64           `json:"passThroughPercent"`
-		Start                  int               `json:"start,omitempty"`
-		Type                   MatchRuleType     `json:"type,omitempty"`
 		UseIncomingQueryString bool              `json:"useIncomingQueryString,omitempty"`
+		PassThroughPercent     float64           `json:"passThroughPercent"`
+		Disabled               bool              `json:"disabled,omitempty"`
 	}
 
 	// MatchRuleCD represents a match rule resource for create or update resource
