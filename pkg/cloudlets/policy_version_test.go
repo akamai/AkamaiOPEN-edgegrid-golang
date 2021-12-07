@@ -3026,7 +3026,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:                0,
 							Type:               "vpMatchRule",
 							Name:               "rul3",
-							PassThroughPercent: -1,
+							PassThroughPercent: tools.Float64Ptr(-1),
 							ID:                 0,
 							Matches: []MatchCriteriaVP{
 								{
@@ -3078,7 +3078,6 @@ func TestCreatePolicyVersion(t *testing.T) {
             ],
             "name": "rul3",
             "start": 0,
-            "useIncomingQueryString": false,
 			"passThroughPercent": -1
         }
     ],
@@ -3104,14 +3103,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 				Version:          6,
 				MatchRules: MatchRules{
 					&MatchRuleVP{
-						Type:                   "vpMatchRule",
-						End:                    0,
-						ID:                     0,
-						MatchURL:               "",
-						Name:                   "rul3",
-						PassThroughPercent:     -1,
-						Start:                  0,
-						UseIncomingQueryString: false,
+						Type:               "vpMatchRule",
+						End:                0,
+						ID:                 0,
+						MatchURL:           "",
+						Name:               "rul3",
+						PassThroughPercent: tools.Float64Ptr(-1),
+						Start:              0,
 						Matches: []MatchCriteriaVP{
 							{
 								CaseSensitive: true,
@@ -3138,7 +3136,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:                0,
 							Type:               "apMatchRule",
 							Name:               "rul3",
-							PassThroughPercent: -1,
+							PassThroughPercent: tools.Float64Ptr(0),
 							ID:                 0,
 							Matches: []MatchCriteriaAP{
 								{
@@ -3216,14 +3214,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 				Version:          6,
 				MatchRules: MatchRules{
 					&MatchRuleAP{
-						Type:                   "apMatchRule",
-						End:                    0,
-						ID:                     0,
-						MatchURL:               "",
-						Name:                   "rul3",
-						PassThroughPercent:     -1,
-						Start:                  0,
-						UseIncomingQueryString: false,
+						Type:               "apMatchRule",
+						End:                0,
+						ID:                 0,
+						MatchURL:           "",
+						Name:               "rul3",
+						PassThroughPercent: tools.Float64Ptr(-1),
+						Start:              0,
 						Matches: []MatchCriteriaAP{
 							{
 								CaseSensitive: true,
@@ -3246,13 +3243,12 @@ func TestCreatePolicyVersion(t *testing.T) {
 				CreatePolicyVersion: CreatePolicyVersion{
 					MatchRules: MatchRules{
 						&MatchRuleAP{
-							Start:                  0,
-							End:                    0,
-							Type:                   "apMatchRule",
-							Name:                   "rul3",
-							PassThroughPercent:     -1,
-							ID:                     0,
-							UseIncomingQueryString: false,
+							Start:              0,
+							End:                0,
+							Type:               "apMatchRule",
+							Name:               "rul3",
+							PassThroughPercent: tools.Float64Ptr(-1),
+							ID:                 0,
 							Matches: []MatchCriteriaAP{
 								{
 									CaseSensitive: false,
@@ -3311,7 +3307,6 @@ func TestCreatePolicyVersion(t *testing.T) {
             ],
             "name": "rul3",
             "start": 0,
-			"useIncomingQueryString": false,
 			"passThroughPercent": -1
         }
     ],
@@ -3342,7 +3337,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						ID:                 0,
 						MatchURL:           "",
 						Name:               "rul3",
-						PassThroughPercent: -1,
+						PassThroughPercent: tools.Float64Ptr(-1),
 						Start:              0,
 						Matches: []MatchCriteriaAP{
 							{
@@ -3373,7 +3368,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "vpMatchRule",
-							PassThroughPercent: 50.50,
+							PassThroughPercent: tools.Float64Ptr(50.50),
 							Name:               "rul3",
 							ID:                 0,
 							Matches: []MatchCriteriaVP{
@@ -3403,7 +3398,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "apMatchRule",
-							PassThroughPercent: 50.50,
+							PassThroughPercent: tools.Float64Ptr(50.50),
 							Name:               "rul3",
 							ID:                 0,
 							Matches: []MatchCriteriaAP{
@@ -3469,7 +3464,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "vpMatchRule",
-							PassThroughPercent: 101,
+							PassThroughPercent: tools.Float64Ptr(101),
 							Name:               "rul3",
 							ID:                 0,
 						},
@@ -3488,7 +3483,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "apMatchRule",
-							PassThroughPercent: 101,
+							PassThroughPercent: tools.Float64Ptr(101),
 							Name:               "rul3",
 							ID:                 0,
 						},

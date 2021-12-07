@@ -40,16 +40,15 @@ type (
 
 	// MatchRuleAP represents an API Prioritization match rule resource for create or update
 	MatchRuleAP struct {
-		Name                   string            `json:"name,omitempty"`
-		Type                   MatchRuleType     `json:"type,omitempty"`
-		Start                  int               `json:"start,omitempty"`
-		End                    int               `json:"end,omitempty"`
-		ID                     int64             `json:"id,omitempty"`
-		Matches                []MatchCriteriaAP `json:"matches,omitempty"`
-		MatchURL               string            `json:"matchURL,omitempty"`
-		UseIncomingQueryString bool              `json:"useIncomingQueryString,omitempty"`
-		PassThroughPercent     float64           `json:"passThroughPercent"`
-		Disabled               bool              `json:"disabled,omitempty"`
+		Name               string            `json:"name,omitempty"`
+		Type               MatchRuleType     `json:"type,omitempty"`
+		Start              int               `json:"start,omitempty"`
+		End                int               `json:"end,omitempty"`
+		ID                 int64             `json:"id,omitempty"`
+		Matches            []MatchCriteriaAP `json:"matches,omitempty"`
+		MatchURL           string            `json:"matchURL,omitempty"`
+		PassThroughPercent *float64          `json:"passThroughPercent"`
+		Disabled           bool              `json:"disabled,omitempty"`
 	}
 
 	// MatchRuleCD represents a match rule resource for create or update resource
@@ -111,16 +110,15 @@ type (
 
 	// MatchRuleVP represents a match rule resource for create or update resource
 	MatchRuleVP struct {
-		Name                   string            `json:"name,omitempty"`
-		Type                   MatchRuleType     `json:"type,omitempty"`
-		Start                  int               `json:"start,omitempty"`
-		End                    int               `json:"end,omitempty"`
-		ID                     int64             `json:"id,omitempty"`
-		Matches                []MatchCriteriaVP `json:"matches,omitempty"`
-		MatchURL               string            `json:"matchURL,omitempty"`
-		UseIncomingQueryString bool              `json:"useIncomingQueryString,omitempty"`
-		PassThroughPercent     float64           `json:"passThroughPercent"`
-		Disabled               bool              `json:"disabled,omitempty"`
+		Name               string            `json:"name,omitempty"`
+		Type               MatchRuleType     `json:"type,omitempty"`
+		Start              int               `json:"start,omitempty"`
+		End                int               `json:"end,omitempty"`
+		ID                 int64             `json:"id,omitempty"`
+		Matches            []MatchCriteriaVP `json:"matches,omitempty"`
+		MatchURL           string            `json:"matchURL,omitempty"`
+		PassThroughPercent *float64          `json:"passThroughPercent"`
+		Disabled           bool              `json:"disabled,omitempty"`
 	}
 
 	// MatchCriteria represents a match criteria resource for match rule for cloudlet
@@ -316,7 +314,7 @@ func (m MatchRuleAP) Validate() error {
 		"Start":              validation.Validate(m.Start, validation.Min(0)),
 		"End":                validation.Validate(m.End, validation.Min(0)),
 		"MatchURL":           validation.Validate(m.MatchURL, validation.Length(0, 8192)),
-		"PassThroughPercent": validation.Validate(m.PassThroughPercent, validation.Required, validation.Min(-1.0), validation.Max(100.0)),
+		"PassThroughPercent": validation.Validate(m.PassThroughPercent, validation.By(passThroughPercentValidation)),
 		"Matches":            validation.Validate(m.Matches),
 	}.Filter()
 }
@@ -380,7 +378,7 @@ func (m MatchRuleVP) Validate() error {
 		"Start":              validation.Validate(m.Start, validation.Min(0)),
 		"End":                validation.Validate(m.End, validation.Min(0)),
 		"MatchURL":           validation.Validate(m.MatchURL, validation.Length(0, 8192)),
-		"PassThroughPercent": validation.Validate(m.PassThroughPercent, validation.Required, validation.Min(-1.0), validation.Max(100.0)),
+		"PassThroughPercent": validation.Validate(m.PassThroughPercent, validation.By(passThroughPercentValidation)),
 		"Matches":            validation.Validate(m.Matches),
 	}.Filter()
 }
@@ -505,6 +503,23 @@ func objectMatchValueSimpleOrRangeOrObjectValidation(value interface{}) error {
 	default:
 		return fmt.Errorf("type %T is invalid. Must be one of: 'simple', 'range' or 'object'", value)
 	}
+}
+
+func passThroughPercentValidation(value interface{}) error {
+	v, ok := value.(*float64)
+	if !ok {
+		return fmt.Errorf("type %T is invalid. Must be *float64", value)
+	}
+	if v == nil {
+		return fmt.Errorf("cannot be blank")
+	}
+	if *v < -1 {
+		return fmt.Errorf("must be no less than -1")
+	}
+	if *v > 100 {
+		return fmt.Errorf("must be no greater than 100")
+	}
+	return nil
 }
 
 // Validate validates ObjectMatchValueRange

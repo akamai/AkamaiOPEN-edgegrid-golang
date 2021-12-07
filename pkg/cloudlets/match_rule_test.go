@@ -7,6 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/cloudlets/tools"
 )
 
 func TestUnmarshalJSONMatchRules(t *testing.T) {
@@ -571,7 +573,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 				&MatchRuleVP{
 					Type:               "vpMatchRule",
 					End:                0,
-					PassThroughPercent: 50.50,
+					PassThroughPercent: tools.Float64Ptr(50.50),
 					ID:                 0,
 					MatchURL:           "",
 					Matches: []MatchCriteriaVP{
@@ -637,7 +639,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 				&MatchRuleAP{
 					Type:               "apMatchRule",
 					End:                0,
-					PassThroughPercent: 50.50,
+					PassThroughPercent: tools.Float64Ptr(50.50),
 					ID:                 0,
 					MatchURL:           "",
 					Matches: []MatchCriteriaAP{
