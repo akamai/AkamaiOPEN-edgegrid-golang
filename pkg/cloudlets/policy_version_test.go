@@ -1,6 +1,7 @@
 package cloudlets
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"net/http"
@@ -681,6 +682,7 @@ func TestGetPolicyVersion(t *testing.T) {
 func TestCreatePolicyVersion(t *testing.T) {
 	tests := map[string]struct {
 		request          CreatePolicyVersionRequest
+		requestBody      string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -918,7 +920,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 				Version:     2,
 			},
 		},
-
 		"201 created, complex ALB with objectMatchValue - object": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -1051,7 +1052,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 				Version:     796,
 			},
 		},
-
 		"201 created, complex ALB with objectMatchValue - simple": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -1174,7 +1174,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 				Version:     797,
 			},
 		},
-
 		"201 created, complex ALB with objectMatchValue - range": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -1545,6 +1544,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 				PolicyID: 276858,
 			},
+			requestBody:    `{"matchRules":[{"name":"rul3","type":"cdMatchRule","matches":[{"matchType":"method","matchOperator":"equals","caseSensitive":true,"negate":false,"objectMatchValue":{"type":"simple","value":["GET"]}}],"forwardSettings":{"originId":"some_origin","percent":10}}]}`,
 			responseStatus: http.StatusCreated,
 			responseBody: `{
     "activations": [],
@@ -3237,7 +3237,6 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
-
 		"201 created, complex AP with objectMatchValue - object": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -3530,6 +3529,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.requestBody != "" {
+					buf := new(bytes.Buffer)
+					_, err := buf.ReadFrom(r.Body)
+					assert.NoError(t, err)
+					req := buf.String()
+					assert.Equal(t, test.requestBody, req)
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
@@ -3610,6 +3616,7 @@ func TestDeletePolicyVersion(t *testing.T) {
 func TestUpdatePolicyVersion(t *testing.T) {
 	tests := map[string]struct {
 		request          UpdatePolicyVersionRequest
+		requestBody      string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string

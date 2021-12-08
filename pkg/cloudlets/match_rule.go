@@ -62,7 +62,7 @@ type (
 		MatchURL        string            `json:"matchURL,omitempty"`
 		ForwardSettings ForwardSettingsCD `json:"forwardSettings"`
 		Disabled        bool              `json:"disabled,omitempty"`
-		MatchesAlways   bool              `json:"matchesAlways"`
+		MatchesAlways   bool              `json:"matchesAlways,omitempty"`
 	}
 
 	// ForwardSettingsCD represents forward settings for CD aka PR
