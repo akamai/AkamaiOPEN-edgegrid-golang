@@ -344,7 +344,7 @@ func TestGetPolicyVersion(t *testing.T) {
 				},
 			},
 		},
-		"200 OK, CD rule": {
+		"200 OK, PR rule": {
 			request: GetPolicyVersionRequest{
 				PolicyID: 276858,
 				Version:  6,
@@ -406,15 +406,15 @@ func TestGetPolicyVersion(t *testing.T) {
 				Location:         "/cloudlets/api/v2/policies/325401/versions/3",
 				MatchRuleFormat:  "1.0",
 				MatchRules: MatchRules{
-					&MatchRuleCD{
+					&MatchRulePR{
 						Type: "cdMatchRule",
 						End:  0,
-						ForwardSettings: ForwardSettingsCD{
+						ForwardSettings: ForwardSettingsPR{
 							OriginID: "fr_test_krk_dc2",
 							Percent:  11,
 						},
 						ID: 0,
-						Matches: []MatchCriteriaCD{
+						Matches: []MatchCriteriaPR{
 							{
 								CaseSensitive: false,
 								MatchOperator: "equals",
@@ -1298,21 +1298,21 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 		},
 
-		"201 created, complex CD": {
+		"201 created, complex PR": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
 					MatchRules: MatchRules{
-						&MatchRuleCD{
+						&MatchRulePR{
 							Start: 0,
 							End:   0,
 							Type:  "cdMatchRule",
 							Name:  "rul3",
 							ID:    0,
-							ForwardSettings: ForwardSettingsCD{
+							ForwardSettings: ForwardSettingsPR{
 								OriginID: "some_origin",
 								Percent:  10,
 							},
-							Matches: []MatchCriteriaCD{
+							Matches: []MatchCriteriaPR{
 								{
 									MatchType:     "hostname",
 									MatchValue:    "3333.dom",
@@ -1336,26 +1336,26 @@ func TestCreatePolicyVersion(t *testing.T) {
 								},
 							},
 						},
-						&MatchRuleCD{
+						&MatchRulePR{
 							Start:    0,
 							End:      0,
 							Type:     "cdMatchRule",
 							Name:     "rule 2",
 							MatchURL: "ddd.aaa",
 							ID:       0,
-							ForwardSettings: ForwardSettingsCD{
+							ForwardSettings: ForwardSettingsPR{
 								OriginID: "some_origin",
 								Percent:  10,
 							},
 						},
-						&MatchRuleCD{
+						&MatchRulePR{
 							Type:     "cdMatchRule",
 							ID:       0,
 							Name:     "r1",
 							Start:    0,
 							End:      0,
 							MatchURL: "abc.com",
-							ForwardSettings: ForwardSettingsCD{
+							ForwardSettings: ForwardSettingsPR{
 								OriginID: "some_origin",
 								Percent:  10,
 							},
@@ -1459,18 +1459,18 @@ func TestCreatePolicyVersion(t *testing.T) {
 				RulesLocked:      false,
 				Version:          6,
 				MatchRules: MatchRules{
-					&MatchRuleCD{
+					&MatchRulePR{
 						Type:     "cdMatchRule",
 						End:      0,
 						ID:       0,
 						MatchURL: "",
 						Name:     "rul3",
 						Start:    0,
-						ForwardSettings: ForwardSettingsCD{
+						ForwardSettings: ForwardSettingsPR{
 							OriginID: "some_origin",
 							Percent:  10,
 						},
-						Matches: []MatchCriteriaCD{
+						Matches: []MatchCriteriaPR{
 							{
 								MatchType:     "hostname",
 								MatchValue:    "3333.dom",
@@ -1494,7 +1494,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							},
 						},
 					},
-					&MatchRuleCD{
+					&MatchRulePR{
 						Type:     "cdMatchRule",
 						End:      0,
 						ID:       0,
@@ -1502,7 +1502,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						Name:     "rule 2",
 						Start:    0,
 					},
-					&MatchRuleCD{
+					&MatchRulePR{
 						Type:     "cdMatchRule",
 						End:      0,
 						ID:       0,
@@ -1513,21 +1513,21 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
-		"201 created, complex CD with objectMatchValue - simple": {
+		"201 created, complex PR with objectMatchValue - simple": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
 					MatchRules: MatchRules{
-						&MatchRuleCD{
+						&MatchRulePR{
 							Start: 0,
 							End:   0,
 							Type:  "cdMatchRule",
 							Name:  "rul3",
 							ID:    0,
-							ForwardSettings: ForwardSettingsCD{
+							ForwardSettings: ForwardSettingsPR{
 								OriginID: "some_origin",
 								Percent:  10,
 							},
-							Matches: []MatchCriteriaCD{
+							Matches: []MatchCriteriaPR{
 								{
 									CaseSensitive: true,
 									MatchOperator: "equals",
@@ -1606,18 +1606,18 @@ func TestCreatePolicyVersion(t *testing.T) {
 				RulesLocked:      false,
 				Version:          6,
 				MatchRules: MatchRules{
-					&MatchRuleCD{
+					&MatchRulePR{
 						Type:     "cdMatchRule",
 						End:      0,
 						ID:       0,
 						MatchURL: "",
 						Name:     "rul3",
 						Start:    0,
-						ForwardSettings: ForwardSettingsCD{
+						ForwardSettings: ForwardSettingsPR{
 							OriginID: "some_origin",
 							Percent:  10,
 						},
-						Matches: []MatchCriteriaCD{
+						Matches: []MatchCriteriaPR{
 							{
 								CaseSensitive: true,
 								MatchOperator: "equals",
@@ -1633,28 +1633,28 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
-		"201 created, complex CD with objectMatchValue - object": {
+		"201 created, complex PR with objectMatchValue - object": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
 					MatchRules: MatchRules{
-						&MatchRuleCD{
+						&MatchRulePR{
 							Start: 0,
 							End:   0,
 							Type:  "cdMatchRule",
 							Name:  "rul3",
 							ID:    0,
-							ForwardSettings: ForwardSettingsCD{
+							ForwardSettings: ForwardSettingsPR{
 								OriginID: "some_origin",
 								Percent:  10,
 							},
-							Matches: []MatchCriteriaCD{
+							Matches: []MatchCriteriaPR{
 								{
 									MatchOperator: "equals",
 									MatchType:     "header",
 									Negate:        false,
 									ObjectMatchValue: &ObjectMatchValueObject{
 										Type: "object",
-										Name: "CD",
+										Name: "PR",
 										Options: &Options{
 											Value: []string{
 												"text/html*",
@@ -1695,7 +1695,7 @@ func TestCreatePolicyVersion(t *testing.T) {
                     "negate": false,
 					"objectMatchValue": {
 						"type": "object",
-						"name": "CD",
+						"name": "PR",
 						"options": {
 							"value": [
 								"text/html*",
@@ -1737,25 +1737,25 @@ func TestCreatePolicyVersion(t *testing.T) {
 				RulesLocked:      false,
 				Version:          6,
 				MatchRules: MatchRules{
-					&MatchRuleCD{
+					&MatchRulePR{
 						Type:     "cdMatchRule",
 						End:      0,
 						ID:       0,
 						MatchURL: "",
 						Name:     "rul3",
 						Start:    0,
-						ForwardSettings: ForwardSettingsCD{
+						ForwardSettings: ForwardSettingsPR{
 							OriginID: "some_origin",
 							Percent:  10,
 						},
-						Matches: []MatchCriteriaCD{
+						Matches: []MatchCriteriaPR{
 							{
 								MatchOperator: "equals",
 								MatchType:     "hostname",
 								Negate:        false,
 								ObjectMatchValue: &ObjectMatchValueObject{
 									Type: "object",
-									Name: "CD",
+									Name: "PR",
 									Options: &Options{
 										Value: []string{
 											"text/html*",
@@ -1771,21 +1771,21 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
-		"validation error, complex CD with unavailable objectMatchValue type - range": {
+		"validation error, complex PR with unavailable objectMatchValue type - range": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
 					MatchRules: MatchRules{
-						&MatchRuleCD{
+						&MatchRulePR{
 							Start: 0,
 							End:   0,
 							Type:  "cdMatchRule",
 							Name:  "rul3",
 							ID:    0,
-							ForwardSettings: ForwardSettingsCD{
+							ForwardSettings: ForwardSettingsPR{
 								OriginID: "some_origin",
 								Percent:  10,
 							},
-							Matches: []MatchCriteriaCD{
+							Matches: []MatchCriteriaPR{
 								{
 									MatchOperator: "equals",
 									MatchType:     "header",
@@ -1803,21 +1803,21 @@ func TestCreatePolicyVersion(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
-		"validation error, complex CD missing forwardSettings": {
+		"validation error, complex PR missing forwardSettings": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
 					MatchRules: MatchRules{
-						&MatchRuleCD{
+						&MatchRulePR{
 							Start: 0,
 							End:   0,
 							Type:  "cdMatchRule",
 							Name:  "rul3",
 							ID:    0,
-							ForwardSettings: ForwardSettingsCD{
+							ForwardSettings: ForwardSettingsPR{
 								OriginID: "some_origin",
 								Percent:  10,
 							},
-							Matches: []MatchCriteriaCD{
+							Matches: []MatchCriteriaPR{
 								{
 									MatchType:     "hostname",
 									MatchValue:    "3333.dom",
@@ -1841,7 +1841,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 								},
 							},
 						},
-						&MatchRuleCD{
+						&MatchRulePR{
 							Start:    0,
 							End:      0,
 							Type:     "cdMatchRule",
@@ -1849,14 +1849,14 @@ func TestCreatePolicyVersion(t *testing.T) {
 							MatchURL: "ddd.aaa",
 							ID:       0,
 						},
-						&MatchRuleCD{
+						&MatchRulePR{
 							Type:     "cdMatchRule",
 							ID:       0,
 							Name:     "r1",
 							Start:    0,
 							End:      0,
 							MatchURL: "abc.com",
-							ForwardSettings: ForwardSettingsCD{
+							ForwardSettings: ForwardSettingsPR{
 								OriginID: "some_origin",
 								Percent:  10,
 							},

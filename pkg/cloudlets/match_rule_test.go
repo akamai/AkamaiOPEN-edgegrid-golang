@@ -256,8 +256,8 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 		},
 
-		"invalid objectMatchValue type for CD - range": {
-			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaCD: objectMatchValue has unexpected type: 'range'"),
+		"invalid objectMatchValue type for PR - range": {
+			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaPR: objectMatchValue has unexpected type: 'range'"),
 			responseBody: `
 	[
         {
@@ -340,7 +340,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 		},
 
-		"valid MatchRuleCD": {
+		"valid MatchRulePR": {
 			responseBody: `
 	[
         {
@@ -379,12 +379,12 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
     ]
 `,
 			expectedObject: MatchRules{
-				&MatchRuleCD{
+				&MatchRulePR{
 					Type:     "cdMatchRule",
 					End:      0,
 					ID:       0,
 					MatchURL: "",
-					Matches: []MatchCriteriaCD{
+					Matches: []MatchCriteriaPR{
 						{
 							CaseSensitive: false,
 							MatchOperator: "equals",
@@ -405,7 +405,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 					},
 					Name:  "Rule3",
 					Start: 0,
-					ForwardSettings: ForwardSettingsCD{
+					ForwardSettings: ForwardSettingsPR{
 						OriginID: "fr_test_krk_dc2",
 						Percent:  62,
 					},

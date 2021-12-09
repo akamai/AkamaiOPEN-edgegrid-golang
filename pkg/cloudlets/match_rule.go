@@ -51,22 +51,22 @@ type (
 		Disabled           bool              `json:"disabled,omitempty"`
 	}
 
-	// MatchRuleCD represents a match rule resource for create or update resource
-	MatchRuleCD struct {
+	// MatchRulePR represents a match rule resource for create or update resource
+	MatchRulePR struct {
 		Name            string            `json:"name,omitempty"`
 		Type            MatchRuleType     `json:"type,omitempty"`
 		Start           int               `json:"start,omitempty"`
 		End             int               `json:"end,omitempty"`
 		ID              int64             `json:"id,omitempty"`
-		Matches         []MatchCriteriaCD `json:"matches,omitempty"`
+		Matches         []MatchCriteriaPR `json:"matches,omitempty"`
 		MatchURL        string            `json:"matchURL,omitempty"`
-		ForwardSettings ForwardSettingsCD `json:"forwardSettings"`
+		ForwardSettings ForwardSettingsPR `json:"forwardSettings"`
 		Disabled        bool              `json:"disabled,omitempty"`
 		MatchesAlways   bool              `json:"matchesAlways,omitempty"`
 	}
 
-	// ForwardSettingsCD represents forward settings for CD aka PR
-	ForwardSettingsCD struct {
+	// ForwardSettingsPR represents forward settings for CD aka PR
+	ForwardSettingsPR struct {
 		OriginID string `json:"originId"`
 		Percent  int    `json:"percent"`
 	}
@@ -140,9 +140,9 @@ type (
 	// ObjectMatchValue can contain ObjectMatchValueObject or ObjectMatchValueSimple
 	MatchCriteriaAP MatchCriteria
 
-	// MatchCriteriaCD represents a match criteria resource for match rule for cloudlet CD aka PR
+	// MatchCriteriaPR represents a match criteria resource for match rule for cloudlet CD aka PR
 	// ObjectMatchValue can contain ObjectMatchValueObject or ObjectMatchValueSimple
-	MatchCriteriaCD MatchCriteria
+	MatchCriteriaPR MatchCriteria
 
 	// MatchCriteriaER represents a match criteria resource for match rule for cloudlet ER
 	// ObjectMatchValue can contain ObjectMatchValueObject or ObjectMatchValueSimple
@@ -206,8 +206,8 @@ const (
 	MatchRuleTypeALB MatchRuleType = "albMatchRule"
 	// MatchRuleTypeAP represents rule type for AP cloudlets
 	MatchRuleTypeAP MatchRuleType = "apMatchRule"
-	// MatchRuleTypeCD represents rule type for CD aka PR cloudlets
-	MatchRuleTypeCD MatchRuleType = "cdMatchRule"
+	// MatchRuleTypePR represents rule type for PR aka PR cloudlets
+	MatchRuleTypePR MatchRuleType = "cdMatchRule"
 	// MatchRuleTypeER represents rule type for ER cloudlets
 	MatchRuleTypeER MatchRuleType = "erMatchRule"
 	// MatchRuleTypeFR represents rule type for FR cloudlets
@@ -253,8 +253,8 @@ var (
 	ErrUnmarshallMatchCriteriaALB = errors.New("unmarshalling MatchCriteriaALB")
 	// ErrUnmarshallMatchCriteriaAP is returned when unmarshalling of MatchCriteriaAP fails
 	ErrUnmarshallMatchCriteriaAP = errors.New("unmarshalling MatchCriteriaAP")
-	// ErrUnmarshallMatchCriteriaCD is returned when unmarshalling of MatchCriteriaCD fails
-	ErrUnmarshallMatchCriteriaCD = errors.New("unmarshalling MatchCriteriaCD")
+	// ErrUnmarshallMatchCriteriaPR is returned when unmarshalling of MatchCriteriaPR fails
+	ErrUnmarshallMatchCriteriaPR = errors.New("unmarshalling MatchCriteriaPR")
 	// ErrUnmarshallMatchCriteriaER is returned when unmarshalling of MatchCriteriaER fails
 	ErrUnmarshallMatchCriteriaER = errors.New("unmarshalling MatchCriteriaER")
 	// ErrUnmarshallMatchCriteriaFR is returned when unmarshalling of MatchCriteriaFR fails
@@ -270,7 +270,7 @@ var (
 var matchRuleHandlers = map[string]func() MatchRule{
 	"albMatchRule": func() MatchRule { return &MatchRuleALB{} },
 	"apMatchRule":  func() MatchRule { return &MatchRuleAP{} },
-	"cdMatchRule":  func() MatchRule { return &MatchRuleCD{} },
+	"cdMatchRule":  func() MatchRule { return &MatchRulePR{} },
 	"erMatchRule":  func() MatchRule { return &MatchRuleER{} },
 	"vpMatchRule":  func() MatchRule { return &MatchRuleVP{} },
 	"frMatchRule":  func() MatchRule { return &MatchRuleFR{} },
@@ -319,10 +319,10 @@ func (m MatchRuleAP) Validate() error {
 	}.Filter()
 }
 
-// Validate validates MatchRuleCD
-func (m MatchRuleCD) Validate() error {
+// Validate validates MatchRulePR
+func (m MatchRulePR) Validate() error {
 	return validation.Errors{
-		"Type": validation.Validate(m.Type, validation.Required, validation.In(MatchRuleTypeCD).Error(
+		"Type": validation.Validate(m.Type, validation.Required, validation.In(MatchRuleTypePR).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be: 'cdMatchRule'", (&m).Type))),
 		"Name":                     validation.Validate(m.Name, validation.Length(0, 8192)),
 		"Start":                    validation.Validate(m.Start, validation.Min(0)),
@@ -416,8 +416,8 @@ func (m MatchCriteriaAP) Validate() error {
 	}.Filter()
 }
 
-// Validate validates MatchCriteriaCD
-func (m MatchCriteriaCD) Validate() error {
+// Validate validates MatchCriteriaPR
+func (m MatchCriteriaPR) Validate() error {
 	return validation.Errors{
 		"MatchType": validation.Validate(m.MatchType, validation.In("header", "hostname", "path", "extension",
 			"query", "cookie", "deviceCharacteristics", "clientip", "continent", "countrycode", "regioncode", "protocol",
@@ -555,7 +555,7 @@ func (m MatchRuleAP) cloudletType() string {
 	return "apMatchRule"
 }
 
-func (m MatchRuleCD) cloudletType() string {
+func (m MatchRulePR) cloudletType() string {
 	return "cdMatchRule"
 }
 
@@ -669,15 +669,15 @@ func (m *MatchCriteriaAP) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// UnmarshalJSON helps to un-marshall field ObjectMatchValue of MatchCriteriaCD as proper instance of *ObjectMatchValueObject or *ObjectMatchValueSimple
-func (m *MatchCriteriaCD) UnmarshalJSON(b []byte) error {
-	// matchCriteriaCD is an alias for MatchCriteriaCD for un-marshalling purposes
-	type matchCriteriaCD MatchCriteriaCD
+// UnmarshalJSON helps to un-marshall field ObjectMatchValue of MatchCriteriaPR as proper instance of *ObjectMatchValueObject or *ObjectMatchValueSimple
+func (m *MatchCriteriaPR) UnmarshalJSON(b []byte) error {
+	// matchCriteriaPR is an alias for MatchCriteriaPR for un-marshalling purposes
+	type matchCriteriaPR MatchCriteriaPR
 
 	// populate common attributes using default json unmarshaler using aliased type
-	err := json.Unmarshal(b, (*matchCriteriaCD)(m))
+	err := json.Unmarshal(b, (*matchCriteriaPR)(m))
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaCD, err)
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaPR, err)
 	}
 	if m.ObjectMatchValue == nil {
 		return nil
@@ -685,16 +685,16 @@ func (m *MatchCriteriaCD) UnmarshalJSON(b []byte) error {
 
 	objectMatchValueTypeName, err := getObjectMatchValueType(m.ObjectMatchValue)
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaCD, err)
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaPR, err)
 	}
 
 	createObjectMatchValue, ok := simpleObjectMatchValueHandlers[objectMatchValueTypeName]
 	if !ok {
-		return fmt.Errorf("%w: objectMatchValue has unexpected type: '%s'", ErrUnmarshallMatchCriteriaCD, objectMatchValueTypeName)
+		return fmt.Errorf("%w: objectMatchValue has unexpected type: '%s'", ErrUnmarshallMatchCriteriaPR, objectMatchValueTypeName)
 	}
 	convertedObjectMatchValue, err := convertObjectMatchValue(m.ObjectMatchValue, createObjectMatchValue())
 	if err != nil {
-		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaCD, err)
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaPR, err)
 	}
 	m.ObjectMatchValue = convertedObjectMatchValue
 
