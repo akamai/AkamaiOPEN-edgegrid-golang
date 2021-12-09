@@ -15,6 +15,7 @@ type (
 	// Edgeworkers is the api interface for edgeworkers
 	Edgeworkers interface {
 		PermissionGroups
+		Properties
 		ResourceTiers
 	}
 
