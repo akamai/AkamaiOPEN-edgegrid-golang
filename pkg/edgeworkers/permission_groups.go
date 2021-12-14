@@ -20,10 +20,10 @@ type (
 		// ListPermissionGroups lists groups and the associated permission capabilities
 		//
 		// See: https://techdocs.akamai.com/edgeworkers/reference/groups#get-groups
-		ListPermissionGroups(context.Context) (*ListPermissionGroupResponse, error)
+		ListPermissionGroups(context.Context) (*ListPermissionGroupsResponse, error)
 	}
 
-	// GetPermissionGroupRequest contains parameters used to list permission groups
+	// GetPermissionGroupRequest contains parameters used to get a permission group
 	GetPermissionGroupRequest struct {
 		GroupID string
 	}
@@ -35,8 +35,8 @@ type (
 		Capabilities []string `json:"capabilities"`
 	}
 
-	// ListPermissionGroupResponse represents a response object returned by ListPermissionGroups
-	ListPermissionGroupResponse struct {
+	// ListPermissionGroupsResponse represents a response object returned by ListPermissionGroups
+	ListPermissionGroupsResponse struct {
 		PermissionGroups []PermissionGroup `json:"groups"`
 	}
 )
@@ -44,7 +44,7 @@ type (
 // Validate validates GetPermissionGroupRequest
 func (g GetPermissionGroupRequest) Validate() error {
 	return validation.Errors{
-		"EdgeWorkerID": validation.Validate(g.GroupID, validation.Required),
+		"GroupID": validation.Validate(g.GroupID, validation.Required),
 	}.Filter()
 }
 
@@ -83,18 +83,18 @@ func (e *edgeworkers) GetPermissionGroup(ctx context.Context, params GetPermissi
 	return &result, nil
 }
 
-func (e *edgeworkers) ListPermissionGroups(ctx context.Context) (*ListPermissionGroupResponse, error) {
+func (e *edgeworkers) ListPermissionGroups(ctx context.Context) (*ListPermissionGroupsResponse, error) {
 	logger := e.Log(ctx)
 	logger.Debug("ListPermissionGroups")
 
-	uri := "/edgeworkers/v1/groups"
+	uri := fmt.Sprintf("/edgeworkers/v1/groups")
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPermissionGroups, err)
 	}
 
-	var result ListPermissionGroupResponse
+	var result ListPermissionGroupsResponse
 	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListPermissionGroups, err)

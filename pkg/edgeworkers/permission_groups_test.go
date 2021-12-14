@@ -147,7 +147,7 @@ func TestListPermissionGroups(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ListPermissionGroupResponse
+		expectedResponse *ListPermissionGroupsResponse
 		withError        error
 	}{
 		"200 OK - list permission groups": {
@@ -200,7 +200,7 @@ func TestListPermissionGroups(t *testing.T) {
     ]
 }`,
 			expectedPath: "/edgeworkers/v1/groups",
-			expectedResponse: &ListPermissionGroupResponse{[]PermissionGroup{
+			expectedResponse: &ListPermissionGroupsResponse{[]PermissionGroup{
 				{
 					ID:   11111,
 					Name: "First test group",
