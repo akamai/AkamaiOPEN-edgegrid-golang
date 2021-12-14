@@ -3,6 +3,7 @@ package cloudlets
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -805,6 +806,303 @@ func TestConvertObjectMatchValue(t *testing.T) {
 			}
 			require.NoError(t, err)
 			assert.Equal(t, test.expected, convertedObjectMatchValue)
+		})
+	}
+}
+
+func TestValidateMatchRules(t *testing.T) {
+	tests := map[string]struct {
+		input     MatchRules
+		withError string
+	}{
+		"valid match rules ALB": {
+			input: MatchRules{
+				MatchRuleALB{
+					Type: "albMatchRule",
+					ForwardSettings: ForwardSettingsALB{
+						OriginID: "testOriginID",
+					},
+				},
+				MatchRuleALB{
+					Type:  "albMatchRule",
+					Start: 1,
+					End:   2,
+					ForwardSettings: ForwardSettingsALB{
+						OriginID: "testOriginID",
+					},
+				},
+			},
+		},
+		"invalid match rules ALB": {
+			input: MatchRules{
+				MatchRuleALB{
+					Type: "matchRule",
+				},
+				MatchRuleALB{
+					Type:  "albMatchRule",
+					Start: -1,
+					End:   -1,
+					ForwardSettings: ForwardSettingsALB{
+						OriginID: "testOriginID",
+					},
+				},
+			},
+			withError: `
+MatchRules[0]: {
+	ForwardSettings.OriginID: cannot be blank
+	Type: value 'matchRule' is invalid. Must be: 'albMatchRule'
+}
+MatchRules[1]: {
+	End: must be no less than 0
+	Start: must be no less than 0
+}`,
+		},
+		"valid match rules AP": {
+			input: MatchRules{
+				MatchRuleAP{
+					Type:               "apMatchRule",
+					PassThroughPercent: tools.Float64Ptr(-1),
+				},
+				MatchRuleAP{
+					Type:               "apMatchRule",
+					PassThroughPercent: tools.Float64Ptr(50.5),
+				},
+				MatchRuleAP{
+					Type:               "apMatchRule",
+					PassThroughPercent: tools.Float64Ptr(0),
+				},
+				MatchRuleAP{
+					Type:               "apMatchRule",
+					PassThroughPercent: tools.Float64Ptr(100),
+				},
+			},
+		},
+		"invalid match rules AP": {
+			input: MatchRules{
+				MatchRuleAP{
+					Type: "matchRule",
+				},
+				MatchRuleAP{
+					Type:               "apMatchRule",
+					PassThroughPercent: tools.Float64Ptr(100.1),
+				},
+				MatchRuleAP{
+					Type:               "apMatchRule",
+					PassThroughPercent: tools.Float64Ptr(-1.1),
+				},
+			},
+			withError: `
+MatchRules[0]: {
+	PassThroughPercent: cannot be blank
+	Type: value 'matchRule' is invalid. Must be: 'apMatchRule'
+}
+MatchRules[1]: {
+	PassThroughPercent: must be no greater than 100
+}
+MatchRules[2]: {
+	PassThroughPercent: must be no less than -1
+}`,
+		},
+		"valid match rules CD": {
+			input: MatchRules{
+				MatchRulePR{
+					Type: "cdMatchRule",
+					ForwardSettings: ForwardSettingsPR{
+						OriginID: "testOriginID",
+						Percent:  100,
+					},
+				},
+				MatchRulePR{
+					Type: "cdMatchRule",
+					ForwardSettings: ForwardSettingsPR{
+						OriginID: "testOriginID",
+						Percent:  1,
+					},
+				},
+			},
+		},
+		"invalid match rules CD": {
+			input: MatchRules{
+				MatchRulePR{
+					Type: "matchRule",
+				},
+				MatchRulePR{
+					Type:            "cdMatchRule",
+					ForwardSettings: ForwardSettingsPR{},
+				},
+				MatchRulePR{
+					Type: "cdMatchRule",
+					ForwardSettings: ForwardSettingsPR{
+						OriginID: "testOriginID",
+						Percent:  101,
+					},
+				},
+				MatchRulePR{
+					Type: "cdMatchRule",
+					ForwardSettings: ForwardSettingsPR{
+						OriginID: "testOriginID",
+						Percent:  -1,
+					},
+				},
+				MatchRulePR{
+					Type: "cdMatchRule",
+					ForwardSettings: ForwardSettingsPR{
+						OriginID: "testOriginID",
+						Percent:  0,
+					},
+				},
+			},
+			withError: `
+MatchRules[0]: {
+	ForwardSettings.OriginID: cannot be blank
+	ForwardSettings.Percent: cannot be blank
+	Type: value 'matchRule' is invalid. Must be: 'cdMatchRule'
+}
+MatchRules[1]: {
+	ForwardSettings.OriginID: cannot be blank
+	ForwardSettings.Percent: cannot be blank
+}
+MatchRules[2]: {
+	ForwardSettings.Percent: must be no greater than 100
+}
+MatchRules[3]: {
+	ForwardSettings.Percent: must be no less than 1
+}
+MatchRules[4]: {
+	ForwardSettings.Percent: cannot be blank
+}`,
+		},
+		"valid match rules ER": {
+			input: MatchRules{
+				MatchRuleER{
+					Type:           "erMatchRule",
+					RedirectURL:    "abc.com",
+					UseRelativeURL: "none",
+					StatusCode:     301,
+				},
+				MatchRuleER{
+					Type:        "erMatchRule",
+					RedirectURL: "abc.com",
+					StatusCode:  301,
+				},
+			},
+		},
+		"invalid match rules ER": {
+			input: MatchRules{
+				MatchRuleER{
+					Type: "matchRule",
+				},
+				MatchRuleER{
+					Type:           "erMatchRule",
+					RedirectURL:    "abc.com",
+					UseRelativeURL: "test",
+					StatusCode:     404,
+				},
+			},
+			withError: `
+MatchRules[0]: {
+	RedirectURL: cannot be blank
+	StatusCode: cannot be blank
+	Type: value 'matchRule' is invalid. Must be: 'erMatchRule'
+}
+MatchRules[1]: {
+	StatusCode: value '404' is invalid. Must be one of: 301, 302, 303, 307 or 308
+	UseRelativeURL: value 'test' is invalid. Must be one of: 'none', 'copy_scheme_hostname', 'relative_url' or '' (empty)
+}`,
+		},
+		"valid match rules FR": {
+			input: MatchRules{
+				MatchRuleFR{
+					Type: "frMatchRule",
+					ForwardSettings: ForwardSettingsFR{
+						PathAndQS: "test",
+						OriginID:  "testOriginID",
+					},
+				},
+				MatchRuleFR{
+					Type: "frMatchRule",
+					ForwardSettings: ForwardSettingsFR{
+						PathAndQS: "test",
+						OriginID:  "testOriginID",
+					},
+				},
+			},
+		},
+		"invalid match rules FR": {
+			input: MatchRules{
+				MatchRuleFR{
+					Type: "matchRule",
+				},
+				MatchRuleFR{
+					Type: "frMatchRule",
+					ForwardSettings: ForwardSettingsFR{
+						OriginID:  "testOriginID",
+						PathAndQS: "",
+					},
+				},
+			},
+			withError: `
+MatchRules[0]: {
+	Type: value 'matchRule' is invalid. Must be: 'frMatchRule'
+}`,
+		},
+		"valid match rules VP": {
+			input: MatchRules{
+				MatchRuleVP{
+					Type:               "vpMatchRule",
+					PassThroughPercent: tools.Float64Ptr(-1),
+				},
+				MatchRuleVP{
+					Type:               "vpMatchRule",
+					PassThroughPercent: tools.Float64Ptr(50.5),
+				},
+				MatchRuleVP{
+					Type:               "vpMatchRule",
+					PassThroughPercent: tools.Float64Ptr(0),
+				},
+				MatchRuleVP{
+					Type:               "vpMatchRule",
+					PassThroughPercent: tools.Float64Ptr(100),
+				},
+			},
+		},
+		"invalid match rules VP": {
+			input: MatchRules{
+				MatchRuleVP{
+					Type: "matchRule",
+				},
+				MatchRuleVP{
+					Type:               "vpMatchRule",
+					PassThroughPercent: tools.Float64Ptr(100.1),
+				},
+				MatchRuleVP{
+					Type:               "vpMatchRule",
+					PassThroughPercent: tools.Float64Ptr(-1.1),
+				},
+			},
+			withError: `
+MatchRules[0]: {
+	PassThroughPercent: cannot be blank
+	Type: value 'matchRule' is invalid. Must be: 'vpMatchRule'
+}
+MatchRules[1]: {
+	PassThroughPercent: must be no greater than 100
+}
+MatchRules[2]: {
+	PassThroughPercent: must be no less than -1
+}`,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			err := test.input.Validate()
+			if test.withError != "" {
+				require.Error(t, err)
+				assert.Equal(t, strings.TrimPrefix(test.withError, "\n"), err.Error())
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -289,6 +291,16 @@ var objectALBMatchValueHandlers = map[string]func() interface{}{
 var simpleObjectMatchValueHandlers = map[string]func() interface{}{
 	"object": func() interface{} { return &ObjectMatchValueObject{} },
 	"simple": func() interface{} { return &ObjectMatchValueSimple{} },
+}
+
+// Validate validates MatchRules
+func (m MatchRules) Validate() error {
+	type matchRules MatchRules
+
+	errs := validation.Errors{
+		"MatchRules": validation.Validate(matchRules(m), validation.Length(0, 5000)),
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates MatchRuleALB
