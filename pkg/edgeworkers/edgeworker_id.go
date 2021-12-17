@@ -343,7 +343,7 @@ func (e *edgeworkers) DeleteEdgeWorkerID(ctx context.Context, params DeleteEdgeW
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("%w: %d", ErrDeleteEdgeWorkerID, resp.StatusCode)
+		return fmt.Errorf("%s: %w", ErrDeleteEdgeWorkerID, e.Error(resp))
 	}
 
 	return nil
