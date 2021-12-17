@@ -893,44 +893,82 @@ func TestEdgeworkers_DeleteEdgeWorkerID(t *testing.T) {
 	tests := map[string]struct {
 		params         DeleteEdgeWorkerIDRequest
 		withError      error
-		expectedURL    string
+		expectedPath   string
 		responseStatus int
+		responseBody   string
 	}{
-		"deleted 204": {
+		"204 Deleted": {
 			params:         DeleteEdgeWorkerIDRequest{EdgeWorkerID: 1},
-			expectedURL:    "/edgeworkers/v1/ids/1",
+			expectedPath:   "/edgeworkers/v1/ids/1",
 			responseStatus: http.StatusNoContent,
 		},
-		"not found 404": {
+		"404 Not Found": {
 			params:         DeleteEdgeWorkerIDRequest{EdgeWorkerID: 1},
-			expectedURL:    "/edgeworkers/v1/ids/1",
+			expectedPath:   "/edgeworkers/v1/ids/1",
 			responseStatus: http.StatusNotFound,
-			withError:      ErrDeleteEdgeWorkerID,
+			responseBody: `
+{
+    "type": "/edgeworkers/error-types/edgeworkers-not-found",
+    "title": "The given resource could not be found.",
+    "detail": "Unable to delete this EdgeWorker ID",
+    "instance": "/edgeworkers/error-instances/da246328-ed4a-4e5f-bed3-44e57f9ba7ef",
+    "status": 404,
+    "errorCode": "EW2002"
+}`,
+			withError: &Error{
+				Type:      "/edgeworkers/error-types/edgeworkers-not-found",
+				Title:     "The given resource could not be found.",
+				Detail:    "Unable to delete this EdgeWorker ID",
+				Instance:  "/edgeworkers/error-instances/da246328-ed4a-4e5f-bed3-44e57f9ba7ef",
+				Status:    404,
+				ErrorCode: "EW2002",
+			},
 		},
-		"server error 500": {
+		"500 internal server error": {
 			params:         DeleteEdgeWorkerIDRequest{EdgeWorkerID: 1},
-			expectedURL:    "/edgeworkers/v1/ids/1",
+			expectedPath:   "/edgeworkers/v1/ids/1",
 			responseStatus: http.StatusInternalServerError,
-			withError:      ErrDeleteEdgeWorkerID,
+			responseBody: `
+{
+  "type": "https://problems.luna-dev.akamaiapis.net/-/resource-impl/forward-origin-error",
+  "title": "Server Error",
+  "status": 500,
+  "instance": "host_name/edgeworkers/v1/ids/1",
+  "method": "DELETE",
+  "serverIp": "104.81.220.111",
+  "clientIp": "89.64.55.111",
+  "requestId": "a73affa111",
+  "requestTime": "2021-12-17T16:32:37Z"
+}`,
+			withError: &Error{
+				Type:        "https://problems.luna-dev.akamaiapis.net/-/resource-impl/forward-origin-error",
+				Title:       "Server Error",
+				Status:      500,
+				Instance:    "host_name/edgeworkers/v1/ids/1",
+				Method:      "DELETE",
+				ServerIP:    "104.81.220.111",
+				ClientIP:    "89.64.55.111",
+				RequestID:   "a73affa111",
+				RequestTime: "2021-12-17T16:32:37Z",
+			},
 		},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedURL, r.URL.String())
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
 				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-
 			err := client.DeleteEdgeWorkerID(context.Background(), test.params)
-
 			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError))
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
 				return
 			}
-
 			require.NoError(t, err)
 		})
 	}
