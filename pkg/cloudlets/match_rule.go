@@ -402,12 +402,14 @@ func (m MatchCriteriaALB) Validate() error {
 			"deviceCharacteristics", "extension", "header", "hostname", "method", "path", "protocol", "proxy", "query", "regioncode", "range").Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'clientip', 'continent', 'cookie', 'countrycode', 'deviceCharacteristics', "+
 				"'extension', 'header', 'hostname', 'method', 'path', 'protocol', 'proxy', 'query', 'regioncode', 'range' or '' (empty)", (&m).MatchType))),
-		"MatchValue": validation.Validate(m.MatchValue, validation.Length(0, 8192), validation.Required.When(m.ObjectMatchValue == nil)),
+		"MatchValue": validation.Validate(m.MatchValue, validation.Length(1, 8192), validation.Required.When(m.ObjectMatchValue == nil).Error("cannot be blank when ObjectMatchValue is blank"),
+			validation.Empty.When(m.ObjectMatchValue != nil).Error("must be blank when ObjectMatchValue is set")),
 		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
 		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
-		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == ""), validation.By(objectMatchValueSimpleOrRangeOrObjectValidation)),
+		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == "").Error("cannot be blank when MatchValue is blank"),
+			validation.Empty.When(m.MatchValue != "").Error("must be blank when MatchValue is set"), validation.By(objectMatchValueSimpleOrRangeOrObjectValidation)),
 	}.Filter()
 }
 
@@ -419,12 +421,14 @@ func (m MatchCriteriaAP) Validate() error {
 			"continent", "countrycode", "regioncode", "protocol", "method", "proxy").Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'header', 'hostname', 'path', 'extension', 'query', 'cookie', "+
 				"'deviceCharacteristics', 'clientip', 'continent', 'countrycode', 'regioncode', 'protocol', 'method', 'proxy'", (&m).MatchType))),
-		"MatchValue": validation.Validate(m.MatchValue, validation.Length(0, 8192)),
+		"MatchValue": validation.Validate(m.MatchValue, validation.Length(1, 8192), validation.Required.When(m.ObjectMatchValue == nil).Error("cannot be blank when ObjectMatchValue is blank"),
+			validation.Empty.When(m.ObjectMatchValue != nil).Error("must be blank when ObjectMatchValue is set")),
 		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
 		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
-		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == ""), validation.By(objectMatchValueSimpleOrObjectValidation)),
+		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == "").Error("cannot be blank when MatchValue is blank"),
+			validation.Empty.When(m.MatchValue != "").Error("must be blank when MatchValue is set"), validation.By(objectMatchValueSimpleOrObjectValidation)),
 	}.Filter()
 }
 
@@ -436,12 +440,14 @@ func (m MatchCriteriaPR) Validate() error {
 			"method", "proxy").Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'header', 'hostname', 'path', 'extension', 'query', 'cookie', "+
 				"'deviceCharacteristics', 'clientip', 'continent', 'countrycode', 'regioncode', 'protocol', 'method', 'proxy'", (&m).MatchType))),
-		"MatchValue": validation.Validate(m.MatchValue, validation.Length(0, 8192)),
+		"MatchValue": validation.Validate(m.MatchValue, validation.Length(1, 8192), validation.Required.When(m.ObjectMatchValue == nil).Error("cannot be blank when ObjectMatchValue is blank"),
+			validation.Empty.When(m.ObjectMatchValue != nil).Error("must be blank when ObjectMatchValue is set")),
 		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
 		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
-		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == ""), validation.By(objectMatchValueSimpleOrObjectValidation)),
+		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == "").Error("cannot be blank when MatchValue is blank"),
+			validation.Empty.When(m.MatchValue != "").Error("must be blank when MatchValue is set"), validation.By(objectMatchValueSimpleOrObjectValidation)),
 	}.Filter()
 }
 
@@ -452,12 +458,14 @@ func (m MatchCriteriaER) Validate() error {
 			"regex", "cookie", "deviceCharacteristics", "clientip", "continent", "countrycode", "regioncode", "protocol", "method", "proxy").Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'header', 'hostname', 'path', 'extension', 'query', 'regex', 'cookie', "+
 				"'deviceCharacteristics', 'clientip', 'continent', 'countrycode', 'regioncode', 'protocol', 'method', 'proxy' or '' (empty)", (&m).MatchType))),
-		"MatchValue": validation.Validate(m.MatchValue, validation.Length(0, 8192)),
+		"MatchValue": validation.Validate(m.MatchValue, validation.Length(1, 8192), validation.Required.When(m.ObjectMatchValue == nil).Error("cannot be blank when ObjectMatchValue is blank"),
+			validation.Empty.When(m.ObjectMatchValue != nil).Error("must be blank when ObjectMatchValue is set")),
 		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
 		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
-		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == ""), validation.By(objectMatchValueSimpleOrObjectValidation)),
+		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == "").Error("cannot be blank when MatchValue is blank"),
+			validation.Empty.When(m.MatchValue != "").Error("must be blank when MatchValue is set"), validation.By(objectMatchValueSimpleOrObjectValidation)),
 	}.Filter()
 }
 
@@ -468,12 +476,14 @@ func (m MatchCriteriaFR) Validate() error {
 			"cookie", "deviceCharacteristics", "clientip", "continent", "countrycode", "regioncode", "protocol", "method", "proxy").Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'header', 'hostname', 'path', 'extension', 'query', 'regex', 'cookie', "+
 				"'deviceCharacteristics', 'clientip', 'continent', 'countrycode', 'regioncode', 'protocol', 'method', 'proxy'", (&m).MatchType))),
-		"MatchValue": validation.Validate(m.MatchValue, validation.Length(0, 8192)),
+		"MatchValue": validation.Validate(m.MatchValue, validation.Length(1, 8192), validation.Required.When(m.ObjectMatchValue == nil).Error("cannot be blank when ObjectMatchValue is blank"),
+			validation.Empty.When(m.ObjectMatchValue != nil).Error("must be blank when ObjectMatchValue is set")),
 		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
 		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
-		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == ""), validation.By(objectMatchValueSimpleOrObjectValidation)),
+		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == "").Error("cannot be blank when MatchValue is blank"),
+			validation.Empty.When(m.MatchValue != "").Error("must be blank when MatchValue is set"), validation.By(objectMatchValueSimpleOrObjectValidation)),
 	}.Filter()
 }
 
@@ -484,12 +494,14 @@ func (m MatchCriteriaVP) Validate() error {
 			"cookie", "deviceCharacteristics", "clientip", "continent", "countrycode", "regioncode", "protocol", "method", "proxy").Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'header', 'hostname', 'path', 'extension', 'query', 'cookie', "+
 				"'deviceCharacteristics', 'clientip', 'continent', 'countrycode', 'regioncode', 'protocol', 'method', 'proxy'", (&m).MatchType))),
-		"MatchValue": validation.Validate(m.MatchValue, validation.Length(0, 8192)),
+		"MatchValue": validation.Validate(m.MatchValue, validation.Length(1, 8192), validation.Required.When(m.ObjectMatchValue == nil).Error("cannot be blank when ObjectMatchValue is blank"),
+			validation.Empty.When(m.ObjectMatchValue != nil).Error("must be blank when ObjectMatchValue is set")),
 		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
 		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
-		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == ""), validation.By(objectMatchValueSimpleOrObjectValidation)),
+		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == "").Error("cannot be blank when MatchValue is blank"),
+			validation.Empty.When(m.MatchValue != "").Error("must be blank when MatchValue is set"), validation.By(objectMatchValueSimpleOrObjectValidation)),
 	}.Filter()
 }
 

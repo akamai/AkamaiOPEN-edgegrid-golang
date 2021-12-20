@@ -1092,6 +1092,84 @@ MatchRules[2]: {
 	PassThroughPercent: must be no less than -1
 }`,
 		},
+		"valid match criteria - matchValue": {
+			input: MatchRules{
+				MatchRuleER{
+					Type:        "erMatchRule",
+					RedirectURL: "abc.com",
+					StatusCode:  301,
+					Matches: []MatchCriteriaER{
+						{
+							MatchType:     "method",
+							MatchOperator: "equals",
+							CheckIPs:      "CONNECTING_IP",
+							MatchValue:    "https",
+						},
+					},
+				},
+			},
+		},
+		"valid match criteria - object match value": {
+			input: MatchRules{
+				MatchRuleER{
+					Type:        "erMatchRule",
+					RedirectURL: "abc.com",
+					StatusCode:  301,
+					Matches: []MatchCriteriaER{
+						{
+							MatchType:     "header",
+							MatchOperator: "equals",
+							CheckIPs:      "CONNECTING_IP",
+							ObjectMatchValue: &ObjectMatchValueSimple{
+								Type: "simple",
+								Value: []string{
+									"GET",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"invalid match criteria - matchValue and omv combinations": {
+			input: MatchRules{
+				MatchRuleER{
+					Type:        "erMatchRule",
+					RedirectURL: "abc.com",
+					StatusCode:  301,
+					Matches: []MatchCriteriaER{
+						{
+							MatchType:     "header",
+							MatchOperator: "equals",
+							CheckIPs:      "CONNECTING_IP",
+							ObjectMatchValue: &ObjectMatchValueSimple{
+								Type: "simple",
+								Value: []string{
+									"GET",
+								},
+							},
+							MatchValue: "GET",
+						},
+						{
+							MatchType:     "header",
+							MatchOperator: "equals",
+							CheckIPs:      "CONNECTING_IP",
+						},
+					},
+				},
+			},
+			withError: `
+MatchRules[0]: {
+	Matches[0]: {
+		MatchValue: must be blank when ObjectMatchValue is set
+		ObjectMatchValue: must be blank when MatchValue is set
+	}
+	Matches[1]: {
+		MatchValue: cannot be blank when ObjectMatchValue is blank
+		ObjectMatchValue: cannot be blank when MatchValue is blank
+	}
+}`,
+		},
 	}
 
 	for name, test := range tests {
