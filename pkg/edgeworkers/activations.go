@@ -23,15 +23,15 @@ type (
 		// See: https://techdocs.akamai.com/edgeworkers/reference-link/get-activation-1
 		GetActivation(context.Context, GetActivationRequest) (*Activation, error)
 
-		// CreateActivation activates an EdgeWorker on a given network
+		// ActivateVersion activates an EdgeWorker version on a given network
 		//
 		// See: https://techdocs.akamai.com/edgeworkers/reference/activations#post-activations-1
-		CreateActivation(context.Context, CreateActivationRequest) (*Activation, error)
+		ActivateVersion(context.Context, ActivateVersionRequest) (*Activation, error)
 
-		// CancelActivation cancels activation with a given id
+		// CancelPendingActivation cancels pending activation with a given id
 		//
 		// See: https://techdocs.akamai.com/edgeworkers/reference/activations#cancel-activation
-		CancelActivation(context.Context, CancelActivationRequest) (*Activation, error)
+		CancelPendingActivation(context.Context, CancelActivationRequest) (*Activation, error)
 	}
 
 	// ListActivationsRequest contains parameters used to list activations
@@ -40,14 +40,14 @@ type (
 		Version      string
 	}
 
-	// CreateActivationRequest contains path parameters and request body used to activate an edge worker
-	CreateActivationRequest struct {
+	// ActivateVersionRequest contains path parameters and request body used to activate an edge worker
+	ActivateVersionRequest struct {
 		EdgeWorkerID int
-		CreateActivation
+		ActivateVersion
 	}
 
-	// CreateActivation is a request body of create activation API request
-	CreateActivation struct {
+	// ActivateVersion represents the request body used to activate a version
+	ActivateVersion struct {
 		Network ActivationNetwork `json:"network"`
 		Version string            `json:"version"`
 	}
@@ -109,16 +109,16 @@ func (r GetActivationRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates CreateActivationRequest
-func (r CreateActivationRequest) Validate() error {
+// Validate validates ActivateVersionRequest
+func (r ActivateVersionRequest) Validate() error {
 	return validation.Errors{
-		"EdgeWorkerID":     validation.Validate(r.EdgeWorkerID, validation.Required),
-		"CreateActivation": validation.Validate(r.CreateActivation, validation.Required),
+		"EdgeWorkerID":    validation.Validate(r.EdgeWorkerID, validation.Required),
+		"ActivateVersion": validation.Validate(&r.ActivateVersion, validation.Required),
 	}.Filter()
 }
 
-// Validate validates CreateActivation
-func (r CreateActivation) Validate() error {
+// Validate validates ActivateVersion
+func (r ActivateVersion) Validate() error {
 	return validation.Errors{
 		"Network": validation.Validate(r.Network, validation.Required, validation.In(ActivationNetworkStaging, ActivationNetworkProduction).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'", r.Network, ActivationNetworkStaging, ActivationNetworkProduction))),
@@ -136,13 +136,13 @@ func (r CancelActivationRequest) Validate() error {
 
 var (
 	// ErrListActivations is returned when ListActivations fails
-	ErrListActivations = errors.New("listing activations")
+	ErrListActivations = errors.New("list activations")
 	// ErrGetActivation is returned when GetActivation fails
-	ErrGetActivation = errors.New("getting activation")
-	// ErrCreateActivation is returned when CreateActivation fails
-	ErrCreateActivation = errors.New("creating activation")
-	// ErrCancelActivation is returned when CancelActivation fails
-	ErrCancelActivation = errors.New("canceling activation")
+	ErrGetActivation = errors.New("get activation")
+	// ErrActivateVersion is returned when ActivateVersion fails
+	ErrActivateVersion = errors.New("activate version")
+	// ErrCancelActivation is returned when CancelPendingActivation fails
+	ErrCancelActivation = errors.New("cancel activation")
 )
 
 func (e edgeworkers) ListActivations(ctx context.Context, params ListActivationsRequest) (*ListActivationsResponse, error) {
@@ -210,38 +210,38 @@ func (e edgeworkers) GetActivation(ctx context.Context, params GetActivationRequ
 	return &result, nil
 }
 
-func (e edgeworkers) CreateActivation(ctx context.Context, params CreateActivationRequest) (*Activation, error) {
+func (e edgeworkers) ActivateVersion(ctx context.Context, params ActivateVersionRequest) (*Activation, error) {
 	logger := e.Log(ctx)
-	logger.Debug("CreateActivation")
+	logger.Debug("ActivateVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateActivation, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w: %s", ErrActivateVersion, ErrStructValidation, err)
 	}
 
 	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/activations", params.EdgeWorkerID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateActivation, err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrActivateVersion, err)
 	}
 
 	var result Activation
 
-	resp, err := e.Exec(req, &result, params.CreateActivation)
+	resp, err := e.Exec(req, &result, params.ActivateVersion)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateActivation, err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateVersion, err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("%s: %w", ErrCreateActivation, e.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrActivateVersion, e.Error(resp))
 	}
 
 	return &result, nil
 }
 
-func (e edgeworkers) CancelActivation(ctx context.Context, params CancelActivationRequest) (*Activation, error) {
+func (e edgeworkers) CancelPendingActivation(ctx context.Context, params CancelActivationRequest) (*Activation, error) {
 	logger := e.Log(ctx)
-	logger.Debug("CancelActivation")
+	logger.Debug("CancelPendingActivation")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrCancelActivation, ErrStructValidation, err)

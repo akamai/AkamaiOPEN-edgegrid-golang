@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"regexp"
 	"testing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -16,7 +17,7 @@ import (
 
 func TestListDeactivations(t *testing.T) {
 	tests := map[string]struct {
-		params         EdgeWorkerListDeactivationsRequest
+		params         ListDeactivationsRequest
 		withError      error
 		expectedPath   string
 		responseStatus int
@@ -24,11 +25,11 @@ func TestListDeactivations(t *testing.T) {
 		expectedResult []Deactivation
 	}{
 		"400 bad request": {
-			params:    EdgeWorkerListDeactivationsRequest{},
+			params:    ListDeactivationsRequest{},
 			withError: ErrStructValidation,
 		},
 		"500 internal server error": {
-			params:         EdgeWorkerListDeactivationsRequest{EdgeWorkerID: 5},
+			params:         ListDeactivationsRequest{EdgeWorkerID: 5},
 			expectedPath:   "/edgeworkers/v1/ids/5/deactivations",
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `{
@@ -125,7 +126,7 @@ func TestListDeactivations(t *testing.T) {
 					LastModifiedTime: "2020-07-10T14:53:25Z",
 				},
 			},
-			params: EdgeWorkerListDeactivationsRequest{EdgeWorkerID: 42},
+			params: ListDeactivationsRequest{EdgeWorkerID: 42},
 		},
 		"200 OK with version": {
 			responseBody: `{
@@ -182,7 +183,7 @@ func TestListDeactivations(t *testing.T) {
 					LastModifiedTime: "2020-07-10T14:53:25Z",
 				},
 			},
-			params: EdgeWorkerListDeactivationsRequest{
+			params: ListDeactivationsRequest{
 				EdgeWorkerID: 42,
 				Version:      "2",
 			},
@@ -214,17 +215,17 @@ func TestListDeactivations(t *testing.T) {
 
 func TestListDeactivationsRequest_Validate(t *testing.T) {
 	tests := map[string]struct {
-		params EdgeWorkerListDeactivationsRequest
+		params ListDeactivationsRequest
 		errors validation.Errors
 	}{
 		"no EW ID": {
-			params: EdgeWorkerListDeactivationsRequest{},
+			params: ListDeactivationsRequest{},
 			errors: validation.Errors{
 				"EdgeWorkerID": validation.ErrorObject{}.SetCode("validation_required").SetMessage("cannot be blank"),
 			},
 		},
 		"EW ID": {
-			params: EdgeWorkerListDeactivationsRequest{EdgeWorkerID: 1},
+			params: ListDeactivationsRequest{EdgeWorkerID: 1},
 		},
 	}
 	for name, test := range tests {
@@ -242,58 +243,50 @@ func TestListDeactivationsRequest_Validate(t *testing.T) {
 
 func TestEdgeWorkerDeactivateVersionRequest_Validate(t *testing.T) {
 	tests := map[string]struct {
-		params EdgeWorkerDeactivateVersionRequest
-		errors validation.Errors
+		params DeactivateVersionRequest
+		errors *regexp.Regexp
 	}{
 		"no EW ID": {
-			params: EdgeWorkerDeactivateVersionRequest{
-				Body: EdgeWorkerDeactivateVersionPayload{
+			params: DeactivateVersionRequest{
+				DeactivateVersion: DeactivateVersion{
 					Version: "--",
 					Network: ActivationNetworkProduction,
 				},
 			},
-			errors: validation.Errors{
-				"EdgeWorkerID": validation.ErrorObject{}.SetCode("validation_required").SetMessage("cannot be blank"),
-			},
+			errors: regexp.MustCompile(`EdgeWorkerID.+cannot be blank.+`),
 		},
 		"no version": {
-			params: EdgeWorkerDeactivateVersionRequest{
+			params: DeactivateVersionRequest{
 				EdgeWorkerID: 1,
-				Body: EdgeWorkerDeactivateVersionPayload{
+				DeactivateVersion: DeactivateVersion{
 					Network: ActivationNetworkProduction,
 				},
 			},
-			errors: validation.Errors{
-				"Body.Version": validation.ErrorObject{}.SetCode("validation_required").SetMessage("cannot be blank"),
-			},
+			errors: regexp.MustCompile(`DeactivateVersion:.+Version:.+cannot be blank.+`),
 		},
 		"bad network": {
-			params: EdgeWorkerDeactivateVersionRequest{
+			params: DeactivateVersionRequest{
 				EdgeWorkerID: 1,
-				Body: EdgeWorkerDeactivateVersionPayload{
+				DeactivateVersion: DeactivateVersion{
 					Network: "-asdfa",
 					Version: "a",
 				},
 			},
-			errors: validation.Errors{
-				"Body.Network": validation.ErrorObject{}.SetCode("validation_in_invalid").SetMessage("value '-asdfa' is invalid. Must be one of: 'STAGING' or 'PRODUCTION'"),
-			},
+			errors: regexp.MustCompile(`DeactivateVersion:.+Network:.+value '-asdfa' is invalid. Must be one of: 'STAGING' or 'PRODUCTION'.+`),
 		},
 		"no network": {
-			params: EdgeWorkerDeactivateVersionRequest{
+			params: DeactivateVersionRequest{
 				EdgeWorkerID: 1,
-				Body: EdgeWorkerDeactivateVersionPayload{
+				DeactivateVersion: DeactivateVersion{
 					Version: "a",
 				},
 			},
-			errors: validation.Errors{
-				"Body.Network": validation.ErrorObject{}.SetCode("validation_required").SetMessage("cannot be blank"),
-			},
+			errors: regexp.MustCompile(`DeactivateVersion:.+Network:.+cannot be blank.+`),
 		},
 		"ok": {
-			params: EdgeWorkerDeactivateVersionRequest{
+			params: DeactivateVersionRequest{
 				EdgeWorkerID: 1,
-				Body: EdgeWorkerDeactivateVersionPayload{
+				DeactivateVersion: DeactivateVersion{
 					Version: "asdf",
 					Network: ActivationNetworkStaging,
 				},
@@ -303,9 +296,9 @@ func TestEdgeWorkerDeactivateVersionRequest_Validate(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			err := test.params.Validate()
-			if len(test.errors) != 0 {
+			if test.errors != nil {
 				require.Error(t, err)
-				assert.Equal(t, test.errors, err)
+				assert.Regexp(t, test.errors, err.Error())
 				return
 			}
 			require.NoError(t, err)
@@ -315,7 +308,7 @@ func TestEdgeWorkerDeactivateVersionRequest_Validate(t *testing.T) {
 
 func TestEdgeworkers_DeactivateVersion(t *testing.T) {
 	tests := map[string]struct {
-		params           EdgeWorkerDeactivateVersionRequest
+		params           DeactivateVersionRequest
 		withError        error
 		expectedPath     string
 		responseStatus   int
@@ -323,13 +316,13 @@ func TestEdgeworkers_DeactivateVersion(t *testing.T) {
 		expectedResponse Deactivation
 	}{
 		"400 bad request": {
-			params:    EdgeWorkerDeactivateVersionRequest{},
+			params:    DeactivateVersionRequest{},
 			withError: ErrStructValidation,
 		},
 		"201 created": {
-			params: EdgeWorkerDeactivateVersionRequest{
+			params: DeactivateVersionRequest{
 				EdgeWorkerID: 1,
-				Body: EdgeWorkerDeactivateVersionPayload{
+				DeactivateVersion: DeactivateVersion{
 					Version: "123",
 					Network: ActivationNetworkProduction,
 					Note:    "not used",
@@ -363,9 +356,9 @@ func TestEdgeworkers_DeactivateVersion(t *testing.T) {
 			},
 		},
 		"500 server error": {
-			params: EdgeWorkerDeactivateVersionRequest{
+			params: DeactivateVersionRequest{
 				EdgeWorkerID: 1,
-				Body: EdgeWorkerDeactivateVersionPayload{
+				DeactivateVersion: DeactivateVersion{
 					Version: "123",
 					Network: ActivationNetworkProduction,
 					Note:    "not used",
@@ -417,17 +410,17 @@ func TestEdgeworkers_DeactivateVersion(t *testing.T) {
 
 func TestEdgeWorkerGetDeactivationRequest_Validate(t *testing.T) {
 	tests := map[string]struct {
-		request EdgeWorkerGetDeactivationRequest
+		request GetDeactivationRequest
 		errors  validation.Errors
 	}{
 		"no EW ID": {
-			request: EdgeWorkerGetDeactivationRequest{DeactivationID: 1},
+			request: GetDeactivationRequest{DeactivationID: 1},
 			errors: map[string]error{
 				"EdgeWorkerID": validation.ErrorObject{}.SetCode("validation_required").SetMessage("cannot be blank"),
 			},
 		},
 		"no Deactivation ID": {
-			request: EdgeWorkerGetDeactivationRequest{EdgeWorkerID: 1},
+			request: GetDeactivationRequest{EdgeWorkerID: 1},
 			errors: map[string]error{
 				"DeactivationID": validation.ErrorObject{}.SetCode("validation_required").SetMessage("cannot be blank"),
 			},
@@ -448,7 +441,7 @@ func TestEdgeWorkerGetDeactivationRequest_Validate(t *testing.T) {
 
 func TestEdgeworkers_GetDeactivation(t *testing.T) {
 	tests := map[string]struct {
-		request              EdgeWorkerGetDeactivationRequest
+		request              GetDeactivationRequest
 		expectedDeactivation Deactivation
 		withError            error
 		expectedPath         string
@@ -456,11 +449,11 @@ func TestEdgeworkers_GetDeactivation(t *testing.T) {
 		responseBody         string
 	}{
 		"request validation error": {
-			request:   EdgeWorkerGetDeactivationRequest{},
+			request:   GetDeactivationRequest{},
 			withError: ErrStructValidation,
 		},
 		"404 deactivation not found": {
-			request: EdgeWorkerGetDeactivationRequest{
+			request: GetDeactivationRequest{
 				EdgeWorkerID:   1,
 				DeactivationID: 2,
 			},
@@ -484,7 +477,7 @@ func TestEdgeworkers_GetDeactivation(t *testing.T) {
 			expectedPath: "/edgeworkers/v1/ids/1/deactivations/2",
 		},
 		"200 ok": {
-			request: EdgeWorkerGetDeactivationRequest{
+			request: GetDeactivationRequest{
 				EdgeWorkerID:   1,
 				DeactivationID: 2,
 			},

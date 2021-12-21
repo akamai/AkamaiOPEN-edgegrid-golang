@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -264,9 +265,9 @@ func TestGetActivation(t *testing.T) {
 	}
 }
 
-func TestCreateActivation(t *testing.T) {
+func TestActivateVersion(t *testing.T) {
 	tests := map[string]struct {
-		params           CreateActivationRequest
+		params           ActivateVersionRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -274,9 +275,9 @@ func TestCreateActivation(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			params: CreateActivationRequest{
+			params: ActivateVersionRequest{
 				EdgeWorkerID: 42,
-				CreateActivation: CreateActivation{
+				ActivateVersion: ActivateVersion{
 					Network: "STAGING",
 					Version: "1",
 				},
@@ -308,9 +309,9 @@ func TestCreateActivation(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			params: CreateActivationRequest{
+			params: ActivateVersionRequest{
 				EdgeWorkerID: 42,
-				CreateActivation: CreateActivation{
+				ActivateVersion: ActivateVersion{
 					Network: "STAGING",
 					Version: "1",
 				},
@@ -336,8 +337,8 @@ func TestCreateActivation(t *testing.T) {
 			},
 		},
 		"missing edge worker id": {
-			params: CreateActivationRequest{
-				CreateActivation: CreateActivation{
+			params: ActivateVersionRequest{
+				ActivateVersion: ActivateVersion{
 					Network: ActivationNetworkStaging,
 					Version: "1",
 				},
@@ -345,8 +346,8 @@ func TestCreateActivation(t *testing.T) {
 			withError: ErrStructValidation,
 		},
 		"invalid network": {
-			params: CreateActivationRequest{
-				CreateActivation: CreateActivation{
+			params: ActivateVersionRequest{
+				ActivateVersion: ActivateVersion{
 					Network: "invalid",
 					Version: "1",
 				},
@@ -365,13 +366,78 @@ func TestCreateActivation(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateActivation(context.Background(), test.params)
+			result, err := client.ActivateVersion(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
 			}
 			require.NoError(t, err)
 			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestEdgeWorkerActivateVersionRequest_Validate(t *testing.T) {
+	tests := map[string]struct {
+		params ActivateVersionRequest
+		errors *regexp.Regexp
+	}{
+		"no EW ID": {
+			params: ActivateVersionRequest{
+				ActivateVersion: ActivateVersion{
+					Version: "--",
+					Network: ActivationNetworkProduction,
+				},
+			},
+			errors: regexp.MustCompile(`EdgeWorkerID.+cannot be blank.+`),
+		},
+		"no version": {
+			params: ActivateVersionRequest{
+				EdgeWorkerID: 1,
+				ActivateVersion: ActivateVersion{
+					Network: ActivationNetworkProduction,
+				},
+			},
+			errors: regexp.MustCompile(`ActivateVersion:.+Version:.+cannot be blank.+`),
+		},
+		"bad network": {
+			params: ActivateVersionRequest{
+				EdgeWorkerID: 1,
+				ActivateVersion: ActivateVersion{
+					Network: "-asdfa",
+					Version: "a",
+				},
+			},
+			errors: regexp.MustCompile(`ActivateVersion:.+Network:.+value '-asdfa' is invalid. Must be one of: 'STAGING' or 'PRODUCTION'.+`),
+		},
+		"no network": {
+			params: ActivateVersionRequest{
+				EdgeWorkerID: 1,
+				ActivateVersion: ActivateVersion{
+					Version: "a",
+				},
+			},
+			errors: regexp.MustCompile(`ActivateVersion:.+Network:.+cannot be blank.+`),
+		},
+		"ok": {
+			params: ActivateVersionRequest{
+				EdgeWorkerID: 1,
+				ActivateVersion: ActivateVersion{
+					Version: "asdf",
+					Network: ActivationNetworkStaging,
+				},
+			},
+		},
+	}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			err := test.params.Validate()
+			if test.errors != nil {
+				require.Error(t, err)
+				assert.Regexp(t, test.errors, err.Error())
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }
@@ -459,7 +525,7 @@ func TestCancelActivation(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CancelActivation(context.Background(), test.params)
+			result, err := client.CancelPendingActivation(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

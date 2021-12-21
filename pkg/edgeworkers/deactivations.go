@@ -16,17 +16,17 @@ type (
 		// ListDeactivations lists all deactivations for a given EdgeWorker ID
 		//
 		// See: https://techdocs.akamai.com/edgeworkers/reference/deactivations#get-deactivations-1
-		ListDeactivations(context.Context, EdgeWorkerListDeactivationsRequest) (*EdgeWorkerListDeactivationsResponse, error)
-
-		// DeactivateVersion deactivates an existing EdgeWorker version on the akamai network
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/deactivations#post-deactivations-1
-		DeactivateVersion(context.Context, EdgeWorkerDeactivateVersionRequest) (*Deactivation, error)
+		ListDeactivations(context.Context, ListDeactivationsRequest) (*ListDeactivationsResponse, error)
 
 		// GetDeactivation gets details for a specific deactivation
 		//
 		// See: https://techdocs.akamai.com/edgeworkers/reference/deactivations#get-deactivation-1
-		GetDeactivation(context.Context, EdgeWorkerGetDeactivationRequest) (*Deactivation, error)
+		GetDeactivation(context.Context, GetDeactivationRequest) (*Deactivation, error)
+
+		// DeactivateVersion deactivates an existing EdgeWorker version on the akamai network
+		//
+		// See: https://techdocs.akamai.com/edgeworkers/reference/deactivations#post-deactivations-1
+		DeactivateVersion(context.Context, DeactivateVersionRequest) (*Deactivation, error)
 	}
 
 	// Deactivation is the response returned by GetDeactivation, DeactivateVersion and ListDeactivation
@@ -43,58 +43,65 @@ type (
 		LastModifiedTime string            `json:"lastModifiedTime"`
 	}
 
-	// EdgeWorkerListDeactivationsRequest describes the parameters for the list deactivations request
-	EdgeWorkerListDeactivationsRequest struct {
+	// ListDeactivationsRequest describes the parameters for the list deactivations request
+	ListDeactivationsRequest struct {
 		EdgeWorkerID int
 		Version      string
 	}
 
-	// EdgeWorkerDeactivateVersionRequest describes the request parameters for DeactivateVersion
-	EdgeWorkerDeactivateVersionRequest struct {
+	// DeactivateVersionRequest describes the request parameters for DeactivateVersion
+	DeactivateVersionRequest struct {
 		EdgeWorkerID int
-		Body         EdgeWorkerDeactivateVersionPayload
+		DeactivateVersion
 	}
 
-	// EdgeWorkerGetDeactivationRequest describes the request parameters for GetDeactivation
-	EdgeWorkerGetDeactivationRequest struct {
+	// GetDeactivationRequest describes the request parameters for GetDeactivation
+	GetDeactivationRequest struct {
 		EdgeWorkerID   int
 		DeactivationID int
 	}
 
-	// EdgeWorkerDeactivateVersionPayload is the request payload for DeactivateVersion
-	EdgeWorkerDeactivateVersionPayload struct {
+	// DeactivateVersion represents the request body used to deactivate a version
+	DeactivateVersion struct {
 		Network ActivationNetwork `json:"network"`
 		Note    string            `json:"note"`
 		Version string            `json:"version"`
 	}
 
-	// EdgeWorkerListDeactivationsResponse describes the list deactivations response
-	EdgeWorkerListDeactivationsResponse struct {
+	// ListDeactivationsResponse describes the list deactivations response
+	ListDeactivationsResponse struct {
 		Deactivations []Deactivation `json:"deactivations"`
 	}
 )
 
-// Validate validates EdgeWorkerListDeactivationsRequest
-func (r *EdgeWorkerListDeactivationsRequest) Validate() error {
+// Validate validates ListDeactivationsRequest
+func (r *ListDeactivationsRequest) Validate() error {
 	return validation.Errors{
 		"EdgeWorkerID": validation.Validate(r.EdgeWorkerID, validation.Required),
 	}.Filter()
 }
 
-// Validate validates EdgeWorkerDeactivateVersionRequest
-func (r *EdgeWorkerDeactivateVersionRequest) Validate() error {
+// Validate validates DeactivateVersionRequest
+func (r *DeactivateVersionRequest) Validate() error {
 	return validation.Errors{
-		"EdgeWorkerID": validation.Validate(r.EdgeWorkerID, validation.Required),
-		"Body.Network": validation.Validate(r.Body.Network, validation.Required, validation.In(
+		"EdgeWorkerID":      validation.Validate(r.EdgeWorkerID, validation.Required),
+		"DeactivateVersion": validation.Validate(&r.DeactivateVersion),
+	}.Filter()
+}
+
+// Validate validates DeactivateVersion
+func (r *DeactivateVersion) Validate() error {
+	return validation.Errors{
+		"Network": validation.Validate(r.Network, validation.Required, validation.In(
 			ActivationNetworkProduction, ActivationNetworkStaging,
 		).Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'",
-			r.Body.Network, ActivationNetworkStaging, ActivationNetworkProduction))),
-		"Body.Version": validation.Validate(r.Body.Version, validation.Required),
+			r.Network, ActivationNetworkStaging, ActivationNetworkProduction))),
+		"Version": validation.Validate(r.Version, validation.Required),
 	}.Filter()
 }
 
-// Validate validates EdgeWorkerGetDeactivationRequest
-func (r *EdgeWorkerGetDeactivationRequest) Validate() error {
+// Validate validates GetDeactivationRequest
+func (r *GetDeactivationRequest) Validate() error {
 	return validation.Errors{
 		"EdgeWorkerID":   validation.Validate(r.EdgeWorkerID, validation.Required),
 		"DeactivationID": validation.Validate(r.DeactivationID, validation.Required),
@@ -110,7 +117,7 @@ var (
 	ErrGetDeactivation = errors.New("get deactivation")
 )
 
-func (e *edgeworkers) ListDeactivations(ctx context.Context, params EdgeWorkerListDeactivationsRequest) (*EdgeWorkerListDeactivationsResponse, error) {
+func (e *edgeworkers) ListDeactivations(ctx context.Context, params ListDeactivationsRequest) (*ListDeactivationsResponse, error) {
 	logger := e.Log(ctx)
 	logger.Debug("ListDeactivations")
 
@@ -134,7 +141,7 @@ func (e *edgeworkers) ListDeactivations(ctx context.Context, params EdgeWorkerLi
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListDeactivations, err.Error())
 	}
 
-	var result EdgeWorkerListDeactivationsResponse
+	var result ListDeactivationsResponse
 	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListDeactivations, err.Error())
@@ -147,7 +154,7 @@ func (e *edgeworkers) ListDeactivations(ctx context.Context, params EdgeWorkerLi
 	return &result, nil
 }
 
-func (e *edgeworkers) DeactivateVersion(ctx context.Context, params EdgeWorkerDeactivateVersionRequest) (*Deactivation, error) {
+func (e *edgeworkers) DeactivateVersion(ctx context.Context, params DeactivateVersionRequest) (*Deactivation, error) {
 	logger := e.Log(ctx)
 	logger.Debug("DeactivateVersion")
 
@@ -166,7 +173,7 @@ func (e *edgeworkers) DeactivateVersion(ctx context.Context, params EdgeWorkerDe
 	}
 
 	var result Deactivation
-	resp, err := e.Exec(req, &result, params.Body)
+	resp, err := e.Exec(req, &result, params.DeactivateVersion)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeactivateVersion, err.Error())
 	}
@@ -178,7 +185,7 @@ func (e *edgeworkers) DeactivateVersion(ctx context.Context, params EdgeWorkerDe
 	return &result, nil
 }
 
-func (e *edgeworkers) GetDeactivation(ctx context.Context, params EdgeWorkerGetDeactivationRequest) (*Deactivation, error) {
+func (e *edgeworkers) GetDeactivation(ctx context.Context, params GetDeactivationRequest) (*Deactivation, error) {
 	logger := e.Log(ctx)
 	logger.Debug("GetDeactivation")
 
