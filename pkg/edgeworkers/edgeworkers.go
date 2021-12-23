@@ -17,6 +17,7 @@ type (
 		Activations
 		Deactivations
 		EdgeWorkerIDs
+		EdgeWorkerVersions
 		PermissionGroups
 		Properties
 		ResourceTiers
