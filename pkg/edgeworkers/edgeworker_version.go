@@ -172,6 +172,10 @@ func (e *edgeworkers) ListEdgeWorkerVersions(ctx context.Context, params ListEdg
 	logger := e.Log(ctx)
 	logger.Debug("ListEdgeWorkerVersions")
 
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListEdgeWorkerVersions, ErrStructValidation, err)
+	}
+
 	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/versions", params.EdgeWorkerID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {

@@ -247,6 +247,10 @@ func TestListEdgeWorkerVersions(t *testing.T) {
 			expectedPath:     "/edgeworkers/v1/ids/88334/versions",
 			expectedResponse: &ListEdgeWorkerVersionsResponse{[]EdgeWorkerVersion{}},
 		},
+		"missing EdgeWorkerID": {
+			params:    ListEdgeWorkerVersionsRequest{},
+			withError: ErrStructValidation,
+		},
 		"500 internal server error": {
 			params: ListEdgeWorkerVersionsRequest{
 				EdgeWorkerID: 88334,
