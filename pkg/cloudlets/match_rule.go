@@ -25,8 +25,8 @@ type (
 	MatchRuleALB struct {
 		Name            string             `json:"name,omitempty"`
 		Type            MatchRuleType      `json:"type,omitempty"`
-		Start           int                `json:"start,omitempty"`
-		End             int                `json:"end,omitempty"`
+		Start           int64              `json:"start,omitempty"`
+		End             int64              `json:"end,omitempty"`
 		ID              int64              `json:"id,omitempty"`
 		Matches         []MatchCriteriaALB `json:"matches,omitempty"`
 		MatchURL        string             `json:"matchURL,omitempty"`
@@ -44,8 +44,8 @@ type (
 	MatchRuleAP struct {
 		Name               string            `json:"name,omitempty"`
 		Type               MatchRuleType     `json:"type,omitempty"`
-		Start              int               `json:"start,omitempty"`
-		End                int               `json:"end,omitempty"`
+		Start              int64             `json:"start,omitempty"`
+		End                int64             `json:"end,omitempty"`
 		ID                 int64             `json:"id,omitempty"`
 		Matches            []MatchCriteriaAP `json:"matches,omitempty"`
 		MatchURL           string            `json:"matchURL,omitempty"`
@@ -57,8 +57,8 @@ type (
 	MatchRulePR struct {
 		Name            string            `json:"name,omitempty"`
 		Type            MatchRuleType     `json:"type,omitempty"`
-		Start           int               `json:"start,omitempty"`
-		End             int               `json:"end,omitempty"`
+		Start           int64             `json:"start,omitempty"`
+		End             int64             `json:"end,omitempty"`
 		ID              int64             `json:"id,omitempty"`
 		Matches         []MatchCriteriaPR `json:"matches,omitempty"`
 		MatchURL        string            `json:"matchURL,omitempty"`
@@ -77,8 +77,8 @@ type (
 	MatchRuleER struct {
 		Name                     string            `json:"name,omitempty"`
 		Type                     MatchRuleType     `json:"type,omitempty"`
-		Start                    int               `json:"start,omitempty"`
-		End                      int               `json:"end,omitempty"`
+		Start                    int64             `json:"start,omitempty"`
+		End                      int64             `json:"end,omitempty"`
 		ID                       int64             `json:"id,omitempty"`
 		Matches                  []MatchCriteriaER `json:"matches,omitempty"`
 		UseRelativeURL           string            `json:"useRelativeUrl,omitempty"`
@@ -94,8 +94,8 @@ type (
 	MatchRuleFR struct {
 		Name            string            `json:"name,omitempty"`
 		Type            MatchRuleType     `json:"type,omitempty"`
-		Start           int               `json:"start,omitempty"`
-		End             int               `json:"end,omitempty"`
+		Start           int64             `json:"start,omitempty"`
+		End             int64             `json:"end,omitempty"`
 		ID              int64             `json:"id,omitempty"`
 		Matches         []MatchCriteriaFR `json:"matches,omitempty"`
 		MatchURL        string            `json:"matchURL,omitempty"`
@@ -114,8 +114,8 @@ type (
 	MatchRuleVP struct {
 		Name               string            `json:"name,omitempty"`
 		Type               MatchRuleType     `json:"type,omitempty"`
-		Start              int               `json:"start,omitempty"`
-		End                int               `json:"end,omitempty"`
+		Start              int64             `json:"start,omitempty"`
+		End                int64             `json:"end,omitempty"`
 		ID                 int64             `json:"id,omitempty"`
 		Matches            []MatchCriteriaVP `json:"matches,omitempty"`
 		MatchURL           string            `json:"matchURL,omitempty"`
