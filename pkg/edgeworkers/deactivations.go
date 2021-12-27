@@ -64,7 +64,7 @@ type (
 	// DeactivateVersion represents the request body used to deactivate a version
 	DeactivateVersion struct {
 		Network ActivationNetwork `json:"network"`
-		Note    string            `json:"note"`
+		Note    string            `json:"note,omitempty"`
 		Version string            `json:"version"`
 	}
 
