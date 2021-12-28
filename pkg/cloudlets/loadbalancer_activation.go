@@ -120,8 +120,8 @@ func (v ListLoadBalancerActivationsRequest) Validate() error {
 //Validate validates LoadBalancerVersionActivation Struct
 func (v LoadBalancerVersionActivation) Validate() error {
 	return validation.Errors{
-		"Network": validation.Validate(v.Network, validation.In(LoadBalancerActivationNetworkStaging, LoadBalancerActivationNetworkProduction).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'STAGING', 'PRODUCTION' or '' (empty)", v.Network))),
+		"Network": validation.Validate(v.Network, validation.Required, validation.In(LoadBalancerActivationNetworkStaging, LoadBalancerActivationNetworkProduction).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'STAGING' or 'PRODUCTION'", v.Network))),
 		"Version": validation.Validate(v.Version, validation.Min(0)),
 	}.Filter()
 }

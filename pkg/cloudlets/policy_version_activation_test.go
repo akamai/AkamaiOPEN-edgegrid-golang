@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -154,7 +153,7 @@ func TestActivatePolicyVersion(t *testing.T) {
 		uri                string
 		responseBody       string
 		expectedActivation PolicyVersionActivation
-		withError          *regexp.Regexp
+		withError          func(*testing.T, error)
 	}{
 		"200 Policy version activation": {
 			responseStatus: http.StatusOK,
@@ -182,7 +181,9 @@ func TestActivatePolicyVersion(t *testing.T) {
 		},
 		"any request validation error": {
 			parameters: ActivatePolicyVersionRequest{},
-			withError:  regexp.MustCompile(ErrStructValidation.Error()),
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
 		},
 		"any kind of server error": {
 			responseStatus: http.StatusInternalServerError,
@@ -194,7 +195,9 @@ func TestActivatePolicyVersion(t *testing.T) {
 					AdditionalPropertyNames: []string{"www.rc-cloudlet.com"},
 				},
 			},
-			withError: regexp.MustCompile(ErrActivatePolicyVersion.Error()),
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrActivatePolicyVersion), "want: %s; got: %s", ErrActivatePolicyVersion, err)
+			},
 		},
 		"property name not existing": {
 			responseStatus: http.StatusBadRequest,
@@ -206,7 +209,10 @@ func TestActivatePolicyVersion(t *testing.T) {
 					AdditionalPropertyNames: []string{"www.rc-cloudlet.com"},
 				},
 			},
-			withError: regexp.MustCompile(`"Requested propertyName \\"XYZ\\" does not exist"`),
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Requested propertyName \\\"XYZ\\\" does not exist", "want: %s; got: %s", ErrActivatePolicyVersion, err)
+				assert.True(t, errors.Is(err, ErrActivatePolicyVersion), "want: %s; got: %s", ErrActivatePolicyVersion, err)
+			},
 			responseBody: `
 				{
 					"detail": "Requested propertyName \"XYZ\" does not exist",
@@ -217,17 +223,21 @@ func TestActivatePolicyVersion(t *testing.T) {
 				}
 			`,
 		},
-		"empty property names": {
+		"validation errors": {
 			responseStatus: http.StatusBadRequest,
 			parameters: ActivatePolicyVersionRequest{
 				PolicyID: 1234,
 				Version:  1,
 				PolicyVersionActivation: PolicyVersionActivation{
-					Network:                 PolicyActivationNetworkStaging,
+					Network:                 "",
 					AdditionalPropertyNames: []string{},
 				},
 			},
-			withError: regexp.MustCompile("struct validation:\nRequestBody.AdditionalPropertyNames: cannot be blank"),
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "RequestBody.Network: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.Containsf(t, err.Error(), "RequestBody.AdditionalPropertyNames: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
 		},
 	}
 
@@ -242,7 +252,7 @@ func TestActivatePolicyVersion(t *testing.T) {
 			client := mockAPIClient(t, mockServer)
 			err := client.ActivatePolicyVersion(context.Background(), test.parameters)
 			if test.withError != nil {
-				assert.True(t, test.withError.MatchString(err.Error()), "want: %s; got: %s", test.withError, err)
+				test.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
