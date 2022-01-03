@@ -20,6 +20,7 @@ type (
 		EdgeKVAccessTokens
 		EdgeKVInitialize
 		EdgeKVItems
+		EdgeKVNamespaces
 		EdgeWorkerIDs
 		EdgeWorkerVersions
 		PermissionGroups
