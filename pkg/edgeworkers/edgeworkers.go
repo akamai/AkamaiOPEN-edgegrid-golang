@@ -21,6 +21,7 @@ type (
 		PermissionGroups
 		Properties
 		ResourceTiers
+		Validations
 	}
 
 	edgeworkers struct {
