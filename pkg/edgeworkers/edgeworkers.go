@@ -12,11 +12,12 @@ var (
 )
 
 type (
-	// Edgeworkers is the api interface for edgeworkers
+	// Edgeworkers is the api interface for EdgeWorkers and EdgeKV
 	Edgeworkers interface {
 		Activations
 		Contracts
 		Deactivations
+		EdgeKVAccessTokens
 		EdgeWorkerIDs
 		EdgeWorkerVersions
 		PermissionGroups
@@ -39,12 +40,12 @@ type (
 
 // Client returns a new edgeworkers Client instance with the specified controller
 func Client(sess session.Session, opts ...Option) Edgeworkers {
-	c := &edgeworkers{
+	e := &edgeworkers{
 		Session: sess,
 	}
 
 	for _, opt := range opts {
-		opt(c)
+		opt(e)
 	}
-	return c
+	return e
 }

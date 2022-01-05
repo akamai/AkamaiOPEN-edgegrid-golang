@@ -28,24 +28,24 @@ type (
 )
 
 // Error parses an error from the response
-func (ew *edgeworkers) Error(r *http.Response) error {
-	var e Error
+func (e *edgeworkers) Error(r *http.Response) error {
+	var result Error
 	var body []byte
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		ew.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
-		e.Status = r.StatusCode
-		e.Title = "Failed to read error body"
-		e.Detail = err.Error()
-		return &e
+		e.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
+		result.Status = r.StatusCode
+		result.Title = "Failed to read error body"
+		result.Detail = err.Error()
+		return &result
 	}
 
-	if err := json.Unmarshal(body, &e); err != nil {
-		ew.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		e.Title = string(body)
-		e.Status = r.StatusCode
+	if err := json.Unmarshal(body, &result); err != nil {
+		e.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
+		result.Title = string(body)
+		result.Status = r.StatusCode
 	}
-	return &e
+	return &result
 }
 
 func (e *Error) Error() string {
