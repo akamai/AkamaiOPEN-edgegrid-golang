@@ -22,6 +22,7 @@ type (
 		PermissionGroups
 		Properties
 		ResourceTiers
+		SecureTokens
 		Validations
 	}
 
