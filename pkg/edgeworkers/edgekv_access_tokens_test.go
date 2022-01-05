@@ -160,6 +160,9 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 				Status:    400,
 				Title:     "Bad Request",
 				Type:      "https://learn.akamai.com",
+				AdditionalDetail: Additional{
+					RequestID: "f60f61cda34a0657",
+				},
 			},
 		},
 		"401 Not authorized - incorrect credentials": {
@@ -233,6 +236,9 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 				Status:    409,
 				Title:     "Conflict",
 				Type:      "https://learn.akamai.com",
+				AdditionalDetail: Additional{
+					RequestID: "bc7561cda1f3021b",
+				},
 			},
 		},
 		"500 internal server error": {
@@ -267,6 +273,9 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 				Status:    500,
 				Title:     "Internal Server Error",
 				Type:      "https://learn.akamai.com",
+				AdditionalDetail: Additional{
+					RequestID: "b2f461d47426558c",
+				},
 			},
 		},
 	}
@@ -388,6 +397,9 @@ func TestGetEdgeKVAccessToken(t *testing.T) {
 				Status:    404,
 				Title:     "Not Found",
 				Type:      "https://learn.akamai.com",
+				AdditionalDetail: Additional{
+					RequestID: "ae9061cddea87d94",
+				},
 			},
 		},
 		"500 Internal server error": {
@@ -736,6 +748,9 @@ func TestDeleteEdgeKVAccessToken(t *testing.T) {
 				Status:    404,
 				Title:     "Not Found",
 				Type:      "https://learn.akamai.com",
+				AdditionalDetail: Additional{
+					RequestID: "a46f61d2c9539c77",
+				},
 			},
 		},
 		"500 internal server error": {
