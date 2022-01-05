@@ -51,6 +51,19 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 				Value:  "eyJ0eXAiOxJKV1QxLCJhbGciOiJSUzI1NiJ9.eyJld2lkcyI6ImFsbCIsInN1YiI6IjUwMCIsIm5hbWVzcGFjZS1kZWZhdWx0IjpbInIiLCJkIiwidyJdLCJjcGMiOiI5NzEwNTIiLCJpc3MiOiJha2FtYWkuY29tL0VkZ2VEQi9QdWxzYXIvdjAuMTEuMCIsIm5hbWVzcGFjZS1kZXZleHAtcm9iZXJ0by10ZXN0IjpbInIiLCJ3Il0sImV4cCI6MTY0ODY4NDc5OSwiZW52IjpbInAiLCJzIl0sImlhdCI6MTY0MDg1ODIzNywianRpIjoiMTBiMGU5NGItYzQ3ZS01NjhlLWFiM2UtMTkyMWZmY2VmZTBjIiwicmVxaWQiOiJha2FtYWkiLCJub2VjbCI6dHJ1ZX0.AZfP-VFqDKNWcu1Or73EFfjG_GBDdJUP81Zs0BnNs_bScc8oyBAEiBjxwEsUxrvRRr7rSu-BxFjiDpxx5DlfbgEwd8H2DFV08cfQFqs7aab4WYLrx4ZweD9Hbg2gGLA-dRAbtSrq_FQKQysOvO2ymPn13E78PvK96t8r4cnN1irXbfyBUOXOE3OVOAKsk-w0Ig7qFDa_4o6YyDMPTpwEQ34T1cVqRYStIVzjSaCwgSfdaQG5qzTzTlFoDzG24tz8YlLgoM5OQf9xgsTsisCOF2jf44VWMu2S0e6MIC5gg7zXx7X2t59Y8TsAd0VqqB37y0AzEXkJblbZUlO9HcGebg",
 			},
 		},
+		"at least one allow is required": {
+			params: CreateEdgeKVAccessTokenRequest{
+				AllowOnProduction: false,
+				AllowOnStaging:    false,
+				Expiry:            "2022-03-30",
+				Name:              "name",
+				NamespacePermissions: NamespacePermissions{
+					"default":            []Permission{"r", "w", "d"},
+					"devexp-jsmith-test": []Permission{"r", "w"},
+				},
+			},
+			withError: ErrStructValidation,
+		},
 		"missing Name": {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: true,

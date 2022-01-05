@@ -127,8 +127,8 @@ func (c CreateEdgeKVAccessTokenRequest) Validate() error {
 	}
 
 	return validation.Errors{
-		"AllowOnProduction":          validation.Validate(c.AllowOnProduction),
-		"AllowOnStaging":             validation.Validate(c.AllowOnStaging),
+		"AllowOnProduction":          validation.Validate(c.AllowOnProduction, validation.Required.When(c.AllowOnStaging == false).Error("at least one of AllowOnProduction or AllowOnStaging has to be provided")),
+		"AllowOnStaging":             validation.Validate(c.AllowOnStaging, validation.Required.When(c.AllowOnProduction == false).Error("at least one of AllowOnProduction or AllowOnStaging has to be provided")),
 		"Expiry":                     validation.Validate(c.Expiry, validation.Required, validation.Date("2006-01-02").Error("the time format should be provided as per ISO-8601")),
 		"Name":                       validation.Validate(c.Name, validation.Required, validation.Length(1, 32)),
 		"NamespacePermissions.Names": validation.Validate(namespaces, validation.Required, validation.Each(validation.Required)),
