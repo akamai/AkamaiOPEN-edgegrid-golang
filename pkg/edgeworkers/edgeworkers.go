@@ -18,6 +18,7 @@ type (
 		Contracts
 		Deactivations
 		EdgeKVAccessTokens
+		EdgeKVInitialize
 		EdgeKVItems
 		EdgeWorkerIDs
 		EdgeWorkerVersions
