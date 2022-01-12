@@ -25,6 +25,7 @@ type (
 		EdgeWorkerVersions
 		PermissionGroups
 		Properties
+		Reports
 		ResourceTiers
 		SecureTokens
 		Validations
