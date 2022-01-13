@@ -147,9 +147,11 @@ var (
 // Validate validates GetReportRequest
 func (r GetReportRequest) Validate() error {
 	return validation.Errors{
-		"ReportID":   validation.Validate(r.ReportID, validation.Required),
-		"Start":      validation.Validate(r.Start, validation.Required, validation.Date("2006-01-02T15:04:05.999Z")),
-		"End":        validation.Validate(r.End, validation.Date("2006-01-02T15:04:05.999Z")),
+		"ReportID": validation.Validate(r.ReportID, validation.Required),
+		"Start": validation.Validate(r.Start, validation.Required, validation.Date("2006-01-02T15:04:05.999Z").Error(
+			fmt.Sprintf("value '%s' is invalid. It must have format '2006-01-02T15:04:05.999Z'", r.Start))),
+		"End": validation.Validate(r.End, validation.Date("2006-01-02T15:04:05.999Z").Error(
+			fmt.Sprintf("value '%s' is invalid. It must have format '2006-01-02T15:04:05.999Z'", r.End))),
 		"EdgeWorker": validation.Validate(r.EdgeWorker, validation.Required),
 		"Status": validation.Validate(r.Status, validation.NilOrNotEmpty, validation.In(StatusSuccess, StatusGenericError, StatusUnknownEdgeWorkerID, StatusUnimplementedEventHandler,
 			StatusRuntimeError, StatusExecutionError, StatusTimeoutError, StatusResourceLimitHit, StatusCPUTimeoutError, StatusWallTimeoutError, StatusInitCPUTimeoutError,
