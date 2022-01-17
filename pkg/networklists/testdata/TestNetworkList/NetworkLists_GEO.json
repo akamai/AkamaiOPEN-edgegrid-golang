@@ -1,0 +1,996 @@
+{
+    "links": {
+        "create": {
+            "href": "/network-list/v2/network-lists",
+            "method": "POST"
+        }
+    },
+    "networkLists": [
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/65654_GEONETWORKLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/65654_GEONETWORKLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/65654_GEONETWORKLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/65654_GEONETWORKLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/65654_GEONETWORKLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/65654_GEONETWORKLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/65654_GEONETWORKLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "Geo - Network List",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "65654_GEONETWORKLIST"
+        },
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/63707_EGPGEOLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/63707_EGPGEOLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/63707_EGPGEOLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/63707_EGPGEOLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/63707_EGPGEOLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/63707_EGPGEOLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/63707_EGPGEOLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "EGP Geolist",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "63707_EGPGEOLIST"
+        },
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/55213_GEOBLACKLISTGCO/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/55213_GEOBLACKLISTGCO/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/55213_GEOBLACKLISTGCO/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/55213_GEOBLACKLISTGCO"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/55213_GEOBLACKLISTGCO/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/55213_GEOBLACKLISTGCO/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/55213_GEOBLACKLISTGCO",
+                    "method": "PUT"
+                }
+            },
+            "name": "Geo Blacklist - GCO",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "55213_GEOBLACKLISTGCO"
+        },
+        {
+            "accessControlGroup": "ALM - 3-TE78Q.G112653",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/53348_GEOBLACKLISTJENKINS/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/53348_GEOBLACKLISTJENKINS/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/53348_GEOBLACKLISTJENKINS/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/53348_GEOBLACKLISTJENKINS"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/53348_GEOBLACKLISTJENKINS/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/53348_GEOBLACKLISTJENKINS/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/53348_GEOBLACKLISTJENKINS",
+                    "method": "PUT"
+                }
+            },
+            "name": "GEO Blacklist_Jenkins",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "53348_GEOBLACKLISTJENKINS"
+        },
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/53076_EXPEDIAGROUPGEOLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/53076_EXPEDIAGROUPGEOLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/53076_EXPEDIAGROUPGEOLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/53076_EXPEDIAGROUPGEOLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/53076_EXPEDIAGROUPGEOLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/53076_EXPEDIAGROUPGEOLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/53076_EXPEDIAGROUPGEOLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "Expediagroup GEO list",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "53076_EXPEDIAGROUPGEOLIST"
+        },
+        {
+            "accessControlGroup": "Car Rentals - 3-TE78Q.G116804",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/52783_APIGEOBLOCK/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/52783_APIGEOBLOCK/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/52783_APIGEOBLOCK/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/52783_APIGEOBLOCK"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/52783_APIGEOBLOCK/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/52783_APIGEOBLOCK/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/52783_APIGEOBLOCK",
+                    "method": "PUT"
+                }
+            },
+            "name": "API_GEOBlock",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "52783_APIGEOBLOCK"
+        },
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/52767_GEOBLACKLISTDUO/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/52767_GEOBLACKLISTDUO/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/52767_GEOBLACKLISTDUO/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/52767_GEOBLACKLISTDUO"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/52767_GEOBLACKLISTDUO/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/52767_GEOBLACKLISTDUO/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/52767_GEOBLACKLISTDUO",
+                    "method": "PUT"
+                }
+            },
+            "name": "Geo Blacklist - Duo",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "52767_GEOBLACKLISTDUO"
+        },
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/51561_EGENCIAGEOBLOCK/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/51561_EGENCIAGEOBLOCK/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/51561_EGENCIAGEOBLOCK/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/51561_EGENCIAGEOBLOCK"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/51561_EGENCIAGEOBLOCK/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/51561_EGENCIAGEOBLOCK/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/51561_EGENCIAGEOBLOCK",
+                    "method": "PUT"
+                }
+            },
+            "name": "Egencia GEO Block",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "51561_EGENCIAGEOBLOCK"
+        },
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "elementCount": 10,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/50337_HOTEISCOMGEOLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/50337_HOTEISCOMGEOLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/50337_HOTEISCOMGEOLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/50337_HOTEISCOMGEOLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/50337_HOTEISCOMGEOLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/50337_HOTEISCOMGEOLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/50337_HOTEISCOMGEOLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "hoteis.com GEO list",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 1,
+            "type": "GEO",
+            "uniqueId": "50337_HOTEISCOMGEOLIST"
+        },
+        {
+            "accessControlGroup": "EGENCIA - 3-TE78Q.G122736",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/49997_LEGACYORBITZBLACKLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/49997_LEGACYORBITZBLACKLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/49997_LEGACYORBITZBLACKLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/49997_LEGACYORBITZBLACKLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/49997_LEGACYORBITZBLACKLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/49997_LEGACYORBITZBLACKLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/49997_LEGACYORBITZBLACKLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "LegacyOrbitz GEO BlackList",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "49997_LEGACYORBITZBLACKLIST"
+        },
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/49182_ADTGEOBLACKLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/49182_ADTGEOBLACKLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/49182_ADTGEOBLACKLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/49182_ADTGEOBLACKLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/49182_ADTGEOBLACKLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/49182_ADTGEOBLACKLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/49182_ADTGEOBLACKLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "ADT - Geo Blacklist",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "49182_ADTGEOBLACKLIST"
+        },
+        {
+            "accessControlGroup": " Kona Site Defender - C-D5TW8R - C-D5TW8R.G31325",
+            "elementCount": 1,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/47882_HOTELSBRANDGEOLISTUSED/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/47882_HOTELSBRANDGEOLISTUSED/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/47882_HOTELSBRANDGEOLISTUSED/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/47882_HOTELSBRANDGEOLISTUSED"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/47882_HOTELSBRANDGEOLISTUSED/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/47882_HOTELSBRANDGEOLISTUSED/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/47882_HOTELSBRANDGEOLISTUSED",
+                    "method": "PUT"
+                }
+            },
+            "name": "Hotels Brand GEO List (Used by Custom Bots)",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 1,
+            "type": "GEO",
+            "uniqueId": "47882_HOTELSBRANDGEOLISTUSED"
+        },
+        {
+            "accessControlGroup": "Car Rentals - 3-TE78Q.G116804",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/46790_CARRENTALSGEOBLOCK/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/46790_CARRENTALSGEOBLOCK/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/46790_CARRENTALSGEOBLOCK/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/46790_CARRENTALSGEOBLOCK"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/46790_CARRENTALSGEOBLOCK/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/46790_CARRENTALSGEOBLOCK/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/46790_CARRENTALSGEOBLOCK",
+                    "method": "PUT"
+                }
+            },
+            "name": "CarRentals Geo Block",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "46790_CARRENTALSGEOBLOCK"
+        },
+        {
+            "accessControlGroup": "EPC - 3-TE78Q.G82853",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/45956_EPCGEOBLACKLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/45956_EPCGEOBLACKLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/45956_EPCGEOBLACKLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/45956_EPCGEOBLACKLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/45956_EPCGEOBLACKLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/45956_EPCGEOBLACKLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/45956_EPCGEOBLACKLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "EPC GEO Blacklist",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "45956_EPCGEOBLACKLIST"
+        },
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/44831_ECSCGEOBLACKLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/44831_ECSCGEOBLACKLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/44831_ECSCGEOBLACKLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/44831_ECSCGEOBLACKLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/44831_ECSCGEOBLACKLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/44831_ECSCGEOBLACKLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/44831_ECSCGEOBLACKLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "ECSC-GEO Blacklist",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "44831_ECSCGEOBLACKLIST"
+        },
+        {
+            "accessControlGroup": "exped_mk_101288 - 3-TE78Q.G112742",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/42687_HOTELSBRANDGEOBLACKLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/42687_HOTELSBRANDGEOBLACKLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/42687_HOTELSBRANDGEOBLACKLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/42687_HOTELSBRANDGEOBLACKLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/42687_HOTELSBRANDGEOBLACKLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/42687_HOTELSBRANDGEOBLACKLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/42687_HOTELSBRANDGEOBLACKLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "Hotels Brand Geo Blacklist",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "42687_HOTELSBRANDGEOBLACKLIST"
+        },
+        {
+            "accessControlGroup": "EGENCIA - 3-TE78Q.G122736",
+            "elementCount": 1,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/40731_BMROLLOUTGEO/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/40731_BMROLLOUTGEO/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/40731_BMROLLOUTGEO/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/40731_BMROLLOUTGEO"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/40731_BMROLLOUTGEO/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/40731_BMROLLOUTGEO/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/40731_BMROLLOUTGEO",
+                    "method": "PUT"
+                }
+            },
+            "name": "BM rollout-GEO",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 8,
+            "type": "GEO",
+            "uniqueId": "40731_BMROLLOUTGEO"
+        },
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/40713_BMROLLOUTGEO/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/40713_BMROLLOUTGEO/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/40713_BMROLLOUTGEO/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/40713_BMROLLOUTGEO"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/40713_BMROLLOUTGEO/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/40713_BMROLLOUTGEO/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/40713_BMROLLOUTGEO",
+                    "method": "PUT"
+                }
+            },
+            "name": "Not Used_3-TE78Q ION",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 4,
+            "type": "GEO",
+            "uniqueId": "40713_BMROLLOUTGEO"
+        },
+        {
+            "accessControlGroup": "3-TE78Q ION - 3-TE78Q.G17244",
+            "description": "case F-CS-2759696",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/40548_GEOBLOCKHOTWIRE/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/40548_GEOBLOCKHOTWIRE/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/40548_GEOBLOCKHOTWIRE/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/40548_GEOBLOCKHOTWIRE"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/40548_GEOBLOCKHOTWIRE/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/40548_GEOBLOCKHOTWIRE/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/40548_GEOBLOCKHOTWIRE",
+                    "method": "PUT"
+                }
+            },
+            "name": "GEO-Block Hotwire",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 2,
+            "type": "GEO",
+            "uniqueId": "40548_GEOBLOCKHOTWIRE"
+        },
+        {
+            "accessControlGroup": "EGENCIA - 3-TE78Q.G122736",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/40016_TEMPGEOBLOCKLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/40016_TEMPGEOBLOCKLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/40016_TEMPGEOBLOCKLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/40016_TEMPGEOBLOCKLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/40016_TEMPGEOBLOCKLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/40016_TEMPGEOBLOCKLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/40016_TEMPGEOBLOCKLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "TEMP Geo-Block List",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "40016_TEMPGEOBLOCKLIST"
+        },
+        {
+            "accessControlGroup": "EGENCIA - 3-TE78Q.G122736",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/25065_HOMEAWAYGEOBLOCK/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/25065_HOMEAWAYGEOBLOCK/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/25065_HOMEAWAYGEOBLOCK/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/25065_HOMEAWAYGEOBLOCK"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/25065_HOMEAWAYGEOBLOCK/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/25065_HOMEAWAYGEOBLOCK/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/25065_HOMEAWAYGEOBLOCK",
+                    "method": "PUT"
+                }
+            },
+            "name": "HomeAway Geo Block",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "25065_HOMEAWAYGEOBLOCK"
+        },
+        {
+            "accessControlGroup": "EGENCIA - 3-TE78Q.G122736",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/17401_CLASSICVACATIONSGEOBLACK/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/17401_CLASSICVACATIONSGEOBLACK/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/17401_CLASSICVACATIONSGEOBLACK/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/17401_CLASSICVACATIONSGEOBLACK"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/17401_CLASSICVACATIONSGEOBLACK/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/17401_CLASSICVACATIONSGEOBLACK/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/17401_CLASSICVACATIONSGEOBLACK",
+                    "method": "PUT"
+                }
+            },
+            "name": "Classic vacations Geo Black list",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "17401_CLASSICVACATIONSGEOBLACK"
+        },
+        {
+            "accessControlGroup": " Kona Site Defender - C-D5TW8R - C-D5TW8R.G31325",
+            "elementCount": 0,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/16865_EANGEOBLACKLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/16865_EANGEOBLACKLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/16865_EANGEOBLACKLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/16865_EANGEOBLACKLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/16865_EANGEOBLACKLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/16865_EANGEOBLACKLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/16865_EANGEOBLACKLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "EAN Geo Blacklist",
+            "networkListType": "networkListResponse",
+            "readOnly": false,
+            "shared": false,
+            "syncPoint": 0,
+            "type": "GEO",
+            "uniqueId": "16865_EANGEOBLACKLIST"
+        },
+        {
+            "elementCount": 27,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/968_ITARCOUNTRYLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/968_ITARCOUNTRYLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/968_ITARCOUNTRYLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/968_ITARCOUNTRYLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/968_ITARCOUNTRYLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/968_ITARCOUNTRYLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/968_ITARCOUNTRYLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "International Traffic in Arms Regulations (ITAR) List",
+            "networkListType": "networkListResponse",
+            "readOnly": true,
+            "shared": true,
+            "syncPoint": 9,
+            "type": "GEO",
+            "uniqueId": "968_ITARCOUNTRYLIST"
+        },
+        {
+            "elementCount": 22,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/969_IEEPACOUNTRYLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/969_IEEPACOUNTRYLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/969_IEEPACOUNTRYLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/969_IEEPACOUNTRYLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/969_IEEPACOUNTRYLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/969_IEEPACOUNTRYLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/969_IEEPACOUNTRYLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "International Emergency Economic Powers Act (IEEPA) List",
+            "networkListType": "networkListResponse",
+            "readOnly": true,
+            "shared": true,
+            "syncPoint": 3,
+            "type": "GEO",
+            "uniqueId": "969_IEEPACOUNTRYLIST"
+        },
+        {
+            "elementCount": 18,
+            "links": {
+                "activateInProduction": {
+                    "href": "/network-list/v2/network-lists/967_OFACCOUNTRYLIST/environments/PRODUCTION/activate",
+                    "method": "POST"
+                },
+                "activateInStaging": {
+                    "href": "/network-list/v2/network-lists/967_OFACCOUNTRYLIST/environments/STAGING/activate",
+                    "method": "POST"
+                },
+                "appendItems": {
+                    "href": "/network-list/v2/network-lists/967_OFACCOUNTRYLIST/append",
+                    "method": "POST"
+                },
+                "retrieve": {
+                    "href": "/network-list/v2/network-lists/967_OFACCOUNTRYLIST"
+                },
+                "statusInProduction": {
+                    "href": "/network-list/v2/network-lists/967_OFACCOUNTRYLIST/environments/PRODUCTION/status"
+                },
+                "statusInStaging": {
+                    "href": "/network-list/v2/network-lists/967_OFACCOUNTRYLIST/environments/STAGING/status"
+                },
+                "update": {
+                    "href": "/network-list/v2/network-lists/967_OFACCOUNTRYLIST",
+                    "method": "PUT"
+                }
+            },
+            "name": "Office of Foreign Asset Control (OFAC) List",
+            "networkListType": "networkListResponse",
+            "readOnly": true,
+            "shared": true,
+            "syncPoint": 4,
+            "type": "GEO",
+            "uniqueId": "967_OFACCOUNTRYLIST"
+        }
+    ]
+}

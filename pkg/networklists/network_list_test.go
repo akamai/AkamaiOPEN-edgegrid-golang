@@ -86,6 +86,83 @@ func TestNetworkList_ListNetworkList(t *testing.T) {
 	}
 }
 
+func TestNetworkList_FilterNetworkLists(t *testing.T) {
+
+	result := GetNetworkListsResponse{}
+
+	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkLists.json"))
+	json.Unmarshal([]byte(respData), &result)
+
+	expectedResult := GetNetworkListsResponse{}
+	expectedResponseData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkLists_GEO.json"))
+	json.Unmarshal([]byte(expectedResponseData), &expectedResult)
+
+	tests := map[string]struct {
+		params           GetNetworkListsRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *GetNetworkListsResponse
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			params: GetNetworkListsRequest{Type: "GEO"},
+			headers: http.Header{
+				"Content-Type": []string{"application/json"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     respData,
+			expectedPath:     "/network-list/v2/network-lists",
+			expectedResponse: &expectedResult,
+		},
+		"500 internal server error": {
+			params:         GetNetworkListsRequest{},
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching networklist",
+    "status": 500
+}`,
+			expectedPath: "/network-list/v2/network-lists",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching networklist",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetNetworkLists(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers),
+				),
+				test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
 // Test NetworkList
 func TestNetworkList_GetNetworkList(t *testing.T) {
 

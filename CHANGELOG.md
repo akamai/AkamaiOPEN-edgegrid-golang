@@ -1,5 +1,16 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.9.0 (Jan. 11, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Add support for Evasive Path Match feature
+  * Deprecate individual policy protection interface methods
+
+* NETWORK LISTS
+  * Include ContractID and GroupID in GetNetworkListResponse
+
 ## 2.8.1 (Nov. 30, 2021)
 
 #### FEATURES/ENHANCEMENTS:
