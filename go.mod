@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/apex/log v1.9.0
-	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/google/uuid v1.1.1
 	github.com/kr/text v0.2.0 // indirect
