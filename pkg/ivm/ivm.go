@@ -13,7 +13,9 @@ var (
 
 type (
 	// IVM is the api interface for Image and Video Manager
-	IVM interface{}
+	IVM interface {
+		PolicySets
+	}
 
 	ivm struct {
 		session.Session

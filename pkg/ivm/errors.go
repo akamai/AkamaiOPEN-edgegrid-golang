@@ -21,6 +21,11 @@ type (
 		IllegalValue    string            `json:"illegalValue,omitempty"`
 		ParameterName   string            `json:"parameterName,omitempty"`
 		ExtensionFields map[string]string `json:"extensionFields,omitempty"`
+		Method          string            `json:"method,omitempty"`
+		ServerIP        string            `json:"serverIp,omitempty"`
+		ClientIP        string            `json:"clientIp,omitempty"`
+		RequestTime     string            `json:"requestTime,omitempty"`
+		AuthzRealm      string            `json:"authzRealm,omitempty"`
 	}
 )
 
