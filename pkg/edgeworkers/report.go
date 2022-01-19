@@ -13,6 +13,11 @@ import (
 type (
 	// Reports is an edgeworkers reports API interface
 	Reports interface {
+		// GetSummaryReport gets summary overview for EdgeWorker reports. Report id is  1
+		//
+		// See: https://techdocs.akamai.com/edgeworkers/reference/reportsreportid#get-report
+		GetSummaryReport(context.Context, GetSummaryReportRequest) (*GetSummaryReportResponse, error)
+
 		// GetReport gets details for an EdgeWorker
 		//
 		// See: https://techdocs.akamai.com/edgeworkers/reference/reportsreportid#get-report
@@ -22,6 +27,37 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edgeworkers/reference/reports
 		ListReports(context.Context) (*ListReportsResponse, error)
+	}
+
+	// GetSummaryReportRequest contains parameters used to get summary overview for EdgeWorker reports
+	GetSummaryReportRequest struct {
+		Start string
+		// If end date is not provided, then API will assign current date by default
+		End          string
+		EdgeWorker   string
+		Status       *string
+		EventHandler *string
+	}
+
+	// GetSummaryReportResponse represents a response object returned by GetSummaryReport
+	GetSummaryReportResponse struct {
+		ReportID    int         `json:"reportId"`
+		Name        string      `json:"name"`
+		Description string      `json:"description"`
+		Start       string      `json:"start"`
+		End         string      `json:"end"`
+		Data        DataSummary `json:"data"`
+		Unavailable *bool       `json:"unavailable"`
+	}
+
+	// DataSummary represents reports summary overview data for EdgeWorker
+	DataSummary struct {
+		Memory       *Summary `json:"memory"`
+		Successes    *Total   `json:"successes"`
+		InitDuration *Summary `json:"initDuration"`
+		ExecDuration *Summary `json:"execDuration"`
+		Errors       *Total   `json:"errors"`
+		Invocations  *Total   `json:"invocations"`
 	}
 
 	// GetReportRequest contains parameters used to get an EdgeWorker report
@@ -53,12 +89,12 @@ type (
 
 	// Data represents data object
 	Data struct {
-		OnClientRequest  OnClientRequest  `json:"onClientRequest"`
-		OnOriginRequest  OnOriginRequest  `json:"onOriginRequest"`
-		OnOriginResponse OnOriginResponse `json:"onOriginResponse"`
-		OnClientResponse OnClientResponse `json:"onClientResponse"`
-		ResponseProvider ResponseProvider `json:"responseProvider"`
-		Init             Init             `json:"init"`
+		OnClientRequest  *OnClientRequest  `json:"onClientRequest"`
+		OnOriginRequest  *OnOriginRequest  `json:"onOriginRequest"`
+		OnOriginResponse *OnOriginResponse `json:"onOriginResponse"`
+		OnClientResponse *OnClientResponse `json:"onClientResponse"`
+		ResponseProvider *ResponseProvider `json:"responseProvider"`
+		Init             *Init             `json:"init"`
 	}
 
 	// OnClientRequest represents OnClientRequest list
@@ -77,25 +113,32 @@ type (
 	// OnRequestAndResponse represents object structure for OnClientRequest, OnOriginRequest, OnOriginResponse,
 	// OnClientResponse, ResponseProvider fields
 	OnRequestAndResponse struct {
+		Status            *string  `json:"status"`
 		StartDateTime     string   `json:"startDateTime"`
 		EdgeWorkerVersion string   `json:"edgeWorkerVersion"`
-		ExecDuration      Duration `json:"execDuration"`
+		ExecDuration      *Summary `json:"execDuration"`
 		Invocations       int      `json:"invocations"`
+		Memory            *Summary `json:"memory"`
 	}
 
 	// InitObject represents object structure for Init field
 	InitObject struct {
-		StartDateTime     string   `json:"startDateTime"`
-		EdgeWorkerVersion string   `json:"edgeWorkerVersion"`
-		InitDuration      Duration `json:"initDuration"`
-		Invocations       int      `json:"invocations"`
+		StartDateTime     string  `json:"startDateTime"`
+		EdgeWorkerVersion string  `json:"edgeWorkerVersion"`
+		InitDuration      Summary `json:"initDuration"`
+		Invocations       int     `json:"invocations"`
 	}
 
-	// Duration represents Duration object
-	Duration struct {
-		Avg int `json:"avg"`
-		Min int `json:"min"`
-		Max int `json:"max"`
+	// Summary represents data object for memory usage, initialization duration and execution duration
+	Summary struct {
+		Avg float64 `json:"avg"`
+		Min float64 `json:"min"`
+		Max float64 `json:"max"`
+	}
+
+	// Total describes total count for Successes, Invocations, Errors
+	Total struct {
+		Total int `json:"total"`
 	}
 
 	// ListReportsResponse represents list of report types
@@ -138,16 +181,37 @@ const (
 )
 
 var (
+	// ErrGetSummaryReport is returned in case an error occurs on GetSummaryReport operation
+	ErrGetSummaryReport = errors.New("get summary overview for EdgeWorker reports")
 	// ErrGetReport is returned in case an error occurs on GetReport operation
 	ErrGetReport = errors.New("get an EdgeWorker report")
 	// ErrListReports is returned in case an error occurs on ListReports operation
 	ErrListReports = errors.New("get EdgeWorker reports")
 )
 
+// Validate validates GetSummaryReportRequest
+func (r GetSummaryReportRequest) Validate() error {
+	return validation.Errors{
+		"Start": validation.Validate(r.Start, validation.Required, validation.Date("2006-01-02T15:04:05.999Z").Error(
+			fmt.Sprintf("value '%s' is invalid. It must have format '2006-01-02T15:04:05.999Z'", r.Start))),
+		"End": validation.Validate(r.End, validation.Date("2006-01-02T15:04:05.999Z").Error(
+			fmt.Sprintf("value '%s' is invalid. It must have format '2006-01-02T15:04:05.999Z'", r.End))),
+		"EdgeWorker": validation.Validate(r.EdgeWorker, validation.Required),
+		"Status": validation.Validate(r.Status, validation.NilOrNotEmpty, validation.In(StatusSuccess, StatusGenericError, StatusUnknownEdgeWorkerID, StatusUnimplementedEventHandler,
+			StatusRuntimeError, StatusExecutionError, StatusTimeoutError, StatusResourceLimitHit, StatusCPUTimeoutError, StatusWallTimeoutError, StatusInitCPUTimeoutError,
+			StatusInitWallTimeoutError).Error(fmt.Sprintf("value '%s' is invalid. Must be one of: 'success', 'genericError', "+
+			"'unknownEdgeWorkerId', 'unimplementedEventHandler', 'runtimeError', 'executionError', 'timeoutError', "+
+			"'resourceLimitHit', 'cpuTimeoutError', 'wallTimeoutError', 'initCpuTimeoutError', 'initWallTimeoutError'", stringFromPtr(r.Status)))),
+		"EventHandler": validation.Validate(r.EventHandler, validation.NilOrNotEmpty, validation.In(EventHandlerOnClientRequest, EventHandlerOnOriginRequest, EventHandlerOnOriginResponse,
+			EventHandlerOnClientResponse, EventHandlerResponseProvider).Error(fmt.Sprintf("value '%s' is invalid. Must be one of: 'onClientRequest', "+
+			"'onOriginRequest', 'onOriginResponse', 'onClientResponse', 'responseProvider'", stringFromPtr(r.EventHandler)))),
+	}.Filter()
+}
+
 // Validate validates GetReportRequest
 func (r GetReportRequest) Validate() error {
 	return validation.Errors{
-		"ReportID": validation.Validate(r.ReportID, validation.Required),
+		"ReportID": validation.Validate(r.ReportID, validation.Required, validation.Min(2)),
 		"Start": validation.Validate(r.Start, validation.Required, validation.Date("2006-01-02T15:04:05.999Z").Error(
 			fmt.Sprintf("value '%s' is invalid. It must have format '2006-01-02T15:04:05.999Z'", r.Start))),
 		"End": validation.Validate(r.End, validation.Date("2006-01-02T15:04:05.999Z").Error(
@@ -169,6 +233,53 @@ func stringFromPtr(s *string) string {
 		return ""
 	}
 	return *s
+}
+
+func (e *edgeworkers) GetSummaryReport(ctx context.Context, params GetSummaryReportRequest) (*GetSummaryReportResponse, error) {
+	logger := e.Log(ctx)
+	logger.Debug("GetSummaryReport")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetSummaryReport, ErrStructValidation, err)
+	}
+
+	uri, err := url.Parse("/edgeworkers/v1/reports/1")
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetSummaryReport, err)
+	}
+
+	q := uri.Query()
+	q.Add("edgeWorker", params.EdgeWorker)
+	q.Add("start", params.Start)
+	if params.End != "" {
+		q.Add("end", params.End)
+	}
+	if params.Status != nil {
+		status := *params.Status
+		q.Add("status", status)
+	}
+	if params.EventHandler != nil {
+		status := *params.EventHandler
+		q.Add("eventHandler", status)
+	}
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetSummaryReport, err)
+	}
+
+	var result GetSummaryReportResponse
+	resp, err := e.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetSummaryReport, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrGetSummaryReport, e.Error(resp))
+	}
+
+	return &result, nil
 }
 
 func (e *edgeworkers) GetReport(ctx context.Context, params GetReportRequest) (*GetReportResponse, error) {
