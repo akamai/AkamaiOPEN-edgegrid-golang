@@ -1,8 +1,14 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.9.0 (Jan. 11, 2022)
+## 2.9.0 (Jan. 24, 2022)
 
 #### FEATURES/ENHANCEMENTS:
+
+* CLOUDLETS
+  * Support for VP cloudlet type (Visitor Prioritization)
+  * Support for CD cloudlet type (Continuous Deployment / Phased Release)
+  * Support for FR cloudlet type (Forward Rewrite)
+  * Support for AP cloudlet type (API Prioritization)
 
 * APPSEC
   * Add support for Evasive Path Match feature
@@ -90,7 +96,7 @@
 
 ## 2.4.0 (Mar 29, 2021) PAPI - Secure by default
 
-*PAPI
+* PAPI
    * Support to provision default certs as part of hostnames request
    * New cert status object in hostnames response if it exists
 
