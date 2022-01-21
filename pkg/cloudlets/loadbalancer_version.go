@@ -46,11 +46,11 @@ type (
 		Continent                     string   `json:"continent"`
 		Country                       string   `json:"country"`
 		Hostname                      string   `json:"hostname,omitempty"`
-		Latitude                      float64  `json:"latitude"`
+		Latitude                      *float64 `json:"latitude"`
 		LivenessHosts                 []string `json:"livenessHosts,omitempty"`
-		Longitude                     float64  `json:"longitude"`
+		Longitude                     *float64 `json:"longitude"`
 		OriginID                      string   `json:"originId"`
-		Percent                       float64  `json:"percent"`
+		Percent                       *float64 `json:"percent"`
 		StateOrProvince               *string  `json:"stateOrProvince,omitempty"`
 	}
 
@@ -143,11 +143,11 @@ func (v DataCenter) Validate() error {
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'AF', 'AS', 'EU', 'NA', 'OC', 'OT' or 'SA'", (&v).Continent))),
 		"Country":       validation.Validate(v.Country, validation.Required, validation.Length(2, 2)),
 		"Hostname":      validation.Validate(v.Hostname, validation.Length(0, 256)),
-		"Latitude":      validation.Validate(v.Latitude, validation.Required, validation.Min(-180.0), validation.Max(180.0)),
-		"LivenessHosts": validation.Validate(v.LivenessHosts, validation.Length(1, 0)), // max is 0, it means there is no upper bound for the length
-		"Longitude":     validation.Validate(v.Longitude, validation.Required, validation.Min(-180.0), validation.Max(180.0)),
+		"Latitude":      validation.Validate(v.Latitude, validation.NotNil, validation.Min(-180.0), validation.Max(180.0)),
+		"LivenessHosts": validation.Validate(v.LivenessHosts, validation.Required, validation.Length(1, 0)), // max is 0, it means there is no upper bound for the length
+		"Longitude":     validation.Validate(v.Longitude, validation.NotNil, validation.Min(-180.0), validation.Max(180.0)),
 		"OriginID":      validation.Validate(v.OriginID, validation.Required, validation.Length(1, 128)),
-		"Percent":       validation.Validate(v.Percent, validation.Required, validation.Min(0.0), validation.Max(100.0)),
+		"Percent":       validation.Validate(v.Percent, validation.NotNil, validation.Min(0.0), validation.Max(100.0)),
 	}.Filter()
 }
 
