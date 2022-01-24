@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	validation "github.com/go-ozzo/ozzo-validation"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
@@ -43,26 +43,31 @@ type (
 
 	// GetNetworkListsResponse contains response from GetNetworkLists method
 	GetNetworkListsResponse struct {
-		Links        *NetworkListsResponseLinks `json:"links,omitempty"`
-		NetworkLists []struct {
-			ElementCount       int                `json:"elementCount"`
-			Links              *NetworkListsLinks `json:"links,omitempty"`
-			Name               string             `json:"name"`
-			NetworkListType    string             `json:"networkListType"`
-			ReadOnly           bool               `json:"readOnly"`
-			Shared             bool               `json:"shared"`
-			SyncPoint          int                `json:"syncPoint"`
-			Type               string             `json:"type"`
-			UniqueID           string             `json:"uniqueId"`
-			AccessControlGroup string             `json:"accessControlGroup,omitempty"`
-			Description        string             `json:"description,omitempty"`
-		} `json:"networkLists"`
+		Links        *NetworkListsResponseLinks           `json:"links,omitempty"`
+		NetworkLists []GetNetworkListsResponseListElement `json:"networkLists"`
+	}
+
+	// GetNetworkListsResponseListElement contains information about a single network list
+	GetNetworkListsResponseListElement struct {
+		ElementCount       int                `json:"elementCount"`
+		Links              *NetworkListsLinks `json:"links,omitempty"`
+		Name               string             `json:"name"`
+		NetworkListType    string             `json:"networkListType"`
+		ReadOnly           bool               `json:"readOnly"`
+		Shared             bool               `json:"shared"`
+		SyncPoint          int                `json:"syncPoint"`
+		Type               string             `json:"type"`
+		UniqueID           string             `json:"uniqueId"`
+		AccessControlGroup string             `json:"accessControlGroup,omitempty"`
+		Description        string             `json:"description,omitempty"`
 	}
 
 	// GetNetworkListResponse contains response from GetNetworkList method
 	GetNetworkListResponse struct {
 		Name            string   `json:"name"`
 		UniqueID        string   `json:"uniqueId"`
+		ContractID      string   `json:"contractId"`
+		GroupID         int      `json:"groupId"`
 		SyncPoint       int      `json:"syncPoint"`
 		Type            string   `json:"type"`
 		Description     string   `json:"description,omitempty"`
@@ -338,6 +343,7 @@ func (p *networklists) GetNetworkLists(ctx context.Context, params GetNetworkLis
 		return &rval, nil
 	}
 
+	rvalfiltered.Links = rval.Links
 	for _, val := range rval.NetworkLists {
 		if (params.Name == "" || params.Name == val.Name) && (params.Type == "" || params.Type == val.Type) {
 			rvalfiltered.NetworkLists = append(rvalfiltered.NetworkLists, val)

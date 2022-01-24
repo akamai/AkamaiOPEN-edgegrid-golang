@@ -87,8 +87,9 @@ func (r ActivatePolicyVersionRequest) Validate() error {
 		"RequestBody.AdditionalPropertyNames": validation.Validate(r.PolicyVersionActivation.AdditionalPropertyNames, validation.Required),
 		"RequestBody.Network": validation.Validate(
 			r.PolicyVersionActivation.Network,
+			validation.Required,
 			validation.In(PolicyActivationNetworkStaging, PolicyActivationNetworkProduction).Error(
-				fmt.Sprintf("value '%s' is invalid. Must be one of: 'staging', 'prod' or '' (empty)", (&r).PolicyVersionActivation.Network)),
+				fmt.Sprintf("value '%s' is invalid. Must be one of: 'staging' or 'prod'", (&r).PolicyVersionActivation.Network)),
 		),
 	}
 	return edgegriderr.ParseValidationErrors(errs)

@@ -247,18 +247,21 @@ func TestActivateLoadBalancerVersion(t *testing.T) {
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
-		"Validation Error": {
+		"Validation Errors": {
 			params: ActivateLoadBalancerVersionRequest{
 				OriginID: "",
 				Async:    false,
 				LoadBalancerVersionActivation: LoadBalancerVersionActivation{
-					Network: LoadBalancerActivationNetworkStaging,
+					Network: "",
 					DryRun:  false,
-					Version: 1,
+					Version: -1,
 				},
 			},
 			responseStatus: http.StatusInternalServerError,
 			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Network: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.Containsf(t, err.Error(), "OriginID: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.Containsf(t, err.Error(), "Version: must be no less than 0", "want: %s; got: %s", ErrStructValidation, err)
 				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
 			},
 		},
