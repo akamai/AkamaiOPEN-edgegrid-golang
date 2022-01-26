@@ -202,7 +202,7 @@ func TestListPolicySets(t *testing.T) {
 			params: ListPolicySetsRequest{
 				Contract: "3-WNKXX1",
 			},
-			responseStatus: http.StatusInternalServerError,
+			responseStatus: http.StatusForbidden,
 			responseBody: `{
     "type": "https://problems.luna-dev.akamaiapis.net/-/pep-authz/deny",
     "title": "Forbidden",

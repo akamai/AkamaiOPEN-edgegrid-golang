@@ -14,6 +14,7 @@ var (
 type (
 	// IVM is the api interface for Image and Video Manager
 	IVM interface {
+		Policies
 		PolicySets
 	}
 
