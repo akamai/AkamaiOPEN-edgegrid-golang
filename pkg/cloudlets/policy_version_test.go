@@ -344,6 +344,102 @@ func TestGetPolicyVersion(t *testing.T) {
 				},
 			},
 		},
+		"200 OK, AS rule with disabled=false": {
+			request: GetPolicyVersionRequest{
+				PolicyID: 355557,
+				Version:  2,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1643788763643,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": "Initial version",
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1643789091393,
+    "location": "/cloudlets/api/v2/policies/355557/versions/2",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "asMatchRule",
+            "akaRuleId": "f58014ee0cc17ce",
+            "end": 0,
+            "forwardSettings": {
+                "originId": "originremote2",
+                "pathAndQS": "/sales/Q1/",
+                "useIncomingQueryString": true
+            },
+            "id": 0,
+            "location": "/cloudlets/api/v2/policies/355557/versions/2/rules/f58014ee0cc17ce",
+            "matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "range",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "range",
+                        "value": [
+                            1,
+                            25
+                        ]
+                    }
+                }
+            ],
+            "name": "Q1Sales",
+            "start": 0
+        }
+    ],
+    "policyId": 355557,
+    "revisionId": 4934569,
+    "rulesLocked": false,
+    "version": 2
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/355557/versions/2?omitRules=false",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1643788763643,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "Initial version",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1643789091393,
+				Location:         "/cloudlets/api/v2/policies/355557/versions/2",
+				MatchRuleFormat:  "1.0",
+				MatchRules: MatchRules{
+					&MatchRuleAS{
+						Type: "asMatchRule",
+						End:  0,
+						ForwardSettings: ForwardSettingsAS{
+							OriginID:               "originremote2",
+							PathAndQS:              "/sales/Q1/",
+							UseIncomingQueryString: true,
+						},
+						ID: 0,
+						Matches: []MatchCriteriaAS{
+							{
+								CaseSensitive: false,
+								MatchOperator: "equals",
+								MatchType:     "range",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueRange{
+									Type: "range",
+									Value: []int64{
+										1, 25},
+								},
+							},
+						},
+						Name:  "Q1Sales",
+						Start: 0,
+					},
+				},
+				PolicyID:    355557,
+				RevisionID:  4934569,
+				RulesLocked: false,
+				Version:     2,
+			},
+		},
 		"200 OK, PR rule": {
 			request: GetPolicyVersionRequest{
 				PolicyID: 276858,
@@ -1297,7 +1393,212 @@ func TestCreatePolicyVersion(t *testing.T) {
 				Version:     798,
 			},
 		},
-
+		"201 created, complex AS": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleAS{
+							Start: 0,
+							End:   0,
+							Type:  "asMatchRule",
+							Name:  "Q1Sales",
+							ID:    0,
+							ForwardSettings: ForwardSettingsAS{
+								OriginID:               "originremote2",
+								PathAndQS:              "/sales/Q1/",
+								UseIncomingQueryString: true,
+							},
+							Matches: []MatchCriteriaAS{
+								{
+									CaseSensitive: false,
+									MatchOperator: "equals",
+									MatchType:     "range",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueRange{
+										Type:  "range",
+										Value: []int64{1, 25},
+									},
+								},
+								{
+									CaseSensitive: false,
+									MatchOperator: "equals",
+									MatchType:     "method",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueSimple{
+										Type:  "simple",
+										Value: []string{"GET"},
+									},
+								},
+								{
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueObject{
+										Type: "object",
+										Name: "AS",
+										Options: &Options{
+											Value: []string{
+												"text/html*",
+												"text/css*",
+												"application/x-javascript*",
+											},
+											ValueHasWildcard: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 355557,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1643788763643,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": "Initial version",
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1643789091393,
+    "location": "/cloudlets/api/v2/policies/355557/versions/2",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "asMatchRule",
+            "akaRuleId": "f58014ee0cc17ce",
+            "end": 0,
+            "forwardSettings": {
+                "originId": "originremote2",
+                "pathAndQS": "/sales/Q1/",
+                "useIncomingQueryString": true
+            },
+            "id": 0,
+            "location": "/cloudlets/api/v2/policies/355557/versions/2/rules/f58014ee0cc17ce",
+            "matches": [
+				{
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "range",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "range",
+                        "value": [
+                            1,
+                            25
+                        ]
+                    }
+                },
+				{
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                },
+				{
+                    "matchOperator": "equals",
+                    "matchType": "header",
+                    "negate": false,
+					"objectMatchValue": {
+						"type": "object",
+						"name": "AS",
+						"options": {
+							"value": [
+								"text/html*",
+                                "text/css*",
+                                "application/x-javascript*"
+							],
+							"valueHasWildcard": true
+						}
+					}
+                }
+            ],
+            "name": "Q1Sales",
+            "start": 0
+        }
+    ],
+    "policyId": 355557,
+    "revisionId": 4934569,
+    "rulesLocked": false,
+    "version": 2
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/355557/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1643788763643,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "Initial version",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1643789091393,
+				Location:         "/cloudlets/api/v2/policies/355557/versions/2",
+				MatchRuleFormat:  "1.0",
+				MatchRules: MatchRules{
+					&MatchRuleAS{
+						Type: "asMatchRule",
+						End:  0,
+						ForwardSettings: ForwardSettingsAS{
+							OriginID:               "originremote2",
+							PathAndQS:              "/sales/Q1/",
+							UseIncomingQueryString: true,
+						},
+						ID: 0,
+						Matches: []MatchCriteriaAS{
+							{
+								CaseSensitive: false,
+								MatchOperator: "equals",
+								MatchType:     "range",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueRange{
+									Type: "range",
+									Value: []int64{
+										1, 25},
+								},
+							},
+							{
+								CaseSensitive: false,
+								MatchOperator: "equals",
+								MatchType:     "method",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueSimple{
+									Type:  "simple",
+									Value: []string{"GET"},
+								},
+							},
+							{
+								MatchOperator: "equals",
+								MatchType:     "header",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueObject{
+									Type: "object",
+									Name: "AS",
+									Options: &Options{
+										Value: []string{
+											"text/html*",
+											"text/css*",
+											"application/x-javascript*",
+										},
+										ValueHasWildcard: true,
+									},
+								},
+							},
+						},
+						Name:  "Q1Sales",
+						Start: 0,
+					},
+				},
+				PolicyID:    355557,
+				RevisionID:  4934569,
+				RulesLocked: false,
+				Version:     2,
+			},
+		},
 		"201 created, complex PR": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
