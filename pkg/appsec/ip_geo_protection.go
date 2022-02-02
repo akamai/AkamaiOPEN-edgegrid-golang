@@ -12,8 +12,6 @@ type (
 	// The IPGeoProtection interface supports retrieving and modifying the protections for a policy,
 	// and whether each is enabled or disabled.
 	//
-	// Deprecated: this interface will be removed in a future release. Use the PolicyProtections interface instead.
-	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	IPGeoProtection interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
@@ -64,7 +62,15 @@ type (
 		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
 	}
 
-	// UpdateIPGeoProtectionResponse is used to modify the IPGeo protection settings.
+	// UpdateIPGeoProtectionRequest is used to modify the IPGeo protection settings.
+	UpdateIPGeoProtectionRequest struct {
+		ConfigID                  int    `json:"-"`
+		Version                   int    `json:"-"`
+		PolicyID                  string `json:"-"`
+		ApplyNetworkLayerControls bool   `json:"applyNetworkLayerControls"`
+	}
+
+	// UpdateIPGeoProtectionResponse is returned from a call to UpdateIPGeoProtection.
 	UpdateIPGeoProtectionResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
@@ -73,14 +79,6 @@ type (
 		ApplyRateControls             bool `json:"applyRateControls"`
 		ApplyReputationControls       bool `json:"applyReputationControls"`
 		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
-
-	// UpdateIPGeoProtectionRequest is returned from a call to UpdateIPGeoProtection.
-	UpdateIPGeoProtectionRequest struct {
-		ConfigID                  int    `json:"-"`
-		Version                   int    `json:"-"`
-		PolicyID                  string `json:"-"`
-		ApplyNetworkLayerControls bool   `json:"applyNetworkLayerControls"`
 	}
 )
 
