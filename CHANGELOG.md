@@ -1,11 +1,16 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.9.1 (Feb. 2, 2022)
+## 2.9.1 (Feb. 7, 2022)
 
 #### FEATURES/ENHANCEMENTS:
 
 * APPSEC
   * Remove deprecation notes for individual policy protection methods
+
+#### BUG FIXES:
+
+* CLOUDLETS
+  * Fixed validation for ALB version DataCenter percent
 
 ## 2.9.0 (Jan. 24, 2022)
 
