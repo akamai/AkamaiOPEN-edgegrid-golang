@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/cloudlets/tools"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"github.com/stretchr/testify/require"
@@ -35,12 +36,12 @@ func TestCreateLoadBalancerVersion(t *testing.T) {
 							LivenessHosts: []string{
 								"clorigin3.www.example.com",
 							},
-							Latitude:  102.78108,
-							Longitude: -116.07064,
+							Latitude:  tools.Float64Ptr(102.78108),
+							Longitude: tools.Float64Ptr(-116.07064),
 							Continent: "NA",
 							Country:   "US",
 							OriginID:  "clorigin3",
-							Percent:   100.0,
+							Percent:   tools.Float64Ptr(100.0),
 						},
 					},
 					Deleted:     false,
@@ -122,12 +123,12 @@ func TestCreateLoadBalancerVersion(t *testing.T) {
 						LivenessHosts: []string{
 							"clorigin3.www.example.com",
 						},
-						Latitude:  102.78108,
-						Longitude: -116.07064,
+						Latitude:  tools.Float64Ptr(102.78108),
+						Longitude: tools.Float64Ptr(-116.07064),
 						Continent: "NA",
 						Country:   "US",
 						OriginID:  "clorigin3",
-						Percent:   100.0,
+						Percent:   tools.Float64Ptr(100.0),
 					},
 				},
 				Deleted:          false,
@@ -264,6 +265,68 @@ func TestCreateLoadBalancerVersion(t *testing.T) {
 	}
 }
 
+func TestDataCenterValidate(t *testing.T) {
+	tests := map[string]struct {
+		DataCenter
+		withError error
+	}{
+		"valid data center": {
+			DataCenter: DataCenter{
+				CloudService: false,
+				Hostname:     "clorigin.example.com",
+				LivenessHosts: []string{
+					"clorigin3.www.example.com",
+				},
+				Latitude:  tools.Float64Ptr(102.78108),
+				Longitude: tools.Float64Ptr(-116.07064),
+				Continent: "NA",
+				Country:   "US",
+				OriginID:  "clorigin3",
+				Percent:   tools.Float64Ptr(100.0),
+			},
+		},
+		"longitude, latitude and percent can be 0": {
+			DataCenter: DataCenter{
+				CloudService: false,
+				Hostname:     "clorigin.example.com",
+				LivenessHosts: []string{
+					"clorigin3.www.example.com",
+				},
+				Latitude:  tools.Float64Ptr(0),
+				Longitude: tools.Float64Ptr(0),
+				Continent: "NA",
+				Country:   "US",
+				OriginID:  "clorigin3",
+				Percent:   tools.Float64Ptr(0),
+			},
+		},
+		"missing all required parameters error": {
+			DataCenter: DataCenter{},
+			withError: validation.Errors{
+				"Continent":     validation.ErrRequired,
+				"Country":       validation.ErrRequired,
+				"Latitude":      validation.ErrNotNilRequired,
+				"LivenessHosts": validation.ErrRequired,
+				"Longitude":     validation.ErrNotNilRequired,
+				"OriginID":      validation.ErrRequired,
+				"Percent":       validation.ErrNotNilRequired,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			err := test.DataCenter.Validate()
+			if test.withError != nil {
+				require.Error(t, err)
+				assert.Equal(t, test.withError.Error(), err.Error(), "want: %s; got %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
 func TestLivenessSettingsValidate(t *testing.T) {
 	tests := map[string]struct {
 		LivenessSettings *LivenessSettings
@@ -366,12 +429,12 @@ func TestGetLoadBalancerVersion(t *testing.T) {
 						LivenessHosts: []string{
 							"clorigin3.www.example.com",
 						},
-						Latitude:  102.78108,
-						Longitude: -116.07064,
+						Latitude:  tools.Float64Ptr(102.78108),
+						Longitude: tools.Float64Ptr(-116.07064),
 						Continent: "NA",
 						Country:   "US",
 						OriginID:  "clorigin3",
-						Percent:   100.0,
+						Percent:   tools.Float64Ptr(100.0),
 					},
 				},
 				Deleted:          false,
@@ -461,12 +524,12 @@ func TestUpdateLoadBalancerVersion(t *testing.T) {
 							LivenessHosts: []string{
 								"clorigin3.www.example.com",
 							},
-							Latitude:  102.78108,
-							Longitude: -116.07064,
+							Latitude:  tools.Float64Ptr(102.78108),
+							Longitude: tools.Float64Ptr(-116.07064),
 							Continent: "NA",
 							Country:   "US",
 							OriginID:  "clorigin3",
-							Percent:   100.0,
+							Percent:   tools.Float64Ptr(100.0),
 						},
 					},
 					Deleted:     false,
@@ -539,12 +602,12 @@ func TestUpdateLoadBalancerVersion(t *testing.T) {
 						LivenessHosts: []string{
 							"clorigin3.www.example.com",
 						},
-						Latitude:  102.78108,
-						Longitude: -116.07064,
+						Latitude:  tools.Float64Ptr(102.78108),
+						Longitude: tools.Float64Ptr(-116.07064),
 						Continent: "NA",
 						Country:   "US",
 						OriginID:  "clorigin3",
-						Percent:   100.0,
+						Percent:   tools.Float64Ptr(100.0),
 					},
 				},
 				Deleted:          false,
@@ -579,12 +642,12 @@ func TestUpdateLoadBalancerVersion(t *testing.T) {
 							LivenessHosts: []string{
 								"clorigin3.www.example.com",
 							},
-							Latitude:  102.78108,
-							Longitude: -116.07064,
+							Latitude:  tools.Float64Ptr(102.78108),
+							Longitude: tools.Float64Ptr(-116.07064),
 							Continent: "NA",
 							Country:   "US",
 							OriginID:  "clorigin3",
-							Percent:   100.0,
+							Percent:   tools.Float64Ptr(100.0),
 						},
 					},
 					Description: "Test load balancing configuration.",
@@ -739,12 +802,12 @@ func TestListLoadBalancerVersions(t *testing.T) {
 							LivenessHosts: []string{
 								"clorigin3.www.example.com",
 							},
-							Latitude:  102.78108,
-							Longitude: -116.07064,
+							Latitude:  tools.Float64Ptr(102.78108),
+							Longitude: tools.Float64Ptr(-116.07064),
 							Continent: "NA",
 							Country:   "US",
 							OriginID:  "clorigin3",
-							Percent:   100.0,
+							Percent:   tools.Float64Ptr(100.0),
 						},
 					},
 					Deleted:          false,
@@ -770,12 +833,12 @@ func TestListLoadBalancerVersions(t *testing.T) {
 							LivenessHosts: []string{
 								"clorigin3.www.example.com",
 							},
-							Latitude:  102.78108,
-							Longitude: -116.07064,
+							Latitude:  tools.Float64Ptr(102.78108),
+							Longitude: tools.Float64Ptr(-116.07064),
 							Continent: "NA",
 							Country:   "US",
 							OriginID:  "clorigin3",
-							Percent:   100.0,
+							Percent:   tools.Float64Ptr(100.0),
 						},
 					},
 					Deleted:          false,
