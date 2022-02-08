@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -125,11 +126,12 @@ const (
 
 // Validate validates CreateEdgeHostnameRequest
 func (eh CreateEdgeHostnameRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"ContractID":   validation.Validate(eh.ContractID, validation.Required),
 		"GroupID":      validation.Validate(eh.GroupID, validation.Required),
 		"EdgeHostname": validation.Validate(eh.EdgeHostname),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates EdgeHostnameCreate
@@ -262,7 +264,7 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 // CreateEdgeHostname id used to create new edge hostname for provided group and contract IDs
 func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameRequest) (*CreateEdgeHostnameResponse, error) {
 	if err := r.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEdgeHostname, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateEdgeHostname, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)

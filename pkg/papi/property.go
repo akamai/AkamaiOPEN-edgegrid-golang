@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -119,11 +120,12 @@ func (v GetPropertiesRequest) Validate() error {
 
 // Validate validates CreatePropertyRequest
 func (v CreatePropertyRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"ContractID": validation.Validate(v.ContractID, validation.Required),
 		"GroupID":    validation.Validate(v.GroupID, validation.Required),
 		"Property":   validation.Validate(v.Property),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates PropertyCreate
@@ -202,7 +204,7 @@ func (p *papi) GetProperties(ctx context.Context, params GetPropertiesRequest) (
 
 func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest) (*CreatePropertyResponse, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateProperty, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateProperty, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)

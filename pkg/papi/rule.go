@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -166,12 +167,13 @@ func (r GetRuleTreeRequest) Validate() error {
 
 // Validate validates UpdateRulesRequest struct
 func (r UpdateRulesRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"PropertyID":      validation.Validate(r.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(r.PropertyVersion, validation.Required),
 		"ValidateMode":    validation.Validate(r.ValidateMode, validation.In(RuleValidateModeFast, RuleValidateModeFull)),
 		"Rules":           validation.Validate(r.Rules),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates RulesUpdate struct
@@ -270,7 +272,7 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 
 func (p *papi) UpdateRuleTree(ctx context.Context, request UpdateRulesRequest) (*UpdateRulesResponse, error) {
 	if err := request.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateRuleTree, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateRuleTree, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
