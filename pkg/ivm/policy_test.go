@@ -19,6 +19,7 @@ func TestListPolicies(t *testing.T) {
 		responseBody     string
 		expectedPath     string
 		expectedResponse *ListPoliciesResponse
+		expectedHeaders  map[string][]string
 		withError        error
 	}{
 		"200 OK": {
@@ -250,6 +251,10 @@ func TestListPolicies(t *testing.T) {
     "totalItems": 8
 }`,
 			expectedPath: "/imaging/v2/network/staging/policies/",
+			expectedHeaders: map[string][]string{
+				"Contract":   {"3-WNKXX1"},
+				"Policy-Set": {"570f9090-5dbe-11ec-8a0a-71665789c1d8"},
+			},
 			expectedResponse: &ListPoliciesResponse{
 				ItemKind: "POLICY",
 				Items: PolicyOutputs{
@@ -1122,6 +1127,9 @@ func TestListPolicies(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
+				for h := range test.expectedHeaders {
+					assert.Equal(t, test.expectedHeaders[h], r.Header[h])
+				}
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))

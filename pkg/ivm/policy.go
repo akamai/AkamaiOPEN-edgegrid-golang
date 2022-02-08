@@ -147,6 +147,7 @@ func (i *ivm) ListPolicies(ctx context.Context, params ListPoliciesRequest) (*Li
 	}
 
 	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Policy-Set", params.PolicySetID)
 
 	var result ListPoliciesResponse
 	resp, err := i.Exec(req, &result)
