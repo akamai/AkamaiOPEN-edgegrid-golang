@@ -1,4 +1,4 @@
-package ivm
+package imaging
 
 import (
 	"errors"
@@ -12,26 +12,26 @@ var (
 )
 
 type (
-	// IVM is the api interface for Image and Video Manager
-	IVM interface {
+	// Imaging is the api interface for Image and Video Manager
+	Imaging interface {
 		Policies
 		PolicySets
 	}
 
-	ivm struct {
+	imaging struct {
 		session.Session
 	}
 
 	// Option defines an Image and Video Manager option
-	Option func(*ivm)
+	Option func(*imaging)
 
 	// ClientFunc is a Image and Video Manager client new method, this can be used for mocking
-	ClientFunc func(sess session.Session, opts ...Option) IVM
+	ClientFunc func(sess session.Session, opts ...Option) Imaging
 )
 
-// Client returns a new ivmanager Client instance with the specified controller
-func Client(sess session.Session, opts ...Option) IVM {
-	c := &ivm{
+// Client returns a new Image and Video Manager Client instance with the specified controller
+func Client(sess session.Session, opts ...Option) Imaging {
+	c := &imaging{
 		Session: sess,
 	}
 

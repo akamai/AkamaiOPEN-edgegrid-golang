@@ -1,4 +1,4 @@
-package ivm
+package imaging
 
 import (
 	"encoding/json"

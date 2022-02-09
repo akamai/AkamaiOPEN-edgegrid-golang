@@ -1,4 +1,4 @@
-package ivm
+package imaging
 
 import (
 	"crypto/tls"
@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func mockAPIClient(t *testing.T, mockServer *httptest.Server) IVM {
+func mockAPIClient(t *testing.T, mockServer *httptest.Server) Imaging {
 	serverURL, err := url.Parse(mockServer.URL)
 	require.NoError(t, err)
 	certPool := x509.NewCertPool()
@@ -36,19 +36,19 @@ func TestClient(t *testing.T) {
 	require.NoError(t, err)
 	tests := map[string]struct {
 		options  []Option
-		expected *ivm
+		expected *imaging
 	}{
 		"no options provided, return default": {
 			options: nil,
-			expected: &ivm{
+			expected: &imaging{
 				Session: sess,
 			},
 		},
 		"option provided, overwrite session": {
-			options: []Option{func(c *ivm) {
+			options: []Option{func(c *imaging) {
 				c.Session = nil
 			}},
-			expected: &ivm{
+			expected: &imaging{
 				Session: nil,
 			},
 		},

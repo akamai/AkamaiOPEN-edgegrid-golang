@@ -1,4 +1,4 @@
-package ivm
+package imaging
 
 import (
 	"context"
@@ -200,7 +200,7 @@ func (v DeletePolicySetRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(errs)
 }
 
-func (i *ivm) ListPolicySets(ctx context.Context, params ListPolicySetsRequest) ([]PolicySet, error) {
+func (i *imaging) ListPolicySets(ctx context.Context, params ListPolicySetsRequest) ([]PolicySet, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListPolicySets")
 
@@ -239,7 +239,7 @@ func (i *ivm) ListPolicySets(ctx context.Context, params ListPolicySetsRequest) 
 	return result, nil
 }
 
-func (i *ivm) GetPolicySet(ctx context.Context, params GetPolicySetRequest) (*PolicySet, error) {
+func (i *imaging) GetPolicySet(ctx context.Context, params GetPolicySetRequest) (*PolicySet, error) {
 	logger := i.Log(ctx)
 	logger.Debug("GetPolicySet")
 
@@ -278,7 +278,7 @@ func (i *ivm) GetPolicySet(ctx context.Context, params GetPolicySetRequest) (*Po
 	return &result, nil
 }
 
-func (i *ivm) CreatePolicySet(ctx context.Context, params CreatePolicySetRequest) (*PolicySet, error) {
+func (i *imaging) CreatePolicySet(ctx context.Context, params CreatePolicySetRequest) (*PolicySet, error) {
 	logger := i.Log(ctx)
 	logger.Debug("CreatePolicySet")
 
@@ -307,7 +307,7 @@ func (i *ivm) CreatePolicySet(ctx context.Context, params CreatePolicySetRequest
 	return &result, nil
 }
 
-func (i *ivm) UpdatePolicySet(ctx context.Context, params UpdatePolicySetRequest) (*PolicySet, error) {
+func (i *imaging) UpdatePolicySet(ctx context.Context, params UpdatePolicySetRequest) (*PolicySet, error) {
 	logger := i.Log(ctx)
 	logger.Debug("UpdatePolicySet")
 
@@ -341,7 +341,7 @@ func (i *ivm) UpdatePolicySet(ctx context.Context, params UpdatePolicySetRequest
 	return &result, nil
 }
 
-func (i *ivm) DeletePolicySet(ctx context.Context, params DeletePolicySetRequest) error {
+func (i *imaging) DeletePolicySet(ctx context.Context, params DeletePolicySetRequest) error {
 	logger := i.Log(ctx)
 	logger.Debug("DeletePolicySet")
 

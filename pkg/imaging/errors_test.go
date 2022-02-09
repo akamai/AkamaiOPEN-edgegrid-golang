@@ -1,4 +1,4 @@
-package ivm
+package imaging
 
 import (
 	"io/ioutil"
@@ -89,7 +89,7 @@ func TestNewError(t *testing.T) {
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			res := Client(sess).(*ivm).Error(test.response)
+			res := Client(sess).(*imaging).Error(test.response)
 			assert.Equal(t, test.expected, res)
 		})
 	}

@@ -1,4 +1,4 @@
-package ivm
+package imaging
 
 import (
 	"encoding/json"
@@ -30,7 +30,7 @@ type (
 )
 
 // Error parses an error from the response
-func (i *ivm) Error(r *http.Response) error {
+func (i *imaging) Error(r *http.Response) error {
 	var e Error
 	var body []byte
 	body, err := ioutil.ReadAll(r.Body)

@@ -1,4 +1,4 @@
-package ivm
+package imaging
 
 import (
 	"context"
@@ -128,7 +128,7 @@ func (v ListPoliciesRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(errs)
 }
 
-func (i *ivm) ListPolicies(ctx context.Context, params ListPoliciesRequest) (*ListPoliciesResponse, error) {
+func (i *imaging) ListPolicies(ctx context.Context, params ListPoliciesRequest) (*ListPoliciesResponse, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListPolicies")
 
