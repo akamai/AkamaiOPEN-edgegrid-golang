@@ -48,10 +48,10 @@ type (
 
 	// CreatePolicySet describes the body of the CreatePolicySet request
 	CreatePolicySet struct {
-		Name   string    `json:"name"`
-		Region Region    `json:"region"`
-		Type   MediaType `json:"type"`
-		//DefaultPolicy Policy `json:"defaultPolicy,omitempty"`
+		Name          string      `json:"name"`
+		Region        Region      `json:"region"`
+		Type          MediaType   `json:"type"`
+		DefaultPolicy PolicyInput `json:"defaultPolicy,omitempty"`
 	}
 
 	// CreatePolicySetRequest describes the parameters of the CreatePolicySet request
@@ -174,8 +174,7 @@ func (v CreatePolicySetRequest) Validate() error {
 			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s', '%s', '%s', '%s', '%s'", v.Region, RegionUS, RegionEMEA, RegionAsia, RegionAustralia, RegionJapan, RegionChina))),
 		"Type": validation.Validate(v.Type, validation.Required, validation.In(TypeImage, TypeVideo).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s'", v.Type, TypeImage, TypeVideo))),
-		//DefaultPolicy Policy `json:"defaultPolicy,omitempty"`
-
+		"DefaultPolicy": validation.Validate(v.DefaultPolicy),
 	}
 	return edgegriderr.ParseValidationErrors(errs)
 }

@@ -454,6 +454,44 @@ func TestCreatePolicySet(t *testing.T) {
 				LastModified: "2022-01-14 09:34:25+0000",
 			},
 		},
+		"201 created with default policy": {
+			params: CreatePolicySetRequest{
+				Contract: "3-WNKXX1",
+				CreatePolicySet: CreatePolicySet{
+					Name:   "my_example_token",
+					Type:   "IMAGE",
+					Region: "US",
+					DefaultPolicy: &PolicyInputVideo{
+						Output: &OutputVideo{
+							PerceptualQuality: &OutputVideoPerceptualQualityVariableInline{
+								Value: OutputVideoPerceptualQualityPtr(OutputVideoPerceptualQualityMediumHigh),
+							},
+						},
+					},
+				},
+			},
+			expectedRequestBody: `{"name":"my_example_token","region":"US","type":"IMAGE","defaultPolicy":{"output":{"perceptualQuality":"mediumHigh"}}}`,
+			responseStatus:      http.StatusCreated,
+			responseBody: `{
+				"name": "my_example_token",
+				"id": "29467ef0-751d-11ec-7a0a-71665789c1d8",
+				"type": "IMAGE",
+				"region": "US",
+				"properties": [],
+				"user": "ftzgvvigljhoq5ia",
+				"lastModified": "2022-01-14 09:34:25+0000"
+			}`,
+			expectedPath: "/imaging/v2/policysets/",
+			expectedResponse: &PolicySet{
+				Name:         "my_example_token",
+				ID:           "29467ef0-751d-11ec-7a0a-71665789c1d8",
+				Type:         "IMAGE",
+				Region:       "US",
+				Properties:   []string{},
+				User:         "ftzgvvigljhoq5ia",
+				LastModified: "2022-01-14 09:34:25+0000",
+			},
+		},
 		"400 Bad request": {
 			params: CreatePolicySetRequest{
 				Contract: "3-WNKXX1",
