@@ -285,6 +285,16 @@ func TestDataCenterValidate(t *testing.T) {
 				Percent:   tools.Float64Ptr(100.0),
 			},
 		},
+		"valid data center, minimal set of params": {
+			DataCenter: DataCenter{
+				Latitude:  tools.Float64Ptr(102.78108),
+				Longitude: tools.Float64Ptr(-116.07064),
+				Continent: "NA",
+				Country:   "US",
+				OriginID:  "clorigin3",
+				Percent:   tools.Float64Ptr(100.0),
+			},
+		},
 		"longitude, latitude and percent can be 0": {
 			DataCenter: DataCenter{
 				CloudService: false,
@@ -303,13 +313,12 @@ func TestDataCenterValidate(t *testing.T) {
 		"missing all required parameters error": {
 			DataCenter: DataCenter{},
 			withError: validation.Errors{
-				"Continent":     validation.ErrRequired,
-				"Country":       validation.ErrRequired,
-				"Latitude":      validation.ErrNotNilRequired,
-				"LivenessHosts": validation.ErrRequired,
-				"Longitude":     validation.ErrNotNilRequired,
-				"OriginID":      validation.ErrRequired,
-				"Percent":       validation.ErrNotNilRequired,
+				"Continent": validation.ErrRequired,
+				"Country":   validation.ErrRequired,
+				"Latitude":  validation.ErrNotNilRequired,
+				"Longitude": validation.ErrNotNilRequired,
+				"OriginID":  validation.ErrRequired,
+				"Percent":   validation.ErrNotNilRequired,
 			},
 		},
 	}
