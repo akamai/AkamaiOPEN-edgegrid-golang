@@ -601,8 +601,6 @@ type (
 		PostBreakpointTransformations Transformations `json:"postBreakpointTransformations,omitempty"`
 		// PreviousVersion The previous version number of this policy version
 		PreviousVersion int `json:"previousVersion,omitempty"`
-		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version.
-		RolloutDuration int `json:"rolloutDuration,omitempty"`
 		// RolloutInfo Contains information about policy rollout start and completion times.
 		RolloutInfo *RolloutInfo `json:"rolloutInfo,omitempty"`
 		// Transformations Set of image transformations to apply to the source image. If unspecified, no operations are performed.
@@ -915,8 +913,6 @@ type (
 		Output *OutputVideo `json:"output,omitempty"`
 		// PreviousVersion The previous version number of this policy version
 		PreviousVersion int `json:"previousVersion,omitempty"`
-		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version.
-		RolloutDuration int `json:"rolloutDuration,omitempty"`
 		// RolloutInfo Contains information about policy rollout start and completion times.
 		RolloutInfo *RolloutInfo `json:"rolloutInfo,omitempty"`
 		// User The user who created this policy version
@@ -2239,18 +2235,12 @@ func (p PolicyOutputImage) Validate() error {
 		"Output":                        validation.Validate(p.Output),
 		"PostBreakpointTransformations": validation.Validate(p.PostBreakpointTransformations),
 		"PreviousVersion":               validation.Validate(p.PreviousVersion),
-		"RolloutDuration": validation.Validate(p.RolloutDuration,
-			validation.Min(3600),
-			validation.Max(604800),
-		),
-		"RolloutInfo":     validation.Validate(p.RolloutInfo),
-		"Transformations": validation.Validate(p.Transformations),
-		"User":            validation.Validate(p.User),
-		"Variables":       validation.Validate(p.Variables, validation.Each()),
-		"Version":         validation.Validate(p.Version),
-		"Video": validation.Validate(p.Video,
-			validation.In(PolicyOutputImageVideoFalse),
-		),
+		"RolloutInfo":                   validation.Validate(p.RolloutInfo),
+		"Transformations":               validation.Validate(p.Transformations),
+		"User":                          validation.Validate(p.User),
+		"Variables":                     validation.Validate(p.Variables, validation.Each()),
+		"Version":                       validation.Validate(p.Version),
+		"Video":                         validation.Validate(p.Video),
 	}.Filter()
 }
 
@@ -2567,17 +2557,11 @@ func (p PolicyOutputVideo) Validate() error {
 		"ID":              validation.Validate(p.ID),
 		"Output":          validation.Validate(p.Output),
 		"PreviousVersion": validation.Validate(p.PreviousVersion),
-		"RolloutDuration": validation.Validate(p.RolloutDuration,
-			validation.Min(3600),
-			validation.Max(604800),
-		),
-		"RolloutInfo": validation.Validate(p.RolloutInfo),
-		"User":        validation.Validate(p.User),
-		"Variables":   validation.Validate(p.Variables, validation.Each()),
-		"Version":     validation.Validate(p.Version),
-		"Video": validation.Validate(p.Video,
-			validation.In(PolicyOutputVideoVideoTrue),
-		),
+		"RolloutInfo":     validation.Validate(p.RolloutInfo),
+		"User":            validation.Validate(p.User),
+		"Variables":       validation.Validate(p.Variables, validation.Each()),
+		"Version":         validation.Validate(p.Version),
+		"Video":           validation.Validate(p.Video, validation.Required),
 	}.Filter()
 }
 
