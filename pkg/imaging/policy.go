@@ -42,7 +42,7 @@ type (
 	// ListPoliciesRequest describes the parameters of the ListPolicies request
 	ListPoliciesRequest struct {
 		Network     PolicyNetwork
-		Contract    string
+		ContractID  string
 		PolicySetID string
 	}
 
@@ -64,7 +64,7 @@ type (
 	policyRequest struct {
 		PolicyID    string
 		Network     PolicyNetwork
-		Contract    string
+		ContractID  string
 		PolicySetID string
 	}
 
@@ -72,7 +72,7 @@ type (
 	UpsertPolicyRequest struct {
 		PolicyID    string
 		Network     PolicyNetwork
-		Contract    string
+		ContractID  string
 		PolicySetID string
 		PolicyInput
 	}
@@ -274,7 +274,7 @@ func unmarshallPolicyOutput(policyOutput map[string]interface{}) (PolicyOutput, 
 // Validate validates ListPoliciesRequest
 func (v ListPoliciesRequest) Validate() error {
 	errs := validation.Errors{
-		"Contract":    validation.Validate(v.Contract, validation.Required),
+		"ContractID":  validation.Validate(v.ContractID, validation.Required),
 		"PolicySetID": validation.Validate(v.PolicySetID, validation.Required),
 		"Network": validation.Validate(v.Network, validation.Required, validation.In(PolicyNetworkStaging, PolicyNetworkProduction).
 			Error(fmt.Sprintf("network has to be '%s', '%s'", PolicyNetworkStaging, PolicyNetworkProduction))),
@@ -286,7 +286,7 @@ func (v ListPoliciesRequest) Validate() error {
 func (v GetPolicyRequest) Validate() error {
 	errs := validation.Errors{
 		"PolicyID":    validation.Validate(v.PolicyID, validation.Required),
-		"Contract":    validation.Validate(v.Contract, validation.Required),
+		"ContractID":  validation.Validate(v.ContractID, validation.Required),
 		"PolicySetID": validation.Validate(v.PolicySetID, validation.Required),
 		"Network": validation.Validate(v.Network, validation.Required, validation.In(PolicyNetworkStaging, PolicyNetworkProduction).
 			Error(fmt.Sprintf("network has to be '%s', '%s'", PolicyNetworkStaging, PolicyNetworkProduction))),
@@ -298,7 +298,7 @@ func (v GetPolicyRequest) Validate() error {
 func (v UpsertPolicyRequest) Validate() error {
 	errs := validation.Errors{
 		"PolicyID":    validation.Validate(v.PolicyID, validation.Required),
-		"Contract":    validation.Validate(v.Contract, validation.Required),
+		"ContractID":  validation.Validate(v.ContractID, validation.Required),
 		"PolicySetID": validation.Validate(v.PolicySetID, validation.Required),
 		"Network": validation.Validate(v.Network, validation.Required, validation.In(PolicyNetworkStaging, PolicyNetworkProduction).
 			Error(fmt.Sprintf("network has to be '%s', '%s'", PolicyNetworkStaging, PolicyNetworkProduction))),
@@ -312,7 +312,7 @@ func (v UpsertPolicyRequest) Validate() error {
 func (v DeletePolicyRequest) Validate() error {
 	errs := validation.Errors{
 		"PolicyID":    validation.Validate(v.PolicyID, validation.Required),
-		"Contract":    validation.Validate(v.Contract, validation.Required),
+		"ContractID":  validation.Validate(v.ContractID, validation.Required),
 		"PolicySetID": validation.Validate(v.PolicySetID, validation.Required),
 		"Network": validation.Validate(v.Network, validation.Required, validation.In(PolicyNetworkStaging, PolicyNetworkProduction).
 			Error(fmt.Sprintf("network has to be '%s', '%s'", PolicyNetworkStaging, PolicyNetworkProduction))),
@@ -324,7 +324,7 @@ func (v DeletePolicyRequest) Validate() error {
 func (v GetPolicyHistoryRequest) Validate() error {
 	errs := validation.Errors{
 		"PolicyID":    validation.Validate(v.PolicyID, validation.Required),
-		"Contract":    validation.Validate(v.Contract, validation.Required),
+		"ContractID":  validation.Validate(v.ContractID, validation.Required),
 		"PolicySetID": validation.Validate(v.PolicySetID, validation.Required),
 		"Network": validation.Validate(v.Network, validation.Required, validation.In(PolicyNetworkStaging, PolicyNetworkProduction).
 			Error(fmt.Sprintf("network has to be '%s', '%s'", PolicyNetworkStaging, PolicyNetworkProduction))),
@@ -347,7 +347,7 @@ func (i *imaging) ListPolicies(ctx context.Context, params ListPoliciesRequest) 
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPolicies, err)
 	}
 
-	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Contract", params.ContractID)
 	req.Header.Set("Policy-Set", params.PolicySetID)
 
 	var result ListPoliciesResponse
@@ -378,7 +378,7 @@ func (i *imaging) GetPolicy(ctx context.Context, params GetPolicyRequest) (Polic
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicy, err)
 	}
 
-	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Contract", params.ContractID)
 	req.Header.Set("Policy-Set", params.PolicySetID)
 
 	var result map[string]interface{}
@@ -414,7 +414,7 @@ func (i *imaging) UpsertPolicy(ctx context.Context, params UpsertPolicyRequest) 
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpsertPolicy, err)
 	}
 
-	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Contract", params.ContractID)
 	req.Header.Set("Policy-Set", params.PolicySetID)
 
 	var result PolicyResponse
@@ -445,7 +445,7 @@ func (i *imaging) DeletePolicy(ctx context.Context, params DeletePolicyRequest) 
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeletePolicy, err)
 	}
 
-	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Contract", params.ContractID)
 	req.Header.Set("Policy-Set", params.PolicySetID)
 
 	var result PolicyResponse
@@ -476,7 +476,7 @@ func (i *imaging) GetPolicyHistory(ctx context.Context, params GetPolicyHistoryR
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicyHistory, err)
 	}
 
-	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Contract", params.ContractID)
 	req.Header.Set("Policy-Set", params.PolicySetID)
 
 	var result GetPolicyHistoryResponse

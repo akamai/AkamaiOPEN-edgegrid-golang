@@ -35,14 +35,14 @@ type (
 
 	// ListPolicySetsRequest describes the parameters of the ListPolicySets request
 	ListPolicySetsRequest struct {
-		Contract string
-		Network  Network
+		ContractID string
+		Network    Network
 	}
 
 	// GetPolicySetRequest describes the parameters of the get GetPolicySet request
 	GetPolicySetRequest struct {
 		PolicySetID string
-		Contract    string
+		ContractID  string
 		Network     Network
 	}
 
@@ -56,7 +56,7 @@ type (
 
 	// CreatePolicySetRequest describes the parameters of the CreatePolicySet request
 	CreatePolicySetRequest struct {
-		Contract string
+		ContractID string
 		CreatePolicySet
 	}
 
@@ -69,7 +69,7 @@ type (
 	// UpdatePolicySetRequest describes the parameters of the UpdatePolicySet request
 	UpdatePolicySetRequest struct {
 		PolicySetID string
-		Contract    string
+		ContractID  string
 		UpdatePolicySet
 	}
 
@@ -87,7 +87,7 @@ type (
 	// DeletePolicySetRequest describes the parameters of the delete PolicySet request
 	DeletePolicySetRequest struct {
 		PolicySetID string
-		Contract    string
+		ContractID  string
 	}
 
 	// MediaType of media this Policy Set manages
@@ -147,7 +147,7 @@ var (
 // Validate validates ListPolicySetsRequest
 func (v ListPolicySetsRequest) Validate() error {
 	errs := validation.Errors{
-		"Contract": validation.Validate(v.Contract, validation.Required),
+		"ContractID": validation.Validate(v.ContractID, validation.Required),
 		"Network": validation.Validate(v.Network, validation.In(NetworkStaging, NetworkProduction, NetworkBoth).
 			Error(fmt.Sprintf("network has to be '%s', '%s' or empty for both networks at the same time", NetworkStaging, NetworkProduction))),
 	}
@@ -158,7 +158,7 @@ func (v ListPolicySetsRequest) Validate() error {
 func (v GetPolicySetRequest) Validate() error {
 	errs := validation.Errors{
 		"PolicySetID": validation.Validate(v.PolicySetID, validation.Required),
-		"Contract":    validation.Validate(v.Contract, validation.Required),
+		"ContractID":  validation.Validate(v.ContractID, validation.Required),
 		"Network": validation.Validate(v.Network, validation.In(NetworkStaging, NetworkProduction, NetworkBoth).
 			Error(fmt.Sprintf("network has to be '%s', '%s' or empty for both networks at the same time", NetworkStaging, NetworkProduction))),
 	}
@@ -168,8 +168,8 @@ func (v GetPolicySetRequest) Validate() error {
 // Validate validates CreatePolicySetRequest
 func (v CreatePolicySetRequest) Validate() error {
 	errs := validation.Errors{
-		"Contract": validation.Validate(v.Contract, validation.Required),
-		"Name":     validation.Validate(v.Name, validation.Required),
+		"ContractID": validation.Validate(v.ContractID, validation.Required),
+		"Name":       validation.Validate(v.Name, validation.Required),
 		"Region": validation.Validate(v.Region, validation.Required, validation.In(RegionUS, RegionEMEA, RegionAsia, RegionAustralia, RegionJapan, RegionChina).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s', '%s', '%s', '%s', '%s'", v.Region, RegionUS, RegionEMEA, RegionAsia, RegionAustralia, RegionJapan, RegionChina))),
 		"Type": validation.Validate(v.Type, validation.Required, validation.In(TypeImage, TypeVideo).Error(
@@ -182,8 +182,8 @@ func (v CreatePolicySetRequest) Validate() error {
 // Validate validates UpdatePolicySetRequest
 func (v UpdatePolicySetRequest) Validate() error {
 	errs := validation.Errors{
-		"Contract": validation.Validate(v.Contract, validation.Required),
-		"Name":     validation.Validate(v.Name, validation.Required),
+		"ContractID": validation.Validate(v.ContractID, validation.Required),
+		"Name":       validation.Validate(v.Name, validation.Required),
 		"Region": validation.Validate(v.Region, validation.Required, validation.In(RegionUS, RegionEMEA, RegionAsia, RegionAustralia, RegionJapan, RegionChina).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s', '%s', '%s', '%s', '%s'", v.Region, RegionUS, RegionEMEA, RegionAsia, RegionAustralia, RegionJapan, RegionChina))),
 	}
@@ -194,7 +194,7 @@ func (v UpdatePolicySetRequest) Validate() error {
 func (v DeletePolicySetRequest) Validate() error {
 	errs := validation.Errors{
 		"PolicySetID": validation.Validate(v.PolicySetID, validation.Required),
-		"Contract":    validation.Validate(v.Contract, validation.Required),
+		"ContractID":  validation.Validate(v.ContractID, validation.Required),
 	}
 	return edgegriderr.ParseValidationErrors(errs)
 }
@@ -223,7 +223,7 @@ func (i *imaging) ListPolicySets(ctx context.Context, params ListPolicySetsReque
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPolicySets, err)
 	}
 
-	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Contract", params.ContractID)
 
 	var result []PolicySet
 	resp, err := i.Exec(req, &result)
@@ -262,7 +262,7 @@ func (i *imaging) GetPolicySet(ctx context.Context, params GetPolicySetRequest) 
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicySet, err)
 	}
 
-	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Contract", params.ContractID)
 
 	var result PolicySet
 	resp, err := i.Exec(req, &result)
@@ -291,7 +291,7 @@ func (i *imaging) CreatePolicySet(ctx context.Context, params CreatePolicySetReq
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreatePolicySet, err)
 	}
 
-	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Contract", params.ContractID)
 
 	var result PolicySet
 	resp, err := i.Exec(req, &result, params.CreatePolicySet)
@@ -324,7 +324,7 @@ func (i *imaging) UpdatePolicySet(ctx context.Context, params UpdatePolicySetReq
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdatePolicySet, err)
 	}
 
-	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Contract", params.ContractID)
 
 	var result PolicySet
 
@@ -358,7 +358,7 @@ func (i *imaging) DeletePolicySet(ctx context.Context, params DeletePolicySetReq
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeletePolicySet, err)
 	}
 
-	req.Header.Set("Contract", params.Contract)
+	req.Header.Set("Contract", params.ContractID)
 
 	resp, err := i.Exec(req, nil)
 	if err != nil {

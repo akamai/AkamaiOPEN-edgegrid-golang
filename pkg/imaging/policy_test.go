@@ -27,7 +27,7 @@ func TestListPolicies(t *testing.T) {
 		"200 OK": {
 			params: ListPoliciesRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 			},
 			responseStatus: http.StatusOK,
@@ -488,7 +488,7 @@ func TestListPolicies(t *testing.T) {
 		"200 OK very deep": {
 			params: ListPoliciesRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 			},
 			responseStatus: http.StatusOK,
@@ -1029,7 +1029,7 @@ func TestListPolicies(t *testing.T) {
 		"400 Bad request": {
 			params: ListPoliciesRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -1054,7 +1054,7 @@ func TestListPolicies(t *testing.T) {
 		"401 Not authorized": {
 			params: ListPoliciesRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -1087,7 +1087,7 @@ func TestListPolicies(t *testing.T) {
 		"403 Forbidden": {
 			params: ListPoliciesRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 			},
 			responseStatus: http.StatusForbidden,
@@ -1112,8 +1112,8 @@ func TestListPolicies(t *testing.T) {
 		// 500
 		"invalid network": {
 			params: ListPoliciesRequest{
-				Contract: "3-WNKXX1",
-				Network:  "foo",
+				ContractID: "3-WNKXX1",
+				Network:    "foo",
 			},
 			withError: ErrStructValidation,
 		},
@@ -1162,7 +1162,7 @@ func TestGetPolicy(t *testing.T) {
 		"200 OK - image": {
 			params: GetPolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -1282,7 +1282,7 @@ func TestGetPolicy(t *testing.T) {
 		"200 OK - video": {
 			params: GetPolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -1327,7 +1327,7 @@ func TestGetPolicy(t *testing.T) {
 		"400 Bad request": {
 			params: GetPolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -1353,7 +1353,7 @@ func TestGetPolicy(t *testing.T) {
 		"401 Not authorized": {
 			params: GetPolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -1387,7 +1387,7 @@ func TestGetPolicy(t *testing.T) {
 		"403 Forbidden": {
 			params: GetPolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -1413,7 +1413,7 @@ func TestGetPolicy(t *testing.T) {
 		// 500
 		"invalid network": {
 			params: GetPolicyRequest{
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				Network:     "foo",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
@@ -1431,16 +1431,16 @@ func TestGetPolicy(t *testing.T) {
 		"missing policy id": {
 			params: GetPolicyRequest{
 				Network:     PolicyNetworkProduction,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 			},
 			withError: ErrStructValidation,
 		},
 		"missing policy set id": {
 			params: GetPolicyRequest{
-				Network:  PolicyNetworkProduction,
-				PolicyID: "foo",
-				Contract: "3-WNKXX1",
+				Network:    PolicyNetworkProduction,
+				PolicyID:   "foo",
+				ContractID: "3-WNKXX1",
 			},
 			withError: ErrStructValidation,
 		},
@@ -1483,7 +1483,7 @@ func TestPutPolicy(t *testing.T) {
 		"200 OK - image": {
 			params: UpsertPolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 				PolicyInput: &PolicyInputImage{
@@ -1591,7 +1591,7 @@ func TestPutPolicy(t *testing.T) {
 		"200 OK - video": {
 			params: UpsertPolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 				PolicyInput: &PolicyInputVideo{
@@ -1625,7 +1625,7 @@ func TestPutPolicy(t *testing.T) {
 		"400 Bad request": {
 			params: UpsertPolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 				PolicyInput: &PolicyInputImage{},
@@ -1652,7 +1652,7 @@ func TestPutPolicy(t *testing.T) {
 		"401 Not authorized": {
 			params: UpsertPolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 				PolicyInput: &PolicyInputImage{},
@@ -1687,7 +1687,7 @@ func TestPutPolicy(t *testing.T) {
 		"403 Forbidden": {
 			params: UpsertPolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 				PolicyInput: &PolicyInputImage{},
@@ -1714,7 +1714,7 @@ func TestPutPolicy(t *testing.T) {
 		// 500
 		"invalid network": {
 			params: UpsertPolicyRequest{
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				Network:     "foo",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
@@ -1732,16 +1732,16 @@ func TestPutPolicy(t *testing.T) {
 		"missing policy id": {
 			params: UpsertPolicyRequest{
 				Network:     PolicyNetworkProduction,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 			},
 			withError: ErrStructValidation,
 		},
 		"missing policy set id": {
 			params: UpsertPolicyRequest{
-				Network:  PolicyNetworkProduction,
-				PolicyID: "foo",
-				Contract: "3-WNKXX1",
+				Network:    PolicyNetworkProduction,
+				PolicyID:   "foo",
+				ContractID: "3-WNKXX1",
 			},
 			withError: ErrStructValidation,
 		},
@@ -1749,7 +1749,7 @@ func TestPutPolicy(t *testing.T) {
 			params: UpsertPolicyRequest{
 				Network:     PolicyNetworkProduction,
 				PolicyID:    "foo",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 			},
 			withError: ErrStructValidation,
@@ -1807,7 +1807,7 @@ func TestDeletePolicy(t *testing.T) {
 		"200 OK": {
 			params: DeletePolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -1832,7 +1832,7 @@ func TestDeletePolicy(t *testing.T) {
 		"400 Bad request": {
 			params: DeletePolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -1858,7 +1858,7 @@ func TestDeletePolicy(t *testing.T) {
 		"401 Not authorized": {
 			params: DeletePolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -1892,7 +1892,7 @@ func TestDeletePolicy(t *testing.T) {
 		"403 Forbidden": {
 			params: DeletePolicyRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -1918,7 +1918,7 @@ func TestDeletePolicy(t *testing.T) {
 		// 500
 		"invalid network": {
 			params: DeletePolicyRequest{
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				Network:     "foo",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
@@ -1936,16 +1936,16 @@ func TestDeletePolicy(t *testing.T) {
 		"missing policy id": {
 			params: DeletePolicyRequest{
 				Network:     PolicyNetworkProduction,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 			},
 			withError: ErrStructValidation,
 		},
 		"missing policy set id": {
 			params: DeletePolicyRequest{
-				Network:  PolicyNetworkProduction,
-				PolicyID: "foo",
-				Contract: "3-WNKXX1",
+				Network:    PolicyNetworkProduction,
+				PolicyID:   "foo",
+				ContractID: "3-WNKXX1",
 			},
 			withError: ErrStructValidation,
 		},
@@ -1988,7 +1988,7 @@ func TestGetPolicyHistory(t *testing.T) {
 		"200 OK": {
 			params: GetPolicyHistoryRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -2042,7 +2042,7 @@ func TestGetPolicyHistory(t *testing.T) {
 		"400 Bad request": {
 			params: GetPolicyHistoryRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -2068,7 +2068,7 @@ func TestGetPolicyHistory(t *testing.T) {
 		"401 Not authorized": {
 			params: GetPolicyHistoryRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -2102,7 +2102,7 @@ func TestGetPolicyHistory(t *testing.T) {
 		"403 Forbidden": {
 			params: GetPolicyHistoryRequest{
 				Network:     PolicyNetworkStaging,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
 			},
@@ -2128,7 +2128,7 @@ func TestGetPolicyHistory(t *testing.T) {
 		// 500
 		"invalid network": {
 			params: GetPolicyHistoryRequest{
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				Network:     "foo",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 				PolicyID:    "foo",
@@ -2146,16 +2146,16 @@ func TestGetPolicyHistory(t *testing.T) {
 		"missing policy id": {
 			params: GetPolicyHistoryRequest{
 				Network:     PolicyNetworkProduction,
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
 			},
 			withError: ErrStructValidation,
 		},
 		"missing policy set id": {
 			params: GetPolicyHistoryRequest{
-				Network:  PolicyNetworkProduction,
-				PolicyID: "foo",
-				Contract: "3-WNKXX1",
+				Network:    PolicyNetworkProduction,
+				PolicyID:   "foo",
+				ContractID: "3-WNKXX1",
 			},
 			withError: ErrStructValidation,
 		},

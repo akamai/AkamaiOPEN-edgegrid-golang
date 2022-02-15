@@ -23,7 +23,7 @@ func TestListPolicySets(t *testing.T) {
 	}{
 		"200 OK - both networks": {
 			params: ListPolicySetsRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -93,8 +93,8 @@ func TestListPolicySets(t *testing.T) {
 		},
 		"200 OK - staging network": {
 			params: ListPolicySetsRequest{
-				Contract: "3-WNKXX1",
-				Network:  NetworkStaging,
+				ContractID: "3-WNKXX1",
+				Network:    NetworkStaging,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -146,7 +146,7 @@ func TestListPolicySets(t *testing.T) {
 		},
 		"400 Bad request": {
 			params: ListPolicySetsRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `{
@@ -154,7 +154,7 @@ func TestListPolicySets(t *testing.T) {
 "title": "Bad Request",
 "instance": "52a21f40-9861-4d35-95d0-a603c85cb2ad",
 "status": 400,
-"detail": "A contract must be specified using the Contract header.",
+"detail": "A contract must be specified using the ContractID header.",
 "problemId": "52a21f40-9861-4d35-95d0-a603c85cb2ad"
 }`,
 			expectedPath: "/imaging/v2/policysets/",
@@ -163,13 +163,13 @@ func TestListPolicySets(t *testing.T) {
 				Title:     "Bad Request",
 				Instance:  "52a21f40-9861-4d35-95d0-a603c85cb2ad",
 				Status:    400,
-				Detail:    "A contract must be specified using the Contract header.",
+				Detail:    "A contract must be specified using the ContractID header.",
 				ProblemID: "52a21f40-9861-4d35-95d0-a603c85cb2ad",
 			},
 		},
 		"401 Not authorized": {
 			params: ListPolicySetsRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `{
@@ -200,7 +200,7 @@ func TestListPolicySets(t *testing.T) {
 		},
 		"403 Forbidden": {
 			params: ListPolicySetsRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 			},
 			responseStatus: http.StatusForbidden,
 			responseBody: `{
@@ -234,8 +234,8 @@ func TestListPolicySets(t *testing.T) {
 		// 500
 		"invalid network": {
 			params: ListPolicySetsRequest{
-				Contract: "3-WNKXX1",
-				Network:  "foo",
+				ContractID: "3-WNKXX1",
+				Network:    "foo",
 			},
 			withError: ErrStructValidation,
 		},
@@ -280,7 +280,7 @@ func TestGetPolicySet(t *testing.T) {
 		"200 OK for both networks": {
 			params: GetPolicySetRequest{
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `{
@@ -308,7 +308,7 @@ func TestGetPolicySet(t *testing.T) {
 		"200 OK for both staging network": {
 			params: GetPolicySetRequest{
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				Network:     NetworkStaging,
 			},
 			responseStatus: http.StatusOK,
@@ -337,7 +337,7 @@ func TestGetPolicySet(t *testing.T) {
 		"404 Not found": {
 			params: GetPolicySetRequest{
 				PolicySetID: "570f9090-5dbe-11ec-8a0a",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 			},
 			responseStatus: http.StatusNotFound,
 			responseBody: `
@@ -370,15 +370,15 @@ func TestGetPolicySet(t *testing.T) {
 		// 500
 		"missing Policy set Id": {
 			params: GetPolicySetRequest{
-				Contract: "3-WNKXX1",
-				Network:  NetworkProduction,
+				ContractID: "3-WNKXX1",
+				Network:    NetworkProduction,
 			},
 			withError: ErrStructValidation,
 		},
 		"invalid network": {
 			params: GetPolicySetRequest{
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				Network:     "foo",
 			},
 			withError: ErrStructValidation,
@@ -425,7 +425,7 @@ func TestCreatePolicySet(t *testing.T) {
 	}{
 		"201 created": {
 			params: CreatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				CreatePolicySet: CreatePolicySet{
 					Name:   "my_example_token",
 					Type:   "IMAGE",
@@ -456,7 +456,7 @@ func TestCreatePolicySet(t *testing.T) {
 		},
 		"201 created with default policy": {
 			params: CreatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				CreatePolicySet: CreatePolicySet{
 					Name:   "my_example_token",
 					Type:   "IMAGE",
@@ -494,7 +494,7 @@ func TestCreatePolicySet(t *testing.T) {
 		},
 		"400 Bad request": {
 			params: CreatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				CreatePolicySet: CreatePolicySet{
 					Name:   "my_example_token",
 					Type:   "IMAGE",
@@ -508,7 +508,7 @@ func TestCreatePolicySet(t *testing.T) {
 					"title": "Bad Request",
 					"instance": "5ea0274b-2322-4a0a-92ee-fabaa5a84d41",
 					"status": 400,
-					"detail": "A contract must be specified using the Contract header.",
+					"detail": "A contract must be specified using the ContractID header.",
 					"problemId": "5ea0274b-2322-4a0a-92ee-fabaa5a84d41"
 				}`,
 			expectedPath: "/imaging/v2/policysets/",
@@ -517,13 +517,13 @@ func TestCreatePolicySet(t *testing.T) {
 				Title:     "Bad Request",
 				Instance:  "5ea0274b-2322-4a0a-92ee-fabaa5a84d41",
 				Status:    400,
-				Detail:    "A contract must be specified using the Contract header.",
+				Detail:    "A contract must be specified using the ContractID header.",
 				ProblemID: "5ea0274b-2322-4a0a-92ee-fabaa5a84d41",
 			},
 		},
 		"missing Policy set Id": {
 			params: CreatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 			},
 			withError: ErrStructValidation,
 		},
@@ -539,7 +539,7 @@ func TestCreatePolicySet(t *testing.T) {
 		},
 		"missing name": {
 			params: CreatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				CreatePolicySet: CreatePolicySet{
 					Type:   "IMAGE",
 					Region: "US",
@@ -549,7 +549,7 @@ func TestCreatePolicySet(t *testing.T) {
 		},
 		"missing type": {
 			params: CreatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				CreatePolicySet: CreatePolicySet{
 					Name:   "my_example_token",
 					Region: "US",
@@ -559,7 +559,7 @@ func TestCreatePolicySet(t *testing.T) {
 		},
 		"invalid type": {
 			params: CreatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				CreatePolicySet: CreatePolicySet{
 					Name:   "my_example_token",
 					Type:   "INVALID",
@@ -570,7 +570,7 @@ func TestCreatePolicySet(t *testing.T) {
 		},
 		"missing region": {
 			params: CreatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				CreatePolicySet: CreatePolicySet{
 					Name: "my_example_token",
 					Type: "IMAGE",
@@ -580,7 +580,7 @@ func TestCreatePolicySet(t *testing.T) {
 		},
 		"invalid region": {
 			params: CreatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				CreatePolicySet: CreatePolicySet{
 					Name:   "my_example_token",
 					Type:   "IMAGE",
@@ -635,7 +635,7 @@ func TestUpdatePolicySet(t *testing.T) {
 		"200 updated": {
 			params: UpdatePolicySetRequest{
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				UpdatePolicySet: UpdatePolicySet{
 					Name:   "my_renamed_token_2",
 					Region: "US",
@@ -666,7 +666,7 @@ func TestUpdatePolicySet(t *testing.T) {
 		"400 Bad request": {
 			params: UpdatePolicySetRequest{
 				PolicySetID: "second",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				UpdatePolicySet: UpdatePolicySet{
 					Name:   "my_renamed_token",
 					Region: "US",
@@ -703,7 +703,7 @@ func TestUpdatePolicySet(t *testing.T) {
 		"500 Internal server error": {
 			params: UpdatePolicySetRequest{
 				PolicySetID: "second",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 				UpdatePolicySet: UpdatePolicySet{
 					Name:   "my_renamed_token",
 					Region: "EMEA",
@@ -739,7 +739,7 @@ func TestUpdatePolicySet(t *testing.T) {
 		},
 		"missing Policy set Id": {
 			params: UpdatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 			},
 			withError: ErrStructValidation,
 		},
@@ -754,7 +754,7 @@ func TestUpdatePolicySet(t *testing.T) {
 		},
 		"missing name": {
 			params: UpdatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				UpdatePolicySet: UpdatePolicySet{
 					Region: "US",
 				},
@@ -763,7 +763,7 @@ func TestUpdatePolicySet(t *testing.T) {
 		},
 		"missing region": {
 			params: UpdatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				UpdatePolicySet: UpdatePolicySet{
 					Name: "my_example_token",
 				},
@@ -772,7 +772,7 @@ func TestUpdatePolicySet(t *testing.T) {
 		},
 		"invalid region": {
 			params: UpdatePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 				UpdatePolicySet: UpdatePolicySet{
 					Name:   "my_example_token",
 					Region: "INVALID",
@@ -824,7 +824,7 @@ func TestDeletePolicySet(t *testing.T) {
 		"204 no content (deleted)": {
 			params: DeletePolicySetRequest{
 				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 			},
 			responseStatus: http.StatusNoContent,
 			expectedPath:   "/imaging/v2/policysets/570f9090-5dbe-11ec-8a0a-71665789c1d8",
@@ -832,7 +832,7 @@ func TestDeletePolicySet(t *testing.T) {
 		"400 Bad request": {
 			params: DeletePolicySetRequest{
 				PolicySetID: "second",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 			},
 			responseStatus: http.StatusBadRequest,
 			responseBody: `
@@ -841,7 +841,7 @@ func TestDeletePolicySet(t *testing.T) {
 					"title": "Bad Request",
 					"instance": "1a7387db-7056-4ae9-8cdf-5f23e0645487",
 					"status": 400,
-					"detail": "A contract must be specified using the Contract header.",
+					"detail": "A contract must be specified using the ContractID header.",
 					"problemId": "1a7387db-7056-4ae9-8cdf-5f23e0645487"
 				}`,
 			expectedPath: "/imaging/v2/policysets/second",
@@ -850,14 +850,14 @@ func TestDeletePolicySet(t *testing.T) {
 				Title:     "Bad Request",
 				Instance:  "1a7387db-7056-4ae9-8cdf-5f23e0645487",
 				Status:    400,
-				Detail:    "A contract must be specified using the Contract header.",
+				Detail:    "A contract must be specified using the ContractID header.",
 				ProblemID: "1a7387db-7056-4ae9-8cdf-5f23e0645487",
 			},
 		},
 		"401 Not authorized": {
 			params: DeletePolicySetRequest{
 				PolicySetID: "second",
-				Contract:    "3-WNKAA1",
+				ContractID:  "3-WNKAA1",
 			},
 			responseStatus: http.StatusBadRequest,
 			responseBody: `
@@ -890,7 +890,7 @@ func TestDeletePolicySet(t *testing.T) {
 		"404 Not found": {
 			params: DeletePolicySetRequest{
 				PolicySetID: "second",
-				Contract:    "3-WNKXX1",
+				ContractID:  "3-WNKXX1",
 			},
 			responseStatus: http.StatusNotFound,
 			responseBody: `
@@ -915,7 +915,7 @@ func TestDeletePolicySet(t *testing.T) {
 		// 500
 		"missing Policy set Id": {
 			params: DeletePolicySetRequest{
-				Contract: "3-WNKXX1",
+				ContractID: "3-WNKXX1",
 			},
 			withError: ErrStructValidation,
 		},
