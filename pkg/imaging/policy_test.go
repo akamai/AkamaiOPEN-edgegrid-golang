@@ -2184,3 +2184,184 @@ func TestGetPolicyHistory(t *testing.T) {
 		})
 	}
 }
+
+func TestRollbackPolicy(t *testing.T) {
+	tests := map[string]struct {
+		params           RollbackPolicyRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *PolicyResponse
+		expectedHeaders  map[string][]string
+		withError        error
+	}{
+		"200 OK": {
+			params: RollbackPolicyRequest{
+				Network:     PolicyNetworkStaging,
+				ContractID:  "3-WNKXX1",
+				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
+				PolicyID:    "foo",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/imaging/v2/network/staging/policies/rollback/foo",
+			expectedHeaders: map[string][]string{
+				"Contract":   {"3-WNKXX1"},
+				"Policy-Set": {"570f9090-5dbe-11ec-8a0a-71665789c1d8"},
+			},
+			responseBody: `
+			{
+				"operationPerformed": "UPDATED",
+				"description": "Policy foo has been rolled back to version 3.",
+				"id": "foo"
+			}`,
+			expectedResponse: &PolicyResponse{
+				OperationPerformed: "UPDATED",
+				Description:        "Policy foo has been rolled back to version 3.",
+				ID:                 "foo",
+			},
+		},
+		"400 Bad request": {
+			params: RollbackPolicyRequest{
+				Network:     PolicyNetworkStaging,
+				ContractID:  "3-WNKXX1",
+				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
+				PolicyID:    "foo",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `{
+"type": "https://problems.luna.akamaiapis.net/image-policy-manager/IVM_1004",
+"title": "Bad Request",
+"instance": "52a21f40-9861-4d35-95d0-a603c85cb2ad",
+"status": 400,
+"detail": "A contract must be specified using the Contract header.",
+"problemId": "52a21f40-9861-4d35-95d0-a603c85cb2ad"
+}`,
+			expectedPath: "/imaging/v2/network/staging/policies/rollback/foo",
+			withError: &Error{
+				Type:      "https://problems.luna.akamaiapis.net/image-policy-manager/IVM_1004",
+				Title:     "Bad Request",
+				Instance:  "52a21f40-9861-4d35-95d0-a603c85cb2ad",
+				Status:    400,
+				Detail:    "A contract must be specified using the Contract header.",
+				ProblemID: "52a21f40-9861-4d35-95d0-a603c85cb2ad",
+			},
+		},
+		"401 Not authorized": {
+			params: RollbackPolicyRequest{
+				Network:     PolicyNetworkStaging,
+				ContractID:  "3-WNKXX1",
+				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
+				PolicyID:    "foo",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `{
+"type": "https://problems.luna-dev.akamaiapis.net/-/pep-authn/deny",
+"title": "Not authorized",
+"status": 401,
+"detail": "Inactive client token",
+"instance": "https://akaa-mgfkwp3rw4k2whym-eyn4wdjeur5lz37c.luna-dev.akamaiapis.net/imaging/v2/network/staging/policysets/",
+"method": "GET",
+"serverIp": "104.81.220.242",
+"clientIp": "22.22.22.22",
+"requestId": "124cc33c",
+"requestTime": "2022-01-12T16:53:44Z"
+}`,
+			expectedPath: "/imaging/v2/network/staging/policies/rollback/foo",
+			withError: &Error{
+				Type:        "https://problems.luna-dev.akamaiapis.net/-/pep-authn/deny",
+				Title:       "Not authorized",
+				Status:      401,
+				Detail:      "Inactive client token",
+				Instance:    "https://akaa-mgfkwp3rw4k2whym-eyn4wdjeur5lz37c.luna-dev.akamaiapis.net/imaging/v2/network/staging/policysets/",
+				Method:      "GET",
+				ServerIP:    "104.81.220.242",
+				ClientIP:    "22.22.22.22",
+				RequestID:   "124cc33c",
+				RequestTime: "2022-01-12T16:53:44Z",
+			},
+		},
+		"403 Forbidden": {
+			params: RollbackPolicyRequest{
+				Network:     PolicyNetworkStaging,
+				ContractID:  "3-WNKXX1",
+				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
+				PolicyID:    "foo",
+			},
+			responseStatus: http.StatusForbidden,
+			responseBody: `{
+				"type": "https://problems.luna.akamaiapis.net/image-policy-manager/IVM_1002",
+				"title": "Forbidden",
+				"instance": "7d633d60-b120-4f28-a0de-ad86aeaf3c68",
+				"status": 403,
+				"detail": "User does not have authorization to perform this action.",
+				"problemId": "7d633d60-b120-4f28-a0de-ad86aeaf3c68"
+			}`,
+			expectedPath: "/imaging/v2/network/staging/policies/rollback/foo",
+			withError: &Error{
+				Type:      "https://problems.luna.akamaiapis.net/image-policy-manager/IVM_1002",
+				Title:     "Forbidden",
+				Instance:  "7d633d60-b120-4f28-a0de-ad86aeaf3c68",
+				Status:    403,
+				Detail:    "User does not have authorization to perform this action.",
+				ProblemID: "7d633d60-b120-4f28-a0de-ad86aeaf3c68",
+			},
+		},
+		// 500
+		"invalid network": {
+			params: RollbackPolicyRequest{
+				ContractID:  "3-WNKXX1",
+				Network:     "foo",
+				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
+				PolicyID:    "foo",
+			},
+			withError: ErrStructValidation,
+		},
+		"missing contract": {
+			params: RollbackPolicyRequest{
+				Network:     PolicyNetworkProduction,
+				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
+				PolicyID:    "foo",
+			},
+			withError: ErrStructValidation,
+		},
+		"missing policy id": {
+			params: RollbackPolicyRequest{
+				Network:     PolicyNetworkProduction,
+				ContractID:  "3-WNKXX1",
+				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
+			},
+			withError: ErrStructValidation,
+		},
+		"missing policy set id": {
+			params: RollbackPolicyRequest{
+				Network:    PolicyNetworkProduction,
+				PolicyID:   "foo",
+				ContractID: "3-WNKXX1",
+			},
+			withError: ErrStructValidation,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				for h := range test.expectedHeaders {
+					assert.Equal(t, test.expectedHeaders[h], r.Header[h])
+				}
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.RollbackPolicy(context.Background(), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}

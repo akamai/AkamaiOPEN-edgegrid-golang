@@ -37,6 +37,9 @@ type (
 
 		// GetPolicyHistory retrieves history of changes for a policy
 		GetPolicyHistory(context.Context, GetPolicyHistoryRequest) (*GetPolicyHistoryResponse, error)
+
+		// RollbackPolicy reverts a policy to its previous version and deploys it to the network
+		RollbackPolicy(ctx context.Context, request RollbackPolicyRequest) (*PolicyResponse, error)
 	}
 
 	// ListPoliciesRequest describes the parameters of the ListPolicies request
@@ -59,6 +62,8 @@ type (
 	DeletePolicyRequest policyRequest
 	// GetPolicyHistoryRequest describes the parameters of the GetHistoryPolicy request
 	GetPolicyHistoryRequest policyRequest
+	// RollbackPolicyRequest describes the parameters of the RollbackPolicy request
+	RollbackPolicyRequest policyRequest
 
 	// policyRequest describes the parameters of the various policy requests
 	policyRequest struct {
@@ -77,7 +82,7 @@ type (
 		PolicyInput
 	}
 
-	// PolicyResponse describes response of the UpsertPolicy and DeletePolicy responses
+	// PolicyResponse describes response of the UpsertPolicy, DeletePolicy and RollbackPolicy responses
 	PolicyResponse struct {
 		Description        string `json:"description"`
 		ID                 string `json:"id"`
@@ -175,6 +180,9 @@ var (
 
 	// ErrGetPolicyHistory is returned when GetPolicyHistory fails
 	ErrGetPolicyHistory = errors.New("get policy history")
+
+	// ErrRollbackPolicy is returned when RollbackPolicy fails
+	ErrRollbackPolicy = errors.New("rollback policy")
 )
 
 func (*PolicyOutputImage) policyOutputType() string {
@@ -322,6 +330,18 @@ func (v DeletePolicyRequest) Validate() error {
 
 // Validate validates GetPolicyHistoryRequest
 func (v GetPolicyHistoryRequest) Validate() error {
+	errs := validation.Errors{
+		"PolicyID":    validation.Validate(v.PolicyID, validation.Required),
+		"ContractID":  validation.Validate(v.ContractID, validation.Required),
+		"PolicySetID": validation.Validate(v.PolicySetID, validation.Required),
+		"Network": validation.Validate(v.Network, validation.Required, validation.In(PolicyNetworkStaging, PolicyNetworkProduction).
+			Error(fmt.Sprintf("network has to be '%s', '%s'", PolicyNetworkStaging, PolicyNetworkProduction))),
+	}
+	return edgegriderr.ParseValidationErrors(errs)
+}
+
+// Validate validates RollbackPolicyRequest
+func (v RollbackPolicyRequest) Validate() error {
 	errs := validation.Errors{
 		"PolicyID":    validation.Validate(v.PolicyID, validation.Required),
 		"ContractID":  validation.Validate(v.ContractID, validation.Required),
@@ -487,6 +507,37 @@ func (i *imaging) GetPolicyHistory(ctx context.Context, params GetPolicyHistoryR
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPolicyHistory, i.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func (i *imaging) RollbackPolicy(ctx context.Context, params RollbackPolicyRequest) (*PolicyResponse, error) {
+	logger := i.Log(ctx)
+	logger.Debug("RollbackPolicy")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrRollbackPolicy, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf("/imaging/v2/network/%s/policies/rollback/%s", params.Network, params.PolicyID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrRollbackPolicy, err)
+	}
+
+	req.Header.Set("Contract", params.ContractID)
+	req.Header.Set("Policy-Set", params.PolicySetID)
+
+	var result PolicyResponse
+	resp, err := i.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrRollbackPolicy, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrRollbackPolicy, i.Error(resp))
 	}
 
 	return &result, nil
