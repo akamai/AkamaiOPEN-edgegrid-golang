@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.9.2 (Feb. **, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Source for evasive path match interface updated with links to documentation
+
 ## 2.9.1 (Feb. 7, 2022)
 
 #### FEATURES/ENHANCEMENTS:
