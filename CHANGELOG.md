@@ -24,6 +24,9 @@
 * APPSEC
   * Source for evasive path match interface updated with links to documentation
 
+* CLOUDLETS
+  * Support for AS cloudlet type (Audience Segmentation)
+
 ## 2.9.1 (Feb. 7, 2022)
 
 #### FEATURES/ENHANCEMENTS:
