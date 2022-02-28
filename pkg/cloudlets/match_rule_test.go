@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/cloudlets/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/tools"
 )
 
 func TestUnmarshalJSONMatchRules(t *testing.T) {
@@ -667,6 +667,83 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 				},
 			},
 		},
+		"valid MatchRuleAS": {
+			responseBody: `
+	[
+		{
+            "name": "rule 10",
+            "type": "asMatchRule",
+            "matchURL": "http://source.com/test1",
+
+            "forwardSettings": {
+                "originId": "origin_remote_1",
+                "pathAndQS": "/cpaths/test1.html"
+            },
+
+            "matches": [
+                {
+                    "matchType": "range",
+                    "objectMatchValue": {
+                        "type": "range",
+                        "value": [  1, 100 ]
+                    },
+                    "matchOperator": "equals",
+                    "negate": false,
+                    "caseSensitive": false
+                },
+                {
+                    "matchType": "header",
+                    "objectMatchValue": {
+                        "options": {
+                            "value": [  "en" ]
+                        },
+                        "type": "object",
+                        "name": "Accept-Charset"
+                    },
+                    "matchOperator": "equals",
+                    "negate": false,
+                    "caseSensitive": false
+                }
+            ]
+        }
+	]`,
+			expectedObject: MatchRules{
+				&MatchRuleAS{
+					Name:     "rule 10",
+					Type:     "asMatchRule",
+					MatchURL: "http://source.com/test1",
+					ForwardSettings: ForwardSettingsAS{
+						OriginID:  "origin_remote_1",
+						PathAndQS: "/cpaths/test1.html",
+					},
+					Matches: []MatchCriteriaAS{
+						{
+							MatchType: "range",
+							ObjectMatchValue: &ObjectMatchValueRange{
+								Type:  "range",
+								Value: []int64{1, 100},
+							},
+							MatchOperator: "equals",
+							CaseSensitive: false,
+							Negate:        false,
+						},
+						{
+							MatchType: "header",
+							ObjectMatchValue: &ObjectMatchValueObject{
+								Name: "Accept-Charset",
+								Type: "object",
+								Options: &Options{
+									Value: []string{"en"},
+								},
+							},
+							MatchOperator: "equals",
+							Negate:        false,
+							CaseSensitive: false,
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for name, test := range tests {
@@ -901,6 +978,46 @@ MatchRules[1]: {
 }
 MatchRules[2]: {
 	PassThroughPercent: must be no less than -1
+}`,
+		},
+		"valid match rules AS": {
+			input: MatchRules{
+				MatchRuleAS{
+					Type:  "asMatchRule",
+					Start: 0,
+					End:   1,
+				},
+				MatchRuleAS{
+					Type: "asMatchRule",
+					ForwardSettings: ForwardSettingsAS{
+						PathAndQS: "something",
+						OriginID:  "something_else",
+					},
+				},
+			},
+		},
+		"invalid match rules AS": {
+			input: MatchRules{
+				MatchRuleAS{
+					Type: "matchRule",
+				},
+				MatchRuleAS{
+					Type:  "asMatchRule",
+					Start: -2,
+					End:   -1,
+					ForwardSettings: ForwardSettingsAS{
+						OriginID: "some_id",
+					},
+				},
+			},
+
+			withError: `
+MatchRules[0]: {
+	Type: value 'matchRule' is invalid. Must be: 'asMatchRule'
+}
+MatchRules[1]: {
+	End: must be no less than 0
+	Start: must be no less than 0
 }`,
 		},
 		"valid match rules CD": {

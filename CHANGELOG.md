@@ -1,5 +1,32 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.10.0 (Feb. 28, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+* [IMPORTANT] Added EdgeWorkers and EdgeKV API support
+  * EDGEWORKERS
+    * Ids - create, read, update, delete, clone
+    * Versions - create, read, delete, validate version bundle
+    * Activations - create, read, delete
+    * Deactivations - read, delete
+    * Resource tiers - read
+    * Reports - read
+    * Secure token - create
+    * Permission groups - read
+    * Properties - read
+    * Contracts - read
+  * EDGEKV 
+    * Items - create, read, update, delete
+    * Namespaces - create, read, update
+    * Initialization - create, read
+    * Access token - create, read, delete
+
+* APPSEC
+  * Source for evasive path match interface updated with links to documentation
+
+* CLOUDLETS
+  * Support for AS cloudlet type (Audience Segmentation)
+
 ## 2.9.1 (Feb. 7, 2022)
 
 #### FEATURES/ENHANCEMENTS:

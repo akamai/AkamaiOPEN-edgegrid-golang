@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -178,10 +179,11 @@ func (v GetPropertyVersionRequest) Validate() error {
 
 // Validate validates CreatePropertyVersionRequest
 func (v CreatePropertyVersionRequest) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"PropertyID": validation.Validate(v.PropertyID, validation.Required),
 		"Version":    validation.Validate(v.Version),
-	}.Filter()
+	}
+	return edgegriderr.ParseValidationErrors(errs)
 }
 
 // Validate validates PropertyVersionCreate
@@ -340,7 +342,7 @@ func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersion
 // CreatePropertyVersion creates a new property version and returns location and number for the new version
 func (p *papi) CreatePropertyVersion(ctx context.Context, request CreatePropertyVersionRequest) (*CreatePropertyVersionResponse, error) {
 	if err := request.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreatePropertyVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreatePropertyVersion, ErrStructValidation, err)
 	}
 
 	logger := p.Log(ctx)
