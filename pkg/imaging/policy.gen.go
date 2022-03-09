@@ -858,7 +858,7 @@ type (
 		Postfix string `json:"postfix,omitempty"`
 		// Prefix A prefix added to the value provided for the variable, or to the default value.
 		Prefix string `json:"prefix,omitempty"`
-		// Type The type of variable, either `bool`, `number`, `url`, `color`, `gravity`, `placement`, `scaleDimension`, `grayscaleType`, `aspect`, `resizeType`, `dimension`, or `perceptualQuality`.
+		// Type The type of value for the variable.
 		Type VariableType `json:"type"`
 	}
 
@@ -1202,6 +1202,10 @@ const (
 	VariableTypeDimension VariableType = "dimension"
 	// VariableTypePerceptualQuality const
 	VariableTypePerceptualQuality VariableType = "perceptualQuality"
+	// VariableTypeString const
+	VariableTypeString VariableType = "string"
+	// VariableTypeFocus const
+	VariableTypeFocus VariableType = "focus"
 
 	// OutputVideoPerceptualQualityHigh const
 	OutputVideoPerceptualQualityHigh OutputVideoPerceptualQuality = "high"
@@ -2240,7 +2244,9 @@ func (p PolicyOutputImage) Validate() error {
 		"User":                          validation.Validate(p.User),
 		"Variables":                     validation.Validate(p.Variables, validation.Each()),
 		"Version":                       validation.Validate(p.Version),
-		"Video":                         validation.Validate(p.Video),
+		"Video": validation.Validate(p.Video,
+			validation.In(PolicyOutputImageVideoFalse),
+		),
 	}.Filter()
 }
 
@@ -2505,7 +2511,7 @@ func (v Variable) Validate() error {
 		"Prefix":  validation.Validate(v.Prefix),
 		"Type": validation.Validate(v.Type,
 			validation.Required,
-			validation.In(VariableTypeBool, VariableTypeNumber, VariableTypeURL, VariableTypeColor, VariableTypeGravity, VariableTypePlacement, VariableTypeScaleDimension, VariableTypeGrayscaleType, VariableTypeAspect, VariableTypeResizeType, VariableTypeDimension, VariableTypePerceptualQuality),
+			validation.In(VariableTypeBool, VariableTypeNumber, VariableTypeURL, VariableTypeColor, VariableTypeGravity, VariableTypePlacement, VariableTypeScaleDimension, VariableTypeGrayscaleType, VariableTypeAspect, VariableTypeResizeType, VariableTypeDimension, VariableTypePerceptualQuality, VariableTypeString, VariableTypeFocus),
 		),
 	}.Filter()
 }
@@ -2561,7 +2567,9 @@ func (p PolicyOutputVideo) Validate() error {
 		"User":            validation.Validate(p.User),
 		"Variables":       validation.Validate(p.Variables, validation.Each()),
 		"Version":         validation.Validate(p.Version),
-		"Video":           validation.Validate(p.Video, validation.Required),
+		"Video": validation.Validate(p.Video,
+			validation.In(PolicyOutputVideoVideoTrue),
+		),
 	}.Filter()
 }
 
