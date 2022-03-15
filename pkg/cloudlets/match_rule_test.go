@@ -1301,7 +1301,7 @@ MatchRules[0]: {
 	Type: value 'invalidMatchRule' is invalid. Must be: 'igMatchRule'
 }
 MatchRules[1]: {
-	AllowDeny: value 'allowBranded' is invalid. Must be one of: 'allow', 'deny' or 'denyBranded'
+	AllowDeny: value 'allowBranded' is invalid. Must be one of: 'allow', 'deny' or 'denybranded'
 }
 MatchRules[2]: {
 	Matches: must be blank when 'matchesAlways' is set

@@ -284,8 +284,8 @@ const (
 	Allow AllowDeny = "allow"
 	// Deny represents deny option
 	Deny AllowDeny = "deny"
-	// DenyBranded represents denyBranded option
-	DenyBranded AllowDeny = "denyBranded"
+	// DenyBranded represents denybranded option
+	DenyBranded AllowDeny = "denybranded"
 )
 
 const (

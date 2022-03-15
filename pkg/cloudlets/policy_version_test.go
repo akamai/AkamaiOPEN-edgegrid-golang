@@ -3768,7 +3768,7 @@ func TestCreatePolicyVersion(t *testing.T) {
             ],
             "name": "rul3",
             "start": 0,
-			"allowDeny": "denyBranded"
+			"allowDeny": "denybranded"
         }
     ],
     "policyId": 276858,
