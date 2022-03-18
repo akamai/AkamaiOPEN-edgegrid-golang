@@ -124,8 +124,8 @@ type (
 	UpdateCPCodeRequest struct {
 		ID               int              `json:"cpcodeId"`
 		Name             string           `json:"cpcodeName"`
-		Purgeable        bool             `json:"purgeable,omitempty"`
-		OverrideTimeZone CPCodeTimeZone   `json:"overrideTimezone,omitempty"`
+		Purgeable        *bool            `json:"purgeable,omitempty"`
+		OverrideTimeZone *CPCodeTimeZone  `json:"overrideTimezone,omitempty"`
 		Contracts        []CPCodeContract `json:"contracts"`
 		Products         []CPCodeProduct  `json:"products"`
 	}
@@ -162,6 +162,13 @@ func (product CPCodeProduct) Validate() error {
 	}.Filter()
 }
 
+// Validate validates CPCodeTimeZone
+func (timeZone CPCodeTimeZone) Validate() error {
+	return validation.Errors{
+		"TimeZoneID": validation.Validate(timeZone.TimeZoneID, validation.Required),
+	}.Filter()
+}
+
 // Validate validates CreateCPCodeRequest
 func (cp CreateCPCodeRequest) Validate() error {
 	return validation.Errors{
@@ -182,11 +189,11 @@ func (cp CreateCPCode) Validate() error {
 // Validate validates UpdateCPCodeRequest
 func (cp UpdateCPCodeRequest) Validate() error {
 	return validation.Errors{
-		"ID":                          validation.Validate(cp.ID, validation.Required),
-		"Name":                        validation.Validate(cp.Name, validation.Required),
-		"Contracts":                   validation.Validate(cp.Contracts, validation.Required),
-		"Products":                    validation.Validate(cp.Products, validation.Required),
-		"OverrideTimeZone.TimeZoneID": validation.Validate(cp.OverrideTimeZone.TimeZoneID, validation.When(cp.OverrideTimeZone != (CPCodeTimeZone{}), validation.Required)),
+		"ID":               validation.Validate(cp.ID, validation.Required),
+		"Name":             validation.Validate(cp.Name, validation.Required),
+		"Contracts":        validation.Validate(cp.Contracts, validation.Required),
+		"Products":         validation.Validate(cp.Products, validation.Required),
+		"OverrideTimeZone": validation.Validate(cp.OverrideTimeZone),
 	}.Filter()
 }
 

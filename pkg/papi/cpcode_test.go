@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -646,7 +647,7 @@ func TestUpdateCPCode(t *testing.T) {
 			params: UpdateCPCodeRequest{
 				ID:   123,
 				Name: "test-cp-code",
-				OverrideTimeZone: CPCodeTimeZone{
+				OverrideTimeZone: &CPCodeTimeZone{
 					TimeZoneID:    "1",
 					TimeZoneValue: "GMT + 1",
 				},
@@ -723,7 +724,7 @@ func TestUpdateCPCode(t *testing.T) {
 			params: UpdateCPCodeRequest{
 				ID:        123,
 				Name:      "test-cp-code",
-				Purgeable: false,
+				Purgeable: tools.BoolPtr(false),
 				Contracts: []CPCodeContract{
 					{
 						ContractID: "test-contract-id",
@@ -955,7 +956,7 @@ func TestUpdateCPCode(t *testing.T) {
 			params: UpdateCPCodeRequest{
 				ID:   123,
 				Name: "test-cp-code-updated",
-				OverrideTimeZone: CPCodeTimeZone{
+				OverrideTimeZone: &CPCodeTimeZone{
 					TimeZoneValue: "GMT + 1",
 				},
 				Contracts: []CPCodeContract{

@@ -1,5 +1,10 @@
 package tools
 
+// BoolPtr returns the address of the bool
+func BoolPtr(b bool) *bool {
+	return &b
+}
+
 // IntPtr returns the address of the int
 func IntPtr(i int) *int {
 	return &i
