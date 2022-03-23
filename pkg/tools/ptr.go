@@ -29,8 +29,3 @@ func Float64Ptr(f float64) *float64 {
 func StringPtr(s string) *string {
 	return &s
 }
-
-// BoolPtr returns the address of the bool
-func BoolPtr(b bool) *bool {
-	return &b
-}
