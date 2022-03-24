@@ -3659,7 +3659,216 @@ func TestCreatePolicyVersion(t *testing.T) {
 				},
 			},
 		},
-
+		"201 created, complex RC": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleRC{
+							Start:     0,
+							End:       0,
+							Type:      "igMatchRule",
+							Name:      "rul3",
+							AllowDeny: DenyBranded,
+							ID:        0,
+							Matches: []MatchCriteriaRC{
+								{
+									CaseSensitive: false,
+									MatchOperator: "equals",
+									MatchType:     "protocol",
+									MatchValue:    "https",
+									Negate:        false,
+								},
+								{
+									CaseSensitive: true,
+									MatchOperator: "equals",
+									MatchType:     "method",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueSimple{
+										Type:  "simple",
+										Value: []string{"GET"},
+									},
+								},
+								{
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueObject{
+										Type: "object",
+										Name: "RC",
+										Options: &Options{
+											Value: []string{
+												"text/html*",
+												"text/css*",
+												"application/x-javascript*",
+											},
+											ValueHasWildcard: true,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "activations": [],
+    "createDate": 1629981355165,
+    "createdBy": "jsmith",
+    "deleted": false,
+    "description": null,
+    "lastModifiedBy": "jsmith",
+    "lastModifiedDate": 1629981355165,
+    "location": "/cloudlets/api/v2/policies/276858/versions/6",
+    "matchRuleFormat": "1.0",
+    "matchRules": [
+        {
+            "type": "igMatchRule",
+            "end": 0,
+            "id": 0,
+            "matchesAlways": false,
+            "matches": [
+				{
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "protocol",
+                    "negate": false,
+					"matchValue": "https"
+				},
+                {
+                    "caseSensitive": true,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "simple",
+                        "value": [
+                            "GET"
+                        ]
+                    }
+                },
+				{
+                    "matchOperator": "equals",
+                    "matchType": "header",
+                    "negate": false,
+					"objectMatchValue": {
+                        "type": "object",
+                        "name": "RC",
+						"options": {
+							"value": [
+								"text/html*",
+								"text/css*",
+								"application/x-javascript*"
+                            ],
+                            "valueHasWildcard": true
+						}
+                    }
+				}
+            ],
+            "name": "rul3",
+            "start": 0,
+			"allowDeny": "denybranded"
+        }
+    ],
+    "policyId": 276858,
+    "revisionId": 4815968,
+    "rulesLocked": false,
+    "version": 6
+}`,
+			expectedPath: "/cloudlets/api/v2/policies/276858/versions",
+			expectedResponse: &PolicyVersion{
+				Activations:      []PolicyActivation{},
+				CreateDate:       1629981355165,
+				CreatedBy:        "jsmith",
+				Deleted:          false,
+				Description:      "",
+				LastModifiedBy:   "jsmith",
+				LastModifiedDate: 1629981355165,
+				Location:         "/cloudlets/api/v2/policies/276858/versions/6",
+				MatchRuleFormat:  "1.0",
+				PolicyID:         276858,
+				RevisionID:       4815968,
+				RulesLocked:      false,
+				Version:          6,
+				MatchRules: MatchRules{
+					&MatchRuleRC{
+						Type:          "igMatchRule",
+						End:           0,
+						ID:            0,
+						MatchesAlways: false,
+						Name:          "rul3",
+						AllowDeny:     DenyBranded,
+						Start:         0,
+						Matches: []MatchCriteriaRC{
+							{
+								CaseSensitive: false,
+								MatchOperator: "equals",
+								MatchType:     "protocol",
+								MatchValue:    "https",
+								Negate:        false,
+							},
+							{
+								CaseSensitive: true,
+								MatchOperator: "equals",
+								MatchType:     "method",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueSimple{
+									Type:  "simple",
+									Value: []string{"GET"},
+								},
+							},
+							{
+								MatchOperator: "equals",
+								MatchType:     "header",
+								Negate:        false,
+								ObjectMatchValue: &ObjectMatchValueObject{
+									Type: "object",
+									Name: "RC",
+									Options: &Options{
+										Value: []string{
+											"text/html*",
+											"text/css*",
+											"application/x-javascript*",
+										},
+										ValueHasWildcard: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"validation error, complex RC with unavailable objectMatchValue type - range": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleRC{
+							Start:     0,
+							End:       0,
+							Type:      "igMatchRule",
+							AllowDeny: Allow,
+							Name:      "rul3",
+							ID:        0,
+							Matches: []MatchCriteriaRC{
+								{
+									MatchOperator: "equals",
+									MatchType:     "header",
+									Negate:        false,
+									ObjectMatchValue: &ObjectMatchValueRange{
+										Type:  "range",
+										Value: []int64{1, 50},
+									},
+								},
+							},
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
+		},
 		"validation error, complex VP with unavailable objectMatchValue type - range": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
@@ -3720,6 +3929,23 @@ func TestCreatePolicyVersion(t *testing.T) {
 			withError: ErrStructValidation,
 		},
 
+		"validation error, simple RC missing allowDeny": {
+			request: CreatePolicyVersionRequest{
+				CreatePolicyVersion: CreatePolicyVersion{
+					MatchRules: MatchRules{
+						&MatchRuleRC{
+							Start: 0,
+							End:   0,
+							Type:  "igMatchRule",
+							Name:  "rul3",
+							ID:    0,
+						},
+					},
+				},
+				PolicyID: 276858,
+			},
+			withError: ErrStructValidation,
+		},
 		"validation error, simple VP missing passThroughPercent": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{

@@ -165,3 +165,120 @@ func TestDeleteEdgeHostname(t *testing.T) {
 		})
 	}
 }
+
+func TestGetEdgeHostname(t *testing.T) {
+	tests := map[string]struct {
+		edgeHostnameID   int
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *GetEdgeHostnameResponse
+		withError        error
+	}{
+		"200 OK": {
+			edgeHostnameID: 1234,
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"chinaCdn": {
+					"isChinaCdn": false
+				},
+				"comments": "Created by Property-Manager/PAPI on Thu Mar 03 15:58:17 GMT 2022",
+				"dnsZone": "edgekey.net",
+				"edgeHostnameId": 4617960,
+				"ipVersionBehavior": "IPV6_IPV4_DUALSTACK",
+				"map": "e;dscx.akamaiedge.net",
+				"productId": "IONSPM",
+				"recordName": "aws_ci_pearltest-asorigin-na-as-eu-ionp.cumulus-essl.webexp-ipqa-ion.com-v2",
+				"securityType": "ENHANCED-TLS",
+				"slotNumber": 47463,
+				"ttl": 21600,
+				"useDefaultMap": true,
+				"useDefaultTtl": true
+			}`,
+			expectedPath: "/hapi/v1/edge-hostnames/1234",
+			expectedResponse: &GetEdgeHostnameResponse{
+				ChinaCdn: ChinaCDN{
+					IsChinaCDN: false,
+				},
+				Comments:          "Created by Property-Manager/PAPI on Thu Mar 03 15:58:17 GMT 2022",
+				DNSZone:           "edgekey.net",
+				EdgeHostnameID:    4617960,
+				IPVersionBehavior: "IPV6_IPV4_DUALSTACK",
+				Map:               "e;dscx.akamaiedge.net",
+				ProductID:         "IONSPM",
+				RecordName:        "aws_ci_pearltest-asorigin-na-as-eu-ionp.cumulus-essl.webexp-ipqa-ion.com-v2",
+				SecurityType:      "ENHANCED-TLS",
+				SlotNumber:        47463,
+				TTL:               21600,
+				UseDefaultMap:     true,
+				UseDefaultTTL:     true,
+			},
+		},
+		"404 could not find edge hostname": {
+			edgeHostnameID: 9999,
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+			{
+				"type": "/hapi/problems/edge-hostname-not-found",
+				"title": "Edge Hostname Not Found",
+				"status": 404,
+				"detail": "Edge hostname not found",
+				"instance": "/hapi/error-instances/cdc47ffa-46f2-410d-8059-3f454c435e93",
+				"requestInstance": "http://cloud-qa-resource-impl.luna-dev.akamaiapis.net/hapi/open/v1/edge-hostnames/9999#8a702528",
+				"method": "GET",
+				"requestTime": "2022-03-03T16:43:19.876613Z",
+				"errors": []
+			}`,
+			expectedPath: "/hapi/v1/edge-hostnames/9999",
+			withError: &Error{
+				Type:            "/hapi/problems/edge-hostname-not-found",
+				Title:           "Edge Hostname Not Found",
+				Status:          404,
+				Detail:          "Edge hostname not found",
+				Instance:        "/hapi/error-instances/cdc47ffa-46f2-410d-8059-3f454c435e93",
+				RequestInstance: "http://cloud-qa-resource-impl.luna-dev.akamaiapis.net/hapi/open/v1/edge-hostnames/9999#8a702528",
+				Method:          "GET",
+				RequestTime:     "2022-03-03T16:43:19.876613Z",
+			},
+		},
+		"500 internal server error": {
+			edgeHostnameID: 9999,
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error deleting activation",
+				"status": 500
+			}`,
+			expectedPath: "/hapi/v1/edge-hostnames/9999",
+			withError: &Error{
+				Type:   "internal_error",
+				Title:  "Internal Server Error",
+				Detail: "Error deleting activation",
+				Status: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetEdgeHostname(context.Background(), test.edgeHostnameID)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}

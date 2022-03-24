@@ -1,5 +1,18 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.11.0 (March 24, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+* [IMPORTANT] Added Image and Video Manager API support
+  * Policy Set - create, read, update, delete
+  * Policy - create, read, update, delete, rollback to previous version, view policy history 
+
+* CLOUDLETS
+  * Support for RC cloudlet type (Request Control)
+
+* PAPI
+  * CP code - read, update
+
 ## 2.10.0 (Feb. 28, 2022)
 
 #### FEATURES/ENHANCEMENTS:

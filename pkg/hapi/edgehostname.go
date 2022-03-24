@@ -20,6 +20,12 @@ type (
 		//
 		// See: https://developer.akamai.com/api/core_features/edge_hostnames/v1.html#deleteedgehostnamebyname
 		DeleteEdgeHostname(context.Context, DeleteEdgeHostnameRequest) (*DeleteEdgeHostnameResponse, error)
+
+		// GetEdgeHostname gets a specific edge hostname's details including its product ID, IP version behavior,
+		// and China CDN or Edge IP Binding status.
+		//
+		// See: https://techdocs.akamai.com/edge-hostnames/reference/get-edgehostnameid
+		GetEdgeHostname(context.Context, int) (*GetEdgeHostnameResponse, error)
 	}
 
 	// DeleteEdgeHostnameRequest is used to delete edge hostname
@@ -66,6 +72,26 @@ type (
 		IsChinaCDN        bool   `json:"isChinaCdn"`
 		CustomChinaCDNMap string `json:"customChinaCdnMap,omitempty"`
 	}
+
+	// GetEdgeHostnameResponse represents edge hostname
+	GetEdgeHostnameResponse struct {
+		EdgeHostnameID         int      `json:"edgeHostnameId"`
+		RecordName             string   `json:"recordName"`
+		DNSZone                string   `json:"dnsZone"`
+		SecurityType           string   `json:"securityType"`
+		UseDefaultTTL          bool     `json:"useDefaultTtl"`
+		UseDefaultMap          bool     `json:"useDefaultMap"`
+		IPVersionBehavior      string   `json:"ipVersionBehavior"`
+		ProductID              string   `json:"productId"`
+		TTL                    int      `json:"ttl"`
+		Map                    string   `json:"map,omitempty"`
+		SlotNumber             int      `json:"slotNumber,omitempty"`
+		Comments               string   `json:"comments"`
+		SerialNumber           int      `json:"serialNumber,omitempty"`
+		CustomTarget           string   `json:"customTarget,omitempty"`
+		ChinaCdn               ChinaCDN `json:"chinaCdn,omitempty"`
+		IsEdgeIPBindingEnabled bool     `json:"isEdgeIPBindingEnabled,omitempty"`
+	}
 )
 
 // Validate validates DeleteEdgeHostnameRequest
@@ -79,6 +105,8 @@ func (r DeleteEdgeHostnameRequest) Validate() error {
 var (
 	// ErrDeleteEdgeHostname represents error when deleting edge hostname fails
 	ErrDeleteEdgeHostname = errors.New("delete edge hostname")
+	// ErrGetEdgeHostname represents error when getting edge hostname fails
+	ErrGetEdgeHostname = errors.New("get edge hostname")
 )
 
 func (h *hapi) DeleteEdgeHostname(ctx context.Context, params DeleteEdgeHostnameRequest) (*DeleteEdgeHostnameResponse, error) {
@@ -118,6 +146,30 @@ func (h *hapi) DeleteEdgeHostname(ctx context.Context, params DeleteEdgeHostname
 
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%s: %w", ErrDeleteEdgeHostname, h.Error(resp))
+	}
+
+	return &rval, nil
+}
+
+func (h *hapi) GetEdgeHostname(ctx context.Context, edgeHostnameID int) (*GetEdgeHostnameResponse, error) {
+	logger := h.Log(ctx)
+	logger.Debug("GetEdgeHostname")
+
+	uri := fmt.Sprintf("/hapi/v1/edge-hostnames/%d", edgeHostnameID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeHostname, err)
+	}
+
+	var rval GetEdgeHostnameResponse
+
+	resp, err := h.Exec(req, &rval)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeHostname, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrGetEdgeHostname, h.Error(resp))
 	}
 
 	return &rval, nil

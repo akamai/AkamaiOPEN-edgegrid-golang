@@ -744,6 +744,97 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 				},
 			},
 		},
+
+		"valid MatchRuleRC": {
+			responseBody: `
+	[
+		{
+			"type": "igMatchRule",
+			"end": 0,
+			"allowDeny": "allow",
+			"id": 0,
+			"matchURL": null,
+			"matches": [
+				{
+					"caseSensitive": false,
+					"matchOperator": "equals",
+					"matchType": "protocol",
+					"matchValue": "https",
+					"negate": false
+				},
+				{
+					"caseSensitive": false,
+					"matchOperator": "equals",
+					"matchType": "method",
+					"negate": false,
+					"objectMatchValue": {
+						"type": "simple",
+						"value": [
+							"GET"
+						]
+					}
+				}
+			],
+			"name": "Rule3",
+			"start": 0
+		}
+	]`,
+			expectedObject: MatchRules{
+				&MatchRuleRC{
+					Name:      "Rule3",
+					Type:      "igMatchRule",
+					AllowDeny: Allow,
+					Matches: []MatchCriteriaRC{
+						{
+							CaseSensitive: false,
+							MatchOperator: "equals",
+							MatchType:     "protocol",
+							MatchValue:    "https",
+							Negate:        false,
+						},
+						{
+							CaseSensitive: false,
+							MatchOperator: "equals",
+							MatchType:     "method",
+							Negate:        false,
+							ObjectMatchValue: &ObjectMatchValueSimple{
+								Type:  "simple",
+								Value: []string{"GET"},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		"invalid objectMatchValue type for RC - range": {
+			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaRC: objectMatchValue has unexpected type: 'range'"),
+			responseBody: `
+	[
+        {
+            "type": "igMatchRule",
+			"allowDeny": "allow",
+            "matches": [
+                {
+                    "caseSensitive": false,
+                    "matchOperator": "equals",
+                    "matchType": "method",
+                    "negate": false,
+                    "objectMatchValue": {
+                        "type": "range",
+                        "value": [
+                            1,
+                            50
+                        ]
+                    }
+                }
+            ],
+            "name": "Rule3",
+            "start": 0
+        }
+    ]
+`,
+		},
 	}
 
 	for name, test := range tests {
@@ -1161,6 +1252,59 @@ MatchRules[1]: {
 			withError: `
 MatchRules[0]: {
 	Type: value 'matchRule' is invalid. Must be: 'frMatchRule'
+}`,
+		},
+		"valid match rules RC": {
+			input: MatchRules{
+				MatchRuleRC{
+					Type:      "igMatchRule",
+					AllowDeny: Allow,
+				},
+				MatchRuleRC{
+					Type:      "igMatchRule",
+					AllowDeny: Deny,
+				},
+				MatchRuleRC{
+					Type:      "igMatchRule",
+					AllowDeny: DenyBranded,
+				},
+			},
+		},
+		"invalid match rules RC": {
+			input: MatchRules{
+				MatchRuleRC{
+					Type: "invalidMatchRule",
+				},
+				MatchRuleRC{
+					Type:      "igMatchRule",
+					AllowDeny: "allowBranded",
+				},
+				MatchRuleRC{
+					Type:          "igMatchRule",
+					AllowDeny:     Allow,
+					MatchesAlways: true,
+					Matches: []MatchCriteriaRC{
+						{
+							CaseSensitive: false,
+							CheckIPs:      "CONNECTING_IP",
+							MatchOperator: "equals",
+							MatchType:     "clientip",
+							MatchValue:    "1.2.3.4",
+							Negate:        false,
+						},
+					},
+				},
+			},
+			withError: `
+MatchRules[0]: {
+	AllowDeny: cannot be blank
+	Type: value 'invalidMatchRule' is invalid. Must be: 'igMatchRule'
+}
+MatchRules[1]: {
+	AllowDeny: value 'allowBranded' is invalid. Must be one of: 'allow', 'deny' or 'denybranded'
+}
+MatchRules[2]: {
+	Matches: must be blank when 'matchesAlways' is set
 }`,
 		},
 		"valid match rules VP": {
