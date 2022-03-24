@@ -206,6 +206,11 @@ func (c *Config) FromEnv(section string) error {
 		c.MaxBody = MaxBodySize
 	}
 
+	val, ok := os.LookupEnv(fmt.Sprintf("%s_%s", prefix, "ACCOUNT_KEY"))
+	if ok {
+		c.AccountKey = val
+	}
+
 	return nil
 }
 

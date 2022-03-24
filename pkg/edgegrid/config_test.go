@@ -113,6 +113,25 @@ func TestConfig_FromEnv(t *testing.T) {
 				MaxBody:      123,
 			},
 		},
+		"default section, valid envs, account key": {
+			section: "default",
+			envs: map[string]string{
+				"AKAMAI_HOST":          "test-host",
+				"AKAMAI_CLIENT_TOKEN":  "test-client-token",
+				"AKAMAI_CLIENT_SECRET": "test-client-secret",
+				"AKAMAI_ACCESS_TOKEN":  "test-access-token",
+				"AKAMAI_MAX_BODY":      "123",
+				"AKAMAI_ACCOUNT_KEY":   "account-key-123",
+			},
+			expected: Config{
+				Host:         "test-host",
+				ClientToken:  "test-client-token",
+				ClientSecret: "test-client-secret",
+				AccessToken:  "test-access-token",
+				MaxBody:      123,
+				AccountKey:   "account-key-123",
+			},
+		},
 		"custom section, valid envs": {
 			section: "test",
 			envs: map[string]string{
