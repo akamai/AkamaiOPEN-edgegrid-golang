@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.11.0 (March 28, 2022)
+## 2.11.0 (March 24, 2022)
 
 #### FEATURES/ENHANCEMENTS:
 * [IMPORTANT] Added Image and Video Manager API support
