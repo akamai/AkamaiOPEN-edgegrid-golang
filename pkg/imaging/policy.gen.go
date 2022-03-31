@@ -579,10 +579,10 @@ type (
 
 	// PointShapeType Defines coordinates for a single point, to help define polygons and rectangles. Each point may be an object with `x`and `y` members, or a two-element array.
 	PointShapeType struct {
-		// True The vertical position of the point, measured in pixels.
-		True *NumberVariableInline `json:"true,omitempty"`
 		// X The horizontal position of the point, measured in pixels.
 		X *NumberVariableInline `json:"x"`
+		// Y The vertical position of the point, measured in pixels.
+		Y *NumberVariableInline `json:"y"`
 	}
 
 	// PolicyOutputImage Specifies details for each policy, such as transformations to apply and variations in image size and formats.
@@ -2222,8 +2222,10 @@ func (o OutputImagePerceptualQualityVariableInline) Validate() error {
 // Validate validates PointShapeType
 func (p PointShapeType) Validate() error {
 	return validation.Errors{
-		"True": validation.Validate(p.True),
 		"X": validation.Validate(p.X,
+			validation.Required,
+		),
+		"Y": validation.Validate(p.Y,
 			validation.Required,
 		),
 	}.Filter()

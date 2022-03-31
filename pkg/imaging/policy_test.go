@@ -1190,6 +1190,39 @@ func TestGetPolicy(t *testing.T) {
                 "perceptualQuality": "mediumHigh"
             },
             "transformations": [
+				{
+					"transformation": "Append",
+					"gravity": "Center",
+					"gravityPriority": "horizontal",
+					"preserveMinorDimension": true,
+					"image": {
+						"type": "Text",
+						"fill": "#000000",
+						"size": 72,
+						"stroke": "#FFFFFF",
+						"strokeSize": 0,
+						"text": "test",
+						"transformation": {
+							"transformation": "Compound",
+							"transformations": []
+						}
+					}
+				},
+				{
+					"transformation": "RegionOfInterestCrop",
+					"style": "fill",
+					"gravity": "Center",
+					"width": 7,
+					"height": 8,
+					"regionOfInterest": {
+						"anchor": {
+							"x": 4,
+							"y": 5
+						},
+						"width": 8,
+						"height": 9
+					} 
+				},
                 {
                     "transformation": "Composite",
                     "xPosition": 0,
@@ -1237,6 +1270,38 @@ func TestGetPolicy(t *testing.T) {
 					},
 				},
 				Transformations: []TransformationType{
+					&Append{
+						Transformation:         "Append",
+						Gravity:                &GravityVariableInline{Value: GravityPtr("Center")},
+						GravityPriority:        &AppendGravityPriorityVariableInline{Value: AppendGravityPriorityPtr("horizontal")},
+						PreserveMinorDimension: &BooleanVariableInline{Value: tools.BoolPtr(true)},
+						Image: &TextImageType{
+							Type:       "Text",
+							Fill:       &StringVariableInline{Value: tools.StringPtr("#000000")},
+							Size:       &NumberVariableInline{Value: tools.Float32Ptr(72)},
+							Stroke:     &StringVariableInline{Value: tools.StringPtr("#FFFFFF")},
+							StrokeSize: &NumberVariableInline{Value: tools.Float32Ptr(0)},
+							Text:       &StringVariableInline{Value: tools.StringPtr("test")},
+							Transformation: &Compound{
+								Transformation: "Compound",
+							},
+						},
+					},
+					&RegionOfInterestCrop{
+						Transformation: "RegionOfInterestCrop",
+						Style:          &RegionOfInterestCropStyleVariableInline{Value: RegionOfInterestCropStylePtr("fill")},
+						Gravity:        &GravityVariableInline{Value: GravityPtr("Center")},
+						Width:          &IntegerVariableInline{Value: tools.IntPtr(7)},
+						Height:         &IntegerVariableInline{Value: tools.IntPtr(8)},
+						RegionOfInterest: &RectangleShapeType{
+							Anchor: PointShapeType{
+								X: &NumberVariableInline{Value: tools.Float32Ptr(4)},
+								Y: &NumberVariableInline{Value: tools.Float32Ptr(5)},
+							},
+							Width:  &NumberVariableInline{Value: tools.Float32Ptr(8)},
+							Height: &NumberVariableInline{Value: tools.Float32Ptr(9)},
+						},
+					},
 					&Composite{
 						Transformation: "Composite",
 						XPosition: &IntegerVariableInline{
