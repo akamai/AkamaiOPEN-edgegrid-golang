@@ -11,17 +11,20 @@ import (
 type (
 	// The EvalProtectHost interface supports retrieving the evaluation hostnames for a configuration and
 	// moving hostnames from evaluating to protected status.
+	// Deprecated: this interface will be removed in a future release. Use the WAPSelectedHostnames interface instead.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#evalhostname
 	EvalProtectHost interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevaluationhostnames
+		// Deprecated: this method will be removed in a future release. Use the GetWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		GetEvalProtectHosts(ctx context.Context, params GetEvalProtectHostsRequest) (*GetEvalProtectHostsResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevaluationhostnames
-		// Deprecated: this method will be removed in a future release. Use GetEvalProtectHosts instead.
+		// Deprecated: this method will be removed in a future release. Use the GetWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		GetEvalProtectHost(ctx context.Context, params GetEvalProtectHostRequest) (*GetEvalProtectHostResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putmoveevaluationhostnamestoprotection
+		// Deprecated: this method will be removed in a future release. Use the UpdateWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		UpdateEvalProtectHost(ctx context.Context, params UpdateEvalProtectHostRequest) (*UpdateEvalProtectHostResponse, error)
 	}
 

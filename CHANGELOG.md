@@ -1,5 +1,11 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.xx.x (Apr. xx, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+* APPSEC
+  * Add WAPBypassNetworkLists interface, to be used in preference to deprecated BypassNetworkLists interface.
+
 ## 2.11.0 (March 24, 2022)
 
 #### FEATURES/ENHANCEMENTS:

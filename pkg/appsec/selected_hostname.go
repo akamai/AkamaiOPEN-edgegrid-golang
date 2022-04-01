@@ -13,19 +13,22 @@ type (
 	// a configuration.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#selectedhostnames
+	// Deprecated: this interface will be removed in a future release.  Use the WAPSelectedHostnames interface instead.
 	SelectedHostname interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectedhostnames
+		// Deprecated: this method will be removed in a future release. Use the GetWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		GetSelectedHostnames(ctx context.Context, params GetSelectedHostnamesRequest) (*GetSelectedHostnamesResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectedhostnames
-		// Deprecated: this method will be removed in a future release. Use GetSelectedHostnames instead.
+		// Deprecated: this method will be removed in a future release. Use the GetWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		GetSelectedHostname(ctx context.Context, params GetSelectedHostnameRequest) (*GetSelectedHostnameResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putselectedhostnames
-		// Deprecated: this method will be removed in a future release. Use UpdateSelectedHostnames instead.
+		// Deprecated: this method will be removed in a future release. Use the UpdateWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		UpdateSelectedHostname(ctx context.Context, params UpdateSelectedHostnameRequest) (*UpdateSelectedHostnameResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putselectedhostnames
+		// Deprecated: this method will be removed in a future release. Use the UpdateWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		UpdateSelectedHostnames(ctx context.Context, params UpdateSelectedHostnamesRequest) (*UpdateSelectedHostnamesResponse, error)
 	}
 

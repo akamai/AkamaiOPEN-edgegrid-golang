@@ -10,20 +10,24 @@ import (
 
 type (
 	// The EvalHost interface supports retrieving and modifying list of evaluation hostnames for a configuration.
+	// Deprecated: this interface will be removed in a future release. Use the WAPSelectedHostnames interface instead.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#evalhostname
 	EvalHost interface {
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevaluationhostnames
+		// Deprecated: this method will be removed in a future release. Use the GetWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		GetEvalHosts(ctx context.Context, params GetEvalHostsRequest) (*GetEvalHostsResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevaluationhostnames
-		// Deprecated: this method will be removed in a future release. Use GetEvalHosts instead.
+		// Deprecated: this method will be removed in a future release. Use the GetWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		GetEvalHost(ctx context.Context, params GetEvalHostRequest) (*GetEvalHostResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putevaluationhostnames
+		// Deprecated: this method will be removed in a future release. Use the UpdateWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		UpdateEvalHost(ctx context.Context, params UpdateEvalHostRequest) (*UpdateEvalHostResponse, error)
 
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putevaluationhostnames
+		// Deprecated: this method will be removed in a future release. Use the WAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		RemoveEvalHost(ctx context.Context, params RemoveEvalHostRequest) (*RemoveEvalHostResponse, error)
 	}
 
