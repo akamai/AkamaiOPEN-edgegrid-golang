@@ -31,23 +31,25 @@ func TestAppSec_GetTuningRecommendations(t *testing.T) {
 	}{
 		"200 OK": {
 			params: GetTuningRecommendationsRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
+				ConfigID:    43253,
+				Version:     15,
+				PolicyID:    "AAAA_81230",
+				RulesetType: RulesetTypeActive,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations?standardException=true",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations?standardException=true&type=active",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
 			params: GetTuningRecommendationsRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
+				ConfigID:    43253,
+				Version:     15,
+				PolicyID:    "AAAA_81230",
+				RulesetType: RulesetTypeEvaluation,
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -58,7 +60,7 @@ func TestAppSec_GetTuningRecommendations(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations?standardException=true",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations?standardException=true&type=evaluation",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -112,25 +114,27 @@ func TestAppSec_GetAttackGroupRecommendations(t *testing.T) {
 	}{
 		"200 OK": {
 			params: GetAttackGroupRecommendationsRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
-				Group:    "XSS",
+				ConfigID:    43253,
+				Version:     15,
+				PolicyID:    "AAAA_81230",
+				Group:       "XSS",
+				RulesetType: RulesetTypeEvaluation,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations/attack-groups/XSS?standardException=true",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations/attack-groups/XSS?standardException=true&type=evaluation",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
 			params: GetAttackGroupRecommendationsRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
-				Group:    "XSS",
+				ConfigID:    43253,
+				Version:     15,
+				PolicyID:    "AAAA_81230",
+				Group:       "XSS",
+				RulesetType: RulesetTypeActive,
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -141,7 +145,7 @@ func TestAppSec_GetAttackGroupRecommendations(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations/attack-groups/XSS?standardException=true",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations/attack-groups/XSS?standardException=true&type=active",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
