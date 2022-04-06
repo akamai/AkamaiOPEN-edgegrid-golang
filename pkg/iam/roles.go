@@ -2,6 +2,7 @@ package iam
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -13,6 +14,9 @@ import (
 type (
 	// Roles is the iam role management interface
 	Roles interface {
+		// ListRoles lists roles for the current account and contract type.
+		//
+		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-roles
 		ListRoles(context.Context, ListRolesRequest) ([]Role, error)
 	}
 
@@ -72,6 +76,9 @@ var (
 
 	// RoleTypeCustom is a custom role provided by the account
 	RoleTypeCustom RoleType = "custom"
+
+	// ErrListRoles is returned when ListRoles fails
+	ErrListRoles = errors.New("list roles")
 )
 
 func (i *iam) ListRoles(ctx context.Context, params ListRolesRequest) ([]Role, error) {
@@ -80,7 +87,7 @@ func (i *iam) ListRoles(ctx context.Context, params ListRolesRequest) ([]Role, e
 
 	u, err := url.Parse(path.Join(UserAdminEP, "roles"))
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "ListRoles", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListRoles, err)
 	}
 	q := u.Query()
 	q.Add("actions", cast.ToString(params.Actions))
@@ -95,17 +102,17 @@ func (i *iam) ListRoles(ctx context.Context, params ListRolesRequest) ([]Role, e
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "ListRoles", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListRoles, err)
 	}
 
 	var rval []Role
 	resp, err := i.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("%s: request failed: %s", "ListRoles", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListRoles, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", "ListRoles", i.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrListRoles, i.Error(resp))
 	}
 
 	return rval, nil

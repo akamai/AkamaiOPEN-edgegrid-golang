@@ -2,6 +2,7 @@ package iam
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -15,12 +16,35 @@ import (
 type (
 	// Users is the IAM user identity management interface
 	Users interface {
+		// CreateUser creates a new user
+		//
+		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-ui-identity
 		CreateUser(context.Context, CreateUserRequest) (*User, error)
+
+		// GetUser gets a user by id
+		//
+		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-ui-identity
 		GetUser(context.Context, GetUserRequest) (*User, error)
-		UpdateUserInfo(context.Context, UpdateUserInfoRequest) (*UserBasicInfo, error)
-		UpdateUserNotifications(context.Context, UpdateUserNotificationsRequest) (*UserNotifications, error)
-		UpdateUserAuthGrants(context.Context, UpdateUserAuthGrantsRequest) ([]AuthGrant, error)
+
+		// RemoveUser removes a user identity
+		//
+		// See: https://techdocs.akamai.com/iam-user-admin/reference/delete-ui-identity
 		RemoveUser(context.Context, RemoveUserRequest) error
+
+		// UpdateUserAuthGrants updates what groups a user has access to, and how the use can interact with the objects in those groups
+		//
+		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-ui-uiidentity-auth-grants
+		UpdateUserAuthGrants(context.Context, UpdateUserAuthGrantsRequest) ([]AuthGrant, error)
+
+		// UpdateUserInfo updates a user's basic info
+		//
+		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-ui-identity-basic-info
+		UpdateUserInfo(context.Context, UpdateUserInfoRequest) (*UserBasicInfo, error)
+
+		// UpdateUserNotifications updates a user's notifications
+		//
+		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-notifications
+		UpdateUserNotifications(context.Context, UpdateUserNotificationsRequest) (*UserNotifications, error)
 	}
 
 	// CreateUserRequest is the input to CreateUser
@@ -133,6 +157,26 @@ type (
 	}
 )
 
+var (
+	// ErrCreateUser is returned when CreateUser fails
+	ErrCreateUser = errors.New("create user")
+
+	// ErrGetUser is returned when GetUser fails
+	ErrGetUser = errors.New("get user")
+
+	// ErrRemoveUser is returned when RemoveUser fails
+	ErrRemoveUser = errors.New("remove user")
+
+	// ErrUpdateUserAuthGrants is returned when UpdateUserAuthGrants fails
+	ErrUpdateUserAuthGrants = errors.New("update user auth grants")
+
+	// ErrUpdateUserInfo is returned when UpdateUserInfo fails
+	ErrUpdateUserInfo = errors.New("update user info")
+
+	// ErrUpdateUserNotifications is returned when UpdateUserNotifications fails
+	ErrUpdateUserNotifications = errors.New("update user notifications")
+)
+
 // Validate performs validation on AuthGrant
 func (r AuthGrant) Validate() error {
 	return validation.Errors{
@@ -198,15 +242,14 @@ func (r RemoveUserRequest) Validate() error {
 	}.Filter()
 }
 
-// CreateUser creates a new iam user
 func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInputValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateUser, ErrStructValidation, err)
 	}
 
 	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities"))
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "CreateUser", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateUser, err)
 	}
 
 	q := u.Query()
@@ -216,7 +259,7 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "CreateUser", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateUser, err)
 	}
 
 	user := User{
@@ -228,25 +271,24 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 	var rval User
 	resp, err := i.Exec(req, &rval, user)
 	if err != nil {
-		return nil, fmt.Errorf("%s: request failed: %s", "CreateUser", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateUser, err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("%s: %w", "CreateUser", i.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrCreateUser, i.Error(resp))
 	}
 
 	return &rval, nil
 }
 
-// GetUser gets a user by id
 func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInputValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetUser, ErrStructValidation, err)
 	}
 
 	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID))
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "GetUser", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetUser, err)
 	}
 
 	q := u.Query()
@@ -258,134 +300,130 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "GetUser", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetUser, err)
 	}
 
 	var rval User
 	resp, err := i.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("%s: request failed: %s", "GetUser", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetUser, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", "GetUser", i.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrGetUser, i.Error(resp))
 	}
 
 	return &rval, nil
 }
 
-// UpdateUserInfo updates a user's basic info
-func (i *iam) UpdateUserInfo(ctx context.Context, params UpdateUserInfoRequest) (*UserBasicInfo, error) {
+func (i *iam) RemoveUser(ctx context.Context, params RemoveUserRequest) error {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInputValidation, err)
+		return fmt.Errorf("%s: %w:\n%s", ErrRemoveUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "basic-info"))
+	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID))
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "UpdateUser", err)
+		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveUser, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "UpdateUser", err)
+		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveUser, err)
 	}
 
-	var rval UserBasicInfo
-	resp, err := i.Exec(req, &rval, params.User)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%s: request failed: %s", "UpdateUser", err)
+		return fmt.Errorf("%w: request failed: %s", ErrRemoveUser, err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", "UpdateUser", i.Error(resp))
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("%s: %w", ErrRemoveUser, i.Error(resp))
 	}
 
-	return &rval, nil
+	return nil
 }
 
-// UpdateUserNotifications updates a user's notifications
-func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNotificationsRequest) (*UserNotifications, error) {
-	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInputValidation, err)
-	}
-
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "notifications"))
-	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "UpdateUserNotifications", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "UpdateUserNotifications", err)
-	}
-
-	var rval UserNotifications
-	resp, err := i.Exec(req, &rval, params.Notifications)
-	if err != nil {
-		return nil, fmt.Errorf("%s: request failed: %s", "UpdateUserNotifications", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", "UpdateUserNotifications", i.Error(resp))
-	}
-
-	return &rval, nil
-}
-
-// UpdateUserAuthGrants updates a user's notifications
 func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGrantsRequest) ([]AuthGrant, error) {
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrInputValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserAuthGrants, ErrStructValidation, err)
 	}
 
 	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "auth-grants"))
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "UpdateUserAuthGrants", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserAuthGrants, err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%s: failed to create request: %s", "UpdateUserAuthGrants", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserAuthGrants, err)
 	}
 
 	rval := make([]AuthGrant, 0)
 
 	resp, err := i.Exec(req, &rval, params.AuthGrants)
 	if err != nil {
-		return nil, fmt.Errorf("%s: request failed: %s", "UpdateUserAuthGrants", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserAuthGrants, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", "UpdateUserAuthGrants", i.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrUpdateUserAuthGrants, i.Error(resp))
 	}
 
 	return rval, nil
 }
 
-// RemoveUser removes a user identity
-func (i *iam) RemoveUser(ctx context.Context, params RemoveUserRequest) error {
+func (i *iam) UpdateUserInfo(ctx context.Context, params UpdateUserInfoRequest) (*UserBasicInfo, error) {
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%w: %s", ErrInputValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserInfo, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID))
+	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "basic-info"))
 	if err != nil {
-		return fmt.Errorf("%s: failed to create request: %s", "RemoveUser", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserInfo, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
 	if err != nil {
-		return fmt.Errorf("%s: failed to create request: %s", "RemoveUser", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserInfo, err)
 	}
 
-	resp, err := i.Exec(req, nil)
+	var rval UserBasicInfo
+	resp, err := i.Exec(req, &rval, params.User)
 	if err != nil {
-		return fmt.Errorf("%s: request failed: %s", "RemoveUser", err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserInfo, err)
 	}
 
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("%s: %w", "RemoveUser", i.Error(resp))
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrUpdateUserInfo, i.Error(resp))
 	}
 
-	return nil
+	return &rval, nil
+}
+
+func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNotificationsRequest) (*UserNotifications, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserNotifications, ErrStructValidation, err)
+	}
+
+	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "notifications"))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserNotifications, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserNotifications, err)
+	}
+
+	var rval UserNotifications
+	resp, err := i.Exec(req, &rval, params.Notifications)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserNotifications, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrUpdateUserNotifications, i.Error(resp))
+	}
+
+	return &rval, nil
 }

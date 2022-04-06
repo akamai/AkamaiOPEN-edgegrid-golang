@@ -9,11 +9,8 @@ import (
 )
 
 var (
-	// ErrStructValidation is returned returned when given struct validation failed
+	// ErrStructValidation is returned when given struct validation failed
 	ErrStructValidation = errors.New("struct validation")
-
-	// ErrNotFound is returned when requested resource was not found
-	ErrNotFound = errors.New("resource not found")
 )
 
 type (
@@ -34,16 +31,6 @@ type (
 
 	// ClientFunc is a iam client new method, this can used for mocking
 	ClientFunc func(sess session.Session, opts ...Option) IAM
-
-	// Response is a base IAM Response type
-	Response struct {
-		AccountID  string   `json:"accountId,omitempty"`
-		ContractID string   `json:"contractId,omitempty"`
-		GroupID    string   `json:"groupId,omitempty"`
-		Etag       string   `json:"etag,omitempty"`
-		Errors     []*Error `json:"errors,omitempty"`
-		Warnings   []*Error `json:"warnings,omitempty"`
-	}
 )
 
 var (
