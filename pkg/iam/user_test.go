@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 func TestIAM_CreateUser(t *testing.T) {
 	tests := map[string]struct {
 		params           CreateUserRequest
+		requestBody      string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -34,6 +36,7 @@ func TestIAM_CreateUser(t *testing.T) {
 				AuthGrants:    []AuthGrant{{GroupID: 1, RoleID: tools.IntPtr(1)}},
 				Notifications: UserNotifications{},
 			},
+			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","uiIdentityId":"","isLocked":false,"tfaConfigured":false,"emailUpdatePending":false,"authGrants":[{"groupId":1,"groupName":"","isBlocked":false,"roleDescription":"","roleId":1,"roleName":""}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null}}}`,
 			responseStatus: http.StatusCreated,
 			responseBody: `
 {
@@ -98,6 +101,13 @@ func TestIAM_CreateUser(t *testing.T) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 				w.WriteHeader(test.responseStatus)
+				if test.requestBody != "" {
+					buf := new(bytes.Buffer)
+					_, err := buf.ReadFrom(r.Body)
+					assert.NoError(t, err)
+					req := buf.String()
+					assert.Equal(t, test.requestBody, req)
+				}
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
@@ -199,6 +209,7 @@ func TestIAM_GetUser(t *testing.T) {
 func TestIAM_UpdateUserInfo(t *testing.T) {
 	tests := map[string]struct {
 		params           UpdateUserInfoRequest
+		requestBody      string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -221,6 +232,7 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 					TimeZone:          "GMT",
 				},
 			},
+			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","timeZone":"GMT","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","contactType":"Billing","preferredLanguage":"English","sessionTimeOut":30}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -291,6 +303,13 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.requestBody != "" {
+					buf := new(bytes.Buffer)
+					_, err := buf.ReadFrom(r.Body)
+					assert.NoError(t, err)
+					req := buf.String()
+					assert.Equal(t, test.requestBody, req)
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
@@ -310,6 +329,7 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 func TestIAM_UpdateUserNotifications(t *testing.T) {
 	tests := map[string]struct {
 		params           UpdateUserNotificationsRequest
+		requestBody      string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -329,6 +349,7 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 					},
 				},
 			},
+			requestBody:    `{"enableEmailNotifications":true,"options":{"newUserNotification":true,"passwordExpiry":true,"proactive":["EdgeScape","EdgeSuite (HTTP Content Delivery)"],"upgrade":["NetStorage","Other Upgrade Notifications (Planned)"]}}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -396,6 +417,13 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.requestBody != "" {
+					buf := new(bytes.Buffer)
+					_, err := buf.ReadFrom(r.Body)
+					assert.NoError(t, err)
+					req := buf.String()
+					assert.Equal(t, test.requestBody, req)
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

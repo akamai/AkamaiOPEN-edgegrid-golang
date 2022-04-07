@@ -12,20 +12,20 @@ import (
 )
 
 type (
-	// Roles is the iam role management interface
+	// Roles is the IAM role API interface
 	Roles interface {
-		// ListRoles lists roles for the current account and contract type.
+		// ListRoles lists roles for the current account and contract type
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-roles
 		ListRoles(context.Context, ListRolesRequest) ([]Role, error)
 	}
 
-	// ListRolesRequest is option query parameters for the list roles endpoint
+	// ListRolesRequest describes the request parameters of the list roles endpoint
 	ListRolesRequest struct {
-		GroupID       *int64 `json:"groupId,omitempty"`
-		Actions       bool   `json:"actions"`
-		IgnoreContext bool   `json:"ignoreContext"`
-		Users         bool   `json:"users"`
+		GroupID       *int64
+		Actions       bool
+		IgnoreContext bool
+		Users         bool
 	}
 
 	// RoleAction encapsulates permissions available to the user for this role
@@ -34,7 +34,7 @@ type (
 		Edit   bool `json:"edit"`
 	}
 
-	// RoleGrantedRole is a list of granted roles, giving the user access to objects in a group.
+	// RoleGrantedRole is a list of granted roles, giving the user access to objects in a group
 	RoleGrantedRole struct {
 		Description string `json:"grantedRoleDescription,omitempty"`
 		RoleID      int64  `json:"grantedRoleId"`
@@ -51,7 +51,7 @@ type (
 		UIIdentityID  string `json:"uiIdentityId"`
 	}
 
-	// Role is a role that includes granted roles.
+	// Role encapsulates the response of the list roles endpoint
 	Role struct {
 		Actions         *RoleAction       `json:"actions,omitempty"`
 		CreatedBy       string            `json:"createdBy"`

@@ -14,14 +14,14 @@ import (
 )
 
 type (
-	// Users is the IAM user identity management interface
+	// Users is the IAM user identity API interface
 	Users interface {
-		// CreateUser creates a new user
+		// CreateUser creates a user in the account specified in your own API client credentials or clone an existing user's role assignments
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-ui-identity
 		CreateUser(context.Context, CreateUserRequest) (*User, error)
 
-		// GetUser gets a user by id
+		// GetUser gets  a specific user's profile
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-ui-identity
 		GetUser(context.Context, GetUserRequest) (*User, error)
@@ -31,62 +31,62 @@ type (
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/delete-ui-identity
 		RemoveUser(context.Context, RemoveUserRequest) error
 
-		// UpdateUserAuthGrants updates what groups a user has access to, and how the use can interact with the objects in those groups
+		// UpdateUserAuthGrants edits what groups a user has access to, and how the user can interact with the objects in those groups
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-ui-uiidentity-auth-grants
 		UpdateUserAuthGrants(context.Context, UpdateUserAuthGrantsRequest) ([]AuthGrant, error)
 
-		// UpdateUserInfo updates a user's basic info
+		// UpdateUserInfo updates a user's information
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-ui-identity-basic-info
 		UpdateUserInfo(context.Context, UpdateUserInfoRequest) (*UserBasicInfo, error)
 
-		// UpdateUserNotifications updates a user's notifications
+		// UpdateUserNotifications subscribes or un-subscribe user to product notification emails
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-notifications
 		UpdateUserNotifications(context.Context, UpdateUserNotificationsRequest) (*UserNotifications, error)
 	}
 
-	// CreateUserRequest is the input to CreateUser
+	// CreateUserRequest contains the request parameters for the create user endpoint
 	CreateUserRequest struct {
-		User          UserBasicInfo     `json:"user"`
-		Notifications UserNotifications `json:"notifications"`
-		AuthGrants    []AuthGrant       `json:"authGrants"`
-		SendEmail     bool              `json:"sendEmail"`
+		User          UserBasicInfo
+		Notifications UserNotifications
+		AuthGrants    []AuthGrant
+		SendEmail     bool
 	}
 
-	// GetUserRequest is the input for GetUser
+	// GetUserRequest contains the request parameters of the get user endpoint
 	GetUserRequest struct {
-		IdentityID    string `json:"uiIdentityId"`
-		Actions       bool   `json:"actions"`
-		AuthGrants    bool   `json:"authGrants"`
-		Notifications bool   `json:"notificiations"`
+		IdentityID    string
+		Actions       bool
+		AuthGrants    bool
+		Notifications bool
 	}
 
-	// UpdateUserInfoRequest is the input to UpdateUserInfo
+	// UpdateUserInfoRequest contains the request parameters of the update user endpoint
 	UpdateUserInfoRequest struct {
-		IdentityID string        `json:"uiIdentityId"`
-		User       UserBasicInfo `json:"user"`
+		IdentityID string
+		User       UserBasicInfo
 	}
 
-	// UpdateUserNotificationsRequest is the input to update user notifications
+	// UpdateUserNotificationsRequest contains the request parameters of the update user notifications endpoint
 	UpdateUserNotificationsRequest struct {
-		IdentityID    string            `json:"uiIdentityId"`
-		Notifications UserNotifications `json:"notifications,omitempty"`
+		IdentityID    string
+		Notifications UserNotifications
 	}
 
-	// UpdateUserAuthGrantsRequest is the input to update user auth grants
+	// UpdateUserAuthGrantsRequest contains the request parameters of the update user auth grants endpoint
 	UpdateUserAuthGrantsRequest struct {
-		IdentityID string      `json:"uiIdentityId"`
-		AuthGrants []AuthGrant `json:"authGrants,omitempty"`
+		IdentityID string
+		AuthGrants []AuthGrant
 	}
 
-	// RemoveUserRequest is the input for RemoveUser
+	// RemoveUserRequest contains the request parameters of the remove user endpoint
 	RemoveUserRequest struct {
-		IdentityID string `json:"uiIdentityId"`
+		IdentityID string
 	}
 
-	// User encapsulates information about each user.
+	// User describes the response of the get and create user endpoints
 	User struct {
 		UserBasicInfo
 		IdentityID         string            `json:"uiIdentityId"`
@@ -121,7 +121,7 @@ type (
 		SessionTimeOut    *int   `json:"sessionTimeOut,omitempty"`
 	}
 
-	// UserActions encapsulates permissions available to the user for this group.
+	// UserActions encapsulates permissions available to the user for this group
 	UserActions struct {
 		APIClient        bool `json:"apiClient"`
 		Delete           bool `json:"delete"`
@@ -131,7 +131,7 @@ type (
 		ThirdPartyAccess bool `json:"thirdPartyAccess"`
 	}
 
-	// AuthGrant is user’s role assignments, per group.
+	// AuthGrant is user’s role assignments, per group
 	AuthGrant struct {
 		GroupID         int         `json:"groupId"`
 		GroupName       string      `json:"groupName"`
@@ -142,13 +142,13 @@ type (
 		Subgroups       []AuthGrant `json:"subGroups,omitempty"`
 	}
 
-	// UserNotifications types of notification emails the user receives.
+	// UserNotifications types of notification emails the user receives
 	UserNotifications struct {
 		EnableEmail bool                    `json:"enableEmailNotifications"`
 		Options     UserNotificationOptions `json:"options"`
 	}
 
-	// UserNotificationOptions types of notification emails the user receives.
+	// UserNotificationOptions types of notification emails the user receives
 	UserNotificationOptions struct {
 		NewUser        bool     `json:"newUserNotification"`
 		PasswordExpiry bool     `json:"passwordExpiry"`
@@ -185,7 +185,7 @@ func (r AuthGrant) Validate() error {
 	}.Filter()
 }
 
-// Validate performs the input validation for CreateUserRequest
+// Validate validates CreateUserRequest
 func (r CreateUserRequest) Validate() error {
 	return validation.Errors{
 		"country":       validation.Validate(r.User.Country, validation.Required),
@@ -198,14 +198,14 @@ func (r CreateUserRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate performs the input validation for GetUserRequest
+// Validate validates GetUserRequest
 func (r GetUserRequest) Validate() error {
 	return validation.Errors{
 		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
 	}.Filter()
 }
 
-// Validate performs the input validation for UpdateUserRequest
+// Validate validates UpdateUserInfoRequest
 func (r UpdateUserInfoRequest) Validate() error {
 	return validation.Errors{
 		"uiIdentity":        validation.Validate(r.IdentityID, validation.Required),
@@ -220,14 +220,14 @@ func (r UpdateUserInfoRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate performs the input validation for UpdateUserNotificationsRequest
+// Validate validates UpdateUserNotificationsRequest
 func (r UpdateUserNotificationsRequest) Validate() error {
 	return validation.Errors{
 		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
 	}.Filter()
 }
 
-// Validate performs the input validation for UpdateUserAuthGrantsRequest
+// Validate validates UpdateUserAuthGrantsRequest
 func (r UpdateUserAuthGrantsRequest) Validate() error {
 	return validation.Errors{
 		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
@@ -235,7 +235,7 @@ func (r UpdateUserAuthGrantsRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate performs the input validation for RemoveUserRequest
+// Validate validates RemoveUserRequest
 func (r RemoveUserRequest) Validate() error {
 	return validation.Errors{
 		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),

@@ -9,7 +9,7 @@ import (
 )
 
 type (
-	// Error is a iam error interface
+	// Error is an IAM error interface
 	Error struct {
 		Type          string          `json:"type"`
 		Title         string          `json:"title"`

@@ -14,7 +14,7 @@ var (
 )
 
 type (
-	// IAM is the iam api interface
+	// IAM is the IAM api interface
 	IAM interface {
 		Groups
 		Roles
@@ -29,7 +29,7 @@ type (
 	// Option defines a IAM option
 	Option func(*iam)
 
-	// ClientFunc is a iam client new method, this can used for mocking
+	// ClientFunc is an IAM client new method, this can be used for mocking
 	ClientFunc func(sess session.Session, opts ...Option) IAM
 )
 
@@ -41,7 +41,7 @@ var (
 	UserAdminEP = path.Join(BaseEndPoint, "user-admin")
 )
 
-// Client returns a new iam Client instance with the specified controller
+// Client returns a new IAM Client instance with the specified controller
 func Client(sess session.Session, opts ...Option) IAM {
 	p := &iam{
 		Session: sess,

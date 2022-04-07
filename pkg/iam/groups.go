@@ -12,7 +12,7 @@ import (
 )
 
 type (
-	// Groups is the IAM group management interface
+	// Groups is the IAM group API interface
 	Groups interface {
 		// ListGroups lists all groups in which you have a scope of admin for the current account and contract type
 		//
@@ -20,18 +20,18 @@ type (
 		ListGroups(context.Context, ListGroupsRequest) ([]Group, error)
 	}
 
-	// ListGroupsRequest is the request for listing groups
+	// ListGroupsRequest describes the request parameters of the list groups endpoint
 	ListGroupsRequest struct {
-		Actions bool `json:"actions"`
+		Actions bool
 	}
 
-	// GroupActions encapsulates permissions available to the user for this group.
+	// GroupActions encapsulates permissions available to the user for this group
 	GroupActions struct {
 		Delete bool `json:"bool"`
 		Edit   bool `json:"edit"`
 	}
 
-	// Group encapsulates information about a group.
+	// Group describes the response of the list groups endpoint
 	Group struct {
 		Actions       *GroupActions `json:"actions,omitempty"`
 		CreatedBy     string        `json:"createdBy"`

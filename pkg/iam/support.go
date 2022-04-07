@@ -9,9 +9,9 @@ import (
 )
 
 type (
-	// Support is a list of iam supported object methods
+	// Support is a list of IAM supported objects API interfaces
 	Support interface {
-		// ListProducts returns all products a user can subscribe to and receive notifications for on the account
+		// ListProducts lists products a user can subscribe to and receive notifications for on the account
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-notification-products
 		ListProducts(context.Context) ([]string, error)
@@ -21,44 +21,44 @@ type (
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-states
 		ListStates(context.Context, ListStatesRequest) ([]string, error)
 
-		// ListTimeoutPolicies lists all the possible session timeout policies that Akamai supports
+		// ListTimeoutPolicies lists all the possible session timeout policies
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-timeout-policies
 		ListTimeoutPolicies(context.Context) ([]TimeoutPolicy, error)
 
-		// SupportedContactTypes lists all the possible contact types that Akamai supports
+		// SupportedContactTypes lists supported contact types
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-contact-types
 		SupportedContactTypes(context.Context) ([]string, error)
 
-		// SupportedCountries returns all the possible countries that Akamai supports
+		// SupportedCountries lists supported countries
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-countries
 		SupportedCountries(context.Context) ([]string, error)
 
-		// SupportedLanguages lists all the possible languages Akamai supports
+		// SupportedLanguages lists supported languages
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-languages
 		SupportedLanguages(context.Context) ([]string, error)
 
-		// SupportedTimezones lists all time zones Akamai supports
+		// SupportedTimezones lists supported timezones
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-timezones
 		SupportedTimezones(context.Context) ([]Timezone, error)
 	}
 
-	// TimeoutPolicy specifies session timeout policy options that can be assigned to each user
+	// TimeoutPolicy encapsulates the response of the list timeout policies endpoint
 	TimeoutPolicy struct {
 		Name  string `json:"name"`
 		Value int64  `json:"value"`
 	}
 
-	// ListStatesRequest specifies the country for the requested states
+	// ListStatesRequest contains the country request parameter for the list states endpoint
 	ListStatesRequest struct {
-		Country string `json:"country"`
+		Country string
 	}
 
-	// Timezone is the object retured by the SupportedTimezones method
+	// Timezone contains the response of the list supported timezones endpoint
 	Timezone struct {
 		Description string `json:"description"`
 		Offset      string `json:"offset"`
