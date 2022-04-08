@@ -50,9 +50,9 @@ type (
 		Version          int64              `json:"version"`
 		Description      string             `json:"description"`
 		CreatedBy        string             `json:"createdBy"`
-		CreateDate       int                `json:"createDate"`
+		CreateDate       int64              `json:"createDate"`
 		LastModifiedBy   string             `json:"lastModifiedBy"`
-		LastModifiedDate int                `json:"lastModifiedDate"`
+		LastModifiedDate int64              `json:"lastModifiedDate"`
 		RulesLocked      bool               `json:"rulesLocked"`
 		Activations      []PolicyActivation `json:"activations"`
 		MatchRules       MatchRules         `json:"matchRules"`
