@@ -30,7 +30,7 @@ type (
 		// ListUsers returns a list of users who have access on this account
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-ui-identities
-		ListUsers(context.Context, ListUsersRequest) ([]User, error)
+		ListUsers(context.Context, ListUsersRequest) ([]UserListItem, error)
 
 		// RemoveUser removes a user identity
 		//
@@ -63,7 +63,7 @@ type (
 
 	// ListUsersRequest contains the request parameters for the list users endpoint
 	ListUsersRequest struct {
-		GroupID    int
+		GroupID    *int
 		AuthGrants bool
 		Actions    bool
 	}
@@ -108,9 +108,24 @@ type (
 		PasswordExpiryDate string            `json:"passwordExpiryDate,omitempty"`
 		TFAConfigured      bool              `json:"tfaConfigured"`
 		EmailUpdatePending bool              `json:"emailUpdatePending"`
-		Actions            UserActions       `json:"actions,omitempty"`
 		AuthGrants         []AuthGrant       `json:"authGrants,omitempty"`
 		Notifications      UserNotifications `json:"notifications,omitempty"`
+	}
+
+	// UserListItem describes the response of the list endpoint
+	UserListItem struct {
+		FirstName     string       `json:"firstName"`
+		LastName      string       `json:"lastName"`
+		UserName      string       `json:"uiUserName,omitempty"`
+		Email         string       `json:"email"`
+		TFAEnabled    bool         `json:"tfaEnabled"`
+		IdentityID    string       `json:"uiIdentityId"`
+		IsLocked      bool         `json:"isLocked"`
+		LastLoginDate string       `json:"lastLoginDate,omitempty"`
+		TFAConfigured bool         `json:"tfaConfigured"`
+		AccountID     string       `json:"accountId"`
+		Actions       *UserActions `json:"actions,omitempty"`
+		AuthGrants    []AuthGrant  `json:"authGrants,omitempty"`
 	}
 
 	// UserBasicInfo is the user basic info structure
@@ -220,13 +235,6 @@ func (r CreateUserRequest) Validate() error {
 func (r GetUserRequest) Validate() error {
 	return validation.Errors{
 		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
-	}.Filter()
-}
-
-// Validate validates ListUsersRequest
-func (r ListUsersRequest) Validate() error {
-	return validation.Errors{
-		"groupId": validation.Validate(r.GroupID, validation.Required),
 	}.Filter()
 }
 
@@ -341,11 +349,7 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 	return &rval, nil
 }
 
-func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]User, error) {
-	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w:\n%s", ErrListUsers, ErrStructValidation, err)
-	}
-
+func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]UserListItem, error) {
 	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities"))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse the URL:\n%s", ErrListUsers, err)
@@ -354,7 +358,9 @@ func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]User, e
 	q := u.Query()
 	q.Add("actions", strconv.FormatBool(params.Actions))
 	q.Add("authGrants", strconv.FormatBool(params.AuthGrants))
-	q.Add("groupId", strconv.FormatInt(int64(params.GroupID), 10))
+	if params.GroupID != nil {
+		q.Add("groupId", strconv.FormatInt(int64(*params.GroupID), 10))
+	}
 	u.RawQuery = q.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
@@ -362,7 +368,7 @@ func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]User, e
 		return nil, fmt.Errorf("%w: failed to create request:\n%s", ErrListUsers, err)
 	}
 
-	var users []User
+	var users []UserListItem
 	resp, err := i.Exec(req, &users)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed:\n%s", ErrListUsers, err)

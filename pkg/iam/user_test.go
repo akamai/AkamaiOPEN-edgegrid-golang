@@ -36,7 +36,7 @@ func TestIAM_CreateUser(t *testing.T) {
 				AuthGrants:    []AuthGrant{{GroupID: 1, RoleID: tools.IntPtr(1)}},
 				Notifications: UserNotifications{},
 			},
-			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","uiIdentityId":"","isLocked":false,"tfaConfigured":false,"emailUpdatePending":false,"actions":{"apiClient":false,"delete":false,"edit":false,"isCloneable":false,"resetPassword":false,"thirdPartyAccess":false,"canEditTFA":false},"authGrants":[{"groupId":1,"groupName":"","isBlocked":false,"roleDescription":"","roleId":1,"roleName":""}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null}}}`,
+			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","uiIdentityId":"","isLocked":false,"tfaConfigured":false,"emailUpdatePending":false,"authGrants":[{"groupId":1,"groupName":"","isBlocked":false,"roleDescription":"","roleId":1,"roleName":""}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null}}}`,
 			responseStatus: http.StatusCreated,
 			responseBody: `
 {
@@ -59,7 +59,6 @@ func TestIAM_CreateUser(t *testing.T) {
 					Country:   "USA",
 					State:     "CA",
 				},
-				Actions: UserActions{},
 			},
 		},
 		"500 internal server error": {
@@ -213,12 +212,12 @@ func TestIam_ListUsers(t *testing.T) {
 		responseStatus   int
 		expectedPath     string
 		responseBody     string
-		expectedResponse []User
+		expectedResponse []UserListItem
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
 			params: ListUsersRequest{
-				GroupID:    12345,
+				GroupID:    tools.IntPtr(12345),
 				AuthGrants: true,
 				Actions:    true,
 			},
@@ -258,20 +257,19 @@ func TestIam_ListUsers(t *testing.T) {
 				]
 			  }
 			]`,
-			expectedResponse: []User{
+			expectedResponse: []UserListItem{
 				{
-					IdentityID: "A-B-123456",
-					UserBasicInfo: UserBasicInfo{
-						FirstName:  "John",
-						LastName:   "Doe",
-						UserName:   "johndoe",
-						Email:      "john.doe@mycompany.com",
-						TFAEnabled: true,
-					},
+					IdentityID:    "A-B-123456",
+					FirstName:     "John",
+					LastName:      "Doe",
+					UserName:      "johndoe",
+					Email:         "john.doe@mycompany.com",
+					AccountID:     "1-123A",
+					TFAEnabled:    true,
 					LastLoginDate: "2016-01-13T17:53:57Z",
 					TFAConfigured: true,
 					IsLocked:      false,
-					Actions: UserActions{
+					Actions: &UserActions{
 						APIClient:        true,
 						Delete:           true,
 						Edit:             true,
@@ -293,7 +291,7 @@ func TestIam_ListUsers(t *testing.T) {
 		},
 		"200 OK, no actions nor grants": {
 			params: ListUsersRequest{
-				GroupID: 12345,
+				GroupID: tools.IntPtr(12345),
 			},
 			responseStatus: http.StatusOK,
 			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=false&authGrants=false&groupId=12345",
@@ -311,31 +309,57 @@ func TestIam_ListUsers(t *testing.T) {
 				"isLocked": false
 			  }
 			]`,
-			expectedResponse: []User{
+			expectedResponse: []UserListItem{
 				{
-					IdentityID: "A-B-123456",
-					UserBasicInfo: UserBasicInfo{
-						FirstName:  "John",
-						LastName:   "Doe",
-						UserName:   "johndoe",
-						Email:      "john.doe@mycompany.com",
-						TFAEnabled: true,
-					},
+					IdentityID:    "A-B-123456",
+					FirstName:     "John",
+					LastName:      "Doe",
+					UserName:      "johndoe",
+					Email:         "john.doe@mycompany.com",
+					AccountID:     "1-123A",
+					TFAEnabled:    true,
 					LastLoginDate: "2016-01-13T17:53:57Z",
 					TFAConfigured: true,
 					IsLocked:      false,
 				},
 			},
 		},
-		"do not validate": {
-			params: ListUsersRequest{},
-			withError: func(t *testing.T, err error) {
-				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+		"no group id": {
+			params:       ListUsersRequest{},
+			expectedPath: "/identity-management/v2/user-admin/ui-identities?actions=false&authGrants=false",
+			responseBody: `[
+			  {
+				"uiIdentityId": "A-B-123456",
+				"firstName": "John",
+				"lastName": "Doe",
+				"uiUserName": "johndoe",
+				"email": "john.doe@mycompany.com",
+				"accountId": "1-123A",
+				"lastLoginDate": "2016-01-13T17:53:57Z",
+				"tfaEnabled": true,
+				"tfaConfigured": true,
+				"isLocked": false
+			  }
+			]`,
+			expectedResponse: []UserListItem{
+				{
+					IdentityID:    "A-B-123456",
+					FirstName:     "John",
+					LastName:      "Doe",
+					UserName:      "johndoe",
+					Email:         "john.doe@mycompany.com",
+					AccountID:     "1-123A",
+					TFAEnabled:    true,
+					LastLoginDate: "2016-01-13T17:53:57Z",
+					TFAConfigured: true,
+					IsLocked:      false,
+				},
 			},
+			responseStatus: http.StatusOK,
 		},
 		"500 internal server error": {
 			params: ListUsersRequest{
-				GroupID:    12345,
+				GroupID:    tools.IntPtr(12345),
 				AuthGrants: true,
 				Actions:    true,
 			},
