@@ -36,7 +36,7 @@ func TestIAM_CreateUser(t *testing.T) {
 				AuthGrants:    []AuthGrant{{GroupID: 1, RoleID: tools.IntPtr(1)}},
 				Notifications: UserNotifications{},
 			},
-			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","uiIdentityId":"","isLocked":false,"tfaConfigured":false,"emailUpdatePending":false,"authGrants":[{"groupId":1,"groupName":"","isBlocked":false,"roleDescription":"","roleId":1,"roleName":""}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null}}}`,
+			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","uiIdentityId":"","isLocked":false,"tfaConfigured":false,"emailUpdatePending":false,"actions":{"apiClient":false,"delete":false,"edit":false,"isCloneable":false,"resetPassword":false,"thirdPartyAccess":false,"canEditTFA":false},"authGrants":[{"groupId":1,"groupName":"","isBlocked":false,"roleDescription":"","roleId":1,"roleName":""}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null}}}`,
 			responseStatus: http.StatusCreated,
 			responseBody: `
 {
@@ -59,6 +59,7 @@ func TestIAM_CreateUser(t *testing.T) {
 					Country:   "USA",
 					State:     "CA",
 				},
+				Actions: UserActions{},
 			},
 		},
 		"500 internal server error": {
@@ -202,6 +203,179 @@ func TestIAM_GetUser(t *testing.T) {
 			}
 			require.NoError(t, err)
 			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestIam_ListUsers(t *testing.T) {
+	tests := map[string]struct {
+		params           ListUsersRequest
+		responseStatus   int
+		expectedPath     string
+		responseBody     string
+		expectedResponse []User
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			params: ListUsersRequest{
+				GroupID:    12345,
+				AuthGrants: true,
+				Actions:    true,
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=true&authGrants=true&groupId=12345",
+			responseBody: `[
+			  {
+				"uiIdentityId": "A-B-123456",
+				"firstName": "John",
+				"lastName": "Doe",
+				"uiUserName": "johndoe",
+				"email": "john.doe@mycompany.com",
+				"accountId": "1-123A",
+				"lastLoginDate": "2016-01-13T17:53:57Z",
+				"tfaEnabled": true,
+				"tfaConfigured": true,
+				"isLocked": false,
+				"actions": {
+				  "resetPassword": true,
+				  "delete": true,
+				  "edit": true,
+				  "apiClient": true,
+				  "thirdPartyAccess": true,
+				  "isCloneable": true,
+				  "editProfile": true,
+				  "canEditTFA": false
+				},
+				"authGrants": [
+				  {
+					"groupId": 12345,
+					"roleId": 12,
+					"groupName": "mygroup",
+					"roleName": "admin",
+					"roleDescription": "This is a new role that has been created to",
+					"isBlocked": false
+				  }
+				]
+			  }
+			]`,
+			expectedResponse: []User{
+				{
+					IdentityID: "A-B-123456",
+					UserBasicInfo: UserBasicInfo{
+						FirstName:  "John",
+						LastName:   "Doe",
+						UserName:   "johndoe",
+						Email:      "john.doe@mycompany.com",
+						TFAEnabled: true,
+					},
+					LastLoginDate: "2016-01-13T17:53:57Z",
+					TFAConfigured: true,
+					IsLocked:      false,
+					Actions: UserActions{
+						APIClient:        true,
+						Delete:           true,
+						Edit:             true,
+						IsCloneable:      true,
+						ResetPassword:    true,
+						ThirdPartyAccess: true,
+					},
+					AuthGrants: []AuthGrant{
+						{
+							GroupID:         12345,
+							RoleID:          tools.IntPtr(12),
+							GroupName:       "mygroup",
+							RoleName:        "admin",
+							RoleDescription: "This is a new role that has been created to",
+						},
+					},
+				},
+			},
+		},
+		"200 OK, no actions nor grants": {
+			params: ListUsersRequest{
+				GroupID: 12345,
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=false&authGrants=false&groupId=12345",
+			responseBody: `[
+			  {
+				"uiIdentityId": "A-B-123456",
+				"firstName": "John",
+				"lastName": "Doe",
+				"uiUserName": "johndoe",
+				"email": "john.doe@mycompany.com",
+				"accountId": "1-123A",
+				"lastLoginDate": "2016-01-13T17:53:57Z",
+				"tfaEnabled": true,
+				"tfaConfigured": true,
+				"isLocked": false
+			  }
+			]`,
+			expectedResponse: []User{
+				{
+					IdentityID: "A-B-123456",
+					UserBasicInfo: UserBasicInfo{
+						FirstName:  "John",
+						LastName:   "Doe",
+						UserName:   "johndoe",
+						Email:      "john.doe@mycompany.com",
+						TFAEnabled: true,
+					},
+					LastLoginDate: "2016-01-13T17:53:57Z",
+					TFAConfigured: true,
+					IsLocked:      false,
+				},
+			},
+		},
+		"do not validate": {
+			params: ListUsersRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
+		"500 internal server error": {
+			params: ListUsersRequest{
+				GroupID:    12345,
+				AuthGrants: true,
+				Actions:    true,
+			},
+			responseStatus: http.StatusInternalServerError,
+			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=true&authGrants=true&groupId=12345",
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error processing request",
+				"status": 500
+			}`,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error processing request",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			users, err := client.ListUsers(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, users)
 		})
 	}
 }

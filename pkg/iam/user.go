@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
@@ -25,6 +26,11 @@ type (
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-ui-identity
 		GetUser(context.Context, GetUserRequest) (*User, error)
+
+		// ListUsers returns a list of users who have access on this account
+		//
+		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-ui-identities
+		ListUsers(context.Context, ListUsersRequest) ([]User, error)
 
 		// RemoveUser removes a user identity
 		//
@@ -53,6 +59,13 @@ type (
 		Notifications UserNotifications
 		AuthGrants    []AuthGrant
 		SendEmail     bool
+	}
+
+	// ListUsersRequest contains the request parameters for the list users endpoint
+	ListUsersRequest struct {
+		GroupID    int
+		AuthGrants bool
+		Actions    bool
 	}
 
 	// GetUserRequest contains the request parameters of the get user endpoint
@@ -95,6 +108,7 @@ type (
 		PasswordExpiryDate string            `json:"passwordExpiryDate,omitempty"`
 		TFAConfigured      bool              `json:"tfaConfigured"`
 		EmailUpdatePending bool              `json:"emailUpdatePending"`
+		Actions            UserActions       `json:"actions,omitempty"`
 		AuthGrants         []AuthGrant       `json:"authGrants,omitempty"`
 		Notifications      UserNotifications `json:"notifications,omitempty"`
 	}
@@ -129,6 +143,7 @@ type (
 		IsCloneable      bool `json:"isCloneable"`
 		ResetPassword    bool `json:"resetPassword"`
 		ThirdPartyAccess bool `json:"thirdPartyAccess"`
+		CanEditTFA       bool `json:"canEditTFA"`
 	}
 
 	// AuthGrant is user’s role assignments, per group
@@ -163,6 +178,9 @@ var (
 
 	// ErrGetUser is returned when GetUser fails
 	ErrGetUser = errors.New("get user")
+
+	// ErrListUsers is returned when GetUser fails
+	ErrListUsers = errors.New("list users")
 
 	// ErrRemoveUser is returned when RemoveUser fails
 	ErrRemoveUser = errors.New("remove user")
@@ -202,6 +220,13 @@ func (r CreateUserRequest) Validate() error {
 func (r GetUserRequest) Validate() error {
 	return validation.Errors{
 		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates ListUsersRequest
+func (r ListUsersRequest) Validate() error {
+	return validation.Errors{
+		"groupId": validation.Validate(r.GroupID, validation.Required),
 	}.Filter()
 }
 
@@ -314,6 +339,40 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 	}
 
 	return &rval, nil
+}
+
+func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]User, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrListUsers, ErrStructValidation, err)
+	}
+
+	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities"))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse the URL:\n%s", ErrListUsers, err)
+	}
+
+	q := u.Query()
+	q.Add("actions", strconv.FormatBool(params.Actions))
+	q.Add("authGrants", strconv.FormatBool(params.AuthGrants))
+	q.Add("groupId", strconv.FormatInt(int64(params.GroupID), 10))
+	u.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request:\n%s", ErrListUsers, err)
+	}
+
+	var users []User
+	resp, err := i.Exec(req, &users)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed:\n%s", ErrListUsers, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListUsers, i.Error(resp))
+	}
+
+	return users, nil
 }
 
 func (i *iam) RemoveUser(ctx context.Context, params RemoveUserRequest) error {
