@@ -276,6 +276,7 @@ func TestIam_ListUsers(t *testing.T) {
 						IsCloneable:      true,
 						ResetPassword:    true,
 						ThirdPartyAccess: true,
+						EditProfile:      true,
 					},
 					AuthGrants: []AuthGrant{
 						{

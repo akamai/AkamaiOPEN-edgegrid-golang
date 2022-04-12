@@ -159,6 +159,7 @@ type (
 		ResetPassword    bool `json:"resetPassword"`
 		ThirdPartyAccess bool `json:"thirdPartyAccess"`
 		CanEditTFA       bool `json:"canEditTFA"`
+		EditProfile      bool `json:"editProfile"`
 	}
 
 	// AuthGrant is user’s role assignments, per group
