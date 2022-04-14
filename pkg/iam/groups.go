@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/spf13/cast"
 )
 
 type (
@@ -204,7 +203,7 @@ func (i *iam) GetGroup(ctx context.Context, params GetGroupRequest) (*Group, err
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetGroup, err)
 	}
 	q := u.Query()
-	q.Add("actions", cast.ToString(params.Actions))
+	q.Add("actions", strconv.FormatBool(params.Actions))
 
 	u.RawQuery = q.Encode()
 
@@ -242,7 +241,7 @@ func (i *iam) ListAffectedUsers(ctx context.Context, params ListAffectedUsersReq
 
 	if params.UserType != "" {
 		q := u.Query()
-		q.Add("userType", cast.ToString(params.UserType))
+		q.Add("userType", params.UserType)
 		u.RawQuery = q.Encode()
 	}
 
@@ -273,7 +272,7 @@ func (i *iam) ListGroups(ctx context.Context, params ListGroupsRequest) ([]Group
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListGroups, err)
 	}
 	q := u.Query()
-	q.Add("actions", cast.ToString(params.Actions))
+	q.Add("actions", strconv.FormatBool(params.Actions))
 
 	u.RawQuery = q.Encode()
 

@@ -509,6 +509,7 @@ func TestRemoveGroup(t *testing.T) {
 				Detail:     "Not Authorized to perform this action",
 				Title:      "Forbidden",
 				Type:       "/useradmin-api/error-types/1001",
+				HTTPStatus: http.StatusForbidden,
 			},
 		},
 		"missing group id": {

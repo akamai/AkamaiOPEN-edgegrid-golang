@@ -11,7 +11,6 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
-	"github.com/spf13/cast"
 )
 
 type (
@@ -287,7 +286,7 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 	}
 
 	q := u.Query()
-	q.Add("sendEmail", cast.ToString(params.SendEmail))
+	q.Add("sendEmail", strconv.FormatBool(params.SendEmail))
 
 	u.RawQuery = q.Encode()
 
@@ -326,9 +325,9 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 	}
 
 	q := u.Query()
-	q.Add("actions", cast.ToString(params.Actions))
-	q.Add("authGrants", cast.ToString(params.AuthGrants))
-	q.Add("notifications", cast.ToString(params.Notifications))
+	q.Add("actions", strconv.FormatBool(params.Actions))
+	q.Add("authGrants", strconv.FormatBool(params.AuthGrants))
+	q.Add("notifications", strconv.FormatBool(params.Notifications))
 
 	u.RawQuery = q.Encode()
 
