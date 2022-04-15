@@ -532,7 +532,7 @@ type (
 	// NumberVariableInline represents a type which stores either a value or a variable name
 	NumberVariableInline struct {
 		Name  *string
-		Value *float32
+		Value *float64
 	}
 
 	// Opacity Adjusts the level of transparency of an image. Use this transformation to make an image more or less transparent.
@@ -626,7 +626,7 @@ type (
 
 	// RectangleShapeType Defines a rectangle's `width` and `height` relative to an `anchor` point at the top left corner.
 	RectangleShapeType struct {
-		Anchor PointShapeType `json:"anchor"`
+		Anchor *PointShapeType `json:"anchor"`
 		// Height Extends the rectangle down from the `anchor` point.
 		Height *NumberVariableInline `json:"height"`
 		// Width Extends the rectangle right from the `anchor` point.
@@ -2979,7 +2979,7 @@ func (n *NumberVariableInline) UnmarshalJSON(in []byte) error {
 		n.Value = nil
 		return nil
 	}
-	var value float32
+	var value float64
 	if err = json.Unmarshal(in, &value); err == nil {
 		n.Name = nil
 		n.Value = &value
@@ -3206,7 +3206,8 @@ func (o *OutputVideoVideoAdaptiveQualityVariableInline) MarshalJSON() ([]byte, e
 ////////// Image type unmarshalers /////////////
 ////////////////////////////////////////////////
 
-var imageTypeValueHandlers = map[string]func() ImageType{
+// ImageTypeValueHandlers is a map of available image types
+var ImageTypeValueHandlers = map[string]func() ImageType{
 	"box":    func() ImageType { return &BoxImageType{} },
 	"text":   func() ImageType { return &TextImageType{} },
 	"url":    func() ImageType { return &URLImageType{} },
@@ -3253,7 +3254,7 @@ func (a *Append) UnmarshalJSON(in []byte) error {
 		return fmt.Errorf("%w: 'type' field on image should be a string", ErrUnmarshalImageTypeAppend)
 	}
 	var target AppendT
-	targetImage, ok := imageTypeValueHandlers[strings.ToLower(typeName)]
+	targetImage, ok := ImageTypeValueHandlers[strings.ToLower(typeName)]
 	if !ok {
 		return fmt.Errorf("%w: invalid image type: %s", ErrUnmarshalImageTypeAppend, imageType)
 	}
@@ -3298,7 +3299,7 @@ func (c *Composite) UnmarshalJSON(in []byte) error {
 		return fmt.Errorf("%w: 'type' field on image should be a string", ErrUnmarshalImageTypeComposite)
 	}
 	var target CompositeT
-	targetImage, ok := imageTypeValueHandlers[strings.ToLower(typeName)]
+	targetImage, ok := ImageTypeValueHandlers[strings.ToLower(typeName)]
 	if !ok {
 		return fmt.Errorf("%w: invalid image type: %s", ErrUnmarshalImageTypeComposite, imageType)
 	}
@@ -3315,21 +3316,31 @@ func (c *Composite) UnmarshalJSON(in []byte) error {
 ////////// Shape type unmarshalers /////////////
 ////////////////////////////////////////////////
 
-var shapeTypeValueHandlers = func(m map[string]interface{}) ShapeType {
+// ShapeTypes is a map of available shape types
+var ShapeTypes = map[string]func() ShapeType{
+	"circle":    func() ShapeType { return &CircleShapeType{} },
+	"point":     func() ShapeType { return &PointShapeType{} },
+	"polygon":   func() ShapeType { return &PolygonShapeType{} },
+	"rectangle": func() ShapeType { return &RectangleShapeType{} },
+	"union":     func() ShapeType { return &UnionShapeType{} },
+}
+
+// ShapeTypeValueHandlers returns a ShapeType based on fields specific for a concrete ShapeType
+var ShapeTypeValueHandlers = func(m map[string]interface{}) ShapeType {
 	if _, ok := m["radius"]; ok {
-		return &CircleShapeType{}
+		return ShapeTypes["circle"]()
 	}
 	if _, ok := m["x"]; ok {
-		return &PointShapeType{}
+		return ShapeTypes["point"]()
 	}
 	if _, ok := m["points"]; ok {
-		return &PolygonShapeType{}
+		return ShapeTypes["polygon"]()
 	}
 	if _, ok := m["anchor"]; ok {
-		return &RectangleShapeType{}
+		return ShapeTypes["rectangle"]()
 	}
 	if _, ok := m["shapes"]; ok {
-		return &UnionShapeType{}
+		return ShapeTypes["union"]()
 	}
 	return nil
 }
@@ -3360,7 +3371,7 @@ func (r *RegionOfInterestCrop) UnmarshalJSON(in []byte) error {
 	}
 	shapeMap := shape.(map[string]interface{})
 	var target RegionOfInterestCropT
-	targetShape := shapeTypeValueHandlers(shapeMap)
+	targetShape := ShapeTypeValueHandlers(shapeMap)
 	if targetShape == nil {
 		return fmt.Errorf("%w: invalid shape type", ErrUnmarshalShapeTypeRegionOfInterestCrop)
 	}
@@ -3395,7 +3406,8 @@ var (
 	ErrUnmarshalTransformationURLImageType = errors.New("unmarshalling URLImageType")
 )
 
-var transformationHandlers = map[string]func() TransformationType{
+// TransformationHandlers is a map of available transformations
+var TransformationHandlers = map[string]func() TransformationType{
 	"Append":               func() TransformationType { return &Append{} },
 	"AspectCrop":           func() TransformationType { return &AspectCrop{} },
 	"BackgroundColor":      func() TransformationType { return &BackgroundColor{} },
@@ -3446,7 +3458,7 @@ func (b *BoxImageType) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'transformation' field on BoxImageType should be a map", ErrUnmarshalTransformationBoxImageType)
 		}
 		typeName := transformationMap["transformation"].(string)
-		transformationTarget, ok := transformationHandlers[typeName]
+		transformationTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationBoxImageType, typeName)
 		}
@@ -3478,7 +3490,7 @@ func (c *CircleImageType) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'transformation' field on CircleImageType should be a map", ErrUnmarshalTransformationCircleImageType)
 		}
 		typeName := transformationMap["transformation"].(string)
-		transformationTarget, ok := transformationHandlers[typeName]
+		transformationTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationCircleImageType, typeName)
 		}
@@ -3510,7 +3522,7 @@ func (f *FitAndFill) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'fillTransformation' field on FitAndFill should be a map", ErrUnmarshalTransformationFitAndFill)
 		}
 		typeName := fillTransformationMap["transformation"].(string)
-		fillTransformationTarget, ok := transformationHandlers[typeName]
+		fillTransformationTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationFitAndFill, typeName)
 		}
@@ -3542,7 +3554,7 @@ func (i *IfDimension) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'default' field on IfDimension should be a map", ErrUnmarshalTransformationIfDimension)
 		}
 		typeName := defaultMap["transformation"].(string)
-		defaultTarget, ok := transformationHandlers[typeName]
+		defaultTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfDimension, typeName)
 		}
@@ -3556,7 +3568,7 @@ func (i *IfDimension) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'equal' field on IfDimension should be a map", ErrUnmarshalTransformationIfDimension)
 		}
 		typeName := equalMap["transformation"].(string)
-		equalTarget, ok := transformationHandlers[typeName]
+		equalTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfDimension, typeName)
 		}
@@ -3570,7 +3582,7 @@ func (i *IfDimension) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'greaterThan' field on IfDimension should be a map", ErrUnmarshalTransformationIfDimension)
 		}
 		typeName := greaterThanMap["transformation"].(string)
-		greaterThanTarget, ok := transformationHandlers[typeName]
+		greaterThanTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfDimension, typeName)
 		}
@@ -3584,7 +3596,7 @@ func (i *IfDimension) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'lessThan' field on IfDimension should be a map", ErrUnmarshalTransformationIfDimension)
 		}
 		typeName := lessThanMap["transformation"].(string)
-		lessThanTarget, ok := transformationHandlers[typeName]
+		lessThanTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfDimension, typeName)
 		}
@@ -3616,7 +3628,7 @@ func (i *IfOrientation) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'default' field on IfOrientation should be a map", ErrUnmarshalTransformationIfOrientation)
 		}
 		typeName := defaultMap["transformation"].(string)
-		defaultTarget, ok := transformationHandlers[typeName]
+		defaultTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfOrientation, typeName)
 		}
@@ -3630,7 +3642,7 @@ func (i *IfOrientation) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'landscape' field on IfOrientation should be a map", ErrUnmarshalTransformationIfOrientation)
 		}
 		typeName := landscapeMap["transformation"].(string)
-		landscapeTarget, ok := transformationHandlers[typeName]
+		landscapeTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfOrientation, typeName)
 		}
@@ -3644,7 +3656,7 @@ func (i *IfOrientation) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'portrait' field on IfOrientation should be a map", ErrUnmarshalTransformationIfOrientation)
 		}
 		typeName := portraitMap["transformation"].(string)
-		portraitTarget, ok := transformationHandlers[typeName]
+		portraitTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfOrientation, typeName)
 		}
@@ -3658,7 +3670,7 @@ func (i *IfOrientation) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'square' field on IfOrientation should be a map", ErrUnmarshalTransformationIfOrientation)
 		}
 		typeName := squareMap["transformation"].(string)
-		squareTarget, ok := transformationHandlers[typeName]
+		squareTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfOrientation, typeName)
 		}
@@ -3690,7 +3702,7 @@ func (t *TextImageType) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'transformation' field on TextImageType should be a map", ErrUnmarshalTransformationTextImageType)
 		}
 		typeName := transformationMap["transformation"].(string)
-		transformationTarget, ok := transformationHandlers[typeName]
+		transformationTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationTextImageType, typeName)
 		}
@@ -3722,7 +3734,7 @@ func (u *URLImageType) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'transformation' field on URLImageType should be a map", ErrUnmarshalTransformationURLImageType)
 		}
 		typeName := transformationMap["transformation"].(string)
-		transformationTarget, ok := transformationHandlers[typeName]
+		transformationTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationURLImageType, typeName)
 		}
@@ -3761,7 +3773,7 @@ func (t *Transformations) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: %s", ErrUnmarshalTransformationList, err)
 		}
 
-		indicatedTransformationType, ok := transformationHandlers[transformationTypeName]
+		indicatedTransformationType, ok := TransformationHandlers[transformationTypeName]
 		if !ok {
 			return fmt.Errorf("%w: unsupported transformation type: %s", ErrUnmarshalTransformationList, transformationTypeName)
 		}

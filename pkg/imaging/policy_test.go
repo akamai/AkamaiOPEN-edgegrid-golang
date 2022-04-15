@@ -311,13 +311,13 @@ func TestListPolicies(t *testing.T) {
 										Value: tools.StringPtr("#000000"),
 									},
 									Size: &NumberVariableInline{
-										Value: tools.Float32Ptr(72),
+										Value: tools.Float64Ptr(72),
 									},
 									Stroke: &StringVariableInline{
 										Value: tools.StringPtr("#FFFFFF"),
 									},
 									StrokeSize: &NumberVariableInline{
-										Value: tools.Float32Ptr(0),
+										Value: tools.Float64Ptr(0),
 									},
 									Text: &StringVariableInline{
 										Value: tools.StringPtr("Hello There"),
@@ -760,7 +760,7 @@ func TestListPolicies(t *testing.T) {
 							&Trim{
 								Transformation: "Trim",
 								Fuzz: &NumberVariableInline{
-									Value: tools.Float32Ptr(0.08),
+									Value: tools.Float64Ptr(0.08),
 								},
 								Padding: &IntegerVariableInline{
 									Value: tools.IntPtr(0),
@@ -1278,9 +1278,9 @@ func TestGetPolicy(t *testing.T) {
 						Image: &TextImageType{
 							Type:       "Text",
 							Fill:       &StringVariableInline{Value: tools.StringPtr("#000000")},
-							Size:       &NumberVariableInline{Value: tools.Float32Ptr(72)},
+							Size:       &NumberVariableInline{Value: tools.Float64Ptr(72)},
 							Stroke:     &StringVariableInline{Value: tools.StringPtr("#FFFFFF")},
-							StrokeSize: &NumberVariableInline{Value: tools.Float32Ptr(0)},
+							StrokeSize: &NumberVariableInline{Value: tools.Float64Ptr(0)},
 							Text:       &StringVariableInline{Value: tools.StringPtr("test")},
 							Transformation: &Compound{
 								Transformation: "Compound",
@@ -1294,12 +1294,12 @@ func TestGetPolicy(t *testing.T) {
 						Width:          &IntegerVariableInline{Value: tools.IntPtr(7)},
 						Height:         &IntegerVariableInline{Value: tools.IntPtr(8)},
 						RegionOfInterest: &RectangleShapeType{
-							Anchor: PointShapeType{
-								X: &NumberVariableInline{Value: tools.Float32Ptr(4)},
-								Y: &NumberVariableInline{Value: tools.Float32Ptr(5)},
+							Anchor: &PointShapeType{
+								X: &NumberVariableInline{Value: tools.Float64Ptr(4)},
+								Y: &NumberVariableInline{Value: tools.Float64Ptr(5)},
 							},
-							Width:  &NumberVariableInline{Value: tools.Float32Ptr(8)},
-							Height: &NumberVariableInline{Value: tools.Float32Ptr(9)},
+							Width:  &NumberVariableInline{Value: tools.Float64Ptr(8)},
+							Height: &NumberVariableInline{Value: tools.Float64Ptr(9)},
 						},
 					},
 					&Composite{
@@ -1322,13 +1322,13 @@ func TestGetPolicy(t *testing.T) {
 								Value: tools.StringPtr("#000000"),
 							},
 							Size: &NumberVariableInline{
-								Value: tools.Float32Ptr(72),
+								Value: tools.Float64Ptr(72),
 							},
 							Stroke: &StringVariableInline{
 								Value: tools.StringPtr("#FFFFFF"),
 							},
 							StrokeSize: &NumberVariableInline{
-								Value: tools.Float32Ptr(0),
+								Value: tools.Float64Ptr(0),
 							},
 							Text: &StringVariableInline{
 								Value: tools.StringPtr("Hello There"),
@@ -1581,13 +1581,13 @@ func TestPutPolicy(t *testing.T) {
 									Value: tools.StringPtr("#000000"),
 								},
 								Size: &NumberVariableInline{
-									Value: tools.Float32Ptr(72),
+									Value: tools.Float64Ptr(72),
 								},
 								Stroke: &StringVariableInline{
 									Value: tools.StringPtr("#FFFFFF"),
 								},
 								StrokeSize: &NumberVariableInline{
-									Value: tools.Float32Ptr(0),
+									Value: tools.Float64Ptr(0),
 								},
 								Text: &StringVariableInline{
 									Value: tools.StringPtr("Hello There"),
