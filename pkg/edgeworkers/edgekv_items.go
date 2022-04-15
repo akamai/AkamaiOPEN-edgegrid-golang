@@ -17,22 +17,22 @@ type (
 	EdgeKVItems interface {
 		// ListItems lists items in EdgeKV group
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#13--list-items-within-a-group
+		// See: https://techdocs.akamai.com/edgekv/reference/get_group
 		ListItems(context.Context, ListItemsRequest) (*ListItemsResponse, error)
 
 		// GetItem reads an item from EdgeKV group
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#11--read-an-item-from-an-edgekv-namespace
+		// See: https://techdocs.akamai.com/edgekv/reference/get_item
 		GetItem(context.Context, GetItemRequest) (*Item, error)
 
 		// UpsertItem creates or updates an item in EdgeKV group
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#10--write-an-item-to-an-edgekv-namespace
+		// See: https://techdocs.akamai.com/edgekv/reference/put_item
 		UpsertItem(context.Context, UpsertItemRequest) (*string, error)
 
 		// DeleteItem deletes an item from EdgeKV group
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#12--delete-an-item-from-an-edgekv-namespace
+		// See: https://techdocs.akamai.com/edgekv/reference/delete_item
 		DeleteItem(context.Context, DeleteItemRequest) (*string, error)
 	}
 

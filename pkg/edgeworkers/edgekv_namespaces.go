@@ -15,19 +15,22 @@ type (
 	EdgeKVNamespaces interface {
 		// ListEdgeKVNamespaces lists all namespaces in the given network
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#2--list-edgekv-namespaces
+		// See: https://techdocs.akamai.com/edgekv/reference/get_namespaces
 		ListEdgeKVNamespaces(context.Context, ListEdgeKVNamespacesRequest) (*ListEdgeKVNamespacesResponse, error)
+
 		// GetEdgeKVNamespace fetches a namespace by name
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#4-read-edgekv-namespace-details
+		// See: https://techdocs.akamai.com/edgekv/reference/get_namespace
 		GetEdgeKVNamespace(context.Context, GetEdgeKVNamespaceRequest) (*Namespace, error)
+
 		// CreateEdgeKVNamespace creates a namespace on the given network
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#3-create-an-edgekv-namespace
+		// See: https://techdocs.akamai.com/edgekv/reference/post_namespace
 		CreateEdgeKVNamespace(context.Context, CreateEdgeKVNamespaceRequest) (*Namespace, error)
+
 		// UpdateEdgeKVNamespace updates a namespace
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#5-update-an-edgekv-namespace
+		// See: https://techdocs.akamai.com/edgekv/reference/put_namespace
 		UpdateEdgeKVNamespace(context.Context, UpdateEdgeKVNamespaceRequest) (*Namespace, error)
 	}
 

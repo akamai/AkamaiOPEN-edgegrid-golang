@@ -16,22 +16,22 @@ type (
 	EdgeKVAccessTokens interface {
 		// CreateEdgeKVAccessToken generates EdgeKV specific access token
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#6-generate-an-edgekv-access-token
+		// See: https://techdocs.akamai.com/edgekv/reference/post_tokens
 		CreateEdgeKVAccessToken(context.Context, CreateEdgeKVAccessTokenRequest) (*CreateEdgeKVAccessTokenResponse, error)
 
 		// GetEdgeKVAccessToken retrieves an EdgeKV access token
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#7-retrieve-an-edgekv-access-token
+		// See: https://techdocs.akamai.com/edgekv/reference/get_token
 		GetEdgeKVAccessToken(context.Context, GetEdgeKVAccessTokenRequest) (*GetEdgeKVAccessTokenResponse, error)
 
 		// ListEdgeKVAccessTokens lists EdgeKV access tokens
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#8-list-edgekv-access-tokens
+		// See: https://techdocs.akamai.com/edgekv/reference/get_tokens
 		ListEdgeKVAccessTokens(context.Context, ListEdgeKVAccessTokensRequest) (*ListEdgeKVAccessTokensResponse, error)
 
 		// DeleteEdgeKVAccessToken revokes an EdgeKV access token
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#9-revoke-an-edgekv-access-token
+		// See: https://techdocs.akamai.com/edgekv/reference/delete_token
 		DeleteEdgeKVAccessToken(context.Context, DeleteEdgeKVAccessTokenRequest) (*DeleteEdgeKVAccessTokenResponse, error)
 	}
 

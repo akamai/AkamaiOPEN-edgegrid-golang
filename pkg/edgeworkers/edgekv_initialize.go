@@ -12,12 +12,12 @@ type (
 	EdgeKVInitialize interface {
 		// InitializeEdgeKV Initialize the EdgeKV database
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#1-initialize-edgekv-for-the-first-time
+		// See: https://techdocs.akamai.com/edgekv/reference/put_initialize
 		InitializeEdgeKV(ctx context.Context) (*EdgeKVInitializationStatus, error)
 
 		// GetEdgeKVInitializationStatus is used to check on the current initialization status
 		//
-		// See: https://github.com/akamai/edgeworkers-examples/tree/master/edgekv/apis#1-initialize-edgekv-for-the-first-time
+		// See: https://techdocs.akamai.com/edgekv/reference/get_initialize
 		GetEdgeKVInitializationStatus(ctx context.Context) (*EdgeKVInitializationStatus, error)
 	}
 
