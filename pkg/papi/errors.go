@@ -20,6 +20,9 @@ type (
 		StatusCode    int             `json:"statusCode,omitempty"`
 		Errors        json.RawMessage `json:"errors,omitempty"`
 		Warnings      json.RawMessage `json:"warnings,omitempty"`
+		LimitKey      string          `json:"limitKey"`
+		Limit         int             `json:"limit"`
+		Remaining     int             `json:"remaining"`
 	}
 )
 
