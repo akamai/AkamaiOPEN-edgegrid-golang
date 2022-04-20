@@ -1,10 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.xx.x (Apr. xx, 2022)
+## 2.12.0 (Apr. 25, 2022)
 
 #### FEATURES/ENHANCEMENTS:
 * APPSEC
   * Add WAPBypassNetworkLists interface, to be used in preference to deprecated BypassNetworkLists interface.
+
+* Support for account switch keys from environment ([#149](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/pull/149))
 
 ## 2.11.0 (March 24, 2022)
 
