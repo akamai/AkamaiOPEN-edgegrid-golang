@@ -19,6 +19,7 @@ type (
 		Groups
 		Roles
 		Support
+		UserLock
 		Users
 	}
 
