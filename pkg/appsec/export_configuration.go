@@ -651,8 +651,10 @@ type (
 	// WebApplicationFirewallEvaluation is returned as part of GetExportConfigurationResponse.
 	WebApplicationFirewallEvaluation struct {
 		AttackGroupActions []struct {
-			Action string `json:"action"`
-			Group  string `json:"group"`
+			Action                 string              `json:"action"`
+			Group                  string              `json:"group"`
+			Exception              *RuleException      `json:"exception,omitempty"`
+			AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
 		} `json:"attackGroupActions,omitempty"`
 		EvaluationID      int `json:"evaluationId"`
 		EvaluationVersion int `json:"evaluationVersion"`

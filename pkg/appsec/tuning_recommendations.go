@@ -22,17 +22,19 @@ type (
 
 	// GetTuningRecommendationsRequest is used to retrieve tuning recommendations for a security policy.
 	GetTuningRecommendationsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
-		PolicyID string `json:"-"`
+		ConfigID    int
+		Version     int
+		PolicyID    string
+		RulesetType RulesetType
 	}
 
 	// GetAttackGroupRecommendationsRequest is used to retrieve tuning recommendations for a specific attack group.
 	GetAttackGroupRecommendationsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
-		PolicyID string `json:"-"`
-		Group    string `json:"group"`
+		ConfigID    int
+		Version     int
+		PolicyID    string
+		Group       string
+		RulesetType RulesetType
 	}
 
 	// GetTuningRecommendationsResponse is returned from a call to GetTuningRecommendations.
@@ -59,6 +61,17 @@ type (
 		PathEvidences     []string `json:"pathEvidences,omitempty"`
 		UserDataEvidences []string `json:"userDataEvidences,omitempty"`
 	}
+
+	// RulesetType is a ruleset type value
+	RulesetType string
+)
+
+const (
+	// RulesetTypeActive for active rulesets
+	RulesetTypeActive RulesetType = "active"
+
+	// RulesetTypeEvaluation for evaluation rulesets
+	RulesetTypeEvaluation RulesetType = "evaluation"
 )
 
 // Validate validates a GetTuningRecommendationsRequest.
@@ -67,6 +80,8 @@ func (v GetTuningRecommendationsRequest) Validate() error {
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
 		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
+		"RulesetType": validation.Validate(v.RulesetType, validation.In(RulesetTypeActive, RulesetTypeEvaluation).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'active', 'evaluation' or '' (empty)", v.RulesetType))),
 	}.Filter()
 }
 
@@ -77,6 +92,8 @@ func (v GetAttackGroupRecommendationsRequest) Validate() error {
 		"Version":  validation.Validate(v.Version, validation.Required),
 		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
 		"Group":    validation.Validate(v.Group, validation.Required),
+		"RulesetType": validation.Validate(v.RulesetType, validation.In(RulesetTypeActive, RulesetTypeEvaluation).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'active', 'evaluation' or '' (empty)", v.RulesetType))),
 	}.Filter()
 }
 
@@ -91,10 +108,11 @@ func (p *appsec) GetTuningRecommendations(ctx context.Context, params GetTuningR
 	var rval GetTuningRecommendationsResponse
 
 	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations?standardException=true",
+		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations?standardException=true&type=%s",
 		params.ConfigID,
 		params.Version,
-		params.PolicyID)
+		params.PolicyID,
+		params.RulesetType)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -127,11 +145,13 @@ func (p *appsec) GetAttackGroupRecommendations(ctx context.Context, params GetAt
 	var rval GetAttackGroupRecommendationsResponse
 
 	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations/attack-groups/%s?standardException=true",
+		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations/attack-groups/%s?standardException=true&type=%s",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
-		params.Group)
+		params.Group,
+		params.RulesetType,
+	)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {

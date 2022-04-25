@@ -23,58 +23,41 @@ type (
 
 	// GetRuleUpgradeRequest is used to verify changes in the KRS rule sets.
 	GetRuleUpgradeRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
-		PolicyID string `json:"-"`
+		ConfigID int
+		Version  int
+		PolicyID string
 	}
 
 	// GetRuleUpgradeResponse is returned from a call to GetRuleUpgrade.
 	GetRuleUpgradeResponse struct {
-		Current          string `json:"current,omitempty"`
-		Evaluating       string `json:"evaluating,omitempty"`
-		Latest           string `json:"latest,omitempty"`
-		KRSToEvalUpdates struct {
-			DeletedRules []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"deletedRules,omitempty"`
-			UpdatedRules []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"updatedRules,omitempty"`
-			NewRules []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"newRules,omitempty"`
-		} `json:"KRSToEvalUpdates,omitempty"`
-		EvalToEvalUpdates struct {
-			DeletedRules []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"deletedRules,omitempty"`
-			UpdatedRules []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"updatedRules,omitempty"`
-			NewRules []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"newRules,omitempty"`
-		} `json:"EvalToEvalUpdates,omitempty"`
-		KRSToLatestUpdates struct {
-			DeletedRules []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"deletedRules,omitempty"`
-			NewRules []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"newRules,omitempty"`
-			UpdatedRules []struct {
-				ID    int    `json:"id,omitempty"`
-				Title string `json:"title,omitempty"`
-			} `json:"updatedRules,omitempty"`
-		} `json:"KRSToLatestUpdates,omitempty"`
+		Current            string             `json:"current,omitempty"`
+		Evaluating         string             `json:"evaluating,omitempty"`
+		Latest             string             `json:"latest,omitempty"`
+		KRSToEvalUpdates   *RulesetUpdateData `json:"KRSToEvalUpdates,omitempty"`
+		EvalToEvalUpdates  *RulesetUpdateData `json:"EvalToEvalUpdates,omitempty"`
+		KRSToLatestUpdates *RulesetUpdateData `json:"KRSToLatestUpdates,omitempty"`
+	}
+
+	// RulesetUpdateData is used to report all updates to rules and attack groups in the ruleset.
+	RulesetUpdateData struct {
+		DeletedRules        *RuleData  `json:"deletedRules,omitempty"`
+		NewRules            *RuleData  `json:"newRules,omitempty"`
+		UpdatedRules        *RuleData  `json:"updatedRules,omitempty"`
+		DeletedAttackGroups *GroupData `json:"deletedAttackGroups,omitempty"`
+		UpdatedAttackGroups *GroupData `json:"updatedAttackGroups,omitempty"`
+		NewAttackGroups     *GroupData `json:"newAttackGroups,omitempty"`
+	}
+
+	// RuleData contains updates to rules
+	RuleData []struct {
+		ID    int    `json:"id,omitempty"`
+		Title string `json:"title,omitempty"`
+	}
+
+	// GroupData contains updates to attack groups
+	GroupData []struct {
+		Group     int    `json:"group,omitempty"`
+		GroupName string `json:"groupName,omitempty"`
 	}
 
 	// UpdateRuleUpgradeRequest is used to upgrade to the most recent version of the KRS rule set.

@@ -72,6 +72,7 @@ type (
 		VersionNotes
 		WAFMode
 		WAFProtection
+		WAPBypassNetworkLists
 		WAPSelectedHostnames
 	}
 

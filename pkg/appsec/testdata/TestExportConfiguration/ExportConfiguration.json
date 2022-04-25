@@ -4723,6 +4723,142 @@
                     "applyReputationControls": true,
                     "applySlowPostControls": true
                 },
+                "webApplicationFirewall": {
+                    "ruleActions": [
+                        {
+                            "action": "alert",
+                            "id": 950002,
+                            "rulesetVersionId": 7392
+                        },
+                        {
+                            "action": "alert",
+                            "id": 950006,
+                            "rulesetVersionId": 7392
+                        }
+                    ],
+                    "attackGroupActions": [
+                        {
+                            "action": "alert",
+                            "group": "POLICY",
+                            "rulesetVersionId": 7392
+                        },
+                        {
+                            "action": "alert",
+                            "group": "WAT",
+                            "rulesetVersionId": 7392
+                        },
+                        {
+                            "action": "alert",
+                            "group": "PROTOCOL",
+                            "rulesetVersionId": 7392
+                        },
+                        {
+                            "action": "alert",
+                            "group": "SQL",
+                            "rulesetVersionId": 7392
+                        },
+                        {
+                            "action": "alert",
+                            "group": "XSS",
+                            "rulesetVersionId": 7392,
+                            "exception": {
+                                "specificHeaderCookieParamXmlOrJsonNames": [
+                                    {
+                                        "names": [
+                                            "ASE-Manual-EVAL-HEADER"
+                                        ],
+                                        "selector": "REQUEST_HEADERS"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "action": "alert",
+                            "group": "CMD",
+                            "rulesetVersionId": 7392
+                        },
+                        {
+                            "action": "alert",
+                            "group": "LFI",
+                            "rulesetVersionId": 7392,
+                            "exception": {
+                                "specificHeaderCookieParamXmlOrJsonNames": [
+                                    {
+                                        "names": [
+                                            "ASE-Manual-Active-COOKIES"
+                                        ],
+                                        "selector": "REQUEST_COOKIES",
+                                        "wildcard": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "action": "alert",
+                            "group": "RFI",
+                            "rulesetVersionId": 7392
+                        },
+                        {
+                            "action": "alert",
+                            "group": "PLATFORM",
+                            "rulesetVersionId": 7392
+                        }
+                    ],
+                    "evaluation": {
+                        "attackGroupActions": [
+                            {
+                                "action": "alert",
+                                "group": "POLICY"
+                            },
+                            {
+                                "action": "alert",
+                                "group": "WAT"
+                            },
+                            {
+                                "action": "alert",
+                                "group": "PROTOCOL"
+                            },
+                            {
+                                "action": "alert",
+                                "group": "SQL"
+                            },
+                            {
+                                "action": "alert",
+                                "group": "XSS"
+                            },
+                            {
+                                "action": "deny",
+                                "group": "CMD"
+                            },
+                            {
+                                "action": "alert",
+                                "group": "LFI"
+                            },
+                            {
+                                "action": "alert",
+                                "group": "RFI"
+                            },
+                            {
+                                "action": "alert",
+                                "group": "PLATFORM"
+                            }
+                        ],
+                        "evaluationId": 13904,
+                        "evaluationVersion": 1,
+                        "ruleActions": [
+                            {
+                                "action": "alert",
+                                "id": 950002
+                            },
+                            {
+                                "action": "alert",
+                                "id": 950006
+                            }
+                        ],
+                        "rulesetVersionId": 7592
+                    },
+                    "threatIntel": "on"
+                },
                 "apiRequestConstraints": {
                     "apiEndpoints": []
                 },
