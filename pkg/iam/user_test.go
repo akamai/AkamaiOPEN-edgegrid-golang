@@ -814,3 +814,66 @@ func TestIAM_RemoveUser(t *testing.T) {
 		})
 	}
 }
+
+func TestIAM_UpdateTFA(t *testing.T) {
+	tests := map[string]struct {
+		params         UpdateTFARequest
+		responseStatus int
+		responseBody   string
+		expectedPath   string
+		withError      func(*testing.T, error)
+	}{
+		"204 No Content": {
+			params: UpdateTFARequest{
+				IdentityID: "1-ABCDE",
+				Action:     TFAActionEnable,
+			},
+			responseStatus: http.StatusNoContent,
+			responseBody:   "",
+			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/tfa?action=enable",
+		},
+		"500 internal server error": {
+			params: UpdateTFARequest{
+				IdentityID: "1-ABCDE",
+				Action:     TFAActionDisable,
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error making request",
+    "status": 500
+}`,
+			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/tfa?action=disable",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error making request",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.UpdateTFA(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}

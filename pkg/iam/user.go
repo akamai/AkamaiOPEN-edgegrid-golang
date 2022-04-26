@@ -50,6 +50,11 @@ type (
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-notifications
 		UpdateUserNotifications(context.Context, UpdateUserNotificationsRequest) (*UserNotifications, error)
+
+		// UpdateTFA updates a user's two-factor authentication setting and can reset tfa
+		//
+		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-ui-identity-tfa
+		UpdateTFA(context.Context, UpdateTFARequest) error
 	}
 
 	// CreateUserRequest contains the request parameters for the create user endpoint
@@ -185,6 +190,24 @@ type (
 		Proactive      []string `json:"proactive"`
 		Upgrade        []string `json:"upgrade"`
 	}
+
+	// TFAActionType is a type for tfa action constants
+	TFAActionType string
+
+	// UpdateTFARequest contains the request parameters of the tfa user endpoint
+	UpdateTFARequest struct {
+		IdentityID string
+		Action     TFAActionType
+	}
+)
+
+const (
+	// TFAActionEnable ia an action value to use to enable tfa
+	TFAActionEnable TFAActionType = "enable"
+	// TFAActionDisable ia an action value to use to disable tfa
+	TFAActionDisable TFAActionType = "disable"
+	// TFAActionReset ia an action value to use to reset tfa
+	TFAActionReset TFAActionType = "reset"
 )
 
 var (
@@ -208,6 +231,9 @@ var (
 
 	// ErrUpdateUserNotifications is returned when UpdateUserNotifications fails
 	ErrUpdateUserNotifications = errors.New("update user notifications")
+
+	// ErrUpdateTFA is returned when UpdateTFA fails
+	ErrUpdateTFA = errors.New("update user's two-factor authentication")
 )
 
 // Validate performs validation on AuthGrant
@@ -272,6 +298,15 @@ func (r UpdateUserAuthGrantsRequest) Validate() error {
 func (r RemoveUserRequest) Validate() error {
 	return validation.Errors{
 		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates UpdateTFARequest
+func (r UpdateTFARequest) Validate() error {
+	return validation.Errors{
+		"IdentityID": validation.Validate(r.IdentityID, validation.Required),
+		"Action": validation.Validate(r.Action, validation.Required, validation.In(TFAActionEnable, TFAActionDisable, TFAActionReset).
+			Error(fmt.Sprintf("value '%s' is invalid. Must be one of: 'enable', 'disable' or 'reset'", r.Action))),
 	}.Filter()
 }
 
@@ -491,4 +526,35 @@ func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNoti
 	}
 
 	return &rval, nil
+}
+
+func (i *iam) UpdateTFA(ctx context.Context, params UpdateTFARequest) error {
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w:\n%s", ErrUpdateTFA, ErrStructValidation, err)
+	}
+
+	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "tfa"))
+	if err != nil {
+		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateTFA, err)
+	}
+
+	q := u.Query()
+	q.Add("action", string(params.Action))
+	u.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
+	if err != nil {
+		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateTFA, err)
+	}
+
+	resp, err := i.Exec(req, nil, nil)
+	if err != nil {
+		return fmt.Errorf("%w: request failed: %s", ErrUpdateTFA, err)
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("%s: %w", ErrUpdateTFA, i.Error(resp))
+	}
+
+	return nil
 }
