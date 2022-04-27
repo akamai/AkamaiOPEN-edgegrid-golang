@@ -16,6 +16,7 @@ var (
 type (
 	// IAM is the IAM api interface
 	IAM interface {
+		BlockedProperties
 		Groups
 		Roles
 		Support
