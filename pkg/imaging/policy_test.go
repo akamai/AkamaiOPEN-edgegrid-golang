@@ -1344,6 +1344,267 @@ func TestGetPolicy(t *testing.T) {
 				DateCreated: "2021-12-07 16:20:34+0000",
 			},
 		},
+		"200 OK - image post break transformation": {
+			params: GetPolicyRequest{
+				Network:     PolicyNetworkStaging,
+				ContractID:  "3-WNKXX1",
+				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
+				PolicyID:    "foo",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+        {
+            "id": "foo",
+            "version": 2,
+            "previousVersion": 1,
+            "rolloutInfo": {
+                "startTime": 1638894035,
+                "endTime": 1638894036,
+                "rolloutDuration": 1
+            },
+            "breakpoints": {
+                "widths": [
+                    320,
+                    640,
+                    1024,
+                    2048,
+                    5000
+                ]
+            },
+            "output": {
+                "perceptualQuality": "mediumHigh"
+            },
+            "transformations": [
+				{
+					"transformation": "Append",
+					"gravity": "Center",
+					"gravityPriority": "horizontal",
+					"preserveMinorDimension": true,
+					"image": {
+						"type": "Text",
+						"fill": "#000000",
+						"size": 72,
+						"stroke": "#FFFFFF",
+						"strokeSize": 0,
+						"text": "test",
+						"transformation": {
+							"transformation": "Compound",
+							"transformations": []
+						}
+					}
+				},
+				{
+					"transformation": "RegionOfInterestCrop",
+					"style": "fill",
+					"gravity": "Center",
+					"width": 7,
+					"height": 8,
+					"regionOfInterest": {
+						"anchor": {
+							"x": 4,
+							"y": 5
+						},
+						"width": 8,
+						"height": 9
+					} 
+				},
+                {
+                    "transformation": "Composite",
+                    "xPosition": 0,
+                    "yPosition": 0,
+                    "gravity": "NorthWest",
+                    "placement": "Over",
+                    "image": {
+                        "type": "Text",
+                        "fill": "#000000",
+                        "size": 72,
+                        "stroke": "#FFFFFF",
+                        "strokeSize": 0,
+                        "text": "Hello There",
+                        "transformation": {
+                            "transformation": "Compound",
+                            "transformations": []
+                        }
+                    }
+                }
+            ],
+			"postBreakpointTransformations": [
+					{
+						"transformation": "IfDimensionPost",
+						"dimension": "width",
+						"value": {
+							"var": "MaxDimOld"
+						},
+						"default": {
+							"transformation": "CompoundPost",
+							"transformations": [
+								{
+									"transformation": "IfDimensionPost",
+									"dimension": "width",
+									"value": {
+										"var": "MinDim"
+									},
+									"lessThan": {
+										"transformation": "CompoundPost",
+										"transformations": [
+											{
+												"transformation": "BackgroundColor",
+												"color": "#ffffff"
+											},
+											{
+												"transformation": "BackgroundColor",
+												"color": "#00ffff"
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				],
+            "video": false,
+            "user": "jsmith",
+            "dateCreated": "2021-12-07 16:20:34+0000" 
+}`,
+			expectedPath: "/imaging/v2/network/staging/policies/foo",
+			expectedHeaders: map[string][]string{
+				"Contract":   {"3-WNKXX1"},
+				"Policy-Set": {"570f9090-5dbe-11ec-8a0a-71665789c1d8"},
+			},
+			expectedResponse: &PolicyOutputImage{
+				ID:              "foo",
+				Version:         2,
+				PreviousVersion: 1,
+				RolloutInfo: &RolloutInfo{
+					StartTime:       1638894035,
+					EndTime:         1638894036,
+					RolloutDuration: 1,
+				},
+				Breakpoints: &Breakpoints{
+					Widths: []int{320, 640, 1024, 2048, 5000},
+				},
+				Output: &OutputImage{
+					PerceptualQuality: &OutputImagePerceptualQualityVariableInline{
+						Value: OutputImagePerceptualQualityPtr(OutputImagePerceptualQualityMediumHigh),
+					},
+				},
+				Transformations: []TransformationType{
+					&Append{
+						Transformation:         "Append",
+						Gravity:                &GravityVariableInline{Value: GravityPtr("Center")},
+						GravityPriority:        &AppendGravityPriorityVariableInline{Value: AppendGravityPriorityPtr("horizontal")},
+						PreserveMinorDimension: &BooleanVariableInline{Value: tools.BoolPtr(true)},
+						Image: &TextImageType{
+							Type:       "Text",
+							Fill:       &StringVariableInline{Value: tools.StringPtr("#000000")},
+							Size:       &NumberVariableInline{Value: tools.Float64Ptr(72)},
+							Stroke:     &StringVariableInline{Value: tools.StringPtr("#FFFFFF")},
+							StrokeSize: &NumberVariableInline{Value: tools.Float64Ptr(0)},
+							Text:       &StringVariableInline{Value: tools.StringPtr("test")},
+							Transformation: &Compound{
+								Transformation: "Compound",
+							},
+						},
+					},
+					&RegionOfInterestCrop{
+						Transformation: "RegionOfInterestCrop",
+						Style:          &RegionOfInterestCropStyleVariableInline{Value: RegionOfInterestCropStylePtr("fill")},
+						Gravity:        &GravityVariableInline{Value: GravityPtr("Center")},
+						Width:          &IntegerVariableInline{Value: tools.IntPtr(7)},
+						Height:         &IntegerVariableInline{Value: tools.IntPtr(8)},
+						RegionOfInterest: &RectangleShapeType{
+							Anchor: &PointShapeType{
+								X: &NumberVariableInline{Value: tools.Float64Ptr(4)},
+								Y: &NumberVariableInline{Value: tools.Float64Ptr(5)},
+							},
+							Width:  &NumberVariableInline{Value: tools.Float64Ptr(8)},
+							Height: &NumberVariableInline{Value: tools.Float64Ptr(9)},
+						},
+					},
+					&Composite{
+						Transformation: "Composite",
+						XPosition: &IntegerVariableInline{
+							Value: tools.IntPtr(0),
+						},
+						YPosition: &IntegerVariableInline{
+							Value: tools.IntPtr(0),
+						},
+						Gravity: &GravityVariableInline{
+							Value: GravityPtr(GravityNorthWest),
+						},
+						Placement: &CompositePlacementVariableInline{
+							Value: CompositePlacementPtr(CompositePlacementOver),
+						},
+						Image: &TextImageType{
+							Type: "Text",
+							Fill: &StringVariableInline{
+								Value: tools.StringPtr("#000000"),
+							},
+							Size: &NumberVariableInline{
+								Value: tools.Float64Ptr(72),
+							},
+							Stroke: &StringVariableInline{
+								Value: tools.StringPtr("#FFFFFF"),
+							},
+							StrokeSize: &NumberVariableInline{
+								Value: tools.Float64Ptr(0),
+							},
+							Text: &StringVariableInline{
+								Value: tools.StringPtr("Hello There"),
+							},
+							Transformation: &Compound{
+								Transformation: "Compound",
+							},
+						},
+					},
+				},
+				PostBreakpointTransformations: []TransformationTypePost{
+					&IfDimensionPost{
+						Transformation: "IfDimensionPost",
+						Dimension: &IfDimensionPostDimensionVariableInline{
+							Value: IfDimensionPostDimensionPtr("width"),
+						},
+						Value: &IntegerVariableInline{
+							Name: tools.StringPtr("MaxDimOld"),
+						},
+						Default: &CompoundPost{
+							Transformation: "CompoundPost",
+							Transformations: []TransformationTypePost{
+								&IfDimensionPost{
+									Transformation: "IfDimensionPost",
+									Dimension: &IfDimensionPostDimensionVariableInline{
+										Value: IfDimensionPostDimensionPtr("width"),
+									},
+									Value: &IntegerVariableInline{
+										Name: tools.StringPtr("MinDim"),
+									},
+									LessThan: &CompoundPost{
+										Transformation: "CompoundPost",
+										Transformations: []TransformationTypePost{
+											&BackgroundColor{
+												Transformation: "BackgroundColor",
+												Color: &StringVariableInline{
+													Value: tools.StringPtr("#ffffff"),
+												},
+											},
+											&BackgroundColor{
+												Transformation: "BackgroundColor",
+												Color: &StringVariableInline{
+													Value: tools.StringPtr("#00ffff"),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Video:       false,
+				User:        "jsmith",
+				DateCreated: "2021-12-07 16:20:34+0000",
+			},
+		},
 		"200 OK - video": {
 			params: GetPolicyRequest{
 				Network:     PolicyNetworkStaging,

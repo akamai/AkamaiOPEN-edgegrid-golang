@@ -70,7 +70,7 @@ $(TEST_TARGETS): ; $(info $(M) Running tests with coverage...) @ ## Run coverage
 .PHONY: create-junit-report
 create-junit-report: | $(GOJUNITREPORT) ; $(info $(M) Creating juint xml report) @
 	$Q cat $(CURDIR)/test/tests.output | $(GOJUNITREPORT) > $(CURDIR)/test/tests.xml
-	$Q sed -i -e 's/skip=/skipped=/g;s/ failures=/ errors="0" failures=/g' $(CURDIR)/test/tests.xml
+	$Q sed -i -e 's/skip=/skipped=/g' $(CURDIR)/test/tests.xml
 
 .PHONY: create-coverage-files
 create-coverage-files: COVERAGE_DIR := $(CURDIR)/test/coverage
