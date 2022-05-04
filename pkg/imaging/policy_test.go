@@ -1430,22 +1430,22 @@ func TestGetPolicy(t *testing.T) {
             ],
 			"postBreakpointTransformations": [
 					{
-						"transformation": "IfDimensionPost",
+						"transformation": "IfDimension",
 						"dimension": "width",
 						"value": {
 							"var": "MaxDimOld"
 						},
 						"default": {
-							"transformation": "CompoundPost",
+							"transformation": "Compound",
 							"transformations": [
 								{
-									"transformation": "IfDimensionPost",
+									"transformation": "IfDimension",
 									"dimension": "width",
 									"value": {
 										"var": "MinDim"
 									},
 									"lessThan": {
-										"transformation": "CompoundPost",
+										"transformation": "Compound",
 										"transformations": [
 											{
 												"transformation": "BackgroundColor",
@@ -1560,7 +1560,7 @@ func TestGetPolicy(t *testing.T) {
 				},
 				PostBreakpointTransformations: []TransformationTypePost{
 					&IfDimensionPost{
-						Transformation: "IfDimensionPost",
+						Transformation: "IfDimension",
 						Dimension: &IfDimensionPostDimensionVariableInline{
 							Value: IfDimensionPostDimensionPtr("width"),
 						},
@@ -1568,10 +1568,10 @@ func TestGetPolicy(t *testing.T) {
 							Name: tools.StringPtr("MaxDimOld"),
 						},
 						Default: &CompoundPost{
-							Transformation: "CompoundPost",
+							Transformation: "Compound",
 							Transformations: []TransformationTypePost{
 								&IfDimensionPost{
-									Transformation: "IfDimensionPost",
+									Transformation: "IfDimension",
 									Dimension: &IfDimensionPostDimensionVariableInline{
 										Value: IfDimensionPostDimensionPtr("width"),
 									},
@@ -1579,7 +1579,7 @@ func TestGetPolicy(t *testing.T) {
 										Name: tools.StringPtr("MinDim"),
 									},
 									LessThan: &CompoundPost{
-										Transformation: "CompoundPost",
+										Transformation: "Compound",
 										Transformations: []TransformationTypePost{
 											&BackgroundColor{
 												Transformation: "BackgroundColor",
