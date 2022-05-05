@@ -131,7 +131,7 @@ type (
 		// Output Dictates the output quality (either `quality` or `perceptualQuality`) and formats that are created for each resized image If unspecified, image formats are created to support all browsers at the default quality level (`85`), which includes formats such as WEBP, JPEG2000 and JPEG-XR for specific browsers
 		Output *OutputImage `json:"output,omitempty"`
 		// PostBreakpointTransformations Post-processing Transformations are applied to the image after image and quality settings have been applied
-		PostBreakpointTransformations Transformations `json:"postBreakpointTransformations,omitempty"`
+		PostBreakpointTransformations PostBreakpointTransformations `json:"postBreakpointTransformations,omitempty"`
 		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version
 		RolloutDuration int `json:"rolloutDuration,omitempty"`
 		// Transformations Set of image transformations to apply to the source image. If unspecified, no operations are performed
