@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"path"
 	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -167,7 +166,7 @@ func (i *iam) CreateGroup(ctx context.Context, params GroupRequest) (*Group, err
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateGroup, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "groups", strconv.FormatInt(params.GroupID, 10)))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/groups/%d", params.GroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateGroup, err)
 	}
@@ -198,7 +197,7 @@ func (i *iam) GetGroup(ctx context.Context, params GetGroupRequest) (*Group, err
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetGroup, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "groups", strconv.FormatInt(params.GroupID, 10)))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/groups/%d", params.GroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetGroup, err)
 	}
@@ -233,8 +232,7 @@ func (i *iam) ListAffectedUsers(ctx context.Context, params ListAffectedUsersReq
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListAffectedUsers, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "groups", "move", strconv.FormatInt(params.SourceGroupID, 10),
-		strconv.FormatInt(params.DestinationGroupID, 10), "affected-users"))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/groups/move/%d/%d/affected-users", params.SourceGroupID, params.DestinationGroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAffectedUsers, err)
 	}
@@ -267,7 +265,7 @@ func (i *iam) ListGroups(ctx context.Context, params ListGroupsRequest) ([]Group
 	logger := i.Log(ctx)
 	logger.Debug("ListGroups")
 
-	u, err := url.Parse(path.Join(UserAdminEP, "groups"))
+	u, err := url.Parse("/identity-management/v2/user-admin/groups")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListGroups, err)
 	}
@@ -302,7 +300,7 @@ func (i *iam) RemoveGroup(ctx context.Context, params RemoveGroupRequest) error 
 		return fmt.Errorf("%s: %w:\n%s", ErrRemoveGroup, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "groups", strconv.FormatInt(params.GroupID, 10)))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/groups/%d", params.GroupID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveGroup, err)
 	}
@@ -332,7 +330,7 @@ func (i *iam) UpdateGroupName(ctx context.Context, params GroupRequest) (*Group,
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateGroupName, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "groups", strconv.FormatInt(params.GroupID, 10)))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/groups/%d", params.GroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateGroupName, err)
 	}

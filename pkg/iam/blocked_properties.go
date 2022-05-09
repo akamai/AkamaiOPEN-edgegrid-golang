@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"path"
-	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -69,7 +67,7 @@ func (i *iam) ListBlockedProperties(ctx context.Context, params ListBlockedPrope
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListBlockedProperties, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "groups", strconv.FormatInt(int64(params.GroupID), 10), "blocked-properties"))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/groups/%d/blocked-properties", params.IdentityID, params.GroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListBlockedProperties, err)
 	}
@@ -97,7 +95,7 @@ func (i *iam) UpdateBlockedProperties(ctx context.Context, params UpdateBlockedP
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateBlockedProperties, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "groups", strconv.FormatInt(int64(params.GroupID), 10), "blocked-properties"))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/groups/%d/blocked-properties", params.IdentityID, params.GroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateBlockedProperties, err)
 	}

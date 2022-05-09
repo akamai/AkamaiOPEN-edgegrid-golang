@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"path"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -63,7 +62,7 @@ func (i *iam) LockUser(ctx context.Context, params LockUserRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrLockUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "lock"))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/lock", params.IdentityID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrLockUser, err)
 	}
@@ -90,7 +89,7 @@ func (i *iam) UnlockUser(ctx context.Context, params UnlockUserRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrUnlockUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "unlock"))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/unlock", params.IdentityID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUnlockUser, err)
 	}

@@ -315,7 +315,7 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities"))
+	u, err := url.Parse(path.Join("/identity-management/v2/user-admin", "ui-identities"))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateUser, err)
 	}
@@ -354,7 +354,7 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetUser, err)
 	}
@@ -385,7 +385,7 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 }
 
 func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]UserListItem, error) {
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities"))
+	u, err := url.Parse("/identity-management/v2/user-admin/ui-identities")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse the URL:\n%s", ErrListUsers, err)
 	}
@@ -421,7 +421,7 @@ func (i *iam) RemoveUser(ctx context.Context, params RemoveUserRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrRemoveUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s", params.IdentityID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveUser, err)
 	}
@@ -448,7 +448,7 @@ func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGra
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserAuthGrants, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "auth-grants"))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/auth-grants", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserAuthGrants, err)
 	}
@@ -477,7 +477,7 @@ func (i *iam) UpdateUserInfo(ctx context.Context, params UpdateUserInfoRequest) 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserInfo, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "basic-info"))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/basic-info", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserInfo, err)
 	}
@@ -505,7 +505,7 @@ func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNoti
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserNotifications, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "notifications"))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/notifications", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserNotifications, err)
 	}
@@ -533,7 +533,7 @@ func (i *iam) UpdateTFA(ctx context.Context, params UpdateTFARequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrUpdateTFA, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join(UserAdminEP, "ui-identities", params.IdentityID, "tfa"))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/tfa", params.IdentityID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateTFA, err)
 	}

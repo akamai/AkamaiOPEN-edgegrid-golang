@@ -30,14 +30,14 @@ var (
 )
 
 // Error parses an error from the response
-func (p *iam) Error(r *http.Response) error {
+func (i *iam) Error(r *http.Response) error {
 	var e Error
 
 	var body []byte
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		p.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
+		i.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.StatusCode = r.StatusCode
 		e.Title = "Failed to read error body"
 		e.Detail = err.Error()
@@ -45,7 +45,7 @@ func (p *iam) Error(r *http.Response) error {
 	}
 
 	if err := json.Unmarshal(body, &e); err != nil {
-		p.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
+		i.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
 		e.Title = "Failed to unmarshal error body"
 		e.Detail = err.Error()
 	}

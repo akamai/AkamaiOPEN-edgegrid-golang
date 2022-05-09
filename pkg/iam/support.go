@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"path"
 )
 
 type (
@@ -94,7 +93,7 @@ func (i *iam) ListProducts(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListProducts")
 
-	getURL := path.Join(UserAdminEP, "common", "notification-products")
+	getURL := "/identity-management/v2/user-admin/common/notification-products"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -118,7 +117,7 @@ func (i *iam) ListStates(ctx context.Context, params ListStatesRequest) ([]strin
 	logger := i.Log(ctx)
 	logger.Debug("ListStates")
 
-	getURL := path.Join(UserAdminEP, "common", "countries", params.Country, "states")
+	getURL := fmt.Sprintf("/identity-management/v2/user-admin/common/countries/%s/states", params.Country)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -142,7 +141,7 @@ func (i *iam) ListTimeoutPolicies(ctx context.Context) ([]TimeoutPolicy, error) 
 	logger := i.Log(ctx)
 	logger.Debug("ListTimeoutPolicies")
 
-	getURL := path.Join(UserAdminEP, "common", "timeout-policies")
+	getURL := "/identity-management/v2/user-admin/common/timeout-policies"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -166,7 +165,7 @@ func (i *iam) SupportedContactTypes(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedContactTypes")
 
-	getURL := path.Join(UserAdminEP, "common", "contact-types")
+	getURL := "/identity-management/v2/user-admin/common/contact-types"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -190,7 +189,7 @@ func (i *iam) SupportedCountries(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedCountries")
 
-	getURL := path.Join(UserAdminEP, "common", "countries")
+	getURL := "/identity-management/v2/user-admin/common/countries"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -214,7 +213,7 @@ func (i *iam) SupportedLanguages(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedLanguages")
 
-	getURL := path.Join(UserAdminEP, "common", "supported-languages")
+	getURL := "/identity-management/v2/user-admin/common/supported-languages"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -238,7 +237,7 @@ func (i *iam) SupportedTimezones(ctx context.Context) ([]Timezone, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedTimezones")
 
-	getURL := path.Join(UserAdminEP, "common", "timezones")
+	getURL := "/identity-management/v2/user-admin/common/timezones"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {

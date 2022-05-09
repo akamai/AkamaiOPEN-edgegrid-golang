@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"path"
 	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -191,7 +190,7 @@ func (i *iam) CreateRole(ctx context.Context, params CreateRoleRequest) (*Role, 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(path.Join(UserAdminEP, "roles"))
+	uri, err := url.Parse("/identity-management/v2/user-admin/roles")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateRole, err)
 	}
@@ -222,7 +221,7 @@ func (i *iam) GetRole(ctx context.Context, params GetRoleRequest) (*Role, error)
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(path.Join(UserAdminEP, "roles", fmt.Sprintf("%d", params.ID)))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/roles/%d", params.ID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetRole, err)
 	}
@@ -259,7 +258,7 @@ func (i *iam) UpdateRole(ctx context.Context, params UpdateRoleRequest) (*Role, 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(path.Join(UserAdminEP, "roles", fmt.Sprintf("%d", params.ID)))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/roles/%d", params.ID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateRole, err)
 	}
@@ -290,7 +289,7 @@ func (i *iam) DeleteRole(ctx context.Context, params DeleteRoleRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrDeleteRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(path.Join(UserAdminEP, "roles", fmt.Sprintf("%d", params.ID)))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/roles/%d", params.ID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to parse url: %s", ErrDeleteRole, err)
 	}
@@ -316,7 +315,7 @@ func (i *iam) ListRoles(ctx context.Context, params ListRolesRequest) ([]Role, e
 	logger := i.Log(ctx)
 	logger.Debug("ListRoles")
 
-	u, err := url.Parse(path.Join(UserAdminEP, "roles"))
+	u, err := url.Parse("/identity-management/v2/user-admin/roles")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListRoles, err)
 	}
@@ -353,7 +352,7 @@ func (i *iam) ListGrantableRoles(ctx context.Context) ([]RoleGrantedRole, error)
 	logger := i.Log(ctx)
 	logger.Debug("ListGrantableRoles")
 
-	uri, err := url.Parse(path.Join(UserAdminEP, "roles", "grantable-roles"))
+	uri, err := url.Parse("/identity-management/v2/user-admin/roles/grantable-roles")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListGrantableRoles, err)
 	}
