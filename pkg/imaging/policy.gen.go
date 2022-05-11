@@ -788,7 +788,7 @@ type (
 	RolloutInfo struct {
 		// EndTime The estimated time that rollout for this policy will end. Value is a unix timestamp.
 		EndTime int `json:"endTime,omitempty"`
-		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version.
+		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version. Policies on the staging network deploy as quickly as possible without rollout. For staging policies this value will always be 1.
 		RolloutDuration int `json:"rolloutDuration,omitempty"`
 		// StartTime The estimated time that rollout for this policy will begin. Value is a unix timestamp.
 		StartTime int `json:"startTime,omitempty"`
@@ -2717,7 +2717,7 @@ func (u UnsharpMask) Validate() error {
 func (v Variable) Validate() error {
 	return validation.Errors{
 		"DefaultValue": validation.Validate(v.DefaultValue,
-			validation.Required,
+			validation.Required.When(v.Type != VariableTypeString),
 		),
 		"EnumOptions": validation.Validate(v.EnumOptions, validation.Each()),
 		"Name": validation.Validate(v.Name,
