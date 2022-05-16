@@ -606,7 +606,7 @@ type (
 	// OutputImage Dictates the output quality (either `quality` or `perceptualQuality`) and formats that are created for each resized image. If unspecified, image formats are created to support all browsers at the default quality level (`85`), which includes formats such as WEBP, JPEG2000 and JPEG-XR for specific browsers.
 	OutputImage struct {
 		// AdaptiveQuality Override the quality of image to serve when Image & Video Manager detects a slow connection. Specifying lower values lets users with slow connections browse your site with reduced load times without impacting the quality of images for users with faster connections.
-		AdaptiveQuality int `json:"adaptiveQuality,omitempty"`
+		AdaptiveQuality *int `json:"adaptiveQuality,omitempty"`
 		// AllowedFormats The graphics file formats allowed for browser specific results.
 		AllowedFormats []OutputImageAllowedFormats `json:"allowedFormats,omitempty"`
 		// ForcedFormats The forced extra formats for the `imFormat` query parameter, which requests a specific browser type. By default, Image and Video Manager detects the browser and returns the appropriate image.
@@ -614,7 +614,7 @@ type (
 		// PerceptualQuality Mutually exclusive with quality. The perceptual quality to use when comparing resulting images, which overrides the `quality` setting. Perceptual quality tunes each image format's quality parameter dynamically based on the human-perceived quality of the output image. This can result in better byte savings (as compared to using regular quality) as many images can be encoded at a much lower quality without compromising perception of the image. In addition, certain images may need to be encoded at a slightly higher quality in order to maintain human-perceived quality. Values are tiered `high`, `mediumHigh`, `medium`, `mediumLow`, or `low`.
 		PerceptualQuality *OutputImagePerceptualQualityVariableInline `json:"perceptualQuality,omitempty"`
 		// PerceptualQualityFloor Only applies with perceptualQuality set. Sets a minimum image quality to respect when using perceptual quality. Perceptual quality will not reduce the quality below this value even if it determines the compressed image to be acceptably visually similar.
-		PerceptualQualityFloor int `json:"perceptualQualityFloor,omitempty"`
+		PerceptualQualityFloor *int `json:"perceptualQualityFloor,omitempty"`
 		// Quality Mutually exclusive with perceptualQuality, used by default if neither is specified. The chosen quality of the output images. Using a quality value from 1-100 resembles JPEG quality across output formats.
 		Quality *IntegerVariableInline `json:"quality,omitempty"`
 	}
@@ -647,29 +647,29 @@ type (
 		// Breakpoints The breakpoint widths (in pixels) to use to create derivative images/videos.
 		Breakpoints *Breakpoints `json:"breakpoints,omitempty"`
 		// DateCreated Date this policy version was created in ISO 8601 extended notation format.
-		DateCreated string `json:"dateCreated,omitempty"`
+		DateCreated string `json:"dateCreated"`
 		// Hosts Hosts that are allowed for image/video URLs within transformations or variables.
 		Hosts []string `json:"hosts,omitempty"`
 		// ID Unique identifier for a policy, up to 64 alphanumeric characters including underscores or dashes.
-		ID string `json:"id,omitempty"`
+		ID string `json:"id"`
 		// Output Dictates the output quality (either `quality` or `perceptualQuality`) and formats that are created for each resized image. If unspecified, image formats are created to support all browsers at the default quality level (`85`), which includes formats such as WEBP, JPEG2000 and JPEG-XR for specific browsers.
 		Output *OutputImage `json:"output,omitempty"`
 		// PostBreakpointTransformations Post-processing Transformations are applied to the image after image and quality settings have been applied.
 		PostBreakpointTransformations PostBreakpointTransformations `json:"postBreakpointTransformations,omitempty"`
 		// PreviousVersion The previous version number of this policy version
-		PreviousVersion int `json:"previousVersion,omitempty"`
+		PreviousVersion int `json:"previousVersion"`
 		// RolloutInfo Contains information about policy rollout start and completion times.
-		RolloutInfo *RolloutInfo `json:"rolloutInfo,omitempty"`
+		RolloutInfo *RolloutInfo `json:"rolloutInfo"`
 		// Transformations Set of image transformations to apply to the source image. If unspecified, no operations are performed.
 		Transformations Transformations `json:"transformations,omitempty"`
 		// User The user who created this policy version
-		User string `json:"user,omitempty"`
+		User string `json:"user"`
 		// Variables Declares variables for use within the policy. Any variable declared here can be invoked throughout transformations as a [Variable](#variable) object, so that you don't have to specify values separately. You can also pass in these variable names and values dynamically as query parameters in the image's request URL.
 		Variables []Variable `json:"variables,omitempty"`
 		// Version The version number of this policy version
-		Version int `json:"version,omitempty"`
+		Version int `json:"version"`
 		// Video Identifies this as an image policy.
-		Video bool `json:"video"`
+		Video *bool `json:"video,omitempty"`
 	}
 
 	// PolicyOutputImageVideo ...
@@ -787,11 +787,11 @@ type (
 	// RolloutInfo Contains information about policy rollout start and completion times.
 	RolloutInfo struct {
 		// EndTime The estimated time that rollout for this policy will end. Value is a unix timestamp.
-		EndTime int `json:"endTime,omitempty"`
+		EndTime int `json:"endTime"`
 		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version. Policies on the staging network deploy as quickly as possible without rollout. For staging policies this value will always be 1.
-		RolloutDuration int `json:"rolloutDuration,omitempty"`
+		RolloutDuration int `json:"rolloutDuration"`
 		// StartTime The estimated time that rollout for this policy will begin. Value is a unix timestamp.
-		StartTime int `json:"startTime,omitempty"`
+		StartTime int `json:"startTime"`
 	}
 
 	// Rotate Rotate the image around its center by indicating the degrees of rotation.
@@ -912,9 +912,9 @@ type (
 		// Name The name of the variable, also available as the query parameter name to set the variable's value dynamically. Use up to 50 alphanumeric characters.
 		Name string `json:"name"`
 		// Postfix A postfix added to the value provided for the variable, or to the default value.
-		Postfix string `json:"postfix,omitempty"`
+		Postfix *string `json:"postfix,omitempty"`
 		// Prefix A prefix added to the value provided for the variable, or to the default value.
-		Prefix string `json:"prefix,omitempty"`
+		Prefix *string `json:"prefix,omitempty"`
 		// Type The type of value for the variable.
 		Type VariableType `json:"type"`
 	}
@@ -961,25 +961,25 @@ type (
 		// Breakpoints The breakpoint widths (in pixels) to use to create derivative images/videos.
 		Breakpoints *Breakpoints `json:"breakpoints,omitempty"`
 		// DateCreated Date this policy version was created in ISO 8601 extended notation format.
-		DateCreated string `json:"dateCreated,omitempty"`
+		DateCreated string `json:"dateCreated"`
 		// Hosts Hosts that are allowed for image/video URLs within transformations or variables.
 		Hosts []string `json:"hosts,omitempty"`
 		// ID Unique identifier for a policy, up to 64 alphanumeric characters including underscores or dashes.
-		ID string `json:"id,omitempty"`
+		ID string `json:"id"`
 		// Output Dictates the output quality that are created for each resized video.
 		Output *OutputVideo `json:"output,omitempty"`
 		// PreviousVersion The previous version number of this policy version
-		PreviousVersion int `json:"previousVersion,omitempty"`
+		PreviousVersion int `json:"previousVersion"`
 		// RolloutInfo Contains information about policy rollout start and completion times.
-		RolloutInfo *RolloutInfo `json:"rolloutInfo,omitempty"`
+		RolloutInfo *RolloutInfo `json:"rolloutInfo"`
 		// User The user who created this policy version
-		User string `json:"user,omitempty"`
+		User string `json:"user"`
 		// Variables Declares variables for use within the policy. Any variable declared here can be invoked throughout transformations as a [Variable](#variable) object, so that you don't have to specify values separately. You can also pass in these variable names and values dynamically as query parameters in the image's request URL.
 		Variables []Variable `json:"variables,omitempty"`
 		// Version The version number of this policy version
-		Version int `json:"version,omitempty"`
+		Version int `json:"version"`
 		// Video Identifies this as a video policy.
-		Video bool `json:"video"`
+		Video *bool `json:"video,omitempty"`
 	}
 
 	// PolicyOutputVideoVideo ...
@@ -2448,18 +2448,30 @@ func (p PointShapeType) Validate() error {
 // Validate validates PolicyOutputImage
 func (p PolicyOutputImage) Validate() error {
 	return validation.Errors{
-		"Breakpoints":                   validation.Validate(p.Breakpoints),
-		"DateCreated":                   validation.Validate(p.DateCreated),
-		"Hosts":                         validation.Validate(p.Hosts, validation.Each()),
-		"ID":                            validation.Validate(p.ID),
+		"Breakpoints": validation.Validate(p.Breakpoints),
+		"DateCreated": validation.Validate(p.DateCreated,
+			validation.Required,
+		),
+		"Hosts": validation.Validate(p.Hosts, validation.Each()),
+		"ID": validation.Validate(p.ID,
+			validation.Required,
+		),
 		"Output":                        validation.Validate(p.Output),
 		"PostBreakpointTransformations": validation.Validate(p.PostBreakpointTransformations),
-		"PreviousVersion":               validation.Validate(p.PreviousVersion),
-		"RolloutInfo":                   validation.Validate(p.RolloutInfo),
-		"Transformations":               validation.Validate(p.Transformations),
-		"User":                          validation.Validate(p.User),
-		"Variables":                     validation.Validate(p.Variables, validation.Each()),
-		"Version":                       validation.Validate(p.Version),
+		"PreviousVersion": validation.Validate(p.PreviousVersion,
+			validation.Required,
+		),
+		"RolloutInfo": validation.Validate(p.RolloutInfo,
+			validation.Required,
+		),
+		"Transformations": validation.Validate(p.Transformations),
+		"User": validation.Validate(p.User,
+			validation.Required,
+		),
+		"Variables": validation.Validate(p.Variables, validation.Each()),
+		"Version": validation.Validate(p.Version,
+			validation.Required,
+		),
 		"Video": validation.Validate(p.Video,
 			validation.In(PolicyOutputImageVideoFalse),
 		),
@@ -2587,12 +2599,17 @@ func (r ResizeTypeVariableInline) Validate() error {
 // Validate validates RolloutInfo
 func (r RolloutInfo) Validate() error {
 	return validation.Errors{
-		"EndTime": validation.Validate(r.EndTime),
+		"EndTime": validation.Validate(r.EndTime,
+			validation.Required,
+		),
 		"RolloutDuration": validation.Validate(r.RolloutDuration,
+			validation.Required,
 			validation.Min(3600),
 			validation.Max(604800),
 		),
-		"StartTime": validation.Validate(r.StartTime),
+		"StartTime": validation.Validate(r.StartTime,
+			validation.Required,
+		),
 	}.Filter()
 }
 

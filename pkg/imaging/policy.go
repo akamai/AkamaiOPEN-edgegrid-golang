@@ -133,7 +133,7 @@ type (
 		// PostBreakpointTransformations Post-processing Transformations are applied to the image after image and quality settings have been applied
 		PostBreakpointTransformations PostBreakpointTransformations `json:"postBreakpointTransformations,omitempty"`
 		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version
-		RolloutDuration int `json:"rolloutDuration,omitempty"`
+		RolloutDuration *int `json:"rolloutDuration,omitempty"`
 		// Transformations Set of image transformations to apply to the source image. If unspecified, no operations are performed
 		Transformations Transformations `json:"transformations,omitempty"`
 		// Variables Declares variables for use within the policy. Any variable declared here can be invoked throughout transformations as a [Variable](#variable) object, so that you don't have to specify values separately You can also pass in these variable names and values dynamically as query parameters in the image's request URL
@@ -149,7 +149,7 @@ type (
 		// Output Dictates the output quality that are created for each resized video
 		Output *OutputVideo `json:"output,omitempty"`
 		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version
-		RolloutDuration int `json:"rolloutDuration,omitempty"`
+		RolloutDuration *int `json:"rolloutDuration,omitempty"`
 		// Variables Declares variables for use within the policy. Any variable declared here can be invoked throughout transformations as a [Variable](#variable) object, so that you don't have to specify values separately You can also pass in these variable names and values dynamically as query parameters in the image's request URL
 		Variables []Variable `json:"variables,omitempty"`
 	}
