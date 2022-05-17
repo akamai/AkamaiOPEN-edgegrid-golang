@@ -40,8 +40,8 @@ type (
 
 	// SetUserPasswordRequest contains the request parameters of the set user password endpoint
 	SetUserPasswordRequest struct {
-		IdentityID  string
-		NewPassword string
+		IdentityID  string `json:"-"`
+		NewPassword string `json:"newPassword"`
 	}
 )
 
@@ -79,7 +79,7 @@ func (i *iam) ResetUserPassword(ctx context.Context, params ResetUserPasswordReq
 	}
 
 	q := u.Query()
-	q.Add("actions", strconv.FormatBool(params.SendEmail))
+	q.Add("sendEmail", strconv.FormatBool(params.SendEmail))
 	u.RawQuery = q.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), nil)
@@ -112,7 +112,7 @@ func (i *iam) SetUserPassword(ctx context.Context, params SetUserPasswordRequest
 		return fmt.Errorf("%w: failed to create request: %s", ErrSetUserPassword, err)
 	}
 
-	resp, err := i.Exec(req, nil, params.NewPassword)
+	resp, err := i.Exec(req, nil, params)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrSetUserPassword, err)
 	}
