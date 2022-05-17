@@ -20,6 +20,7 @@ type (
 		Roles
 		Support
 		UserLock
+		UserPassword
 		Users
 	}
 
