@@ -246,6 +246,89 @@ func TestAppSec_CreateRatePolicy(t *testing.T) {
 	}
 }
 
+// Test Create RatePolicy with negative hostnames match (using RatePoliciesHosts field)
+func TestAppSec_CreateRatePolicy_NegativeMatch(t *testing.T) {
+
+	result := CreateRatePolicyResponse{}
+
+	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePoliciesHosts.json"))
+	json.Unmarshal([]byte(respData), &result)
+
+	req := CreateRatePolicyRequest{}
+
+	reqData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePoliciesHosts.json"))
+	json.Unmarshal([]byte(reqData), &req)
+
+	tests := map[string]struct {
+		params           CreateRatePolicyRequest
+		prop             *CreateRatePolicyRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *CreateRatePolicyResponse
+		withError        error
+		headers          http.Header
+	}{
+		"201 Created": {
+			params: CreateRatePolicyRequest{
+				ConfigID:      43253,
+				ConfigVersion: 15,
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusCreated,
+			responseBody:     respData,
+			expectedResponse: &result,
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/rate-policies",
+		},
+		"500 internal server error": {
+			params: CreateRatePolicyRequest{
+				ConfigID:      43253,
+				ConfigVersion: 15,
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: (`
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating domain"
+}`),
+			expectedPath: "/appsec/v1/configs/43253/versions/15/rate-policies",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating domain",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, http.MethodPost, r.Method)
+				w.WriteHeader(test.responseStatus)
+				if len(test.responseBody) > 0 {
+					_, err := w.Write([]byte(test.responseBody))
+					assert.NoError(t, err)
+				}
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.CreateRatePolicy(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
 // Test Update RatePolicy
 func TestAppSec_UpdateRatePolicy(t *testing.T) {
 	result := UpdateRatePolicyResponse{}

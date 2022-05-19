@@ -62,6 +62,7 @@ type (
 			CreateDate            time.Time                    `json:"-"`
 			Description           string                       `json:"description,omitempty"`
 			FileExtensions        *RatePolicyFileExtensions    `json:"fileExtensions,omitempty"`
+			Hosts                 *RatePoliciesHosts           `json:"hosts,omitempty"`
 			Hostnames             []string                     `json:"hostnames,omitempty"`
 			ID                    int                          `json:"id"`
 			MatchType             string                       `json:"matchType"`
@@ -266,6 +267,7 @@ type (
 			CreateDate            time.Time                    `json:"-"`
 			Description           string                       `json:"description,omitempty"`
 			FileExtensions        *RatePolicyFileExtensions    `json:"fileExtensions,omitempty"`
+			Hosts                 *RatePoliciesHosts           `json:"hosts,omitempty"`
 			Hostnames             []string                     `json:"hostnames,omitempty"`
 			ID                    int                          `json:"id"`
 			MatchType             string                       `json:"matchType"`

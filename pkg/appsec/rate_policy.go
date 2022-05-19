@@ -66,7 +66,8 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hostnames              []string `json:"hostnames"`
+		Hosts                  *RatePoliciesHosts `json:"hosts,omitempty"`
+		Hostnames              []string           `json:"hostnames"`
 		AdditionalMatchOptions []struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Type          string   `json:"type"`
@@ -118,7 +119,8 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hostnames              []string `json:"hostnames"`
+		Hosts                  *RatePoliciesHosts `json:"hosts,omitempty"`
+		Hostnames              []string           `json:"hostnames"`
 		AdditionalMatchOptions []struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Type          string   `json:"type"`
@@ -168,7 +170,8 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hostnames              []string `json:"hostnames"`
+		Hosts                  *RatePoliciesHosts `json:"hosts,omitempty"`
+		Hostnames              []string           `json:"hostnames"`
 		AdditionalMatchOptions []struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Type          string   `json:"type"`
@@ -212,6 +215,7 @@ type (
 			PathMatchType          string                            `json:"pathMatchType,omitempty"`
 			PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch"`
 			FileExtensions         *RatePolicyFileExtensions         `json:"fileExtensions,omitempty"`
+			Hosts                  *RatePoliciesHosts                `json:"hosts,omitempty"`
 			Hostnames              []string                          `json:"hostnames,omitempty"`
 			AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
 			QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
@@ -251,6 +255,7 @@ type (
 		PathMatchType          string                            `json:"pathMatchType,omitempty"`
 		PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch"`
 		FileExtensions         *RatePolicyFileExtensions         `json:"fileExtensions,omitempty"`
+		Hosts                  *RatePoliciesHosts                `json:"hosts,omitempty"`
 		Hostnames              []string                          `json:"hostnames,omitempty"`
 		AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
 		QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
@@ -300,6 +305,12 @@ type (
 		Values        []string `json:"values,omitempty"`
 		PositiveMatch bool     `json:"positiveMatch"`
 		ValueInRange  bool     `json:"valueInRange"`
+	}
+
+	// RatePoliciesHosts is used as part of a rate policy description.
+	RatePoliciesHosts struct {
+		Values        *[]string        `json:"values,omitempty"`
+		PositiveMatch *json.RawMessage `json:"positiveMatch,omitempty"`
 	}
 )
 
