@@ -170,9 +170,12 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 
 	var rval CreateActivationsResponse
 
-	_, err = p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
 		return nil, fmt.Errorf("CreateActivations request failed: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, p.Error(resp)
 	}
 
 	var rvalget CreateActivationsResponse
@@ -187,11 +190,10 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 		return nil, fmt.Errorf("failed to create GetActivation request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rvalget)
+	resp, err = p.Exec(req, &rvalget)
 	if err != nil {
 		return nil, fmt.Errorf("GetActivation request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -214,9 +216,12 @@ func (p *appsec) RemoveActivations(ctx context.Context, params RemoveActivations
 
 	var rval RemoveActivationsResponse
 
-	_, errp := p.Exec(req, &rval, params)
+	resp, errp := p.Exec(req, &rval, params)
 	if errp != nil {
 		return nil, fmt.Errorf("RemoveActivations request failed: %w", errp)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil

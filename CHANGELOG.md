@@ -4,7 +4,8 @@
 
 #### BUG FIXES:
 * APPSEC
-  * The `EffectiveTimePeriod`, `SamplingRate`, `LoggingOptions`, and `Operation` fields of the various `CustomRule` response structs are now marshalled correctly.
+  * Fixed incorrect error message on activation failure
+  * The `EffectiveTimePeriod`, `SamplingRate`, `LoggingOptions`, and `Operation` fields of the various `CustomRule` response structs are now marshalled correctly
 
 ## 2.13.0 (May 31, 2022)
 
