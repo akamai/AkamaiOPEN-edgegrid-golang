@@ -1,5 +1,11 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.14.0 (June NN, 2022)
+
+#### BUG FIXES:
+* APPSEC
+  * The `EffectiveTimePeriod`, `SamplingRate`, `LoggingOptions`, and `Operation` fields of the various `CustomRule` response structs are now marshalled correctly.
+
 ## 2.13.0 (May 31, 2022)
 
 #### FEATURES/ENHANCEMENTS:

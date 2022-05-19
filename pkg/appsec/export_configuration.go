@@ -78,24 +78,29 @@ type (
 			Used                  bool                         `json:"-"`
 		} `json:"ratePolicies"`
 		ReputationProfiles []struct {
-			Condition        *ConditionReputationProfile `json:"condition,omitempty"`
-			Context          string                      `json:"context,omitempty"`
-			ContextReadable  string                      `json:"-"`
-			Enabled          bool                        `json:"-"`
-			ID               int                         `json:"id"`
-			Name             string                      `json:"name"`
-			SharedIPHandling string                      `json:"sharedIpHandling"`
-			Threshold        int                         `json:"threshold"`
+			Condition       *ConditionReputationProfile `json:"condition,omitempty"`
+			Context         string                      `json:"context,omitempty"`
+			ContextReadable string                      `json:"-"`
+
+			Enabled          bool   `json:"-"`
+			ID               int    `json:"id"`
+			Name             string `json:"name"`
+			SharedIPHandling string `json:"sharedIpHandling"`
+			Threshold        int    `json:"threshold"`
 		} `json:"reputationProfiles"`
 		CustomRules []struct {
-			Conditions    *ConditionsExp `json:"conditions,omitempty"`
-			Description   string         `json:"description,omitempty"`
-			ID            int            `json:"id"`
-			Name          string         `json:"name"`
-			RuleActivated bool           `json:"-"`
-			Structured    bool           `json:"-"`
-			Tag           []string       `json:"tag"`
-			Version       int            `json:"-"`
+			Conditions          *ConditionsExp   `json:"conditions,omitempty"`
+			Description         string           `json:"description,omitempty"`
+			ID                  int              `json:"id"`
+			Name                string           `json:"name"`
+			RuleActivated       bool             `json:"-"`
+			Structured          bool             `json:"-"`
+			Tag                 []string         `json:"tag"`
+			Version             int              `json:"-"`
+			EffectiveTimePeriod *json.RawMessage `json:"effectiveTimePeriod,omitempty"`
+			SamplingRate        int              `json:"samplingRate,omitempty"`
+			LoggingOptions      *json.RawMessage `json:"loggingOptions,omitempty"`
+			Operation           string           `json:"operation,omitempty"`
 		} `json:"customRules"`
 		Rulesets []struct {
 			ID               int            `json:"id"`
