@@ -1997,7 +1997,10 @@ func (c CompositePlacementVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(c.Name),
 		"Value": validation.Validate(c.Value,
-			validation.In(CompositePlacementOver, CompositePlacementUnder, CompositePlacementMask, CompositePlacementStencil),
+			validation.In(CompositePlacementOver,
+				CompositePlacementUnder,
+				CompositePlacementMask,
+				CompositePlacementStencil),
 		),
 	}.Filter()
 }
@@ -2200,7 +2203,15 @@ func (g GravityVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(g.Name),
 		"Value": validation.Validate(g.Value,
-			validation.In(GravityNorth, GravityNorthEast, GravityNorthWest, GravitySouth, GravitySouthEast, GravitySouthWest, GravityCenter, GravityEast, GravityWest),
+			validation.In(GravityNorth,
+				GravityNorthEast,
+				GravityNorthWest,
+				GravitySouth,
+				GravitySouthEast,
+				GravitySouthWest,
+				GravityCenter,
+				GravityEast,
+				GravityWest),
 		),
 	}.Filter()
 }
@@ -2221,7 +2232,10 @@ func (g GrayscaleTypeVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(g.Name),
 		"Value": validation.Validate(g.Value,
-			validation.In(GrayscaleTypeRec601, GrayscaleTypeRec709, GrayscaleTypeBrightness, GrayscaleTypeLightness),
+			validation.In(GrayscaleTypeRec601,
+				GrayscaleTypeRec709,
+				GrayscaleTypeBrightness,
+				GrayscaleTypeLightness),
 		),
 	}.Filter()
 }
@@ -2409,10 +2423,20 @@ func (o OutputImage) Validate() error {
 			validation.Max(100),
 		),
 		"AllowedFormats": validation.Validate(o.AllowedFormats, validation.Each(
-			validation.In(OutputImageAllowedFormatsGif, OutputImageAllowedFormatsJpeg, OutputImageAllowedFormatsPng, OutputImageAllowedFormatsWebp, OutputImageAllowedFormatsJpegxr, OutputImageAllowedFormatsJpeg2000)),
+			validation.In(OutputImageAllowedFormatsGif,
+				OutputImageAllowedFormatsJpeg,
+				OutputImageAllowedFormatsPng,
+				OutputImageAllowedFormatsWebp,
+				OutputImageAllowedFormatsJpegxr,
+				OutputImageAllowedFormatsJpeg2000)),
 		),
 		"ForcedFormats": validation.Validate(o.ForcedFormats, validation.Each(
-			validation.In(OutputImageForcedFormatsGif, OutputImageForcedFormatsJpeg, OutputImageForcedFormatsPng, OutputImageForcedFormatsWebp, OutputImageForcedFormatsJpegxr, OutputImageForcedFormatsJpeg2000)),
+			validation.In(OutputImageForcedFormatsGif,
+				OutputImageForcedFormatsJpeg,
+				OutputImageForcedFormatsPng,
+				OutputImageForcedFormatsWebp,
+				OutputImageForcedFormatsJpegxr,
+				OutputImageForcedFormatsJpeg2000)),
 		),
 		"PerceptualQuality": validation.Validate(o.PerceptualQuality),
 		"PerceptualQualityFloor": validation.Validate(o.PerceptualQualityFloor,
@@ -2428,7 +2452,11 @@ func (o OutputImagePerceptualQualityVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(o.Name),
 		"Value": validation.Validate(o.Value,
-			validation.In(OutputImagePerceptualQualityHigh, OutputImagePerceptualQualityMediumHigh, OutputImagePerceptualQualityMedium, OutputImagePerceptualQualityMediumLow, OutputImagePerceptualQualityLow),
+			validation.In(OutputImagePerceptualQualityHigh,
+				OutputImagePerceptualQualityMediumHigh,
+				OutputImagePerceptualQualityMedium,
+				OutputImagePerceptualQualityMediumLow,
+				OutputImagePerceptualQualityLow),
 		),
 	}.Filter()
 }
@@ -2744,7 +2772,20 @@ func (v Variable) Validate() error {
 		"Prefix":  validation.Validate(v.Prefix),
 		"Type": validation.Validate(v.Type,
 			validation.Required,
-			validation.In(VariableTypeBool, VariableTypeNumber, VariableTypeURL, VariableTypeColor, VariableTypeGravity, VariableTypePlacement, VariableTypeScaleDimension, VariableTypeGrayscaleType, VariableTypeAspect, VariableTypeResizeType, VariableTypeDimension, VariableTypePerceptualQuality, VariableTypeString, VariableTypeFocus),
+			validation.In(VariableTypeBool,
+				VariableTypeNumber,
+				VariableTypeURL,
+				VariableTypeColor,
+				VariableTypeGravity,
+				VariableTypePlacement,
+				VariableTypeScaleDimension,
+				VariableTypeGrayscaleType,
+				VariableTypeAspect,
+				VariableTypeResizeType,
+				VariableTypeDimension,
+				VariableTypePerceptualQuality,
+				VariableTypeString,
+				VariableTypeFocus),
 		),
 	}.Filter()
 }
@@ -2772,7 +2813,11 @@ func (o OutputVideoPerceptualQualityVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(o.Name),
 		"Value": validation.Validate(o.Value,
-			validation.In(OutputVideoPerceptualQualityHigh, OutputVideoPerceptualQualityMediumHigh, OutputVideoPerceptualQualityMedium, OutputVideoPerceptualQualityMediumLow, OutputVideoPerceptualQualityLow),
+			validation.In(OutputVideoPerceptualQualityHigh,
+				OutputVideoPerceptualQualityMediumHigh,
+				OutputVideoPerceptualQualityMedium,
+				OutputVideoPerceptualQualityMediumLow,
+				OutputVideoPerceptualQualityLow),
 		),
 	}.Filter()
 }
@@ -2782,7 +2827,11 @@ func (o OutputVideoVideoAdaptiveQualityVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(o.Name),
 		"Value": validation.Validate(o.Value,
-			validation.In(OutputVideoVideoAdaptiveQualityHigh, OutputVideoVideoAdaptiveQualityMediumHigh, OutputVideoVideoAdaptiveQualityMedium, OutputVideoVideoAdaptiveQualityMediumLow, OutputVideoVideoAdaptiveQualityLow),
+			validation.In(OutputVideoVideoAdaptiveQualityHigh,
+				OutputVideoVideoAdaptiveQualityMediumHigh,
+				OutputVideoVideoAdaptiveQualityMedium,
+				OutputVideoVideoAdaptiveQualityMediumLow,
+				OutputVideoVideoAdaptiveQualityLow),
 		),
 	}.Filter()
 }
@@ -2790,16 +2839,28 @@ func (o OutputVideoVideoAdaptiveQualityVariableInline) Validate() error {
 // Validate validates PolicyOutputVideo
 func (p PolicyOutputVideo) Validate() error {
 	return validation.Errors{
-		"Breakpoints":     validation.Validate(p.Breakpoints),
-		"DateCreated":     validation.Validate(p.DateCreated),
-		"Hosts":           validation.Validate(p.Hosts, validation.Each()),
-		"ID":              validation.Validate(p.ID),
-		"Output":          validation.Validate(p.Output),
-		"PreviousVersion": validation.Validate(p.PreviousVersion),
-		"RolloutInfo":     validation.Validate(p.RolloutInfo),
-		"User":            validation.Validate(p.User),
-		"Variables":       validation.Validate(p.Variables, validation.Each()),
-		"Version":         validation.Validate(p.Version),
+		"Breakpoints": validation.Validate(p.Breakpoints),
+		"DateCreated": validation.Validate(p.DateCreated,
+			validation.Required,
+		),
+		"Hosts": validation.Validate(p.Hosts, validation.Each()),
+		"ID": validation.Validate(p.ID,
+			validation.Required,
+		),
+		"Output": validation.Validate(p.Output),
+		"PreviousVersion": validation.Validate(p.PreviousVersion,
+			validation.Required,
+		),
+		"RolloutInfo": validation.Validate(p.RolloutInfo,
+			validation.Required,
+		),
+		"User": validation.Validate(p.User,
+			validation.Required,
+		),
+		"Variables": validation.Validate(p.Variables, validation.Each()),
+		"Version": validation.Validate(p.Version,
+			validation.Required,
+		),
 		"Video": validation.Validate(p.Video,
 			validation.In(PolicyOutputVideoVideoTrue),
 		),
@@ -2811,47 +2872,49 @@ func (p PolicyOutputVideo) Validate() error {
 //////////////////////////////////////////////////////////////////
 var (
 
-	// ErrUnmarshalVariableAppendGravityPriorityVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableAppendGravityPriorityVariableInline represents an error while unmarshalling AppendGravityPriorityVariableInline
 	ErrUnmarshalVariableAppendGravityPriorityVariableInline = errors.New("unmarshalling AppendGravityPriorityVariableInline")
-	// ErrUnmarshalVariableBooleanVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableBooleanVariableInline represents an error while unmarshalling BooleanVariableInline
 	ErrUnmarshalVariableBooleanVariableInline = errors.New("unmarshalling BooleanVariableInline")
-	// ErrUnmarshalVariableCompositePlacementVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableCompositePlacementVariableInline represents an error while unmarshalling CompositePlacementVariableInline
 	ErrUnmarshalVariableCompositePlacementVariableInline = errors.New("unmarshalling CompositePlacementVariableInline")
-	// ErrUnmarshalVariableCompositeScaleDimensionVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableCompositeScaleDimensionVariableInline represents an error while unmarshalling CompositeScaleDimensionVariableInline
 	ErrUnmarshalVariableCompositeScaleDimensionVariableInline = errors.New("unmarshalling CompositeScaleDimensionVariableInline")
-	// ErrUnmarshalVariableFaceCropAlgorithmVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableFaceCropAlgorithmVariableInline represents an error while unmarshalling FaceCropAlgorithmVariableInline
 	ErrUnmarshalVariableFaceCropAlgorithmVariableInline = errors.New("unmarshalling FaceCropAlgorithmVariableInline")
-	// ErrUnmarshalVariableFaceCropFocusVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableFaceCropFocusVariableInline represents an error while unmarshalling FaceCropFocusVariableInline
 	ErrUnmarshalVariableFaceCropFocusVariableInline = errors.New("unmarshalling FaceCropFocusVariableInline")
-	// ErrUnmarshalVariableFaceCropStyleVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableFaceCropStyleVariableInline represents an error while unmarshalling FaceCropStyleVariableInline
 	ErrUnmarshalVariableFaceCropStyleVariableInline = errors.New("unmarshalling FaceCropStyleVariableInline")
-	// ErrUnmarshalVariableFeatureCropStyleVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableFeatureCropStyleVariableInline represents an error while unmarshalling FeatureCropStyleVariableInline
 	ErrUnmarshalVariableFeatureCropStyleVariableInline = errors.New("unmarshalling FeatureCropStyleVariableInline")
-	// ErrUnmarshalVariableGravityVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableGravityVariableInline represents an error while unmarshalling GravityVariableInline
 	ErrUnmarshalVariableGravityVariableInline = errors.New("unmarshalling GravityVariableInline")
-	// ErrUnmarshalVariableGrayscaleTypeVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableGrayscaleTypeVariableInline represents an error while unmarshalling GrayscaleTypeVariableInline
 	ErrUnmarshalVariableGrayscaleTypeVariableInline = errors.New("unmarshalling GrayscaleTypeVariableInline")
-	// ErrUnmarshalVariableIfDimensionDimensionVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableIfDimensionDimensionVariableInline represents an error while unmarshalling IfDimensionDimensionVariableInline
 	ErrUnmarshalVariableIfDimensionDimensionVariableInline = errors.New("unmarshalling IfDimensionDimensionVariableInline")
-	// ErrUnmarshalVariableIfDimensionPostDimensionVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableIfDimensionPostDimensionVariableInline represents an error while unmarshalling IfDimensionPostDimensionVariableInline
 	ErrUnmarshalVariableIfDimensionPostDimensionVariableInline = errors.New("unmarshalling IfDimensionPostDimensionVariableInline")
-	// ErrUnmarshalVariableIntegerVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableIntegerVariableInline represents an error while unmarshalling IntegerVariableInline
 	ErrUnmarshalVariableIntegerVariableInline = errors.New("unmarshalling IntegerVariableInline")
-	// ErrUnmarshalVariableNumberVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableNumberVariableInline represents an error while unmarshalling NumberVariableInline
 	ErrUnmarshalVariableNumberVariableInline = errors.New("unmarshalling NumberVariableInline")
-	// ErrUnmarshalVariableOutputImagePerceptualQualityVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableOutputImagePerceptualQualityVariableInline represents an error while unmarshalling OutputImagePerceptualQualityVariableInline
 	ErrUnmarshalVariableOutputImagePerceptualQualityVariableInline = errors.New("unmarshalling OutputImagePerceptualQualityVariableInline")
-	// ErrUnmarshalVariableRegionOfInterestCropStyleVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableQueryVariableInline represents an error while unmarshalling QueryVariableInline
+	ErrUnmarshalVariableQueryVariableInline = errors.New("unmarshalling QueryVariableInline")
+	// ErrUnmarshalVariableRegionOfInterestCropStyleVariableInline represents an error while unmarshalling RegionOfInterestCropStyleVariableInline
 	ErrUnmarshalVariableRegionOfInterestCropStyleVariableInline = errors.New("unmarshalling RegionOfInterestCropStyleVariableInline")
-	// ErrUnmarshalVariableResizeAspectVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableResizeAspectVariableInline represents an error while unmarshalling ResizeAspectVariableInline
 	ErrUnmarshalVariableResizeAspectVariableInline = errors.New("unmarshalling ResizeAspectVariableInline")
-	// ErrUnmarshalVariableResizeTypeVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableResizeTypeVariableInline represents an error while unmarshalling ResizeTypeVariableInline
 	ErrUnmarshalVariableResizeTypeVariableInline = errors.New("unmarshalling ResizeTypeVariableInline")
-	// ErrUnmarshalVariableStringVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableStringVariableInline represents an error while unmarshalling StringVariableInline
 	ErrUnmarshalVariableStringVariableInline = errors.New("unmarshalling StringVariableInline")
-	// ErrUnmarshalVariableOutputVideoPerceptualQualityVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableOutputVideoPerceptualQualityVariableInline represents an error while unmarshalling OutputVideoPerceptualQualityVariableInline
 	ErrUnmarshalVariableOutputVideoPerceptualQualityVariableInline = errors.New("unmarshalling OutputVideoPerceptualQualityVariableInline")
-	// ErrUnmarshalVariableOutputVideoVideoAdaptiveQualityVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableOutputVideoVideoAdaptiveQualityVariableInline represents an error while unmarshalling OutputVideoVideoAdaptiveQualityVariableInline
 	ErrUnmarshalVariableOutputVideoVideoAdaptiveQualityVariableInline = errors.New("unmarshalling OutputVideoVideoAdaptiveQualityVariableInline")
 )
 
@@ -3478,9 +3541,9 @@ var ImageTypeValueHandlers = map[string]func() ImageType{
 
 var (
 
-	// ErrUnmarshalImageTypeAppend represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalImageTypeAppend represents an error while unmarshalling Append
 	ErrUnmarshalImageTypeAppend = errors.New("unmarshalling Append")
-	// ErrUnmarshalImageTypeComposite represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalImageTypeComposite represents an error while unmarshalling Composite
 	ErrUnmarshalImageTypeComposite = errors.New("unmarshalling Composite")
 )
 
