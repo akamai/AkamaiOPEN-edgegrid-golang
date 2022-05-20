@@ -545,6 +545,21 @@ type (
 	// IfOrientationTransformation ...
 	IfOrientationTransformation string
 
+	// ImQuery Apply artistic transformations to images quickly and dynamically by specifying transformations with a query string appendedto the image URL.
+	ImQuery struct {
+		// AllowedTransformations Specifies the transformations that can be applied using the query string parameter.
+		AllowedTransformations []ImQueryAllowedTransformations `json:"allowedTransformations"`
+		Query                  *QueryVariableInline            `json:"query"`
+		// Transformation Identifies this type of transformation, `ImQuery` in this case.
+		Transformation ImQueryTransformation `json:"transformation"`
+	}
+
+	// ImQueryAllowedTransformations ...
+	ImQueryAllowedTransformations string
+
+	// ImQueryTransformation ...
+	ImQueryTransformation string
+
 	// IntegerVariableInline represents a type which stores either a value or a variable name
 	IntegerVariableInline struct {
 		Name  *string
@@ -679,6 +694,11 @@ type (
 	PolygonShapeType struct {
 		// Points Series of [PointShapeType](#pointshapetype) objects. The last and first points connect to close the shape automatically.
 		Points []PointShapeType `json:"points"`
+	}
+
+	// QueryVariableInline represents a type which stores either a value or a variable name
+	QueryVariableInline struct {
+		Name *string
 	}
 
 	// RectangleShapeType Defines a rectangle's `width` and `height` relative to an `anchor` point at the top left corner.
@@ -1145,6 +1165,70 @@ const (
 	// IfOrientationTransformationIfOrientation const
 	IfOrientationTransformationIfOrientation IfOrientationTransformation = "IfOrientation"
 
+	// ImQueryAllowedTransformationsAppend const
+	ImQueryAllowedTransformationsAppend ImQueryAllowedTransformations = "Append"
+	// ImQueryAllowedTransformationsAspectCrop const
+	ImQueryAllowedTransformationsAspectCrop ImQueryAllowedTransformations = "AspectCrop"
+	// ImQueryAllowedTransformationsBackgroundColor const
+	ImQueryAllowedTransformationsBackgroundColor ImQueryAllowedTransformations = "BackgroundColor"
+	// ImQueryAllowedTransformationsBlur const
+	ImQueryAllowedTransformationsBlur ImQueryAllowedTransformations = "Blur"
+	// ImQueryAllowedTransformationsComposite const
+	ImQueryAllowedTransformationsComposite ImQueryAllowedTransformations = "Composite"
+	// ImQueryAllowedTransformationsContrast const
+	ImQueryAllowedTransformationsContrast ImQueryAllowedTransformations = "Contrast"
+	// ImQueryAllowedTransformationsCrop const
+	ImQueryAllowedTransformationsCrop ImQueryAllowedTransformations = "Crop"
+	// ImQueryAllowedTransformationsChromaKey const
+	ImQueryAllowedTransformationsChromaKey ImQueryAllowedTransformations = "ChromaKey"
+	// ImQueryAllowedTransformationsFaceCrop const
+	ImQueryAllowedTransformationsFaceCrop ImQueryAllowedTransformations = "FaceCrop"
+	// ImQueryAllowedTransformationsFeatureCrop const
+	ImQueryAllowedTransformationsFeatureCrop ImQueryAllowedTransformations = "FeatureCrop"
+	// ImQueryAllowedTransformationsFitAndFill const
+	ImQueryAllowedTransformationsFitAndFill ImQueryAllowedTransformations = "FitAndFill"
+	// ImQueryAllowedTransformationsGoop const
+	ImQueryAllowedTransformationsGoop ImQueryAllowedTransformations = "Goop"
+	// ImQueryAllowedTransformationsGrayscale const
+	ImQueryAllowedTransformationsGrayscale ImQueryAllowedTransformations = "Grayscale"
+	// ImQueryAllowedTransformationsHSL const
+	ImQueryAllowedTransformationsHSL ImQueryAllowedTransformations = "HSL"
+	// ImQueryAllowedTransformationsHSV const
+	ImQueryAllowedTransformationsHSV ImQueryAllowedTransformations = "HSV"
+	// ImQueryAllowedTransformationsMaxColors const
+	ImQueryAllowedTransformationsMaxColors ImQueryAllowedTransformations = "MaxColors"
+	// ImQueryAllowedTransformationsMirror const
+	ImQueryAllowedTransformationsMirror ImQueryAllowedTransformations = "Mirror"
+	// ImQueryAllowedTransformationsMonoHue const
+	ImQueryAllowedTransformationsMonoHue ImQueryAllowedTransformations = "MonoHue"
+	// ImQueryAllowedTransformationsOpacity const
+	ImQueryAllowedTransformationsOpacity ImQueryAllowedTransformations = "Opacity"
+	// ImQueryAllowedTransformationsRegionOfInterestCrop const
+	ImQueryAllowedTransformationsRegionOfInterestCrop ImQueryAllowedTransformations = "RegionOfInterestCrop"
+	// ImQueryAllowedTransformationsRelativeCrop const
+	ImQueryAllowedTransformationsRelativeCrop ImQueryAllowedTransformations = "RelativeCrop"
+	// ImQueryAllowedTransformationsRemoveColor const
+	ImQueryAllowedTransformationsRemoveColor ImQueryAllowedTransformations = "RemoveColor"
+	// ImQueryAllowedTransformationsResize const
+	ImQueryAllowedTransformationsResize ImQueryAllowedTransformations = "Resize"
+	// ImQueryAllowedTransformationsRotate const
+	ImQueryAllowedTransformationsRotate ImQueryAllowedTransformations = "Rotate"
+	// ImQueryAllowedTransformationsScale const
+	ImQueryAllowedTransformationsScale ImQueryAllowedTransformations = "Scale"
+	// ImQueryAllowedTransformationsShear const
+	ImQueryAllowedTransformationsShear ImQueryAllowedTransformations = "Shear"
+	// ImQueryAllowedTransformationsTrim const
+	ImQueryAllowedTransformationsTrim ImQueryAllowedTransformations = "Trim"
+	// ImQueryAllowedTransformationsUnsharpMask const
+	ImQueryAllowedTransformationsUnsharpMask ImQueryAllowedTransformations = "UnsharpMask"
+	// ImQueryAllowedTransformationsIfDimension const
+	ImQueryAllowedTransformationsIfDimension ImQueryAllowedTransformations = "IfDimension"
+	// ImQueryAllowedTransformationsIfOrientation const
+	ImQueryAllowedTransformationsIfOrientation ImQueryAllowedTransformations = "IfOrientation"
+
+	// ImQueryTransformationImQuery const
+	ImQueryTransformationImQuery ImQueryTransformation = "ImQuery"
+
 	// MaxColorsTransformationMaxColors const
 	MaxColorsTransformationMaxColors MaxColorsTransformation = "MaxColors"
 
@@ -1392,6 +1476,10 @@ func (IfDimension) transformationType() string {
 
 func (IfOrientation) transformationType() string {
 	return "IfOrientation"
+}
+
+func (ImQuery) transformationType() string {
+	return "ImQuery"
 }
 
 func (MaxColors) transformationType() string {
@@ -1709,6 +1797,16 @@ func IfOrientationPostTransformationPtr(v IfOrientationPostTransformation) *IfOr
 
 // IfOrientationTransformationPtr returns pointer of IfOrientationTransformation
 func IfOrientationTransformationPtr(v IfOrientationTransformation) *IfOrientationTransformation {
+	return &v
+}
+
+// ImQueryAllowedTransformationsPtr returns pointer of ImQueryAllowedTransformations
+func ImQueryAllowedTransformationsPtr(v ImQueryAllowedTransformations) *ImQueryAllowedTransformations {
+	return &v
+}
+
+// ImQueryTransformationPtr returns pointer of ImQueryTransformation
+func ImQueryTransformationPtr(v ImQueryTransformation) *ImQueryTransformation {
 	return &v
 }
 
@@ -2350,6 +2448,52 @@ func (i IfOrientationPost) Validate() error {
 	}.Filter()
 }
 
+// Validate validates ImQuery
+func (i ImQuery) Validate() error {
+	return validation.Errors{
+		"AllowedTransformations": validation.Validate(i.AllowedTransformations,
+			validation.Required, validation.Each(
+				validation.In(ImQueryAllowedTransformationsAppend,
+					ImQueryAllowedTransformationsAspectCrop,
+					ImQueryAllowedTransformationsBackgroundColor,
+					ImQueryAllowedTransformationsBlur,
+					ImQueryAllowedTransformationsComposite,
+					ImQueryAllowedTransformationsContrast,
+					ImQueryAllowedTransformationsCrop,
+					ImQueryAllowedTransformationsChromaKey,
+					ImQueryAllowedTransformationsFaceCrop,
+					ImQueryAllowedTransformationsFeatureCrop,
+					ImQueryAllowedTransformationsFitAndFill,
+					ImQueryAllowedTransformationsGoop,
+					ImQueryAllowedTransformationsGrayscale,
+					ImQueryAllowedTransformationsHSL,
+					ImQueryAllowedTransformationsHSV,
+					ImQueryAllowedTransformationsMaxColors,
+					ImQueryAllowedTransformationsMirror,
+					ImQueryAllowedTransformationsMonoHue,
+					ImQueryAllowedTransformationsOpacity,
+					ImQueryAllowedTransformationsRegionOfInterestCrop,
+					ImQueryAllowedTransformationsRelativeCrop,
+					ImQueryAllowedTransformationsRemoveColor,
+					ImQueryAllowedTransformationsResize,
+					ImQueryAllowedTransformationsRotate,
+					ImQueryAllowedTransformationsScale,
+					ImQueryAllowedTransformationsShear,
+					ImQueryAllowedTransformationsTrim,
+					ImQueryAllowedTransformationsUnsharpMask,
+					ImQueryAllowedTransformationsIfDimension,
+					ImQueryAllowedTransformationsIfOrientation)),
+		),
+		"Query": validation.Validate(i.Query,
+			validation.Required,
+		),
+		"Transformation": validation.Validate(i.Transformation,
+			validation.Required,
+			validation.In(ImQueryTransformationImQuery),
+		),
+	}.Filter()
+}
+
 // Validate validates IntegerVariableInline
 func (i IntegerVariableInline) Validate() error {
 	return validation.Errors{
@@ -2511,6 +2655,15 @@ func (p PolygonShapeType) Validate() error {
 	return validation.Errors{
 		"Points": validation.Validate(p.Points,
 			validation.Required, validation.Each(),
+		),
+	}.Filter()
+}
+
+// Validate validates QueryVariableInline
+func (q QueryVariableInline) Validate() error {
+	return validation.Errors{
+		"Name": validation.Validate(q.Name,
+			validation.Required,
 		),
 	}.Filter()
 }
@@ -3354,6 +3507,25 @@ func (o *OutputImagePerceptualQualityVariableInline) MarshalJSON() ([]byte, erro
 }
 
 // UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
+func (q *QueryVariableInline) UnmarshalJSON(in []byte) error {
+	var err error
+	var variable InlineVariable
+	if err = json.Unmarshal(in, &variable); err == nil {
+		q.Name = &variable.Var
+		return nil
+	}
+	return fmt.Errorf("%w: %s", ErrUnmarshalVariableQueryVariableInline, err)
+}
+
+// MarshalJSON is a custom marshaler used to encode a variable which can be either a value or a variable object
+func (q *QueryVariableInline) MarshalJSON() ([]byte, error) {
+	if q.Name != nil {
+		return json.Marshal(VariableInline{Var: *q.Name})
+	}
+	return nil, nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
 func (r *RegionOfInterestCropStyleVariableInline) UnmarshalJSON(in []byte) error {
 	var err error
 	var variable InlineVariable
@@ -3759,6 +3931,7 @@ var TransformationHandlers = map[string]func() TransformationType{
 	"HSV":                  func() TransformationType { return &HSV{} },
 	"IfDimension":          func() TransformationType { return &IfDimension{} },
 	"IfOrientation":        func() TransformationType { return &IfOrientation{} },
+	"ImQuery":              func() TransformationType { return &ImQuery{} },
 	"MaxColors":            func() TransformationType { return &MaxColors{} },
 	"Mirror":               func() TransformationType { return &Mirror{} },
 	"MonoHue":              func() TransformationType { return &MonoHue{} },
