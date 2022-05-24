@@ -112,6 +112,48 @@ func TestCreateGroup(t *testing.T) {
 	}
 }
 
+func TestMoveGroup(t *testing.T) {
+	tests := map[string]struct {
+		params         MoveGroupRequest
+		responseStatus int
+		withError      error
+		responseBody   string
+	}{
+		"204 ok": {
+			responseStatus: http.StatusNoContent,
+			params:         MoveGroupRequest{DestinationGroupID: 1, SourceGroupID: 1},
+		},
+		"500 internal server error": {
+			responseStatus: http.StatusInternalServerError,
+			params:         MoveGroupRequest{DestinationGroupID: 1, SourceGroupID: 1},
+			withError:      ErrMoveGroup,
+		},
+		"validation error": {
+			params:    MoveGroupRequest{},
+			withError: ErrStructValidation,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "/identity-management/v2/user-admin/groups/move", r.URL.String())
+				assert.Equal(t, http.MethodPost, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.MoveGroup(context.Background(), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
 func TestGetGroup(t *testing.T) {
 	tests := map[string]struct {
 		params           GetGroupRequest

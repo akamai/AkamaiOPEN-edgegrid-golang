@@ -43,6 +43,11 @@ type (
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-group
 		UpdateGroupName(context.Context, GroupRequest) (*Group, error)
+
+		// MoveGroup Move a nested group under another group within the same parent hierarchy
+		//
+		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-groups-move
+		MoveGroup(context.Context, MoveGroupRequest) error
 	}
 
 	// GetGroupRequest describes the request parameters of the get group endpoint
@@ -87,6 +92,12 @@ type (
 		GroupName string `json:"groupName"`
 	}
 
+	// MoveGroupRequest describes the request body to move a group under another group
+	MoveGroupRequest struct {
+		SourceGroupID      int64 `json:"sourceGroupId"`
+		DestinationGroupID int64 `json:"destinationGroupId"`
+	}
+
 	// ListAffectedUsersRequest describes the request and body parameters of the list affected users endpoint
 	ListAffectedUsersRequest struct {
 		DestinationGroupID int64
@@ -125,6 +136,8 @@ var (
 	ErrUpdateGroupName = errors.New("update group name")
 	// ErrRemoveGroup is returned when RemoveGroup fails
 	ErrRemoveGroup = errors.New("remove group")
+	// ErrMoveGroup is returned when MoveGroup fails
+	ErrMoveGroup = errors.New("move group")
 )
 
 // Validate validates GetGroupRequest
@@ -139,6 +152,14 @@ func (r GroupRequest) Validate() error {
 	return validation.Errors{
 		"groupID":   validation.Validate(r.GroupID, validation.Required),
 		"groupName": validation.Validate(r.GroupName, validation.Required),
+	}.Filter()
+}
+
+// Validate validates MoveGroupRequest
+func (r MoveGroupRequest) Validate() error {
+	return validation.Errors{
+		"destinationGroupID": validation.Validate(r.DestinationGroupID, validation.Required),
+		"sourceGroupID":      validation.Validate(r.SourceGroupID, validation.Required),
 	}.Filter()
 }
 
@@ -351,4 +372,34 @@ func (i *iam) UpdateGroupName(ctx context.Context, params GroupRequest) (*Group,
 	}
 
 	return &result, nil
+}
+
+func (i *iam) MoveGroup(ctx context.Context, params MoveGroupRequest) error {
+	logger := i.Log(ctx)
+	logger.Debug("MoveGroup")
+
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w:\n%s", ErrMoveGroup, ErrStructValidation, err)
+	}
+
+	u, err := url.Parse("/identity-management/v2/user-admin/groups/move")
+	if err != nil {
+		return fmt.Errorf("%w: failed to parse url: %s", ErrMoveGroup, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), nil)
+	if err != nil {
+		return fmt.Errorf("%w: failed to create request: %s", ErrMoveGroup, err)
+	}
+
+	resp, err := i.Exec(req, nil)
+	if err != nil {
+		return fmt.Errorf("%w: request failed: %s", ErrMoveGroup, err)
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("%w: %s", ErrMoveGroup, i.Error(resp))
+	}
+
+	return nil
 }
