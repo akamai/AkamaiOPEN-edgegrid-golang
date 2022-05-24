@@ -392,7 +392,7 @@ func (i *iam) MoveGroup(ctx context.Context, params MoveGroupRequest) error {
 		return fmt.Errorf("%w: failed to create request: %s", ErrMoveGroup, err)
 	}
 
-	resp, err := i.Exec(req, nil)
+	resp, err := i.Exec(req, nil, params)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrMoveGroup, err)
 	}
