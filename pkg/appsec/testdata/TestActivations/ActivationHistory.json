@@ -1,0 +1,23 @@
+{
+	"activationHistory": [
+		{
+			"activatedBy": "ruagarwa",
+			"activationDate": "2022-05-05T14:22:55Z",
+			"activationId": 482748,
+			"network": "STAGING",
+			"notes": "tesr",
+			"status": "ACTIVATED",
+			"version": 81
+		},
+		{
+			"activatedBy": "ruagarwa",
+			"activationDate": "2022-05-05T14:19:17Z",
+			"activationId": 482747,
+			"network": "PRODUCTION",
+			"notes": "Test",
+			"status": "ACTIVATION_FAILED",
+			"version": 81
+		}
+	],
+	"configId": 43253
+}

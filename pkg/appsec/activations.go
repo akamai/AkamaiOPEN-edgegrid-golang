@@ -18,6 +18,10 @@ type (
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getactivationid
 		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
 
+		// GetActivationHistory lists the activation history for a configuration.
+		// https://techdocs.akamai.com/application-security/reference/get-activation-history
+		GetActivationHistory(ctx context.Context, params GetActivationHistoryRequest) (*GetActivationHistoryResponse, error)
+
 		// CreateActivations activates a configuration. If acknowledgeWarnings is true and warnings are
 		// returned on the first attempt, a second attempt is made acknowledging the warnings.
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postactivations
@@ -49,6 +53,28 @@ type (
 			ConfigVersion         int    `json:"configVersion"`
 			PreviousConfigVersion int    `json:"previousConfigVersion"`
 		} `json:"activationConfigs"`
+	}
+
+	// GetActivationHistoryRequest is used to request the activation history for a configuration.
+	GetActivationHistoryRequest struct {
+		ConfigID int `json:"configId"`
+	}
+
+	// GetActivationHistoryResponse lists the activation history for a configuration.
+	GetActivationHistoryResponse struct {
+		ConfigID          int          `json:"configId"`
+		ActivationHistory []Activation `json:"activationHistory,omitempty"`
+	}
+
+	// Activation represents the status of a configuration activation.
+	Activation struct {
+		ActivationID   int       `json:"activationId"`
+		Version        int       `json:"version"`
+		Status         string    `json:"status"`
+		Network        string    `json:"Network"`
+		ActivatedBy    string    `json:"activatedBy"`
+		ActivationDate time.Time `json:"activationDate"`
+		Notes          string    `json:"notes"`
 	}
 
 	// CreateActivationsRequest is used to request activation or deactivation of a configuration.
@@ -126,6 +152,13 @@ func (v GetActivationsRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate validates a GetActivationHistoryRequest.
+func (v GetActivationHistoryRequest) Validate() error {
+	return validation.Errors{
+		"configId": validation.Validate(v.ConfigID, validation.Required),
+	}.Filter()
+}
+
 func (p *appsec) GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -148,6 +181,37 @@ func (p *appsec) GetActivations(ctx context.Context, params GetActivationsReques
 	resp, errp := p.Exec(req, &rval)
 	if errp != nil {
 		return nil, fmt.Errorf("GetActivations request failed: %w", errp)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, p.Error(resp)
+	}
+
+	return &rval, nil
+}
+
+func (p *appsec) GetActivationHistory(ctx context.Context, params GetActivationHistoryRequest) (*GetActivationHistoryResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	logger := p.Log(ctx)
+	logger.Debug("GetActivationHistory")
+
+	var rval GetActivationHistoryResponse
+
+	uri := fmt.Sprintf(
+		"/appsec/v1/configs/%d/activations",
+		params.ConfigID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GetActivationHistory request: %w", err)
+	}
+
+	resp, errp := p.Exec(req, &rval)
+	if errp != nil {
+		return nil, fmt.Errorf("list activation history request failed: %w", errp)
 	}
 
 	if resp.StatusCode != http.StatusOK {
