@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
@@ -89,6 +91,13 @@ var (
 	ErrSupportedTimezones = errors.New("supported timezones")
 )
 
+// Validate validates ListStatesRequest
+func (r ListStatesRequest) Validate() error {
+	return validation.Errors{
+		"country": validation.Validate(r.Country, validation.Required),
+	}.Filter()
+}
+
 func (i *iam) ListProducts(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListProducts")
@@ -116,6 +125,10 @@ func (i *iam) ListProducts(ctx context.Context) ([]string, error) {
 func (i *iam) ListStates(ctx context.Context, params ListStatesRequest) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListStates")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrListStates, ErrStructValidation, err)
+	}
 
 	getURL := fmt.Sprintf("/identity-management/v2/user-admin/common/countries/%s/states", params.Country)
 
