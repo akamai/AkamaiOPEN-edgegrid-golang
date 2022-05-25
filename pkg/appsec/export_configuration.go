@@ -90,14 +90,28 @@ type (
 			Threshold        int    `json:"threshold"`
 		} `json:"reputationProfiles"`
 		CustomRules []struct {
-			Conditions          *ConditionsExp   `json:"conditions,omitempty"`
-			Description         string           `json:"description,omitempty"`
-			ID                  int              `json:"id"`
-			Name                string           `json:"name"`
-			RuleActivated       bool             `json:"-"`
-			Structured          bool             `json:"-"`
-			Tag                 []string         `json:"tag"`
-			Version             int              `json:"-"`
+			ID            int      `json:"id"`
+			Name          string   `json:"name"`
+			Description   string   `json:"description,omitempty"`
+			Version       int      `json:"-"`
+			RuleActivated bool     `json:"-"`
+			Structured    bool     `json:"structured,omitempty"`
+			Tag           []string `json:"tag"`
+			Conditions    []struct {
+				Name               *json.RawMessage `json:"name,omitempty"`
+				NameCase           *json.RawMessage `json:"nameCase,omitempty"`
+				NameWildcard       *json.RawMessage `json:"nameWildcard,omitempty"`
+				PositiveMatch      bool             `json:"positiveMatch"`
+				Type               string           `json:"type"`
+				UseHeaders         *json.RawMessage `json:"useHeaders,omitempty"`
+				Value              *json.RawMessage `json:"value,omitempty"`
+				ValueCase          *json.RawMessage `json:"valueCase,omitempty"`
+				ValueExactMatch    *json.RawMessage `json:"valueExactMatch,omitempty"`
+				ValueIgnoreSegment *json.RawMessage `json:"valueIgnoreSegment,omitempty"`
+				ValueNormalize     *json.RawMessage `json:"valueNormalize,omitempty"`
+				ValueRecursive     *json.RawMessage `json:"valueRecursive,omitempty"`
+				ValueWildcard      *json.RawMessage `json:"valueWildcard,omitempty"`
+			} `json:"conditions"`
 			EffectiveTimePeriod *json.RawMessage `json:"effectiveTimePeriod,omitempty"`
 			SamplingRate        int              `json:"samplingRate,omitempty"`
 			LoggingOptions      *json.RawMessage `json:"loggingOptions,omitempty"`
