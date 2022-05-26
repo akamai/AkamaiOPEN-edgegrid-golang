@@ -1460,6 +1460,25 @@ func TestGetPolicy(t *testing.T) {
 								}
 							]
 						}
+					},
+					{
+					  "transformation": "Composite",
+					  "xPosition": 0,
+					  "yPosition": 0,
+					  "gravity": "NorthWest",
+					  "placement": "Over",
+					  "image": {
+						"type": "Text",
+						"fill": "#000000",
+						"size": 72,
+						"stroke": "#FFFFFF",
+						"strokeSize": 0,
+						"text": "test",
+						"transformation": {
+						  "transformation": "Compound",
+						  "transformations": []
+						}
+					  }
 					}
 				],
             "video": false,
@@ -1598,6 +1617,24 @@ func TestGetPolicy(t *testing.T) {
 								},
 							},
 						},
+					},
+					&CompositePost{
+						Gravity: &GravityPostVariableInline{Value: GravityPostPtr("NorthWest")},
+						Image: &TextImageTypePost{
+							Fill:       &StringVariableInline{Value: tools.StringPtr("#000000")},
+							Size:       &NumberVariableInline{Value: tools.Float64Ptr(72)},
+							Stroke:     &StringVariableInline{Value: tools.StringPtr("#FFFFFF")},
+							StrokeSize: &NumberVariableInline{Value: tools.Float64Ptr(0)},
+							Text:       &StringVariableInline{Value: tools.StringPtr("test")},
+							Type:       TextImageTypePostTypeText,
+							Transformation: &CompoundPost{
+								Transformation: CompoundPostTransformationCompound,
+							},
+						},
+						Placement:      &CompositePostPlacementVariableInline{Value: CompositePostPlacementPtr(CompositePostPlacementOver)},
+						Transformation: CompositePostTransformationComposite,
+						XPosition:      &IntegerVariableInline{Value: tools.IntPtr(0)},
+						YPosition:      &IntegerVariableInline{Value: tools.IntPtr(0)},
 					},
 				},
 				Video:       tools.BoolPtr(false),
