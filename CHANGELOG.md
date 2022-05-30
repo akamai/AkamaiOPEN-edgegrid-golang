@@ -15,8 +15,8 @@
   * Change all primitive optional parameters to pointers
   * Correct `Anchor` field in `RectangleShapeType`
   * Value field for `NumberVariableInline` should be defined as `float64`
-  * Rename `PointShapeType.True` to `PointShapeType.True`, to match the OpenAPI definition
-  * Add composite type to `PostBreakpointTransformations`
+  * Rename `PointShapeType.True` to `PointShapeType.Y`, to match the OpenAPI definition
+  * Add `Composite` transformation to `PostBreakpointTransformations`
   * Fix `PostBreakpointTransformations.PolicyInputImage`
 
 ## 2.12.0 (Apr. 25, 2022)
