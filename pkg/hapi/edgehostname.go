@@ -1,11 +1,16 @@
 package hapi
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -26,6 +31,10 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-hostnames/reference/get-edgehostnameid
 		GetEdgeHostname(context.Context, int) (*GetEdgeHostnameResponse, error)
+
+		// UpdateEdgeHostname allows update ttl (path = "/ttl") or IpVersionBehaviour (path = "/ipVersionBehavior")
+		// See: https://techdocs.akamai.com/edge-hostnames/reference/patch-edgehostnames
+		UpdateEdgeHostname(context.Context, UpdateEdgeHostnameRequest) (*UpdateEdgeHostnameResponse, error)
 	}
 
 	// DeleteEdgeHostnameRequest is used to delete edge hostname
@@ -51,26 +60,70 @@ type (
 		EdgeHostnames     []EdgeHostname `json:"edgeHostnames"`
 	}
 
-	// EdgeHostname represents edge hostname part of DeleteEdgeHostnameResponse
+	// UpdateEdgeHostnameRequest is a request used to update edge hostname
+	UpdateEdgeHostnameRequest struct {
+		DNSZone           string
+		RecordName        string
+		StatusUpdateEmail []string
+		Comments          string
+		Body              []UpdateEdgeHostnameRequestBody
+	}
+
+	// UpdateEdgeHostnameRequestBody is a request's body used to update edge hostname
+	UpdateEdgeHostnameRequestBody struct {
+		Op    string `json:"op"`
+		Path  string `json:"path"`
+		Value string `json:"value"`
+	}
+
+	// UpdateEdgeHostnameResponse is a response from deleting edge hostname
+	UpdateEdgeHostnameResponse struct {
+		Action            string         `json:"action,omitempty"`
+		ChangeID          int            `json:"changeId,omitempty"`
+		Comments          string         `json:"comments,omitempty"`
+		Status            string         `json:"status,omitempty"`
+		StatusMessage     string         `json:"statusMessage,omitempty"`
+		StatusUpdateDate  string         `json:"statusUpdateDate,omitempty"`
+		StatusUpdateEmail string         `json:"statusUpdateEmail,omitempty"`
+		SubmitDate        string         `json:"submitDate,omitempty"`
+		Submitter         string         `json:"submitter,omitempty"`
+		SubmitterEmail    string         `json:"submitterEmail,omitempty"`
+		EdgeHostnames     []EdgeHostname `json:"edgeHostnames,omitempty"`
+	}
+
+	// EdgeHostname represents edge hostname part of DeleteEdgeHostnameResponse and UpdateEdgeHostnameResponse
 	EdgeHostname struct {
-		EdgeHostnameID    int      `json:"edgeHostnameId"`
-		RecordName        string   `json:"recordName"`
-		DNSZone           string   `json:"dnsZone"`
-		SecurityType      string   `json:"securityType"`
-		UseDefaultTTL     bool     `json:"useDefaultTtl"`
-		UseDefaultMap     bool     `json:"useDefaultMap"`
-		TTL               int      `json:"ttl"`
-		Map               string   `json:"map"`
-		SlotNumber        int      `json:"slotNumber"`
-		IPVersionBehavior string   `json:"ipVersionBehavior"`
-		Comments          string   `json:"comments"`
-		ChinaCDN          ChinaCDN `json:"chinaCdn"`
+		EdgeHostnameID         int       `json:"edgeHostnameId,omitempty"`
+		RecordName             string    `json:"recordName"`
+		DNSZone                string    `json:"dnsZone"`
+		SecurityType           string    `json:"securityType"`
+		UseDefaultTTL          bool      `json:"useDefaultTtl"`
+		UseDefaultMap          bool      `json:"useDefaultMap"`
+		TTL                    int       `json:"ttl"`
+		Map                    string    `json:"map,omitempty"`
+		SlotNumber             int       `json:"slotNumber,omitempty"`
+		IPVersionBehavior      string    `json:"ipVersionBehavior,omitempty"`
+		Comments               string    `json:"comments,omitempty"`
+		ChinaCDN               ChinaCDN  `json:"chinaCdn,omitempty"`
+		CustomTarget           string    `json:"customTarget,omitempty"`
+		IsEdgeIPBindingEnabled bool      `json:"isEdgeIPBindingEnabled,omitempty"`
+		MapAlias               string    `json:"mapAlias,omitempty"`
+		ProductId              string    `json:"productId,omitempty"`
+		SerialNumber           int       `json:"serialNumber,omitempty"`
+		UseCases               []UseCase `json:"useCases,omitempty"`
 	}
 
 	// ChinaCDN represents China CDN settings of EdgeHostname
 	ChinaCDN struct {
-		IsChinaCDN        bool   `json:"isChinaCdn"`
+		IsChinaCDN        bool   `json:"isChinaCdn,omitempty"`
 		CustomChinaCDNMap string `json:"customChinaCdnMap,omitempty"`
+	}
+
+	// UseCase represents useCase attribute in EdgeHostname
+	UseCase struct {
+		Type    string `json:"type,omitempty"`
+		Option  string `json:"option"`
+		UseCase string `json:"useCase"`
 	}
 
 	// GetEdgeHostnameResponse represents edge hostname
@@ -102,11 +155,32 @@ func (r DeleteEdgeHostnameRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate validates DeleteEdgeHostnameRequest
+func (r UpdateEdgeHostnameRequest) Validate() error {
+	errs := validation.Errors{
+		"DNSZone":    validation.Validate(r.DNSZone, validation.Required),
+		"RecordName": validation.Validate(r.RecordName, validation.Required),
+		"Body":       validation.Validate(r.Body),
+	}
+	return edgegriderr.ParseValidationErrors(errs)
+}
+
+// Validate validates UpdateEdgeHostnameRequestBody
+func (b UpdateEdgeHostnameRequestBody) Validate() error {
+	return validation.Errors{
+		"Path":  validation.Validate(b.Path, validation.Required, validation.In("/ttl", "/ipVersionBehavior").Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '/ttl' or '/ipVersionBehavior'", b.Path))),
+		"Op":    validation.Validate(b.Op, validation.Required, validation.In("replace").Error(fmt.Sprintf("value '%s' is invalid. Must use 'replace'", b.Op))),
+		"Value": validation.Validate(b.Value, validation.Required),
+	}.Filter()
+}
+
 var (
 	// ErrDeleteEdgeHostname represents error when deleting edge hostname fails
 	ErrDeleteEdgeHostname = errors.New("delete edge hostname")
 	// ErrGetEdgeHostname represents error when getting edge hostname fails
 	ErrGetEdgeHostname = errors.New("get edge hostname")
+	// ErrUpdateEdgeHostname represents error when updating edge hostname fails
+	ErrUpdateEdgeHostname = errors.New("update edge hostname")
 )
 
 func (h *hapi) DeleteEdgeHostname(ctx context.Context, params DeleteEdgeHostnameRequest) (*DeleteEdgeHostnameResponse, error) {
@@ -173,4 +247,58 @@ func (h *hapi) GetEdgeHostname(ctx context.Context, edgeHostnameID int) (*GetEdg
 	}
 
 	return &rval, nil
+}
+
+func (h *hapi) UpdateEdgeHostname(ctx context.Context, request UpdateEdgeHostnameRequest) (*UpdateEdgeHostnameResponse, error) {
+	if err := request.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s: %s", ErrUpdateEdgeHostname, ErrStructValidation, err)
+	}
+
+	logger := h.Log(ctx)
+	logger.Debug("UpdateEdgeHostname")
+
+	uri := fmt.Sprintf("/hapi/v1/dns-zones/%s/edge-hostnames/%s", request.DNSZone, request.RecordName)
+
+	body, err := buildBody(request.Body)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request body", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, uri, body)
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	if len(request.StatusUpdateEmail) > 0 {
+		emails := strings.Join(request.StatusUpdateEmail, ",")
+		q.Add("statusUpdateEmail", emails)
+	}
+	if request.Comments != "" {
+		q.Add("comments", request.Comments)
+	}
+	req.URL.RawQuery = q.Encode()
+
+	req.Header.Set("Content-Type", "application/json-patch+json")
+
+	var result UpdateEdgeHostnameResponse
+
+	resp, err := h.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEdgeHostname, err)
+	}
+
+	if resp.StatusCode != http.StatusAccepted {
+		return nil, fmt.Errorf("%w: %s", ErrUpdateEdgeHostname, h.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func buildBody(body []UpdateEdgeHostnameRequestBody) (io.Reader, error) {
+	reqBody, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewBuffer(reqBody), nil
 }
