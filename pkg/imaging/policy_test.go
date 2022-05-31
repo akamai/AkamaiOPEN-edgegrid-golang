@@ -269,7 +269,7 @@ func TestListPolicies(t *testing.T) {
 							EndTime:         1626379177,
 							RolloutDuration: 1,
 						},
-						Video:       false,
+						Video:       tools.BoolPtr(false),
 						User:        "system",
 						DateCreated: "2021-07-15 19:59:35+0000",
 					},
@@ -311,13 +311,13 @@ func TestListPolicies(t *testing.T) {
 										Value: tools.StringPtr("#000000"),
 									},
 									Size: &NumberVariableInline{
-										Value: tools.Float32Ptr(72),
+										Value: tools.Float64Ptr(72),
 									},
 									Stroke: &StringVariableInline{
 										Value: tools.StringPtr("#FFFFFF"),
 									},
 									StrokeSize: &NumberVariableInline{
-										Value: tools.Float32Ptr(0),
+										Value: tools.Float64Ptr(0),
 									},
 									Text: &StringVariableInline{
 										Value: tools.StringPtr("Hello There"),
@@ -328,7 +328,7 @@ func TestListPolicies(t *testing.T) {
 								},
 							},
 						},
-						Video:       false,
+						Video:       tools.BoolPtr(false),
 						User:        "jsmith",
 						DateCreated: "2021-12-07 16:20:34+0000",
 					},
@@ -349,7 +349,7 @@ func TestListPolicies(t *testing.T) {
 								Value: OutputImagePerceptualQualityPtr(OutputImagePerceptualQualityMediumHigh),
 							},
 						},
-						Video:       false,
+						Video:       tools.BoolPtr(false),
 						User:        "jsmith",
 						DateCreated: "2021-08-06 19:46:32+0000",
 					},
@@ -391,7 +391,7 @@ func TestListPolicies(t *testing.T) {
 								DefaultValue: "5",
 							},
 						},
-						Video:       false,
+						Video:       tools.BoolPtr(false),
 						User:        "foofoo5",
 						DateCreated: "2021-12-16 18:46:38+0000",
 					},
@@ -433,7 +433,7 @@ func TestListPolicies(t *testing.T) {
 								DefaultValue: "5",
 							},
 						},
-						Video:       false,
+						Video:       tools.BoolPtr(false),
 						User:        "foofoo5",
 						DateCreated: "2021-12-16 18:47:36+0000",
 					},
@@ -446,7 +446,7 @@ func TestListPolicies(t *testing.T) {
 							EndTime:         1643052401,
 							RolloutDuration: 1,
 						},
-						Video:       false,
+						Video:       tools.BoolPtr(false),
 						User:        "jsmith",
 						DateCreated: "2022-01-24 19:26:39+0000",
 					},
@@ -459,7 +459,7 @@ func TestListPolicies(t *testing.T) {
 							EndTime:         1643052165,
 							RolloutDuration: 1,
 						},
-						Video:       false,
+						Video:       tools.BoolPtr(false),
 						User:        "jsmith",
 						DateCreated: "2022-01-24 19:22:43+0000",
 					},
@@ -477,7 +477,7 @@ func TestListPolicies(t *testing.T) {
 								Value: OutputVideoPerceptualQualityPtr(OutputVideoPerceptualQualityMediumHigh),
 							},
 						},
-						Video:       true,
+						Video:       tools.BoolPtr(true),
 						User:        "jsmith",
 						DateCreated: "2022-01-24 20:17:10+0000",
 					},
@@ -760,7 +760,7 @@ func TestListPolicies(t *testing.T) {
 							&Trim{
 								Transformation: "Trim",
 								Fuzz: &NumberVariableInline{
-									Value: tools.Float32Ptr(0.08),
+									Value: tools.Float64Ptr(0.08),
 								},
 								Padding: &IntegerVariableInline{
 									Value: tools.IntPtr(0),
@@ -1014,9 +1014,9 @@ func TestListPolicies(t *testing.T) {
 							PerceptualQuality: &OutputImagePerceptualQualityVariableInline{
 								Value: OutputImagePerceptualQualityPtr("mediumHigh"),
 							},
-							AdaptiveQuality: 50,
+							AdaptiveQuality: tools.IntPtr(50),
 						},
-						Video:           false,
+						Video:           tools.BoolPtr(false),
 						ID:              "multidimension",
 						DateCreated:     "2022-01-01 12:00:00+0000",
 						PreviousVersion: 0,
@@ -1278,9 +1278,9 @@ func TestGetPolicy(t *testing.T) {
 						Image: &TextImageType{
 							Type:       "Text",
 							Fill:       &StringVariableInline{Value: tools.StringPtr("#000000")},
-							Size:       &NumberVariableInline{Value: tools.Float32Ptr(72)},
+							Size:       &NumberVariableInline{Value: tools.Float64Ptr(72)},
 							Stroke:     &StringVariableInline{Value: tools.StringPtr("#FFFFFF")},
-							StrokeSize: &NumberVariableInline{Value: tools.Float32Ptr(0)},
+							StrokeSize: &NumberVariableInline{Value: tools.Float64Ptr(0)},
 							Text:       &StringVariableInline{Value: tools.StringPtr("test")},
 							Transformation: &Compound{
 								Transformation: "Compound",
@@ -1294,12 +1294,12 @@ func TestGetPolicy(t *testing.T) {
 						Width:          &IntegerVariableInline{Value: tools.IntPtr(7)},
 						Height:         &IntegerVariableInline{Value: tools.IntPtr(8)},
 						RegionOfInterest: &RectangleShapeType{
-							Anchor: PointShapeType{
-								X: &NumberVariableInline{Value: tools.Float32Ptr(4)},
-								Y: &NumberVariableInline{Value: tools.Float32Ptr(5)},
+							Anchor: &PointShapeType{
+								X: &NumberVariableInline{Value: tools.Float64Ptr(4)},
+								Y: &NumberVariableInline{Value: tools.Float64Ptr(5)},
 							},
-							Width:  &NumberVariableInline{Value: tools.Float32Ptr(8)},
-							Height: &NumberVariableInline{Value: tools.Float32Ptr(9)},
+							Width:  &NumberVariableInline{Value: tools.Float64Ptr(8)},
+							Height: &NumberVariableInline{Value: tools.Float64Ptr(9)},
 						},
 					},
 					&Composite{
@@ -1322,13 +1322,13 @@ func TestGetPolicy(t *testing.T) {
 								Value: tools.StringPtr("#000000"),
 							},
 							Size: &NumberVariableInline{
-								Value: tools.Float32Ptr(72),
+								Value: tools.Float64Ptr(72),
 							},
 							Stroke: &StringVariableInline{
 								Value: tools.StringPtr("#FFFFFF"),
 							},
 							StrokeSize: &NumberVariableInline{
-								Value: tools.Float32Ptr(0),
+								Value: tools.Float64Ptr(0),
 							},
 							Text: &StringVariableInline{
 								Value: tools.StringPtr("Hello There"),
@@ -1339,7 +1339,305 @@ func TestGetPolicy(t *testing.T) {
 						},
 					},
 				},
-				Video:       false,
+				Video:       tools.BoolPtr(false),
+				User:        "jsmith",
+				DateCreated: "2021-12-07 16:20:34+0000",
+			},
+		},
+		"200 OK - image post break transformation": {
+			params: GetPolicyRequest{
+				Network:     PolicyNetworkStaging,
+				ContractID:  "3-WNKXX1",
+				PolicySetID: "570f9090-5dbe-11ec-8a0a-71665789c1d8",
+				PolicyID:    "foo",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+        {
+            "id": "foo",
+            "version": 2,
+            "previousVersion": 1,
+            "rolloutInfo": {
+                "startTime": 1638894035,
+                "endTime": 1638894036,
+                "rolloutDuration": 1
+            },
+            "breakpoints": {
+                "widths": [
+                    320,
+                    640,
+                    1024,
+                    2048,
+                    5000
+                ]
+            },
+            "output": {
+                "perceptualQuality": "mediumHigh"
+            },
+            "transformations": [
+				{
+					"transformation": "Append",
+					"gravity": "Center",
+					"gravityPriority": "horizontal",
+					"preserveMinorDimension": true,
+					"image": {
+						"type": "Text",
+						"fill": "#000000",
+						"size": 72,
+						"stroke": "#FFFFFF",
+						"strokeSize": 0,
+						"text": "test",
+						"transformation": {
+							"transformation": "Compound",
+							"transformations": []
+						}
+					}
+				},
+				{
+					"transformation": "RegionOfInterestCrop",
+					"style": "fill",
+					"gravity": "Center",
+					"width": 7,
+					"height": 8,
+					"regionOfInterest": {
+						"anchor": {
+							"x": 4,
+							"y": 5
+						},
+						"width": 8,
+						"height": 9
+					} 
+				},
+                {
+                    "transformation": "Composite",
+                    "xPosition": 0,
+                    "yPosition": 0,
+                    "gravity": "NorthWest",
+                    "placement": "Over",
+                    "image": {
+                        "type": "Text",
+                        "fill": "#000000",
+                        "size": 72,
+                        "stroke": "#FFFFFF",
+                        "strokeSize": 0,
+                        "text": "Hello There",
+                        "transformation": {
+                            "transformation": "Compound",
+                            "transformations": []
+                        }
+                    }
+                }
+            ],
+			"postBreakpointTransformations": [
+					{
+						"transformation": "IfDimension",
+						"dimension": "width",
+						"value": {
+							"var": "MaxDimOld"
+						},
+						"default": {
+							"transformation": "Compound",
+							"transformations": [
+								{
+									"transformation": "IfDimension",
+									"dimension": "width",
+									"value": {
+										"var": "MinDim"
+									},
+									"lessThan": {
+										"transformation": "Compound",
+										"transformations": [
+											{
+												"transformation": "BackgroundColor",
+												"color": "#ffffff"
+											},
+											{
+												"transformation": "BackgroundColor",
+												"color": "#00ffff"
+											}
+										]
+									}
+								}
+							]
+						}
+					},
+					{
+					  "transformation": "Composite",
+					  "xPosition": 0,
+					  "yPosition": 0,
+					  "gravity": "NorthWest",
+					  "placement": "Over",
+					  "image": {
+						"type": "Text",
+						"fill": "#000000",
+						"size": 72,
+						"stroke": "#FFFFFF",
+						"strokeSize": 0,
+						"text": "test",
+						"transformation": {
+						  "transformation": "Compound",
+						  "transformations": []
+						}
+					  }
+					}
+				],
+            "video": false,
+            "user": "jsmith",
+            "dateCreated": "2021-12-07 16:20:34+0000" 
+}`,
+			expectedPath: "/imaging/v2/network/staging/policies/foo",
+			expectedHeaders: map[string][]string{
+				"Contract":   {"3-WNKXX1"},
+				"Policy-Set": {"570f9090-5dbe-11ec-8a0a-71665789c1d8"},
+			},
+			expectedResponse: &PolicyOutputImage{
+				ID:              "foo",
+				Version:         2,
+				PreviousVersion: 1,
+				RolloutInfo: &RolloutInfo{
+					StartTime:       1638894035,
+					EndTime:         1638894036,
+					RolloutDuration: 1,
+				},
+				Breakpoints: &Breakpoints{
+					Widths: []int{320, 640, 1024, 2048, 5000},
+				},
+				Output: &OutputImage{
+					PerceptualQuality: &OutputImagePerceptualQualityVariableInline{
+						Value: OutputImagePerceptualQualityPtr(OutputImagePerceptualQualityMediumHigh),
+					},
+				},
+				Transformations: []TransformationType{
+					&Append{
+						Transformation:         "Append",
+						Gravity:                &GravityVariableInline{Value: GravityPtr("Center")},
+						GravityPriority:        &AppendGravityPriorityVariableInline{Value: AppendGravityPriorityPtr("horizontal")},
+						PreserveMinorDimension: &BooleanVariableInline{Value: tools.BoolPtr(true)},
+						Image: &TextImageType{
+							Type:       "Text",
+							Fill:       &StringVariableInline{Value: tools.StringPtr("#000000")},
+							Size:       &NumberVariableInline{Value: tools.Float64Ptr(72)},
+							Stroke:     &StringVariableInline{Value: tools.StringPtr("#FFFFFF")},
+							StrokeSize: &NumberVariableInline{Value: tools.Float64Ptr(0)},
+							Text:       &StringVariableInline{Value: tools.StringPtr("test")},
+							Transformation: &Compound{
+								Transformation: "Compound",
+							},
+						},
+					},
+					&RegionOfInterestCrop{
+						Transformation: "RegionOfInterestCrop",
+						Style:          &RegionOfInterestCropStyleVariableInline{Value: RegionOfInterestCropStylePtr("fill")},
+						Gravity:        &GravityVariableInline{Value: GravityPtr("Center")},
+						Width:          &IntegerVariableInline{Value: tools.IntPtr(7)},
+						Height:         &IntegerVariableInline{Value: tools.IntPtr(8)},
+						RegionOfInterest: &RectangleShapeType{
+							Anchor: &PointShapeType{
+								X: &NumberVariableInline{Value: tools.Float64Ptr(4)},
+								Y: &NumberVariableInline{Value: tools.Float64Ptr(5)},
+							},
+							Width:  &NumberVariableInline{Value: tools.Float64Ptr(8)},
+							Height: &NumberVariableInline{Value: tools.Float64Ptr(9)},
+						},
+					},
+					&Composite{
+						Transformation: "Composite",
+						XPosition: &IntegerVariableInline{
+							Value: tools.IntPtr(0),
+						},
+						YPosition: &IntegerVariableInline{
+							Value: tools.IntPtr(0),
+						},
+						Gravity: &GravityVariableInline{
+							Value: GravityPtr(GravityNorthWest),
+						},
+						Placement: &CompositePlacementVariableInline{
+							Value: CompositePlacementPtr(CompositePlacementOver),
+						},
+						Image: &TextImageType{
+							Type: "Text",
+							Fill: &StringVariableInline{
+								Value: tools.StringPtr("#000000"),
+							},
+							Size: &NumberVariableInline{
+								Value: tools.Float64Ptr(72),
+							},
+							Stroke: &StringVariableInline{
+								Value: tools.StringPtr("#FFFFFF"),
+							},
+							StrokeSize: &NumberVariableInline{
+								Value: tools.Float64Ptr(0),
+							},
+							Text: &StringVariableInline{
+								Value: tools.StringPtr("Hello There"),
+							},
+							Transformation: &Compound{
+								Transformation: "Compound",
+							},
+						},
+					},
+				},
+				PostBreakpointTransformations: []TransformationTypePost{
+					&IfDimensionPost{
+						Transformation: "IfDimension",
+						Dimension: &IfDimensionPostDimensionVariableInline{
+							Value: IfDimensionPostDimensionPtr("width"),
+						},
+						Value: &IntegerVariableInline{
+							Name: tools.StringPtr("MaxDimOld"),
+						},
+						Default: &CompoundPost{
+							Transformation: "Compound",
+							Transformations: []TransformationTypePost{
+								&IfDimensionPost{
+									Transformation: "IfDimension",
+									Dimension: &IfDimensionPostDimensionVariableInline{
+										Value: IfDimensionPostDimensionPtr("width"),
+									},
+									Value: &IntegerVariableInline{
+										Name: tools.StringPtr("MinDim"),
+									},
+									LessThan: &CompoundPost{
+										Transformation: "Compound",
+										Transformations: []TransformationTypePost{
+											&BackgroundColor{
+												Transformation: "BackgroundColor",
+												Color: &StringVariableInline{
+													Value: tools.StringPtr("#ffffff"),
+												},
+											},
+											&BackgroundColor{
+												Transformation: "BackgroundColor",
+												Color: &StringVariableInline{
+													Value: tools.StringPtr("#00ffff"),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					&CompositePost{
+						Gravity: &GravityPostVariableInline{Value: GravityPostPtr("NorthWest")},
+						Image: &TextImageTypePost{
+							Fill:       &StringVariableInline{Value: tools.StringPtr("#000000")},
+							Size:       &NumberVariableInline{Value: tools.Float64Ptr(72)},
+							Stroke:     &StringVariableInline{Value: tools.StringPtr("#FFFFFF")},
+							StrokeSize: &NumberVariableInline{Value: tools.Float64Ptr(0)},
+							Text:       &StringVariableInline{Value: tools.StringPtr("test")},
+							Type:       TextImageTypePostTypeText,
+							Transformation: &CompoundPost{
+								Transformation: CompoundPostTransformationCompound,
+							},
+						},
+						Placement:      &CompositePostPlacementVariableInline{Value: CompositePostPlacementPtr(CompositePostPlacementOver)},
+						Transformation: CompositePostTransformationComposite,
+						XPosition:      &IntegerVariableInline{Value: tools.IntPtr(0)},
+						YPosition:      &IntegerVariableInline{Value: tools.IntPtr(0)},
+					},
+				},
+				Video:       tools.BoolPtr(false),
 				User:        "jsmith",
 				DateCreated: "2021-12-07 16:20:34+0000",
 			},
@@ -1384,7 +1682,7 @@ func TestGetPolicy(t *testing.T) {
 						Value: OutputVideoPerceptualQualityPtr(OutputVideoPerceptualQualityMediumHigh),
 					},
 				},
-				Video:       true,
+				Video:       tools.BoolPtr(true),
 				User:        "jsmith",
 				DateCreated: "2022-01-24 20:17:10+0000",
 			},
@@ -1581,13 +1879,13 @@ func TestPutPolicy(t *testing.T) {
 									Value: tools.StringPtr("#000000"),
 								},
 								Size: &NumberVariableInline{
-									Value: tools.Float32Ptr(72),
+									Value: tools.Float64Ptr(72),
 								},
 								Stroke: &StringVariableInline{
 									Value: tools.StringPtr("#FFFFFF"),
 								},
 								StrokeSize: &NumberVariableInline{
-									Value: tools.Float32Ptr(0),
+									Value: tools.Float64Ptr(0),
 								},
 								Text: &StringVariableInline{
 									Value: tools.StringPtr("Hello There"),

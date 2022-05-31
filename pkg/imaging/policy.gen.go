@@ -15,12 +15,25 @@ type (
 		transformationType() string
 	}
 
+	// TransformationTypePost is implemented by PostBreakpointTransformations types
+	TransformationTypePost interface {
+		transformationTypePost() string
+	}
+
 	// Transformations represents an array of Transformations
 	Transformations []TransformationType
+
+	// PostBreakpointTransformations represents an array of PostBreakPointTransformations
+	PostBreakpointTransformations []TransformationTypePost
 
 	// ImageType is implemented by ImageType types
 	ImageType interface {
 		imageType() string
+	}
+
+	// ImageTypePost is implemented by ImageTypePost types
+	ImageTypePost interface {
+		imageTypePost() string
 	}
 
 	// ShapeType is implemented by ImageType types
@@ -122,6 +135,22 @@ type (
 		Width *IntegerVariableInline `json:"width,omitempty"`
 	}
 
+	// BoxImageTypePost A rectangular box, with a specified color and applied transformation.
+	BoxImageTypePost struct {
+		// Color The fill color of the box, not the edge of the box. The API supports hexadecimal representation and CSS hexadecimal color values.
+		Color *StringVariableInline `json:"color,omitempty"`
+		// Height The height of the box in pixels.
+		Height         *IntegerVariableInline `json:"height,omitempty"`
+		Transformation TransformationTypePost `json:"transformation,omitempty"`
+		// Type Identifies the type of image, `Box` in this case.
+		Type BoxImageTypePostType `json:"type"`
+		// Width The width of the box in pixels.
+		Width *IntegerVariableInline `json:"width,omitempty"`
+	}
+
+	// BoxImageTypePostType ...
+	BoxImageTypePostType string
+
 	// BoxImageTypeType ...
 	BoxImageTypeType string
 
@@ -166,6 +195,22 @@ type (
 		Width *IntegerVariableInline `json:"width,omitempty"`
 	}
 
+	// CircleImageTypePost A rectangular box, with a specified color and applied transformation.
+	CircleImageTypePost struct {
+		// Color The fill color of the circle. The API supports hexadecimal representation and CSS hexadecimal color values.
+		Color *StringVariableInline `json:"color,omitempty"`
+		// Diameter The diameter of the circle. The diameter will be the width and the height of the image in pixels.
+		Diameter       *IntegerVariableInline `json:"diameter,omitempty"`
+		Transformation TransformationTypePost `json:"transformation,omitempty"`
+		// Type Identifies the type of image, `Circle` in this case.
+		Type CircleImageTypePostType `json:"type"`
+		// Width The width of the box in pixels.
+		Width *IntegerVariableInline `json:"width,omitempty"`
+	}
+
+	// CircleImageTypePostType ...
+	CircleImageTypePostType string
+
 	// CircleImageTypeType ...
 	CircleImageTypeType string
 
@@ -205,6 +250,46 @@ type (
 		Value *CompositePlacement
 	}
 
+	// CompositePost Applies another image to the source image, either as an overlay or an underlay. The image that's underneath is visible in areas that are beyond the edges of the top image or that are less than 100% opaque. A common use of an overlay composite is to add a watermark.
+	CompositePost struct {
+		// Gravity Compass direction indicating the corner or edge of the base image to place the applied image. Use Horizontal and Vertical Offset to adjust the applied image's gravity position
+		Gravity *GravityPostVariableInline `json:"gravity,omitempty"`
+		Image   ImageTypePost              `json:"image"`
+		// Placement Place applied image on top of or underneath the base image. Watermarks are usually applied over. Backgrounds are usually applied under.
+		Placement *CompositePostPlacementVariableInline `json:"placement,omitempty"`
+		// Scale A multiplier to resize the applied image relative to the source image and preserve aspect ratio, 1 by default. Set the `scaleDimension` to calculate the `scale` from the source image's width or height.
+		Scale *NumberVariableInline `json:"scale,omitempty"`
+		// ScaleDimension The dimension, either `width` or `height`, of the source image to scale.
+		ScaleDimension *CompositePostScaleDimensionVariableInline `json:"scaleDimension,omitempty"`
+		// Transformation Identifies this type of transformation, `Composite` in this case.
+		Transformation CompositePostTransformation `json:"transformation"`
+		// XPosition The x-axis position of the image to apply.
+		XPosition *IntegerVariableInline `json:"xPosition,omitempty"`
+		// YPosition The y-axis position of the image to apply.
+		YPosition *IntegerVariableInline `json:"yPosition,omitempty"`
+	}
+
+	// CompositePostPlacement ...
+	CompositePostPlacement string
+
+	// CompositePostPlacementVariableInline represents a type which stores either a value or a variable name
+	CompositePostPlacementVariableInline struct {
+		Name  *string
+		Value *CompositePostPlacement
+	}
+
+	// CompositePostScaleDimension ...
+	CompositePostScaleDimension string
+
+	// CompositePostScaleDimensionVariableInline represents a type which stores either a value or a variable name
+	CompositePostScaleDimensionVariableInline struct {
+		Name  *string
+		Value *CompositePostScaleDimension
+	}
+
+	// CompositePostTransformation ...
+	CompositePostTransformation string
+
 	// CompositeScaleDimension ...
 	CompositeScaleDimension string
 
@@ -223,6 +308,16 @@ type (
 		Transformation  CompoundTransformation `json:"transformation"`
 		Transformations Transformations        `json:"transformations,omitempty"`
 	}
+
+	// CompoundPost ...
+	CompoundPost struct {
+		// Transformation Identifies this type of transformation, `Compound` in this case.
+		Transformation  CompoundPostTransformation    `json:"transformation"`
+		Transformations PostBreakpointTransformations `json:"transformations,omitempty"`
+	}
+
+	// CompoundPostTransformation ...
+	CompoundPostTransformation string
 
 	// CompoundTransformation ...
 	CompoundTransformation string
@@ -277,7 +372,7 @@ type (
 		Confidence *NumberVariableInline `json:"confidence,omitempty"`
 		// FailGravity Controls placement of the crop if Image and Video Manager does not detect any faces in the image. Directions are relative to the edges of the image being transformed.
 		FailGravity *GravityVariableInline `json:"failGravity,omitempty"`
-		// Focus Distinguishes the faces detected, either `biggest` or `all` to place the crop rectangle around the full set of faces, `all` by default.
+		// Focus Distinguishes the faces detected, either `biggestFace` or `allFaces` to place the crop rectangle around the full set of faces, `all` by default.
 		Focus *FaceCropFocusVariableInline `json:"focus,omitempty"`
 		// Gravity Controls placement of the crop. Directions are relative to the face(s) plus padding.
 		Gravity *GravityVariableInline `json:"gravity,omitempty"`
@@ -393,6 +488,15 @@ type (
 	// Gravity ...
 	Gravity string
 
+	// GravityPost ...
+	GravityPost string
+
+	// GravityPostVariableInline represents a type which stores either a value or a variable name
+	GravityPostVariableInline struct {
+		Name  *string
+		Value *GravityPost
+	}
+
 	// GravityVariableInline represents a type which stores either a value or a variable name
 	GravityVariableInline struct {
 		Name  *string
@@ -472,6 +576,32 @@ type (
 		Value *IfDimensionDimension
 	}
 
+	// IfDimensionPost ...
+	IfDimensionPost struct {
+		Default TransformationTypePost `json:"default,omitempty"`
+		// Dimension The dimension to use to select the transformation, either `height`, `width`, or `both`.
+		Dimension   *IfDimensionPostDimensionVariableInline `json:"dimension,omitempty"`
+		Equal       TransformationTypePost                  `json:"equal,omitempty"`
+		GreaterThan TransformationTypePost                  `json:"greaterThan,omitempty"`
+		LessThan    TransformationTypePost                  `json:"lessThan,omitempty"`
+		// Transformation Identifies this type of transformation, `IfDimension` in this case.
+		Transformation IfDimensionPostTransformation `json:"transformation"`
+		// Value The value to compare against the source image dimension. For example, if the image dimension is less than the value the lessThan transformation is applied.
+		Value *IntegerVariableInline `json:"value"`
+	}
+
+	// IfDimensionPostDimension ...
+	IfDimensionPostDimension string
+
+	// IfDimensionPostDimensionVariableInline represents a type which stores either a value or a variable name
+	IfDimensionPostDimensionVariableInline struct {
+		Name  *string
+		Value *IfDimensionPostDimension
+	}
+
+	// IfDimensionPostTransformation ...
+	IfDimensionPostTransformation string
+
 	// IfDimensionTransformation ...
 	IfDimensionTransformation string
 
@@ -485,8 +615,36 @@ type (
 		Transformation IfOrientationTransformation `json:"transformation"`
 	}
 
+	// IfOrientationPost ...
+	IfOrientationPost struct {
+		Default   TransformationTypePost `json:"default,omitempty"`
+		Landscape TransformationTypePost `json:"landscape,omitempty"`
+		Portrait  TransformationTypePost `json:"portrait,omitempty"`
+		Square    TransformationTypePost `json:"square,omitempty"`
+		// Transformation Identifies this type of transformation, `IfOrientation` in this case.
+		Transformation IfOrientationPostTransformation `json:"transformation"`
+	}
+
+	// IfOrientationPostTransformation ...
+	IfOrientationPostTransformation string
+
 	// IfOrientationTransformation ...
 	IfOrientationTransformation string
+
+	// ImQuery Apply artistic transformations to images quickly and dynamically by specifying transformations with a query string appendedto the image URL.
+	ImQuery struct {
+		// AllowedTransformations Specifies the transformations that can be applied using the query string parameter.
+		AllowedTransformations []ImQueryAllowedTransformations `json:"allowedTransformations"`
+		Query                  *QueryVariableInline            `json:"query"`
+		// Transformation Identifies this type of transformation, `ImQuery` in this case.
+		Transformation ImQueryTransformation `json:"transformation"`
+	}
+
+	// ImQueryAllowedTransformations ...
+	ImQueryAllowedTransformations string
+
+	// ImQueryTransformation ...
+	ImQueryTransformation string
 
 	// IntegerVariableInline represents a type which stores either a value or a variable name
 	IntegerVariableInline struct {
@@ -532,7 +690,7 @@ type (
 	// NumberVariableInline represents a type which stores either a value or a variable name
 	NumberVariableInline struct {
 		Name  *string
-		Value *float32
+		Value *float64
 	}
 
 	// Opacity Adjusts the level of transparency of an image. Use this transformation to make an image more or less transparent.
@@ -549,7 +707,7 @@ type (
 	// OutputImage Dictates the output quality (either `quality` or `perceptualQuality`) and formats that are created for each resized image. If unspecified, image formats are created to support all browsers at the default quality level (`85`), which includes formats such as WEBP, JPEG2000 and JPEG-XR for specific browsers.
 	OutputImage struct {
 		// AdaptiveQuality Override the quality of image to serve when Image & Video Manager detects a slow connection. Specifying lower values lets users with slow connections browse your site with reduced load times without impacting the quality of images for users with faster connections.
-		AdaptiveQuality int `json:"adaptiveQuality,omitempty"`
+		AdaptiveQuality *int `json:"adaptiveQuality,omitempty"`
 		// AllowedFormats The graphics file formats allowed for browser specific results.
 		AllowedFormats []OutputImageAllowedFormats `json:"allowedFormats,omitempty"`
 		// ForcedFormats The forced extra formats for the `imFormat` query parameter, which requests a specific browser type. By default, Image and Video Manager detects the browser and returns the appropriate image.
@@ -557,7 +715,7 @@ type (
 		// PerceptualQuality Mutually exclusive with quality. The perceptual quality to use when comparing resulting images, which overrides the `quality` setting. Perceptual quality tunes each image format's quality parameter dynamically based on the human-perceived quality of the output image. This can result in better byte savings (as compared to using regular quality) as many images can be encoded at a much lower quality without compromising perception of the image. In addition, certain images may need to be encoded at a slightly higher quality in order to maintain human-perceived quality. Values are tiered `high`, `mediumHigh`, `medium`, `mediumLow`, or `low`.
 		PerceptualQuality *OutputImagePerceptualQualityVariableInline `json:"perceptualQuality,omitempty"`
 		// PerceptualQualityFloor Only applies with perceptualQuality set. Sets a minimum image quality to respect when using perceptual quality. Perceptual quality will not reduce the quality below this value even if it determines the compressed image to be acceptably visually similar.
-		PerceptualQualityFloor int `json:"perceptualQualityFloor,omitempty"`
+		PerceptualQualityFloor *int `json:"perceptualQualityFloor,omitempty"`
 		// Quality Mutually exclusive with perceptualQuality, used by default if neither is specified. The chosen quality of the output images. Using a quality value from 1-100 resembles JPEG quality across output formats.
 		Quality *IntegerVariableInline `json:"quality,omitempty"`
 	}
@@ -590,29 +748,29 @@ type (
 		// Breakpoints The breakpoint widths (in pixels) to use to create derivative images/videos.
 		Breakpoints *Breakpoints `json:"breakpoints,omitempty"`
 		// DateCreated Date this policy version was created in ISO 8601 extended notation format.
-		DateCreated string `json:"dateCreated,omitempty"`
+		DateCreated string `json:"dateCreated"`
 		// Hosts Hosts that are allowed for image/video URLs within transformations or variables.
 		Hosts []string `json:"hosts,omitempty"`
 		// ID Unique identifier for a policy, up to 64 alphanumeric characters including underscores or dashes.
-		ID string `json:"id,omitempty"`
+		ID string `json:"id"`
 		// Output Dictates the output quality (either `quality` or `perceptualQuality`) and formats that are created for each resized image. If unspecified, image formats are created to support all browsers at the default quality level (`85`), which includes formats such as WEBP, JPEG2000 and JPEG-XR for specific browsers.
 		Output *OutputImage `json:"output,omitempty"`
 		// PostBreakpointTransformations Post-processing Transformations are applied to the image after image and quality settings have been applied.
-		PostBreakpointTransformations Transformations `json:"postBreakpointTransformations,omitempty"`
+		PostBreakpointTransformations PostBreakpointTransformations `json:"postBreakpointTransformations,omitempty"`
 		// PreviousVersion The previous version number of this policy version
-		PreviousVersion int `json:"previousVersion,omitempty"`
+		PreviousVersion int `json:"previousVersion"`
 		// RolloutInfo Contains information about policy rollout start and completion times.
-		RolloutInfo *RolloutInfo `json:"rolloutInfo,omitempty"`
+		RolloutInfo *RolloutInfo `json:"rolloutInfo"`
 		// Transformations Set of image transformations to apply to the source image. If unspecified, no operations are performed.
 		Transformations Transformations `json:"transformations,omitempty"`
 		// User The user who created this policy version
-		User string `json:"user,omitempty"`
+		User string `json:"user"`
 		// Variables Declares variables for use within the policy. Any variable declared here can be invoked throughout transformations as a [Variable](#variable) object, so that you don't have to specify values separately. You can also pass in these variable names and values dynamically as query parameters in the image's request URL.
 		Variables []Variable `json:"variables,omitempty"`
 		// Version The version number of this policy version
-		Version int `json:"version,omitempty"`
+		Version int `json:"version"`
 		// Video Identifies this as an image policy.
-		Video bool `json:"video"`
+		Video *bool `json:"video,omitempty"`
 	}
 
 	// PolicyOutputImageVideo ...
@@ -624,9 +782,14 @@ type (
 		Points []PointShapeType `json:"points"`
 	}
 
+	// QueryVariableInline represents a type which stores either a value or a variable name
+	QueryVariableInline struct {
+		Name *string
+	}
+
 	// RectangleShapeType Defines a rectangle's `width` and `height` relative to an `anchor` point at the top left corner.
 	RectangleShapeType struct {
-		Anchor PointShapeType `json:"anchor"`
+		Anchor *PointShapeType `json:"anchor"`
 		// Height Extends the rectangle down from the `anchor` point.
 		Height *NumberVariableInline `json:"height"`
 		// Width Extends the rectangle right from the `anchor` point.
@@ -730,11 +893,11 @@ type (
 	// RolloutInfo Contains information about policy rollout start and completion times.
 	RolloutInfo struct {
 		// EndTime The estimated time that rollout for this policy will end. Value is a unix timestamp.
-		EndTime int `json:"endTime,omitempty"`
-		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version.
-		RolloutDuration int `json:"rolloutDuration,omitempty"`
+		EndTime int `json:"endTime"`
+		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version. Policies on the staging network deploy as quickly as possible without rollout. For staging policies this value will always be 1.
+		RolloutDuration int `json:"rolloutDuration"`
 		// StartTime The estimated time that rollout for this policy will begin. Value is a unix timestamp.
-		StartTime int `json:"startTime,omitempty"`
+		StartTime int `json:"startTime"`
 	}
 
 	// Rotate Rotate the image around its center by indicating the degrees of rotation.
@@ -799,6 +962,28 @@ type (
 		Typeface *StringVariableInline `json:"typeface,omitempty"`
 	}
 
+	// TextImageTypePost A snippet of text. Defines font family and size, fill color, and outline stroke width and color.
+	TextImageTypePost struct {
+		// Fill The main fill color of the text.
+		Fill *StringVariableInline `json:"fill,omitempty"`
+		// Size The size in pixels to render the text.
+		Size *NumberVariableInline `json:"size,omitempty"`
+		// Stroke The color for the outline of the text.
+		Stroke *StringVariableInline `json:"stroke,omitempty"`
+		// StrokeSize The thickness in points for the outline of the text.
+		StrokeSize *NumberVariableInline `json:"strokeSize,omitempty"`
+		// Text The line of text to render.
+		Text           *StringVariableInline  `json:"text"`
+		Transformation TransformationTypePost `json:"transformation,omitempty"`
+		// Type Identifies the type of image, `Text` in this case.
+		Type TextImageTypePostType `json:"type"`
+		// Typeface The font family to apply to the text image. This may be a URL to a TrueType or WOFF (v1) typeface, or a string that refers to one of the standard built-in browser fonts.
+		Typeface *StringVariableInline `json:"typeface,omitempty"`
+	}
+
+	// TextImageTypePostType ...
+	TextImageTypePostType string
+
 	// TextImageTypeType ...
 	TextImageTypeType string
 
@@ -823,6 +1008,18 @@ type (
 		// URL The URL of the image.
 		URL *StringVariableInline `json:"url"`
 	}
+
+	// URLImageTypePost An image loaded from a URL.
+	URLImageTypePost struct {
+		Transformation TransformationTypePost `json:"transformation,omitempty"`
+		// Type Identifies the type of image, `URL` in this case.
+		Type URLImageTypePostType `json:"type,omitempty"`
+		// URL The URL of the image.
+		URL *StringVariableInline `json:"url"`
+	}
+
+	// URLImageTypePostType ...
+	URLImageTypePostType string
 
 	// URLImageTypeType ...
 	URLImageTypeType string
@@ -855,9 +1052,9 @@ type (
 		// Name The name of the variable, also available as the query parameter name to set the variable's value dynamically. Use up to 50 alphanumeric characters.
 		Name string `json:"name"`
 		// Postfix A postfix added to the value provided for the variable, or to the default value.
-		Postfix string `json:"postfix,omitempty"`
+		Postfix *string `json:"postfix,omitempty"`
 		// Prefix A prefix added to the value provided for the variable, or to the default value.
-		Prefix string `json:"prefix,omitempty"`
+		Prefix *string `json:"prefix,omitempty"`
 		// Type The type of value for the variable.
 		Type VariableType `json:"type"`
 	}
@@ -904,25 +1101,25 @@ type (
 		// Breakpoints The breakpoint widths (in pixels) to use to create derivative images/videos.
 		Breakpoints *Breakpoints `json:"breakpoints,omitempty"`
 		// DateCreated Date this policy version was created in ISO 8601 extended notation format.
-		DateCreated string `json:"dateCreated,omitempty"`
+		DateCreated string `json:"dateCreated"`
 		// Hosts Hosts that are allowed for image/video URLs within transformations or variables.
 		Hosts []string `json:"hosts,omitempty"`
 		// ID Unique identifier for a policy, up to 64 alphanumeric characters including underscores or dashes.
-		ID string `json:"id,omitempty"`
+		ID string `json:"id"`
 		// Output Dictates the output quality that are created for each resized video.
 		Output *OutputVideo `json:"output,omitempty"`
 		// PreviousVersion The previous version number of this policy version
-		PreviousVersion int `json:"previousVersion,omitempty"`
+		PreviousVersion int `json:"previousVersion"`
 		// RolloutInfo Contains information about policy rollout start and completion times.
-		RolloutInfo *RolloutInfo `json:"rolloutInfo,omitempty"`
+		RolloutInfo *RolloutInfo `json:"rolloutInfo"`
 		// User The user who created this policy version
-		User string `json:"user,omitempty"`
+		User string `json:"user"`
 		// Variables Declares variables for use within the policy. Any variable declared here can be invoked throughout transformations as a [Variable](#variable) object, so that you don't have to specify values separately. You can also pass in these variable names and values dynamically as query parameters in the image's request URL.
 		Variables []Variable `json:"variables,omitempty"`
 		// Version The version number of this policy version
-		Version int `json:"version,omitempty"`
+		Version int `json:"version"`
 		// Video Identifies this as a video policy.
-		Video bool `json:"video"`
+		Video *bool `json:"video,omitempty"`
 	}
 
 	// PolicyOutputVideoVideo ...
@@ -951,11 +1148,17 @@ const (
 	// BlurTransformationBlur const
 	BlurTransformationBlur BlurTransformation = "Blur"
 
+	// BoxImageTypePostTypeBox const
+	BoxImageTypePostTypeBox BoxImageTypePostType = "Box"
+
 	// BoxImageTypeTypeBox const
 	BoxImageTypeTypeBox BoxImageTypeType = "Box"
 
 	// ChromaKeyTransformationChromaKey const
 	ChromaKeyTransformationChromaKey ChromaKeyTransformation = "ChromaKey"
+
+	// CircleImageTypePostTypeCircle const
+	CircleImageTypePostTypeCircle CircleImageTypePostType = "Circle"
 
 	// CircleImageTypeTypeCircle const
 	CircleImageTypeTypeCircle CircleImageTypeType = "Circle"
@@ -969,6 +1172,23 @@ const (
 	// CompositePlacementStencil const
 	CompositePlacementStencil CompositePlacement = "Stencil"
 
+	// CompositePostPlacementOver const
+	CompositePostPlacementOver CompositePostPlacement = "Over"
+	// CompositePostPlacementUnder const
+	CompositePostPlacementUnder CompositePostPlacement = "Under"
+	// CompositePostPlacementMask const
+	CompositePostPlacementMask CompositePostPlacement = "Mask"
+	// CompositePostPlacementStencil const
+	CompositePostPlacementStencil CompositePostPlacement = "Stencil"
+
+	// CompositePostScaleDimensionWidth const
+	CompositePostScaleDimensionWidth CompositePostScaleDimension = "width"
+	// CompositePostScaleDimensionHeight const
+	CompositePostScaleDimensionHeight CompositePostScaleDimension = "height"
+
+	// CompositePostTransformationComposite const
+	CompositePostTransformationComposite CompositePostTransformation = "Composite"
+
 	// CompositeScaleDimensionWidth const
 	CompositeScaleDimensionWidth CompositeScaleDimension = "width"
 	// CompositeScaleDimensionHeight const
@@ -976,6 +1196,9 @@ const (
 
 	// CompositeTransformationComposite const
 	CompositeTransformationComposite CompositeTransformation = "Composite"
+
+	// CompoundPostTransformationCompound const
+	CompoundPostTransformationCompound CompoundPostTransformation = "Compound"
 
 	// CompoundTransformationCompound const
 	CompoundTransformationCompound CompoundTransformation = "Compound"
@@ -991,10 +1214,10 @@ const (
 	// FaceCropAlgorithmDnn const
 	FaceCropAlgorithmDnn FaceCropAlgorithm = "dnn"
 
-	// FaceCropFocusAll const
-	FaceCropFocusAll FaceCropFocus = "all"
-	// FaceCropFocusBiggest const
-	FaceCropFocusBiggest FaceCropFocus = "biggest"
+	// FaceCropFocusAllFaces const
+	FaceCropFocusAllFaces FaceCropFocus = "allFaces"
+	// FaceCropFocusBiggestFace const
+	FaceCropFocusBiggestFace FaceCropFocus = "biggestFace"
 
 	// FaceCropStyleCrop const
 	FaceCropStyleCrop FaceCropStyle = "crop"
@@ -1041,6 +1264,25 @@ const (
 	// GravityWest const
 	GravityWest Gravity = "West"
 
+	// GravityPostNorth const
+	GravityPostNorth GravityPost = "North"
+	// GravityPostNorthEast const
+	GravityPostNorthEast GravityPost = "NorthEast"
+	// GravityPostNorthWest const
+	GravityPostNorthWest GravityPost = "NorthWest"
+	// GravityPostSouth const
+	GravityPostSouth GravityPost = "South"
+	// GravityPostSouthEast const
+	GravityPostSouthEast GravityPost = "SouthEast"
+	// GravityPostSouthWest const
+	GravityPostSouthWest GravityPost = "SouthWest"
+	// GravityPostCenter const
+	GravityPostCenter GravityPost = "Center"
+	// GravityPostEast const
+	GravityPostEast GravityPost = "East"
+	// GravityPostWest const
+	GravityPostWest GravityPost = "West"
+
 	// GrayscaleTransformationGrayscale const
 	GrayscaleTransformationGrayscale GrayscaleTransformation = "Grayscale"
 
@@ -1066,11 +1308,88 @@ const (
 	// IfDimensionDimensionBoth const
 	IfDimensionDimensionBoth IfDimensionDimension = "both"
 
+	// IfDimensionPostDimensionWidth const
+	IfDimensionPostDimensionWidth IfDimensionPostDimension = "width"
+	// IfDimensionPostDimensionHeight const
+	IfDimensionPostDimensionHeight IfDimensionPostDimension = "height"
+	// IfDimensionPostDimensionBoth const
+	IfDimensionPostDimensionBoth IfDimensionPostDimension = "both"
+
+	// IfDimensionPostTransformationIfDimension const
+	IfDimensionPostTransformationIfDimension IfDimensionPostTransformation = "IfDimension"
+
 	// IfDimensionTransformationIfDimension const
 	IfDimensionTransformationIfDimension IfDimensionTransformation = "IfDimension"
 
+	// IfOrientationPostTransformationIfOrientation const
+	IfOrientationPostTransformationIfOrientation IfOrientationPostTransformation = "IfOrientation"
+
 	// IfOrientationTransformationIfOrientation const
 	IfOrientationTransformationIfOrientation IfOrientationTransformation = "IfOrientation"
+
+	// ImQueryAllowedTransformationsAppend const
+	ImQueryAllowedTransformationsAppend ImQueryAllowedTransformations = "Append"
+	// ImQueryAllowedTransformationsAspectCrop const
+	ImQueryAllowedTransformationsAspectCrop ImQueryAllowedTransformations = "AspectCrop"
+	// ImQueryAllowedTransformationsBackgroundColor const
+	ImQueryAllowedTransformationsBackgroundColor ImQueryAllowedTransformations = "BackgroundColor"
+	// ImQueryAllowedTransformationsBlur const
+	ImQueryAllowedTransformationsBlur ImQueryAllowedTransformations = "Blur"
+	// ImQueryAllowedTransformationsComposite const
+	ImQueryAllowedTransformationsComposite ImQueryAllowedTransformations = "Composite"
+	// ImQueryAllowedTransformationsContrast const
+	ImQueryAllowedTransformationsContrast ImQueryAllowedTransformations = "Contrast"
+	// ImQueryAllowedTransformationsCrop const
+	ImQueryAllowedTransformationsCrop ImQueryAllowedTransformations = "Crop"
+	// ImQueryAllowedTransformationsChromaKey const
+	ImQueryAllowedTransformationsChromaKey ImQueryAllowedTransformations = "ChromaKey"
+	// ImQueryAllowedTransformationsFaceCrop const
+	ImQueryAllowedTransformationsFaceCrop ImQueryAllowedTransformations = "FaceCrop"
+	// ImQueryAllowedTransformationsFeatureCrop const
+	ImQueryAllowedTransformationsFeatureCrop ImQueryAllowedTransformations = "FeatureCrop"
+	// ImQueryAllowedTransformationsFitAndFill const
+	ImQueryAllowedTransformationsFitAndFill ImQueryAllowedTransformations = "FitAndFill"
+	// ImQueryAllowedTransformationsGoop const
+	ImQueryAllowedTransformationsGoop ImQueryAllowedTransformations = "Goop"
+	// ImQueryAllowedTransformationsGrayscale const
+	ImQueryAllowedTransformationsGrayscale ImQueryAllowedTransformations = "Grayscale"
+	// ImQueryAllowedTransformationsHSL const
+	ImQueryAllowedTransformationsHSL ImQueryAllowedTransformations = "HSL"
+	// ImQueryAllowedTransformationsHSV const
+	ImQueryAllowedTransformationsHSV ImQueryAllowedTransformations = "HSV"
+	// ImQueryAllowedTransformationsMaxColors const
+	ImQueryAllowedTransformationsMaxColors ImQueryAllowedTransformations = "MaxColors"
+	// ImQueryAllowedTransformationsMirror const
+	ImQueryAllowedTransformationsMirror ImQueryAllowedTransformations = "Mirror"
+	// ImQueryAllowedTransformationsMonoHue const
+	ImQueryAllowedTransformationsMonoHue ImQueryAllowedTransformations = "MonoHue"
+	// ImQueryAllowedTransformationsOpacity const
+	ImQueryAllowedTransformationsOpacity ImQueryAllowedTransformations = "Opacity"
+	// ImQueryAllowedTransformationsRegionOfInterestCrop const
+	ImQueryAllowedTransformationsRegionOfInterestCrop ImQueryAllowedTransformations = "RegionOfInterestCrop"
+	// ImQueryAllowedTransformationsRelativeCrop const
+	ImQueryAllowedTransformationsRelativeCrop ImQueryAllowedTransformations = "RelativeCrop"
+	// ImQueryAllowedTransformationsRemoveColor const
+	ImQueryAllowedTransformationsRemoveColor ImQueryAllowedTransformations = "RemoveColor"
+	// ImQueryAllowedTransformationsResize const
+	ImQueryAllowedTransformationsResize ImQueryAllowedTransformations = "Resize"
+	// ImQueryAllowedTransformationsRotate const
+	ImQueryAllowedTransformationsRotate ImQueryAllowedTransformations = "Rotate"
+	// ImQueryAllowedTransformationsScale const
+	ImQueryAllowedTransformationsScale ImQueryAllowedTransformations = "Scale"
+	// ImQueryAllowedTransformationsShear const
+	ImQueryAllowedTransformationsShear ImQueryAllowedTransformations = "Shear"
+	// ImQueryAllowedTransformationsTrim const
+	ImQueryAllowedTransformationsTrim ImQueryAllowedTransformations = "Trim"
+	// ImQueryAllowedTransformationsUnsharpMask const
+	ImQueryAllowedTransformationsUnsharpMask ImQueryAllowedTransformations = "UnsharpMask"
+	// ImQueryAllowedTransformationsIfDimension const
+	ImQueryAllowedTransformationsIfDimension ImQueryAllowedTransformations = "IfDimension"
+	// ImQueryAllowedTransformationsIfOrientation const
+	ImQueryAllowedTransformationsIfOrientation ImQueryAllowedTransformations = "IfOrientation"
+
+	// ImQueryTransformationImQuery const
+	ImQueryTransformationImQuery ImQueryTransformation = "ImQuery"
 
 	// MaxColorsTransformationMaxColors const
 	MaxColorsTransformationMaxColors MaxColorsTransformation = "MaxColors"
@@ -1166,11 +1485,17 @@ const (
 	// ShearTransformationShear const
 	ShearTransformationShear ShearTransformation = "Shear"
 
+	// TextImageTypePostTypeText const
+	TextImageTypePostTypeText TextImageTypePostType = "Text"
+
 	// TextImageTypeTypeText const
 	TextImageTypeTypeText TextImageTypeType = "Text"
 
 	// TrimTransformationTrim const
 	TrimTransformationTrim TrimTransformation = "Trim"
+
+	// URLImageTypePostTypeURL const
+	URLImageTypePostTypeURL URLImageTypePostType = "URL"
 
 	// URLImageTypeTypeURL const
 	URLImageTypeTypeURL URLImageTypeType = "URL"
@@ -1257,12 +1582,20 @@ func (BoxImageType) imageType() string {
 	return "BoxImageType"
 }
 
+func (BoxImageTypePost) imageTypePost() string {
+	return "BoxImageTypePost"
+}
+
 func (ChromaKey) transformationType() string {
 	return "ChromaKey"
 }
 
 func (CircleImageType) imageType() string {
 	return "CircleImageType"
+}
+
+func (CircleImageTypePost) imageTypePost() string {
+	return "CircleImageTypePost"
 }
 
 func (CircleShapeType) shapeType() string {
@@ -1319,6 +1652,10 @@ func (IfDimension) transformationType() string {
 
 func (IfOrientation) transformationType() string {
 	return "IfOrientation"
+}
+
+func (ImQuery) transformationType() string {
+	return "ImQuery"
 }
 
 func (MaxColors) transformationType() string {
@@ -1381,6 +1718,10 @@ func (TextImageType) imageType() string {
 	return "TextImageType"
 }
 
+func (TextImageTypePost) imageTypePost() string {
+	return "TextImageTypePost"
+}
+
 func (Trim) transformationType() string {
 	return "Trim"
 }
@@ -1389,11 +1730,87 @@ func (URLImageType) imageType() string {
 	return "URLImageType"
 }
 
+func (URLImageTypePost) imageTypePost() string {
+	return "URLImageTypePost"
+}
+
 func (UnionShapeType) shapeType() string {
 	return "UnionShapeType"
 }
 
 func (UnsharpMask) transformationType() string {
+	return "UnsharpMask"
+}
+
+func (BackgroundColor) transformationTypePost() string {
+	return "BackgroundColor"
+}
+
+func (Blur) transformationTypePost() string {
+	return "Blur"
+}
+
+func (ChromaKey) transformationTypePost() string {
+	return "ChromaKey"
+}
+
+func (CompositePost) transformationTypePost() string {
+	return "CompositePost"
+}
+
+func (CompoundPost) transformationTypePost() string {
+	return "CompoundPost"
+}
+
+func (Contrast) transformationTypePost() string {
+	return "Contrast"
+}
+
+func (Goop) transformationTypePost() string {
+	return "Goop"
+}
+
+func (Grayscale) transformationTypePost() string {
+	return "Grayscale"
+}
+
+func (HSL) transformationTypePost() string {
+	return "HSL"
+}
+
+func (HSV) transformationTypePost() string {
+	return "HSV"
+}
+
+func (IfDimensionPost) transformationTypePost() string {
+	return "IfDimensionPost"
+}
+
+func (IfOrientationPost) transformationTypePost() string {
+	return "IfOrientationPost"
+}
+
+func (MaxColors) transformationTypePost() string {
+	return "MaxColors"
+}
+
+func (Mirror) transformationTypePost() string {
+	return "Mirror"
+}
+
+func (MonoHue) transformationTypePost() string {
+	return "MonoHue"
+}
+
+func (Opacity) transformationTypePost() string {
+	return "Opacity"
+}
+
+func (RemoveColor) transformationTypePost() string {
+	return "RemoveColor"
+}
+
+func (UnsharpMask) transformationTypePost() string {
 	return "UnsharpMask"
 }
 
@@ -1426,6 +1843,11 @@ func BlurTransformationPtr(v BlurTransformation) *BlurTransformation {
 	return &v
 }
 
+// BoxImageTypePostTypePtr returns pointer of BoxImageTypePostType
+func BoxImageTypePostTypePtr(v BoxImageTypePostType) *BoxImageTypePostType {
+	return &v
+}
+
 // BoxImageTypeTypePtr returns pointer of BoxImageTypeType
 func BoxImageTypeTypePtr(v BoxImageTypeType) *BoxImageTypeType {
 	return &v
@@ -1433,6 +1855,11 @@ func BoxImageTypeTypePtr(v BoxImageTypeType) *BoxImageTypeType {
 
 // ChromaKeyTransformationPtr returns pointer of ChromaKeyTransformation
 func ChromaKeyTransformationPtr(v ChromaKeyTransformation) *ChromaKeyTransformation {
+	return &v
+}
+
+// CircleImageTypePostTypePtr returns pointer of CircleImageTypePostType
+func CircleImageTypePostTypePtr(v CircleImageTypePostType) *CircleImageTypePostType {
 	return &v
 }
 
@@ -1446,6 +1873,21 @@ func CompositePlacementPtr(v CompositePlacement) *CompositePlacement {
 	return &v
 }
 
+// CompositePostPlacementPtr returns pointer of CompositePostPlacement
+func CompositePostPlacementPtr(v CompositePostPlacement) *CompositePostPlacement {
+	return &v
+}
+
+// CompositePostScaleDimensionPtr returns pointer of CompositePostScaleDimension
+func CompositePostScaleDimensionPtr(v CompositePostScaleDimension) *CompositePostScaleDimension {
+	return &v
+}
+
+// CompositePostTransformationPtr returns pointer of CompositePostTransformation
+func CompositePostTransformationPtr(v CompositePostTransformation) *CompositePostTransformation {
+	return &v
+}
+
 // CompositeScaleDimensionPtr returns pointer of CompositeScaleDimension
 func CompositeScaleDimensionPtr(v CompositeScaleDimension) *CompositeScaleDimension {
 	return &v
@@ -1453,6 +1895,11 @@ func CompositeScaleDimensionPtr(v CompositeScaleDimension) *CompositeScaleDimens
 
 // CompositeTransformationPtr returns pointer of CompositeTransformation
 func CompositeTransformationPtr(v CompositeTransformation) *CompositeTransformation {
+	return &v
+}
+
+// CompoundPostTransformationPtr returns pointer of CompoundPostTransformation
+func CompoundPostTransformationPtr(v CompoundPostTransformation) *CompoundPostTransformation {
 	return &v
 }
 
@@ -1516,6 +1963,11 @@ func GravityPtr(v Gravity) *Gravity {
 	return &v
 }
 
+// GravityPostPtr returns pointer of GravityPost
+func GravityPostPtr(v GravityPost) *GravityPost {
+	return &v
+}
+
 // GrayscaleTransformationPtr returns pointer of GrayscaleTransformation
 func GrayscaleTransformationPtr(v GrayscaleTransformation) *GrayscaleTransformation {
 	return &v
@@ -1541,13 +1993,38 @@ func IfDimensionDimensionPtr(v IfDimensionDimension) *IfDimensionDimension {
 	return &v
 }
 
+// IfDimensionPostDimensionPtr returns pointer of IfDimensionPostDimension
+func IfDimensionPostDimensionPtr(v IfDimensionPostDimension) *IfDimensionPostDimension {
+	return &v
+}
+
+// IfDimensionPostTransformationPtr returns pointer of IfDimensionPostTransformation
+func IfDimensionPostTransformationPtr(v IfDimensionPostTransformation) *IfDimensionPostTransformation {
+	return &v
+}
+
 // IfDimensionTransformationPtr returns pointer of IfDimensionTransformation
 func IfDimensionTransformationPtr(v IfDimensionTransformation) *IfDimensionTransformation {
 	return &v
 }
 
+// IfOrientationPostTransformationPtr returns pointer of IfOrientationPostTransformation
+func IfOrientationPostTransformationPtr(v IfOrientationPostTransformation) *IfOrientationPostTransformation {
+	return &v
+}
+
 // IfOrientationTransformationPtr returns pointer of IfOrientationTransformation
 func IfOrientationTransformationPtr(v IfOrientationTransformation) *IfOrientationTransformation {
+	return &v
+}
+
+// ImQueryAllowedTransformationsPtr returns pointer of ImQueryAllowedTransformations
+func ImQueryAllowedTransformationsPtr(v ImQueryAllowedTransformations) *ImQueryAllowedTransformations {
+	return &v
+}
+
+// ImQueryTransformationPtr returns pointer of ImQueryTransformation
+func ImQueryTransformationPtr(v ImQueryTransformation) *ImQueryTransformation {
 	return &v
 }
 
@@ -1636,6 +2113,11 @@ func ShearTransformationPtr(v ShearTransformation) *ShearTransformation {
 	return &v
 }
 
+// TextImageTypePostTypePtr returns pointer of TextImageTypePostType
+func TextImageTypePostTypePtr(v TextImageTypePostType) *TextImageTypePostType {
+	return &v
+}
+
 // TextImageTypeTypePtr returns pointer of TextImageTypeType
 func TextImageTypeTypePtr(v TextImageTypeType) *TextImageTypeType {
 	return &v
@@ -1643,6 +2125,11 @@ func TextImageTypeTypePtr(v TextImageTypeType) *TextImageTypeType {
 
 // TrimTransformationPtr returns pointer of TrimTransformation
 func TrimTransformationPtr(v TrimTransformation) *TrimTransformation {
+	return &v
+}
+
+// URLImageTypePostTypePtr returns pointer of URLImageTypePostType
+func URLImageTypePostTypePtr(v URLImageTypePostType) *URLImageTypePostType {
 	return &v
 }
 
@@ -1762,6 +2249,20 @@ func (b BoxImageType) Validate() error {
 	}.Filter()
 }
 
+// Validate validates BoxImageTypePost
+func (b BoxImageTypePost) Validate() error {
+	return validation.Errors{
+		"Color":          validation.Validate(b.Color),
+		"Height":         validation.Validate(b.Height),
+		"Transformation": validation.Validate(b.Transformation),
+		"Type": validation.Validate(b.Type,
+			validation.Required,
+			validation.In(BoxImageTypePostTypeBox),
+		),
+		"Width": validation.Validate(b.Width),
+	}.Filter()
+}
+
 // Validate validates Breakpoints
 func (b Breakpoints) Validate() error {
 	return validation.Errors{
@@ -1795,6 +2296,20 @@ func (c CircleImageType) Validate() error {
 		"Type": validation.Validate(c.Type,
 			validation.Required,
 			validation.In(CircleImageTypeTypeCircle),
+		),
+		"Width": validation.Validate(c.Width),
+	}.Filter()
+}
+
+// Validate validates CircleImageTypePost
+func (c CircleImageTypePost) Validate() error {
+	return validation.Errors{
+		"Color":          validation.Validate(c.Color),
+		"Diameter":       validation.Validate(c.Diameter),
+		"Transformation": validation.Validate(c.Transformation),
+		"Type": validation.Validate(c.Type,
+			validation.Required,
+			validation.In(CircleImageTypePostTypeCircle),
 		),
 		"Width": validation.Validate(c.Width),
 	}.Filter()
@@ -1836,7 +2351,52 @@ func (c CompositePlacementVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(c.Name),
 		"Value": validation.Validate(c.Value,
-			validation.In(CompositePlacementOver, CompositePlacementUnder, CompositePlacementMask, CompositePlacementStencil),
+			validation.In(CompositePlacementOver,
+				CompositePlacementUnder,
+				CompositePlacementMask,
+				CompositePlacementStencil),
+		),
+	}.Filter()
+}
+
+// Validate validates CompositePost
+func (c CompositePost) Validate() error {
+	return validation.Errors{
+		"Gravity": validation.Validate(c.Gravity),
+		"Image": validation.Validate(c.Image,
+			validation.Required,
+		),
+		"Placement":      validation.Validate(c.Placement),
+		"Scale":          validation.Validate(c.Scale),
+		"ScaleDimension": validation.Validate(c.ScaleDimension),
+		"Transformation": validation.Validate(c.Transformation,
+			validation.Required,
+			validation.In(CompositePostTransformationComposite),
+		),
+		"XPosition": validation.Validate(c.XPosition),
+		"YPosition": validation.Validate(c.YPosition),
+	}.Filter()
+}
+
+// Validate validates CompositePostPlacementVariableInline
+func (c CompositePostPlacementVariableInline) Validate() error {
+	return validation.Errors{
+		"Name": validation.Validate(c.Name),
+		"Value": validation.Validate(c.Value,
+			validation.In(CompositePostPlacementOver,
+				CompositePostPlacementUnder,
+				CompositePostPlacementMask,
+				CompositePostPlacementStencil),
+		),
+	}.Filter()
+}
+
+// Validate validates CompositePostScaleDimensionVariableInline
+func (c CompositePostScaleDimensionVariableInline) Validate() error {
+	return validation.Errors{
+		"Name": validation.Validate(c.Name),
+		"Value": validation.Validate(c.Value,
+			validation.In(CompositePostScaleDimensionWidth, CompositePostScaleDimensionHeight),
 		),
 	}.Filter()
 }
@@ -1857,6 +2417,17 @@ func (c Compound) Validate() error {
 		"Transformation": validation.Validate(c.Transformation,
 			validation.Required,
 			validation.In(CompoundTransformationCompound),
+		),
+		"Transformations": validation.Validate(c.Transformations),
+	}.Filter()
+}
+
+// Validate validates CompoundPost
+func (c CompoundPost) Validate() error {
+	return validation.Errors{
+		"Transformation": validation.Validate(c.Transformation,
+			validation.Required,
+			validation.In(CompoundPostTransformationCompound),
 		),
 		"Transformations": validation.Validate(c.Transformations),
 	}.Filter()
@@ -1944,7 +2515,7 @@ func (f FaceCropFocusVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(f.Name),
 		"Value": validation.Validate(f.Value,
-			validation.In(FaceCropFocusAll, FaceCropFocusBiggest),
+			validation.In(FaceCropFocusAllFaces, FaceCropFocusBiggestFace),
 		),
 	}.Filter()
 }
@@ -2023,12 +2594,38 @@ func (g Goop) Validate() error {
 	}.Filter()
 }
 
+// Validate validates GravityPostVariableInline
+func (g GravityPostVariableInline) Validate() error {
+	return validation.Errors{
+		"Name": validation.Validate(g.Name),
+		"Value": validation.Validate(g.Value,
+			validation.In(GravityPostNorth,
+				GravityPostNorthEast,
+				GravityPostNorthWest,
+				GravityPostSouth,
+				GravityPostSouthEast,
+				GravityPostSouthWest,
+				GravityPostCenter,
+				GravityPostEast,
+				GravityPostWest),
+		),
+	}.Filter()
+}
+
 // Validate validates GravityVariableInline
 func (g GravityVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(g.Name),
 		"Value": validation.Validate(g.Value,
-			validation.In(GravityNorth, GravityNorthEast, GravityNorthWest, GravitySouth, GravitySouthEast, GravitySouthWest, GravityCenter, GravityEast, GravityWest),
+			validation.In(GravityNorth,
+				GravityNorthEast,
+				GravityNorthWest,
+				GravitySouth,
+				GravitySouthEast,
+				GravitySouthWest,
+				GravityCenter,
+				GravityEast,
+				GravityWest),
 		),
 	}.Filter()
 }
@@ -2049,7 +2646,10 @@ func (g GrayscaleTypeVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(g.Name),
 		"Value": validation.Validate(g.Value,
-			validation.In(GrayscaleTypeRec601, GrayscaleTypeRec709, GrayscaleTypeBrightness, GrayscaleTypeLightness),
+			validation.In(GrayscaleTypeRec601,
+				GrayscaleTypeRec709,
+				GrayscaleTypeBrightness,
+				GrayscaleTypeLightness),
 		),
 	}.Filter()
 }
@@ -2108,6 +2708,34 @@ func (i IfDimensionDimensionVariableInline) Validate() error {
 	}.Filter()
 }
 
+// Validate validates IfDimensionPost
+func (i IfDimensionPost) Validate() error {
+	return validation.Errors{
+		"Default":     validation.Validate(i.Default),
+		"Dimension":   validation.Validate(i.Dimension),
+		"Equal":       validation.Validate(i.Equal),
+		"GreaterThan": validation.Validate(i.GreaterThan),
+		"LessThan":    validation.Validate(i.LessThan),
+		"Transformation": validation.Validate(i.Transformation,
+			validation.Required,
+			validation.In(IfDimensionPostTransformationIfDimension),
+		),
+		"Value": validation.Validate(i.Value,
+			validation.Required,
+		),
+	}.Filter()
+}
+
+// Validate validates IfDimensionPostDimensionVariableInline
+func (i IfDimensionPostDimensionVariableInline) Validate() error {
+	return validation.Errors{
+		"Name": validation.Validate(i.Name),
+		"Value": validation.Validate(i.Value,
+			validation.In(IfDimensionPostDimensionWidth, IfDimensionPostDimensionHeight, IfDimensionPostDimensionBoth),
+		),
+	}.Filter()
+}
+
 // Validate validates IfOrientation
 func (i IfOrientation) Validate() error {
 	return validation.Errors{
@@ -2118,6 +2746,66 @@ func (i IfOrientation) Validate() error {
 		"Transformation": validation.Validate(i.Transformation,
 			validation.Required,
 			validation.In(IfOrientationTransformationIfOrientation),
+		),
+	}.Filter()
+}
+
+// Validate validates IfOrientationPost
+func (i IfOrientationPost) Validate() error {
+	return validation.Errors{
+		"Default":   validation.Validate(i.Default),
+		"Landscape": validation.Validate(i.Landscape),
+		"Portrait":  validation.Validate(i.Portrait),
+		"Square":    validation.Validate(i.Square),
+		"Transformation": validation.Validate(i.Transformation,
+			validation.Required,
+			validation.In(IfOrientationPostTransformationIfOrientation),
+		),
+	}.Filter()
+}
+
+// Validate validates ImQuery
+func (i ImQuery) Validate() error {
+	return validation.Errors{
+		"AllowedTransformations": validation.Validate(i.AllowedTransformations,
+			validation.Required, validation.Each(
+				validation.In(ImQueryAllowedTransformationsAppend,
+					ImQueryAllowedTransformationsAspectCrop,
+					ImQueryAllowedTransformationsBackgroundColor,
+					ImQueryAllowedTransformationsBlur,
+					ImQueryAllowedTransformationsComposite,
+					ImQueryAllowedTransformationsContrast,
+					ImQueryAllowedTransformationsCrop,
+					ImQueryAllowedTransformationsChromaKey,
+					ImQueryAllowedTransformationsFaceCrop,
+					ImQueryAllowedTransformationsFeatureCrop,
+					ImQueryAllowedTransformationsFitAndFill,
+					ImQueryAllowedTransformationsGoop,
+					ImQueryAllowedTransformationsGrayscale,
+					ImQueryAllowedTransformationsHSL,
+					ImQueryAllowedTransformationsHSV,
+					ImQueryAllowedTransformationsMaxColors,
+					ImQueryAllowedTransformationsMirror,
+					ImQueryAllowedTransformationsMonoHue,
+					ImQueryAllowedTransformationsOpacity,
+					ImQueryAllowedTransformationsRegionOfInterestCrop,
+					ImQueryAllowedTransformationsRelativeCrop,
+					ImQueryAllowedTransformationsRemoveColor,
+					ImQueryAllowedTransformationsResize,
+					ImQueryAllowedTransformationsRotate,
+					ImQueryAllowedTransformationsScale,
+					ImQueryAllowedTransformationsShear,
+					ImQueryAllowedTransformationsTrim,
+					ImQueryAllowedTransformationsUnsharpMask,
+					ImQueryAllowedTransformationsIfDimension,
+					ImQueryAllowedTransformationsIfOrientation)),
+		),
+		"Query": validation.Validate(i.Query,
+			validation.Required,
+		),
+		"Transformation": validation.Validate(i.Transformation,
+			validation.Required,
+			validation.In(ImQueryTransformationImQuery),
 		),
 	}.Filter()
 }
@@ -2195,10 +2883,20 @@ func (o OutputImage) Validate() error {
 			validation.Max(100),
 		),
 		"AllowedFormats": validation.Validate(o.AllowedFormats, validation.Each(
-			validation.In(OutputImageAllowedFormatsGif, OutputImageAllowedFormatsJpeg, OutputImageAllowedFormatsPng, OutputImageAllowedFormatsWebp, OutputImageAllowedFormatsJpegxr, OutputImageAllowedFormatsJpeg2000)),
+			validation.In(OutputImageAllowedFormatsGif,
+				OutputImageAllowedFormatsJpeg,
+				OutputImageAllowedFormatsPng,
+				OutputImageAllowedFormatsWebp,
+				OutputImageAllowedFormatsJpegxr,
+				OutputImageAllowedFormatsJpeg2000)),
 		),
 		"ForcedFormats": validation.Validate(o.ForcedFormats, validation.Each(
-			validation.In(OutputImageForcedFormatsGif, OutputImageForcedFormatsJpeg, OutputImageForcedFormatsPng, OutputImageForcedFormatsWebp, OutputImageForcedFormatsJpegxr, OutputImageForcedFormatsJpeg2000)),
+			validation.In(OutputImageForcedFormatsGif,
+				OutputImageForcedFormatsJpeg,
+				OutputImageForcedFormatsPng,
+				OutputImageForcedFormatsWebp,
+				OutputImageForcedFormatsJpegxr,
+				OutputImageForcedFormatsJpeg2000)),
 		),
 		"PerceptualQuality": validation.Validate(o.PerceptualQuality),
 		"PerceptualQualityFloor": validation.Validate(o.PerceptualQualityFloor,
@@ -2214,7 +2912,11 @@ func (o OutputImagePerceptualQualityVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(o.Name),
 		"Value": validation.Validate(o.Value,
-			validation.In(OutputImagePerceptualQualityHigh, OutputImagePerceptualQualityMediumHigh, OutputImagePerceptualQualityMedium, OutputImagePerceptualQualityMediumLow, OutputImagePerceptualQualityLow),
+			validation.In(OutputImagePerceptualQualityHigh,
+				OutputImagePerceptualQualityMediumHigh,
+				OutputImagePerceptualQualityMedium,
+				OutputImagePerceptualQualityMediumLow,
+				OutputImagePerceptualQualityLow),
 		),
 	}.Filter()
 }
@@ -2234,18 +2936,30 @@ func (p PointShapeType) Validate() error {
 // Validate validates PolicyOutputImage
 func (p PolicyOutputImage) Validate() error {
 	return validation.Errors{
-		"Breakpoints":                   validation.Validate(p.Breakpoints),
-		"DateCreated":                   validation.Validate(p.DateCreated),
-		"Hosts":                         validation.Validate(p.Hosts, validation.Each()),
-		"ID":                            validation.Validate(p.ID),
+		"Breakpoints": validation.Validate(p.Breakpoints),
+		"DateCreated": validation.Validate(p.DateCreated,
+			validation.Required,
+		),
+		"Hosts": validation.Validate(p.Hosts, validation.Each()),
+		"ID": validation.Validate(p.ID,
+			validation.Required,
+		),
 		"Output":                        validation.Validate(p.Output),
 		"PostBreakpointTransformations": validation.Validate(p.PostBreakpointTransformations),
-		"PreviousVersion":               validation.Validate(p.PreviousVersion),
-		"RolloutInfo":                   validation.Validate(p.RolloutInfo),
-		"Transformations":               validation.Validate(p.Transformations),
-		"User":                          validation.Validate(p.User),
-		"Variables":                     validation.Validate(p.Variables, validation.Each()),
-		"Version":                       validation.Validate(p.Version),
+		"PreviousVersion": validation.Validate(p.PreviousVersion,
+			validation.Required,
+		),
+		"RolloutInfo": validation.Validate(p.RolloutInfo,
+			validation.Required,
+		),
+		"Transformations": validation.Validate(p.Transformations),
+		"User": validation.Validate(p.User,
+			validation.Required,
+		),
+		"Variables": validation.Validate(p.Variables, validation.Each()),
+		"Version": validation.Validate(p.Version,
+			validation.Required,
+		),
 		"Video": validation.Validate(p.Video,
 			validation.In(PolicyOutputImageVideoFalse),
 		),
@@ -2257,6 +2971,15 @@ func (p PolygonShapeType) Validate() error {
 	return validation.Errors{
 		"Points": validation.Validate(p.Points,
 			validation.Required, validation.Each(),
+		),
+	}.Filter()
+}
+
+// Validate validates QueryVariableInline
+func (q QueryVariableInline) Validate() error {
+	return validation.Errors{
+		"Name": validation.Validate(q.Name,
+			validation.Required,
 		),
 	}.Filter()
 }
@@ -2373,12 +3096,17 @@ func (r ResizeTypeVariableInline) Validate() error {
 // Validate validates RolloutInfo
 func (r RolloutInfo) Validate() error {
 	return validation.Errors{
-		"EndTime": validation.Validate(r.EndTime),
+		"EndTime": validation.Validate(r.EndTime,
+			validation.Required,
+		),
 		"RolloutDuration": validation.Validate(r.RolloutDuration,
+			validation.Required,
 			validation.Min(3600),
 			validation.Max(604800),
 		),
-		"StartTime": validation.Validate(r.StartTime),
+		"StartTime": validation.Validate(r.StartTime,
+			validation.Required,
+		),
 	}.Filter()
 }
 
@@ -2450,6 +3178,25 @@ func (t TextImageType) Validate() error {
 	}.Filter()
 }
 
+// Validate validates TextImageTypePost
+func (t TextImageTypePost) Validate() error {
+	return validation.Errors{
+		"Fill":       validation.Validate(t.Fill),
+		"Size":       validation.Validate(t.Size),
+		"Stroke":     validation.Validate(t.Stroke),
+		"StrokeSize": validation.Validate(t.StrokeSize),
+		"Text": validation.Validate(t.Text,
+			validation.Required,
+		),
+		"Transformation": validation.Validate(t.Transformation),
+		"Type": validation.Validate(t.Type,
+			validation.Required,
+			validation.In(TextImageTypePostTypeText),
+		),
+		"Typeface": validation.Validate(t.Typeface),
+	}.Filter()
+}
+
 // Validate validates Trim
 func (t Trim) Validate() error {
 	return validation.Errors{
@@ -2470,6 +3217,19 @@ func (u URLImageType) Validate() error {
 		"Transformation": validation.Validate(u.Transformation),
 		"Type": validation.Validate(u.Type,
 			validation.In(URLImageTypeTypeURL),
+		),
+		"URL": validation.Validate(u.URL,
+			validation.Required,
+		),
+	}.Filter()
+}
+
+// Validate validates URLImageTypePost
+func (u URLImageTypePost) Validate() error {
+	return validation.Errors{
+		"Transformation": validation.Validate(u.Transformation),
+		"Type": validation.Validate(u.Type,
+			validation.In(URLImageTypePostTypeURL),
 		),
 		"URL": validation.Validate(u.URL,
 			validation.Required,
@@ -2503,7 +3263,7 @@ func (u UnsharpMask) Validate() error {
 func (v Variable) Validate() error {
 	return validation.Errors{
 		"DefaultValue": validation.Validate(v.DefaultValue,
-			validation.Required,
+			validation.Required.When(v.Type != VariableTypeString),
 		),
 		"EnumOptions": validation.Validate(v.EnumOptions, validation.Each()),
 		"Name": validation.Validate(v.Name,
@@ -2513,7 +3273,20 @@ func (v Variable) Validate() error {
 		"Prefix":  validation.Validate(v.Prefix),
 		"Type": validation.Validate(v.Type,
 			validation.Required,
-			validation.In(VariableTypeBool, VariableTypeNumber, VariableTypeURL, VariableTypeColor, VariableTypeGravity, VariableTypePlacement, VariableTypeScaleDimension, VariableTypeGrayscaleType, VariableTypeAspect, VariableTypeResizeType, VariableTypeDimension, VariableTypePerceptualQuality, VariableTypeString, VariableTypeFocus),
+			validation.In(VariableTypeBool,
+				VariableTypeNumber,
+				VariableTypeURL,
+				VariableTypeColor,
+				VariableTypeGravity,
+				VariableTypePlacement,
+				VariableTypeScaleDimension,
+				VariableTypeGrayscaleType,
+				VariableTypeAspect,
+				VariableTypeResizeType,
+				VariableTypeDimension,
+				VariableTypePerceptualQuality,
+				VariableTypeString,
+				VariableTypeFocus),
 		),
 	}.Filter()
 }
@@ -2541,7 +3314,11 @@ func (o OutputVideoPerceptualQualityVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(o.Name),
 		"Value": validation.Validate(o.Value,
-			validation.In(OutputVideoPerceptualQualityHigh, OutputVideoPerceptualQualityMediumHigh, OutputVideoPerceptualQualityMedium, OutputVideoPerceptualQualityMediumLow, OutputVideoPerceptualQualityLow),
+			validation.In(OutputVideoPerceptualQualityHigh,
+				OutputVideoPerceptualQualityMediumHigh,
+				OutputVideoPerceptualQualityMedium,
+				OutputVideoPerceptualQualityMediumLow,
+				OutputVideoPerceptualQualityLow),
 		),
 	}.Filter()
 }
@@ -2551,7 +3328,11 @@ func (o OutputVideoVideoAdaptiveQualityVariableInline) Validate() error {
 	return validation.Errors{
 		"Name": validation.Validate(o.Name),
 		"Value": validation.Validate(o.Value,
-			validation.In(OutputVideoVideoAdaptiveQualityHigh, OutputVideoVideoAdaptiveQualityMediumHigh, OutputVideoVideoAdaptiveQualityMedium, OutputVideoVideoAdaptiveQualityMediumLow, OutputVideoVideoAdaptiveQualityLow),
+			validation.In(OutputVideoVideoAdaptiveQualityHigh,
+				OutputVideoVideoAdaptiveQualityMediumHigh,
+				OutputVideoVideoAdaptiveQualityMedium,
+				OutputVideoVideoAdaptiveQualityMediumLow,
+				OutputVideoVideoAdaptiveQualityLow),
 		),
 	}.Filter()
 }
@@ -2559,16 +3340,28 @@ func (o OutputVideoVideoAdaptiveQualityVariableInline) Validate() error {
 // Validate validates PolicyOutputVideo
 func (p PolicyOutputVideo) Validate() error {
 	return validation.Errors{
-		"Breakpoints":     validation.Validate(p.Breakpoints),
-		"DateCreated":     validation.Validate(p.DateCreated),
-		"Hosts":           validation.Validate(p.Hosts, validation.Each()),
-		"ID":              validation.Validate(p.ID),
-		"Output":          validation.Validate(p.Output),
-		"PreviousVersion": validation.Validate(p.PreviousVersion),
-		"RolloutInfo":     validation.Validate(p.RolloutInfo),
-		"User":            validation.Validate(p.User),
-		"Variables":       validation.Validate(p.Variables, validation.Each()),
-		"Version":         validation.Validate(p.Version),
+		"Breakpoints": validation.Validate(p.Breakpoints),
+		"DateCreated": validation.Validate(p.DateCreated,
+			validation.Required,
+		),
+		"Hosts": validation.Validate(p.Hosts, validation.Each()),
+		"ID": validation.Validate(p.ID,
+			validation.Required,
+		),
+		"Output": validation.Validate(p.Output),
+		"PreviousVersion": validation.Validate(p.PreviousVersion,
+			validation.Required,
+		),
+		"RolloutInfo": validation.Validate(p.RolloutInfo,
+			validation.Required,
+		),
+		"User": validation.Validate(p.User,
+			validation.Required,
+		),
+		"Variables": validation.Validate(p.Variables, validation.Each()),
+		"Version": validation.Validate(p.Version,
+			validation.Required,
+		),
 		"Video": validation.Validate(p.Video,
 			validation.In(PolicyOutputVideoVideoTrue),
 		),
@@ -2580,45 +3373,55 @@ func (p PolicyOutputVideo) Validate() error {
 //////////////////////////////////////////////////////////////////
 var (
 
-	// ErrUnmarshalVariableAppendGravityPriorityVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableAppendGravityPriorityVariableInline represents an error while unmarshalling AppendGravityPriorityVariableInline
 	ErrUnmarshalVariableAppendGravityPriorityVariableInline = errors.New("unmarshalling AppendGravityPriorityVariableInline")
-	// ErrUnmarshalVariableBooleanVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableBooleanVariableInline represents an error while unmarshalling BooleanVariableInline
 	ErrUnmarshalVariableBooleanVariableInline = errors.New("unmarshalling BooleanVariableInline")
-	// ErrUnmarshalVariableCompositePlacementVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableCompositePlacementVariableInline represents an error while unmarshalling CompositePlacementVariableInline
 	ErrUnmarshalVariableCompositePlacementVariableInline = errors.New("unmarshalling CompositePlacementVariableInline")
-	// ErrUnmarshalVariableCompositeScaleDimensionVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableCompositePostPlacementVariableInline represents an error while unmarshalling CompositePostPlacementVariableInline
+	ErrUnmarshalVariableCompositePostPlacementVariableInline = errors.New("unmarshalling CompositePostPlacementVariableInline")
+	// ErrUnmarshalVariableCompositePostScaleDimensionVariableInline represents an error while unmarshalling CompositePostScaleDimensionVariableInline
+	ErrUnmarshalVariableCompositePostScaleDimensionVariableInline = errors.New("unmarshalling CompositePostScaleDimensionVariableInline")
+	// ErrUnmarshalVariableCompositeScaleDimensionVariableInline represents an error while unmarshalling CompositeScaleDimensionVariableInline
 	ErrUnmarshalVariableCompositeScaleDimensionVariableInline = errors.New("unmarshalling CompositeScaleDimensionVariableInline")
-	// ErrUnmarshalVariableFaceCropAlgorithmVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableFaceCropAlgorithmVariableInline represents an error while unmarshalling FaceCropAlgorithmVariableInline
 	ErrUnmarshalVariableFaceCropAlgorithmVariableInline = errors.New("unmarshalling FaceCropAlgorithmVariableInline")
-	// ErrUnmarshalVariableFaceCropFocusVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableFaceCropFocusVariableInline represents an error while unmarshalling FaceCropFocusVariableInline
 	ErrUnmarshalVariableFaceCropFocusVariableInline = errors.New("unmarshalling FaceCropFocusVariableInline")
-	// ErrUnmarshalVariableFaceCropStyleVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableFaceCropStyleVariableInline represents an error while unmarshalling FaceCropStyleVariableInline
 	ErrUnmarshalVariableFaceCropStyleVariableInline = errors.New("unmarshalling FaceCropStyleVariableInline")
-	// ErrUnmarshalVariableFeatureCropStyleVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableFeatureCropStyleVariableInline represents an error while unmarshalling FeatureCropStyleVariableInline
 	ErrUnmarshalVariableFeatureCropStyleVariableInline = errors.New("unmarshalling FeatureCropStyleVariableInline")
-	// ErrUnmarshalVariableGravityVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableGravityPostVariableInline represents an error while unmarshalling GravityPostVariableInline
+	ErrUnmarshalVariableGravityPostVariableInline = errors.New("unmarshalling GravityPostVariableInline")
+	// ErrUnmarshalVariableGravityVariableInline represents an error while unmarshalling GravityVariableInline
 	ErrUnmarshalVariableGravityVariableInline = errors.New("unmarshalling GravityVariableInline")
-	// ErrUnmarshalVariableGrayscaleTypeVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableGrayscaleTypeVariableInline represents an error while unmarshalling GrayscaleTypeVariableInline
 	ErrUnmarshalVariableGrayscaleTypeVariableInline = errors.New("unmarshalling GrayscaleTypeVariableInline")
-	// ErrUnmarshalVariableIfDimensionDimensionVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableIfDimensionDimensionVariableInline represents an error while unmarshalling IfDimensionDimensionVariableInline
 	ErrUnmarshalVariableIfDimensionDimensionVariableInline = errors.New("unmarshalling IfDimensionDimensionVariableInline")
-	// ErrUnmarshalVariableIntegerVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableIfDimensionPostDimensionVariableInline represents an error while unmarshalling IfDimensionPostDimensionVariableInline
+	ErrUnmarshalVariableIfDimensionPostDimensionVariableInline = errors.New("unmarshalling IfDimensionPostDimensionVariableInline")
+	// ErrUnmarshalVariableIntegerVariableInline represents an error while unmarshalling IntegerVariableInline
 	ErrUnmarshalVariableIntegerVariableInline = errors.New("unmarshalling IntegerVariableInline")
-	// ErrUnmarshalVariableNumberVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableNumberVariableInline represents an error while unmarshalling NumberVariableInline
 	ErrUnmarshalVariableNumberVariableInline = errors.New("unmarshalling NumberVariableInline")
-	// ErrUnmarshalVariableOutputImagePerceptualQualityVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableOutputImagePerceptualQualityVariableInline represents an error while unmarshalling OutputImagePerceptualQualityVariableInline
 	ErrUnmarshalVariableOutputImagePerceptualQualityVariableInline = errors.New("unmarshalling OutputImagePerceptualQualityVariableInline")
-	// ErrUnmarshalVariableRegionOfInterestCropStyleVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableQueryVariableInline represents an error while unmarshalling QueryVariableInline
+	ErrUnmarshalVariableQueryVariableInline = errors.New("unmarshalling QueryVariableInline")
+	// ErrUnmarshalVariableRegionOfInterestCropStyleVariableInline represents an error while unmarshalling RegionOfInterestCropStyleVariableInline
 	ErrUnmarshalVariableRegionOfInterestCropStyleVariableInline = errors.New("unmarshalling RegionOfInterestCropStyleVariableInline")
-	// ErrUnmarshalVariableResizeAspectVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableResizeAspectVariableInline represents an error while unmarshalling ResizeAspectVariableInline
 	ErrUnmarshalVariableResizeAspectVariableInline = errors.New("unmarshalling ResizeAspectVariableInline")
-	// ErrUnmarshalVariableResizeTypeVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableResizeTypeVariableInline represents an error while unmarshalling ResizeTypeVariableInline
 	ErrUnmarshalVariableResizeTypeVariableInline = errors.New("unmarshalling ResizeTypeVariableInline")
-	// ErrUnmarshalVariableStringVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableStringVariableInline represents an error while unmarshalling StringVariableInline
 	ErrUnmarshalVariableStringVariableInline = errors.New("unmarshalling StringVariableInline")
-	// ErrUnmarshalVariableOutputVideoPerceptualQualityVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableOutputVideoPerceptualQualityVariableInline represents an error while unmarshalling OutputVideoPerceptualQualityVariableInline
 	ErrUnmarshalVariableOutputVideoPerceptualQualityVariableInline = errors.New("unmarshalling OutputVideoPerceptualQualityVariableInline")
-	// ErrUnmarshalVariableOutputVideoVideoAdaptiveQualityVariableInline represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalVariableOutputVideoVideoAdaptiveQualityVariableInline represents an error while unmarshalling OutputVideoVideoAdaptiveQualityVariableInline
 	ErrUnmarshalVariableOutputVideoVideoAdaptiveQualityVariableInline = errors.New("unmarshalling OutputVideoVideoAdaptiveQualityVariableInline")
 )
 
@@ -2700,6 +3503,64 @@ func (c *CompositePlacementVariableInline) UnmarshalJSON(in []byte) error {
 
 // MarshalJSON is a custom marshaler used to encode a variable which can be either a value or a variable object
 func (c *CompositePlacementVariableInline) MarshalJSON() ([]byte, error) {
+	if c.Value != nil {
+		return json.Marshal(*c.Value)
+	}
+	if c.Name != nil {
+		return json.Marshal(VariableInline{Var: *c.Name})
+	}
+	return nil, nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
+func (c *CompositePostPlacementVariableInline) UnmarshalJSON(in []byte) error {
+	var err error
+	var variable InlineVariable
+	if err = json.Unmarshal(in, &variable); err == nil {
+		c.Name = &variable.Var
+		c.Value = nil
+		return nil
+	}
+	var value CompositePostPlacement
+	if err = json.Unmarshal(in, &value); err == nil {
+		c.Name = nil
+		c.Value = &value
+		return nil
+	}
+	return fmt.Errorf("%w: %s", ErrUnmarshalVariableCompositePostPlacementVariableInline, err)
+}
+
+// MarshalJSON is a custom marshaler used to encode a variable which can be either a value or a variable object
+func (c *CompositePostPlacementVariableInline) MarshalJSON() ([]byte, error) {
+	if c.Value != nil {
+		return json.Marshal(*c.Value)
+	}
+	if c.Name != nil {
+		return json.Marshal(VariableInline{Var: *c.Name})
+	}
+	return nil, nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
+func (c *CompositePostScaleDimensionVariableInline) UnmarshalJSON(in []byte) error {
+	var err error
+	var variable InlineVariable
+	if err = json.Unmarshal(in, &variable); err == nil {
+		c.Name = &variable.Var
+		c.Value = nil
+		return nil
+	}
+	var value CompositePostScaleDimension
+	if err = json.Unmarshal(in, &value); err == nil {
+		c.Name = nil
+		c.Value = &value
+		return nil
+	}
+	return fmt.Errorf("%w: %s", ErrUnmarshalVariableCompositePostScaleDimensionVariableInline, err)
+}
+
+// MarshalJSON is a custom marshaler used to encode a variable which can be either a value or a variable object
+func (c *CompositePostScaleDimensionVariableInline) MarshalJSON() ([]byte, error) {
 	if c.Value != nil {
 		return json.Marshal(*c.Value)
 	}
@@ -2855,6 +3716,35 @@ func (f *FeatureCropStyleVariableInline) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
+func (g *GravityPostVariableInline) UnmarshalJSON(in []byte) error {
+	var err error
+	var variable InlineVariable
+	if err = json.Unmarshal(in, &variable); err == nil {
+		g.Name = &variable.Var
+		g.Value = nil
+		return nil
+	}
+	var value GravityPost
+	if err = json.Unmarshal(in, &value); err == nil {
+		g.Name = nil
+		g.Value = &value
+		return nil
+	}
+	return fmt.Errorf("%w: %s", ErrUnmarshalVariableGravityPostVariableInline, err)
+}
+
+// MarshalJSON is a custom marshaler used to encode a variable which can be either a value or a variable object
+func (g *GravityPostVariableInline) MarshalJSON() ([]byte, error) {
+	if g.Value != nil {
+		return json.Marshal(*g.Value)
+	}
+	if g.Name != nil {
+		return json.Marshal(VariableInline{Var: *g.Name})
+	}
+	return nil, nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
 func (g *GravityVariableInline) UnmarshalJSON(in []byte) error {
 	var err error
 	var variable InlineVariable
@@ -2942,6 +3832,35 @@ func (i *IfDimensionDimensionVariableInline) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
+func (i *IfDimensionPostDimensionVariableInline) UnmarshalJSON(in []byte) error {
+	var err error
+	var variable InlineVariable
+	if err = json.Unmarshal(in, &variable); err == nil {
+		i.Name = &variable.Var
+		i.Value = nil
+		return nil
+	}
+	var value IfDimensionPostDimension
+	if err = json.Unmarshal(in, &value); err == nil {
+		i.Name = nil
+		i.Value = &value
+		return nil
+	}
+	return fmt.Errorf("%w: %s", ErrUnmarshalVariableIfDimensionPostDimensionVariableInline, err)
+}
+
+// MarshalJSON is a custom marshaler used to encode a variable which can be either a value or a variable object
+func (i *IfDimensionPostDimensionVariableInline) MarshalJSON() ([]byte, error) {
+	if i.Value != nil {
+		return json.Marshal(*i.Value)
+	}
+	if i.Name != nil {
+		return json.Marshal(VariableInline{Var: *i.Name})
+	}
+	return nil, nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
 func (i *IntegerVariableInline) UnmarshalJSON(in []byte) error {
 	var err error
 	var variable InlineVariable
@@ -2979,7 +3898,7 @@ func (n *NumberVariableInline) UnmarshalJSON(in []byte) error {
 		n.Value = nil
 		return nil
 	}
-	var value float32
+	var value float64
 	if err = json.Unmarshal(in, &value); err == nil {
 		n.Name = nil
 		n.Value = &value
@@ -3024,6 +3943,25 @@ func (o *OutputImagePerceptualQualityVariableInline) MarshalJSON() ([]byte, erro
 	}
 	if o.Name != nil {
 		return json.Marshal(VariableInline{Var: *o.Name})
+	}
+	return nil, nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
+func (q *QueryVariableInline) UnmarshalJSON(in []byte) error {
+	var err error
+	var variable InlineVariable
+	if err = json.Unmarshal(in, &variable); err == nil {
+		q.Name = &variable.Var
+		return nil
+	}
+	return fmt.Errorf("%w: %s", ErrUnmarshalVariableQueryVariableInline, err)
+}
+
+// MarshalJSON is a custom marshaler used to encode a variable which can be either a value or a variable object
+func (q *QueryVariableInline) MarshalJSON() ([]byte, error) {
+	if q.Name != nil {
+		return json.Marshal(VariableInline{Var: *q.Name})
 	}
 	return nil, nil
 }
@@ -3206,18 +4144,27 @@ func (o *OutputVideoVideoAdaptiveQualityVariableInline) MarshalJSON() ([]byte, e
 ////////// Image type unmarshalers /////////////
 ////////////////////////////////////////////////
 
-var imageTypeValueHandlers = map[string]func() ImageType{
+// ImageTypeValueHandlers is a map of available image types
+var ImageTypeValueHandlers = map[string]func() ImageType{
 	"box":    func() ImageType { return &BoxImageType{} },
 	"text":   func() ImageType { return &TextImageType{} },
 	"url":    func() ImageType { return &URLImageType{} },
 	"circle": func() ImageType { return &CircleImageType{} },
 }
 
+// ImageTypePostValueHandlers is a map of available image post types
+var ImageTypePostValueHandlers = map[string]func() ImageTypePost{
+	"box":    func() ImageTypePost { return &BoxImageTypePost{} },
+	"text":   func() ImageTypePost { return &TextImageTypePost{} },
+	"url":    func() ImageTypePost { return &URLImageTypePost{} },
+	"circle": func() ImageTypePost { return &CircleImageTypePost{} },
+}
+
 var (
 
-	// ErrUnmarshalImageTypeAppend represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalImageTypeAppend represents an error while unmarshalling Append
 	ErrUnmarshalImageTypeAppend = errors.New("unmarshalling Append")
-	// ErrUnmarshalImageTypeComposite represents an error while unmarshalling {$compositeType}}
+	// ErrUnmarshalImageTypeComposite represents an error while unmarshalling Composite
 	ErrUnmarshalImageTypeComposite = errors.New("unmarshalling Composite")
 )
 
@@ -3253,7 +4200,7 @@ func (a *Append) UnmarshalJSON(in []byte) error {
 		return fmt.Errorf("%w: 'type' field on image should be a string", ErrUnmarshalImageTypeAppend)
 	}
 	var target AppendT
-	targetImage, ok := imageTypeValueHandlers[strings.ToLower(typeName)]
+	targetImage, ok := ImageTypeValueHandlers[strings.ToLower(typeName)]
 	if !ok {
 		return fmt.Errorf("%w: invalid image type: %s", ErrUnmarshalImageTypeAppend, imageType)
 	}
@@ -3298,7 +4245,7 @@ func (c *Composite) UnmarshalJSON(in []byte) error {
 		return fmt.Errorf("%w: 'type' field on image should be a string", ErrUnmarshalImageTypeComposite)
 	}
 	var target CompositeT
-	targetImage, ok := imageTypeValueHandlers[strings.ToLower(typeName)]
+	targetImage, ok := ImageTypeValueHandlers[strings.ToLower(typeName)]
 	if !ok {
 		return fmt.Errorf("%w: invalid image type: %s", ErrUnmarshalImageTypeComposite, imageType)
 	}
@@ -3311,25 +4258,86 @@ func (c *Composite) UnmarshalJSON(in []byte) error {
 	return nil
 }
 
+var (
+
+	// ErrUnmarshalImageTypeCompositePost represents an error while unmarshalling CompositePost
+	ErrUnmarshalImageTypeCompositePost = errors.New("unmarshalling CompositePost")
+)
+
+// UnmarshalJSON is a custom unmarshaler used to decode a type containing a reference to ImageType interface
+func (c *CompositePost) UnmarshalJSON(in []byte) error {
+	data := make(map[string]interface{})
+	type CompositePostT CompositePost
+	err := json.Unmarshal(in, &data)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalImageTypeCompositePost, err)
+	}
+	image, ok := data["image"]
+	if !ok {
+		var target CompositePostT
+		err = json.Unmarshal(in, &target)
+		if err != nil {
+			return fmt.Errorf("%w: %s", ErrUnmarshalImageTypeCompositePost, err)
+		}
+		*c = CompositePost(target)
+		return nil
+	}
+	imageMap := image.(map[string]interface{})
+	imageType, ok := imageMap["type"]
+	if !ok {
+		_, ok := imageMap["url"]
+		if !ok {
+			return fmt.Errorf("%w: missing image type", ErrUnmarshalImageTypeCompositePost)
+		}
+		imageType = "URL"
+	}
+	typeName, ok := imageType.(string)
+	if !ok {
+		return fmt.Errorf("%w: 'type' field on image should be a string", ErrUnmarshalImageTypeCompositePost)
+	}
+	var target CompositePostT
+	targetImage, ok := ImageTypePostValueHandlers[strings.ToLower(typeName)]
+	if !ok {
+		return fmt.Errorf("%w: invalid image type: %s", ErrUnmarshalImageTypeCompositePost, imageType)
+	}
+	target.Image = targetImage()
+	err = json.Unmarshal(in, &target)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalImageTypeCompositePost, err)
+	}
+	*c = CompositePost(target)
+	return nil
+}
+
 ////////////////////////////////////////////////
 ////////// Shape type unmarshalers /////////////
 ////////////////////////////////////////////////
 
-var shapeTypeValueHandlers = func(m map[string]interface{}) ShapeType {
+// ShapeTypes is a map of available shape types
+var ShapeTypes = map[string]func() ShapeType{
+	"circle":    func() ShapeType { return &CircleShapeType{} },
+	"point":     func() ShapeType { return &PointShapeType{} },
+	"polygon":   func() ShapeType { return &PolygonShapeType{} },
+	"rectangle": func() ShapeType { return &RectangleShapeType{} },
+	"union":     func() ShapeType { return &UnionShapeType{} },
+}
+
+// ShapeTypeValueHandlers returns a ShapeType based on fields specific for a concrete ShapeType
+var ShapeTypeValueHandlers = func(m map[string]interface{}) ShapeType {
 	if _, ok := m["radius"]; ok {
-		return &CircleShapeType{}
+		return ShapeTypes["circle"]()
 	}
 	if _, ok := m["x"]; ok {
-		return &PointShapeType{}
+		return ShapeTypes["point"]()
 	}
 	if _, ok := m["points"]; ok {
-		return &PolygonShapeType{}
+		return ShapeTypes["polygon"]()
 	}
 	if _, ok := m["anchor"]; ok {
-		return &RectangleShapeType{}
+		return ShapeTypes["rectangle"]()
 	}
 	if _, ok := m["shapes"]; ok {
-		return &UnionShapeType{}
+		return ShapeTypes["union"]()
 	}
 	return nil
 }
@@ -3360,7 +4368,7 @@ func (r *RegionOfInterestCrop) UnmarshalJSON(in []byte) error {
 	}
 	shapeMap := shape.(map[string]interface{})
 	var target RegionOfInterestCropT
-	targetShape := shapeTypeValueHandlers(shapeMap)
+	targetShape := ShapeTypeValueHandlers(shapeMap)
 	if targetShape == nil {
 		return fmt.Errorf("%w: invalid shape type", ErrUnmarshalShapeTypeRegionOfInterestCrop)
 	}
@@ -3395,7 +4403,24 @@ var (
 	ErrUnmarshalTransformationURLImageType = errors.New("unmarshalling URLImageType")
 )
 
-var transformationHandlers = map[string]func() TransformationType{
+var (
+
+	// ErrUnmarshalPostBreakpointTransformationBoxImageTypePost represents an error while unmarshalling {$compositeType}}
+	ErrUnmarshalPostBreakpointTransformationBoxImageTypePost = errors.New("unmarshalling BoxImageTypePost")
+	// ErrUnmarshalPostBreakpointTransformationCircleImageTypePost represents an error while unmarshalling {$compositeType}}
+	ErrUnmarshalPostBreakpointTransformationCircleImageTypePost = errors.New("unmarshalling CircleImageTypePost")
+	// ErrUnmarshalPostBreakpointTransformationIfDimensionPost represents an error while unmarshalling {$compositeType}}
+	ErrUnmarshalPostBreakpointTransformationIfDimensionPost = errors.New("unmarshalling IfDimensionPost")
+	// ErrUnmarshalPostBreakpointTransformationIfOrientationPost represents an error while unmarshalling {$compositeType}}
+	ErrUnmarshalPostBreakpointTransformationIfOrientationPost = errors.New("unmarshalling IfOrientationPost")
+	// ErrUnmarshalPostBreakpointTransformationTextImageTypePost represents an error while unmarshalling {$compositeType}}
+	ErrUnmarshalPostBreakpointTransformationTextImageTypePost = errors.New("unmarshalling TextImageTypePost")
+	// ErrUnmarshalPostBreakpointTransformationURLImageTypePost represents an error while unmarshalling {$compositeType}}
+	ErrUnmarshalPostBreakpointTransformationURLImageTypePost = errors.New("unmarshalling URLImageTypePost")
+)
+
+// TransformationHandlers is a map of available transformations
+var TransformationHandlers = map[string]func() TransformationType{
 	"Append":               func() TransformationType { return &Append{} },
 	"AspectCrop":           func() TransformationType { return &AspectCrop{} },
 	"BackgroundColor":      func() TransformationType { return &BackgroundColor{} },
@@ -3414,6 +4439,7 @@ var transformationHandlers = map[string]func() TransformationType{
 	"HSV":                  func() TransformationType { return &HSV{} },
 	"IfDimension":          func() TransformationType { return &IfDimension{} },
 	"IfOrientation":        func() TransformationType { return &IfOrientation{} },
+	"ImQuery":              func() TransformationType { return &ImQuery{} },
 	"MaxColors":            func() TransformationType { return &MaxColors{} },
 	"Mirror":               func() TransformationType { return &Mirror{} },
 	"MonoHue":              func() TransformationType { return &MonoHue{} },
@@ -3427,6 +4453,28 @@ var transformationHandlers = map[string]func() TransformationType{
 	"Shear":                func() TransformationType { return &Shear{} },
 	"Trim":                 func() TransformationType { return &Trim{} },
 	"UnsharpMask":          func() TransformationType { return &UnsharpMask{} },
+}
+
+// PostBreakpointTransformationHandlers is a map of available PostBreakpointTransformations
+var PostBreakpointTransformationHandlers = map[string]func() TransformationTypePost{
+	"BackgroundColor": func() TransformationTypePost { return &BackgroundColor{} },
+	"Blur":            func() TransformationTypePost { return &Blur{} },
+	"ChromaKey":       func() TransformationTypePost { return &ChromaKey{} },
+	"Compound":        func() TransformationTypePost { return &CompoundPost{} },
+	"Composite":       func() TransformationTypePost { return &CompositePost{} },
+	"Contrast":        func() TransformationTypePost { return &Contrast{} },
+	"Goop":            func() TransformationTypePost { return &Goop{} },
+	"Grayscale":       func() TransformationTypePost { return &Grayscale{} },
+	"HSL":             func() TransformationTypePost { return &HSL{} },
+	"HSV":             func() TransformationTypePost { return &HSV{} },
+	"IfDimension":     func() TransformationTypePost { return &IfDimensionPost{} },
+	"IfOrientation":   func() TransformationTypePost { return &IfOrientationPost{} },
+	"MaxColors":       func() TransformationTypePost { return &MaxColors{} },
+	"Mirror":          func() TransformationTypePost { return &Mirror{} },
+	"MonoHue":         func() TransformationTypePost { return &MonoHue{} },
+	"Opacity":         func() TransformationTypePost { return &Opacity{} },
+	"RemoveColor":     func() TransformationTypePost { return &RemoveColor{} },
+	"UnsharpMask":     func() TransformationTypePost { return &UnsharpMask{} },
 }
 
 // UnmarshalJSON is a custom unmarshaler used to decode a type containing a reference to Transformation interface
@@ -3446,7 +4494,7 @@ func (b *BoxImageType) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'transformation' field on BoxImageType should be a map", ErrUnmarshalTransformationBoxImageType)
 		}
 		typeName := transformationMap["transformation"].(string)
-		transformationTarget, ok := transformationHandlers[typeName]
+		transformationTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationBoxImageType, typeName)
 		}
@@ -3478,7 +4526,7 @@ func (c *CircleImageType) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'transformation' field on CircleImageType should be a map", ErrUnmarshalTransformationCircleImageType)
 		}
 		typeName := transformationMap["transformation"].(string)
-		transformationTarget, ok := transformationHandlers[typeName]
+		transformationTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationCircleImageType, typeName)
 		}
@@ -3510,7 +4558,7 @@ func (f *FitAndFill) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'fillTransformation' field on FitAndFill should be a map", ErrUnmarshalTransformationFitAndFill)
 		}
 		typeName := fillTransformationMap["transformation"].(string)
-		fillTransformationTarget, ok := transformationHandlers[typeName]
+		fillTransformationTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationFitAndFill, typeName)
 		}
@@ -3542,7 +4590,7 @@ func (i *IfDimension) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'default' field on IfDimension should be a map", ErrUnmarshalTransformationIfDimension)
 		}
 		typeName := defaultMap["transformation"].(string)
-		defaultTarget, ok := transformationHandlers[typeName]
+		defaultTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfDimension, typeName)
 		}
@@ -3556,7 +4604,7 @@ func (i *IfDimension) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'equal' field on IfDimension should be a map", ErrUnmarshalTransformationIfDimension)
 		}
 		typeName := equalMap["transformation"].(string)
-		equalTarget, ok := transformationHandlers[typeName]
+		equalTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfDimension, typeName)
 		}
@@ -3570,7 +4618,7 @@ func (i *IfDimension) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'greaterThan' field on IfDimension should be a map", ErrUnmarshalTransformationIfDimension)
 		}
 		typeName := greaterThanMap["transformation"].(string)
-		greaterThanTarget, ok := transformationHandlers[typeName]
+		greaterThanTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfDimension, typeName)
 		}
@@ -3584,7 +4632,7 @@ func (i *IfDimension) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'lessThan' field on IfDimension should be a map", ErrUnmarshalTransformationIfDimension)
 		}
 		typeName := lessThanMap["transformation"].(string)
-		lessThanTarget, ok := transformationHandlers[typeName]
+		lessThanTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfDimension, typeName)
 		}
@@ -3616,7 +4664,7 @@ func (i *IfOrientation) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'default' field on IfOrientation should be a map", ErrUnmarshalTransformationIfOrientation)
 		}
 		typeName := defaultMap["transformation"].(string)
-		defaultTarget, ok := transformationHandlers[typeName]
+		defaultTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfOrientation, typeName)
 		}
@@ -3630,7 +4678,7 @@ func (i *IfOrientation) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'landscape' field on IfOrientation should be a map", ErrUnmarshalTransformationIfOrientation)
 		}
 		typeName := landscapeMap["transformation"].(string)
-		landscapeTarget, ok := transformationHandlers[typeName]
+		landscapeTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfOrientation, typeName)
 		}
@@ -3644,7 +4692,7 @@ func (i *IfOrientation) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'portrait' field on IfOrientation should be a map", ErrUnmarshalTransformationIfOrientation)
 		}
 		typeName := portraitMap["transformation"].(string)
-		portraitTarget, ok := transformationHandlers[typeName]
+		portraitTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfOrientation, typeName)
 		}
@@ -3658,7 +4706,7 @@ func (i *IfOrientation) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'square' field on IfOrientation should be a map", ErrUnmarshalTransformationIfOrientation)
 		}
 		typeName := squareMap["transformation"].(string)
-		squareTarget, ok := transformationHandlers[typeName]
+		squareTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationIfOrientation, typeName)
 		}
@@ -3690,7 +4738,7 @@ func (t *TextImageType) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'transformation' field on TextImageType should be a map", ErrUnmarshalTransformationTextImageType)
 		}
 		typeName := transformationMap["transformation"].(string)
-		transformationTarget, ok := transformationHandlers[typeName]
+		transformationTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationTextImageType, typeName)
 		}
@@ -3722,7 +4770,7 @@ func (u *URLImageType) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: 'transformation' field on URLImageType should be a map", ErrUnmarshalTransformationURLImageType)
 		}
 		typeName := transformationMap["transformation"].(string)
-		transformationTarget, ok := transformationHandlers[typeName]
+		transformationTarget, ok := TransformationHandlers[typeName]
 		if !ok {
 			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalTransformationURLImageType, typeName)
 		}
@@ -3737,8 +4785,287 @@ func (u *URLImageType) UnmarshalJSON(in []byte) error {
 	return nil
 }
 
+// UnmarshalJSON is a custom unmarshaler used to decode a type containing a reference to PostBreakpointTransformation interface
+func (b *BoxImageTypePost) UnmarshalJSON(in []byte) error {
+	data := make(map[string]interface{})
+	type BoxImageTypePostT BoxImageTypePost
+	err := json.Unmarshal(in, &data)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationBoxImageTypePost, err)
+	}
+	var target BoxImageTypePostT
+
+	transformationParam, ok := data["transformation"]
+	if ok {
+		transformationMap, ok := transformationParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'transformation' field on BoxImageTypePost should be a map", ErrUnmarshalPostBreakpointTransformationBoxImageTypePost)
+		}
+		typeName := transformationMap["transformation"].(string)
+		transformationTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationBoxImageTypePost, typeName)
+		}
+		target.Transformation = transformationTarget()
+	}
+
+	err = json.Unmarshal(in, &target)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationBoxImageTypePost, err)
+	}
+	*b = BoxImageTypePost(target)
+	return nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a type containing a reference to PostBreakpointTransformation interface
+func (c *CircleImageTypePost) UnmarshalJSON(in []byte) error {
+	data := make(map[string]interface{})
+	type CircleImageTypePostT CircleImageTypePost
+	err := json.Unmarshal(in, &data)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationCircleImageTypePost, err)
+	}
+	var target CircleImageTypePostT
+
+	transformationParam, ok := data["transformation"]
+	if ok {
+		transformationMap, ok := transformationParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'transformation' field on CircleImageTypePost should be a map", ErrUnmarshalPostBreakpointTransformationCircleImageTypePost)
+		}
+		typeName := transformationMap["transformation"].(string)
+		transformationTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationCircleImageTypePost, typeName)
+		}
+		target.Transformation = transformationTarget()
+	}
+
+	err = json.Unmarshal(in, &target)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationCircleImageTypePost, err)
+	}
+	*c = CircleImageTypePost(target)
+	return nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a type containing a reference to PostBreakpointTransformation interface
+func (i *IfDimensionPost) UnmarshalJSON(in []byte) error {
+	data := make(map[string]interface{})
+	type IfDimensionPostT IfDimensionPost
+	err := json.Unmarshal(in, &data)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationIfDimensionPost, err)
+	}
+	var target IfDimensionPostT
+
+	defaultParam, ok := data["default"]
+	if ok {
+		defaultMap, ok := defaultParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'default' field on IfDimensionPost should be a map", ErrUnmarshalPostBreakpointTransformationIfDimensionPost)
+		}
+		typeName := defaultMap["transformation"].(string)
+		defaultTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationIfDimensionPost, typeName)
+		}
+		target.Default = defaultTarget()
+	}
+
+	equalParam, ok := data["equal"]
+	if ok {
+		equalMap, ok := equalParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'equal' field on IfDimensionPost should be a map", ErrUnmarshalPostBreakpointTransformationIfDimensionPost)
+		}
+		typeName := equalMap["transformation"].(string)
+		equalTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationIfDimensionPost, typeName)
+		}
+		target.Equal = equalTarget()
+	}
+
+	greaterThanParam, ok := data["greaterThan"]
+	if ok {
+		greaterThanMap, ok := greaterThanParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'greaterThan' field on IfDimensionPost should be a map", ErrUnmarshalPostBreakpointTransformationIfDimensionPost)
+		}
+		typeName := greaterThanMap["transformation"].(string)
+		greaterThanTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationIfDimensionPost, typeName)
+		}
+		target.GreaterThan = greaterThanTarget()
+	}
+
+	lessThanParam, ok := data["lessThan"]
+	if ok {
+		lessThanMap, ok := lessThanParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'lessThan' field on IfDimensionPost should be a map", ErrUnmarshalPostBreakpointTransformationIfDimensionPost)
+		}
+		typeName := lessThanMap["transformation"].(string)
+		lessThanTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationIfDimensionPost, typeName)
+		}
+		target.LessThan = lessThanTarget()
+	}
+
+	err = json.Unmarshal(in, &target)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationIfDimensionPost, err)
+	}
+	*i = IfDimensionPost(target)
+	return nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a type containing a reference to PostBreakpointTransformation interface
+func (i *IfOrientationPost) UnmarshalJSON(in []byte) error {
+	data := make(map[string]interface{})
+	type IfOrientationPostT IfOrientationPost
+	err := json.Unmarshal(in, &data)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationIfOrientationPost, err)
+	}
+	var target IfOrientationPostT
+
+	defaultParam, ok := data["default"]
+	if ok {
+		defaultMap, ok := defaultParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'default' field on IfOrientationPost should be a map", ErrUnmarshalPostBreakpointTransformationIfOrientationPost)
+		}
+		typeName := defaultMap["transformation"].(string)
+		defaultTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationIfOrientationPost, typeName)
+		}
+		target.Default = defaultTarget()
+	}
+
+	landscapeParam, ok := data["landscape"]
+	if ok {
+		landscapeMap, ok := landscapeParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'landscape' field on IfOrientationPost should be a map", ErrUnmarshalPostBreakpointTransformationIfOrientationPost)
+		}
+		typeName := landscapeMap["transformation"].(string)
+		landscapeTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationIfOrientationPost, typeName)
+		}
+		target.Landscape = landscapeTarget()
+	}
+
+	portraitParam, ok := data["portrait"]
+	if ok {
+		portraitMap, ok := portraitParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'portrait' field on IfOrientationPost should be a map", ErrUnmarshalPostBreakpointTransformationIfOrientationPost)
+		}
+		typeName := portraitMap["transformation"].(string)
+		portraitTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationIfOrientationPost, typeName)
+		}
+		target.Portrait = portraitTarget()
+	}
+
+	squareParam, ok := data["square"]
+	if ok {
+		squareMap, ok := squareParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'square' field on IfOrientationPost should be a map", ErrUnmarshalPostBreakpointTransformationIfOrientationPost)
+		}
+		typeName := squareMap["transformation"].(string)
+		squareTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationIfOrientationPost, typeName)
+		}
+		target.Square = squareTarget()
+	}
+
+	err = json.Unmarshal(in, &target)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationIfOrientationPost, err)
+	}
+	*i = IfOrientationPost(target)
+	return nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a type containing a reference to PostBreakpointTransformation interface
+func (t *TextImageTypePost) UnmarshalJSON(in []byte) error {
+	data := make(map[string]interface{})
+	type TextImageTypePostT TextImageTypePost
+	err := json.Unmarshal(in, &data)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationTextImageTypePost, err)
+	}
+	var target TextImageTypePostT
+
+	transformationParam, ok := data["transformation"]
+	if ok {
+		transformationMap, ok := transformationParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'transformation' field on TextImageTypePost should be a map", ErrUnmarshalPostBreakpointTransformationTextImageTypePost)
+		}
+		typeName := transformationMap["transformation"].(string)
+		transformationTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationTextImageTypePost, typeName)
+		}
+		target.Transformation = transformationTarget()
+	}
+
+	err = json.Unmarshal(in, &target)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationTextImageTypePost, err)
+	}
+	*t = TextImageTypePost(target)
+	return nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a type containing a reference to PostBreakpointTransformation interface
+func (u *URLImageTypePost) UnmarshalJSON(in []byte) error {
+	data := make(map[string]interface{})
+	type URLImageTypePostT URLImageTypePost
+	err := json.Unmarshal(in, &data)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationURLImageTypePost, err)
+	}
+	var target URLImageTypePostT
+
+	transformationParam, ok := data["transformation"]
+	if ok {
+		transformationMap, ok := transformationParam.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("%w: 'transformation' field on URLImageTypePost should be a map", ErrUnmarshalPostBreakpointTransformationURLImageTypePost)
+		}
+		typeName := transformationMap["transformation"].(string)
+		transformationTarget, ok := PostBreakpointTransformationHandlers[typeName]
+		if !ok {
+			return fmt.Errorf("%w: invalid transformation type: %s", ErrUnmarshalPostBreakpointTransformationURLImageTypePost, typeName)
+		}
+		target.Transformation = transformationTarget()
+	}
+
+	err = json.Unmarshal(in, &target)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationURLImageTypePost, err)
+	}
+	*u = URLImageTypePost(target)
+	return nil
+}
+
 // ErrUnmarshalTransformationList represents an error while unmarshalling transformation list
 var ErrUnmarshalTransformationList = errors.New("unmarshalling transformation list")
+
+// ErrUnmarshalPostBreakpointTransformationList represents an error while unmarshalling post breakpoint transformation list
+var ErrUnmarshalPostBreakpointTransformationList = errors.New("unmarshalling post breakpoint transformation list")
 
 // UnmarshalJSON is a custom unmarshaler used to decode a slice of Transformation interfaces
 func (t *Transformations) UnmarshalJSON(in []byte) error {
@@ -3761,7 +5088,7 @@ func (t *Transformations) UnmarshalJSON(in []byte) error {
 			return fmt.Errorf("%w: %s", ErrUnmarshalTransformationList, err)
 		}
 
-		indicatedTransformationType, ok := transformationHandlers[transformationTypeName]
+		indicatedTransformationType, ok := TransformationHandlers[transformationTypeName]
 		if !ok {
 			return fmt.Errorf("%w: unsupported transformation type: %s", ErrUnmarshalTransformationList, transformationTypeName)
 		}
@@ -3769,6 +5096,41 @@ func (t *Transformations) UnmarshalJSON(in []byte) error {
 		err = json.Unmarshal(bytes, ipt)
 		if err != nil {
 			return fmt.Errorf("%w: %s", ErrUnmarshalTransformationList, err)
+		}
+		*t = append(*t, ipt)
+	}
+	return nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a slice of PostBreakpointTransformation interfaces
+func (t *PostBreakpointTransformations) UnmarshalJSON(in []byte) error {
+	data := make([]map[string]interface{}, 0)
+	if err := json.Unmarshal(in, &data); err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationList, err)
+	}
+	for _, transformation := range data {
+		transformationType, ok := transformation["transformation"]
+		if !ok {
+			return fmt.Errorf("%w: transformation should contain 'transformation' field", ErrUnmarshalPostBreakpointTransformationList)
+		}
+		transformationTypeName, ok := transformationType.(string)
+		if !ok {
+			return fmt.Errorf("%w: 'transformation' field on transformation entry should be a string", ErrUnmarshalPostBreakpointTransformationList)
+		}
+
+		bytes, err := json.Marshal(transformation)
+		if err != nil {
+			return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationList, err)
+		}
+
+		indicatedTransformationType, ok := PostBreakpointTransformationHandlers[transformationTypeName]
+		if !ok {
+			return fmt.Errorf("%w: unsupported transformation type: %s", ErrUnmarshalPostBreakpointTransformationList, transformationTypeName)
+		}
+		ipt := indicatedTransformationType()
+		err = json.Unmarshal(bytes, ipt)
+		if err != nil {
+			return fmt.Errorf("%w: %s", ErrUnmarshalPostBreakpointTransformationList, err)
 		}
 		*t = append(*t, ipt)
 	}

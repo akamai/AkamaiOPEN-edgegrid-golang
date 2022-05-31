@@ -1,16 +1,37 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.13.0 (May 31, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+
+* Image and Video Manager:
+  * Add new `ImQuery` transformation
+  * New `PostBreakPointTransformationType`
+
+#### BUG FIXES:
+
+* Image and Video Manager:
+  * `default_value` field on variable in image policy should not be required
+  * Change all primitive optional parameters to pointers
+  * Correct `Anchor` field in `RectangleShapeType`
+  * Value field for `NumberVariableInline` should be defined as `float64`
+  * Rename `PointShapeType.True` to `PointShapeType.Y`, to match the OpenAPI definition
+  * Add `Composite` transformation to `PostBreakpointTransformations`
+  * Fix `PostBreakpointTransformations.PolicyInputImage`
+
 ## 2.12.0 (Apr. 25, 2022)
 
 #### FEATURES/ENHANCEMENTS:
+
 * APPSEC
-  * Add WAPBypassNetworkLists interface, to be used in preference to deprecated BypassNetworkLists interface.
+  * Add WAPBypassNetworkLists interface, to be used in preference to deprecated BypassNetworkLists interface
 
 * Support for account switch keys from environment ([#149](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/pull/149))
 
 ## 2.11.0 (March 24, 2022)
 
 #### FEATURES/ENHANCEMENTS:
+
 * [IMPORTANT] Added Image and Video Manager API support
   * Policy Set - create, read, update, delete
   * Policy - create, read, update, delete, rollback to previous version, view policy history 
@@ -24,6 +45,7 @@
 ## 2.10.0 (Feb. 28, 2022)
 
 #### FEATURES/ENHANCEMENTS:
+
 * [IMPORTANT] Added EdgeWorkers and EdgeKV API support
   * EDGEWORKERS
     * Ids - create, read, update, delete, clone
