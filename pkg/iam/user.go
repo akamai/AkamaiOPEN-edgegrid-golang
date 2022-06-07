@@ -59,10 +59,10 @@ type (
 
 	// CreateUserRequest contains the request parameters for the create user endpoint
 	CreateUserRequest struct {
-		User          UserBasicInfo
-		Notifications UserNotifications
-		AuthGrants    []AuthGrant
-		SendEmail     bool
+		UserBasicInfo
+		AuthGrants    []AuthGrantRequest `json:"authGrants,omitempty"`
+		Notifications UserNotifications  `json:"notifications,omitempty"`
+		SendEmail     bool               `json:"-"`
 	}
 
 	// ListUsersRequest contains the request parameters for the list users endpoint
@@ -95,7 +95,7 @@ type (
 	// UpdateUserAuthGrantsRequest contains the request parameters of the update user auth grants endpoint
 	UpdateUserAuthGrantsRequest struct {
 		IdentityID string
-		AuthGrants []AuthGrant
+		AuthGrants []AuthGrantRequest
 	}
 
 	// RemoveUserRequest contains the request parameters of the remove user endpoint
@@ -177,6 +177,14 @@ type (
 		Subgroups       []AuthGrant `json:"subGroups,omitempty"`
 	}
 
+	// AuthGrantRequest is user’s role assignments, per group for the create/update operation
+	AuthGrantRequest struct {
+		GroupID   int                `json:"groupId"`
+		IsBlocked bool               `json:"isBlocked"`
+		RoleID    *int               `json:"roleId,omitempty"`
+		Subgroups []AuthGrantRequest `json:"subGroups,omitempty"`
+	}
+
 	// UserNotifications types of notification emails the user receives
 	UserNotifications struct {
 		EnableEmail bool                    `json:"enableEmailNotifications"`
@@ -247,11 +255,11 @@ func (r AuthGrant) Validate() error {
 // Validate validates CreateUserRequest
 func (r CreateUserRequest) Validate() error {
 	return validation.Errors{
-		"country":       validation.Validate(r.User.Country, validation.Required),
-		"email":         validation.Validate(r.User.Email, validation.Required, is.EmailFormat),
-		"firstName":     validation.Validate(r.User.FirstName, validation.Required),
-		"lastName":      validation.Validate(r.User.LastName, validation.Required),
-		"phone":         validation.Validate(r.User.Phone, validation.Required),
+		"country":       validation.Validate(r.Country, validation.Required),
+		"email":         validation.Validate(r.Email, validation.Required, is.EmailFormat),
+		"firstName":     validation.Validate(r.FirstName, validation.Required),
+		"lastName":      validation.Validate(r.LastName, validation.Required),
+		"phone":         validation.Validate(r.Phone, validation.Required),
 		"authGrants":    validation.Validate(r.AuthGrants, validation.Required),
 		"notifications": validation.Validate(r.Notifications, validation.Required),
 	}.Filter()
@@ -330,14 +338,8 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateUser, err)
 	}
 
-	user := User{
-		UserBasicInfo: params.User,
-		AuthGrants:    params.AuthGrants,
-		Notifications: params.Notifications,
-	}
-
-	var rval User
-	resp, err := i.Exec(req, &rval, user)
+	var result User
+	resp, err := i.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateUser, err)
 	}
@@ -346,7 +348,7 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 		return nil, fmt.Errorf("%s: %w", ErrCreateUser, i.Error(resp))
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error) {

@@ -25,7 +25,7 @@ func TestIAM_CreateUser(t *testing.T) {
 	}{
 		"201 OK": {
 			params: CreateUserRequest{
-				User: UserBasicInfo{
+				UserBasicInfo: UserBasicInfo{
 					FirstName: "John",
 					LastName:  "Doe",
 					Email:     "john.doe@mycompany.com",
@@ -33,10 +33,10 @@ func TestIAM_CreateUser(t *testing.T) {
 					Country:   "USA",
 					State:     "CA",
 				},
-				AuthGrants:    []AuthGrant{{GroupID: 1, RoleID: tools.IntPtr(1)}},
+				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: tools.IntPtr(1)}},
 				Notifications: UserNotifications{},
 			},
-			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","uiIdentityId":"","isLocked":false,"tfaConfigured":false,"emailUpdatePending":false,"authGrants":[{"groupId":1,"groupName":"","isBlocked":false,"roleDescription":"","roleId":1,"roleName":""}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null}}}`,
+			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","authGrants":[{"groupId":1,"isBlocked":false,"roleId":1}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null}}}`,
 			responseStatus: http.StatusCreated,
 			responseBody: `
 {
@@ -63,7 +63,7 @@ func TestIAM_CreateUser(t *testing.T) {
 		},
 		"500 internal server error": {
 			params: CreateUserRequest{
-				User: UserBasicInfo{
+				UserBasicInfo: UserBasicInfo{
 					FirstName: "John",
 					LastName:  "Doe",
 					Email:     "john.doe@mycompany.com",
@@ -71,7 +71,7 @@ func TestIAM_CreateUser(t *testing.T) {
 					Country:   "USA",
 					State:     "CA",
 				},
-				AuthGrants:    []AuthGrant{{GroupID: 1, RoleID: tools.IntPtr(1)}},
+				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: tools.IntPtr(1)}},
 				Notifications: UserNotifications{},
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -651,11 +651,11 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 		"200 OK": {
 			params: UpdateUserAuthGrantsRequest{
 				IdentityID: "1-ABCDE",
-				AuthGrants: []AuthGrant{
+				AuthGrants: []AuthGrantRequest{
 					{
 						GroupID: 12345,
 						RoleID:  tools.IntPtr(16),
-						Subgroups: []AuthGrant{
+						Subgroups: []AuthGrantRequest{
 							{
 								GroupID: 54321,
 							},
@@ -692,11 +692,11 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 		"500 internal server error": {
 			params: UpdateUserAuthGrantsRequest{
 				IdentityID: "1-ABCDE",
-				AuthGrants: []AuthGrant{
+				AuthGrants: []AuthGrantRequest{
 					{
 						GroupID: 12345,
 						RoleID:  tools.IntPtr(16),
-						Subgroups: []AuthGrant{
+						Subgroups: []AuthGrantRequest{
 							{
 								GroupID: 54321,
 							},
