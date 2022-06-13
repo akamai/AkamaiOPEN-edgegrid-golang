@@ -39,6 +39,7 @@ type (
 		Eval
 		EvalGroup
 		EvalHost
+		EvalPenaltyBox
 		EvalProtectHost
 		EvalRule
 		ExportConfiguration

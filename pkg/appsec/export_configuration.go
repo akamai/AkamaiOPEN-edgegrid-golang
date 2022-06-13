@@ -222,11 +222,12 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox       *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
-			SlowPost         *SlowPostexp                       `json:"slowPost,omitempty"`
-			LoggingOverrides *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
-			PragmaHeader     *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
+			PenaltyBox           *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
+			EvaluationPenaltyBox *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
+			SlowPost             *SlowPostexp                       `json:"slowPost,omitempty"`
+			LoggingOverrides     *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
+			PragmaHeader         *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
+			EvasivePathMatch     *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -421,11 +422,12 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox       *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
-			SlowPost         *SlowPostexp                       `json:"slowPost,omitempty"`
-			LoggingOverrides *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
-			PragmaHeader     *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
+			PenaltyBox           *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
+			EvaluationPenaltyBox *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
+			SlowPost             *SlowPostexp                       `json:"slowPost,omitempty"`
+			LoggingOverrides     *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
+			PragmaHeader         *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
+			EvasivePathMatch     *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`

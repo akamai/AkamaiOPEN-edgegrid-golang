@@ -13,89 +13,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAppSec_ListPenaltyBoxes(t *testing.T) {
-
-	result := GetPenaltyBoxesResponse{}
-
-	respData := compactJSON(loadFixtureBytes("testdata/TestPenaltyBoxes/PenaltyBox.json"))
-	json.Unmarshal([]byte(respData), &result)
-
-	tests := map[string]struct {
-		params           GetPenaltyBoxesRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *GetPenaltyBoxesResponse
-		withError        error
-		headers          http.Header
-	}{
-		"200 OK": {
-			params: GetPenaltyBoxesRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
-			},
-			headers: http.Header{
-				"Content-Type": []string{"application/json"},
-			},
-			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/penalty-box",
-			expectedResponse: &result,
-		},
-		"500 internal server error": {
-			params: GetPenaltyBoxesRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
-			},
-			headers:        http.Header{},
-			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching propertys",
-    "status": 500
-}`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/penalty-box",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching propertys",
-				StatusCode: http.StatusInternalServerError,
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			client := mockAPIClient(t, mockServer)
-			result, err := client.GetPenaltyBoxes(
-				session.ContextWithOptions(
-					context.Background(),
-					session.WithContextHeaders(test.headers),
-				),
-				test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
-		})
-	}
-}
-
-// Test PenaltyBox
-func TestAppSec_GetPenaltyBox(t *testing.T) {
+// Test get EvalPenaltyBox
+func TestAppSec_GetEvalPenaltyBox(t *testing.T) {
 
 	result := GetPenaltyBoxResponse{}
 
@@ -118,7 +37,7 @@ func TestAppSec_GetPenaltyBox(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/penalty-box",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-penalty-box",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
@@ -134,7 +53,7 @@ func TestAppSec_GetPenaltyBox(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error fetching match target"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/penalty-box",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-penalty-box",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -154,7 +73,7 @@ func TestAppSec_GetPenaltyBox(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetPenaltyBox(context.Background(), test.params)
+			result, err := client.GetEvalPenaltyBox(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -165,8 +84,8 @@ func TestAppSec_GetPenaltyBox(t *testing.T) {
 	}
 }
 
-// Test Update PenaltyBox.
-func TestAppSec_UpdatePenaltyBox(t *testing.T) {
+// Test Update EvalPenaltyBox.
+func TestAppSec_UpdateEvalPenaltyBox(t *testing.T) {
 	result := UpdatePenaltyBoxResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPenaltyBoxes/PenaltyBox.json"))
@@ -200,7 +119,7 @@ func TestAppSec_UpdatePenaltyBox(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/penalty-box",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-penalty-box",
 		},
 		"500 internal server error": {
 			params: UpdatePenaltyBoxRequest{
@@ -217,7 +136,7 @@ func TestAppSec_UpdatePenaltyBox(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error creating zone"
 }`),
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/penalty-box",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-penalty-box",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -238,7 +157,7 @@ func TestAppSec_UpdatePenaltyBox(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdatePenaltyBox(
+			result, err := client.UpdateEvalPenaltyBox(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)

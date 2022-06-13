@@ -2,6 +2,10 @@
 
 ## 2.14.0 (June NN, 2022)
 
+#### FEATURES/ENHANCEMENTS:
+* APPSEC
+  * Added penalty box support for security policy in evaluation mode 
+
 #### BUG FIXES:
 * APPSEC
   * Fixed incorrect error message on activation failure
