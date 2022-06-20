@@ -28,8 +28,6 @@ func (p *appsec) GetEvalPenaltyBox(ctx context.Context, params GetPenaltyBoxRequ
 	logger := p.Log(ctx)
 	logger.Debug("GetEvalPenaltyBox")
 
-	var rval GetPenaltyBoxResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/eval-penalty-box",
 		params.ConfigID,
@@ -41,7 +39,8 @@ func (p *appsec) GetEvalPenaltyBox(ctx context.Context, params GetPenaltyBoxRequ
 		return nil, fmt.Errorf("failed to create GetEvalPenaltyBox request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	var result GetPenaltyBoxResponse
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetEvalPenaltyBox request failed: %w", err)
 	}
@@ -50,7 +49,7 @@ func (p *appsec) GetEvalPenaltyBox(ctx context.Context, params GetPenaltyBoxRequ
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
@@ -72,7 +71,7 @@ func (p *appsec) UpdateEvalPenaltyBox(ctx context.Context, params UpdatePenaltyB
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create UpdateEvalPenaltyBox: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateEvalPenaltyBox request: %w", err)
 	}
 
 	var rval UpdatePenaltyBoxResponse

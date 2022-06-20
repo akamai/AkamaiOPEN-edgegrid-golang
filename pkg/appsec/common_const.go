@@ -3,7 +3,8 @@ package appsec
 type (
 	// RulesetType is a ruleset type value.
 	RulesetType string
-	ActionType  string
+	// ActionType is an action type value.
+	ActionType string
 )
 
 const (

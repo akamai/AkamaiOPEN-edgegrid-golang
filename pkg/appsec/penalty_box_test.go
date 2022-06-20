@@ -188,11 +188,11 @@ func TestAppSec_UpdatePenaltyBox(t *testing.T) {
 	}{
 		"200 Success": {
 			params: UpdatePenaltyBoxRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
+				ConfigID:             43253,
+				Version:              15,
+				PolicyID:             "AAAA_81230",
 				PenaltyBoxProtection: true,
-				Action: string(ActionTypeDeny),
+				Action:               string(ActionTypeDeny),
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -204,11 +204,11 @@ func TestAppSec_UpdatePenaltyBox(t *testing.T) {
 		},
 		"500 internal server error": {
 			params: UpdatePenaltyBoxRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
+				ConfigID:             43253,
+				Version:              15,
+				PolicyID:             "AAAA_81230",
 				PenaltyBoxProtection: true,
-				Action: string(ActionTypeDeny),
+				Action:               string(ActionTypeDeny),
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
