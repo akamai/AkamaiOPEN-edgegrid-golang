@@ -95,7 +95,7 @@ type (
 			Description   string   `json:"description,omitempty"`
 			Version       int      `json:"-"`
 			RuleActivated bool     `json:"-"`
-			Structured    bool     `json:"structured,omitempty"`
+			Structured    bool     `json:"-"`
 			Tag           []string `json:"tag"`
 			Conditions    []struct {
 				Name               *json.RawMessage `json:"name,omitempty"`
@@ -103,7 +103,6 @@ type (
 				NameWildcard       *json.RawMessage `json:"nameWildcard,omitempty"`
 				PositiveMatch      bool             `json:"positiveMatch"`
 				Type               string           `json:"type"`
-				UseHeaders         *json.RawMessage `json:"useHeaders,omitempty"`
 				Value              *json.RawMessage `json:"value,omitempty"`
 				ValueCase          *json.RawMessage `json:"valueCase,omitempty"`
 				ValueExactMatch    *json.RawMessage `json:"valueExactMatch,omitempty"`
@@ -112,10 +111,10 @@ type (
 				ValueRecursive     *json.RawMessage `json:"valueRecursive,omitempty"`
 				ValueWildcard      *json.RawMessage `json:"valueWildcard,omitempty"`
 			} `json:"conditions"`
-			EffectiveTimePeriod *json.RawMessage `json:"effectiveTimePeriod,omitempty"`
-			SamplingRate        int              `json:"samplingRate,omitempty"`
-			LoggingOptions      *json.RawMessage `json:"loggingOptions,omitempty"`
-			Operation           string           `json:"operation,omitempty"`
+			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
+			SamplingRate        int                        `json:"samplingRate,omitempty"`
+			LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
+			Operation           string                     `json:"operation,omitempty"`
 		} `json:"customRules"`
 		Rulesets []struct {
 			ID               int            `json:"id"`

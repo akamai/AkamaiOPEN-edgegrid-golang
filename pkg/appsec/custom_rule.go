@@ -48,13 +48,13 @@ type (
 	// GetCustomRulesResponse is returned from a call to GetCustomRules.
 	GetCustomRulesResponse struct {
 		CustomRules []struct {
-			ID                  int                       `json:"id"`
-			Link                string                    `json:"link"`
-			Name                string                    `json:"name"`
-			Status              string                    `json:"status"`
-			Version             int                       `json:"version"`
-			EffectiveTimePeriod CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
-			SamplingRate        string                    `json:"samplingRate,omitempty"`
+			ID                  int                        `json:"id"`
+			Link                string                     `json:"link"`
+			Name                string                     `json:"name"`
+			Status              string                     `json:"status"`
+			Version             int                        `json:"version"`
+			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
+			SamplingRate        string                     `json:"samplingRate,omitempty"`
 		} `json:"customRules"`
 	}
 
@@ -82,7 +82,6 @@ type (
 			NameWildcard       *json.RawMessage `json:"nameWildcard,omitempty"`
 			PositiveMatch      bool             `json:"positiveMatch"`
 			Type               string           `json:"type"`
-			UseHeaders         *json.RawMessage `json:"useHeaders,omitempty"`
 			Value              *json.RawMessage `json:"value,omitempty"`
 			ValueCase          *json.RawMessage `json:"valueCase,omitempty"`
 			ValueExactMatch    *json.RawMessage `json:"valueExactMatch,omitempty"`
@@ -91,10 +90,10 @@ type (
 			ValueRecursive     *json.RawMessage `json:"valueRecursive,omitempty"`
 			ValueWildcard      *json.RawMessage `json:"valueWildcard,omitempty"`
 		} `json:"conditions"`
-		EffectiveTimePeriod CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
-		SamplingRate        int                       `json:"samplingRate,omitempty"`
-		LoggingOptions      *json.RawMessage          `json:"loggingOptions,omitempty"`
-		Operation           string                    `json:"operation,omitempty"`
+		EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
+		SamplingRate        int                        `json:"samplingRate,omitempty"`
+		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
+		Operation           string                     `json:"operation,omitempty"`
 	}
 
 	// CustomRuleEffectivePeriod defines the period during which a custom rule is active as well as its current status.
@@ -118,7 +117,7 @@ type (
 		Description   string   `json:"description,omitempty"`
 		Version       int      `json:"-"`
 		RuleActivated bool     `json:"-"`
-		Structured    bool     `json:"structured,omitempty"`
+		Structured    bool     `json:"-"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
 			Name               *json.RawMessage `json:"name,omitempty"`
@@ -126,7 +125,6 @@ type (
 			NameWildcard       *json.RawMessage `json:"nameWildcard,omitempty"`
 			PositiveMatch      bool             `json:"positiveMatch"`
 			Type               string           `json:"type"`
-			UseHeaders         *json.RawMessage `json:"useHeaders,omitempty"`
 			Value              *json.RawMessage `json:"value,omitempty"`
 			ValueCase          *json.RawMessage `json:"valueCase,omitempty"`
 			ValueExactMatch    *json.RawMessage `json:"valueExactMatch,omitempty"`
@@ -135,10 +133,10 @@ type (
 			ValueRecursive     *json.RawMessage `json:"valueRecursive,omitempty"`
 			ValueWildcard      *json.RawMessage `json:"valueWildcard,omitempty"`
 		} `json:"conditions"`
-		EffectiveTimePeriod CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
-		SamplingRate        int                       `json:"samplingRate,omitempty"`
-		LoggingOptions      *json.RawMessage          `json:"loggingOptions,omitempty"`
-		Operation           string                    `json:"operation,omitempty"`
+		EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
+		SamplingRate        int                        `json:"samplingRate,omitempty"`
+		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
+		Operation           string                     `json:"operation,omitempty"`
 	}
 
 	// UpdateCustomRuleRequest is used to modify an existing custom rule.
