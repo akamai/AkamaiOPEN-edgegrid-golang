@@ -65,6 +65,7 @@ type (
 		ID           int64
 		Actions      bool
 		GrantedRoles bool
+		Users        bool
 	}
 
 	// UpdateRoleRequest describes the request parameters of the update role endpoint.
@@ -229,6 +230,7 @@ func (i *iam) GetRole(ctx context.Context, params GetRoleRequest) (*Role, error)
 	q := uri.Query()
 	q.Add("actions", strconv.FormatBool(params.Actions))
 	q.Add("grantedRoles", strconv.FormatBool(params.GrantedRoles))
+	q.Add("users", strconv.FormatBool(params.Users))
 
 	uri.RawQuery = q.Encode()
 

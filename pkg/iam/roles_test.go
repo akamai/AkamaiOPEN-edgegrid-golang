@@ -142,6 +142,7 @@ func TestIAM_GetRole(t *testing.T) {
 				ID:           123456,
 				Actions:      true,
 				GrantedRoles: true,
+				Users:        true,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -169,9 +170,27 @@ func TestIAM_GetRole(t *testing.T) {
             "grantedRoleName": "WebAP User",
             "grantedRoleDescription": "Web Application Protector User Role"
         }
-    ]
+    ],
+	"users": [
+        {
+            "uiIdentityId": "USER1",
+            "firstName": "John",
+            "lastName": "Smith",
+            "accountId": "ACCOUNT1",
+            "email": "example@akamai.com",
+            "lastLoginDate": "2016-02-17T18:46:42.000Z"
+        },
+        {
+            "uiIdentityId": "USER2",
+            "firstName": "Steve",
+            "lastName": "Smith",
+            "accountId": "ACCOUNT2",
+            "email": "example1@akamai.com",
+            "lastLoginDate": "2016-02-17T18:46:42.000Z"
+        }
+	]
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=true&grantedRoles=true",
+			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=true&grantedRoles=true&users=true",
 			expectedResponse: &Role{
 				RoleID:          123456,
 				RoleName:        "Terraform admin updated",
@@ -197,6 +216,24 @@ func TestIAM_GetRole(t *testing.T) {
 						Description: "Web Application Protector User Role",
 					},
 				},
+				Users: []RoleUser{
+					{
+						UIIdentityID:  "USER1",
+						FirstName:     "John",
+						LastName:      "Smith",
+						AccountID:     "ACCOUNT1",
+						Email:         "example@akamai.com",
+						LastLoginDate: "2016-02-17T18:46:42.000Z",
+					},
+					{
+						UIIdentityID:  "USER2",
+						FirstName:     "Steve",
+						LastName:      "Smith",
+						AccountID:     "ACCOUNT2",
+						Email:         "example1@akamai.com",
+						LastLoginDate: "2016-02-17T18:46:42.000Z",
+					},
+				},
 			},
 		},
 		"200 OK without query params": {
@@ -213,7 +250,7 @@ func TestIAM_GetRole(t *testing.T) {
     "modifiedDate": "2022-04-11T10:59:30.000Z",
     "modifiedBy": "jBond"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false",
+			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
 			expectedResponse: &Role{
 				RoleID:          123456,
 				RoleName:        "Terraform admin updated",
@@ -228,7 +265,7 @@ func TestIAM_GetRole(t *testing.T) {
 		"404 Not found": {
 			params:         GetRoleRequest{ID: 123456},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false",
+			expectedPath:   "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
 			responseBody: `
 {
     "instance": "",
@@ -256,7 +293,7 @@ func TestIAM_GetRole(t *testing.T) {
 	"detail": "Error making request",
 	"status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false",
+			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
