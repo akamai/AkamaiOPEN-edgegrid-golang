@@ -96,10 +96,9 @@ func (v GetPenaltyBoxesRequest) Validate() error {
 // Validate validates an UpdatePenaltyBoxRequest.
 func (v UpdatePenaltyBoxRequest) Validate() error {
 	return validation.Errors{
-		"ConfigID":             validation.Validate(v.ConfigID, validation.Required),
-		"Version":              validation.Validate(v.Version, validation.Required),
-		"PolicyID":             validation.Validate(v.PolicyID, validation.Required),
-		"PenaltyBoxProtection": validation.Validate(v.PenaltyBoxProtection, validation.Required),
+		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
+		"Version":  validation.Validate(v.Version, validation.Required),
+		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
 		"Action": validation.Validate(v.Action, validation.Required, validation.In(string(ActionTypeAlert), string(ActionTypeDeny), string(ActionTypeNone)).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'alert', 'deny' or 'none'", v.Action))),
 	}.Filter()

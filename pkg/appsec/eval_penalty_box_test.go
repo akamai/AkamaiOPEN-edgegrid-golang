@@ -110,7 +110,7 @@ func TestAppSec_UpdateEvalPenaltyBox(t *testing.T) {
 				ConfigID:             43253,
 				Version:              15,
 				PolicyID:             "AAAA_81230",
-				PenaltyBoxProtection: true,
+				PenaltyBoxProtection: false,
 				Action:               string(ActionTypeDeny),
 			},
 			headers: http.Header{
