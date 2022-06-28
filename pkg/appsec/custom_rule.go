@@ -48,11 +48,13 @@ type (
 	// GetCustomRulesResponse is returned from a call to GetCustomRules.
 	GetCustomRulesResponse struct {
 		CustomRules []struct {
-			ID      int    `json:"id"`
-			Link    string `json:"link"`
-			Name    string `json:"name"`
-			Status  string `json:"status"`
-			Version int    `json:"version"`
+			ID                  int                        `json:"id"`
+			Link                string                     `json:"link"`
+			Name                string                     `json:"name"`
+			Status              string                     `json:"status"`
+			Version             int                        `json:"version"`
+			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
+			SamplingRate        string                     `json:"samplingRate,omitempty"`
 		} `json:"customRules"`
 	}
 
@@ -63,7 +65,10 @@ type (
 	}
 
 	// GetCustomRuleResponse is returned from a call to GetCustomRule.
-	GetCustomRuleResponse struct {
+	GetCustomRuleResponse CustomRuleResponse
+
+	// CustomRuleResponse is returned from calls to GetCustomRule, UpdateCustomRule, and DeleteCustomRule.
+	CustomRuleResponse struct {
 		ID            int      `json:"-"`
 		Name          string   `json:"name"`
 		Description   string   `json:"description,omitempty"`
@@ -72,15 +77,30 @@ type (
 		Structured    bool     `json:"-"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string           `json:"type"`
-			PositiveMatch bool             `json:"positiveMatch"`
-			Value         *json.RawMessage `json:"value,omitempty"`
-			ValueWildcard *json.RawMessage `json:"valueWildcard,omitempty"`
-			ValueCase     *json.RawMessage `json:"valueCase,omitempty"`
-			NameWildcard  *json.RawMessage `json:"nameWildcard,omitempty"`
-			Name          *json.RawMessage `json:"name,omitempty"`
-			NameCase      *json.RawMessage `json:"nameCase,omitempty"`
+			Name               *json.RawMessage `json:"name,omitempty"`
+			NameCase           *json.RawMessage `json:"nameCase,omitempty"`
+			NameWildcard       *json.RawMessage `json:"nameWildcard,omitempty"`
+			PositiveMatch      bool             `json:"positiveMatch"`
+			Type               string           `json:"type"`
+			Value              *json.RawMessage `json:"value,omitempty"`
+			ValueCase          *json.RawMessage `json:"valueCase,omitempty"`
+			ValueExactMatch    *json.RawMessage `json:"valueExactMatch,omitempty"`
+			ValueIgnoreSegment *json.RawMessage `json:"valueIgnoreSegment,omitempty"`
+			ValueNormalize     *json.RawMessage `json:"valueNormalize,omitempty"`
+			ValueRecursive     *json.RawMessage `json:"valueRecursive,omitempty"`
+			ValueWildcard      *json.RawMessage `json:"valueWildcard,omitempty"`
 		} `json:"conditions"`
+		EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
+		SamplingRate        int                        `json:"samplingRate,omitempty"`
+		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
+		Operation           string                     `json:"operation,omitempty"`
+	}
+
+	// CustomRuleEffectivePeriod defines the period during which a custom rule is active as well as its current status.
+	CustomRuleEffectivePeriod struct {
+		EndDate   string `json:"endDate"`
+		StartDate string `json:"startDate"`
+		Status    string `json:"-"`
 	}
 
 	// CreateCustomRuleRequest is used to create a custom rule.
@@ -96,18 +116,27 @@ type (
 		Name          string   `json:"name"`
 		Description   string   `json:"description,omitempty"`
 		Version       int      `json:"-"`
-		RuleActivated bool     `json:"ruleActivated"`
+		RuleActivated bool     `json:"-"`
+		Structured    bool     `json:"-"`
 		Tag           []string `json:"tag"`
 		Conditions    []struct {
-			Type          string                    `json:"type"`
-			PositiveMatch bool                      `json:"positiveMatch"`
-			Value         CustomRuleConditionsValue `json:"value,omitempty"`
-			ValueWildcard *json.RawMessage          `json:"valueWildcard,omitempty"`
-			ValueCase     *json.RawMessage          `json:"valueCase,omitempty"`
-			NameWildcard  *json.RawMessage          `json:"nameWildcard,omitempty"`
-			Name          CustomRuleConditionsName  `json:"name,omitempty"`
-			NameCase      *json.RawMessage          `json:"nameCase,omitempty"`
+			Name               *json.RawMessage `json:"name,omitempty"`
+			NameCase           *json.RawMessage `json:"nameCase,omitempty"`
+			NameWildcard       *json.RawMessage `json:"nameWildcard,omitempty"`
+			PositiveMatch      bool             `json:"positiveMatch"`
+			Type               string           `json:"type"`
+			Value              *json.RawMessage `json:"value,omitempty"`
+			ValueCase          *json.RawMessage `json:"valueCase,omitempty"`
+			ValueExactMatch    *json.RawMessage `json:"valueExactMatch,omitempty"`
+			ValueIgnoreSegment *json.RawMessage `json:"valueIgnoreSegment,omitempty"`
+			ValueNormalize     *json.RawMessage `json:"valueNormalize,omitempty"`
+			ValueRecursive     *json.RawMessage `json:"valueRecursive,omitempty"`
+			ValueWildcard      *json.RawMessage `json:"valueWildcard,omitempty"`
 		} `json:"conditions"`
+		EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
+		SamplingRate        int                        `json:"samplingRate,omitempty"`
+		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
+		Operation           string                     `json:"operation,omitempty"`
 	}
 
 	// UpdateCustomRuleRequest is used to modify an existing custom rule.
@@ -119,24 +148,7 @@ type (
 	}
 
 	// UpdateCustomRuleResponse is returned from a call to UpdateCustomRule.
-	UpdateCustomRuleResponse struct {
-		ID            int      `json:"id,omitempty"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description,omitempty"`
-		Version       int      `json:"-"`
-		RuleActivated bool     `json:"ruleActivated"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Type          string           `json:"type"`
-			PositiveMatch bool             `json:"positiveMatch"`
-			Value         *json.RawMessage `json:"value,omitempty"`
-			ValueWildcard *json.RawMessage `json:"valueWildcard,omitempty"`
-			ValueCase     *json.RawMessage `json:"valueCase,omitempty"`
-			NameWildcard  *json.RawMessage `json:"nameWildcard,omitempty"`
-			Name          *json.RawMessage `json:"name,omitempty"`
-			NameCase      *json.RawMessage `json:"nameCase,omitempty"`
-		} `json:"conditions"`
-	}
+	UpdateCustomRuleResponse GetCustomRuleResponse
 
 	// RemoveCustomRuleRequest is used to remove a custom rule.
 	RemoveCustomRuleRequest struct {
@@ -145,24 +157,7 @@ type (
 	}
 
 	// RemoveCustomRuleResponse is returned from a call to RemoveCustomRule.
-	RemoveCustomRuleResponse struct {
-		ID            int      `json:"id,omitempty"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description,omitempty"`
-		Version       int      `json:"-"`
-		RuleActivated bool     `json:"ruleActivated"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Type          string                    `json:"type"`
-			PositiveMatch bool                      `json:"positiveMatch"`
-			Value         CustomRuleConditionsValue `json:"value,omitempty"`
-			ValueWildcard *json.RawMessage          `json:"valueWildcard,omitempty"`
-			ValueCase     *json.RawMessage          `json:"valueCase,omitempty"`
-			NameWildcard  *json.RawMessage          `json:"nameWildcard,omitempty"`
-			Name          CustomRuleConditionsName  `json:"name,omitempty"`
-			NameCase      *json.RawMessage          `json:"nameCase,omitempty"`
-		} `json:"conditions"`
-	}
+	RemoveCustomRuleResponse UpdateCustomRuleResponse
 )
 
 // UnmarshalJSON reads a CustomRuleConditionsValue from its data argument.

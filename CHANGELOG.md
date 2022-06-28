@@ -1,5 +1,25 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.14.0 (June 28, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+* APPSEC
+  * Added penalty box support for security policy in evaluation mode 
+
+* HAPI
+  * EdgeHostname - update
+
+* IAM
+  * Blocked properties - read, update
+  * Group - create, read, update, delete
+  * Role - create, read, update, delete
+  * User - lock, unlock, TFA, set password, reset password
+
+#### BUG FIXES:
+* APPSEC
+  * Fixed incorrect error message on activation failure
+  * The `EffectiveTimePeriod`, `SamplingRate`, `LoggingOptions`, and `Operation` fields of the various `CustomRule` response structs are now marshalled correctly
+
 ## 2.13.0 (May 31, 2022)
 
 #### FEATURES/ENHANCEMENTS:

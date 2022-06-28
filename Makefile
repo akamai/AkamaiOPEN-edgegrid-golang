@@ -68,7 +68,7 @@ $(TEST_TARGETS): ; $(info $(M) Running tests with coverage...) @ ## Run coverage
 		-coverprofile="$(COVERAGE_PROFILE)" ./... | tee test/tests.output
 
 .PHONY: create-junit-report
-create-junit-report: | $(GOJUNITREPORT) ; $(info $(M) Creating juint xml report) @
+create-junit-report: | $(GOJUNITREPORT) ; $(info $(M) Creating junit xml report) @
 	$Q cat $(CURDIR)/test/tests.output | $(GOJUNITREPORT) > $(CURDIR)/test/tests.xml
 	$Q sed -i -e 's/skip=/skipped=/g' $(CURDIR)/test/tests.xml
 

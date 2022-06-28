@@ -9,7 +9,7 @@ import (
 )
 
 type (
-	// Error is a iam error interface
+	// Error is an IAM error interface
 	Error struct {
 		Type          string          `json:"type"`
 		Title         string          `json:"title"`
@@ -20,6 +20,7 @@ type (
 		StatusCode    int             `json:"statusCode,omitempty"`
 		Errors        json.RawMessage `json:"errors,omitempty"`
 		Warnings      json.RawMessage `json:"warnings,omitempty"`
+		HTTPStatus    int             `json:"httpStatus,omitempty"`
 	}
 )
 
@@ -29,23 +30,23 @@ var (
 )
 
 // Error parses an error from the response
-func (p *iam) Error(r *http.Response) error {
+func (i *iam) Error(r *http.Response) error {
 	var e Error
 
 	var body []byte
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		p.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
+		i.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.StatusCode = r.StatusCode
-		e.Title = fmt.Sprintf("Failed to read error body")
+		e.Title = "Failed to read error body"
 		e.Detail = err.Error()
 		return &e
 	}
 
 	if err := json.Unmarshal(body, &e); err != nil {
-		p.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		e.Title = fmt.Sprintf("Failed to unmarshal error body")
+		i.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
+		e.Title = "Failed to unmarshal error body"
 		e.Detail = err.Error()
 	}
 

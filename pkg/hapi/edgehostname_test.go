@@ -282,3 +282,154 @@ func TestGetEdgeHostname(t *testing.T) {
 		})
 	}
 }
+
+func TestPatchEdgeHostname(t *testing.T) {
+	tests := map[string]struct {
+		request          UpdateEdgeHostnameRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *UpdateEdgeHostnameResponse
+		withError        error
+	}{
+		"202 Accepted": {
+			request: UpdateEdgeHostnameRequest{
+				DNSZone:           "edgesuite.net",
+				RecordName:        "mgw-test-001",
+				StatusUpdateEmail: []string{"some@example.com"},
+				Comments:          "some comment",
+				Body: []UpdateEdgeHostnameRequestBody{
+					{
+						Op:    "replace",
+						Path:  "/ttl",
+						Value: "10000",
+					},
+					{
+						Op:    "replace",
+						Path:  "/ipVersionBehavior",
+						Value: "IPV4",
+					},
+				},
+			},
+			responseStatus: http.StatusAccepted,
+			responseBody: `
+{
+    "action": "EDIT",
+    "changeId": 66025603,
+    "edgeHostnames": [
+        {
+            "chinaCdn": {
+                "isChinaCdn": false
+            },
+            "dnsZone": "edgesuite.net",
+            "edgeHostnameId": 4558392,
+			"ipVersionBehavior": "IPV4",
+            "recordName": "mgw-test-001",
+            "securityType": "STANDARD-TLS",
+			"ttl": 10000,
+            "useDefaultMap": false,
+            "useDefaultTtl": false
+        }
+    ],
+    "status": "PENDING",
+    "statusMessage": "File uploaded and awaiting validation",
+    "statusUpdateDate": "2021-09-23T15:07:10.000+00:00",
+    "submitDate": "2021-09-23T15:07:10.000+00:00",
+    "submitter": "ftzgvvigljhoq5ib",
+    "submitterEmail": "ftzgvvigljhoq5ib@nomail-akamai.com"
+}`,
+			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-001?comments=some+comment&statusUpdateEmail=some%40example.com",
+			expectedResponse: &UpdateEdgeHostnameResponse{
+				Action:   "EDIT",
+				ChangeID: 66025603,
+				EdgeHostnames: []EdgeHostname{{
+					ChinaCDN: ChinaCDN{
+						IsChinaCDN: false,
+					},
+					DNSZone:           "edgesuite.net",
+					EdgeHostnameID:    4558392,
+					RecordName:        "mgw-test-001",
+					SecurityType:      "STANDARD-TLS",
+					UseDefaultMap:     false,
+					UseDefaultTTL:     false,
+					TTL:               10000,
+					IPVersionBehavior: "IPV4",
+				},
+				},
+				Status:           "PENDING",
+				StatusMessage:    "File uploaded and awaiting validation",
+				StatusUpdateDate: "2021-09-23T15:07:10.000+00:00",
+				SubmitDate:       "2021-09-23T15:07:10.000+00:00",
+				Submitter:        "ftzgvvigljhoq5ib",
+				SubmitterEmail:   "ftzgvvigljhoq5ib@nomail-akamai.com",
+			},
+		},
+		"400 Incorrect body": {
+			request: UpdateEdgeHostnameRequest{
+				DNSZone:           "edgesuite.net",
+				RecordName:        "mgw-test-001",
+				StatusUpdateEmail: []string{"some@example.com"},
+				Comments:          "some comment",
+				Body: []UpdateEdgeHostnameRequestBody{
+					{
+						Path:  "/incorrect",
+						Value: "some Value",
+					},
+				},
+			},
+			responseStatus: http.StatusBadRequest,
+			responseBody: `
+{
+    "type": "/hapi/problems/invalid-patch-request",
+    "title": "Invalid Patch Request",
+    "status": 400,
+    "detail": "Invalid 'patch' request: patch replacement is only supported for 'TTL',and 'IpVersionBehavior'",
+    "instance": "/hapi/error-instances/02702ac2-38a8-42a8-a482-07e1e4a93a44",
+    "requestInstance": "http://cloud-qa-resource-impl.luna-dev.akamaiapis.net/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-001?comments=some+comment&statusUpdateEmail=some%40example.com#0e423b67",
+    "method": "PATCH",
+    "requestTime": "2022-05-23T13:50:06.221019Z",
+    "errors": []
+}`,
+			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-001?comments=some+comment&statusUpdateEmail=some%40example.com",
+			withError:    ErrUpdateEdgeHostname,
+		},
+		"500 internal server error": {
+			request: UpdateEdgeHostnameRequest{
+				DNSZone:           "edgesuite.net",
+				RecordName:        "mgw-test-002",
+				StatusUpdateEmail: []string{"some@example.com"},
+				Comments:          "some comment",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+	"title": "Internal Server Error",
+	"detail": "Error deleting activation",
+	"status": 500
+}`,
+			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-002?comments=some+comment&statusUpdateEmail=some%40example.com",
+			withError:    ErrUpdateEdgeHostname,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPatch, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.UpdateEdgeHostname(context.Background(), test.request)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}

@@ -61,17 +61,6 @@ type (
 		PathEvidences     []string `json:"pathEvidences,omitempty"`
 		UserDataEvidences []string `json:"userDataEvidences,omitempty"`
 	}
-
-	// RulesetType is a ruleset type value
-	RulesetType string
-)
-
-const (
-	// RulesetTypeActive for active rulesets
-	RulesetTypeActive RulesetType = "active"
-
-	// RulesetTypeEvaluation for evaluation rulesets
-	RulesetTypeEvaluation RulesetType = "evaluation"
 )
 
 // Validate validates a GetTuningRecommendationsRequest.

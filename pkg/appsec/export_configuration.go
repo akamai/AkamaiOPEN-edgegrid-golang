@@ -62,6 +62,7 @@ type (
 			CreateDate            time.Time                    `json:"-"`
 			Description           string                       `json:"description,omitempty"`
 			FileExtensions        *RatePolicyFileExtensions    `json:"fileExtensions,omitempty"`
+			Hosts                 *RatePoliciesHosts           `json:"hosts,omitempty"`
 			Hostnames             []string                     `json:"hostnames,omitempty"`
 			ID                    int                          `json:"id"`
 			MatchType             string                       `json:"matchType"`
@@ -78,24 +79,42 @@ type (
 			Used                  bool                         `json:"-"`
 		} `json:"ratePolicies"`
 		ReputationProfiles []struct {
-			Condition        *ConditionReputationProfile `json:"condition,omitempty"`
-			Context          string                      `json:"context,omitempty"`
-			ContextReadable  string                      `json:"-"`
-			Enabled          bool                        `json:"-"`
-			ID               int                         `json:"id"`
-			Name             string                      `json:"name"`
-			SharedIPHandling string                      `json:"sharedIpHandling"`
-			Threshold        int                         `json:"threshold"`
+			Condition       *ConditionReputationProfile `json:"condition,omitempty"`
+			Context         string                      `json:"context,omitempty"`
+			ContextReadable string                      `json:"-"`
+
+			Enabled          bool   `json:"-"`
+			ID               int    `json:"id"`
+			Name             string `json:"name"`
+			SharedIPHandling string `json:"sharedIpHandling"`
+			Threshold        int    `json:"threshold"`
 		} `json:"reputationProfiles"`
 		CustomRules []struct {
-			Conditions    *ConditionsExp `json:"conditions,omitempty"`
-			Description   string         `json:"description,omitempty"`
-			ID            int            `json:"id"`
-			Name          string         `json:"name"`
-			RuleActivated bool           `json:"-"`
-			Structured    bool           `json:"-"`
-			Tag           []string       `json:"tag"`
-			Version       int            `json:"-"`
+			ID            int      `json:"id"`
+			Name          string   `json:"name"`
+			Description   string   `json:"description,omitempty"`
+			Version       int      `json:"-"`
+			RuleActivated bool     `json:"-"`
+			Structured    bool     `json:"-"`
+			Tag           []string `json:"tag"`
+			Conditions    []struct {
+				Name               *json.RawMessage `json:"name,omitempty"`
+				NameCase           *json.RawMessage `json:"nameCase,omitempty"`
+				NameWildcard       *json.RawMessage `json:"nameWildcard,omitempty"`
+				PositiveMatch      bool             `json:"positiveMatch"`
+				Type               string           `json:"type"`
+				Value              *json.RawMessage `json:"value,omitempty"`
+				ValueCase          *json.RawMessage `json:"valueCase,omitempty"`
+				ValueExactMatch    *json.RawMessage `json:"valueExactMatch,omitempty"`
+				ValueIgnoreSegment *json.RawMessage `json:"valueIgnoreSegment,omitempty"`
+				ValueNormalize     *json.RawMessage `json:"valueNormalize,omitempty"`
+				ValueRecursive     *json.RawMessage `json:"valueRecursive,omitempty"`
+				ValueWildcard      *json.RawMessage `json:"valueWildcard,omitempty"`
+			} `json:"conditions"`
+			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
+			SamplingRate        int                        `json:"samplingRate,omitempty"`
+			LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
+			Operation           string                     `json:"operation,omitempty"`
 		} `json:"customRules"`
 		Rulesets []struct {
 			ID               int            `json:"id"`
@@ -202,11 +221,12 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox       *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
-			SlowPost         *SlowPostexp                       `json:"slowPost,omitempty"`
-			LoggingOverrides *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
-			PragmaHeader     *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
+			PenaltyBox           *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
+			EvaluationPenaltyBox *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
+			SlowPost             *SlowPostexp                       `json:"slowPost,omitempty"`
+			LoggingOverrides     *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
+			PragmaHeader         *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
+			EvasivePathMatch     *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -261,6 +281,7 @@ type (
 			CreateDate            time.Time                    `json:"-"`
 			Description           string                       `json:"description,omitempty"`
 			FileExtensions        *RatePolicyFileExtensions    `json:"fileExtensions,omitempty"`
+			Hosts                 *RatePoliciesHosts           `json:"hosts,omitempty"`
 			Hostnames             []string                     `json:"hostnames,omitempty"`
 			ID                    int                          `json:"id"`
 			MatchType             string                       `json:"matchType"`
@@ -400,11 +421,12 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox       *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
-			SlowPost         *SlowPostexp                       `json:"slowPost,omitempty"`
-			LoggingOverrides *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
-			PragmaHeader     *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
+			PenaltyBox           *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
+			EvaluationPenaltyBox *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
+			SlowPost             *SlowPostexp                       `json:"slowPost,omitempty"`
+			LoggingOverrides     *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
+			PragmaHeader         *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
+			EvasivePathMatch     *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`

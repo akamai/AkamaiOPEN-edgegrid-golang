@@ -449,6 +449,13 @@ func TestIAM_ListStates(t *testing.T) {
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
+		"missing country": {
+			params: ListStatesRequest{},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
 	}
 
 	for name, test := range tests {

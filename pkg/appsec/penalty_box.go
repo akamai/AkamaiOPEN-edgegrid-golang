@@ -99,6 +99,8 @@ func (v UpdatePenaltyBoxRequest) Validate() error {
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
 		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
+		"Action": validation.Validate(v.Action, validation.Required, validation.In(string(ActionTypeAlert), string(ActionTypeDeny), string(ActionTypeNone)).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'alert', 'deny' or 'none'", v.Action))),
 	}.Filter()
 }
 
@@ -188,7 +190,7 @@ func (p *appsec) UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRe
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create UpdatePenaltyBox: %w", err)
+		return nil, fmt.Errorf("failed to create UpdatePenaltyBox request: %w", err)
 	}
 
 	var rval UpdatePenaltyBoxResponse
