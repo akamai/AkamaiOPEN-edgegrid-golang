@@ -344,7 +344,7 @@ func TestCreateProperty(t *testing.T) {
 	testProperty.HandoutMode = "normal"
 	testProperty.FailoverDelay = 0
 	testProperty.FailbackDelay = 0
-	testProperty.TrafficTargets = []*TrafficTarget{&TrafficTarget{DatacenterId: 3131, Enabled: true, Servers: []string{"1.2.3.4"}, Weight: 100.0}}
+	testProperty.TrafficTargets = []*TrafficTarget{{DatacenterId: 3131, Enabled: true, Servers: []string{"1.2.3.4"}, Weight: 100.0}}
 
 	statresp, err := testProperty.Create(gtmTestDomain)
 	assert.NoError(t, err)
@@ -380,7 +380,7 @@ func TestUpdateProperty(t *testing.T) {
                         "healthMultiplier" : null,
                         "healthThreshold" : null,
                         "lastModified" : "2019-06-14T19:46:17.818+00:00",
-                        livenessTests" : [  {
+                        "livenessTests" : [  {
                             "name": "liveness-1",
                             "peerCertificateVerification": false,
                             "testInterval": 30,

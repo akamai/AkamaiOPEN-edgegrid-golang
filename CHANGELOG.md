@@ -1,5 +1,10 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 1.2.0 (Jul 04, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+* Added GTM API v1.5 support
+
 ## 1.1.1 (May 11, 2021)
 
 #### BUG FIXES
