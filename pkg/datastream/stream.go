@@ -81,6 +81,9 @@ type (
 		Namespace          string             `json:"namespace"`
 		ContainerName      string             `json:"containerName"`
 		Source             string             `json:"source"`
+		ContentType        string             `json:"contentType"`
+		CustomHeaderName   string             `json:"customHeaderName"`
+		CustomHeaderValue  string             `json:"customHeaderValue"`
 	}
 
 	// StreamConfiguration is used in CreateStream as a request body

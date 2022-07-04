@@ -837,6 +837,8 @@ func TestDs_Connectors(t *testing.T) {
 				URL:                 "testURL",
 				EventCollectorToken: "testEventCollector",
 				CompressLogs:        true,
+				CustomHeaderName:    "custom-header",
+				CustomHeaderValue:   "custom-header-value",
 			},
 			expectedJSON: `
 [{
@@ -844,7 +846,9 @@ func TestDs_Connectors(t *testing.T) {
     "url": "testURL",
     "eventCollectorToken": "testEventCollector",
     "connectorType": "SPLUNK",
-    "compressLogs": true
+    "compressLogs": true,
+	"customHeaderName": "custom-header",
+	"customHeaderValue": "custom-header-value"
 }]
 `,
 		},
@@ -871,31 +875,40 @@ func TestDs_Connectors(t *testing.T) {
 		},
 		"CustomHTTPSConnector": {
 			connector: &CustomHTTPSConnector{
-				AuthenticationType: AuthenticationTypeNone,
+				AuthenticationType: AuthenticationTypeBasic,
 				ConnectorName:      "testConnectorName",
 				URL:                "testURL",
 				UserName:           "testUserName",
 				Password:           "testPassword",
 				CompressLogs:       true,
+				CustomHeaderName:   "custom-header",
+				CustomHeaderValue:  "custom-header-value",
+				ContentType:        "application/json",
 			},
 			expectedJSON: `
 [{
-    "authenticationType": "NONE",
+    "authenticationType": "BASIC",
     "connectorName": "testConnectorName",
     "url": "testURL",
     "userName": "testUserName",
     "password": "testPassword",
     "connectorType": "HTTPS",
-    "compressLogs": true
+    "compressLogs": true,
+	"customHeaderName": "custom-header",
+	"customHeaderValue": "custom-header-value",
+	"contentType": "application/json"
 }]
 `,
 		},
 		"SumoLogicConnector": {
 			connector: &SumoLogicConnector{
-				ConnectorName: "testConnectorName",
-				Endpoint:      "testEndpoint",
-				CollectorCode: "testCollectorCode",
-				CompressLogs:  true,
+				ConnectorName:     "testConnectorName",
+				Endpoint:          "testEndpoint",
+				CollectorCode:     "testCollectorCode",
+				CompressLogs:      true,
+				CustomHeaderName:  "custom-header",
+				CustomHeaderValue: "custom-header-value",
+				ContentType:       "application/json",
 			},
 			expectedJSON: `
 [{
@@ -903,7 +916,10 @@ func TestDs_Connectors(t *testing.T) {
     "connectorName": "testConnectorName",
     "endpoint": "testEndpoint",
     "collectorCode": "testCollectorCode",
-    "compressLogs": true
+    "compressLogs": true,
+	"customHeaderName": "custom-header",
+	"customHeaderValue": "custom-header-value",
+	"contentType": "application/json"
 }]
 `,
 		},

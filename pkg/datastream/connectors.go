@@ -1,6 +1,10 @@
 package datastream
 
-import validation "github.com/go-ozzo/ozzo-validation/v4"
+import (
+	"regexp"
+
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+)
 
 type (
 	// S3Connector provides details about the Amazon S3 connector in a stream
@@ -47,6 +51,8 @@ type (
 		ConnectorName       string        `json:"connectorName"`
 		EventCollectorToken string        `json:"eventCollectorToken"`
 		URL                 string        `json:"url"`
+		CustomHeaderName    string        `json:"customHeaderName,omitempty"`
+		CustomHeaderValue   string        `json:"customHeaderValue,omitempty"`
 	}
 
 	// GCSConnector provides detailed information about the Google Cloud Storage connector
@@ -71,16 +77,22 @@ type (
 		Password           string             `json:"password,omitempty"`
 		URL                string             `json:"url"`
 		UserName           string             `json:"userName,omitempty"`
+		ContentType        string             `json:"contentType,omitempty"`
+		CustomHeaderName   string             `json:"customHeaderName,omitempty"`
+		CustomHeaderValue  string             `json:"customHeaderValue,omitempty"`
 	}
 
 	// SumoLogicConnector provides detailed information about the Sumo Logic connector
 	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#sumologic
 	SumoLogicConnector struct {
-		ConnectorType ConnectorType `json:"connectorType"`
-		CollectorCode string        `json:"collectorCode"`
-		CompressLogs  bool          `json:"compressLogs"`
-		ConnectorName string        `json:"connectorName"`
-		Endpoint      string        `json:"endpoint"`
+		ConnectorType     ConnectorType `json:"connectorType"`
+		CollectorCode     string        `json:"collectorCode"`
+		CompressLogs      bool          `json:"compressLogs"`
+		ConnectorName     string        `json:"connectorName"`
+		Endpoint          string        `json:"endpoint"`
+		ContentType       string        `json:"contentType,omitempty"`
+		CustomHeaderName  string        `json:"customHeaderName,omitempty"`
+		CustomHeaderValue string        `json:"customHeaderValue,omitempty"`
 	}
 
 	// OracleCloudStorageConnector provides details about the Oracle Cloud Storage connector
@@ -126,6 +138,8 @@ const (
 	// AuthenticationTypeBasic const
 	AuthenticationTypeBasic AuthenticationType = "BASIC"
 )
+
+var customHeaderNameRegexp = regexp.MustCompile("^[A-Za-z0-9_-]+$")
 
 // SetConnectorType for S3Connector
 func (c *S3Connector) SetConnectorType() {
@@ -189,6 +203,8 @@ func (c *SplunkConnector) Validate() error {
 		"ConnectorName":       validation.Validate(c.ConnectorName, validation.Required),
 		"EventCollectorToken": validation.Validate(c.EventCollectorToken, validation.Required),
 		"URL":                 validation.Validate(c.URL, validation.Required),
+		"CustomHeaderName":    validation.Validate(c.CustomHeaderName, validation.Required.When(c.CustomHeaderValue != ""), validation.When(c.CustomHeaderName != "", validation.Match(customHeaderNameRegexp))),
+		"CustomHeaderValue":   validation.Validate(c.CustomHeaderValue, validation.Required.When(c.CustomHeaderName != "")),
 	}.Filter()
 }
 
@@ -221,6 +237,10 @@ func (c *CustomHTTPSConnector) Validate() error {
 		"AuthenticationType": validation.Validate(c.AuthenticationType, validation.Required, validation.In(AuthenticationTypeBasic, AuthenticationTypeNone)),
 		"ConnectorName":      validation.Validate(c.ConnectorName, validation.Required),
 		"URL":                validation.Validate(c.URL, validation.Required),
+		"UserName":           validation.Validate(c.UserName, validation.Required.When(c.AuthenticationType == AuthenticationTypeBasic)),
+		"Password":           validation.Validate(c.Password, validation.Required.When(c.AuthenticationType == AuthenticationTypeBasic)),
+		"CustomHeaderName":   validation.Validate(c.CustomHeaderName, validation.Required.When(c.CustomHeaderValue != ""), validation.When(c.CustomHeaderName != "", validation.Match(customHeaderNameRegexp))),
+		"CustomHeaderValue":  validation.Validate(c.CustomHeaderValue, validation.Required.When(c.CustomHeaderName != "")),
 	}.Filter()
 }
 
@@ -232,10 +252,12 @@ func (c *SumoLogicConnector) SetConnectorType() {
 // Validate validates SumoLogicConnector
 func (c *SumoLogicConnector) Validate() error {
 	return validation.Errors{
-		"ConnectorType": validation.Validate(c.ConnectorType, validation.Required, validation.In(ConnectorTypeSumoLogic)),
-		"CollectorCode": validation.Validate(c.CollectorCode, validation.Required),
-		"ConnectorName": validation.Validate(c.ConnectorName, validation.Required),
-		"Endpoint":      validation.Validate(c.Endpoint, validation.Required),
+		"ConnectorType":     validation.Validate(c.ConnectorType, validation.Required, validation.In(ConnectorTypeSumoLogic)),
+		"CollectorCode":     validation.Validate(c.CollectorCode, validation.Required),
+		"ConnectorName":     validation.Validate(c.ConnectorName, validation.Required),
+		"Endpoint":          validation.Validate(c.Endpoint, validation.Required),
+		"CustomHeaderName":  validation.Validate(c.CustomHeaderName, validation.Required.When(c.CustomHeaderValue != ""), validation.When(c.CustomHeaderName != "", validation.Match(customHeaderNameRegexp))),
+		"CustomHeaderValue": validation.Validate(c.CustomHeaderValue, validation.Required.When(c.CustomHeaderName != "")),
 	}.Filter()
 }
 
