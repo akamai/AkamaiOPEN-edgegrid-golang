@@ -217,7 +217,7 @@ func TestIam_ListUsers(t *testing.T) {
 	}{
 		"200 OK": {
 			params: ListUsersRequest{
-				GroupID:    tools.IntPtr(12345),
+				GroupID:    tools.Int64Ptr(12345),
 				AuthGrants: true,
 				Actions:    true,
 			},
@@ -292,7 +292,7 @@ func TestIam_ListUsers(t *testing.T) {
 		},
 		"200 OK, no actions nor grants": {
 			params: ListUsersRequest{
-				GroupID: tools.IntPtr(12345),
+				GroupID: tools.Int64Ptr(12345),
 			},
 			responseStatus: http.StatusOK,
 			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=false&authGrants=false&groupId=12345",
@@ -360,7 +360,7 @@ func TestIam_ListUsers(t *testing.T) {
 		},
 		"500 internal server error": {
 			params: ListUsersRequest{
-				GroupID:    tools.IntPtr(12345),
+				GroupID:    tools.Int64Ptr(12345),
 				AuthGrants: true,
 				Actions:    true,
 			},
