@@ -67,7 +67,7 @@ type (
 
 	// ListUsersRequest contains the request parameters for the list users endpoint
 	ListUsersRequest struct {
-		GroupID    *int
+		GroupID    *int64
 		AuthGrants bool
 		Actions    bool
 	}
@@ -168,7 +168,7 @@ type (
 
 	// AuthGrant is user’s role assignments, per group
 	AuthGrant struct {
-		GroupID         int         `json:"groupId"`
+		GroupID         int64       `json:"groupId"`
 		GroupName       string      `json:"groupName"`
 		IsBlocked       bool        `json:"isBlocked"`
 		RoleDescription string      `json:"roleDescription"`
@@ -179,7 +179,7 @@ type (
 
 	// AuthGrantRequest is user’s role assignments, per group for the create/update operation
 	AuthGrantRequest struct {
-		GroupID   int                `json:"groupId"`
+		GroupID   int64              `json:"groupId"`
 		IsBlocked bool               `json:"isBlocked"`
 		RoleID    *int               `json:"roleId,omitempty"`
 		Subgroups []AuthGrantRequest `json:"subGroups,omitempty"`
