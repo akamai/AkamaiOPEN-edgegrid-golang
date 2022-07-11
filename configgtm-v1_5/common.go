@@ -26,7 +26,7 @@ func appendReqArgs(req *http.Request, queryArgs map[string]string) {
 
 // default schema version
 // TODO: retrieve from environment or elsewhere in Service Init
-var schemaVersion string = "1.4"
+var schemaVersion string = "1.5"
 
 // internal method to set version. passed in as string
 func setVersionHeader(req *http.Request, version string) {
