@@ -17,6 +17,7 @@ func TestListEnrollments(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
+		expectedHeaders  map[string]string
 		expectedResponse *ListEnrollmentsResponse
 		withError        func(*testing.T, error)
 	}{
@@ -266,6 +267,9 @@ func TestListEnrollments(t *testing.T) {
 }
 ]}`,
 			expectedPath: "/cps/v2/enrollments?contractId=Contract-123",
+			expectedHeaders: map[string]string{
+				"Accept": "application/vnd.akamai.cps.enrollments.v9+json",
+			},
 			expectedResponse: &ListEnrollmentsResponse{Enrollments: []Enrollment{
 				{
 					AdminContact: &Contact{
@@ -391,7 +395,6 @@ func TestListEnrollments(t *testing.T) {
 						LastName:  "D4",
 						Phone:     "617-444-3000",
 					},
-					//ThirdParty:     &ThirdParty{ExcludeSANS: false},
 					ValidationType:     "dv",
 					SignatureAlgorithm: "SHA-256",
 				},
@@ -471,6 +474,9 @@ func TestListEnrollments(t *testing.T) {
    "status": 500
 }`,
 			expectedPath: "/cps/v2/enrollments?contractId=1",
+			expectedHeaders: map[string]string{
+				"Accept": "application/vnd.akamai.cps.enrollments.v9+json",
+			},
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -488,6 +494,9 @@ func TestListEnrollments(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
+				for k, v := range test.expectedHeaders {
+					assert.Equal(t, v, r.Header.Get(k))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
@@ -510,6 +519,7 @@ func TestGetEnrollment(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
+		expectedHeaders  map[string]string
 		expectedResponse *Enrollment
 		withError        func(*testing.T, error)
 	}{
@@ -613,6 +623,9 @@ func TestGetEnrollment(t *testing.T) {
     "maxAllowedWildcardSanNames": 100
 }`,
 			expectedPath: "/cps/v2/enrollments/1",
+			expectedHeaders: map[string]string{
+				"Accept": "application/vnd.akamai.cps.enrollment.v9+json",
+			},
 			expectedResponse: &Enrollment{
 				AdminContact: &Contact{
 					AddressLineOne:   "150 Broadway",
@@ -703,6 +716,9 @@ func TestGetEnrollment(t *testing.T) {
    "status": 500
 }`,
 			expectedPath: "/cps/v2/enrollments/1",
+			expectedHeaders: map[string]string{
+				"Accept": "application/vnd.akamai.cps.enrollment.v9+json",
+			},
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -720,6 +736,9 @@ func TestGetEnrollment(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
+				for k, v := range test.expectedHeaders {
+					assert.Equal(t, v, r.Header.Get(k))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

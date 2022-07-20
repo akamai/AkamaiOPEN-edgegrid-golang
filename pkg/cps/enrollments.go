@@ -319,7 +319,7 @@ func (c *cps) ListEnrollments(ctx context.Context, params ListEnrollmentsRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListEnrollments, err)
 	}
-	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment.v9+json")
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollments.v9+json")
 
 	var result ListEnrollmentsResponse
 
