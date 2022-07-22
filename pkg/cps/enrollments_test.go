@@ -799,6 +799,42 @@ func TestCreateEnrollment(t *testing.T) {
 				ID:         1,
 			},
 		},
+		"202 accepted allow duplicate cn": {
+			request: CreateEnrollmentRequest{
+				Enrollment: Enrollment{
+					AdminContact: &Contact{
+						Email: "r1d1@akamai.com",
+					},
+					CertificateType: "third-party",
+					CSR: &CSR{
+						CN: "www.example.com",
+					},
+					NetworkConfiguration: &NetworkConfiguration{},
+					Org:                  &Org{Name: "Akamai"},
+					RA:                   "third-party",
+					TechContact: &Contact{
+						Email: "r2d2@akamai.com",
+					},
+					ValidationType: "third-party",
+				},
+				ContractID:       "ctr-1",
+				DeployNotAfter:   "12-12-2021",
+				DeployNotBefore:  "12-07-2020",
+				AllowDuplicateCN: true,
+			},
+			responseStatus: http.StatusAccepted,
+			responseBody: `
+{
+	"enrollment": "/cps-api/enrollments/1",
+	"changes": ["/cps-api/enrollments/1/changes/10002"]
+}`,
+			expectedPath: "/cps/v2/enrollments?allow-duplicate-cn=true&contractId=ctr-1&deploy-not-after=12-12-2021&deploy-not-before=12-07-2020",
+			expectedResponse: &CreateEnrollmentResponse{
+				Enrollment: "/cps-api/enrollments/1",
+				Changes:    []string{"/cps-api/enrollments/1/changes/10002"},
+				ID:         1,
+			},
+		},
 		"500 internal server error": {
 			request: CreateEnrollmentRequest{
 				Enrollment: Enrollment{

@@ -161,9 +161,10 @@ type (
 	// CreateEnrollmentRequest contains request body and path parameters used to create an enrollment
 	CreateEnrollmentRequest struct {
 		Enrollment
-		ContractID      string
-		DeployNotAfter  string
-		DeployNotBefore string
+		ContractID       string
+		DeployNotAfter   string
+		DeployNotBefore  string
+		AllowDuplicateCN bool
 	}
 
 	// CreateEnrollmentResponse contains response body returned after successful enrollment creation
@@ -383,6 +384,9 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 	}
 	if params.DeployNotBefore != "" {
 		query.Add("deploy-not-before", params.DeployNotBefore)
+	}
+	if params.AllowDuplicateCN {
+		query.Add("allow-duplicate-cn", "true")
 	}
 	uri.RawQuery = query.Encode()
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
