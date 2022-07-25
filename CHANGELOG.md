@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.14,1 (July 26, 2022)
+
+### BUG FIXES:
+
+* IAM
+  * Change IAM GroupID type to int64
+
 ## 2.14.0 (June 28, 2022)
 
 #### FEATURES/ENHANCEMENTS:
@@ -24,13 +31,13 @@
 
 #### FEATURES/ENHANCEMENTS:
 
-* Image and Video Manager:
+* Image and Video Manager
   * Add new `ImQuery` transformation
   * New `PostBreakPointTransformationType`
 
 #### BUG FIXES:
 
-* Image and Video Manager:
+* Image and Video Manager
   * `default_value` field on variable in image policy should not be required
   * Change all primitive optional parameters to pointers
   * Correct `Anchor` field in `RectangleShapeType`
