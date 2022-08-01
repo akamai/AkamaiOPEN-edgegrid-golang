@@ -53,7 +53,11 @@ func (p *gtm) Error(r *http.Response) error {
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("Title: %s; Type: %s; Detail: %s", e.Title, e.Type, e.Detail)
+	msg, err := json.MarshalIndent(e, "", "\t")
+	if err != nil {
+		return fmt.Sprintf("error marshaling API error: %s", err)
+	}
+	return fmt.Sprintf("API error: \n%s", msg)
 }
 
 // Is handles error comparisons
