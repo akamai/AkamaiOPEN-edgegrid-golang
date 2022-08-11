@@ -84,6 +84,8 @@ type (
 		ContentType        string             `json:"contentType"`
 		CustomHeaderName   string             `json:"customHeaderName"`
 		CustomHeaderValue  string             `json:"customHeaderValue"`
+		TLSHostname        string             `json:"tlsHostname"`
+		MTLS               string             `json:"mTLS"`
 	}
 
 	// StreamConfiguration is used in CreateStream as a request body

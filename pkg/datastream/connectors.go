@@ -53,6 +53,10 @@ type (
 		URL                 string        `json:"url"`
 		CustomHeaderName    string        `json:"customHeaderName,omitempty"`
 		CustomHeaderValue   string        `json:"customHeaderValue,omitempty"`
+		TLSHostname         string        `json:"tlsHostname,omitempty"`
+		CACert              string        `json:"caCert,omitempty"`
+		ClientCert          string        `json:"clientCert,omitempty"`
+		ClientKey           string        `json:"clientKey,omitempty"`
 	}
 
 	// GCSConnector provides detailed information about the Google Cloud Storage connector
@@ -80,6 +84,10 @@ type (
 		ContentType        string             `json:"contentType,omitempty"`
 		CustomHeaderName   string             `json:"customHeaderName,omitempty"`
 		CustomHeaderValue  string             `json:"customHeaderValue,omitempty"`
+		TLSHostname        string             `json:"tlsHostname,omitempty"`
+		CACert             string             `json:"caCert,omitempty"`
+		ClientCert         string             `json:"clientCert,omitempty"`
+		ClientKey          string             `json:"clientKey,omitempty"`
 	}
 
 	// SumoLogicConnector provides detailed information about the Sumo Logic connector
