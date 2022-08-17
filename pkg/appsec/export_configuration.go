@@ -98,18 +98,19 @@ type (
 			Structured    bool     `json:"-"`
 			Tag           []string `json:"tag"`
 			Conditions    []struct {
-				Name               *json.RawMessage `json:"name,omitempty"`
-				NameCase           *json.RawMessage `json:"nameCase,omitempty"`
-				NameWildcard       *json.RawMessage `json:"nameWildcard,omitempty"`
-				PositiveMatch      bool             `json:"positiveMatch"`
-				Type               string           `json:"type"`
-				Value              *json.RawMessage `json:"value,omitempty"`
-				ValueCase          *json.RawMessage `json:"valueCase,omitempty"`
-				ValueExactMatch    *json.RawMessage `json:"valueExactMatch,omitempty"`
-				ValueIgnoreSegment *json.RawMessage `json:"valueIgnoreSegment,omitempty"`
-				ValueNormalize     *json.RawMessage `json:"valueNormalize,omitempty"`
-				ValueRecursive     *json.RawMessage `json:"valueRecursive,omitempty"`
-				ValueWildcard      *json.RawMessage `json:"valueWildcard,omitempty"`
+				Name                  *json.RawMessage `json:"name,omitempty"`
+				NameCase              *bool            `json:"nameCase,omitempty"`
+				NameWildcard          *bool            `json:"nameWildcard,omitempty"`
+				PositiveMatch         bool             `json:"positiveMatch"`
+				Type                  string           `json:"type"`
+				Value                 *json.RawMessage `json:"value,omitempty"`
+				ValueCase             *bool            `json:"valueCase,omitempty"`
+				ValueExactMatch       *bool            `json:"valueExactMatch,omitempty"`
+				ValueIgnoreSegment    *bool            `json:"valueIgnoreSegment,omitempty"`
+				ValueNormalize        *bool            `json:"valueNormalize,omitempty"`
+				ValueRecursive        *bool            `json:"valueRecursive,omitempty"`
+				ValueWildcard         *bool            `json:"valueWildcard,omitempty"`
+				UseXForwardForHeaders *bool            `json:"useXForwardForHeaders,omitempty"`
 			} `json:"conditions"`
 			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
 			SamplingRate        int                        `json:"samplingRate,omitempty"`
