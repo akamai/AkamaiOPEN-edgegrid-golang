@@ -36,15 +36,7 @@ type (
 	}
 
 	// GetReputationProtectionResponse is returned from a call to GetReputationProtection.
-	GetReputationProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-	}
+	GetReputationProtectionResponse ProtectionsResponse
 
 	// GetReputationProtectionsRequest is used to retrieve the reputation protection setting.
 	GetReputationProtectionsRequest struct {
@@ -55,15 +47,7 @@ type (
 	}
 
 	// GetReputationProtectionsResponse is returned from a call to GetReputationProtection.
-	GetReputationProtectionsResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
+	GetReputationProtectionsResponse ProtectionsResponse
 
 	// UpdateReputationProtectionRequest is used to modify the reputation protection setting.
 	UpdateReputationProtectionRequest struct {
@@ -74,15 +58,7 @@ type (
 	}
 
 	// UpdateReputationProtectionResponse is returned from a call to UpdateReputationProtection.
-	UpdateReputationProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
+	UpdateReputationProtectionResponse ProtectionsResponse
 
 	// RemoveReputationProtectionRequest is used to remove the reputation protection settings.
 	RemoveReputationProtectionRequest struct {
@@ -93,15 +69,7 @@ type (
 	}
 
 	// RemoveReputationProtectionResponse is returned from a call to RemoveReputationProtection.
-	RemoveReputationProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
+	RemoveReputationProtectionResponse ProtectionsResponse
 )
 
 // Validate validates a GetReputationProtectionRequest.
@@ -141,14 +109,14 @@ func (v RemoveReputationProtectionRequest) Validate() error {
 }
 
 func (p *appsec) GetReputationProtection(ctx context.Context, params GetReputationProtectionRequest) (*GetReputationProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetReputationProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetReputationProtection")
-
-	var rval GetReputationProtectionResponse
+	var result GetReputationProtectionResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -161,7 +129,7 @@ func (p *appsec) GetReputationProtection(ctx context.Context, params GetReputati
 		return nil, fmt.Errorf("failed to create GetReputationProtection request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetReputationProtection request failed: %w", err)
 	}
@@ -170,19 +138,19 @@ func (p *appsec) GetReputationProtection(ctx context.Context, params GetReputati
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetReputationProtections(ctx context.Context, params GetReputationProtectionsRequest) (*GetReputationProtectionsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetReputationProtections")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetReputationProtections")
-
-	var rval GetReputationProtectionsResponse
+	var result GetReputationProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -195,7 +163,7 @@ func (p *appsec) GetReputationProtections(ctx context.Context, params GetReputat
 		return nil, fmt.Errorf("failed to create GetReputationProtections request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetReputationProtections request failed: %w", err)
 	}
@@ -204,32 +172,32 @@ func (p *appsec) GetReputationProtections(ctx context.Context, params GetReputat
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateReputationProtection(ctx context.Context, params UpdateReputationProtectionRequest) (*UpdateReputationProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateReputationProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateReputationProtection")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateReputationProtection request: %w", err)
 	}
 
-	var rval UpdateReputationProtectionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateReputationProtectionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateReputationProtection request failed: %w", err)
 	}
@@ -238,31 +206,31 @@ func (p *appsec) UpdateReputationProtection(ctx context.Context, params UpdateRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) RemoveReputationProtection(ctx context.Context, params RemoveReputationProtectionRequest) (*RemoveReputationProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveReputationProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("RemoveReputationProtection")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveReputationProtection request: %w", err)
 	}
 
-	var rval RemoveReputationProtectionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result RemoveReputationProtectionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveReputationProtection request failed: %w", err)
 	}
@@ -271,5 +239,5 @@ func (p *appsec) RemoveReputationProtection(ctx context.Context, params RemoveRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

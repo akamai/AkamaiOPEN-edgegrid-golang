@@ -137,14 +137,14 @@ func (v UpdateSlowPostProtectionSettingRequest) Validate() error {
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) GetSlowPostProtectionSetting(ctx context.Context, params GetSlowPostProtectionSettingRequest) (*GetSlowPostProtectionSettingResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetSlowPostProtectionSetting")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetSlowPostProtectionSetting")
-
-	var rval GetSlowPostProtectionSettingResponse
+	var result GetSlowPostProtectionSettingResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/slow-post",
@@ -157,7 +157,7 @@ func (p *appsec) GetSlowPostProtectionSetting(ctx context.Context, params GetSlo
 		return nil, fmt.Errorf("failed to create GetSlowPostProtectionSetting request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSlowPostProtectionSetting request failed: %w", err)
 	}
@@ -166,19 +166,19 @@ func (p *appsec) GetSlowPostProtectionSetting(ctx context.Context, params GetSlo
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetSlowPostProtectionSettings(ctx context.Context, params GetSlowPostProtectionSettingsRequest) (*GetSlowPostProtectionSettingsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetSlowPostProtectionSettings")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetSlowPostProtectionSettings")
-
-	var rval GetSlowPostProtectionSettingsResponse
+	var result GetSlowPostProtectionSettingsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/slow-post",
@@ -191,7 +191,7 @@ func (p *appsec) GetSlowPostProtectionSettings(ctx context.Context, params GetSl
 		return nil, fmt.Errorf("failed to create GetSlowPostProtectionSettings request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSlowPostProtectionSettings request failed: %w", err)
 	}
@@ -200,32 +200,32 @@ func (p *appsec) GetSlowPostProtectionSettings(ctx context.Context, params GetSl
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateSlowPostProtectionSetting(ctx context.Context, params UpdateSlowPostProtectionSettingRequest) (*UpdateSlowPostProtectionSettingResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateSlowPostProtectionSetting")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateSlowPostProtectionSetting")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/slow-post",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create update UpdateSlowPostProtectionSetting request: %w", err)
 	}
 
-	var rval UpdateSlowPostProtectionSettingResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateSlowPostProtectionSettingResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateSlowPostProtectionSetting request failed: %w", err)
 	}
@@ -234,5 +234,5 @@ func (p *appsec) UpdateSlowPostProtectionSetting(ctx context.Context, params Upd
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

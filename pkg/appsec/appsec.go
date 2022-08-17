@@ -18,20 +18,20 @@ type (
 		Activations
 		AdvancedSettingsEvasivePathMatch
 		AdvancedSettingsLogging
-		AdvancedSettingsPrefetch
 		AdvancedSettingsPragma
+		AdvancedSettingsPrefetch
+		ApiConstraintsProtection
 		ApiEndpoints
 		ApiHostnameCoverage
-		ApiHostnameCoverageOverlapping
 		ApiHostnameCoverageMatchTargets
+		ApiHostnameCoverageOverlapping
 		ApiRequestConstraints
-		APIConstraintsProtection
 		AttackGroup
 		BypassNetworkLists
 		Configuration
 		ConfigurationClone
-		ConfigurationVersionClone
 		ConfigurationVersion
+		ConfigurationVersionClone
 		ContractsGroups
 		CustomDeny
 		CustomRule
@@ -46,7 +46,10 @@ type (
 		FailoverHostnames
 		IPGeo
 		IPGeoProtection
-		ReputationAnalysis
+		MalwareContentTypes
+		MalwarePolicy
+		MalwarePolicyAction
+		MalwareProtection
 		MatchTarget
 		MatchTargetSequence
 		NetworkLayerProtection
@@ -55,6 +58,7 @@ type (
 		RatePolicy
 		RatePolicyAction
 		RateProtection
+		ReputationAnalysis
 		ReputationProfile
 		ReputationProfileAction
 		ReputationProtection
@@ -62,12 +66,12 @@ type (
 		RuleUpgrade
 		SecurityPolicy
 		SecurityPolicyClone
-		SelectedHostname
 		SelectableHostnames
+		SelectedHostname
 		SiemDefinitions
 		SiemSettings
-		SlowPostProtectionSetting
 		SlowPostProtection
+		SlowPostProtectionSetting
 		ThreatIntel
 		TuningRecommendations
 		VersionNotes

@@ -33,15 +33,7 @@ type (
 	}
 
 	// GetIPGeoProtectionResponse is returned from a call to GetIPGeoProtection.
-	GetIPGeoProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-	}
+	GetIPGeoProtectionResponse ProtectionsResponse
 
 	// GetIPGeoProtectionsRequest is used to retrieve the IPGeo protection settings.
 	GetIPGeoProtectionsRequest struct {
@@ -52,15 +44,7 @@ type (
 	}
 
 	// GetIPGeoProtectionsResponse is returned from a call to GetIPGeoProtections.
-	GetIPGeoProtectionsResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-	}
+	GetIPGeoProtectionsResponse ProtectionsResponse
 
 	// UpdateIPGeoProtectionRequest is used to modify the IPGeo protection settings.
 	UpdateIPGeoProtectionRequest struct {
@@ -71,15 +55,7 @@ type (
 	}
 
 	// UpdateIPGeoProtectionResponse is returned from a call to UpdateIPGeoProtection.
-	UpdateIPGeoProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
+	UpdateIPGeoProtectionResponse ProtectionsResponse
 )
 
 // Validate validates a GetIPGeoProtectionRequest.
@@ -110,14 +86,14 @@ func (v UpdateIPGeoProtectionRequest) Validate() error {
 }
 
 func (p *appsec) GetIPGeoProtection(ctx context.Context, params GetIPGeoProtectionRequest) (*GetIPGeoProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetIPGeoProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetIPGeoProtection")
-
-	var rval GetIPGeoProtectionResponse
+	var result GetIPGeoProtectionResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -130,7 +106,7 @@ func (p *appsec) GetIPGeoProtection(ctx context.Context, params GetIPGeoProtecti
 		return nil, fmt.Errorf("failed to create GetIPGeoProtection request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetIPGeoProtection request failed: %w", err)
 	}
@@ -139,19 +115,19 @@ func (p *appsec) GetIPGeoProtection(ctx context.Context, params GetIPGeoProtecti
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetIPGeoProtections(ctx context.Context, params GetIPGeoProtectionsRequest) (*GetIPGeoProtectionsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetIPGeoProtections")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetIPGeoProtections")
-
-	var rval GetIPGeoProtectionsResponse
+	var result GetIPGeoProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -164,7 +140,7 @@ func (p *appsec) GetIPGeoProtections(ctx context.Context, params GetIPGeoProtect
 		return nil, fmt.Errorf("failed to create GetIPGeoProtections request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetIPGeoProtections request failed: %w", err)
 	}
@@ -173,32 +149,32 @@ func (p *appsec) GetIPGeoProtections(ctx context.Context, params GetIPGeoProtect
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateIPGeoProtection(ctx context.Context, params UpdateIPGeoProtectionRequest) (*UpdateIPGeoProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateIPGeoProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateIPGeoProtection")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateIPGeoProtection request: %w", err)
 	}
 
-	var rval UpdateIPGeoProtectionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateIPGeoProtectionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateIPGeoProtection request failed: %w", err)
 	}
@@ -207,5 +183,5 @@ func (p *appsec) UpdateIPGeoProtection(ctx context.Context, params UpdateIPGeoPr
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

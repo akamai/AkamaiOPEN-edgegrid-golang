@@ -105,14 +105,14 @@ func (v UpdatePenaltyBoxRequest) Validate() error {
 }
 
 func (p *appsec) GetPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest) (*GetPenaltyBoxResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetPenaltyBox")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetPenaltyBox")
-
-	var rval GetPenaltyBoxResponse
+	var result GetPenaltyBoxResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/penalty-box",
@@ -125,7 +125,7 @@ func (p *appsec) GetPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest)
 		return nil, fmt.Errorf("failed to create GetPenaltyBox request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetPenaltyBox request failed: %w", err)
 	}
@@ -134,20 +134,20 @@ func (p *appsec) GetPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest)
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequest) (*GetPenaltyBoxesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetPenaltyBoxs")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetPenaltyBoxs")
-
-	var rval GetPenaltyBoxesResponse
+	var result GetPenaltyBoxesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/penalty-box",
@@ -160,7 +160,7 @@ func (p *appsec) GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequ
 		return nil, fmt.Errorf("failed to create GetPenaltyBoxes request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetPenaltyBoxes request failed: %w", err)
 	}
@@ -169,32 +169,32 @@ func (p *appsec) GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequ
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRequest) (*UpdatePenaltyBoxResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdatePenaltyBox")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdatePenaltyBox")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/penalty-box",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdatePenaltyBox request: %w", err)
 	}
 
-	var rval UpdatePenaltyBoxResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdatePenaltyBoxResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdatePenaltyBox request failed: %w", err)
 	}
@@ -203,5 +203,5 @@ func (p *appsec) UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

@@ -87,14 +87,14 @@ func (v GetAttackGroupRecommendationsRequest) Validate() error {
 }
 
 func (p *appsec) GetTuningRecommendations(ctx context.Context, params GetTuningRecommendationsRequest) (*GetTuningRecommendationsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetTuningRecommendations")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetTuningRecommendations")
-
-	var rval GetTuningRecommendationsResponse
+	var result GetTuningRecommendationsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations?standardException=true&type=%s",
@@ -110,7 +110,7 @@ func (p *appsec) GetTuningRecommendations(ctx context.Context, params GetTuningR
 
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetTuningRecommendations request failed: %w", err)
 	}
@@ -119,19 +119,19 @@ func (p *appsec) GetTuningRecommendations(ctx context.Context, params GetTuningR
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetAttackGroupRecommendations(ctx context.Context, params GetAttackGroupRecommendationsRequest) (*GetAttackGroupRecommendationsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetAttackGroupRecommendations")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetAttackGroupRecommendations")
-
-	var rval GetAttackGroupRecommendationsResponse
+	var result GetAttackGroupRecommendationsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations/attack-groups/%s?standardException=true&type=%s",
@@ -149,7 +149,7 @@ func (p *appsec) GetAttackGroupRecommendations(ctx context.Context, params GetAt
 
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetAttackGroupRecommendations request failed: %w", err)
 	}
@@ -158,6 +158,6 @@ func (p *appsec) GetAttackGroupRecommendations(ctx context.Context, params GetAt
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }

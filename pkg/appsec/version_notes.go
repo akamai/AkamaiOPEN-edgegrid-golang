@@ -62,14 +62,14 @@ func (v UpdateVersionNotesRequest) Validate() error {
 }
 
 func (p *appsec) GetVersionNotes(ctx context.Context, params GetVersionNotesRequest) (*GetVersionNotesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetVersionNotes")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetVersionNotes")
-
-	var rval GetVersionNotesResponse
+	var result GetVersionNotesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/version-notes",
@@ -82,7 +82,7 @@ func (p *appsec) GetVersionNotes(ctx context.Context, params GetVersionNotesRequ
 		return nil, fmt.Errorf("failed to create GetVersionNotes request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetVersionNotes request failed: %w", err)
 	}
@@ -91,31 +91,31 @@ func (p *appsec) GetVersionNotes(ctx context.Context, params GetVersionNotesRequ
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateVersionNotes(ctx context.Context, params UpdateVersionNotesRequest) (*UpdateVersionNotesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateVersionNotes")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateVersionNotes")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/version-notes",
 		params.ConfigID,
 		params.Version,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateVersionNotes request: %w", err)
 	}
 
-	var rval UpdateVersionNotesResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateVersionNotesResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateVersionNotes request failed: %w", err)
 	}
@@ -124,5 +124,5 @@ func (p *appsec) UpdateVersionNotes(ctx context.Context, params UpdateVersionNot
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

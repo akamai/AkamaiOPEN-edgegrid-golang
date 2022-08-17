@@ -75,14 +75,14 @@ func (v GetApiHostnameCoverageMatchTargetsRequest) Validate() error {
 }
 
 func (p *appsec) GetApiHostnameCoverageMatchTargets(ctx context.Context, params GetApiHostnameCoverageMatchTargetsRequest) (*GetApiHostnameCoverageMatchTargetsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetApiHostnameCoverageMatchTargets")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetApiHostnameCoverageMatchTargets")
-
-	var rval GetApiHostnameCoverageMatchTargetsResponse
+	var result GetApiHostnameCoverageMatchTargetsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/hostname-coverage/match-targets?hostname=%s",
@@ -95,7 +95,7 @@ func (p *appsec) GetApiHostnameCoverageMatchTargets(ctx context.Context, params 
 		return nil, fmt.Errorf("failed to create GetApiHostnameCoverageMatchTargets request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetApiHostnameCoverageMatchTargets request failed: %w", err)
 	}
@@ -104,6 +104,6 @@ func (p *appsec) GetApiHostnameCoverageMatchTargets(ctx context.Context, params 
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }

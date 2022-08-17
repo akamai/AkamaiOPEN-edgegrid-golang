@@ -95,14 +95,14 @@ func (v CreateConfigurationCloneRequest) Validate() error {
 }
 
 func (p *appsec) GetConfigurationClone(ctx context.Context, params GetConfigurationCloneRequest) (*GetConfigurationCloneResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetConfigurationClone")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetConfigurationClone")
-
-	var rval GetConfigurationCloneResponse
+	var result GetConfigurationCloneResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d",
@@ -114,7 +114,7 @@ func (p *appsec) GetConfigurationClone(ctx context.Context, params GetConfigurat
 		return nil, fmt.Errorf("failed to create GetConfigurationClone request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetConfigurationClone request failed: %w", err)
 	}
@@ -123,17 +123,17 @@ func (p *appsec) GetConfigurationClone(ctx context.Context, params GetConfigurat
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) CreateConfigurationClone(ctx context.Context, params CreateConfigurationCloneRequest) (*CreateConfigurationCloneResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("CreateConfigurationClone")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	logger := p.Log(ctx)
-	logger.Debug("CreateConfigurationClone")
 
 	uri := "/appsec/v1/configs/"
 
@@ -142,9 +142,9 @@ func (p *appsec) CreateConfigurationClone(ctx context.Context, params CreateConf
 		return nil, fmt.Errorf("failed to create CreateConfigurationClone request: %w", err)
 	}
 
-	var rval CreateConfigurationCloneResponse
+	var result CreateConfigurationCloneResponse
 
-	resp, err := p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("CreateConfigurationClone request failed: %w", err)
 	}
@@ -153,6 +153,6 @@ func (p *appsec) CreateConfigurationClone(ctx context.Context, params CreateConf
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }

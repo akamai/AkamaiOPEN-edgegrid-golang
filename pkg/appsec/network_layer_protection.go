@@ -35,15 +35,7 @@ type (
 	}
 
 	// GetNetworkLayerProtectionResponse is returned from a call to GetNetworkLayerProtection.
-	GetNetworkLayerProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-	}
+	GetNetworkLayerProtectionResponse ProtectionsResponse
 
 	// GetNetworkLayerProtectionsRequest is used to retrieve the network layer protection setting.
 	GetNetworkLayerProtectionsRequest struct {
@@ -54,15 +46,7 @@ type (
 	}
 
 	// GetNetworkLayerProtectionsResponse is returned from a call to GetNetworkLayerProtection.
-	GetNetworkLayerProtectionsResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
+	GetNetworkLayerProtectionsResponse ProtectionsResponse
 
 	// UpdateNetworkLayerProtectionRequest is used to modify the network layer protection setting.
 	UpdateNetworkLayerProtectionRequest struct {
@@ -73,15 +57,7 @@ type (
 	}
 
 	// UpdateNetworkLayerProtectionResponse is returned from a call to UpdateNetworkLayerProtection
-	UpdateNetworkLayerProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
+	UpdateNetworkLayerProtectionResponse ProtectionsResponse
 
 	// RemoveNetworkLayerProtectionRequest is used to remove the network layer protection setting.
 	RemoveNetworkLayerProtectionRequest struct {
@@ -92,15 +68,7 @@ type (
 	}
 
 	// RemoveNetworkLayerProtectionResponse is returned from a call to RemoveNetworkLayerProtection.
-	RemoveNetworkLayerProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
+	RemoveNetworkLayerProtectionResponse ProtectionsResponse
 )
 
 // Validate validates a GetNetworkLayerProtectionRequest.
@@ -140,14 +108,14 @@ func (v RemoveNetworkLayerProtectionRequest) Validate() error {
 }
 
 func (p *appsec) GetNetworkLayerProtection(ctx context.Context, params GetNetworkLayerProtectionRequest) (*GetNetworkLayerProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetNetworkLayerProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetNetworkLayerProtection")
-
-	var rval GetNetworkLayerProtectionResponse
+	var result GetNetworkLayerProtectionResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -160,7 +128,7 @@ func (p *appsec) GetNetworkLayerProtection(ctx context.Context, params GetNetwor
 		return nil, fmt.Errorf("failed to create GetNetworkLayerProtection request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetNetworkLayerProtection request failed: %w", err)
 	}
@@ -169,19 +137,19 @@ func (p *appsec) GetNetworkLayerProtection(ctx context.Context, params GetNetwor
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetNetworkLayerProtections(ctx context.Context, params GetNetworkLayerProtectionsRequest) (*GetNetworkLayerProtectionsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetNetworkLayerProtections")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetNetworkLayerProtections")
-
-	var rval GetNetworkLayerProtectionsResponse
+	var result GetNetworkLayerProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -194,7 +162,7 @@ func (p *appsec) GetNetworkLayerProtections(ctx context.Context, params GetNetwo
 		return nil, fmt.Errorf("failed to create GetNetworkLayerProtections request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetNetworkLayerProtections request failed: %w", err)
 	}
@@ -203,32 +171,32 @@ func (p *appsec) GetNetworkLayerProtections(ctx context.Context, params GetNetwo
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateNetworkLayerProtection(ctx context.Context, params UpdateNetworkLayerProtectionRequest) (*UpdateNetworkLayerProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateNetworkLayerProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateNetworkLayerProtection")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateNetworkLayerProtection request: %w", err)
 	}
 
-	var rval UpdateNetworkLayerProtectionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateNetworkLayerProtectionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateNetworkLayerProtection request failed: %w", err)
 	}
@@ -237,31 +205,31 @@ func (p *appsec) UpdateNetworkLayerProtection(ctx context.Context, params Update
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) RemoveNetworkLayerProtection(ctx context.Context, params RemoveNetworkLayerProtectionRequest) (*RemoveNetworkLayerProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveNetworkLayerProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("RemoveNetworkLayerProtection")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveNetworkLayerProtection request: %w", err)
 	}
 
-	var rval RemoveNetworkLayerProtectionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result RemoveNetworkLayerProtectionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveNetworkLayerProtection request failed: %w", err)
 	}
@@ -270,5 +238,5 @@ func (p *appsec) RemoveNetworkLayerProtection(ctx context.Context, params Remove
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

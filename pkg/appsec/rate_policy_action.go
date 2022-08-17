@@ -121,14 +121,14 @@ func (v UpdateRatePolicyActionRequest) Validate() error {
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) GetRatePolicyAction(ctx context.Context, params GetRatePolicyActionRequest) (*GetRatePolicyActionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetRatePolicyAction")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetRatePolicyAction")
-
-	var rval GetRatePolicyActionResponse
+	var result GetRatePolicyActionResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rate-policies",
@@ -141,7 +141,7 @@ func (p *appsec) GetRatePolicyAction(ctx context.Context, params GetRatePolicyAc
 		return nil, fmt.Errorf("failed to create GetRatePolicyAction request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRatePolicyAction request failed: %w", err)
 	}
@@ -150,20 +150,20 @@ func (p *appsec) GetRatePolicyAction(ctx context.Context, params GetRatePolicyAc
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyActionsRequest) (*GetRatePolicyActionsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetRatePolicyActions")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetRatePolicyActions")
-
-	var rval GetRatePolicyActionsResponse
-	var rvalfiltered GetRatePolicyActionsResponse
+	var result GetRatePolicyActionsResponse
+	var filteredResult GetRatePolicyActionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rate-policies",
@@ -176,7 +176,7 @@ func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyA
 		return nil, fmt.Errorf("failed to create GetRatePolicyActions request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRatePolicyActions request failed: %w", err)
 	}
@@ -186,29 +186,29 @@ func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyA
 	}
 
 	if params.RatePolicyID != 0 {
-		for _, val := range rval.RatePolicyActions {
+		for _, val := range result.RatePolicyActions {
 			if val.ID == params.RatePolicyID {
-				rvalfiltered.RatePolicyActions = append(rvalfiltered.RatePolicyActions, val)
+				filteredResult.RatePolicyActions = append(filteredResult.RatePolicyActions, val)
 			}
 		}
 
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
 
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }
 
 func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePolicyActionRequest) (*UpdateRatePolicyActionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateRatePolicyAction")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateRatePolicyAction")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rate-policies/%d",
 		params.ConfigID,
 		params.Version,
@@ -216,13 +216,13 @@ func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePo
 		params.RatePolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateRatePolicyAction: %w", err)
 	}
 
-	var rval UpdateRatePolicyActionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateRatePolicyActionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateRatePolicyAction request failed: %w", err)
 	}
@@ -231,5 +231,5 @@ func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePo
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

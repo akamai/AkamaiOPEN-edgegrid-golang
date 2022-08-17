@@ -96,14 +96,14 @@ func (v UpdateRuleUpgradeRequest) Validate() error {
 }
 
 func (p *appsec) GetRuleUpgrade(ctx context.Context, params GetRuleUpgradeRequest) (*GetRuleUpgradeResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetRuleUpgrade")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetRuleUpgrade")
-
-	var rval GetRuleUpgradeResponse
+	var result GetRuleUpgradeResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules/upgrade-details",
@@ -117,7 +117,7 @@ func (p *appsec) GetRuleUpgrade(ctx context.Context, params GetRuleUpgradeReques
 		return nil, fmt.Errorf("failed to create GetRuleUpgrade request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRuleUpgrade request failed: %w", err)
 	}
@@ -126,32 +126,32 @@ func (p *appsec) GetRuleUpgrade(ctx context.Context, params GetRuleUpgradeReques
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateRuleUpgrade(ctx context.Context, params UpdateRuleUpgradeRequest) (*UpdateRuleUpgradeResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateRuleUpgrade")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateRuleUpgrade")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateRuleUpgrade request: %w", err)
 	}
 
-	var rval UpdateRuleUpgradeResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateRuleUpgradeResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateRuleUpgrade request failed: %w", err)
 	}
@@ -160,5 +160,5 @@ func (p *appsec) UpdateRuleUpgrade(ctx context.Context, params UpdateRuleUpgrade
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

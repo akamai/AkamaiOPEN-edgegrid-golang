@@ -33,15 +33,7 @@ type (
 	}
 
 	// GetSlowPostProtectionResponse is returned from a call to GetSlowPostProtection.
-	GetSlowPostProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-	}
+	GetSlowPostProtectionResponse ProtectionsResponse
 
 	// GetSlowPostProtectionsRequest is used to retrieve the slow post protecton setting for a policy.
 	GetSlowPostProtectionsRequest struct {
@@ -52,15 +44,7 @@ type (
 	}
 
 	// GetSlowPostProtectionsResponse is returned from a call to GetSlowPostProtections.
-	GetSlowPostProtectionsResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-	}
+	GetSlowPostProtectionsResponse ProtectionsResponse
 
 	// UpdateSlowPostProtectionRequest is used to modify the slow post protection setting.
 	UpdateSlowPostProtectionRequest struct {
@@ -71,15 +55,7 @@ type (
 	}
 
 	// UpdateSlowPostProtectionResponse is returned from a call to UpdateSlowPostProtection.
-	UpdateSlowPostProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
+	UpdateSlowPostProtectionResponse ProtectionsResponse
 )
 
 // Validate validates a GetSlowPostProtectionRequest.
@@ -110,14 +86,14 @@ func (v UpdateSlowPostProtectionRequest) Validate() error {
 }
 
 func (p *appsec) GetSlowPostProtection(ctx context.Context, params GetSlowPostProtectionRequest) (*GetSlowPostProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetSlowPostProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetSlowPostProtection")
-
-	var rval GetSlowPostProtectionResponse
+	var result GetSlowPostProtectionResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -130,7 +106,7 @@ func (p *appsec) GetSlowPostProtection(ctx context.Context, params GetSlowPostPr
 		return nil, fmt.Errorf("failed to create GetSlowPostProtection request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSlowPostProtection request failed: %w", err)
 	}
@@ -139,19 +115,19 @@ func (p *appsec) GetSlowPostProtection(ctx context.Context, params GetSlowPostPr
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetSlowPostProtections(ctx context.Context, params GetSlowPostProtectionsRequest) (*GetSlowPostProtectionsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetSlowPostProtections")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetSlowPostProtections")
-
-	var rval GetSlowPostProtectionsResponse
+	var result GetSlowPostProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -164,7 +140,7 @@ func (p *appsec) GetSlowPostProtections(ctx context.Context, params GetSlowPostP
 		return nil, fmt.Errorf("failed to create GetSlowPostProtections request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSlowPostProtections request failed: %w", err)
 	}
@@ -173,32 +149,32 @@ func (p *appsec) GetSlowPostProtections(ctx context.Context, params GetSlowPostP
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateSlowPostProtection(ctx context.Context, params UpdateSlowPostProtectionRequest) (*UpdateSlowPostProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateSlowPostProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateSlowPostProtection")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateSlowPostProtection request: %w", err)
 	}
 
-	var rval UpdateSlowPostProtectionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateSlowPostProtectionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateSlowPostProtection request failed: %w", err)
 	}
@@ -207,5 +183,5 @@ func (p *appsec) UpdateSlowPostProtection(ctx context.Context, params UpdateSlow
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

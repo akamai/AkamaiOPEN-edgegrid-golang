@@ -31,12 +31,11 @@ type (
 )
 
 func (p *appsec) GetSiemDefinitions(ctx context.Context, params GetSiemDefinitionsRequest) (*GetSiemDefinitionsResponse, error) {
-
 	logger := p.Log(ctx)
 	logger.Debug("GetSiemDefinitions")
 
-	var rval GetSiemDefinitionsResponse
-	var rvalfiltered GetSiemDefinitionsResponse
+	var result GetSiemDefinitionsResponse
+	var filteredResult GetSiemDefinitionsResponse
 
 	uri := "/appsec/v1/siem-definitions"
 
@@ -45,7 +44,7 @@ func (p *appsec) GetSiemDefinitions(ctx context.Context, params GetSiemDefinitio
 		return nil, fmt.Errorf("failed to create GetSiemDefinitions request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSiemDefinitions request failed: %w", err)
 	}
@@ -55,16 +54,16 @@ func (p *appsec) GetSiemDefinitions(ctx context.Context, params GetSiemDefinitio
 	}
 
 	if params.SiemDefinitionName != "" {
-		for _, val := range rval.SiemDefinitions {
+		for _, val := range result.SiemDefinitions {
 			if val.Name == params.SiemDefinitionName {
-				rvalfiltered.SiemDefinitions = append(rvalfiltered.SiemDefinitions, val)
+				filteredResult.SiemDefinitions = append(filteredResult.SiemDefinitions, val)
 			}
 		}
 
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
 
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }

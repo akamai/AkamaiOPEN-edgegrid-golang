@@ -44,11 +44,10 @@ type (
 )
 
 func (p *appsec) GetConfigurationVersions(ctx context.Context, params GetConfigurationVersionsRequest) (*GetConfigurationVersionsResponse, error) {
-
 	logger := p.Log(ctx)
 	logger.Debug("GetConfigurationVersions")
 
-	var rval GetConfigurationVersionsResponse
+	var result GetConfigurationVersionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions?page=-1&detail=false",
@@ -59,7 +58,7 @@ func (p *appsec) GetConfigurationVersions(ctx context.Context, params GetConfigu
 		return nil, fmt.Errorf("failed to create GetConfigurationVersions request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetConfigurationVersions request failed: %w", err)
 	}
@@ -68,6 +67,6 @@ func (p *appsec) GetConfigurationVersions(ctx context.Context, params GetConfigu
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }

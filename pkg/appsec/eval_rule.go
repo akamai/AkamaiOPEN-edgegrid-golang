@@ -108,14 +108,14 @@ func (v UpdateEvalRuleRequest) Validate() error {
 }
 
 func (p *appsec) GetEvalRule(ctx context.Context, params GetEvalRuleRequest) (*GetEvalRuleResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetEvalRule")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetEvalRule")
-
-	var rval GetEvalRuleResponse
+	var result GetEvalRuleResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/eval-rules/%d?includeConditionException=true",
@@ -129,7 +129,7 @@ func (p *appsec) GetEvalRule(ctx context.Context, params GetEvalRuleRequest) (*G
 		return nil, fmt.Errorf("failed to create GetEvalRule request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetEvalRule request failed: %w", err)
 	}
@@ -138,20 +138,20 @@ func (p *appsec) GetEvalRule(ctx context.Context, params GetEvalRuleRequest) (*G
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetEvalRules(ctx context.Context, params GetEvalRulesRequest) (*GetEvalRulesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetEvalRules")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetEvalRules")
-
-	var rval GetEvalRulesResponse
-	var rvalfiltered GetEvalRulesResponse
+	var result GetEvalRulesResponse
+	var filteredResult GetEvalRulesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/eval-rules?includeConditionException=true",
@@ -164,7 +164,7 @@ func (p *appsec) GetEvalRules(ctx context.Context, params GetEvalRulesRequest) (
 		return nil, fmt.Errorf("failed to create GetEvalRules request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetEvalRules request failed: %w", err)
 	}
@@ -174,28 +174,28 @@ func (p *appsec) GetEvalRules(ctx context.Context, params GetEvalRulesRequest) (
 	}
 
 	if params.RuleID != 0 {
-		for _, val := range rval.Rules {
+		for _, val := range result.Rules {
 			if val.ID == params.RuleID {
-				rvalfiltered.Rules = append(rvalfiltered.Rules, val)
+				filteredResult.Rules = append(filteredResult.Rules, val)
 			}
 		}
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
 
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }
 
 func (p *appsec) UpdateEvalRule(ctx context.Context, params UpdateEvalRuleRequest) (*UpdateEvalRuleResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateEvalRule")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateEvalRule")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/eval-rules/%d/action-condition-exception",
 		params.ConfigID,
 		params.Version,
@@ -203,14 +203,14 @@ func (p *appsec) UpdateEvalRule(ctx context.Context, params UpdateEvalRuleReques
 		params.RuleID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateEvalRule request: %w", err)
 	}
 
-	var rval UpdateEvalRuleResponse
+	var result UpdateEvalRuleResponse
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateEvalRule request failed: %w", err)
 	}
@@ -219,5 +219,5 @@ func (p *appsec) UpdateEvalRule(ctx context.Context, params UpdateEvalRuleReques
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

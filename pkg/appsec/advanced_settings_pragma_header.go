@@ -82,14 +82,14 @@ func (v UpdateAdvancedSettingsPragmaRequest) Validate() error {
 }
 
 func (p *appsec) GetAdvancedSettingsPragma(ctx context.Context, params GetAdvancedSettingsPragmaRequest) (*GetAdvancedSettingsPragmaResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetAdvancedSettingsPragma")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetAdvancedSettingsPragma")
-
-	var rval GetAdvancedSettingsPragmaResponse
+	var result GetAdvancedSettingsPragmaResponse
 	var uri string
 
 	if params.PolicyID != "" {
@@ -112,7 +112,7 @@ func (p *appsec) GetAdvancedSettingsPragma(ctx context.Context, params GetAdvanc
 
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetAdvancedSettingsPragma request failed: %w", err)
 	}
@@ -121,17 +121,17 @@ func (p *appsec) GetAdvancedSettingsPragma(ctx context.Context, params GetAdvanc
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateAdvancedSettingsPragma(ctx context.Context, params UpdateAdvancedSettingsPragmaRequest) (*UpdateAdvancedSettingsPragmaResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateAdvancedSettingsPragma")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	logger := p.Log(ctx)
-	logger.Debug("UpdateAdvancedSettingsPragma")
 
 	var uri string
 	if params.PolicyID != "" {
@@ -152,8 +152,8 @@ func (p *appsec) UpdateAdvancedSettingsPragma(ctx context.Context, params Update
 		return nil, fmt.Errorf("failed to create UpdateAdvancedSettingsPragma request: %w", err)
 	}
 
-	var rval UpdateAdvancedSettingsPragmaResponse
-	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
+	var result UpdateAdvancedSettingsPragmaResponse
+	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateAdvancedSettingsPragma request failed: %w", err)
 	}
@@ -162,5 +162,5 @@ func (p *appsec) UpdateAdvancedSettingsPragma(ctx context.Context, params Update
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

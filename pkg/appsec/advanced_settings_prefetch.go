@@ -86,14 +86,14 @@ func (v UpdateAdvancedSettingsPrefetchRequest) Validate() error {
 }
 
 func (p *appsec) GetAdvancedSettingsPrefetch(ctx context.Context, params GetAdvancedSettingsPrefetchRequest) (*GetAdvancedSettingsPrefetchResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetAdvancedSettingsPrefetch")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetAdvancedSettingsPrefetch")
-
-	var rval GetAdvancedSettingsPrefetchResponse
+	var result GetAdvancedSettingsPrefetchResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/advanced-settings/prefetch",
@@ -106,7 +106,7 @@ func (p *appsec) GetAdvancedSettingsPrefetch(ctx context.Context, params GetAdva
 		return nil, fmt.Errorf("failed to create GetAdvancedSettingsPrefetch request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetAdvancedSettingsPrefetch request failed: %w", err)
 	}
@@ -115,31 +115,31 @@ func (p *appsec) GetAdvancedSettingsPrefetch(ctx context.Context, params GetAdva
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateAdvancedSettingsPrefetch(ctx context.Context, params UpdateAdvancedSettingsPrefetchRequest) (*UpdateAdvancedSettingsPrefetchResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateAdvancedSettingsPrefetch")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateAdvancedSettingsPrefetch")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/advanced-settings/prefetch",
 		params.ConfigID,
 		params.Version,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateAdvancedSettingsPrefetch request: %w", err)
 	}
 
-	var rval UpdateAdvancedSettingsPrefetchResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateAdvancedSettingsPrefetchResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateAdvancedSettingsPrefetch request failed: %w", err)
 	}
@@ -148,5 +148,5 @@ func (p *appsec) UpdateAdvancedSettingsPrefetch(ctx context.Context, params Upda
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

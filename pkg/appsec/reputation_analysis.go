@@ -99,14 +99,14 @@ func (v RemoveReputationAnalysisRequest) Validate() error {
 }
 
 func (p *appsec) GetReputationAnalysis(ctx context.Context, params GetReputationAnalysisRequest) (*GetReputationAnalysisResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetReputationAnalysis")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetReputationAnalysis")
-
-	var rval GetReputationAnalysisResponse
+	var result GetReputationAnalysisResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/reputation-analysis",
@@ -119,7 +119,7 @@ func (p *appsec) GetReputationAnalysis(ctx context.Context, params GetReputation
 		return nil, fmt.Errorf("failed to create GetReputationAnalysis request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetReputationAnalysis request failed: %w", err)
 	}
@@ -128,32 +128,32 @@ func (p *appsec) GetReputationAnalysis(ctx context.Context, params GetReputation
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateReputationAnalysis(ctx context.Context, params UpdateReputationAnalysisRequest) (*UpdateReputationAnalysisResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateReputationAnalysis")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateReputationAnalysis")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/reputation-analysis",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateReputationAnalysis request: %w", err)
 	}
 
-	var rval UpdateReputationAnalysisResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateReputationAnalysisResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateReputationAnalysis request failed: %w", err)
 	}
@@ -162,29 +162,28 @@ func (p *appsec) UpdateReputationAnalysis(ctx context.Context, params UpdateRepu
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) RemoveReputationAnalysis(ctx context.Context, params RemoveReputationAnalysisRequest) (*RemoveReputationAnalysisResponse, error) {
-
-	var rval RemoveReputationAnalysisResponse
-
 	logger := p.Log(ctx)
 	logger.Debug("RemoveReputationAnalysis")
 
-	putURL := fmt.Sprintf(
+	var result RemoveReputationAnalysisResponse
+
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/reputation-analysis",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveReputationAnalysis request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveReputationAnalysis request failed: %w", err)
 	}
@@ -193,5 +192,5 @@ func (p *appsec) RemoveReputationAnalysis(ctx context.Context, params RemoveRepu
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

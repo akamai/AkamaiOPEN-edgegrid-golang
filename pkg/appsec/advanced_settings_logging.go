@@ -145,14 +145,14 @@ func (v RemoveAdvancedSettingsLoggingRequest) Validate() error {
 }
 
 func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvancedSettingsLoggingRequest) (*GetAdvancedSettingsLoggingResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetAdvancedSettingsLoggings")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetAdvancedSettingsLoggings")
-
-	var rval GetAdvancedSettingsLoggingResponse
+	var result GetAdvancedSettingsLoggingResponse
 	var uri string
 
 	if params.PolicyID != "" {
@@ -173,7 +173,7 @@ func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvan
 		return nil, fmt.Errorf("failed to create GetAdvancedSettingsLogging request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetAdvancedSettingsLogging request failed: %w", err)
 	}
@@ -182,40 +182,40 @@ func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvan
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateAdvancedSettingsLogging(ctx context.Context, params UpdateAdvancedSettingsLoggingRequest) (*UpdateAdvancedSettingsLoggingResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateAdvancedSettingsLogging")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateAdvancedSettingsLogging")
-
-	var putURL string
+	var uri string
 	if params.PolicyID != "" {
-		putURL = fmt.Sprintf(
+		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/advanced-settings/logging",
 			params.ConfigID,
 			params.Version,
 			params.PolicyID)
 	} else {
-		putURL = fmt.Sprintf(
+		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/advanced-settings/logging",
 			params.ConfigID,
 			params.Version)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateAdvancedSettingsLogging request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	var rval UpdateAdvancedSettingsLoggingResponse
-	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
+	var result UpdateAdvancedSettingsLoggingResponse
+	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("CreateAdvancedSettingsLogging request failed: %w", err)
 	}
@@ -224,39 +224,39 @@ func (p *appsec) UpdateAdvancedSettingsLogging(ctx context.Context, params Updat
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) RemoveAdvancedSettingsLogging(ctx context.Context, params RemoveAdvancedSettingsLoggingRequest) (*RemoveAdvancedSettingsLoggingResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveAdvancedSettingsLogging")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("RemoveAdvancedSettingsLogging")
-
-	var putURL string
+	var uri string
 	if params.PolicyID != "" {
-		putURL = fmt.Sprintf(
+		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/advanced-settings/logging",
 			params.ConfigID,
 			params.Version,
 			params.PolicyID)
 	} else {
-		putURL = fmt.Sprintf(
+		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/advanced-settings/logging",
 			params.ConfigID,
 			params.Version)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveAdvancedSettingsLogging request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	var rval RemoveAdvancedSettingsLoggingResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result RemoveAdvancedSettingsLoggingResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveAdvancedSettingsLogging request failed: %w", err)
 	}
@@ -265,5 +265,5 @@ func (p *appsec) RemoveAdvancedSettingsLogging(ctx context.Context, params Remov
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

@@ -33,6 +33,17 @@ type (
 		Version  int `json:"version"`
 	}
 
+	// EvaluatingSecurityPolicy is returned from a call to GetExportConfiguration.
+	EvaluatingSecurityPolicy struct {
+		EffectiveSecurityControls struct {
+			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
+			ApplyRateControls             bool `json:"applyRateControls,omitempty"`
+			ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
+		}
+		Hostnames        []string `json:"hostnames,omitempty"`
+		SecurityPolicyID string   `json:"id"`
+	}
+
 	// GetExportConfigurationResponse is returned from a call to GetExportConfiguration.
 	GetExportConfigurationResponse struct {
 		ConfigID   int    `json:"configId"`
@@ -96,7 +107,7 @@ type (
 			Version       int      `json:"-"`
 			RuleActivated bool     `json:"-"`
 			Structured    bool     `json:"-"`
-			Tag           []string `json:"tag"`
+			Tag           []string `json:"tag,omitempty"`
 			Conditions    []struct {
 				Name                  *json.RawMessage `json:"name,omitempty"`
 				NameCase              *bool            `json:"nameCase,omitempty"`
@@ -111,7 +122,8 @@ type (
 				ValueRecursive        *bool            `json:"valueRecursive,omitempty"`
 				ValueWildcard         *bool            `json:"valueWildcard,omitempty"`
 				UseXForwardForHeaders *bool            `json:"useXForwardForHeaders,omitempty"`
-			} `json:"conditions"`
+			} `json:"conditions,omitempty"`
+
 			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
 			SamplingRate        int                        `json:"samplingRate,omitempty"`
 			LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
@@ -177,6 +189,7 @@ type (
 				ApplyRateControls             bool `json:"applyRateControls"`
 				ApplyReputationControls       bool `json:"applyReputationControls"`
 				ApplySlowPostControls         bool `json:"applySlowPostControls"`
+				ApplyMalwareControls          bool `json:"applyMalwareControls"`
 			} `json:"securityControls"`
 			WebApplicationFirewall struct {
 				RuleActions []struct {
@@ -205,8 +218,9 @@ type (
 			ClientReputation      struct {
 				ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
 			} `json:"clientReputation"`
-			RatePolicyActions *SecurityPoliciesRatePolicyActions `json:"ratePolicyActions,omitempty"`
-			IPGeoFirewall     struct {
+			RatePolicyActions    *SecurityPoliciesRatePolicyActions `json:"ratePolicyActions,omitempty"`
+			MalwarePolicyActions []MalwarePolicyActionBody          `json:"malwarePolicyActions,omitempty"`
+			IPGeoFirewall        struct {
 				Block       string `json:"block"`
 				GeoControls struct {
 					BlockedIPNetworkLists struct {
@@ -233,16 +247,9 @@ type (
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
 		CustomDenyList  *CustomDenyListexp  `json:"customDenyList,omitempty"`
 		Evaluating      struct {
-			SecurityPolicies []struct {
-				EffectiveSecurityControls struct {
-					ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-					ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-					ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-				}
-				Hostnames        []string `json:"hostnames,omitempty"`
-				SecurityPolicyID string   `json:"id"`
-			}
-		} `json:"evaluating"`
+			SecurityPolicies []EvaluatingSecurityPolicy `json:"securityPolicies,omitempty"`
+		} `json:"evaluating,omitempty"`
+		MalwarePolicies []MalwarePolicyBody `json:"malwarePolicies,omitempty"`
 	}
 
 	// GetExportConfigurationsRequest is used to call GetExportConfigurations.
@@ -378,6 +385,7 @@ type (
 				ApplyRateControls             bool `json:"applyRateControls"`
 				ApplyReputationControls       bool `json:"applyReputationControls"`
 				ApplySlowPostControls         bool `json:"applySlowPostControls"`
+				ApplyMalwareControls          bool `json:"applyMalwareControls"`
 			} `json:"securityControls"`
 			WebApplicationFirewall struct {
 				RuleActions []struct {

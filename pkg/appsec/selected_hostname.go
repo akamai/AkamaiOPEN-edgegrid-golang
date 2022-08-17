@@ -126,14 +126,14 @@ func (v UpdateSelectedHostnameRequest) Validate() error {
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) GetSelectedHostname(ctx context.Context, params GetSelectedHostnameRequest) (*GetSelectedHostnameResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetSelectedHostname")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetSelectedHostname")
-
-	var rval GetSelectedHostnameResponse
+	var result GetSelectedHostnameResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames",
@@ -145,7 +145,7 @@ func (p *appsec) GetSelectedHostname(ctx context.Context, params GetSelectedHost
 		return nil, fmt.Errorf("failed to create GetSelectedHostname request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSelectedHostname request failed: %w", err)
 	}
@@ -154,19 +154,19 @@ func (p *appsec) GetSelectedHostname(ctx context.Context, params GetSelectedHost
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetSelectedHostnames(ctx context.Context, params GetSelectedHostnamesRequest) (*GetSelectedHostnamesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetSelectedHostnames")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetSelectedHostnames")
-
-	var rval GetSelectedHostnamesResponse
+	var result GetSelectedHostnamesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames",
@@ -178,7 +178,7 @@ func (p *appsec) GetSelectedHostnames(ctx context.Context, params GetSelectedHos
 		return nil, fmt.Errorf("failed to create GetSelectedHostnames request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSelectedHostnames request failed: %w", err)
 	}
@@ -187,31 +187,31 @@ func (p *appsec) GetSelectedHostnames(ctx context.Context, params GetSelectedHos
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateSelectedHostnames(ctx context.Context, params UpdateSelectedHostnamesRequest) (*UpdateSelectedHostnamesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateSelectedHostnames")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateSelectedHostnames")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames",
 		params.ConfigID,
 		params.Version,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateSelectedHostnames request: %w", err)
 	}
 
-	var rval UpdateSelectedHostnamesResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateSelectedHostnamesResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateSelectedHostnames request failed: %w", err)
 	}
@@ -220,31 +220,31 @@ func (p *appsec) UpdateSelectedHostnames(ctx context.Context, params UpdateSelec
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) UpdateSelectedHostname(ctx context.Context, params UpdateSelectedHostnameRequest) (*UpdateSelectedHostnameResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateSelectedHostname")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateSelectedHostname")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames",
 		params.ConfigID,
 		params.Version,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateSelectedHostname request: %w", err)
 	}
 
-	var rval UpdateSelectedHostnameResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateSelectedHostnameResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateSelectedHostname request failed: %w", err)
 	}
@@ -253,5 +253,5 @@ func (p *appsec) UpdateSelectedHostname(ctx context.Context, params UpdateSelect
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
