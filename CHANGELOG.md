@@ -1,8 +1,15 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.15.0 (August XX, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+* APPSEC
+  * Add xff field to custom rule conditions
+  * Add NotificationEmails to Activation struct
+
 ## 2.14.1 (July 26, 2022)
 
-### BUG FIXES:
+#### BUG FIXES:
 
 * IAM
   * Change IAM GroupID type to int64
