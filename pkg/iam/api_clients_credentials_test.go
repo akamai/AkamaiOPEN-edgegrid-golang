@@ -622,7 +622,7 @@ func TestIAM_UpdateCredential(t *testing.T) {
 		"validation errors": {
 			params: UpdateCredentialRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "update credential: struct validation: ExpiresOn: cannot be blank\nStatus: cannot be blank\nCredentialID: cannot be blank", err.Error())
+				assert.Equal(t, "update credential: struct validation: Body: {\n\tExpiresOn: cannot be blank\n\tStatus: cannot be blank\n}\nCredentialID: cannot be blank", err.Error())
 			},
 		},
 		"404 Not Found": {

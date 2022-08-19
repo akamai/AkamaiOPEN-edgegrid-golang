@@ -37,7 +37,7 @@
 
 
 
-
+* Improved formatting of validation errors
 
 
 

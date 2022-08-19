@@ -1744,7 +1744,7 @@ func TestCreateConfiguration(t *testing.T) {
 		"missing required params: comments, configName, contractID, locations and propertyIDs - validation error": {
 			params: CreateConfigurationRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create configuration: struct validation: Comments: cannot be blank\nConfigName: cannot be blank\nContractID: cannot be blank\nLocations: cannot be blank\nPropertyIDs: cannot be blank", err.Error())
+				assert.Equal(t, "create configuration: struct validation: Body: {\n\tComments: cannot be blank\n\tConfigName: cannot be blank\n\tContractID: cannot be blank\n\tLocations: cannot be blank\n\tPropertyIDs: cannot be blank\n}", err.Error())
 			},
 		},
 		"missing required params - location fields": {
@@ -1764,7 +1764,7 @@ func TestCreateConfiguration(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create configuration: struct validation: Locations[0]: {\n\tUnit: cannot be blank\n\tValue: cannot be blank\n\tComments: cannot be blank\n\tTrafficTypeID: cannot be blank\n}", err.Error())
+				assert.Equal(t, "create configuration: struct validation: Body: {\n\tLocations[0]: {\n\t\tCapacity: {\n\t\t\tUnit: cannot be blank\n\t\t\tValue: cannot be blank\n\t\t}\n\t\tComments: cannot be blank\n\t\tTrafficTypeID: cannot be blank\n\t}\n}", err.Error())
 			},
 		},
 		"missing required params - multiCDN fields": {
@@ -1788,7 +1788,7 @@ func TestCreateConfiguration(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create configuration: struct validation: BOCC: cannot be blank\nCDNs: cannot be blank\nDataStreams: cannot be blank\nOrigins: cannot be blank", err.Error())
+				assert.Equal(t, "create configuration: struct validation: Body: {\n\tMultiCDNSettings: {\n\t\tBOCC: cannot be blank\n\t\tCDNs: cannot be blank\n\t\tDataStreams: cannot be blank\n\t\tOrigins: cannot be blank\n\t}\n}", err.Error())
 			},
 		},
 		"missing required params - BOCC struct fields when enabled": {
@@ -1835,7 +1835,7 @@ func TestCreateConfiguration(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create configuration: struct validation: ConditionalSamplingFrequency: cannot be blank\nForwardType: cannot be blank\nRequestType: cannot be blank\nSamplingFrequency: cannot be blank", err.Error())
+				assert.Equal(t, "create configuration: struct validation: Body: {\n\tMultiCDNSettings: {\n\t\tBOCC: {\n\t\t\tConditionalSamplingFrequency: cannot be blank\n\t\t\tForwardType: cannot be blank\n\t\t\tRequestType: cannot be blank\n\t\t\tSamplingFrequency: cannot be blank\n\t\t}\n\t}\n}", err.Error())
 			},
 		},
 		"missing required params - Origin struct fields": {
@@ -1875,7 +1875,7 @@ func TestCreateConfiguration(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create configuration: struct validation: Origins[0]: {\n\tHostname: cannot be blank\n\tOriginID: cannot be blank\n\tPropertyID: cannot be blank\n}", err.Error())
+				assert.Equal(t, "create configuration: struct validation: Body: {\n\tMultiCDNSettings: {\n\t\tOrigins[0]: {\n\t\t\tHostname: cannot be blank\n\t\t\tOriginID: cannot be blank\n\t\t\tPropertyID: cannot be blank\n\t\t}\n\t}\n}", err.Error())
 			},
 		},
 		"validation error - at least one CDN must be enabled": {
@@ -1925,7 +1925,7 @@ func TestCreateConfiguration(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create configuration: struct validation: CDNs: at least one of CDNs must be enabled", err.Error())
+				assert.Equal(t, "create configuration: struct validation: Body: {\n\tMultiCDNSettings: {\n\t\tCDNs: at least one of CDNs must be enabled\n\t}\n}", err.Error())
 			},
 		},
 		"validation error - authKeys nor IPACLCIDRs specified": {
@@ -1969,7 +1969,7 @@ func TestCreateConfiguration(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create configuration: struct validation: CDNs: at least one authentication method is required for CDN. Either IP ACL or header authentication must be enabled", err.Error())
+				assert.Equal(t, "create configuration: struct validation: Body: {\n\tMultiCDNSettings: {\n\t\tCDNs: at least one authentication method is required for CDN. Either IP ACL or header authentication must be enabled\n\t}\n}", err.Error())
 			},
 		},
 		"struct fields validations": {
@@ -2028,7 +2028,7 @@ func TestCreateConfiguration(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create configuration: struct validation: CapacityAlertsThreshold: must be no less than 50\nLocations[0]: {\n\tUnit: value 'MB' is invalid. Must be one of: 'GB', 'TB'\n}\nConditionalSamplingFrequency: value 'a' is invalid. Must be one of: 'ZERO', 'ONE_TENTH'\nForwardType: value 'a' is invalid. Must be one of: 'ORIGIN_ONLY', 'MIDGRESS_ONLY', 'ORIGIN_AND_MIDGRESS'\nRequestType: value 'a' is invalid. Must be one of: 'EDGE_ONLY', 'EDGE_AND_MIDGRESS'\nSamplingFrequency: value 'a' is invalid. Must be one of: 'ZERO', 'ONE_TENTH'\nCDNs[1]: {\n\tCDNAuthKeys[0]: {\n\t\tAuthKeyName: cannot be blank\n\t}\n}\nSamplingRate: must be no less than 1", err.Error())
+				assert.Equal(t, "create configuration: struct validation: Body: {\n\tCapacityAlertsThreshold: must be no less than 50\n\tLocations[0]: {\n\t\tCapacity: {\n\t\t\tUnit: value 'MB' is invalid. Must be one of: 'GB', 'TB'\n\t\t}\n\t}\n\tMultiCDNSettings: {\n\t\tBOCC: {\n\t\t\tConditionalSamplingFrequency: value 'a' is invalid. Must be one of: 'ZERO', 'ONE_TENTH'\n\t\t\tForwardType: value 'a' is invalid. Must be one of: 'ORIGIN_ONLY', 'MIDGRESS_ONLY', 'ORIGIN_AND_MIDGRESS'\n\t\t\tRequestType: value 'a' is invalid. Must be one of: 'EDGE_ONLY', 'EDGE_AND_MIDGRESS'\n\t\t\tSamplingFrequency: value 'a' is invalid. Must be one of: 'ZERO', 'ONE_TENTH'\n\t\t}\n\t\tCDNs[1]: {\n\t\t\tCDNAuthKeys[0]: {\n\t\t\t\tAuthKeyName: cannot be blank\n\t\t\t}\n\t\t}\n\t\tDataStreams: {\n\t\t\tSamplingRate: must be no less than 1\n\t\t}\n\t}\n}", err.Error())
 			},
 		},
 		"500 internal server error": {
@@ -2672,7 +2672,7 @@ func TestUpdateConfiguration(t *testing.T) {
 		"missing required params - validation error": {
 			params: UpdateConfigurationRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "update configuration: struct validation: Comments: cannot be blank\nLocations: cannot be blank\nPropertyIDs: cannot be blank\nConfigID: cannot be blank", err.Error())
+				assert.Equal(t, "update configuration: struct validation: Body: {\n\tComments: cannot be blank\n\tLocations: cannot be blank\n\tPropertyIDs: cannot be blank\n}\nConfigID: cannot be blank", err.Error())
 			},
 		},
 		"500 internal server error": {

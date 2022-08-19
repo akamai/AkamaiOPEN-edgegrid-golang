@@ -546,7 +546,7 @@ func TestIAM_UpdateCIDRBlock(t *testing.T) {
 			params: UpdateCIDRBlockRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
-				assert.Contains(t, err.Error(), "update CIDR block: struct validation: CIDRBlock: cannot be blank\nCIDRBlockID: cannot be blank")
+				assert.Contains(t, err.Error(), "update CIDR block: struct validation: Body: {\n\tCIDRBlock: cannot be blank\n}\nCIDRBlockID: cannot be blank")
 			},
 		},
 		"invalid required parameters": {
@@ -572,7 +572,7 @@ func TestIAM_UpdateCIDRBlock(t *testing.T) {
 			},
 			withError: func(t *testing.T, err error) {
 				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
-				assert.Contains(t, err.Error(), "update CIDR block: struct validation: CIDRBlock: invalid CIDR address: 1a.2.3.4/32")
+				assert.Contains(t, err.Error(), "update CIDR block: struct validation: Body: {\n\tCIDRBlock: invalid CIDR address: 1a.2.3.4/32\n}")
 			},
 		},
 		"500 internal server error": {

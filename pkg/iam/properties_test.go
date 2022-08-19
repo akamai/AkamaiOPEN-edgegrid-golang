@@ -388,7 +388,7 @@ func TestIAM_MoveProperty(t *testing.T) {
 		"validation errors": {
 			params: MovePropertyRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "move property: struct validation: DestinationGroupID: cannot be blank\nSourceGroupID: cannot be blank\nPropertyID: cannot be blank", err.Error())
+				assert.Equal(t, "move property: struct validation: Body: {\n\tDestinationGroupID: cannot be blank\n\tSourceGroupID: cannot be blank\n}\nPropertyID: cannot be blank", err.Error())
 			},
 		},
 		"400 not allowed": {

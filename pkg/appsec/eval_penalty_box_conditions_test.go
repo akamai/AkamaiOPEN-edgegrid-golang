@@ -206,7 +206,7 @@ func TestAppsec_UpdateEvalPenaltyBoxConditions(t *testing.T) {
 			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/eval-penalty-box/conditions",
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "struct validation: ConditionOperator: cannot be blank\nConditions: is required", err.Error())
+				assert.Equal(t, "struct validation: ConditionsPayload: {\n\tConditionOperator: cannot be blank\n\tConditions: is required\n}", err.Error())
 			},
 		},
 		"validation errors - ConditionOperator cannot be blank": {
@@ -217,7 +217,7 @@ func TestAppsec_UpdateEvalPenaltyBoxConditions(t *testing.T) {
 				ConditionsPayload: reqDataWithNoConditionOperator,
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "struct validation: ConditionOperator: cannot be blank", err.Error())
+				assert.Equal(t, "struct validation: ConditionsPayload: {\n\tConditionOperator: cannot be blank\n}", err.Error())
 			},
 		},
 		"validation errors - Conditions cannot be blank": {
@@ -228,7 +228,7 @@ func TestAppsec_UpdateEvalPenaltyBoxConditions(t *testing.T) {
 				ConditionsPayload: reqDataWithNoConditions,
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "struct validation: Conditions: is required", err.Error())
+				assert.Equal(t, "struct validation: ConditionsPayload: {\n\tConditions: is required\n}", err.Error())
 			},
 		},
 		"200 Success": {
