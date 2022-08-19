@@ -1302,7 +1302,7 @@ func TestPapiUpdateRuleTree(t *testing.T) {
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "updating rule tree: struct validation:\nVariables[1]: {\n\tValue: is required\n}")
+				assert.Contains(t, err.Error(), "updating rule tree: struct validation:\nRules: {\n\tRules: {\n\t\tVariables[1]: {\n\t\t\tValue: is required\n\t\t}\n\t}\n}")
 			},
 		},
 		"500 Internal Server Error": {
