@@ -1,0 +1,60 @@
+{
+    "conditions": [
+        {
+            "type": "hostMatch",
+            "positiveMatch": true,
+            "value": [
+                "www.g.com",
+                "www.f"
+            ]
+        },
+        {
+            "type": "argsPostMatch",
+            "name": "asdfas",
+            "positiveMatch": true,
+            "value": [
+                "asfsdfsa"
+            ]
+        },
+        {
+            "type": "argsPostNamesMatch",
+            "positiveMatch": true,
+            "value": [
+                "sfosadfasdf"
+            ]
+        },
+        {
+            "type": "asNumberMatch",
+            "positiveMatch": false,
+            "value": [
+                "2145697538"
+            ],
+            "useXForwardForHeaders": true
+        },
+        {
+            "type": "geoMatch",
+            "positiveMatch": false,
+            "value": [
+                "Argentina"
+            ],
+            "useXForwardForHeaders": true
+        },
+        {
+            "type": "ipAddressMatch",
+            "positiveMatch": false,
+            "value": [
+                "81.477.377.57"
+            ],
+            "useXForwardForHeaders": true
+        }
+    ],
+    "id": 60022381,
+    "name": "ak CR",
+    "operation": "AND",
+    "ruleActivated": false,
+    "structured": true,
+    "tag": [
+        "tag"
+    ],
+    "version": 1
+}

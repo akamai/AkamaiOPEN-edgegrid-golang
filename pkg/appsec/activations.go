@@ -68,13 +68,14 @@ type (
 
 	// Activation represents the status of a configuration activation.
 	Activation struct {
-		ActivationID   int       `json:"activationId"`
-		Version        int       `json:"version"`
-		Status         string    `json:"status"`
-		Network        string    `json:"Network"`
-		ActivatedBy    string    `json:"activatedBy"`
-		ActivationDate time.Time `json:"activationDate"`
-		Notes          string    `json:"notes"`
+		ActivationID       int       `json:"activationId"`
+		Version            int       `json:"version"`
+		Status             string    `json:"status"`
+		Network            string    `json:"Network"`
+		ActivatedBy        string    `json:"activatedBy"`
+		ActivationDate     time.Time `json:"activationDate"`
+		Notes              string    `json:"notes"`
+		NotificationEmails []string  `json:"notificationEmails"`
 	}
 
 	// CreateActivationsRequest is used to request activation or deactivation of a configuration.

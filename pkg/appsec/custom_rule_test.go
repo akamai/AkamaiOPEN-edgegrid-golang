@@ -95,7 +95,7 @@ func TestAppSec_GetCustomRule(t *testing.T) {
 
 	result := GetCustomRuleResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRules.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
@@ -164,12 +164,12 @@ func TestAppSec_CreateCustomRule(t *testing.T) {
 
 	result := CreateCustomRuleResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRules.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	req := CreateCustomRuleRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRules.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {
@@ -244,12 +244,12 @@ func TestAppSec_CreateCustomRule(t *testing.T) {
 func TestAppSec_UpdateCustomRule(t *testing.T) {
 	result := UpdateCustomRuleResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRules.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	req := UpdateCustomRuleRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRules.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
 	json.Unmarshal([]byte(reqData), &req)
 
 	tests := map[string]struct {

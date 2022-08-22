@@ -1,8 +1,23 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.15.0 (August 22, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Add xff field to custom rule conditions
+  * Add NotificationEmails to Activation struct
+
+* GTM
+  * Improved error messages
+
+* CPS
+  * Add cps ListEnrollments
+  * Extend CreateEnrollment with AllowDuplicateCN option
+  
 ## 2.14.1 (July 26, 2022)
 
-### BUG FIXES:
+#### BUG FIXES:
 
 * IAM
   * Change IAM GroupID type to int64
@@ -10,6 +25,7 @@
 ## 2.14.0 (June 28, 2022)
 
 #### FEATURES/ENHANCEMENTS:
+
 * APPSEC
   * Added penalty box support for security policy in evaluation mode 
 

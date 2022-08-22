@@ -14,7 +14,12 @@ import (
 type (
 	// Enrollments is a CPS enrollments API interface
 	Enrollments interface {
-		// GetEnrollment fetches anrollment object with given ID
+		// ListEnrollments fetches all enrollments with given contractId
+		//
+		// See https://techdocs.akamai.com/cps/reference/get-enrollments
+		ListEnrollments(context.Context, ListEnrollmentsRequest) (*ListEnrollmentsResponse, error)
+
+		// GetEnrollment fetches enrollment object with given ID
 		//
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getasingleenrollment
 		GetEnrollment(context.Context, GetEnrollmentRequest) (*Enrollment, error)
@@ -33,6 +38,11 @@ type (
 		//
 		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#deleteasingleenrollment
 		RemoveEnrollment(context.Context, RemoveEnrollmentRequest) (*RemoveEnrollmentResponse, error)
+	}
+
+	// ListEnrollmentsResponse represents list of CPS enrollment objects under given contractId. It is used as a response body while fetching enrollments by contractId
+	ListEnrollmentsResponse struct {
+		Enrollments []Enrollment `json:"enrollments"`
 	}
 
 	// Enrollment represents a CPS enrollment object. It is used both as a request body for enrollment creation and response body while fetching enrollment by ID
@@ -138,6 +148,11 @@ type (
 		ExcludeSANS bool `json:"excludeSans"`
 	}
 
+	// ListEnrollmentsRequest contains Contract ID of enrollments that are to be fetched with ListEnrollments
+	ListEnrollmentsRequest struct {
+		ContractID string
+	}
+
 	// GetEnrollmentRequest contains ID of an enrollment that is to be fetched with GetEnrollment
 	GetEnrollmentRequest struct {
 		EnrollmentID int
@@ -146,9 +161,10 @@ type (
 	// CreateEnrollmentRequest contains request body and path parameters used to create an enrollment
 	CreateEnrollmentRequest struct {
 		Enrollment
-		ContractID      string
-		DeployNotAfter  string
-		DeployNotBefore string
+		ContractID       string
+		DeployNotAfter   string
+		DeployNotBefore  string
+		AllowDuplicateCN bool
 	}
 
 	// CreateEnrollmentResponse contains response body returned after successful enrollment creation
@@ -240,6 +256,13 @@ func (n NetworkConfiguration) Validate() error {
 	}.Filter()
 }
 
+// Validate performs validation on ListEnrollmentRequest
+func (e ListEnrollmentsRequest) Validate() error {
+	return validation.Errors{
+		"contractId": validation.Validate(e.ContractID, validation.Required),
+	}.Filter()
+}
+
 // Validate performs validation on GetEnrollmentRequest
 func (e GetEnrollmentRequest) Validate() error {
 	return validation.Errors{
@@ -271,6 +294,8 @@ func (e RemoveEnrollmentRequest) Validate() error {
 }
 
 var (
+	// ErrListEnrollments is returned when ListEnrollments fails
+	ErrListEnrollments = errors.New("fetching enrollments")
 	// ErrGetEnrollment is returned when GetEnrollment fails
 	ErrGetEnrollment = errors.New("fetching enrollment")
 	// ErrCreateEnrollment is returned when CreateEnrollment fails
@@ -281,31 +306,55 @@ var (
 	ErrRemoveEnrollment = errors.New("remove enrollment")
 )
 
+func (c *cps) ListEnrollments(ctx context.Context, params ListEnrollmentsRequest) (*ListEnrollmentsResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListEnrollments, ErrStructValidation, err)
+	}
+
+	logger := c.Log(ctx)
+	logger.Debug("ListEnrollments")
+
+	uri := fmt.Sprintf("/cps/v2/enrollments?contractId=%s", params.ContractID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListEnrollments, err)
+	}
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollments.v9+json")
+
+	var result ListEnrollmentsResponse
+
+	resp, err := c.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListEnrollments, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListEnrollments, c.Error(resp))
+	}
+
+	return &result, nil
+}
+
 func (c *cps) GetEnrollment(ctx context.Context, params GetEnrollmentRequest) (*Enrollment, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetEnrollment, ErrStructValidation, err)
 	}
 
-	var rval Enrollment
-
 	logger := c.Log(ctx)
 	logger.Debug("GetEnrollment")
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/cps/v2/enrollments/%d",
-		params.EnrollmentID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetEnrollment, err)
-	}
+	uri := fmt.Sprintf("/cps/v2/enrollments/%d", params.EnrollmentID)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEnrollment, err)
 	}
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment.v9+json")
 
-	resp, err := c.Exec(req, &rval)
+	var result Enrollment
+
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEnrollment, err)
 	}
@@ -314,7 +363,7 @@ func (c *cps) GetEnrollment(ctx context.Context, params GetEnrollmentRequest) (*
 		return nil, fmt.Errorf("%s: %w", ErrGetEnrollment, c.Error(resp))
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentRequest) (*CreateEnrollmentResponse, error) {
@@ -322,14 +371,10 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrStructValidation, err)
 	}
 
-	var rval CreateEnrollmentResponse
-
 	logger := c.Log(ctx)
 	logger.Debug("CreateEnrollment")
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/cps/v2/enrollments?contractId=%s",
-		params.ContractID))
+	uri, err := url.Parse(fmt.Sprintf("/cps/v2/enrollments?contractId=%s", params.ContractID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: parsing URL: %s", ErrCreateEnrollment, err)
 	}
@@ -340,6 +385,9 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 	if params.DeployNotBefore != "" {
 		query.Add("deploy-not-before", params.DeployNotBefore)
 	}
+	if params.AllowDuplicateCN {
+		query.Add("allow-duplicate-cn", "true")
+	}
 	uri.RawQuery = query.Encode()
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
@@ -348,7 +396,9 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
 	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v9+json")
 
-	resp, err := c.Exec(req, &rval, params.Enrollment)
+	var result CreateEnrollmentResponse
+
+	resp, err := c.Exec(req, &result, params.Enrollment)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEnrollment, err)
 	}
@@ -356,13 +406,13 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%s: %w", ErrCreateEnrollment, c.Error(resp))
 	}
-	id, err := GetIDFromLocation(rval.Enrollment)
+	id, err := GetIDFromLocation(result.Enrollment)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrInvalidLocation, err)
 	}
-	rval.ID = id
+	result.ID = id
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentRequest) (*UpdateEnrollmentResponse, error) {
@@ -370,14 +420,10 @@ func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentReque
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrStructValidation, err)
 	}
 
-	var rval UpdateEnrollmentResponse
-
 	logger := c.Log(ctx)
 	logger.Debug("UpdateEnrollment")
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/cps/v2/enrollments/%d",
-		params.EnrollmentID))
+	uri, err := url.Parse(fmt.Sprintf("/cps/v2/enrollments/%d", params.EnrollmentID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: parsing URL: %s", ErrUpdateEnrollment, err)
 	}
@@ -409,7 +455,9 @@ func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentReque
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
 	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v9+json")
 
-	resp, err := c.Exec(req, &rval, params.Enrollment)
+	var result UpdateEnrollmentResponse
+
+	resp, err := c.Exec(req, &result, params.Enrollment)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEnrollment, err)
 	}
@@ -417,13 +465,13 @@ func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentReque
 	if resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateEnrollment, c.Error(resp))
 	}
-	id, err := GetIDFromLocation(rval.Enrollment)
+	id, err := GetIDFromLocation(result.Enrollment)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEnrollment, ErrInvalidLocation, err)
 	}
-	rval.ID = id
+	result.ID = id
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (c *cps) RemoveEnrollment(ctx context.Context, params RemoveEnrollmentRequest) (*RemoveEnrollmentResponse, error) {
@@ -431,14 +479,10 @@ func (c *cps) RemoveEnrollment(ctx context.Context, params RemoveEnrollmentReque
 		return nil, fmt.Errorf("%s: %w: %s", ErrRemoveEnrollment, ErrStructValidation, err)
 	}
 
-	var rval RemoveEnrollmentResponse
-
 	logger := c.Log(ctx)
 	logger.Debug("RemoveEnrollment")
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/cps/v2/enrollments/%d",
-		params.EnrollmentID))
+	uri, err := url.Parse(fmt.Sprintf("/cps/v2/enrollments/%d", params.EnrollmentID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: parsing URL: %s", ErrRemoveEnrollment, err)
 	}
@@ -460,7 +504,9 @@ func (c *cps) RemoveEnrollment(ctx context.Context, params RemoveEnrollmentReque
 	}
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
 
-	resp, err := c.Exec(req, &rval)
+	var result RemoveEnrollmentResponse
+
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrRemoveEnrollment, err)
 	}
@@ -469,5 +515,5 @@ func (c *cps) RemoveEnrollment(ctx context.Context, params RemoveEnrollmentReque
 		return nil, fmt.Errorf("%s: %w", ErrRemoveEnrollment, c.Error(resp))
 	}
 
-	return &rval, nil
+	return &result, nil
 }

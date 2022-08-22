@@ -3323,6 +3323,14 @@
             {
                 "conditions": [
                     {
+                        "positiveMatch": true,
+                        "type": "geoMatch",
+                        "value": [
+                            "AD"
+                        ],
+                        "useXForwardForHeaders": false
+                    },
+                    {
                         "type": "requestMethodMatch",
                         "positiveMatch": true,
                         "value": [
