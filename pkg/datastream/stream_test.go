@@ -946,6 +946,29 @@ func TestDs_Connectors(t *testing.T) {
 }]
 `,
 		},
+		"LogglyConnector": {
+			connector: &LogglyConnector{
+				ConnectorName:     "testConnectorName",
+				Endpoint:          "testEndpoint",
+				AuthToken:         "testAuthToken",
+				Tags:              "testTags",
+				ContentType:       "testContentType",
+				CustomHeaderName:  "testCustomHeaderName",
+				CustomHeaderValue: "testCustomHeaderValue",
+			},
+			expectedJSON: `
+[{
+	"connectorType": "LOGGLY",
+	"connectorName": "testConnectorName",
+	"endpoint": "testEndpoint",
+	"authToken": "testAuthToken",
+	"tags": "testTags",
+	"contentType": "testContentType",
+	"customHeaderName": "testCustomHeaderName",
+	"customHeaderValue": "testCustomHeaderValue"
+}]
+    `,
+		},
 	}
 
 	request := CreateStreamRequest{

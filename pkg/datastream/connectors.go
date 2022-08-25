@@ -116,6 +116,19 @@ type (
 		SecretAccessKey string        `json:"secretAccessKey"`
 	}
 
+	// LogglyConnector contains details about Loggly connector.
+	// See: https://techdocs.akamai.com/datastream2/reference/post-stream
+	LogglyConnector struct {
+		ConnectorType     ConnectorType `json:"connectorType"`
+		ConnectorName     string        `json:"connectorName"`
+		Endpoint          string        `json:"endpoint"`
+		AuthToken         string        `json:"authToken"`
+		Tags              string        `json:"tags,omitempty"`
+		ContentType       string        `json:"contentType,omitempty"`
+		CustomHeaderName  string        `json:"customHeaderName,omitempty"`
+		CustomHeaderValue string        `json:"customHeaderValue,omitempty"`
+	}
+
 	// ConnectorType is used to create an "enum" of possible ConnectorTypes
 	ConnectorType string
 
@@ -140,6 +153,8 @@ const (
 	ConnectorTypeSumoLogic ConnectorType = "SUMO_LOGIC"
 	// ConnectorTypeOracle const
 	ConnectorTypeOracle ConnectorType = "Oracle_Cloud_Storage"
+	// ConnectorTypeLoggly const
+	ConnectorTypeLoggly ConnectorType = "LOGGLY"
 
 	// AuthenticationTypeNone const
 	AuthenticationTypeNone AuthenticationType = "NONE"
@@ -285,5 +300,22 @@ func (c *OracleCloudStorageConnector) Validate() error {
 		"Path":            validation.Validate(c.Path, validation.Required),
 		"Region":          validation.Validate(c.Region, validation.Required),
 		"SecretAccessKey": validation.Validate(c.SecretAccessKey, validation.Required),
+	}.Filter()
+}
+
+// SetConnectorType for LogglyConnector
+func (c *LogglyConnector) SetConnectorType() {
+	c.ConnectorType = ConnectorTypeLoggly
+}
+
+// Validate validates LogglyConnector
+func (c *LogglyConnector) Validate() error {
+	return validation.Errors{
+		"ConnectorType":     validation.Validate(c.ConnectorType, validation.Required, validation.In(ConnectorTypeLoggly)),
+		"ConnectorName":     validation.Validate(c.ConnectorName, validation.Required),
+		"Endpoint":          validation.Validate(c.Endpoint, validation.Required),
+		"AuthToken":         validation.Validate(c.AuthToken, validation.Required),
+		"CustomHeaderName":  validation.Validate(c.CustomHeaderName, validation.Required.When(c.CustomHeaderValue != ""), validation.When(c.CustomHeaderName != "", validation.Match(customHeaderNameRegexp))),
+		"CustomHeaderValue": validation.Validate(c.CustomHeaderValue, validation.Required.When(c.CustomHeaderName != "")),
 	}.Filter()
 }
