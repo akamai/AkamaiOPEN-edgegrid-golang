@@ -52,12 +52,6 @@ type (
 		Status             string              `json:"status"`
 	}
 
-	// DeploymentSchedule contains the schedule for when you want this change deploy
-	DeploymentSchedule struct {
-		NotAfter  string `json:"notAfter,omitempty"`
-		NotBefore string `json:"notBefore,omitempty"`
-	}
-
 	// StatusInfoError contains error information for this Change
 	StatusInfoError struct {
 		Code        string `json:"code"`

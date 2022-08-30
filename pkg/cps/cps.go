@@ -14,9 +14,10 @@ var (
 type (
 	// CPS is the cps api interface
 	CPS interface {
-		Enrollments
 		ChangeOperations
+		DeploymentSchedules
 		DVChallenges
+		Enrollments
 		PreVerification
 	}
 
