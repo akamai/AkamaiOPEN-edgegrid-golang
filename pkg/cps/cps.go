@@ -14,11 +14,14 @@ var (
 type (
 	// CPS is the cps api interface
 	CPS interface {
+		ChangeManagementInfo
 		ChangeOperations
 		DeploymentSchedules
 		DVChallenges
 		Enrollments
+		PostVerification
 		PreVerification
+		ThirdPartyCSR
 	}
 
 	cps struct {

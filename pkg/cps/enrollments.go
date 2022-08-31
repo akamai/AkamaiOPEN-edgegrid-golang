@@ -242,13 +242,6 @@ func (c CSR) Validate() error {
 	}.Filter()
 }
 
-// Validate performs validation on ThirdParty
-func (t ThirdParty) Validate() error {
-	return validation.Errors{
-		"excludeSans": validation.Validate(t.ExcludeSANS, validation.Required),
-	}.Filter()
-}
-
 // Validate performs validation on NetworkConfiguration
 func (n NetworkConfiguration) Validate() error {
 	return validation.Errors{

@@ -43,7 +43,7 @@ func (c *cps) GetChangePreVerificationWarnings(ctx context.Context, params GetCh
 	var rval PreVerificationWarnings
 
 	logger := c.Log(ctx)
-	logger.Debug("GetChangeLetsEncryptChallenges")
+	logger.Debug("GetChangePreVerificationWarnings")
 
 	uri, err := url.Parse(fmt.Sprintf(
 		"/cps/v2/enrollments/%d/changes/%d/input/info/pre-verification-warnings",
