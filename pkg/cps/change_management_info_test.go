@@ -202,7 +202,7 @@ func TestGetChangeDeploymentInfo(t *testing.T) {
 }`,
 			expectedPath: "/cps/v2/enrollments/1/changes/2/input/info/change-management-info",
 			expectedResponse: &ChangeDeploymentInfoResponse{
-				NetworkConfiguration: NetworkConfig{
+				NetworkConfiguration: DeploymentNetworkConfiguration{
 					Geography:        "core",
 					SecureNetwork:    "enhanced-tls",
 					MustHaveCiphers:  "ak-akamai-2020q1",
@@ -216,14 +216,14 @@ func TestGetChangeDeploymentInfo(t *testing.T) {
 					QUICEnabled:  false,
 					DNSNames:     nil,
 				},
-				PrimaryCertificate: CertificateData{
+				PrimaryCertificate: DeploymentCertificate{
 					SignatureAlgorithm: "SHA-1",
 					Certificate:        "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----",
 					TrustChain:         "",
 					Expiry:             "2023-08-25T13:02:15Z",
 					KeyAlgorithm:       "RSA",
 				},
-				MultiStackedCertificates: []CertificateData{},
+				MultiStackedCertificates: []DeploymentCertificate{},
 				OCSPURIs:                 []string{},
 				OCSPStapled:              tools.BoolPtr(false),
 			},

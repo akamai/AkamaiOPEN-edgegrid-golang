@@ -16,6 +16,7 @@ type (
 	CPS interface {
 		ChangeManagementInfo
 		ChangeOperations
+		Deployments
 		DeploymentSchedules
 		DVChallenges
 		Enrollments

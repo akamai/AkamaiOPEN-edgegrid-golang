@@ -26,7 +26,7 @@ type (
 
 		// CreateEnrollment creates a new enrollment
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#postenrollments
+		// See: https://techdocs.akamai.com/cps/reference/post-enrollment
 		CreateEnrollment(context.Context, CreateEnrollmentRequest) (*CreateEnrollmentResponse, error)
 
 		// UpdateEnrollment updates a single enrollment entry with given ID

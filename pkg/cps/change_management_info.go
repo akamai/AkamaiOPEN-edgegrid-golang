@@ -71,35 +71,7 @@ type (
 	}
 
 	// ChangeDeploymentInfoResponse contains response from GetChangeDeploymentInfo
-	ChangeDeploymentInfoResponse struct {
-		NetworkConfiguration     NetworkConfig     `json:"networkConfiguration"`
-		PrimaryCertificate       CertificateData   `json:"primaryCertificate"`
-		MultiStackedCertificates []CertificateData `json:"multiStackedCertificates"`
-		OCSPURIs                 []string          `json:"ocspUris"`
-		OCSPStapled              *bool             `json:"ocspStapled"`
-	}
-
-	// NetworkConfig holds network configuration properties
-	NetworkConfig struct {
-		Geography             string   `json:"geography"`
-		SecureNetwork         string   `json:"secureNetwork"`
-		MustHaveCiphers       string   `json:"mustHaveCiphers"`
-		PreferredCiphers      string   `json:"preferredCiphers"`
-		DisallowedTLSVersions []string `json:"disallowedTlsVersions"`
-		OCSPStapling          string   `json:"ocspStapling"`
-		SNIOnly               bool     `json:"sniOnly"`
-		QUICEnabled           bool     `json:"quicEnabled"`
-		DNSNames              []string `json:"dnsNames"`
-	}
-
-	// CertificateData holds certificate information
-	CertificateData struct {
-		SignatureAlgorithm string `json:"signatureAlgorithm"`
-		Certificate        string `json:"certificate"`
-		TrustChain         string `json:"trustChain"`
-		Expiry             string `json:"expiry"`
-		KeyAlgorithm       string `json:"keyAlgorithm"`
-	}
+	ChangeDeploymentInfoResponse Deployment
 )
 
 var (
