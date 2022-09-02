@@ -20,6 +20,7 @@ type (
 		DeploymentSchedules
 		DVChallenges
 		Enrollments
+		History
 		PostVerification
 		PreVerification
 		ThirdPartyCSR

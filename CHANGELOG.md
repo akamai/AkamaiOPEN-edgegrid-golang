@@ -1,5 +1,22 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.XX.X (XXXXX XX, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+
+* CPS
+  * ChangeManagementInfo - get change management info, get change deployment info
+  * Deployments - list deployments, get production deployment, get staging deployment
+  * DeploymentSchedules - get deployment schedule, update deployment schedule
+  * History - get DV history, get certificate history, get change history
+  * PostVerification - get post verification warnings
+  * ThirdPartyCSR - get third-party CSR
+
+#### BREAKING CHANGES:
+
+* CPS
+  * Renamed structs: Challenges and ValidationRecords to Challenge and ValidationRecord accordingly
+
 ## 2.17.0 (October 24, 2022)
 
 #### FEATURES/ENHANCEMENTS:
