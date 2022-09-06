@@ -13,12 +13,12 @@ type (
 	DVChallenges interface {
 		// GetChangeLetsEncryptChallenges gets detailed information about Domain Validation challenges
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getallowedinputtypeforinfo
+		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
 		GetChangeLetsEncryptChallenges(context.Context, GetChangeRequest) (*DVArray, error)
 
 		// AcknowledgeDVChallenges sends acknowledgement request to CPS informing that the validation is completed
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#acknowledgement
+		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
 		AcknowledgeDVChallenges(context.Context, AcknowledgementRequest) error
 	}
 

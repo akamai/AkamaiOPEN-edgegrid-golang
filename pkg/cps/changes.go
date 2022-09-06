@@ -15,17 +15,17 @@ type (
 	ChangeOperations interface {
 		// GetChangeStatus fetches change status for given enrollment and change ID
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getasinglechange
+		// See: https://techdocs.akamai.com/cps/reference/get-enrollment-change
 		GetChangeStatus(context.Context, GetChangeStatusRequest) (*Change, error)
 
 		// CancelChange cancels a pending change
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#deleteasinglechange
+		// See: https://techdocs.akamai.com/cps/reference/delete-enrollment-change
 		CancelChange(context.Context, CancelChangeRequest) (*CancelChangeResponse, error)
 
 		// UpdateChange updates a pending change
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#postallowedinputtypeforupdate
+		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
 		UpdateChange(context.Context, UpdateChangeRequest) (*UpdateChangeResponse, error)
 	}
 

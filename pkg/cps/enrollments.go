@@ -21,7 +21,7 @@ type (
 
 		// GetEnrollment fetches enrollment object with given ID
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getasingleenrollment
+		// See: https://techdocs.akamai.com/cps/reference/get-enrollment
 		GetEnrollment(context.Context, GetEnrollmentRequest) (*Enrollment, error)
 
 		// CreateEnrollment creates a new enrollment
@@ -31,12 +31,12 @@ type (
 
 		// UpdateEnrollment updates a single enrollment entry with given ID
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#putasingleenrollment
+		// See: https://techdocs.akamai.com/cps/reference/put-enrollment
 		UpdateEnrollment(context.Context, UpdateEnrollmentRequest) (*UpdateEnrollmentResponse, error)
 
 		// RemoveEnrollment removes an enrollment with given ID
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#deleteasingleenrollment
+		// See: https://techdocs.akamai.com/cps/reference/delete-enrollment
 		RemoveEnrollment(context.Context, RemoveEnrollmentRequest) (*RemoveEnrollmentResponse, error)
 	}
 
