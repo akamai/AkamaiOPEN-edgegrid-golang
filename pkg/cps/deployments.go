@@ -45,14 +45,10 @@ type (
 	}
 
 	// GetProductionDeploymentResponse contains response for GetProductionDeployment
-	GetProductionDeploymentResponse struct {
-		Production Deployment `json:"production"`
-	}
+	GetProductionDeploymentResponse Deployment
 
 	// GetStagingDeploymentResponse contains response for GetStagingDeployment
-	GetStagingDeploymentResponse struct {
-		Staging Deployment `json:"staging"`
-	}
+	GetStagingDeploymentResponse Deployment
 
 	// Deployment represents details of production or staging deployment
 	Deployment struct {

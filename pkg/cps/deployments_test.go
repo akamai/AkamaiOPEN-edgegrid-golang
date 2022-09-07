@@ -238,7 +238,6 @@ func TestGetProductionDeployment(t *testing.T) {
 			params:         GetDeploymentRequest{EnrollmentID: 10},
 			responseStatus: http.StatusOK,
 			responseBody: `{
-  "production": {
     "ocspStapled": false,
     "ocspUris": [],
     "networkConfiguration": {
@@ -272,46 +271,43 @@ func TestGetProductionDeployment(t *testing.T) {
         "trustChain": "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... KEUp0=\n-----END CERTIFICATE-----"
       }
     ]
-  }
 }`,
 			expectedPath: "/cps/v2/enrollments/10/deployments/production",
 			expectedHeaders: map[string]string{
 				"Accept": "application/vnd.akamai.cps.deployment.v7+json",
 			},
 			expectedResponse: &GetProductionDeploymentResponse{
-				Production: Deployment{
-					OCSPStapled: tools.BoolPtr(false),
-					OCSPURIs:    []string{},
-					NetworkConfiguration: DeploymentNetworkConfiguration{
-						Geography:        "core",
-						MustHaveCiphers:  "ak-akamai-2020q1",
-						OCSPStapling:     "on",
-						PreferredCiphers: "ak-akamai-2020q1",
-						QUICEnabled:      false,
-						SecureNetwork:    "standard-tls",
-						SNIOnly:          true,
-						DisallowedTLSVersions: []string{
-							"TLSv1",
-							"TLSv1_1",
-						},
-						DNSNames: []string{
-							"san2.example.com",
-							"san1.example.com",
-						},
+				OCSPStapled: tools.BoolPtr(false),
+				OCSPURIs:    []string{},
+				NetworkConfiguration: DeploymentNetworkConfiguration{
+					Geography:        "core",
+					MustHaveCiphers:  "ak-akamai-2020q1",
+					OCSPStapling:     "on",
+					PreferredCiphers: "ak-akamai-2020q1",
+					QUICEnabled:      false,
+					SecureNetwork:    "standard-tls",
+					SNIOnly:          true,
+					DisallowedTLSVersions: []string{
+						"TLSv1",
+						"TLSv1_1",
 					},
-					PrimaryCertificate: DeploymentCertificate{
-						Certificate:        "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... 93Nvw==\n-----END CERTIFICATE-----",
-						Expiry:             "2022-02-05T13:21:21Z",
+					DNSNames: []string{
+						"san2.example.com",
+						"san1.example.com",
+					},
+				},
+				PrimaryCertificate: DeploymentCertificate{
+					Certificate:        "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... 93Nvw==\n-----END CERTIFICATE-----",
+					Expiry:             "2022-02-05T13:21:21Z",
+					SignatureAlgorithm: "SHA-256",
+					TrustChain:         "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... Qs/v0=\n-----END CERTIFICATE-----",
+				},
+				MultiStackedCertificates: []DeploymentCertificate{
+					{
+						Certificate:        "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... nMweq/\n-----END CERTIFICATE-----",
+						Expiry:             "2022-02-05T13:21:20Z",
 						SignatureAlgorithm: "SHA-256",
-						TrustChain:         "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... Qs/v0=\n-----END CERTIFICATE-----",
-					},
-					MultiStackedCertificates: []DeploymentCertificate{
-						{
-							Certificate:        "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... nMweq/\n-----END CERTIFICATE-----",
-							Expiry:             "2022-02-05T13:21:20Z",
-							SignatureAlgorithm: "SHA-256",
-							TrustChain:         "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... KEUp0=\n-----END CERTIFICATE-----",
-						},
+						TrustChain:         "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... KEUp0=\n-----END CERTIFICATE-----",
 					},
 				},
 			},
@@ -386,7 +382,6 @@ func TestGetStagingDeployment(t *testing.T) {
 			params:         GetDeploymentRequest{EnrollmentID: 10},
 			responseStatus: http.StatusOK,
 			responseBody: `{
-  "staging": {
     "ocspStapled": false,
     "ocspUris": [],
     "networkConfiguration": {
@@ -420,46 +415,44 @@ func TestGetStagingDeployment(t *testing.T) {
         "trustChain": "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... KEUp0=\n-----END CERTIFICATE-----"
       }
     ]
-  }
 }`,
 			expectedPath: "/cps/v2/enrollments/10/deployments/staging",
 			expectedHeaders: map[string]string{
 				"Accept": "application/vnd.akamai.cps.deployment.v7+json",
 			},
 			expectedResponse: &GetStagingDeploymentResponse{
-				Staging: Deployment{
-					OCSPStapled: tools.BoolPtr(false),
-					OCSPURIs:    []string{},
-					NetworkConfiguration: DeploymentNetworkConfiguration{
-						Geography:        "core",
-						MustHaveCiphers:  "ak-akamai-2020q1",
-						OCSPStapling:     "on",
-						PreferredCiphers: "ak-akamai-2020q1",
-						QUICEnabled:      false,
-						SecureNetwork:    "standard-tls",
-						SNIOnly:          true,
-						DisallowedTLSVersions: []string{
-							"TLSv1",
-							"TLSv1_1",
-						},
-						DNSNames: []string{
-							"san2.example.com",
-							"san1.example.com",
-						},
+
+				OCSPStapled: tools.BoolPtr(false),
+				OCSPURIs:    []string{},
+				NetworkConfiguration: DeploymentNetworkConfiguration{
+					Geography:        "core",
+					MustHaveCiphers:  "ak-akamai-2020q1",
+					OCSPStapling:     "on",
+					PreferredCiphers: "ak-akamai-2020q1",
+					QUICEnabled:      false,
+					SecureNetwork:    "standard-tls",
+					SNIOnly:          true,
+					DisallowedTLSVersions: []string{
+						"TLSv1",
+						"TLSv1_1",
 					},
-					PrimaryCertificate: DeploymentCertificate{
-						Certificate:        "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... 93Nvw==\n-----END CERTIFICATE-----",
-						Expiry:             "2022-02-05T13:21:21Z",
+					DNSNames: []string{
+						"san2.example.com",
+						"san1.example.com",
+					},
+				},
+				PrimaryCertificate: DeploymentCertificate{
+					Certificate:        "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... 93Nvw==\n-----END CERTIFICATE-----",
+					Expiry:             "2022-02-05T13:21:21Z",
+					SignatureAlgorithm: "SHA-256",
+					TrustChain:         "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... Qs/v0=\n-----END CERTIFICATE-----",
+				},
+				MultiStackedCertificates: []DeploymentCertificate{
+					{
+						Certificate:        "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... nMweq/\n-----END CERTIFICATE-----",
+						Expiry:             "2022-02-05T13:21:20Z",
 						SignatureAlgorithm: "SHA-256",
-						TrustChain:         "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... Qs/v0=\n-----END CERTIFICATE-----",
-					},
-					MultiStackedCertificates: []DeploymentCertificate{
-						{
-							Certificate:        "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... nMweq/\n-----END CERTIFICATE-----",
-							Expiry:             "2022-02-05T13:21:20Z",
-							SignatureAlgorithm: "SHA-256",
-							TrustChain:         "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... KEUp0=\n-----END CERTIFICATE-----",
-						},
+						TrustChain:         "-----BEGIN CERTIFICATE-----\nMIID <sample - removed for readability> .... KEUp0=\n-----END CERTIFICATE-----",
 					},
 				},
 			},
