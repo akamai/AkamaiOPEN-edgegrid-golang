@@ -969,6 +969,27 @@ func TestDs_Connectors(t *testing.T) {
 }]
     `,
 		},
+		"NewRelicConnector": {
+			connector: &NewRelicConnector{
+				ConnectorName:     "testConnectorName",
+				Endpoint:          "testEndpoint",
+				AuthToken:         "testAuthToken",
+				ContentType:       "testContentType",
+				CustomHeaderName:  "testCustomHeaderName",
+				CustomHeaderValue: "testCustomHeaderValue",
+			},
+			expectedJSON: `
+[{
+	"connectorType": "NEWRELIC",
+	"connectorName": "testConnectorName",
+	"endpoint": "testEndpoint",
+	"authToken": "testAuthToken",
+	"contentType": "testContentType",
+	"customHeaderName": "testCustomHeaderName",
+	"customHeaderValue": "testCustomHeaderValue"
+}]
+    `,
+		},
 	}
 
 	request := CreateStreamRequest{
