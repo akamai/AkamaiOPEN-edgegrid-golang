@@ -2,6 +2,7 @@ package configgtm
 
 import (
 	"fmt"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 

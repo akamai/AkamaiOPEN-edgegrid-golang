@@ -4,6 +4,7 @@ import (
 	"testing"
 	//edge "github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"fmt"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/h2non/gock.v1"

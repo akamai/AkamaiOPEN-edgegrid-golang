@@ -1,8 +1,9 @@
 package configgtm
 
 import (
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 )
 
 var (

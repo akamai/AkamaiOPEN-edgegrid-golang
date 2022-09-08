@@ -2,9 +2,10 @@ package configgtm
 
 import (
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"net/http"
 	"strings"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
 //

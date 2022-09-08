@@ -2,8 +2,9 @@ package dnsv2
 
 import (
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"testing"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/h2non/gock.v1"

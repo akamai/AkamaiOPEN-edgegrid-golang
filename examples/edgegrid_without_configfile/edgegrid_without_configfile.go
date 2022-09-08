@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/edgegrid"
 )
 
 func main() {

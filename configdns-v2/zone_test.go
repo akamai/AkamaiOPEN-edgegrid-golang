@@ -2,10 +2,11 @@ package dnsv2
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/jsonhooks-v1"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/h2non/gock.v1"
-	"testing"
 )
 
 func TestZone_JSON(t *testing.T) {

@@ -2,9 +2,10 @@ package dnsv2
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/h2non/gock.v1"
-	"testing"
 )
 
 func TestRecord_ContainsHelper(t *testing.T) {
