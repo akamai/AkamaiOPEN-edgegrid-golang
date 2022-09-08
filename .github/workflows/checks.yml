@@ -1,0 +1,22 @@
+name: build
+on:
+  push:
+    branches:
+     - "*"
+  pull_request:
+    branches:
+      - master
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: 'go.mod'
+      - name: Fmt check
+        run: make fmt-check
+      - name: Run tests
+        run: make test

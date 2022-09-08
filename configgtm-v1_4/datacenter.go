@@ -3,9 +3,10 @@ package configgtm
 import (
 	"errors"
 	"fmt"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"strconv"
 	"strings"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 )
 
 //

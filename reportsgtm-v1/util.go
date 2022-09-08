@@ -1,9 +1,10 @@
 package reportsgtm
 
 import (
+	"net/http"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/client-v1"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/configgtm-v1_3"
-	"net/http"
 
 	"fmt"
 	"time"
