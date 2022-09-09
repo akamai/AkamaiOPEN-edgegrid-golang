@@ -15,7 +15,7 @@ jobs:
       - name: Get changelog
         run: |
           echo 'CHANGELOG_BODY<<EOF' >> $GITHUB_ENV
-          awk '/## ([0-9]+\.?){2,3}/{n++}; n==1; n==2{exit}' CHANGELOG.md >> $GITHUB_ENV
+          awk '/## ([0-9]+\.?)+/{n++}; n==1; n==2{exit}' CHANGELOG.md >> $GITHUB_ENV
           echo 'EOF'>> $GITHUB_ENV
       - uses: release-drafter/release-drafter@v5
         env:
