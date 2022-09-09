@@ -2,15 +2,20 @@
 
 ## 2.XX.X (XXXXX XX, 2022)
 
+### Deprecations
+
+* CPS
+  * UpdateChange() function has been deprecated
+
 #### FEATURES/ENHANCEMENTS:
 
 * CPS
-  * ChangeManagementInfo - get change management info, get change deployment info
+  * ChangeManagementInfo - get change management info, get or acknowledge change deployment info
   * Deployments - list deployments, get production deployment, get staging deployment
   * DeploymentSchedules - get deployment schedule, update deployment schedule
   * History - get DV history, get certificate history, get change history
-  * PostVerification - get post verification warnings
-  * ThirdPartyCSR - get third-party CSR
+  * PostVerification - get or acknowledge post verification warnings 
+  * ThirdPartyCSR - get third-party CSR, upload certificate
 
 #### BREAKING CHANGES:
 

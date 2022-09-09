@@ -20,6 +20,11 @@ type (
 		//
 		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
 		GetChangeDeploymentInfo(ctx context.Context, params GetChangeRequest) (*ChangeDeploymentInfoResponse, error)
+
+		// AcknowledgeChangeManagement sends acknowledgement request to CPS to proceed deploying the certificate to the production network
+		//
+		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
+		AcknowledgeChangeManagement(context.Context, AcknowledgementRequest) error
 	}
 
 	// ChangeManagementInfoResponse contains response from GetChangeManagementInfo
@@ -79,6 +84,8 @@ var (
 	ErrGetChangeManagementInfo = errors.New("get change management info")
 	// ErrGetChangeDeploymentInfo is returned when GetChangeDeploymentInfo fails
 	ErrGetChangeDeploymentInfo = errors.New("get change deployment info")
+	// ErrAcknowledgeChangeManagement is returned when AcknowledgeChangeManagement fails
+	ErrAcknowledgeChangeManagement = errors.New("acknowledging change management")
 )
 
 func (c *cps) GetChangeManagementInfo(ctx context.Context, params GetChangeRequest) (*ChangeManagementInfoResponse, error) {
@@ -137,4 +144,33 @@ func (c *cps) GetChangeDeploymentInfo(ctx context.Context, params GetChangeReque
 	}
 
 	return &result, nil
+}
+
+func (c *cps) AcknowledgeChangeManagement(ctx context.Context, params AcknowledgementRequest) error {
+	c.Log(ctx).Debug("AcknowledgeChangeManagement")
+
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w: %s", ErrAcknowledgeChangeManagement, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf("/cps/v2/enrollments/%d/changes/%d/input/update/change-management-ack",
+		params.EnrollmentID, params.ChangeID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return fmt.Errorf("%w: failed to create request: %s", ErrAcknowledgeChangeManagement, err)
+	}
+	req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.acknowledgement.v1+json")
+
+	resp, err := c.Exec(req, nil, params.Acknowledgement)
+	if err != nil {
+		return fmt.Errorf("%w: request failed: %s", ErrAcknowledgeChangeManagement, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%s: %w", ErrAcknowledgeChangeManagement, c.Error(resp))
+	}
+
+	return nil
 }

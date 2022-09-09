@@ -14,6 +14,10 @@ type (
 		//
 		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
 		GetChangePostVerificationWarnings(ctx context.Context, params GetChangeRequest) (*PostVerificationWarnings, error)
+		// AcknowledgePostVerificationWarnings sends acknowledgement request to CPS informing that the warnings should be ignored
+		//
+		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
+		AcknowledgePostVerificationWarnings(context.Context, AcknowledgementRequest) error
 	}
 
 	// PostVerificationWarnings is a response object containing all warnings encountered during enrollment post-verification
@@ -25,6 +29,8 @@ type (
 var (
 	// ErrGetChangePostVerificationWarnings is returned when GetChangePostVerificationWarnings fails
 	ErrGetChangePostVerificationWarnings = errors.New("get post-verification-warnings")
+	// ErrAcknowledgePostVerificationWarnings is returned when AcknowledgePostVerificationWarnings fails
+	ErrAcknowledgePostVerificationWarnings = errors.New("acknowledging post-verification-warnings")
 )
 
 func (c *cps) GetChangePostVerificationWarnings(ctx context.Context, params GetChangeRequest) (*PostVerificationWarnings, error) {
@@ -54,4 +60,33 @@ func (c *cps) GetChangePostVerificationWarnings(ctx context.Context, params GetC
 	}
 
 	return &result, nil
+}
+
+func (c *cps) AcknowledgePostVerificationWarnings(ctx context.Context, params AcknowledgementRequest) error {
+	c.Log(ctx).Debug("AcknowledgePostVerificationWarnings")
+
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w: %s", ErrAcknowledgePostVerificationWarnings, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf("/cps/v2/enrollments/%d/changes/%d/input/update/post-verification-warnings-ack",
+		params.EnrollmentID, params.ChangeID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return fmt.Errorf("%w: failed to create request: %s", ErrAcknowledgePostVerificationWarnings, err)
+	}
+	req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.acknowledgement.v1+json")
+
+	resp, err := c.Exec(req, nil, params.Acknowledgement)
+	if err != nil {
+		return fmt.Errorf("%w: request failed: %s", ErrAcknowledgePostVerificationWarnings, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%s: %w", ErrAcknowledgePostVerificationWarnings, c.Error(resp))
+	}
+
+	return nil
 }
