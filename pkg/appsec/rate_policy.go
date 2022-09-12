@@ -33,7 +33,6 @@ type (
 	// CreateRatePolicyRequest is used to create a rate policy.
 	CreateRatePolicyRequest struct {
 		ID             int             `json:"-"`
-		PolicyID       int             `json:"-"`
 		ConfigID       int             `json:"configId"`
 		ConfigVersion  int             `json:"configVersion"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
@@ -42,7 +41,6 @@ type (
 	// CreateRatePolicyResponse is returned from a call to CreateRatePolicy.
 	CreateRatePolicyResponse struct {
 		ID                    int    `json:"id"`
-		PolicyID              int    `json:"policyId"`
 		ConfigID              int    `json:"configId"`
 		ConfigVersion         int    `json:"configVersion"`
 		MatchType             string `json:"matchType"`
@@ -65,9 +63,9 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hosts                  *RatePoliciesHosts                 `json:"hosts,omitempty"`
-		Hostnames              []string                           `json:"hostnames"`
-		AdditionalMatchOptions []RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions"`
+		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
+		Hostnames              []string                `json:"hostnames"`
+		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
 		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
@@ -82,7 +80,6 @@ type (
 	// UpdateRatePolicyRequest is used to modify an existing rate policy.
 	UpdateRatePolicyRequest struct {
 		RatePolicyID   int             `json:"id"`
-		PolicyID       int             `json:"policyId"`
 		ConfigID       int             `json:"configId"`
 		ConfigVersion  int             `json:"configVersion"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
@@ -91,7 +88,6 @@ type (
 	// UpdateRatePolicyResponse is returned from a call to UpdateRatePolicy.
 	UpdateRatePolicyResponse struct {
 		ID                    int    `json:"id"`
-		PolicyID              int    `json:"policyId"`
 		ConfigID              int    `json:"configId"`
 		ConfigVersion         int    `json:"configVersion"`
 		MatchType             string `json:"matchType"`
@@ -114,14 +110,10 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hosts                  *RatePoliciesHosts `json:"hosts,omitempty"`
-		Hostnames              []string           `json:"hostnames"`
-		AdditionalMatchOptions []struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Type          string   `json:"type"`
-			Values        []string `json:"values"`
-		} `json:"additionalMatchOptions"`
-		QueryParameters []struct {
+		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
+		Hostnames              []string                `json:"hostnames"`
+		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
+		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
 			PositiveMatch bool     `json:"positiveMatch"`
@@ -142,7 +134,6 @@ type (
 	// RemoveRatePolicyResponse is returned from a call to RemoveRatePolicy.
 	RemoveRatePolicyResponse struct {
 		ID                    int    `json:"id"`
-		PolicyID              int    `json:"policyId"`
 		ConfigID              int    `json:"configId"`
 		ConfigVersion         int    `json:"configVersion"`
 		MatchType             string `json:"matchType"`
@@ -165,14 +156,10 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hosts                  *RatePoliciesHosts `json:"hosts,omitempty"`
-		Hostnames              []string           `json:"hostnames"`
-		AdditionalMatchOptions []struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Type          string   `json:"type"`
-			Values        []string `json:"values"`
-		} `json:"additionalMatchOptions"`
-		QueryParameters []struct {
+		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
+		Hostnames              []string                `json:"hostnames"`
+		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
+		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
 			PositiveMatch bool     `json:"positiveMatch"`
@@ -193,33 +180,33 @@ type (
 	// GetRatePoliciesResponse is returned from a call to GetRatePolicies.
 	GetRatePoliciesResponse struct {
 		RatePolicies []struct {
-			ID                     int                               `json:"id"`
-			ConfigID               int                               `json:"-"`
-			ConfigVersion          int                               `json:"-"`
-			MatchType              string                            `json:"matchType,omitempty"`
-			Type                   string                            `json:"type,omitempty"`
-			Name                   string                            `json:"name,omitempty"`
-			Description            string                            `json:"description,omitempty"`
-			AverageThreshold       int                               `json:"averageThreshold,omitempty"`
-			BurstThreshold         int                               `json:"burstThreshold,omitempty"`
-			ClientIdentifier       string                            `json:"clientIdentifier,omitempty"`
-			UseXForwardForHeaders  bool                              `json:"useXForwardForHeaders"`
-			RequestType            string                            `json:"requestType,omitempty"`
-			SameActionOnIpv6       bool                              `json:"sameActionOnIpv6"`
-			Path                   *RatePolicyPath                   `json:"path,omitempty"`
-			PathMatchType          string                            `json:"pathMatchType,omitempty"`
-			PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch"`
-			FileExtensions         *RatePolicyFileExtensions         `json:"fileExtensions,omitempty"`
-			Hosts                  *RatePoliciesHosts                `json:"hosts,omitempty"`
-			Hostnames              []string                          `json:"hostnames,omitempty"`
-			AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
-			QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
-			CreateDate             string                            `json:"-"`
-			UpdateDate             string                            `json:"-"`
-			Used                   json.RawMessage                   `json:"used"`
-			SameActionOnIpv        bool                              `json:"sameActionOnIpv"`
-			APISelectors           *RatePolicyAPISelectors           `json:"apiSelectors,omitempty"`
-			BodyParameters         *RatePolicyBodyParameters         `json:"bodyParameters,omitempty"`
+			ID                     int                        `json:"id"`
+			ConfigID               int                        `json:"-"`
+			ConfigVersion          int                        `json:"-"`
+			MatchType              string                     `json:"matchType,omitempty"`
+			Type                   string                     `json:"type,omitempty"`
+			Name                   string                     `json:"name,omitempty"`
+			Description            string                     `json:"description,omitempty"`
+			AverageThreshold       int                        `json:"averageThreshold,omitempty"`
+			BurstThreshold         int                        `json:"burstThreshold,omitempty"`
+			ClientIdentifier       string                     `json:"clientIdentifier,omitempty"`
+			UseXForwardForHeaders  bool                       `json:"useXForwardForHeaders"`
+			RequestType            string                     `json:"requestType,omitempty"`
+			SameActionOnIpv6       bool                       `json:"sameActionOnIpv6"`
+			Path                   *RatePolicyPath            `json:"path,omitempty"`
+			PathMatchType          string                     `json:"pathMatchType,omitempty"`
+			PathURIPositiveMatch   bool                       `json:"pathUriPositiveMatch"`
+			FileExtensions         *RatePolicyFileExtensions  `json:"fileExtensions,omitempty"`
+			Hosts                  *RatePoliciesHosts         `json:"hosts,omitempty"`
+			Hostnames              []string                   `json:"hostnames,omitempty"`
+			AdditionalMatchOptions []RatePolicyMatchOption    `json:"additionalMatchOptions,omitempty"`
+			QueryParameters        *RatePolicyQueryParameters `json:"queryParameters,omitempty"`
+			CreateDate             string                     `json:"-"`
+			UpdateDate             string                     `json:"-"`
+			Used                   json.RawMessage            `json:"used"`
+			SameActionOnIpv        bool                       `json:"sameActionOnIpv"`
+			APISelectors           *RatePolicyAPISelectors    `json:"apiSelectors,omitempty"`
+			BodyParameters         *RatePolicyBodyParameters  `json:"bodyParameters,omitempty"`
 		} `json:"ratePolicies,omitempty"`
 	}
 
@@ -232,31 +219,30 @@ type (
 
 	// GetRatePolicyResponse is returned from a call to GetRatePolicy.
 	GetRatePolicyResponse struct {
-		ID                     int                               `json:"-"`
-		PolicyID               int                               `json:"policyId,omitempty"`
-		ConfigID               int                               `json:"-"`
-		ConfigVersion          int                               `json:"-"`
-		MatchType              string                            `json:"matchType,omitempty"`
-		Type                   string                            `json:"type,omitempty"`
-		Name                   string                            `json:"name,omitempty"`
-		Description            string                            `json:"description,omitempty"`
-		AverageThreshold       int                               `json:"averageThreshold,omitempty"`
-		BurstThreshold         int                               `json:"burstThreshold,omitempty"`
-		ClientIdentifier       string                            `json:"clientIdentifier,omitempty"`
-		UseXForwardForHeaders  bool                              `json:"useXForwardForHeaders"`
-		RequestType            string                            `json:"requestType,omitempty"`
-		SameActionOnIpv6       bool                              `json:"sameActionOnIpv6"`
-		Path                   *RatePolicyPath                   `json:"path,omitempty"`
-		PathMatchType          string                            `json:"pathMatchType,omitempty"`
-		PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch"`
-		FileExtensions         *RatePolicyFileExtensions         `json:"fileExtensions,omitempty"`
-		Hosts                  *RatePoliciesHosts                `json:"hosts,omitempty"`
-		Hostnames              []string                          `json:"hostnames,omitempty"`
-		AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
-		QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
-		CreateDate             string                            `json:"-"`
-		UpdateDate             string                            `json:"-"`
-		Used                   bool                              `json:"-"`
+		ID                     int                        `json:"-"`
+		ConfigID               int                        `json:"-"`
+		ConfigVersion          int                        `json:"-"`
+		MatchType              string                     `json:"matchType,omitempty"`
+		Type                   string                     `json:"type,omitempty"`
+		Name                   string                     `json:"name,omitempty"`
+		Description            string                     `json:"description,omitempty"`
+		AverageThreshold       int                        `json:"averageThreshold,omitempty"`
+		BurstThreshold         int                        `json:"burstThreshold,omitempty"`
+		ClientIdentifier       string                     `json:"clientIdentifier,omitempty"`
+		UseXForwardForHeaders  bool                       `json:"useXForwardForHeaders"`
+		RequestType            string                     `json:"requestType,omitempty"`
+		SameActionOnIpv6       bool                       `json:"sameActionOnIpv6"`
+		Path                   *RatePolicyPath            `json:"path,omitempty"`
+		PathMatchType          string                     `json:"pathMatchType,omitempty"`
+		PathURIPositiveMatch   bool                       `json:"pathUriPositiveMatch"`
+		FileExtensions         *RatePolicyFileExtensions  `json:"fileExtensions,omitempty"`
+		Hosts                  *RatePoliciesHosts         `json:"hosts,omitempty"`
+		Hostnames              []string                   `json:"hostnames,omitempty"`
+		AdditionalMatchOptions []RatePolicyMatchOption    `json:"additionalMatchOptions,omitempty"`
+		QueryParameters        *RatePolicyQueryParameters `json:"queryParameters,omitempty"`
+		CreateDate             string                     `json:"-"`
+		UpdateDate             string                     `json:"-"`
+		Used                   bool                       `json:"-"`
 	}
 
 	// RatePolicyAPISelectors is used as part of a rate policy description.
@@ -287,8 +273,8 @@ type (
 		Values        []string `json:"values,omitempty"`
 	}
 
-	// RatePolicyAdditionalMatchOptions is used as part of a rate policy description.
-	RatePolicyAdditionalMatchOptions []struct {
+	// RatePolicyMatchOption is used as part of a rate policy description.
+	RatePolicyMatchOption struct {
 		PositiveMatch bool     `json:"positiveMatch"`
 		Type          string   `json:"type,omitempty"`
 		Values        []string `json:"values,omitempty"`

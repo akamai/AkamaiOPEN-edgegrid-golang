@@ -53,7 +53,7 @@ type (
 			Status              string                     `json:"status"`
 			Version             int                        `json:"version"`
 			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
-			SamplingRate        string                     `json:"samplingRate,omitempty"`
+			SamplingRate        *int                       `json:"samplingRate,omitempty"`
 		} `json:"customRules"`
 	}
 
