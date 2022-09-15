@@ -1,5 +1,35 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.16.0 (September XX, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Add deprecation notes for the following:
+    * methods:
+      * GetIPGeoProtections
+      * GetNetworkLayerProtections
+      * GetRateProtections
+      * GetReputationProtections
+      * GetSlowPostProtectionSetting
+      * GetSlowPostProtections
+      * GetWAFProtections
+      * RemoveNetworkLayerProtection
+      * RemovePolicyProtections
+      * RemoveReputationProtection
+    * structs:
+      * GetIPGeoProtectionsRequest
+      * GetNetworkLayerProtectionsRequest
+      * GetRateProtectionsRequest
+      * GetReputationProtectionsRequest
+      * GetSlowPostProtectionSettingRequest
+      * GetSlowPostProtectionSettingResponse
+      * GetSlowPostProtectionsRequest
+      * GetWAFProtectionsRequest
+      * RemoveNetworkLayerProtectionRequest
+      * RemovePolicyProtectionsRequest
+      * RemoveReputationProtectionRequest
+
 ## 2.15.0 (August 22, 2022)
 
 #### FEATURES/ENHANCEMENTS:
