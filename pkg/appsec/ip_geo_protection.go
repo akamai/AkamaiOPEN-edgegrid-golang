@@ -9,17 +9,23 @@ import (
 )
 
 type (
-	// The IPGeoProtection interface supports retrieving and modifying the protections for a policy,
-	// and whether each is enabled or disabled.
+	// The IPGeoProtection interface supports retrieving and updating IPGeo protection for a configuration and policy.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	IPGeoProtection interface {
+		// GetIPGeoProtections retrieves the current IPGeo protection protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// Deprecated: this method will be removed in a future release. Use GetIPGeoProtection instead.
 		GetIPGeoProtections(ctx context.Context, params GetIPGeoProtectionsRequest) (*GetIPGeoProtectionsResponse, error)
 
+		// GetIPGeoProtection retrieves the current IPGeo protection protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetIPGeoProtection(ctx context.Context, params GetIPGeoProtectionRequest) (*GetIPGeoProtectionResponse, error)
 
+		// SetIPGeoProtection updates the IPGeo protection protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateIPGeoProtection(ctx context.Context, params UpdateIPGeoProtectionRequest) (*UpdateIPGeoProtectionResponse, error)
 	}
@@ -36,6 +42,7 @@ type (
 	GetIPGeoProtectionResponse ProtectionsResponse
 
 	// GetIPGeoProtectionsRequest is used to retrieve the IPGeo protection settings.
+	// Deprecated: this struct will be removed in a future release.
 	GetIPGeoProtectionsRequest struct {
 		ConfigID                  int    `json:"-"`
 		Version                   int    `json:"-"`
@@ -44,6 +51,7 @@ type (
 	}
 
 	// GetIPGeoProtectionsResponse is returned from a call to GetIPGeoProtections.
+	// Deprecated: this struct will be removed in a future release.
 	GetIPGeoProtectionsResponse ProtectionsResponse
 
 	// UpdateIPGeoProtectionRequest is used to modify the IPGeo protection settings.

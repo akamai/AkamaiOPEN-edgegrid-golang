@@ -9,17 +9,23 @@ import (
 )
 
 type (
-	// The WAFProtection interface supports retrieving, modifying and removing protections for a
-	// security policy.
+	// The WAFProtection interface supports retrieving and updating application layer protection for a configuration and policy.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	WAFProtection interface {
+		// GetWAFProtections retrieves the current WAF protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// Deprecated: this method will be removed in a future release. Use GetWAFProtection instead.
 		GetWAFProtections(ctx context.Context, params GetWAFProtectionsRequest) (*GetWAFProtectionsResponse, error)
 
+		// GetWAFProtection retrieves the current WAF protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetWAFProtection(ctx context.Context, params GetWAFProtectionRequest) (*GetWAFProtectionResponse, error)
 
+		// UpdateWAFProtection updates the WAF protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateWAFProtection(ctx context.Context, params UpdateWAFProtectionRequest) (*UpdateWAFProtectionResponse, error)
 	}
@@ -36,6 +42,7 @@ type (
 	GetWAFProtectionResponse ProtectionsResponse
 
 	// GetWAFProtectionsRequest is used to retrieve the WAF protection setting.
+	// Deprecated: this struct will be removed in a future release.
 	GetWAFProtectionsRequest struct {
 		ConfigID                      int    `json:"-"`
 		Version                       int    `json:"-"`
@@ -44,6 +51,7 @@ type (
 	}
 
 	// GetWAFProtectionsResponse is returned from a call to GetWAFProtections.
+	// Deprecated: this struct will be removed in a future release.
 	GetWAFProtectionsResponse ProtectionsResponse
 
 	// UpdateWAFProtectionRequest is used to modify the WAF protection setting.

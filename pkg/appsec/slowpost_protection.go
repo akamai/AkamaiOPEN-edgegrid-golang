@@ -9,17 +9,23 @@ import (
 )
 
 type (
-	// The SlowPostProtection interface supports retrieving and updating slow post protection
-	// for a configuration and policy.
+	// The SlowPostProtection interface supports retrieving and updating slow post protection for a configuration and policy.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#slowpostprotection
 	SlowPostProtection interface {
+		// GetSlowPostProtections retrieves the current SLOW post protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// Deprecated: this method will be removed in a future release. Use GetSlowPostProtection instead.
 		GetSlowPostProtections(ctx context.Context, params GetSlowPostProtectionsRequest) (*GetSlowPostProtectionsResponse, error)
 
+		// GetSlowPostProtection retrieves the current SLOW post protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetSlowPostProtection(ctx context.Context, params GetSlowPostProtectionRequest) (*GetSlowPostProtectionResponse, error)
 
+		// UpdateSlowPostProtection updates the SLOW post protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateSlowPostProtection(ctx context.Context, params UpdateSlowPostProtectionRequest) (*UpdateSlowPostProtectionResponse, error)
 	}
@@ -36,6 +42,7 @@ type (
 	GetSlowPostProtectionResponse ProtectionsResponse
 
 	// GetSlowPostProtectionsRequest is used to retrieve the slow post protecton setting for a policy.
+	// Deprecated: this struct will be removed in a future release.
 	GetSlowPostProtectionsRequest struct {
 		ConfigID              int    `json:"-"`
 		Version               int    `json:"-"`
@@ -44,6 +51,7 @@ type (
 	}
 
 	// GetSlowPostProtectionsResponse is returned from a call to GetSlowPostProtections.
+	// Deprecated: this struct will be removed in a future release.
 	GetSlowPostProtectionsResponse ProtectionsResponse
 
 	// UpdateSlowPostProtectionRequest is used to modify the slow post protection setting.

@@ -9,18 +9,24 @@ import (
 )
 
 type (
-	// The PolicyProtections interface supports retrieving, modifying and removing protections for a
-	// security policy.
+	// The PolicyProtections interface supports retrieving and updating protections for a configuration and policy.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	PolicyProtections interface {
+		// GetPolicyProtections retrieves the current protection settings for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetPolicyProtections(ctx context.Context, params GetPolicyProtectionsRequest) (*PolicyProtectionsResponse, error)
 
+		// UpdatePolicyProtections updates the protection settings for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdatePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error)
 
+		// RemovePolicyProtections removes protection settings for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
+		// Deprecated: this method will be removed in a future release. Use UpdatePolicyProtections instead.
 		RemovePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error)
 	}
 

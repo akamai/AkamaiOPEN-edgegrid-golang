@@ -9,20 +9,30 @@ import (
 )
 
 type (
-	// The NetworkLayerProtection interface supports retrieving, modifying and removing network layer protection.
+	// The NetworkLayerProtection interface supports retrieving and updating network layer protection for a configuration and policy.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	NetworkLayerProtection interface {
+		// GetNetworkLayerProtections retrieves the current network layer protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// Deprecated: this method will be removed in a future release. Use GetNetworkLayerProtection instead.
 		GetNetworkLayerProtections(ctx context.Context, params GetNetworkLayerProtectionsRequest) (*GetNetworkLayerProtectionsResponse, error)
 
+		// GetNetworkLayerProtection retrieves the current network layer protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetNetworkLayerProtection(ctx context.Context, params GetNetworkLayerProtectionRequest) (*GetNetworkLayerProtectionResponse, error)
 
+		// UpdateNetworkLayerProtection updates the network layer protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateNetworkLayerProtection(ctx context.Context, params UpdateNetworkLayerProtectionRequest) (*UpdateNetworkLayerProtectionResponse, error)
 
+		// UpdateNetworkLayerProtection removes network layer protection for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
+		// Deprecated: this method will be removed in a future release. Use UpdateNetworkLayerProtection instead.
 		RemoveNetworkLayerProtection(ctx context.Context, params RemoveNetworkLayerProtectionRequest) (*RemoveNetworkLayerProtectionResponse, error)
 	}
 
@@ -38,6 +48,7 @@ type (
 	GetNetworkLayerProtectionResponse ProtectionsResponse
 
 	// GetNetworkLayerProtectionsRequest is used to retrieve the network layer protection setting.
+	// Deprecated: this struct will be removed in a future release.
 	GetNetworkLayerProtectionsRequest struct {
 		ConfigID                  int    `json:"-"`
 		Version                   int    `json:"-"`
@@ -46,6 +57,7 @@ type (
 	}
 
 	// GetNetworkLayerProtectionsResponse is returned from a call to GetNetworkLayerProtection.
+	// Deprecated: this struct will be removed in a future release.
 	GetNetworkLayerProtectionsResponse ProtectionsResponse
 
 	// UpdateNetworkLayerProtectionRequest is used to modify the network layer protection setting.
@@ -60,6 +72,7 @@ type (
 	UpdateNetworkLayerProtectionResponse ProtectionsResponse
 
 	// RemoveNetworkLayerProtectionRequest is used to remove the network layer protection setting.
+	// Deprecated: this struct will be removed in a future release.
 	RemoveNetworkLayerProtectionRequest struct {
 		ConfigID                  int    `json:"-"`
 		Version                   int    `json:"-"`
@@ -68,6 +81,7 @@ type (
 	}
 
 	// RemoveNetworkLayerProtectionResponse is returned from a call to RemoveNetworkLayerProtection.
+	// Deprecated: this struct will be removed in a future release.
 	RemoveNetworkLayerProtectionResponse ProtectionsResponse
 )
 

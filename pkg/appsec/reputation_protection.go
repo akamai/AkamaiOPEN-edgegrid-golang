@@ -9,21 +9,30 @@ import (
 )
 
 type (
-	// The ReputationProtection interface supports retrieving, modifying and removing reputation
-	// protection.
+	// The ReputationProtection interface supports retrieving and updating reputation protection for a configuration and policy.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	ReputationProtection interface {
+		// GetReputationProtections retrieves the current reputation protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// Deprecated: this method will be removed in a future release. Use GetReputationProtection instead.
 		GetReputationProtections(ctx context.Context, params GetReputationProtectionsRequest) (*GetReputationProtectionsResponse, error)
 
+		// GetReputationProtection retrieves the current reputation protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetReputationProtection(ctx context.Context, params GetReputationProtectionRequest) (*GetReputationProtectionResponse, error)
 
+		// UpdateReputationProtection updates the reputation protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateReputationProtection(ctx context.Context, params UpdateReputationProtectionRequest) (*UpdateReputationProtectionResponse, error)
 
+		// RemoveReputationProtection removes reputation protection for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
+		// Deprecated: this method will be removed in a future release. Use UpdateReputationProtection instead.
 		RemoveReputationProtection(ctx context.Context, params RemoveReputationProtectionRequest) (*RemoveReputationProtectionResponse, error)
 	}
 
@@ -39,6 +48,7 @@ type (
 	GetReputationProtectionResponse ProtectionsResponse
 
 	// GetReputationProtectionsRequest is used to retrieve the reputation protection setting.
+	// Deprecated: this struct will be removed in a future release.
 	GetReputationProtectionsRequest struct {
 		ConfigID                int    `json:"-"`
 		Version                 int    `json:"-"`
@@ -47,6 +57,7 @@ type (
 	}
 
 	// GetReputationProtectionsResponse is returned from a call to GetReputationProtection.
+	// Deprecated: this struct will be removed in a future release.
 	GetReputationProtectionsResponse ProtectionsResponse
 
 	// UpdateReputationProtectionRequest is used to modify the reputation protection setting.
@@ -61,6 +72,7 @@ type (
 	UpdateReputationProtectionResponse ProtectionsResponse
 
 	// RemoveReputationProtectionRequest is used to remove the reputation protection settings.
+	// Deprecated: this struct will be removed in a future release.
 	RemoveReputationProtectionRequest struct {
 		ConfigID                int    `json:"-"`
 		Version                 int    `json:"-"`
@@ -69,6 +81,7 @@ type (
 	}
 
 	// RemoveReputationProtectionResponse is returned from a call to RemoveReputationProtection.
+	// Deprecated: this struct will be removed in a future release.
 	RemoveReputationProtectionResponse ProtectionsResponse
 )
 

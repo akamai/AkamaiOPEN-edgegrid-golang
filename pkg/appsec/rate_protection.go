@@ -9,17 +9,23 @@ import (
 )
 
 type (
-	// The RateProtection interface supports retrieving and updating rate controls for a configuration
-	// and policy.
+	// The RateProtection interface supports retrieving and updating rate protection for a configuration and policy.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	RateProtection interface {
+		// GetRateProtections retrieves the current rate protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// Deprecated: this method will be removed in a future release. Use GetRateProtection instead.
 		GetRateProtections(ctx context.Context, params GetRateProtectionsRequest) (*GetRateProtectionsResponse, error)
 
+		// GetRateProtection retrieves the current rate protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetRateProtection(ctx context.Context, params GetRateProtectionRequest) (*GetRateProtectionResponse, error)
 
+		// UpdateRateProtection updates the rate protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateRateProtection(ctx context.Context, params UpdateRateProtectionRequest) (*UpdateRateProtectionResponse, error)
 	}
@@ -36,6 +42,7 @@ type (
 	GetRateProtectionResponse ProtectionsResponse
 
 	// GetRateProtectionsRequest is used to retrieve the rate protection setting.
+	// Deprecated: this struct will be removed in a future release.
 	GetRateProtectionsRequest struct {
 		ConfigID          int    `json:"-"`
 		Version           int    `json:"-"`
@@ -44,6 +51,7 @@ type (
 	}
 
 	// GetRateProtectionsResponse is returned from a call to GetRateProtection.
+	// Deprecated: this struct will be removed in a future release.
 	GetRateProtectionsResponse ProtectionsResponse
 
 	// UpdateRateProtectionRequest is used to modify the rate protection setting.
