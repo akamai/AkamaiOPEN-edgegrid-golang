@@ -143,8 +143,9 @@ type (
 		} `json:"rulesets"`
 		MatchTargets struct {
 			APITargets []struct {
-				Sequence int    `json:"-"`
+				Sequence int    `json:"sequence"`
 				ID       int    `json:"id,omitempty"`
+				TargetID int    `json:"targetId"`
 				Type     string `json:"type,omitempty"`
 				Apis     []struct {
 					ID   int    `json:"id,omitempty"`
