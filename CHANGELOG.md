@@ -5,6 +5,12 @@
 #### FEATURES/ENHANCEMENTS:
 
 * APPSEC
+  * Add interfaces to support file malware scanning (FMS):
+    * MalwareComntentTypes
+    * MalwarePolicy
+    * MalwarePolicyAction
+    * MalwareProtection
+  * Add GetRuleRecommendations method to TuningRecommendations interface
   * Add deprecation notes for the following:
     * methods:
       * GetIPGeoProtections
