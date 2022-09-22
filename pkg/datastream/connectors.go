@@ -141,6 +141,24 @@ type (
 		CustomHeaderValue string        `json:"customHeaderValue,omitempty"`
 	}
 
+	// ElasticsearchConnector contains details about Elasticsearch connector.
+	// See: https://techdocs.akamai.com/datastream2/docs/stream-elasticsearch
+	ElasticsearchConnector struct {
+		ConnectorType     ConnectorType `json:"connectorType"`
+		ConnectorName     string        `json:"connectorName"`
+		Endpoint          string        `json:"endpoint"`
+		IndexName         string        `json:"indexName"`
+		UserName          string        `json:"userName"`
+		Password          string        `json:"password"`
+		ContentType       string        `json:"contentType,omitempty"`
+		CustomHeaderName  string        `json:"customHeaderName,omitempty"`
+		CustomHeaderValue string        `json:"customHeaderValue,omitempty"`
+		TLSHostname       string        `json:"tlsHostname,omitempty"`
+		CACert            string        `json:"caCert,omitempty"`
+		ClientCert        string        `json:"clientCert,omitempty"`
+		ClientKey         string        `json:"clientKey,omitempty"`
+	}
+
 	// ConnectorType is used to create an "enum" of possible ConnectorTypes
 	ConnectorType string
 
@@ -169,6 +187,8 @@ const (
 	ConnectorTypeLoggly ConnectorType = "LOGGLY"
 	// ConnectorTypeNewRelic const
 	ConnectorTypeNewRelic ConnectorType = "NEWRELIC"
+	// ConnectorTypeElasticsearch const
+	ConnectorTypeElasticsearch ConnectorType = "ELASTICSEARCH"
 
 	// AuthenticationTypeNone const
 	AuthenticationTypeNone AuthenticationType = "NONE"
@@ -346,6 +366,25 @@ func (c *NewRelicConnector) Validate() error {
 		"ConnectorName":     validation.Validate(c.ConnectorName, validation.Required),
 		"Endpoint":          validation.Validate(c.Endpoint, validation.Required),
 		"AuthToken":         validation.Validate(c.AuthToken, validation.Required),
+		"CustomHeaderName":  validation.Validate(c.CustomHeaderName, validation.Required.When(c.CustomHeaderValue != ""), validation.When(c.CustomHeaderName != "", validation.Match(customHeaderNameRegexp))),
+		"CustomHeaderValue": validation.Validate(c.CustomHeaderValue, validation.Required.When(c.CustomHeaderName != "")),
+	}.Filter()
+}
+
+// SetConnectorType for ElasticsearchConnector
+func (c *ElasticsearchConnector) SetConnectorType() {
+	c.ConnectorType = ConnectorTypeElasticsearch
+}
+
+// Validate validates ElasticsearchConnector
+func (c *ElasticsearchConnector) Validate() error {
+	return validation.Errors{
+		"ConnectorType":     validation.Validate(c.ConnectorType, validation.Required, validation.In(ConnectorTypeElasticsearch)),
+		"ConnectorName":     validation.Validate(c.ConnectorName, validation.Required),
+		"Endpoint":          validation.Validate(c.Endpoint, validation.Required),
+		"UserName":          validation.Validate(c.UserName, validation.Required),
+		"Password":          validation.Validate(c.Password, validation.Required),
+		"IndexName":         validation.Validate(c.IndexName, validation.Required),
 		"CustomHeaderName":  validation.Validate(c.CustomHeaderName, validation.Required.When(c.CustomHeaderValue != ""), validation.When(c.CustomHeaderName != "", validation.Match(customHeaderNameRegexp))),
 		"CustomHeaderValue": validation.Validate(c.CustomHeaderValue, validation.Required.When(c.CustomHeaderName != "")),
 	}.Filter()

@@ -990,6 +990,39 @@ func TestDs_Connectors(t *testing.T) {
 }]
     `,
 		},
+		"ElasticsearchConnector": {
+			connector: &ElasticsearchConnector{
+				ConnectorName:     "testConnectorName",
+				Endpoint:          "testEndpoint",
+				IndexName:         "testIndexName",
+				UserName:          "testUserName",
+				Password:          "testPassword",
+				ContentType:       "testContentType",
+				CustomHeaderName:  "testCustomHeaderName",
+				CustomHeaderValue: "testCustomHeaderValue",
+				TLSHostname:       "testTLSHostname",
+				CACert:            "testCACert",
+				ClientCert:        "testClientCert",
+				ClientKey:         "testClientKey",
+			},
+			expectedJSON: `
+[{
+	"connectorType": "ELASTICSEARCH",
+	"connectorName": "testConnectorName",
+	"endpoint": "testEndpoint",
+	"indexName": "testIndexName",
+	"userName": "testUserName",
+	"password": "testPassword",
+	"contentType": "testContentType",
+	"customHeaderName": "testCustomHeaderName",
+	"customHeaderValue": "testCustomHeaderValue",
+	"tlsHostname": "testTLSHostname",
+	"caCert": "testCACert",
+	"clientCert": "testClientCert",
+	"clientKey": "testClientKey"
+}]
+    `,
+		},
 	}
 
 	request := CreateStreamRequest{

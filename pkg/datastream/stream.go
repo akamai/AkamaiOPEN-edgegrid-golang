@@ -71,6 +71,7 @@ type (
 		Path               string             `json:"path"`
 		URL                string             `json:"url"`
 		Endpoint           string             `json:"endpoint"`
+		IndexName          string             `json:"indexName"`
 		ServiceAccountName string             `json:"serviceAccountName"`
 		ProjectID          string             `json:"projectId"`
 		Service            string             `json:"service"`
