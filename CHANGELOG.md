@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.16.0 (September XX, 2022)
+## 2.16.0 (September 26, 2022)
 
 #### FEATURES/ENHANCEMENTS:
 
