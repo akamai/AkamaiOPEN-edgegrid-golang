@@ -1,0 +1,26 @@
+name: release
+on:
+  push:
+    tags:
+      - "v*.*.*"
+jobs:
+  create_release_draft:
+    permissions:
+      contents: write
+      pull-requests: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get changelog
+        run: |
+          echo 'CHANGELOG_BODY<<EOF' >> $GITHUB_ENV
+          awk '/## ([0-9]+\.?)+/{n++}; n==1; n==2{exit}' CHANGELOG.md >> $GITHUB_ENV
+          echo 'EOF'>> $GITHUB_ENV
+      - uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ github.ref_name }}
+          name: "Edgegrid ${{ github.ref_name }} release"
+          footer: "${{ env.CHANGELOG_BODY }}"
