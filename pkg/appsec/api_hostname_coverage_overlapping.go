@@ -47,14 +47,14 @@ func (v GetApiHostnameCoverageOverlappingRequest) Validate() error {
 }
 
 func (p *appsec) GetApiHostnameCoverageOverlapping(ctx context.Context, params GetApiHostnameCoverageOverlappingRequest) (*GetApiHostnameCoverageOverlappingResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetApiHostnameCoverageOverlapping")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetApiHostnameCoverageOverlapping")
-
-	var rval GetApiHostnameCoverageOverlappingResponse
+	var result GetApiHostnameCoverageOverlappingResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/hostname-coverage/overlapping?hostname=%s",
@@ -68,7 +68,7 @@ func (p *appsec) GetApiHostnameCoverageOverlapping(ctx context.Context, params G
 		return nil, fmt.Errorf("failed to create GetApiHostnameCoverageOverlapping request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetApiHostnameCoverageOverlapping request failed: %w", err)
 	}
@@ -77,6 +77,6 @@ func (p *appsec) GetApiHostnameCoverageOverlapping(ctx context.Context, params G
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }

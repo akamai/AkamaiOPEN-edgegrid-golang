@@ -125,7 +125,7 @@ func (p *appsec) GetWAPBypassNetworkLists(ctx context.Context, params GetWAPBypa
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var rval GetWAPBypassNetworkListsResponse
+	var result GetWAPBypassNetworkListsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/bypass-network-lists",
@@ -139,7 +139,7 @@ func (p *appsec) GetWAPBypassNetworkLists(ctx context.Context, params GetWAPBypa
 		return nil, fmt.Errorf("failed to create GetWAPBypassNetworkLists request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetWAPBypassNetworkLists request failed: %w", err)
 	}
@@ -148,7 +148,7 @@ func (p *appsec) GetWAPBypassNetworkLists(ctx context.Context, params GetWAPBypa
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
@@ -160,20 +160,20 @@ func (p *appsec) UpdateWAPBypassNetworkLists(ctx context.Context, params UpdateW
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/bypass-network-lists",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateWAPBypassNetworkLists request: %w", err)
 	}
 
-	var rval UpdateWAPBypassNetworkListsResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateWAPBypassNetworkListsResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateWAPBypassNetworkLists request failed: %w", err)
 	}
@@ -182,7 +182,7 @@ func (p *appsec) UpdateWAPBypassNetworkLists(ctx context.Context, params UpdateW
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 // Deprecated: this method will be removed in a future release.
@@ -194,20 +194,20 @@ func (p *appsec) RemoveWAPBypassNetworkLists(ctx context.Context, params RemoveW
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/bypass-network-lists",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveWAPBypassNetworkLists request: %w", err)
 	}
 
-	var rval RemoveWAPBypassNetworkListsResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result RemoveWAPBypassNetworkListsResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveWAPBypassNetworkLists request failed: %w", err)
 	}
@@ -216,5 +216,5 @@ func (p *appsec) RemoveWAPBypassNetworkLists(ctx context.Context, params RemoveW
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

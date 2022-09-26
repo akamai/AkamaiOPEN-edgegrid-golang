@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"reflect"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -54,7 +53,7 @@ type (
 			Status              string                     `json:"status"`
 			Version             int                        `json:"version"`
 			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
-			SamplingRate        string                     `json:"samplingRate,omitempty"`
+			SamplingRate        *int                       `json:"samplingRate,omitempty"`
 		} `json:"customRules"`
 	}
 
@@ -257,14 +256,14 @@ func (v RemoveCustomRuleRequest) Validate() error {
 }
 
 func (p *appsec) GetCustomRule(ctx context.Context, params GetCustomRuleRequest) (*GetCustomRuleResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetCustomRule")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetCustomRule")
-
-	var rval GetCustomRuleResponse
+	var result GetCustomRuleResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/custom-rules/%d",
@@ -276,7 +275,7 @@ func (p *appsec) GetCustomRule(ctx context.Context, params GetCustomRuleRequest)
 		return nil, fmt.Errorf("failed to create GetCustomRule request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomRule request failed: %w", err)
 	}
@@ -285,20 +284,20 @@ func (p *appsec) GetCustomRule(ctx context.Context, params GetCustomRuleRequest)
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesRequest) (*GetCustomRulesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetCustomRules")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetCustomRules")
-
-	var rval GetCustomRulesResponse
-	var rvalfiltered GetCustomRulesResponse
+	var result GetCustomRulesResponse
+	var filteredResult GetCustomRulesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/custom-rules",
@@ -310,7 +309,7 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 		return nil, fmt.Errorf("failed to create GetCustomRules request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomRules request failed: %w", err)
 	}
@@ -320,42 +319,42 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 	}
 
 	if params.ID != 0 {
-		for _, val := range rval.CustomRules {
+		for _, val := range result.CustomRules {
 			if val.ID == params.ID {
-				rvalfiltered.CustomRules = append(rvalfiltered.CustomRules, val)
+				filteredResult.CustomRules = append(filteredResult.CustomRules, val)
 			}
 		}
 
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
 
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }
 
 func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRequest) (*UpdateCustomRuleResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateCustomRule")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateCustomRule")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/custom-rules/%d",
 		params.ConfigID,
 		params.ID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateCustomRule request: %w", err)
 	}
 
-	var rval UpdateCustomRuleResponse
+	var result UpdateCustomRuleResponse
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
+	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateCustomRule request failed: %w", err)
 	}
@@ -364,16 +363,16 @@ func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRequest) (*CreateCustomRuleResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("CreateCustomRule")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	logger := p.Log(ctx)
-	logger.Debug("CreateCustomRule")
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/custom-rules",
@@ -385,9 +384,9 @@ func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRe
 		return nil, fmt.Errorf("failed to create CreateCustomRule request: %w", err)
 	}
 
-	var rval CreateCustomRuleResponse
+	var result CreateCustomRuleResponse
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
+	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("CreateCustomRule request failed: %w", err)
 	}
@@ -396,30 +395,22 @@ func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRequest) (*RemoveCustomRuleResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveCustomRule")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var rval RemoveCustomRuleResponse
+	var result RemoveCustomRuleResponse
 
-	logger := p.Log(ctx)
-	logger.Debug("RemoveCustomRule")
-
-	uri, err := url.Parse(fmt.Sprintf(
-		"/appsec/v1/configs/%d/custom-rules/%d",
-		params.ConfigID,
-		params.ID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	uri := fmt.Sprintf("/appsec/v1/configs/%d/custom-rules/%d", params.ConfigID, params.ID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveCustomRule request: %w", err)
 	}
@@ -433,5 +424,5 @@ func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

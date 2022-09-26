@@ -96,28 +96,28 @@ func TestAppSec_GetTuningRecommendations(t *testing.T) {
 	}
 }
 
-func TestAppSec_GetAttackGroupRecommendations(t *testing.T) {
+func TestAppSec_GetRuleRecommendations(t *testing.T) {
 
-	result := GetAttackGroupRecommendationsResponse{}
+	result := GetRuleRecommendationsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestTuningRecommendations/AttackGroupRecommendations.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestTuningRecommendations/RuleRecommendations.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {
-		params           GetAttackGroupRecommendationsRequest
+		params           GetRuleRecommendationsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetAttackGroupRecommendationsResponse
+		expectedResponse *GetRuleRecommendationsResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			params: GetAttackGroupRecommendationsRequest{
+			params: GetRuleRecommendationsRequest{
 				ConfigID:    43253,
 				Version:     15,
 				PolicyID:    "AAAA_81230",
-				Group:       "XSS",
+				RuleID:      958008,
 				RulesetType: RulesetTypeEvaluation,
 			},
 			headers: http.Header{
@@ -125,15 +125,15 @@ func TestAppSec_GetAttackGroupRecommendations(t *testing.T) {
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations/attack-groups/XSS?standardException=true&type=evaluation",
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations/rules/958008?standardException=true&type=evaluation",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			params: GetAttackGroupRecommendationsRequest{
+			params: GetRuleRecommendationsRequest{
 				ConfigID:    43253,
 				Version:     15,
 				PolicyID:    "AAAA_81230",
-				Group:       "XSS",
+				RuleID:      958008,
 				RulesetType: RulesetTypeActive,
 			},
 			headers:        http.Header{},
@@ -145,7 +145,7 @@ func TestAppSec_GetAttackGroupRecommendations(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations/attack-groups/XSS?standardException=true&type=active",
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/recommendations/rules/958008?standardException=true&type=active",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -165,7 +165,7 @@ func TestAppSec_GetAttackGroupRecommendations(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetAttackGroupRecommendations(
+			result, err := client.GetRuleRecommendations(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers),

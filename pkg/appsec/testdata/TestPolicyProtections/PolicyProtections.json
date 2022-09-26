@@ -6,5 +6,6 @@
         "applyNetworkLayerControls": true,
         "applyRateControls": true,
         "applyReputationControls": true,
-        "applySlowPostControls": true
+        "applySlowPostControls": true,
+        "applyMalwareControls": true
     }

@@ -9,17 +9,23 @@ import (
 )
 
 type (
-	// The WAFProtection interface supports retrieving, modifying and removing protections for a
-	// security policy.
+	// The WAFProtection interface supports retrieving and updating application layer protection for a configuration and policy.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	WAFProtection interface {
+		// GetWAFProtections retrieves the current WAF protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// Deprecated: this method will be removed in a future release. Use GetWAFProtection instead.
 		GetWAFProtections(ctx context.Context, params GetWAFProtectionsRequest) (*GetWAFProtectionsResponse, error)
 
+		// GetWAFProtection retrieves the current WAF protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetWAFProtection(ctx context.Context, params GetWAFProtectionRequest) (*GetWAFProtectionResponse, error)
 
+		// UpdateWAFProtection updates the WAF protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateWAFProtection(ctx context.Context, params UpdateWAFProtectionRequest) (*UpdateWAFProtectionResponse, error)
 	}
@@ -33,17 +39,10 @@ type (
 	}
 
 	// GetWAFProtectionResponse is returned from a call to GetWAFProtection.
-	GetWAFProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-	}
+	GetWAFProtectionResponse ProtectionsResponse
 
 	// GetWAFProtectionsRequest is used to retrieve the WAF protection setting.
+	// Deprecated: this struct will be removed in a future release.
 	GetWAFProtectionsRequest struct {
 		ConfigID                      int    `json:"-"`
 		Version                       int    `json:"-"`
@@ -52,15 +51,8 @@ type (
 	}
 
 	// GetWAFProtectionsResponse is returned from a call to GetWAFProtections.
-	GetWAFProtectionsResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-	}
+	// Deprecated: this struct will be removed in a future release.
+	GetWAFProtectionsResponse ProtectionsResponse
 
 	// UpdateWAFProtectionRequest is used to modify the WAF protection setting.
 	UpdateWAFProtectionRequest struct {
@@ -71,15 +63,7 @@ type (
 	}
 
 	// UpdateWAFProtectionResponse is returned from a call to UpdateWAFProtection.
-	UpdateWAFProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
+	UpdateWAFProtectionResponse ProtectionsResponse
 )
 
 // Validate validates a GetWAFProtectionRequest.
@@ -110,14 +94,14 @@ func (v UpdateWAFProtectionRequest) Validate() error {
 }
 
 func (p *appsec) GetWAFProtection(ctx context.Context, params GetWAFProtectionRequest) (*GetWAFProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetWAFProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetWAFProtection")
-
-	var rval GetWAFProtectionResponse
+	var result GetWAFProtectionResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -130,7 +114,7 @@ func (p *appsec) GetWAFProtection(ctx context.Context, params GetWAFProtectionRe
 		return nil, fmt.Errorf("failed to create GetWAFProtection request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetWAFProtection request failed: %w", err)
 	}
@@ -139,19 +123,19 @@ func (p *appsec) GetWAFProtection(ctx context.Context, params GetWAFProtectionRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetWAFProtections(ctx context.Context, params GetWAFProtectionsRequest) (*GetWAFProtectionsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetWAFProtections")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetWAFProtections")
-
-	var rval GetWAFProtectionsResponse
+	var result GetWAFProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -164,7 +148,7 @@ func (p *appsec) GetWAFProtections(ctx context.Context, params GetWAFProtections
 		return nil, fmt.Errorf("failed to create GetWAFProtections request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetWAFProtections request failed: %w", err)
 	}
@@ -173,32 +157,32 @@ func (p *appsec) GetWAFProtections(ctx context.Context, params GetWAFProtections
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateWAFProtection(ctx context.Context, params UpdateWAFProtectionRequest) (*UpdateWAFProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateWAFProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateWAFProtection")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateWAFProtection request: %w", err)
 	}
 
-	var rval UpdateWAFProtectionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateWAFProtectionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateWAFProtection request failed: %w", err)
 	}
@@ -207,5 +191,5 @@ func (p *appsec) UpdateWAFProtection(ctx context.Context, params UpdateWAFProtec
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

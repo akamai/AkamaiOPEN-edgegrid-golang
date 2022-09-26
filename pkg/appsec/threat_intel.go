@@ -65,14 +65,14 @@ func (v UpdateThreatIntelRequest) Validate() error {
 }
 
 func (p *appsec) GetThreatIntel(ctx context.Context, params GetThreatIntelRequest) (*GetThreatIntelResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetThreatIntel")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetThreatIntel")
-
-	var rval GetThreatIntelResponse
+	var result GetThreatIntelResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/threat-intel",
@@ -84,8 +84,8 @@ func (p *appsec) GetThreatIntel(ctx context.Context, params GetThreatIntelReques
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetThreatIntel request: %w", err)
 	}
-	logger.Debugf("BEFORE GetThreatIntel %v", rval)
-	resp, err := p.Exec(req, &rval)
+	logger.Debugf("BEFORE GetThreatIntel %v", result)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetThreatIntel  request failed: %w", err)
 	}
@@ -93,33 +93,33 @@ func (p *appsec) GetThreatIntel(ctx context.Context, params GetThreatIntelReques
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
-	logger.Debugf("GetThreatIntel %v", rval)
-	return &rval, nil
+	logger.Debugf("GetThreatIntel %v", result)
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateThreatIntel(ctx context.Context, params UpdateThreatIntelRequest) (*UpdateThreatIntelResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateThreatIntel")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateThreatIntel")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/threat-intel",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateThreatIntel request: %w", err)
 	}
 
-	var rval UpdateThreatIntelResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateThreatIntelResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateThreatIntel request failed: %w", err)
 	}
@@ -128,5 +128,5 @@ func (p *appsec) UpdateThreatIntel(ctx context.Context, params UpdateThreatIntel
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

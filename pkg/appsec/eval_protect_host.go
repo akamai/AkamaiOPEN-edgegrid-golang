@@ -94,14 +94,14 @@ func (v UpdateEvalProtectHostRequest) Validate() error {
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) GetEvalProtectHost(ctx context.Context, params GetEvalProtectHostRequest) (*GetEvalProtectHostResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetEvalProtectHost")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetEvalProtectHost")
-
-	var rval GetEvalProtectHostResponse
+	var result GetEvalProtectHostResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames/eval-hostnames",
@@ -113,7 +113,7 @@ func (p *appsec) GetEvalProtectHost(ctx context.Context, params GetEvalProtectHo
 		return nil, fmt.Errorf("failed to create GetEvalProtectHost request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetEvalProtectHost request failed: %w", err)
 	}
@@ -122,19 +122,19 @@ func (p *appsec) GetEvalProtectHost(ctx context.Context, params GetEvalProtectHo
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetEvalProtectHosts(ctx context.Context, params GetEvalProtectHostsRequest) (*GetEvalProtectHostsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetEvalProtectHosts")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetEvalProtectHosts")
-
-	var rval GetEvalProtectHostsResponse
+	var result GetEvalProtectHostsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames/eval-hostnames",
@@ -146,7 +146,7 @@ func (p *appsec) GetEvalProtectHosts(ctx context.Context, params GetEvalProtectH
 		return nil, fmt.Errorf("failed to create GetEvalProtectHosts request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetEvalProtectHosts request failed: %w", err)
 	}
@@ -155,31 +155,31 @@ func (p *appsec) GetEvalProtectHosts(ctx context.Context, params GetEvalProtectH
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateEvalProtectHost(ctx context.Context, params UpdateEvalProtectHostRequest) (*UpdateEvalProtectHostResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateEvalProtectHost")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateEvalProtectHost")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/protect-eval-hostnames",
 		params.ConfigID,
 		params.Version,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateEvalProtectHost request: %w", err)
 	}
 
-	var rval UpdateEvalProtectHostResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateEvalProtectHostResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateEvalProtectHost request failed: %w", err)
 	}
@@ -188,5 +188,5 @@ func (p *appsec) UpdateEvalProtectHost(ctx context.Context, params UpdateEvalPro
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

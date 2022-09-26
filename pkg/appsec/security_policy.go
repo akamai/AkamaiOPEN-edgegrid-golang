@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -204,12 +203,11 @@ func (v RemoveSecurityPolicyRequest) Validate() error {
 }
 
 func (p *appsec) GetSecurityPolicies(ctx context.Context, params GetSecurityPoliciesRequest) (*GetSecurityPoliciesResponse, error) {
-
 	logger := p.Log(ctx)
 	logger.Debug("GetSecurityPolicys")
 
-	var rval GetSecurityPoliciesResponse
-	var rvalfiltered GetSecurityPoliciesResponse
+	var result GetSecurityPoliciesResponse
+	var filteredResult GetSecurityPoliciesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies",
@@ -221,7 +219,7 @@ func (p *appsec) GetSecurityPolicies(ctx context.Context, params GetSecurityPoli
 		return nil, fmt.Errorf("failed to create GetSecurityPolicies request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSecurityPolicies request failed: %w", err)
 	}
@@ -231,26 +229,25 @@ func (p *appsec) GetSecurityPolicies(ctx context.Context, params GetSecurityPoli
 	}
 
 	if params.PolicyName != "" {
-		for _, val := range rval.Policies {
+		for _, val := range result.Policies {
 			if val.PolicyName == params.PolicyName {
-				rvalfiltered.Policies = append(rvalfiltered.Policies, val)
+				filteredResult.Policies = append(filteredResult.Policies, val)
 			}
 		}
 
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
 
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }
 
 func (p *appsec) GetSecurityPolicy(ctx context.Context, params GetSecurityPolicyRequest) (*GetSecurityPolicyResponse, error) {
-
 	logger := p.Log(ctx)
 	logger.Debug("GetSecurityPolicys")
 
-	var rval GetSecurityPolicyResponse
+	var result GetSecurityPolicyResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s",
@@ -263,7 +260,7 @@ func (p *appsec) GetSecurityPolicy(ctx context.Context, params GetSecurityPolicy
 		return nil, fmt.Errorf("failed to create GetSecurityPolicy request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSecurityPolicy request failed: %w", err)
 	}
@@ -272,32 +269,32 @@ func (p *appsec) GetSecurityPolicy(ctx context.Context, params GetSecurityPolicy
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateSecurityPolicy(ctx context.Context, params UpdateSecurityPolicyRequest) (*UpdateSecurityPolicyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateSecurityPolicy")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateSecurityPolicy")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateSecurityPolicy request: %w", err)
 	}
 
-	var rval UpdateSecurityPolicyResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateSecurityPolicyResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateSecurityPolicy request failed: %w", err)
 	}
@@ -306,16 +303,16 @@ func (p *appsec) UpdateSecurityPolicy(ctx context.Context, params UpdateSecurity
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) CreateSecurityPolicy(ctx context.Context, params CreateSecurityPolicyRequest) (*CreateSecurityPolicyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("CreateSecurityPolicy")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	logger := p.Log(ctx)
-	logger.Debug("CreateSecurityPolicy")
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies",
@@ -327,9 +324,9 @@ func (p *appsec) CreateSecurityPolicy(ctx context.Context, params CreateSecurity
 		return nil, fmt.Errorf("failed to create CreateSecurityPolicy request: %w", err)
 	}
 
-	var rval CreateSecurityPolicyResponse
+	var result CreateSecurityPolicyResponse
 
-	resp, err := p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("CreateSecurityPolicy request failed: %w", err)
 	}
@@ -338,36 +335,27 @@ func (p *appsec) CreateSecurityPolicy(ctx context.Context, params CreateSecurity
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) RemoveSecurityPolicy(ctx context.Context, params RemoveSecurityPolicyRequest) (*RemoveSecurityPolicyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveSecurityPolicy")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var rval RemoveSecurityPolicyResponse
+	var result RemoveSecurityPolicyResponse
 
-	logger := p.Log(ctx)
-	logger.Debug("RemoveSecurityPolicy")
-
-	uri, err := url.Parse(fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/security-policies/%s",
-		params.ConfigID,
-		params.Version,
-		params.PolicyID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/security-policies/%s", params.ConfigID, params.Version, params.PolicyID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveSecurityPolicy request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveSecurityPolicy request failed: %w", err)
 	}
@@ -376,5 +364,5 @@ func (p *appsec) RemoveSecurityPolicy(ctx context.Context, params RemoveSecurity
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

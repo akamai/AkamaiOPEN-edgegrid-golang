@@ -117,14 +117,14 @@ func (v RemoveEvalHostRequest) Validate() error {
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) GetEvalHost(ctx context.Context, params GetEvalHostRequest) (*GetEvalHostResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetEvalHost")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetEvalHost")
-
-	var rval GetEvalHostResponse
+	var result GetEvalHostResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames/eval-hostnames",
@@ -136,7 +136,7 @@ func (p *appsec) GetEvalHost(ctx context.Context, params GetEvalHostRequest) (*G
 		return nil, fmt.Errorf("failed to create GetEvalHost request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetEvalHost request failed: %w", err)
 	}
@@ -145,19 +145,19 @@ func (p *appsec) GetEvalHost(ctx context.Context, params GetEvalHostRequest) (*G
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetEvalHosts(ctx context.Context, params GetEvalHostsRequest) (*GetEvalHostsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetEvalHosts")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetEvalHosts")
-
-	var rval GetEvalHostsResponse
+	var result GetEvalHostsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames/eval-hostnames",
@@ -169,7 +169,7 @@ func (p *appsec) GetEvalHosts(ctx context.Context, params GetEvalHostsRequest) (
 		return nil, fmt.Errorf("failed to create GetEvalHosts request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetEvalHosts request failed: %w", err)
 	}
@@ -178,30 +178,30 @@ func (p *appsec) GetEvalHosts(ctx context.Context, params GetEvalHostsRequest) (
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateEvalHost(ctx context.Context, params UpdateEvalHostRequest) (*UpdateEvalHostResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateEvalHost")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateEvalHost")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames/eval-hostnames",
 		params.ConfigID,
 		params.Version)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateEvalHost request: %w", err)
 	}
 
-	var rval UpdateEvalHostResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateEvalHostResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateEvalHost request failed: %w", err)
 	}
@@ -210,29 +210,29 @@ func (p *appsec) UpdateEvalHost(ctx context.Context, params UpdateEvalHostReques
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) RemoveEvalHost(ctx context.Context, params RemoveEvalHostRequest) (*RemoveEvalHostResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveEvalHost")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("RemoveEvalHost")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames/eval-hostnames",
 		params.ConfigID,
 		params.Version)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveEvalHost request: %w", err)
 	}
 
-	var rval RemoveEvalHostResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result RemoveEvalHostResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveEvalHost request failed: %w", err)
 	}
@@ -241,5 +241,5 @@ func (p *appsec) RemoveEvalHost(ctx context.Context, params RemoveEvalHostReques
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

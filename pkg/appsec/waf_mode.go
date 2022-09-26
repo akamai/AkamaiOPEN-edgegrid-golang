@@ -111,14 +111,14 @@ func (v UpdateWAFModeRequest) Validate() error {
 }
 
 func (p *appsec) GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*GetWAFModeResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetWAFMode")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetWAFMode")
-
-	var rval GetWAFModeResponse
+	var result GetWAFModeResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/mode",
@@ -131,7 +131,7 @@ func (p *appsec) GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*Get
 		return nil, fmt.Errorf("failed to create GetWAFMode request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetWAFMode request failed: %w", err)
 	}
@@ -140,20 +140,20 @@ func (p *appsec) GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*Get
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*GetWAFModesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetWAFModes")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetWAFModes")
-
-	var rval GetWAFModesResponse
+	var result GetWAFModesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/mode",
@@ -166,7 +166,7 @@ func (p *appsec) GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*G
 		return nil, fmt.Errorf("failed to create GetWAFModes request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetWAFModes request failed: %w", err)
 	}
@@ -175,32 +175,32 @@ func (p *appsec) GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*G
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest) (*UpdateWAFModeResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateWAFMode")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateWAFMode")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/mode",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateWAFMode request: %w", err)
 	}
 
-	var rval UpdateWAFModeResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateWAFModeResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateWAFMode request failed: %w", err)
 	}
@@ -209,5 +209,5 @@ func (p *appsec) UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest)
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

@@ -172,14 +172,14 @@ func (v CreateSecurityPolicyCloneRequest) Validate() error {
 }
 
 func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityPolicyCloneRequest) (*GetSecurityPolicyCloneResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetSecurityPolicyClone")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetSecurityPolicyClone")
-
-	var rvals GetSecurityPolicyCloneResponse
+	var results GetSecurityPolicyCloneResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s",
@@ -192,7 +192,7 @@ func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityP
 		return nil, fmt.Errorf("failed to create GetSecurityPolicyClone request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rvals)
+	resp, err := p.Exec(req, &results)
 	if err != nil {
 		return nil, fmt.Errorf("GetSecurityPolicyClone request failed: %w", err)
 	}
@@ -201,19 +201,19 @@ func (p *appsec) GetSecurityPolicyClone(ctx context.Context, params GetSecurityP
 		return nil, p.Error(resp)
 	}
 
-	return &rvals, nil
+	return &results, nil
 
 }
 
 func (p *appsec) GetSecurityPolicyClones(ctx context.Context, params GetSecurityPolicyClonesRequest) (*GetSecurityPolicyClonesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetSecurityPolicyClone")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetSecurityPolicyClone")
-
-	var rval GetSecurityPolicyClonesResponse
+	var result GetSecurityPolicyClonesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies?detail=true&notMatched=false",
@@ -225,7 +225,7 @@ func (p *appsec) GetSecurityPolicyClones(ctx context.Context, params GetSecurity
 		return nil, fmt.Errorf("failed to create GetSecurityPolicyClones request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSecurityPolicyClones request failed: %w", err)
 	}
@@ -234,17 +234,17 @@ func (p *appsec) GetSecurityPolicyClones(ctx context.Context, params GetSecurity
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) CreateSecurityPolicyClone(ctx context.Context, params CreateSecurityPolicyCloneRequest) (*CreateSecurityPolicyCloneResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("CreateSecurityPolicyClone")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	logger := p.Log(ctx)
-	logger.Debug("CreateSecurityPolicyClone")
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies",
@@ -256,9 +256,9 @@ func (p *appsec) CreateSecurityPolicyClone(ctx context.Context, params CreateSec
 		return nil, fmt.Errorf("failed to create CreateSecurityPolicyClone request: %w", err)
 	}
 
-	var rval CreateSecurityPolicyCloneResponse
+	var result CreateSecurityPolicyCloneResponse
 
-	resp, err := p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("CreateSecurityPolicyClone request failed: %w", err)
 	}
@@ -267,6 +267,6 @@ func (p *appsec) CreateSecurityPolicyClone(ctx context.Context, params CreateSec
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }

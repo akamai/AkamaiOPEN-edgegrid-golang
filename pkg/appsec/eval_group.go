@@ -21,14 +21,14 @@ type (
 )
 
 func (p *appsec) GetEvalGroup(ctx context.Context, params GetAttackGroupRequest) (*GetAttackGroupResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetEvalGroup")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetEvalGroup")
-
-	var rval GetAttackGroupResponse
+	var result GetAttackGroupResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/eval-groups/%s?includeConditionException=true",
@@ -41,8 +41,8 @@ func (p *appsec) GetEvalGroup(ctx context.Context, params GetAttackGroupRequest)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetEvalGroup request: %w", err)
 	}
-	logger.Debugf("BEFORE GetEvalGroup %v", rval)
-	resp, err := p.Exec(req, &rval)
+	logger.Debugf("BEFORE GetEvalGroup %v", result)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetEvalGroup request failed: %w", err)
 	}
@@ -50,21 +50,21 @@ func (p *appsec) GetEvalGroup(ctx context.Context, params GetAttackGroupRequest)
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
-	logger.Debugf("GetEvalGroup %v", rval)
-	return &rval, nil
+	logger.Debugf("GetEvalGroup %v", result)
+	return &result, nil
 
 }
 
 func (p *appsec) GetEvalGroups(ctx context.Context, params GetAttackGroupsRequest) (*GetAttackGroupsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetEvalGroupConditionExceptions")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetEvalGroupConditionExceptions")
-
-	var rval GetAttackGroupsResponse
-	var rvalfiltered GetAttackGroupsResponse
+	var result GetAttackGroupsResponse
+	var filteredResult GetAttackGroupsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/eval-groups?includeConditionException=true",
@@ -76,7 +76,7 @@ func (p *appsec) GetEvalGroups(ctx context.Context, params GetAttackGroupsReques
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetEvalGroups request: %w", err)
 	}
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetEvalGroups request failed: %w", err)
 	}
@@ -86,28 +86,28 @@ func (p *appsec) GetEvalGroups(ctx context.Context, params GetAttackGroupsReques
 	}
 
 	if params.Group != "" {
-		for k, val := range rval.AttackGroups {
+		for k, val := range result.AttackGroups {
 			if val.Group == params.Group {
-				rvalfiltered.AttackGroups = append(rvalfiltered.AttackGroups, rval.AttackGroups[k])
+				filteredResult.AttackGroups = append(filteredResult.AttackGroups, result.AttackGroups[k])
 			}
 		}
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
 
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }
 
 func (p *appsec) UpdateEvalGroup(ctx context.Context, params UpdateAttackGroupRequest) (*UpdateAttackGroupResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateEvalGroup")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateEvalGroup")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/eval-groups/%s/action-condition-exception",
 		params.ConfigID,
 		params.Version,
@@ -115,13 +115,13 @@ func (p *appsec) UpdateEvalGroup(ctx context.Context, params UpdateAttackGroupRe
 		params.Group,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateEvalGroup request: %w", err)
 	}
 
-	var rval UpdateAttackGroupResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateAttackGroupResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateEvalGroup request failed: %w", err)
 	}
@@ -130,5 +130,5 @@ func (p *appsec) UpdateEvalGroup(ctx context.Context, params UpdateAttackGroupRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

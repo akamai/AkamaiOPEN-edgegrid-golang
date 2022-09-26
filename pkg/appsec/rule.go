@@ -199,14 +199,14 @@ func (v UpdateConditionExceptionRequest) Validate() error {
 }
 
 func (p *appsec) GetRule(ctx context.Context, params GetRuleRequest) (*GetRuleResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetRule")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetRule")
-
-	var rval GetRuleResponse
+	var result GetRuleResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules/%d?includeConditionException=true",
@@ -220,7 +220,7 @@ func (p *appsec) GetRule(ctx context.Context, params GetRuleRequest) (*GetRuleRe
 		return nil, fmt.Errorf("failed to create GetRule request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRule request failed: %w", err)
 	}
@@ -229,20 +229,20 @@ func (p *appsec) GetRule(ctx context.Context, params GetRuleRequest) (*GetRuleRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetRules(ctx context.Context, params GetRulesRequest) (*GetRulesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetRules")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetRules")
-
-	var rval GetRulesResponse
-	var rvalfiltered GetRulesResponse
+	var result GetRulesResponse
+	var filteredResult GetRulesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules?includeConditionException=true",
@@ -255,7 +255,7 @@ func (p *appsec) GetRules(ctx context.Context, params GetRulesRequest) (*GetRule
 		return nil, fmt.Errorf("failed to create GetRules request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRules request failed: %w", err)
 	}
@@ -265,29 +265,29 @@ func (p *appsec) GetRules(ctx context.Context, params GetRulesRequest) (*GetRule
 	}
 
 	if params.RuleID != 0 {
-		for _, val := range rval.Rules {
+		for _, val := range result.Rules {
 			if val.ID == params.RuleID {
-				rvalfiltered.Rules = append(rvalfiltered.Rules, val)
+				filteredResult.Rules = append(filteredResult.Rules, val)
 			}
 		}
 
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
 
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }
 
 func (p *appsec) UpdateRule(ctx context.Context, params UpdateRuleRequest) (*UpdateRuleResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateRule")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateRule")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules/%d/action-condition-exception",
 		params.ConfigID,
 		params.Version,
@@ -295,13 +295,13 @@ func (p *appsec) UpdateRule(ctx context.Context, params UpdateRuleRequest) (*Upd
 		params.RuleID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateRule request: %w", err)
 	}
 
-	var rval UpdateRuleResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateRuleResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateRule request failed: %w", err)
 	}
@@ -310,18 +310,18 @@ func (p *appsec) UpdateRule(ctx context.Context, params UpdateRuleRequest) (*Upd
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) UpdateRuleConditionException(ctx context.Context, params UpdateConditionExceptionRequest) (*UpdateConditionExceptionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateRuleConditionException")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateRuleConditionException")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules/%d/condition-exception",
 		params.ConfigID,
 		params.Version,
@@ -329,13 +329,13 @@ func (p *appsec) UpdateRuleConditionException(ctx context.Context, params Update
 		params.RuleID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateRuleConditionException request: %w", err)
 	}
 
-	var rval UpdateConditionExceptionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateConditionExceptionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateRuleConditionException request failed: %w", err)
 	}
@@ -344,5 +344,5 @@ func (p *appsec) UpdateRuleConditionException(ctx context.Context, params Update
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

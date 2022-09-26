@@ -46,7 +46,7 @@ func (p *appsec) GetApiHostnameCoverage(ctx context.Context, _ GetApiHostnameCov
 	logger := p.Log(ctx)
 	logger.Debug("GetApiHostnameCoverage")
 
-	var rval GetApiHostnameCoverageResponse
+	var result GetApiHostnameCoverageResponse
 
 	uri := "/appsec/v1/hostname-coverage"
 
@@ -55,7 +55,7 @@ func (p *appsec) GetApiHostnameCoverage(ctx context.Context, _ GetApiHostnameCov
 		return nil, fmt.Errorf("failed to create GetApiHostnameCoverage request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetApiHostnameCoverage request failed: %w", err)
 	}
@@ -64,6 +64,6 @@ func (p *appsec) GetApiHostnameCoverage(ctx context.Context, _ GetApiHostnameCov
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }

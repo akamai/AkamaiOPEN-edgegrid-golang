@@ -55,15 +55,15 @@ func (v GetApiEndpointsRequest) Validate() error {
 }
 
 func (p *appsec) GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequest) (*GetApiEndpointsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetApiEndpoints")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetApiEndpoints")
-
-	var rval GetApiEndpointsResponse
-	var rvalfiltered GetApiEndpointsResponse
+	var result GetApiEndpointsResponse
+	var filteredResult GetApiEndpointsResponse
 
 	var uri string
 	if params.PolicyID != "" {
@@ -85,7 +85,7 @@ func (p *appsec) GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequ
 		return nil, fmt.Errorf("failed to create GetApiEndpoints request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetApiEndpoints request failed: %w", err)
 	}
@@ -95,15 +95,15 @@ func (p *appsec) GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequ
 	}
 
 	if params.Name != "" {
-		for _, val := range rval.APIEndpoints {
+		for _, val := range result.APIEndpoints {
 			if val.Name == params.Name {
-				rvalfiltered.APIEndpoints = append(rvalfiltered.APIEndpoints, val)
+				filteredResult.APIEndpoints = append(filteredResult.APIEndpoints, val)
 			}
 		}
 
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }

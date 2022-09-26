@@ -161,14 +161,14 @@ func (v GetActivationHistoryRequest) Validate() error {
 }
 
 func (p *appsec) GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetActivations")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetActivations")
-
-	var rval GetActivationsResponse
+	var result GetActivationsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/activations/%d",
@@ -179,7 +179,7 @@ func (p *appsec) GetActivations(ctx context.Context, params GetActivationsReques
 		return nil, fmt.Errorf("failed to create GetActivations request: %w", err)
 	}
 
-	resp, errp := p.Exec(req, &rval)
+	resp, errp := p.Exec(req, &result)
 	if errp != nil {
 		return nil, fmt.Errorf("GetActivations request failed: %w", errp)
 	}
@@ -188,18 +188,18 @@ func (p *appsec) GetActivations(ctx context.Context, params GetActivationsReques
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) GetActivationHistory(ctx context.Context, params GetActivationHistoryRequest) (*GetActivationHistoryResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetActivationHistory")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetActivationHistory")
-
-	var rval GetActivationHistoryResponse
+	var result GetActivationHistoryResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/activations",
@@ -210,7 +210,7 @@ func (p *appsec) GetActivationHistory(ctx context.Context, params GetActivationH
 		return nil, fmt.Errorf("failed to create GetActivationHistory request: %w", err)
 	}
 
-	resp, errp := p.Exec(req, &rval)
+	resp, errp := p.Exec(req, &result)
 	if errp != nil {
 		return nil, fmt.Errorf("list activation history request failed: %w", errp)
 	}
@@ -219,7 +219,7 @@ func (p *appsec) GetActivationHistory(ctx context.Context, params GetActivationH
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) CreateActivations(ctx context.Context, params CreateActivationsRequest, _ bool) (*CreateActivationsResponse, error) {
@@ -233,9 +233,9 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 		return nil, fmt.Errorf("failed to create CreateActivations request: %w", err)
 	}
 
-	var rval CreateActivationsResponse
+	var result CreateActivationsResponse
 
-	resp, err := p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("CreateActivations request failed: %w", err)
 	}
@@ -243,11 +243,9 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 		return nil, p.Error(resp)
 	}
 
-	var rvalget CreateActivationsResponse
-
 	uriget := fmt.Sprintf(
 		"/appsec/v1/activations/%d",
-		rval.ActivationID,
+		result.ActivationID,
 	)
 
 	req, err = http.NewRequestWithContext(ctx, http.MethodGet, uriget, nil)
@@ -255,7 +253,7 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 		return nil, fmt.Errorf("failed to create GetActivation request: %w", err)
 	}
 
-	resp, err = p.Exec(req, &rvalget)
+	resp, err = p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetActivation request failed: %w", err)
 	}
@@ -263,12 +261,11 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 		return nil, p.Error(resp)
 	}
 
-	return &rvalget, nil
+	return &result, nil
 
 }
 
 func (p *appsec) RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error) {
-
 	logger := p.Log(ctx)
 	logger.Debug("RemoveActivations")
 
@@ -279,9 +276,9 @@ func (p *appsec) RemoveActivations(ctx context.Context, params RemoveActivations
 		return nil, fmt.Errorf("failed to create RemoveActivations request: %w", err)
 	}
 
-	var rval RemoveActivationsResponse
+	var result RemoveActivationsResponse
 
-	resp, errp := p.Exec(req, &rval, params)
+	resp, errp := p.Exec(req, &result, params)
 	if errp != nil {
 		return nil, fmt.Errorf("RemoveActivations request failed: %w", errp)
 	}
@@ -289,7 +286,7 @@ func (p *appsec) RemoveActivations(ctx context.Context, params RemoveActivations
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 // ActivationValue is used to create an "enum" of possible Activation.ActivationType values

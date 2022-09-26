@@ -73,14 +73,14 @@ func (v UpdateMatchTargetSequenceRequest) Validate() error {
 }
 
 func (p *appsec) GetMatchTargetSequence(ctx context.Context, params GetMatchTargetSequenceRequest) (*GetMatchTargetSequenceResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetMatchTargetSequence")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetMatchTargetSequence")
-
-	var rval GetMatchTargetSequenceResponse
+	var result GetMatchTargetSequenceResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/match-targets/sequence?type=%s",
@@ -94,7 +94,7 @@ func (p *appsec) GetMatchTargetSequence(ctx context.Context, params GetMatchTarg
 		return nil, fmt.Errorf("failed to create GetMatchTargetSequence request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetMatchTargetSequence request failed: %w", err)
 	}
@@ -103,31 +103,31 @@ func (p *appsec) GetMatchTargetSequence(ctx context.Context, params GetMatchTarg
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateMatchTargetSequence(ctx context.Context, params UpdateMatchTargetSequenceRequest) (*UpdateMatchTargetSequenceResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateMatchTargetSequence")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateMatchTargetSequence")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/match-targets/sequence",
 		params.ConfigID,
 		params.ConfigVersion,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateMatchTargetSequence request: %w", err)
 	}
 
-	var rval UpdateMatchTargetSequenceResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateMatchTargetSequenceResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateMatchTargetSequence request failed: %w", err)
 	}
@@ -136,5 +136,5 @@ func (p *appsec) UpdateMatchTargetSequence(ctx context.Context, params UpdateMat
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

@@ -104,14 +104,14 @@ func (v UpdateReputationProfileActionRequest) Validate() error {
 }
 
 func (p *appsec) GetReputationProfileAction(ctx context.Context, params GetReputationProfileActionRequest) (*GetReputationProfileActionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetReputationProfileAction")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetReputationProfileAction")
-
-	var rval GetReputationProfileActionResponse
+	var result GetReputationProfileActionResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/reputation-profiles/%d",
@@ -125,7 +125,7 @@ func (p *appsec) GetReputationProfileAction(ctx context.Context, params GetReput
 		return nil, fmt.Errorf("failed to create GetReputationProfileAction request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetReputationProfileAction request failed: %w", err)
 	}
@@ -134,20 +134,20 @@ func (p *appsec) GetReputationProfileAction(ctx context.Context, params GetReput
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetReputationProfileActions(ctx context.Context, params GetReputationProfileActionsRequest) (*GetReputationProfileActionsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetReputationProfileActions")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetReputationProfileActions")
-
-	var rval GetReputationProfileActionsResponse
-	var rvalfiltered GetReputationProfileActionsResponse
+	var result GetReputationProfileActionsResponse
+	var filteredResult GetReputationProfileActionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/reputation-profiles",
@@ -160,7 +160,7 @@ func (p *appsec) GetReputationProfileActions(ctx context.Context, params GetRepu
 		return nil, fmt.Errorf("failed to create GetReputationProfileActions request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetReputationProfileActions request failed: %w", err)
 	}
@@ -170,29 +170,29 @@ func (p *appsec) GetReputationProfileActions(ctx context.Context, params GetRepu
 	}
 
 	if params.ReputationProfileID != 0 {
-		for _, val := range rval.ReputationProfiles {
+		for _, val := range result.ReputationProfiles {
 			if val.ID == params.ReputationProfileID {
-				rvalfiltered.ReputationProfiles = append(rvalfiltered.ReputationProfiles, val)
+				filteredResult.ReputationProfiles = append(filteredResult.ReputationProfiles, val)
 			}
 		}
 
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
 
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }
 
 func (p *appsec) UpdateReputationProfileAction(ctx context.Context, params UpdateReputationProfileActionRequest) (*UpdateReputationProfileActionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateReputationProfileAction")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateReputationProfileAction")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/reputation-profiles/%d",
 		params.ConfigID,
 		params.Version,
@@ -200,13 +200,13 @@ func (p *appsec) UpdateReputationProfileAction(ctx context.Context, params Updat
 		params.ReputationProfileID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateReputationProfileAction request: %w", err)
 	}
 
-	var rval UpdateReputationProfileActionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateReputationProfileActionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateReputationProfileAction request failed: %w", err)
 	}
@@ -215,5 +215,5 @@ func (p *appsec) UpdateReputationProfileAction(ctx context.Context, params Updat
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

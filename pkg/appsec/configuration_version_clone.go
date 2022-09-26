@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
 
 	"time"
 
@@ -125,14 +124,14 @@ func (v RemoveConfigurationVersionCloneRequest) Validate() error {
 }
 
 func (p *appsec) GetConfigurationVersionClone(ctx context.Context, params GetConfigurationVersionCloneRequest) (*GetConfigurationVersionCloneResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetConfigurationVersionClone")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetConfigurationVersionClone")
-
-	var rval GetConfigurationVersionCloneResponse
+	var result GetConfigurationVersionCloneResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d",
@@ -144,7 +143,7 @@ func (p *appsec) GetConfigurationVersionClone(ctx context.Context, params GetCon
 		return nil, fmt.Errorf("failed to create GetConfigurationVersionClone request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetConfigurationVersionClone request failed: %w", err)
 	}
@@ -153,17 +152,17 @@ func (p *appsec) GetConfigurationVersionClone(ctx context.Context, params GetCon
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) CreateConfigurationVersionClone(ctx context.Context, params CreateConfigurationVersionCloneRequest) (*CreateConfigurationVersionCloneResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("CreateConfigurationVersionClone")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	logger := p.Log(ctx)
-	logger.Debug("CreateConfigurationVersionClone")
 
 	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions", params.ConfigID)
 
@@ -172,9 +171,9 @@ func (p *appsec) CreateConfigurationVersionClone(ctx context.Context, params Cre
 		return nil, fmt.Errorf("failed to create CreateConfigurationVersionClone request: %w", err)
 	}
 
-	var rval CreateConfigurationVersionCloneResponse
+	var result CreateConfigurationVersionCloneResponse
 
-	resp, err := p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("CreateConfigurationVersionClone request failed: %w", err)
 	}
@@ -183,36 +182,26 @@ func (p *appsec) CreateConfigurationVersionClone(ctx context.Context, params Cre
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) RemoveConfigurationVersionClone(ctx context.Context, params RemoveConfigurationVersionCloneRequest) (*RemoveConfigurationVersionCloneResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveConfiguration")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var rval RemoveConfigurationVersionCloneResponse
-
-	logger := p.Log(ctx)
-	logger.Debug("RemoveConfiguration")
-
-	uri, err := url.Parse(fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d",
-		params.ConfigID,
-		params.Version,
-	),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d", params.ConfigID, params.Version)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveConfigurationVersionClone request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	var result RemoveConfigurationVersionCloneResponse
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveConfigurationVersionClone request failed: %w", err)
 	}
@@ -221,5 +210,5 @@ func (p *appsec) RemoveConfigurationVersionClone(ctx context.Context, params Rem
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

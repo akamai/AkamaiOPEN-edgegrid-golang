@@ -64,14 +64,14 @@ func (v UpdateWAPSelectedHostnamesRequest) Validate() error {
 }
 
 func (p *appsec) GetWAPSelectedHostnames(ctx context.Context, params GetWAPSelectedHostnamesRequest) (*GetWAPSelectedHostnamesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetWAPSelectedHostnames")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetWAPSelectedHostnames")
-
-	var rval GetWAPSelectedHostnamesResponse
+	var result GetWAPSelectedHostnamesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/wap-selected-hostnames",
@@ -84,7 +84,7 @@ func (p *appsec) GetWAPSelectedHostnames(ctx context.Context, params GetWAPSelec
 		return nil, fmt.Errorf("failed to create GetWAPSelectedHostnames request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetWAPSelectedHostnames request failed: %w", err)
 	}
@@ -93,31 +93,31 @@ func (p *appsec) GetWAPSelectedHostnames(ctx context.Context, params GetWAPSelec
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) UpdateWAPSelectedHostnames(ctx context.Context, params UpdateWAPSelectedHostnamesRequest) (*UpdateWAPSelectedHostnamesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateWAPSelectedHostnames")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateWAPSelectedHostnames")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/wap-selected-hostnames",
 		params.ConfigID,
 		params.Version,
 		params.SecurityPolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateWAPSelectedHostnames request: %w", err)
 	}
 
-	var rval UpdateWAPSelectedHostnamesResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateWAPSelectedHostnamesResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateWAPSelectedHostnames request failed: %w", err)
 	}
@@ -126,5 +126,5 @@ func (p *appsec) UpdateWAPSelectedHostnames(ctx context.Context, params UpdateWA
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

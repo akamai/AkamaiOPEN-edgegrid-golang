@@ -17,7 +17,7 @@ func TestAppSec_ListRatePolicies(t *testing.T) {
 
 	result := GetRatePoliciesResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePolicy.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePolicies.json"))
 	json.Unmarshal([]byte(respData), &result)
 
 	tests := map[string]struct {

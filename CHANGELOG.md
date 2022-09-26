@@ -1,5 +1,69 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 2.16.0 (September 26, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Add interfaces to support file malware scanning (FMS):
+    * MalwareContentTypes
+    * MalwarePolicy
+    * MalwarePolicyAction
+    * MalwareProtection
+  * Add GetRuleRecommendations method to TuningRecommendations interface
+  * Add deprecation notes for the following:
+    * methods:
+      * GetIPGeoProtections
+      * GetNetworkLayerProtections
+      * GetRateProtections
+      * GetReputationProtections
+      * GetSlowPostProtectionSetting
+      * GetSlowPostProtections
+      * GetWAFProtections
+      * RemoveNetworkLayerProtection
+      * RemovePolicyProtections
+      * RemoveReputationProtection
+    * structs:
+      * GetIPGeoProtectionsRequest
+      * GetNetworkLayerProtectionsRequest
+      * GetRateProtectionsRequest
+      * GetReputationProtectionsRequest
+      * GetSlowPostProtectionSettingRequest
+      * GetSlowPostProtectionSettingResponse
+      * GetSlowPostProtectionsRequest
+      * GetWAFProtectionsRequest
+      * RemoveNetworkLayerProtectionRequest
+      * RemovePolicyProtectionsRequest
+      * RemoveReputationProtectionRequest
+
+* [IMPORTANT] Added Bot Management API Support
+    * Akamai Bot Category - read
+    * Akamai Bot Category Action - read, update
+    * Akamai Defined Bot - read
+    * Bot Analytics Cookie - read, update
+    * Bot Analytics Cookie Values - read
+    * Bot Category Exception - read, update
+    * Bot Detection - read
+    * Bot Detection Action - read, update
+    * Bot Endpoint Coverage Report - read
+    * Bot Management Setting - read, update
+    * Challenge Action - create, read, update, delete
+    * Challenge Interception Rules - read, update
+    * Client Side Security - read, update
+    * Conditional Action - create, read, update, delete
+    * Custom Bot Category - create, read, update, delete
+    * Custom Bot Category Action - read, update
+    * Custom Bot Category Sequence - read, update
+    * Custom Client - create, read, update, delete
+    * Custom Defined Bot - create, read, update, delete
+    * Custom Deny Action - create, read, update, delete
+    * Javascript Injection - read, update
+    * Recategorized Akamai Defined Bot - create, read, update, delete
+    * Response Action - read
+    * Serve Alternate Action - create, read, update, delete
+    * Transactional Endpoint - create, read, update, delete
+    * Transactional Endpoint Protection - read, update
+
 ## 2.15.0 (August 22, 2022)
 
 #### FEATURES/ENHANCEMENTS:

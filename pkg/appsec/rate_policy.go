@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -34,7 +33,6 @@ type (
 	// CreateRatePolicyRequest is used to create a rate policy.
 	CreateRatePolicyRequest struct {
 		ID             int             `json:"-"`
-		PolicyID       int             `json:"-"`
 		ConfigID       int             `json:"configId"`
 		ConfigVersion  int             `json:"configVersion"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
@@ -43,7 +41,6 @@ type (
 	// CreateRatePolicyResponse is returned from a call to CreateRatePolicy.
 	CreateRatePolicyResponse struct {
 		ID                    int    `json:"id"`
-		PolicyID              int    `json:"policyId"`
 		ConfigID              int    `json:"configId"`
 		ConfigVersion         int    `json:"configVersion"`
 		MatchType             string `json:"matchType"`
@@ -66,14 +63,10 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hosts                  *RatePoliciesHosts `json:"hosts,omitempty"`
-		Hostnames              []string           `json:"hostnames"`
-		AdditionalMatchOptions []struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Type          string   `json:"type"`
-			Values        []string `json:"values"`
-		} `json:"additionalMatchOptions"`
-		QueryParameters []struct {
+		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
+		Hostnames              []string                `json:"hostnames"`
+		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
+		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
 			PositiveMatch bool     `json:"positiveMatch"`
@@ -87,7 +80,6 @@ type (
 	// UpdateRatePolicyRequest is used to modify an existing rate policy.
 	UpdateRatePolicyRequest struct {
 		RatePolicyID   int             `json:"id"`
-		PolicyID       int             `json:"policyId"`
 		ConfigID       int             `json:"configId"`
 		ConfigVersion  int             `json:"configVersion"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
@@ -96,7 +88,6 @@ type (
 	// UpdateRatePolicyResponse is returned from a call to UpdateRatePolicy.
 	UpdateRatePolicyResponse struct {
 		ID                    int    `json:"id"`
-		PolicyID              int    `json:"policyId"`
 		ConfigID              int    `json:"configId"`
 		ConfigVersion         int    `json:"configVersion"`
 		MatchType             string `json:"matchType"`
@@ -119,14 +110,10 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hosts                  *RatePoliciesHosts `json:"hosts,omitempty"`
-		Hostnames              []string           `json:"hostnames"`
-		AdditionalMatchOptions []struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Type          string   `json:"type"`
-			Values        []string `json:"values"`
-		} `json:"additionalMatchOptions"`
-		QueryParameters []struct {
+		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
+		Hostnames              []string                `json:"hostnames"`
+		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
+		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
 			PositiveMatch bool     `json:"positiveMatch"`
@@ -147,7 +134,6 @@ type (
 	// RemoveRatePolicyResponse is returned from a call to RemoveRatePolicy.
 	RemoveRatePolicyResponse struct {
 		ID                    int    `json:"id"`
-		PolicyID              int    `json:"policyId"`
 		ConfigID              int    `json:"configId"`
 		ConfigVersion         int    `json:"configVersion"`
 		MatchType             string `json:"matchType"`
@@ -170,14 +156,10 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
 		} `json:"fileExtensions"`
-		Hosts                  *RatePoliciesHosts `json:"hosts,omitempty"`
-		Hostnames              []string           `json:"hostnames"`
-		AdditionalMatchOptions []struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Type          string   `json:"type"`
-			Values        []string `json:"values"`
-		} `json:"additionalMatchOptions"`
-		QueryParameters []struct {
+		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
+		Hostnames              []string                `json:"hostnames"`
+		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
+		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
 			PositiveMatch bool     `json:"positiveMatch"`
@@ -198,33 +180,33 @@ type (
 	// GetRatePoliciesResponse is returned from a call to GetRatePolicies.
 	GetRatePoliciesResponse struct {
 		RatePolicies []struct {
-			ID                     int                               `json:"id"`
-			ConfigID               int                               `json:"-"`
-			ConfigVersion          int                               `json:"-"`
-			MatchType              string                            `json:"matchType,omitempty"`
-			Type                   string                            `json:"type,omitempty"`
-			Name                   string                            `json:"name,omitempty"`
-			Description            string                            `json:"description,omitempty"`
-			AverageThreshold       int                               `json:"averageThreshold,omitempty"`
-			BurstThreshold         int                               `json:"burstThreshold,omitempty"`
-			ClientIdentifier       string                            `json:"clientIdentifier,omitempty"`
-			UseXForwardForHeaders  bool                              `json:"useXForwardForHeaders"`
-			RequestType            string                            `json:"requestType,omitempty"`
-			SameActionOnIpv6       bool                              `json:"sameActionOnIpv6"`
-			Path                   *RatePolicyPath                   `json:"path,omitempty"`
-			PathMatchType          string                            `json:"pathMatchType,omitempty"`
-			PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch"`
-			FileExtensions         *RatePolicyFileExtensions         `json:"fileExtensions,omitempty"`
-			Hosts                  *RatePoliciesHosts                `json:"hosts,omitempty"`
-			Hostnames              []string                          `json:"hostnames,omitempty"`
-			AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
-			QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
-			CreateDate             string                            `json:"-"`
-			UpdateDate             string                            `json:"-"`
-			Used                   json.RawMessage                   `json:"used"`
-			SameActionOnIpv        bool                              `json:"sameActionOnIpv"`
-			APISelectors           *RatePolicyAPISelectors           `json:"apiSelectors,omitempty"`
-			BodyParameters         *RatePolicyBodyParameters         `json:"bodyParameters,omitempty"`
+			ID                     int                        `json:"id"`
+			ConfigID               int                        `json:"-"`
+			ConfigVersion          int                        `json:"-"`
+			MatchType              string                     `json:"matchType,omitempty"`
+			Type                   string                     `json:"type,omitempty"`
+			Name                   string                     `json:"name,omitempty"`
+			Description            string                     `json:"description,omitempty"`
+			AverageThreshold       int                        `json:"averageThreshold,omitempty"`
+			BurstThreshold         int                        `json:"burstThreshold,omitempty"`
+			ClientIdentifier       string                     `json:"clientIdentifier,omitempty"`
+			UseXForwardForHeaders  bool                       `json:"useXForwardForHeaders"`
+			RequestType            string                     `json:"requestType,omitempty"`
+			SameActionOnIpv6       bool                       `json:"sameActionOnIpv6"`
+			Path                   *RatePolicyPath            `json:"path,omitempty"`
+			PathMatchType          string                     `json:"pathMatchType,omitempty"`
+			PathURIPositiveMatch   bool                       `json:"pathUriPositiveMatch"`
+			FileExtensions         *RatePolicyFileExtensions  `json:"fileExtensions,omitempty"`
+			Hosts                  *RatePoliciesHosts         `json:"hosts,omitempty"`
+			Hostnames              []string                   `json:"hostnames,omitempty"`
+			AdditionalMatchOptions []RatePolicyMatchOption    `json:"additionalMatchOptions,omitempty"`
+			QueryParameters        *RatePolicyQueryParameters `json:"queryParameters,omitempty"`
+			CreateDate             string                     `json:"-"`
+			UpdateDate             string                     `json:"-"`
+			Used                   json.RawMessage            `json:"used"`
+			SameActionOnIpv        bool                       `json:"sameActionOnIpv"`
+			APISelectors           *RatePolicyAPISelectors    `json:"apiSelectors,omitempty"`
+			BodyParameters         *RatePolicyBodyParameters  `json:"bodyParameters,omitempty"`
 		} `json:"ratePolicies,omitempty"`
 	}
 
@@ -237,31 +219,30 @@ type (
 
 	// GetRatePolicyResponse is returned from a call to GetRatePolicy.
 	GetRatePolicyResponse struct {
-		ID                     int                               `json:"-"`
-		PolicyID               int                               `json:"policyId,omitempty"`
-		ConfigID               int                               `json:"-"`
-		ConfigVersion          int                               `json:"-"`
-		MatchType              string                            `json:"matchType,omitempty"`
-		Type                   string                            `json:"type,omitempty"`
-		Name                   string                            `json:"name,omitempty"`
-		Description            string                            `json:"description,omitempty"`
-		AverageThreshold       int                               `json:"averageThreshold,omitempty"`
-		BurstThreshold         int                               `json:"burstThreshold,omitempty"`
-		ClientIdentifier       string                            `json:"clientIdentifier,omitempty"`
-		UseXForwardForHeaders  bool                              `json:"useXForwardForHeaders"`
-		RequestType            string                            `json:"requestType,omitempty"`
-		SameActionOnIpv6       bool                              `json:"sameActionOnIpv6"`
-		Path                   *RatePolicyPath                   `json:"path,omitempty"`
-		PathMatchType          string                            `json:"pathMatchType,omitempty"`
-		PathURIPositiveMatch   bool                              `json:"pathUriPositiveMatch"`
-		FileExtensions         *RatePolicyFileExtensions         `json:"fileExtensions,omitempty"`
-		Hosts                  *RatePoliciesHosts                `json:"hosts,omitempty"`
-		Hostnames              []string                          `json:"hostnames,omitempty"`
-		AdditionalMatchOptions *RatePolicyAdditionalMatchOptions `json:"additionalMatchOptions,omitempty"`
-		QueryParameters        *RatePolicyQueryParameters        `json:"queryParameters,omitempty"`
-		CreateDate             string                            `json:"-"`
-		UpdateDate             string                            `json:"-"`
-		Used                   bool                              `json:"-"`
+		ID                     int                        `json:"-"`
+		ConfigID               int                        `json:"-"`
+		ConfigVersion          int                        `json:"-"`
+		MatchType              string                     `json:"matchType,omitempty"`
+		Type                   string                     `json:"type,omitempty"`
+		Name                   string                     `json:"name,omitempty"`
+		Description            string                     `json:"description,omitempty"`
+		AverageThreshold       int                        `json:"averageThreshold,omitempty"`
+		BurstThreshold         int                        `json:"burstThreshold,omitempty"`
+		ClientIdentifier       string                     `json:"clientIdentifier,omitempty"`
+		UseXForwardForHeaders  bool                       `json:"useXForwardForHeaders"`
+		RequestType            string                     `json:"requestType,omitempty"`
+		SameActionOnIpv6       bool                       `json:"sameActionOnIpv6"`
+		Path                   *RatePolicyPath            `json:"path,omitempty"`
+		PathMatchType          string                     `json:"pathMatchType,omitempty"`
+		PathURIPositiveMatch   bool                       `json:"pathUriPositiveMatch"`
+		FileExtensions         *RatePolicyFileExtensions  `json:"fileExtensions,omitempty"`
+		Hosts                  *RatePoliciesHosts         `json:"hosts,omitempty"`
+		Hostnames              []string                   `json:"hostnames,omitempty"`
+		AdditionalMatchOptions []RatePolicyMatchOption    `json:"additionalMatchOptions,omitempty"`
+		QueryParameters        *RatePolicyQueryParameters `json:"queryParameters,omitempty"`
+		CreateDate             string                     `json:"-"`
+		UpdateDate             string                     `json:"-"`
+		Used                   bool                       `json:"-"`
 	}
 
 	// RatePolicyAPISelectors is used as part of a rate policy description.
@@ -292,8 +273,8 @@ type (
 		Values        []string `json:"values,omitempty"`
 	}
 
-	// RatePolicyAdditionalMatchOptions is used as part of a rate policy description.
-	RatePolicyAdditionalMatchOptions []struct {
+	// RatePolicyMatchOption is used as part of a rate policy description.
+	RatePolicyMatchOption struct {
 		PositiveMatch bool     `json:"positiveMatch"`
 		Type          string   `json:"type,omitempty"`
 		Values        []string `json:"values,omitempty"`
@@ -358,14 +339,14 @@ func (v RemoveRatePolicyRequest) Validate() error {
 }
 
 func (p *appsec) GetRatePolicy(ctx context.Context, params GetRatePolicyRequest) (*GetRatePolicyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetRatePolicy")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetRatePolicy")
-
-	var rval GetRatePolicyResponse
+	var result GetRatePolicyResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/rate-policies/%d",
@@ -378,7 +359,7 @@ func (p *appsec) GetRatePolicy(ctx context.Context, params GetRatePolicyRequest)
 		return nil, fmt.Errorf("failed to create GetRatePolicy request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRatePolicy request failed: %w", err)
 	}
@@ -387,20 +368,20 @@ func (p *appsec) GetRatePolicy(ctx context.Context, params GetRatePolicyRequest)
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetRatePolicies(ctx context.Context, params GetRatePoliciesRequest) (*GetRatePoliciesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetRatePolicies")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetRatePolicies")
-
-	var rval GetRatePoliciesResponse
-	var rvalfiltered GetRatePoliciesResponse
+	var result GetRatePoliciesResponse
+	var filteredResult GetRatePoliciesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/rate-policies",
@@ -413,7 +394,7 @@ func (p *appsec) GetRatePolicies(ctx context.Context, params GetRatePoliciesRequ
 		return nil, fmt.Errorf("failed to create GetRatePolicies request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRatePolicies request failed: %w", err)
 	}
@@ -423,43 +404,43 @@ func (p *appsec) GetRatePolicies(ctx context.Context, params GetRatePoliciesRequ
 	}
 
 	if params.RatePolicyID != 0 {
-		for _, val := range rval.RatePolicies {
+		for _, val := range result.RatePolicies {
 			if val.ID == params.RatePolicyID {
-				rvalfiltered.RatePolicies = append(rvalfiltered.RatePolicies, val)
+				filteredResult.RatePolicies = append(filteredResult.RatePolicies, val)
 			}
 		}
 
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
 
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }
 
 func (p *appsec) UpdateRatePolicy(ctx context.Context, params UpdateRatePolicyRequest) (*UpdateRatePolicyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateRatePolicy")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateRatePolicy")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/rate-policies/%d",
 		params.ConfigID,
 		params.ConfigVersion,
 		params.RatePolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateRatePolicy request: %w", err)
 	}
 
-	var rval UpdateRatePolicyResponse
+	var result UpdateRatePolicyResponse
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
+	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateRatePolicy request failed: %w", err)
 	}
@@ -468,16 +449,16 @@ func (p *appsec) UpdateRatePolicy(ctx context.Context, params UpdateRatePolicyRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) CreateRatePolicy(ctx context.Context, params CreateRatePolicyRequest) (*CreateRatePolicyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("CreateRatePolicy")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	logger := p.Log(ctx)
-	logger.Debug("CreateRatePolicy")
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/rate-policies",
@@ -490,9 +471,9 @@ func (p *appsec) CreateRatePolicy(ctx context.Context, params CreateRatePolicyRe
 		return nil, fmt.Errorf("failed to create CreateRatePolicy request: %w", err)
 	}
 
-	var rval CreateRatePolicyResponse
+	var result CreateRatePolicyResponse
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
+	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("CreateRatePolicy request failed: %w", err)
 	}
@@ -501,36 +482,27 @@ func (p *appsec) CreateRatePolicy(ctx context.Context, params CreateRatePolicyRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) RemoveRatePolicy(ctx context.Context, params RemoveRatePolicyRequest) (*RemoveRatePolicyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveRatePolicy")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var rval RemoveRatePolicyResponse
+	var result RemoveRatePolicyResponse
 
-	logger := p.Log(ctx)
-	logger.Debug("RemoveRatePolicy")
-
-	uri, err := url.Parse(fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/rate-policies/%d",
-		params.ConfigID,
-		params.ConfigVersion,
-		params.RatePolicyID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/rate-policies/%d", params.ConfigID, params.ConfigVersion, params.RatePolicyID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveRatePolicy request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveRatePolicy request failed: %w", err)
 	}
@@ -539,5 +511,5 @@ func (p *appsec) RemoveRatePolicy(ctx context.Context, params RemoveRatePolicyRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

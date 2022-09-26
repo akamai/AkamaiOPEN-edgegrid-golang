@@ -42,11 +42,10 @@ type (
 )
 
 func (p *appsec) GetSelectableHostnames(ctx context.Context, params GetSelectableHostnamesRequest) (*GetSelectableHostnamesResponse, error) {
-
 	logger := p.Log(ctx)
 	logger.Debug("GetSelectableHostnamess")
 
-	var rval GetSelectableHostnamesResponse
+	var result GetSelectableHostnamesResponse
 
 	var uri string
 
@@ -67,7 +66,7 @@ func (p *appsec) GetSelectableHostnames(ctx context.Context, params GetSelectabl
 		return nil, fmt.Errorf("failed to create GetSelectableHostnames request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSelectableHostnames request failed: %w", err)
 	}
@@ -76,6 +75,6 @@ func (p *appsec) GetSelectableHostnames(ctx context.Context, params GetSelectabl
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"reflect"
 	"strconv"
 
@@ -192,14 +191,14 @@ func (v RemoveCustomDenyRequest) Validate() error {
 }
 
 func (p *appsec) GetCustomDeny(ctx context.Context, params GetCustomDenyRequest) (*GetCustomDenyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetCustomDeny")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetCustomDeny")
-
-	var rval GetCustomDenyResponse
+	var result GetCustomDenyResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/custom-deny/%s",
@@ -212,7 +211,7 @@ func (p *appsec) GetCustomDeny(ctx context.Context, params GetCustomDenyRequest)
 		return nil, fmt.Errorf("failed to create GetCustomDeny request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomDeny request failed: %w", err)
 	}
@@ -221,20 +220,20 @@ func (p *appsec) GetCustomDeny(ctx context.Context, params GetCustomDenyRequest)
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetCustomDenyList(ctx context.Context, params GetCustomDenyListRequest) (*GetCustomDenyListResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetCustomDenyList")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetCustomDenyList")
-
-	var rval GetCustomDenyListResponse
-	var rvalfiltered GetCustomDenyListResponse
+	var result GetCustomDenyListResponse
+	var filteredResult GetCustomDenyListResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/custom-deny",
@@ -247,7 +246,7 @@ func (p *appsec) GetCustomDenyList(ctx context.Context, params GetCustomDenyList
 		return nil, fmt.Errorf("failed to create GetlustomDenyList request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomDenyList request failed: %w", err)
 	}
@@ -257,42 +256,42 @@ func (p *appsec) GetCustomDenyList(ctx context.Context, params GetCustomDenyList
 	}
 
 	if params.ID != "" {
-		for _, val := range rval.CustomDenyList {
+		for _, val := range result.CustomDenyList {
 			if string(val.ID) == params.ID {
-				rvalfiltered.CustomDenyList = append(rvalfiltered.CustomDenyList, val)
+				filteredResult.CustomDenyList = append(filteredResult.CustomDenyList, val)
 			}
 		}
 
 	} else {
-		rvalfiltered = rval
+		filteredResult = result
 	}
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }
 
 func (p *appsec) UpdateCustomDeny(ctx context.Context, params UpdateCustomDenyRequest) (*UpdateCustomDenyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateCustomDeny")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateCustomDeny")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/custom-deny/%s",
 		params.ConfigID,
 		params.Version,
 		params.ID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateCustomDeny request: %w", err)
 	}
 
-	var rval UpdateCustomDenyResponse
+	var result UpdateCustomDenyResponse
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
+	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateCustomDeny request failed: %w", err)
 	}
@@ -301,16 +300,16 @@ func (p *appsec) UpdateCustomDeny(ctx context.Context, params UpdateCustomDenyRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) CreateCustomDeny(ctx context.Context, params CreateCustomDenyRequest) (*CreateCustomDenyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("CreateCustomDeny")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	logger := p.Log(ctx)
-	logger.Debug("CreateCustomDeny")
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/custom-deny",
@@ -323,9 +322,9 @@ func (p *appsec) CreateCustomDeny(ctx context.Context, params CreateCustomDenyRe
 		return nil, fmt.Errorf("failed to create CreateCustomDeny request: %w", err)
 	}
 
-	var rval CreateCustomDenyResponse
+	var result CreateCustomDenyResponse
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := p.Exec(req, &rval, params.JsonPayloadRaw)
+	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
 		return nil, fmt.Errorf("CreateCustomDeny request failed: %w", err)
 	}
@@ -334,36 +333,27 @@ func (p *appsec) CreateCustomDeny(ctx context.Context, params CreateCustomDenyRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) RemoveCustomDeny(ctx context.Context, params RemoveCustomDenyRequest) (*RemoveCustomDenyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveCustomDeny")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var rval RemoveCustomDenyResponse
+	var result RemoveCustomDenyResponse
 
-	logger := p.Log(ctx)
-	logger.Debug("RemoveCustomDeny")
-
-	uri, err := url.Parse(fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/custom-deny/%s",
-		params.ConfigID,
-		params.Version,
-		params.ID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/custom-deny/%s", params.ConfigID, params.Version, params.ID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveCustomDeny request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveCustomDeny request failed: %w", err)
 	}
@@ -372,5 +362,5 @@ func (p *appsec) RemoveCustomDeny(ctx context.Context, params RemoveCustomDenyRe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

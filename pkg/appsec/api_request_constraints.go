@@ -103,15 +103,15 @@ func (v RemoveApiRequestConstraintsRequest) Validate() error {
 }
 
 func (p *appsec) GetApiRequestConstraints(ctx context.Context, params GetApiRequestConstraintsRequest) (*GetApiRequestConstraintsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetApiRequestConstraints")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetApiRequestConstraints")
-
-	var rval GetApiRequestConstraintsResponse
-	var rvalfiltered GetApiRequestConstraintsResponse
+	var result GetApiRequestConstraintsResponse
+	var filteredResult GetApiRequestConstraintsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints",
@@ -124,7 +124,7 @@ func (p *appsec) GetApiRequestConstraints(ctx context.Context, params GetApiRequ
 		return nil, fmt.Errorf("failed to create GetApiRequestConstraints request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetApiRequestConstraints request failed: %w", err)
 	}
@@ -134,34 +134,34 @@ func (p *appsec) GetApiRequestConstraints(ctx context.Context, params GetApiRequ
 	}
 
 	if params.ApiID != 0 {
-		rvalfiltered.APIEndpoints = make([]ApiEndpoint, 0)
-		for _, val := range rval.APIEndpoints {
+		filteredResult.APIEndpoints = make([]ApiEndpoint, 0)
+		for _, val := range result.APIEndpoints {
 			if val.ID == params.ApiID {
-				rvalfiltered.APIEndpoints = append(rvalfiltered.APIEndpoints, val)
+				filteredResult.APIEndpoints = append(filteredResult.APIEndpoints, val)
 			}
 		}
 	} else {
-		rvalfiltered = rval
-		if len(rvalfiltered.APIEndpoints) == 0 {
-			rvalfiltered.APIEndpoints = make([]ApiEndpoint, 0)
+		filteredResult = result
+		if len(filteredResult.APIEndpoints) == 0 {
+			filteredResult.APIEndpoints = make([]ApiEndpoint, 0)
 		}
 	}
 
-	return &rvalfiltered, nil
+	return &filteredResult, nil
 
 }
 
 func (p *appsec) UpdateApiRequestConstraints(ctx context.Context, params UpdateApiRequestConstraintsRequest) (*UpdateApiRequestConstraintsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateApiRequestConstraints")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateApiRequestConstraints")
-
-	var putURL string
+	var uri string
 	if params.ApiID != 0 {
-		putURL = fmt.Sprintf(
+		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints/%d",
 			params.ConfigID,
 			params.Version,
@@ -169,7 +169,7 @@ func (p *appsec) UpdateApiRequestConstraints(ctx context.Context, params UpdateA
 			params.ApiID,
 		)
 	} else {
-		putURL = fmt.Sprintf(
+		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints",
 			params.ConfigID,
 			params.Version,
@@ -177,13 +177,13 @@ func (p *appsec) UpdateApiRequestConstraints(ctx context.Context, params UpdateA
 		)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateApiRequestConstraints request: %w", err)
 	}
 
-	var rval UpdateApiRequestConstraintsResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateApiRequestConstraintsResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateApiRequestConstraints request failed: %w", err)
 	}
@@ -192,20 +192,20 @@ func (p *appsec) UpdateApiRequestConstraints(ctx context.Context, params UpdateA
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (p *appsec) RemoveApiRequestConstraints(ctx context.Context, params RemoveApiRequestConstraintsRequest) (*RemoveApiRequestConstraintsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveApiRequestConstraints")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("RemoveApiRequestConstraints")
-
-	var putURL string
+	var uri string
 	if params.ApiID != 0 {
-		putURL = fmt.Sprintf(
+		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints/%d",
 			params.ConfigID,
 			params.Version,
@@ -213,7 +213,7 @@ func (p *appsec) RemoveApiRequestConstraints(ctx context.Context, params RemoveA
 			params.ApiID,
 		)
 	} else {
-		putURL = fmt.Sprintf(
+		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints",
 			params.ConfigID,
 			params.Version,
@@ -221,13 +221,13 @@ func (p *appsec) RemoveApiRequestConstraints(ctx context.Context, params RemoveA
 		)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveApiRequestConstraints request: %w", err)
 	}
 
-	var rval RemoveApiRequestConstraintsResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result RemoveApiRequestConstraintsResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveApiRequestConstraints request failed: %w", err)
 	}
@@ -236,5 +236,5 @@ func (p *appsec) RemoveApiRequestConstraints(ctx context.Context, params RemoveA
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

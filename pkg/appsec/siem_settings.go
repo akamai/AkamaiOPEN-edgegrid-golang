@@ -123,14 +123,14 @@ func (v RemoveSiemSettingsRequest) Validate() error {
 }
 
 func (p *appsec) GetSiemSettings(ctx context.Context, params GetSiemSettingsRequest) (*GetSiemSettingsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetSiemSettings")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetSiemSettings")
-
-	var rval GetSiemSettingsResponse
+	var result GetSiemSettingsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/siem",
@@ -143,7 +143,7 @@ func (p *appsec) GetSiemSettings(ctx context.Context, params GetSiemSettingsRequ
 		return nil, fmt.Errorf("failed to create GetSiemSettings request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetSiemSettings request failed: %w", err)
 	}
@@ -152,31 +152,31 @@ func (p *appsec) GetSiemSettings(ctx context.Context, params GetSiemSettingsRequ
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettingsRequest) (*UpdateSiemSettingsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateSiemSettings")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateSiemSettings")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/siem",
 		params.ConfigID,
 		params.Version,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateSiemSettings request: %w", err)
 	}
 
-	var rval UpdateSiemSettingsResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateSiemSettingsResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateSiemSettings request failed: %w", err)
 	}
@@ -185,31 +185,31 @@ func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettin
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) RemoveSiemSettings(ctx context.Context, params RemoveSiemSettingsRequest) (*RemoveSiemSettingsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveSiemSettings")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("RemoveSiemSettings")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/siem",
 		params.ConfigID,
 		params.Version,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveSiemSettings request: %w", err)
 	}
 
-	var rval RemoveSiemSettingsResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result RemoveSiemSettingsResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("RemoveSiemSettings request failed: %w", err)
 	}
@@ -218,5 +218,5 @@ func (p *appsec) RemoveSiemSettings(ctx context.Context, params RemoveSiemSettin
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

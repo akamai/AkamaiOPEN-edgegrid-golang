@@ -105,14 +105,14 @@ func (v UpdateIPGeoRequest) Validate() error {
 }
 
 func (p *appsec) GetIPGeo(ctx context.Context, params GetIPGeoRequest) (*GetIPGeoResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetIPGeo")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetIPGeo")
-
-	var rval GetIPGeoResponse
+	var result GetIPGeoResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/ip-geo-firewall",
@@ -125,7 +125,7 @@ func (p *appsec) GetIPGeo(ctx context.Context, params GetIPGeoRequest) (*GetIPGe
 		return nil, fmt.Errorf("failed to create GetIPGeo request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetIPGeo request failed: %w", err)
 	}
@@ -134,32 +134,32 @@ func (p *appsec) GetIPGeo(ctx context.Context, params GetIPGeoRequest) (*GetIPGe
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateIPGeo(ctx context.Context, params UpdateIPGeoRequest) (*UpdateIPGeoResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateIPGeo")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateIPGeo")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/ip-geo-firewall",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateIPGeo request: %w", err)
 	}
 
-	var rval UpdateIPGeoResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateIPGeoResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateIPGeo request failed: %w", err)
 	}
@@ -168,5 +168,5 @@ func (p *appsec) UpdateIPGeo(ctx context.Context, params UpdateIPGeoRequest) (*U
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }

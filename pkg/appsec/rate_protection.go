@@ -9,17 +9,23 @@ import (
 )
 
 type (
-	// The RateProtection interface supports retrieving and updating rate controls for a configuration
-	// and policy.
+	// The RateProtection interface supports retrieving and updating rate protection for a configuration and policy.
 	//
 	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	RateProtection interface {
+		// GetRateProtections retrieves the current rate protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// Deprecated: this method will be removed in a future release. Use GetRateProtection instead.
 		GetRateProtections(ctx context.Context, params GetRateProtectionsRequest) (*GetRateProtectionsResponse, error)
 
+		// GetRateProtection retrieves the current rate protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
 		GetRateProtection(ctx context.Context, params GetRateProtectionRequest) (*GetRateProtectionResponse, error)
 
+		// UpdateRateProtection updates the rate protection setting for a configuration and policy.
+		//
 		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
 		UpdateRateProtection(ctx context.Context, params UpdateRateProtectionRequest) (*UpdateRateProtectionResponse, error)
 	}
@@ -33,17 +39,10 @@ type (
 	}
 
 	// GetRateProtectionResponse is returned from a call to GetRateProtection.
-	GetRateProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-	}
+	GetRateProtectionResponse ProtectionsResponse
 
 	// GetRateProtectionsRequest is used to retrieve the rate protection setting.
+	// Deprecated: this struct will be removed in a future release.
 	GetRateProtectionsRequest struct {
 		ConfigID          int    `json:"-"`
 		Version           int    `json:"-"`
@@ -52,15 +51,8 @@ type (
 	}
 
 	// GetRateProtectionsResponse is returned from a call to GetRateProtection.
-	GetRateProtectionsResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-	}
+	// Deprecated: this struct will be removed in a future release.
+	GetRateProtectionsResponse ProtectionsResponse
 
 	// UpdateRateProtectionRequest is used to modify the rate protection setting.
 	UpdateRateProtectionRequest struct {
@@ -71,15 +63,7 @@ type (
 	}
 
 	// UpdateRateProtectionResponse is returned from a call to UpdateRateProtection.
-	UpdateRateProtectionResponse struct {
-		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool `json:"applyRateControls"`
-		ApplyReputationControls       bool `json:"applyReputationControls"`
-		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-	}
+	UpdateRateProtectionResponse ProtectionsResponse
 )
 
 // Validate validates a GetRateProtectionRequest.
@@ -110,14 +94,14 @@ func (v UpdateRateProtectionRequest) Validate() error {
 }
 
 func (p *appsec) GetRateProtection(ctx context.Context, params GetRateProtectionRequest) (*GetRateProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetRateProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetRateProtection")
-
-	var rval GetRateProtectionResponse
+	var result GetRateProtectionResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -130,7 +114,7 @@ func (p *appsec) GetRateProtection(ctx context.Context, params GetRateProtection
 		return nil, fmt.Errorf("failed to create GetRateProtection request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRateProtection request failed: %w", err)
 	}
@@ -139,19 +123,19 @@ func (p *appsec) GetRateProtection(ctx context.Context, params GetRateProtection
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) GetRateProtections(ctx context.Context, params GetRateProtectionsRequest) (*GetRateProtectionsResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("GetRateProtections")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("GetRateProtections")
-
-	var rval GetRateProtectionsResponse
+	var result GetRateProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -164,7 +148,7 @@ func (p *appsec) GetRateProtections(ctx context.Context, params GetRateProtectio
 		return nil, fmt.Errorf("failed to create GetRateProtections request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRateProtections request failed: %w", err)
 	}
@@ -173,32 +157,32 @@ func (p *appsec) GetRateProtections(ctx context.Context, params GetRateProtectio
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 
 }
 
 func (p *appsec) UpdateRateProtection(ctx context.Context, params UpdateRateProtectionRequest) (*UpdateRateProtectionResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("UpdateRateProtection")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateRateProtection")
-
-	putURL := fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
 		params.Version,
 		params.PolicyID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateRateProtection request: %w", err)
 	}
 
-	var rval UpdateRateProtectionResponse
-	resp, err := p.Exec(req, &rval, params)
+	var result UpdateRateProtectionResponse
+	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateRateProtection request failed: %w", err)
 	}
@@ -207,5 +191,5 @@ func (p *appsec) UpdateRateProtection(ctx context.Context, params UpdateRateProt
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
+	return &result, nil
 }
