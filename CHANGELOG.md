@@ -6,7 +6,7 @@
 
 * APPSEC
   * Add interfaces to support file malware scanning (FMS):
-    * MalwareComntentTypes
+    * MalwareContentTypes
     * MalwarePolicy
     * MalwarePolicyAction
     * MalwareProtection
