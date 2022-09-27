@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	// ErrStructValidation is returned returned when given struct validation failed
+	// ErrStructValidation is returned when given struct validation failed
 	ErrStructValidation = errors.New("struct validation")
 
 	// ErrNotFound is returned when requested resource was not found
@@ -20,19 +20,20 @@ var (
 type (
 	// PAPI is the papi api interface
 	PAPI interface {
-		Groups
-		Contracts
 		Activations
-		CPCodes
-		Properties
-		PropertyVersions
-		EdgeHostnames
-		Products
-		Search
-		PropertyVersionHostnames
 		ClientSettings
+		Contracts
+		CPCodes
+		EdgeHostnames
+		Groups
+		Includes
+		Products
+		Properties
 		PropertyRules
+		PropertyVersionHostnames
+		PropertyVersions
 		RuleFormats
+		Search
 	}
 
 	papi struct {

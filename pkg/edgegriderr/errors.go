@@ -10,7 +10,7 @@ import (
 )
 
 // ParseValidationErrors parses validation errors into easily readable form
-// The output error is formated with indentations and struct field indexing for collections
+// The output error is formatted with indentations and struct field indexing for collections
 func ParseValidationErrors(e validation.Errors) error {
 	if e.Filter() == nil {
 		return nil
