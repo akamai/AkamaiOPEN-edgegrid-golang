@@ -40,8 +40,8 @@ type (
 
 	// ListDeploymentsResponse contains response for ListDeployments
 	ListDeploymentsResponse struct {
-		Production Deployment `json:"production"`
-		Staging    Deployment `json:"staging"`
+		Production *Deployment `json:"production"`
+		Staging    *Deployment `json:"staging"`
 	}
 
 	// GetProductionDeploymentResponse contains response for GetProductionDeployment

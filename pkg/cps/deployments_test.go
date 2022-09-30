@@ -102,7 +102,7 @@ func TestListDeployments(t *testing.T) {
 				"Accept": "application/vnd.akamai.cps.deployments.v7+json",
 			},
 			expectedResponse: &ListDeploymentsResponse{
-				Production: Deployment{
+				Production: &Deployment{
 					OCSPStapled: tools.BoolPtr(false),
 					OCSPURIs:    []string{},
 					NetworkConfiguration: DeploymentNetworkConfiguration{
@@ -137,7 +137,7 @@ func TestListDeployments(t *testing.T) {
 						},
 					},
 				},
-				Staging: Deployment{
+				Staging: &Deployment{
 					OCSPStapled: tools.BoolPtr(false),
 					OCSPURIs:    []string{},
 					NetworkConfiguration: DeploymentNetworkConfiguration{
