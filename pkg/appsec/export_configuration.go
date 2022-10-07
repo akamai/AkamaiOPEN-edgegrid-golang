@@ -221,22 +221,7 @@ type (
 			} `json:"clientReputation"`
 			RatePolicyActions    *SecurityPoliciesRatePolicyActions `json:"ratePolicyActions,omitempty"`
 			MalwarePolicyActions []MalwarePolicyActionBody          `json:"malwarePolicyActions,omitempty"`
-			IPGeoFirewall        struct {
-				Block       string `json:"block"`
-				GeoControls struct {
-					BlockedIPNetworkLists struct {
-						NetworkList []string `json:"networkList,omitempty"`
-					} `json:"blockedIPNetworkLists"`
-				} `json:"geoControls"`
-				IPControls struct {
-					AllowedIPNetworkLists struct {
-						NetworkList []string `json:"networkList,omitempty"`
-					} `json:"allowedIPNetworkLists"`
-					BlockedIPNetworkLists struct {
-						NetworkList []string `json:"networkList,omitempty"`
-					} `json:"blockedIPNetworkLists"`
-				} `json:"ipControls"`
-			} `json:"ipGeoFirewall,omitempty"`
+			IPGeoFirewall        *IPGeoFirewall                     `json:"ipGeoFirewall,omitempty"`
 			PenaltyBox           *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
 			EvaluationPenaltyBox *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
 			SlowPost             *SlowPostexp                       `json:"slowPost,omitempty"`
@@ -499,7 +484,7 @@ type (
 			AllExtensions      bool     `json:"allExtensions"`
 			EnableAppLayer     bool     `json:"enableAppLayer"`
 			EnableRateControls bool     `json:"enableRateControls"`
-			Extensions         []string `json:"extensions"`
+			Extensions         []string `json:"extensions,omitempty"`
 		} `json:"prefetch"`
 		PragmaHeader *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
 	}
