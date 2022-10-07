@@ -128,8 +128,6 @@ func (p *appsec) GetTuningRecommendations(ctx context.Context, params GetTuningR
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetTuningRecommendationsResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations?standardException=true&type=%s",
 		params.ConfigID,
@@ -141,20 +139,18 @@ func (p *appsec) GetTuningRecommendations(ctx context.Context, params GetTuningR
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetTuningRecommendations request: %w", err)
 	}
-
 	req.Header.Set("Content-Type", "application/json")
 
+	var result GetTuningRecommendationsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetTuningRecommendations request failed: %w", err)
+		return nil, fmt.Errorf("get tuning recommendations request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetAttackGroupRecommendations(ctx context.Context, params GetAttackGroupRecommendationsRequest) (*GetAttackGroupRecommendationsResponse, error) {
@@ -164,8 +160,6 @@ func (p *appsec) GetAttackGroupRecommendations(ctx context.Context, params GetAt
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetAttackGroupRecommendationsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations/attack-groups/%s?standardException=true&type=%s",
@@ -183,17 +177,16 @@ func (p *appsec) GetAttackGroupRecommendations(ctx context.Context, params GetAt
 
 	req.Header.Set("Content-Type", "application/json")
 
+	var result GetAttackGroupRecommendationsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetAttackGroupRecommendations request failed: %w", err)
+		return nil, fmt.Errorf("get attack group recommendations request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetRuleRecommendations(ctx context.Context, params GetRuleRecommendationsRequest) (*GetRuleRecommendationsResponse, error) {
@@ -203,8 +196,6 @@ func (p *appsec) GetRuleRecommendations(ctx context.Context, params GetRuleRecom
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetRuleRecommendationsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/recommendations/rules/%d?standardException=true&type=%s",
@@ -222,15 +213,14 @@ func (p *appsec) GetRuleRecommendations(ctx context.Context, params GetRuleRecom
 
 	req.Header.Set("Content-Type", "application/json")
 
+	var result GetRuleRecommendationsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetRuleRecommendations request failed: %w", err)
+		return nil, fmt.Errorf("get rule recommendations request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }

@@ -119,13 +119,11 @@ func (v RemoveWAPBypassNetworkListsRequest) Validate() error {
 
 func (p *appsec) GetWAPBypassNetworkLists(ctx context.Context, params GetWAPBypassNetworkListsRequest) (*GetWAPBypassNetworkListsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debugf("GetWAPBypassNetworkLists(%+v)", params)
+	logger.Debugf("GetWAPBypassNetworkLists")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetWAPBypassNetworkListsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/bypass-network-lists",
@@ -139,22 +137,21 @@ func (p *appsec) GetWAPBypassNetworkLists(ctx context.Context, params GetWAPBypa
 		return nil, fmt.Errorf("failed to create GetWAPBypassNetworkLists request: %w", err)
 	}
 
+	var result GetWAPBypassNetworkListsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetWAPBypassNetworkLists request failed: %w", err)
+		return nil, fmt.Errorf("get WAP bypass network lists request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateWAPBypassNetworkLists(ctx context.Context, params UpdateWAPBypassNetworkListsRequest) (*UpdateWAPBypassNetworkListsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debugf("UpdateWAPBypassNetworkLists(%+v)", params)
+	logger.Debugf("UpdateWAPBypassNetworkLists")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -175,9 +172,8 @@ func (p *appsec) UpdateWAPBypassNetworkLists(ctx context.Context, params UpdateW
 	var result UpdateWAPBypassNetworkListsResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateWAPBypassNetworkLists request failed: %w", err)
+		return nil, fmt.Errorf("update WAP bypass network lists request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -188,7 +184,7 @@ func (p *appsec) UpdateWAPBypassNetworkLists(ctx context.Context, params UpdateW
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) RemoveWAPBypassNetworkLists(ctx context.Context, params RemoveWAPBypassNetworkListsRequest) (*RemoveWAPBypassNetworkListsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debugf("RemoveWAPBypassNetworkLists(%+v)", params)
+	logger.Debugf("RemoveWAPBypassNetworkLists")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -209,9 +205,8 @@ func (p *appsec) RemoveWAPBypassNetworkLists(ctx context.Context, params RemoveW
 	var result RemoveWAPBypassNetworkListsResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveWAPBypassNetworkLists request failed: %w", err)
+		return nil, fmt.Errorf("remove WAP bypass network lists request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

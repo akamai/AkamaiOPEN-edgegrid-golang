@@ -133,8 +133,6 @@ func (p *appsec) GetSelectedHostname(ctx context.Context, params GetSelectedHost
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetSelectedHostnameResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames",
 		params.ConfigID,
@@ -145,17 +143,16 @@ func (p *appsec) GetSelectedHostname(ctx context.Context, params GetSelectedHost
 		return nil, fmt.Errorf("failed to create GetSelectedHostname request: %w", err)
 	}
 
+	var result GetSelectedHostnameResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetSelectedHostname request failed: %w", err)
+		return nil, fmt.Errorf("get selected hostname request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetSelectedHostnames(ctx context.Context, params GetSelectedHostnamesRequest) (*GetSelectedHostnamesResponse, error) {
@@ -165,8 +162,6 @@ func (p *appsec) GetSelectedHostnames(ctx context.Context, params GetSelectedHos
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetSelectedHostnamesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames",
@@ -178,17 +173,16 @@ func (p *appsec) GetSelectedHostnames(ctx context.Context, params GetSelectedHos
 		return nil, fmt.Errorf("failed to create GetSelectedHostnames request: %w", err)
 	}
 
+	var result GetSelectedHostnamesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetSelectedHostnames request failed: %w", err)
+		return nil, fmt.Errorf("get selected hostnames request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateSelectedHostnames(ctx context.Context, params UpdateSelectedHostnamesRequest) (*UpdateSelectedHostnamesResponse, error) {
@@ -213,9 +207,8 @@ func (p *appsec) UpdateSelectedHostnames(ctx context.Context, params UpdateSelec
 	var result UpdateSelectedHostnamesResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateSelectedHostnames request failed: %w", err)
+		return nil, fmt.Errorf("update selected hostnames request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -246,9 +239,8 @@ func (p *appsec) UpdateSelectedHostname(ctx context.Context, params UpdateSelect
 	var result UpdateSelectedHostnameResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateSelectedHostname request failed: %w", err)
+		return nil, fmt.Errorf("update selected hostname request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

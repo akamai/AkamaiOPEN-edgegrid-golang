@@ -324,8 +324,6 @@ func (p *appsec) GetReputationProfile(ctx context.Context, params GetReputationP
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetReputationProfileResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/reputation-profiles/%d",
 		params.ConfigID,
@@ -337,17 +335,16 @@ func (p *appsec) GetReputationProfile(ctx context.Context, params GetReputationP
 		return nil, fmt.Errorf("failed to create GetReputationProfile request: %w", err)
 	}
 
+	var result GetReputationProfileResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetReputationProfile request failed: %w", err)
+		return nil, fmt.Errorf("get reputation profile request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetReputationProfiles(ctx context.Context, params GetReputationProfilesRequest) (*GetReputationProfilesResponse, error) {
@@ -357,9 +354,6 @@ func (p *appsec) GetReputationProfiles(ctx context.Context, params GetReputation
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetReputationProfilesResponse
-	var filteredResult GetReputationProfilesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/reputation-profiles",
@@ -372,28 +366,26 @@ func (p *appsec) GetReputationProfiles(ctx context.Context, params GetReputation
 		return nil, fmt.Errorf("failed to create GetReputationProfiles request: %w", err)
 	}
 
+	var result GetReputationProfilesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetReputationProfiles request failed: %w", err)
+		return nil, fmt.Errorf("get reputation profiles request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.ReputationProfileId != 0 {
+		var filteredResult GetReputationProfilesResponse
 		for _, val := range result.ReputationProfiles {
 			if val.ID == params.ReputationProfileId {
 				filteredResult.ReputationProfiles = append(filteredResult.ReputationProfiles, val)
 			}
 		}
-
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
 
-	return &filteredResult, nil
-
+	return &result, nil
 }
 
 func (p *appsec) UpdateReputationProfile(ctx context.Context, params UpdateReputationProfileRequest) (*UpdateReputationProfileResponse, error) {
@@ -415,14 +407,13 @@ func (p *appsec) UpdateReputationProfile(ctx context.Context, params UpdateReput
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateReputationProfile request: %w", err)
 	}
-
 	req.Header.Set("Content-Type", "application/json")
+
 	var result UpdateReputationProfileResponse
 	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateReputationProfile request failed: %w", err)
+		return nil, fmt.Errorf("update reputation profile request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -453,15 +444,13 @@ func (p *appsec) CreateReputationProfile(ctx context.Context, params CreateReput
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("CreateReputationProfile request failed: %w", err)
+		return nil, fmt.Errorf("create reputation profile request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) RemoveReputationProfile(ctx context.Context, params RemoveReputationProfileRequest) (*RemoveReputationProfileResponse, error) {
@@ -472,19 +461,17 @@ func (p *appsec) RemoveReputationProfile(ctx context.Context, params RemoveReput
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result RemoveReputationProfileResponse
-
 	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/reputation-profiles/%d", params.ConfigID, params.ConfigVersion, params.ReputationProfileId)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveReputationProfile request: %w", err)
 	}
 
+	var result RemoveReputationProfileResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveReputationProfile request failed: %w", err)
+		return nil, fmt.Errorf("remove reputation profile request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

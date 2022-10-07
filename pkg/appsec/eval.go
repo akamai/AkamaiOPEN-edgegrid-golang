@@ -148,8 +148,6 @@ func (p *appsec) GetEval(ctx context.Context, params GetEvalRequest) (*GetEvalRe
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetEvalResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/mode",
 		params.ConfigID,
@@ -161,17 +159,16 @@ func (p *appsec) GetEval(ctx context.Context, params GetEvalRequest) (*GetEvalRe
 		return nil, fmt.Errorf("failed to create GetEval request: %w", err)
 	}
 
+	var result GetEvalResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetEval request failed: %w", err)
+		return nil, fmt.Errorf("get eval request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 // Deprecated: this method will be removed in a future release.
@@ -182,8 +179,6 @@ func (p *appsec) GetEvals(ctx context.Context, params GetEvalsRequest) (*GetEval
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetEvalsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/mode",
@@ -196,17 +191,16 @@ func (p *appsec) GetEvals(ctx context.Context, params GetEvalsRequest) (*GetEval
 		return nil, fmt.Errorf("failed to create GetEvals request: %w", err)
 	}
 
+	var result GetEvalsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetEvals request failed: %w", err)
+		return nil, fmt.Errorf("get evals request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateEval(ctx context.Context, params UpdateEvalRequest) (*UpdateEvalResponse, error) {
@@ -232,9 +226,8 @@ func (p *appsec) UpdateEval(ctx context.Context, params UpdateEvalRequest) (*Upd
 	var result UpdateEvalResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateEval request failed: %w", err)
+		return nil, fmt.Errorf("update eval request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -244,7 +237,7 @@ func (p *appsec) UpdateEval(ctx context.Context, params UpdateEvalRequest) (*Upd
 
 func (p *appsec) RemoveEval(ctx context.Context, params RemoveEvalRequest) (*RemoveEvalResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("UpdateEval")
+	logger.Debug("RemoveEval")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -265,9 +258,8 @@ func (p *appsec) RemoveEval(ctx context.Context, params RemoveEvalRequest) (*Rem
 	var result RemoveEvalResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveEval request failed: %w", err)
+		return nil, fmt.Errorf("remove eval request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

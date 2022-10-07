@@ -112,8 +112,6 @@ func (p *appsec) GetIPGeo(ctx context.Context, params GetIPGeoRequest) (*GetIPGe
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetIPGeoResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/ip-geo-firewall",
 		params.ConfigID,
@@ -125,17 +123,16 @@ func (p *appsec) GetIPGeo(ctx context.Context, params GetIPGeoRequest) (*GetIPGe
 		return nil, fmt.Errorf("failed to create GetIPGeo request: %w", err)
 	}
 
+	var result GetIPGeoResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetIPGeo request failed: %w", err)
+		return nil, fmt.Errorf("get IPGeo request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateIPGeo(ctx context.Context, params UpdateIPGeoRequest) (*UpdateIPGeoResponse, error) {
@@ -161,9 +158,8 @@ func (p *appsec) UpdateIPGeo(ctx context.Context, params UpdateIPGeoRequest) (*U
 	var result UpdateIPGeoResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateIPGeo request failed: %w", err)
+		return nil, fmt.Errorf("update IPGeo request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

@@ -106,8 +106,6 @@ func (p *appsec) GetReputationAnalysis(ctx context.Context, params GetReputation
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetReputationAnalysisResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/reputation-analysis",
 		params.ConfigID,
@@ -119,17 +117,16 @@ func (p *appsec) GetReputationAnalysis(ctx context.Context, params GetReputation
 		return nil, fmt.Errorf("failed to create GetReputationAnalysis request: %w", err)
 	}
 
+	var result GetReputationAnalysisResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetReputationAnalysis request failed: %w", err)
+		return nil, fmt.Errorf("get reputation analysis request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateReputationAnalysis(ctx context.Context, params UpdateReputationAnalysisRequest) (*UpdateReputationAnalysisResponse, error) {
@@ -155,9 +152,8 @@ func (p *appsec) UpdateReputationAnalysis(ctx context.Context, params UpdateRepu
 	var result UpdateReputationAnalysisResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateReputationAnalysis request failed: %w", err)
+		return nil, fmt.Errorf("update reputation analysis request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -168,8 +164,6 @@ func (p *appsec) UpdateReputationAnalysis(ctx context.Context, params UpdateRepu
 func (p *appsec) RemoveReputationAnalysis(ctx context.Context, params RemoveReputationAnalysisRequest) (*RemoveReputationAnalysisResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("RemoveReputationAnalysis")
-
-	var result RemoveReputationAnalysisResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/reputation-analysis",
@@ -183,11 +177,11 @@ func (p *appsec) RemoveReputationAnalysis(ctx context.Context, params RemoveRepu
 		return nil, fmt.Errorf("failed to create RemoveReputationAnalysis request: %w", err)
 	}
 
+	var result RemoveReputationAnalysisResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveReputationAnalysis request failed: %w", err)
+		return nil, fmt.Errorf("remove reputation analysis request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

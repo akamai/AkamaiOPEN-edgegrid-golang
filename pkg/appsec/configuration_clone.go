@@ -102,8 +102,6 @@ func (p *appsec) GetConfigurationClone(ctx context.Context, params GetConfigurat
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetConfigurationCloneResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d",
 		params.ConfigID,
@@ -114,17 +112,16 @@ func (p *appsec) GetConfigurationClone(ctx context.Context, params GetConfigurat
 		return nil, fmt.Errorf("failed to create GetConfigurationClone request: %w", err)
 	}
 
+	var result GetConfigurationCloneResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetConfigurationClone request failed: %w", err)
+		return nil, fmt.Errorf("get configuration clone request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) CreateConfigurationClone(ctx context.Context, params CreateConfigurationCloneRequest) (*CreateConfigurationCloneResponse, error) {
@@ -143,16 +140,13 @@ func (p *appsec) CreateConfigurationClone(ctx context.Context, params CreateConf
 	}
 
 	var result CreateConfigurationCloneResponse
-
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("CreateConfigurationClone request failed: %w", err)
+		return nil, fmt.Errorf("create configuration clone request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }

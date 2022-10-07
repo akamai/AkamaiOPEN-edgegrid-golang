@@ -85,8 +85,6 @@ func (p *appsec) GetAPIConstraintsProtection(ctx context.Context, params GetAPIC
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetAPIConstraintsProtectionResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
@@ -98,9 +96,10 @@ func (p *appsec) GetAPIConstraintsProtection(ctx context.Context, params GetAPIC
 		return nil, fmt.Errorf("failed to create GetAPIConstraintsProtection request: %w", err)
 	}
 
+	var result GetAPIConstraintsProtectionResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetAPIConstraintsProtection request failed: %w", err)
+		return nil, fmt.Errorf("get API constraints protection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -108,7 +107,6 @@ func (p *appsec) GetAPIConstraintsProtection(ctx context.Context, params GetAPIC
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateAPIConstraintsProtection(ctx context.Context, params UpdateAPIConstraintsProtectionRequest) (*UpdateAPIConstraintsProtectionResponse, error) {
@@ -134,7 +132,7 @@ func (p *appsec) UpdateAPIConstraintsProtection(ctx context.Context, params Upda
 	var result UpdateAPIConstraintsProtectionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateAPIConstraintsProtection request failed: %w", err)
+		return nil, fmt.Errorf("update API constraints protection request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

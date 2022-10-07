@@ -152,9 +152,7 @@ func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvan
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetAdvancedSettingsLoggingResponse
 	var uri string
-
 	if params.PolicyID != "" {
 		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/advanced-settings/logging",
@@ -173,9 +171,10 @@ func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvan
 		return nil, fmt.Errorf("failed to create GetAdvancedSettingsLogging request: %w", err)
 	}
 
+	var result GetAdvancedSettingsLoggingResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetAdvancedSettingsLogging request failed: %w", err)
+		return nil, fmt.Errorf("get advanced settings logging request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -183,7 +182,6 @@ func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvan
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateAdvancedSettingsLogging(ctx context.Context, params UpdateAdvancedSettingsLoggingRequest) (*UpdateAdvancedSettingsLoggingResponse, error) {
@@ -212,12 +210,12 @@ func (p *appsec) UpdateAdvancedSettingsLogging(ctx context.Context, params Updat
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateAdvancedSettingsLogging request: %w", err)
 	}
-
 	req.Header.Set("Content-Type", "application/json")
+
 	var result UpdateAdvancedSettingsLoggingResponse
 	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("CreateAdvancedSettingsLogging request failed: %w", err)
+		return nil, fmt.Errorf("update advanced settings logging request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -253,12 +251,12 @@ func (p *appsec) RemoveAdvancedSettingsLogging(ctx context.Context, params Remov
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveAdvancedSettingsLogging request: %w", err)
 	}
-
 	req.Header.Set("Content-Type", "application/json")
+
 	var result RemoveAdvancedSettingsLoggingResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveAdvancedSettingsLogging request failed: %w", err)
+		return nil, fmt.Errorf("remove advanced settings logging request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

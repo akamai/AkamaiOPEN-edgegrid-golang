@@ -71,8 +71,6 @@ func (p *appsec) GetWAPSelectedHostnames(ctx context.Context, params GetWAPSelec
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetWAPSelectedHostnamesResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/wap-selected-hostnames",
 		params.ConfigID,
@@ -84,11 +82,11 @@ func (p *appsec) GetWAPSelectedHostnames(ctx context.Context, params GetWAPSelec
 		return nil, fmt.Errorf("failed to create GetWAPSelectedHostnames request: %w", err)
 	}
 
+	var result GetWAPSelectedHostnamesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetWAPSelectedHostnames request failed: %w", err)
+		return nil, fmt.Errorf("get WAP selected hostnames request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -119,9 +117,8 @@ func (p *appsec) UpdateWAPSelectedHostnames(ctx context.Context, params UpdateWA
 	var result UpdateWAPSelectedHostnamesResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateWAPSelectedHostnames request failed: %w", err)
+		return nil, fmt.Errorf("update WAP selected hostnames request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

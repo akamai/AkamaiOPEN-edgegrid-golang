@@ -118,8 +118,6 @@ func (p *appsec) GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*Get
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetWAFModeResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/mode",
 		params.ConfigID,
@@ -131,17 +129,16 @@ func (p *appsec) GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*Get
 		return nil, fmt.Errorf("failed to create GetWAFMode request: %w", err)
 	}
 
+	var result GetWAFModeResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetWAFMode request failed: %w", err)
+		return nil, fmt.Errorf("get WAF mode request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 // Deprecated: this method will be removed in a future release.
@@ -152,8 +149,6 @@ func (p *appsec) GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*G
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetWAFModesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/mode",
@@ -166,17 +161,16 @@ func (p *appsec) GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*G
 		return nil, fmt.Errorf("failed to create GetWAFModes request: %w", err)
 	}
 
+	var result GetWAFModesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetWAFModes request failed: %w", err)
+		return nil, fmt.Errorf("get WAF Modes request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest) (*UpdateWAFModeResponse, error) {
@@ -202,9 +196,8 @@ func (p *appsec) UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest)
 	var result UpdateWAFModeResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateWAFMode request failed: %w", err)
+		return nil, fmt.Errorf("update WAF mode request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

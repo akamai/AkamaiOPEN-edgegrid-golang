@@ -288,8 +288,6 @@ func (p *appsec) GetMatchTarget(ctx context.Context, params GetMatchTargetReques
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetMatchTargetResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/match-targets/%d?includeChildObjectName=true",
 		params.ConfigID,
@@ -302,17 +300,16 @@ func (p *appsec) GetMatchTarget(ctx context.Context, params GetMatchTargetReques
 		return nil, fmt.Errorf("failed to create GetMatchTarget request: %w", err)
 	}
 
+	var result GetMatchTargetResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetMatchTarget request failed: %w", err)
+		return nil, fmt.Errorf("get match target request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequest) (*GetMatchTargetsResponse, error) {
@@ -322,9 +319,6 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetMatchTargetsResponse
-	var filteredResult GetMatchTargetsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/match-targets",
@@ -337,16 +331,17 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 		return nil, fmt.Errorf("failed to create GetMatchTargets request: %w", err)
 	}
 
+	var result GetMatchTargetsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetMatchTargets request failed: %w", err)
+		return nil, fmt.Errorf("get match targets request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.TargetID != 0 {
+		var filteredResult GetMatchTargetsResponse
 		for _, val := range result.MatchTargets.WebsiteTargets {
 			if val.TargetID == params.TargetID {
 				filteredResult.MatchTargets.WebsiteTargets = append(filteredResult.MatchTargets.WebsiteTargets, val)
@@ -357,11 +352,10 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 				filteredResult.MatchTargets.APITargets = append(filteredResult.MatchTargets.APITargets, val)
 			}
 		}
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
-	return &filteredResult, nil
 
+	return &result, nil
 }
 
 func (p *appsec) UpdateMatchTarget(ctx context.Context, params UpdateMatchTargetRequest) (*UpdateMatchTargetResponse, error) {
@@ -388,9 +382,8 @@ func (p *appsec) UpdateMatchTarget(ctx context.Context, params UpdateMatchTarget
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateMatchTarget request failed: %w", err)
+		return nil, fmt.Errorf("update match target request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -421,15 +414,13 @@ func (p *appsec) CreateMatchTarget(ctx context.Context, params CreateMatchTarget
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("CreateMatchTarget request failed: %w", err)
+		return nil, fmt.Errorf("create match target request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) RemoveMatchTarget(ctx context.Context, params RemoveMatchTargetRequest) (*RemoveMatchTargetResponse, error) {
@@ -440,17 +431,16 @@ func (p *appsec) RemoveMatchTarget(ctx context.Context, params RemoveMatchTarget
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result RemoveMatchTargetResponse
-
 	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/match-targets/%d", params.ConfigID, params.ConfigVersion, params.TargetID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveMatchTarget request: %w", err)
 	}
 
+	var result RemoveMatchTargetResponse
 	resp, errd := p.Exec(req, nil)
 	if errd != nil {
-		return nil, fmt.Errorf("RemoveMatchTarget request failed: %w", err)
+		return nil, fmt.Errorf("remove match target request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {

@@ -149,8 +149,6 @@ func (p *appsec) GetSlowPostProtectionSetting(ctx context.Context, params GetSlo
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetSlowPostProtectionSettingResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/slow-post",
 		params.ConfigID,
@@ -162,17 +160,16 @@ func (p *appsec) GetSlowPostProtectionSetting(ctx context.Context, params GetSlo
 		return nil, fmt.Errorf("failed to create GetSlowPostProtectionSetting request: %w", err)
 	}
 
+	var result GetSlowPostProtectionSettingResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetSlowPostProtectionSetting request failed: %w", err)
+		return nil, fmt.Errorf("get slow post protection setting request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetSlowPostProtectionSettings(ctx context.Context, params GetSlowPostProtectionSettingsRequest) (*GetSlowPostProtectionSettingsResponse, error) {
@@ -182,8 +179,6 @@ func (p *appsec) GetSlowPostProtectionSettings(ctx context.Context, params GetSl
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetSlowPostProtectionSettingsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/slow-post",
@@ -196,17 +191,16 @@ func (p *appsec) GetSlowPostProtectionSettings(ctx context.Context, params GetSl
 		return nil, fmt.Errorf("failed to create GetSlowPostProtectionSettings request: %w", err)
 	}
 
+	var result GetSlowPostProtectionSettingsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetSlowPostProtectionSettings request failed: %w", err)
+		return nil, fmt.Errorf("get slow post protection settings request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateSlowPostProtectionSetting(ctx context.Context, params UpdateSlowPostProtectionSettingRequest) (*UpdateSlowPostProtectionSettingResponse, error) {
@@ -232,9 +226,8 @@ func (p *appsec) UpdateSlowPostProtectionSetting(ctx context.Context, params Upd
 	var result UpdateSlowPostProtectionSettingResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateSlowPostProtectionSetting request failed: %w", err)
+		return nil, fmt.Errorf("update slow post protection setting request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

@@ -89,9 +89,7 @@ func (p *appsec) GetAdvancedSettingsPragma(ctx context.Context, params GetAdvanc
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetAdvancedSettingsPragmaResponse
 	var uri string
-
 	if params.PolicyID != "" {
 		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/advanced-settings/pragma-header",
@@ -109,12 +107,12 @@ func (p *appsec) GetAdvancedSettingsPragma(ctx context.Context, params GetAdvanc
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetAdvancedSettingsPragma request: %w", err)
 	}
-
 	req.Header.Set("Content-Type", "application/json")
 
+	var result GetAdvancedSettingsPragmaResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetAdvancedSettingsPragma request failed: %w", err)
+		return nil, fmt.Errorf("get advanced settings pragma request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -122,7 +120,6 @@ func (p *appsec) GetAdvancedSettingsPragma(ctx context.Context, params GetAdvanc
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateAdvancedSettingsPragma(ctx context.Context, params UpdateAdvancedSettingsPragmaRequest) (*UpdateAdvancedSettingsPragmaResponse, error) {
@@ -155,7 +152,7 @@ func (p *appsec) UpdateAdvancedSettingsPragma(ctx context.Context, params Update
 	var result UpdateAdvancedSettingsPragmaResponse
 	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateAdvancedSettingsPragma request failed: %w", err)
+		return nil, fmt.Errorf("update advanced settings pragma request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

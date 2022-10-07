@@ -34,8 +34,6 @@ func (p *appsec) GetFailoverHostnames(ctx context.Context, params GetFailoverHos
 	logger := p.Log(ctx)
 	logger.Debug("GetFailoverHostnames")
 
-	var result GetFailoverHostnamesResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/failover-hostnames",
 		params.ConfigID,
@@ -46,15 +44,14 @@ func (p *appsec) GetFailoverHostnames(ctx context.Context, params GetFailoverHos
 		return nil, fmt.Errorf("failed to create GetFailoverHostnames request: %w", err)
 	}
 
+	var result GetFailoverHostnamesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetFailoverHostnames request failed: %w", err)
+		return nil, fmt.Errorf("get failover hostnames request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }

@@ -110,9 +110,6 @@ func (p *appsec) GetApiRequestConstraints(ctx context.Context, params GetApiRequ
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetApiRequestConstraintsResponse
-	var filteredResult GetApiRequestConstraintsResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/api-request-constraints",
 		params.ConfigID,
@@ -124,31 +121,26 @@ func (p *appsec) GetApiRequestConstraints(ctx context.Context, params GetApiRequ
 		return nil, fmt.Errorf("failed to create GetApiRequestConstraints request: %w", err)
 	}
 
+	var result GetApiRequestConstraintsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetApiRequestConstraints request failed: %w", err)
+		return nil, fmt.Errorf("get API request constraints request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.ApiID != 0 {
-		filteredResult.APIEndpoints = make([]ApiEndpoint, 0)
+		var filteredResult GetApiRequestConstraintsResponse
 		for _, val := range result.APIEndpoints {
 			if val.ID == params.ApiID {
 				filteredResult.APIEndpoints = append(filteredResult.APIEndpoints, val)
 			}
 		}
-	} else {
-		filteredResult = result
-		if len(filteredResult.APIEndpoints) == 0 {
-			filteredResult.APIEndpoints = make([]ApiEndpoint, 0)
-		}
+		return &filteredResult, nil
 	}
 
-	return &filteredResult, nil
-
+	return &result, nil
 }
 
 func (p *appsec) UpdateApiRequestConstraints(ctx context.Context, params UpdateApiRequestConstraintsRequest) (*UpdateApiRequestConstraintsResponse, error) {
@@ -185,7 +177,7 @@ func (p *appsec) UpdateApiRequestConstraints(ctx context.Context, params UpdateA
 	var result UpdateApiRequestConstraintsResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateApiRequestConstraints request failed: %w", err)
+		return nil, fmt.Errorf("update API request constraints request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -229,7 +221,7 @@ func (p *appsec) RemoveApiRequestConstraints(ctx context.Context, params RemoveA
 	var result RemoveApiRequestConstraintsResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveApiRequestConstraints request failed: %w", err)
+		return nil, fmt.Errorf("remove API request constraints request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

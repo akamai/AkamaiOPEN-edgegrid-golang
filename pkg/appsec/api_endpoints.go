@@ -62,9 +62,6 @@ func (p *appsec) GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequ
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetApiEndpointsResponse
-	var filteredResult GetApiEndpointsResponse
-
 	var uri string
 	if params.PolicyID != "" {
 		uri = fmt.Sprintf(
@@ -85,25 +82,24 @@ func (p *appsec) GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequ
 		return nil, fmt.Errorf("failed to create GetApiEndpoints request: %w", err)
 	}
 
+	var result GetApiEndpointsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetApiEndpoints request failed: %w", err)
+		return nil, fmt.Errorf("get API endpoints request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.Name != "" {
+		var filteredResult GetApiEndpointsResponse
 		for _, val := range result.APIEndpoints {
 			if val.Name == params.Name {
 				filteredResult.APIEndpoints = append(filteredResult.APIEndpoints, val)
 			}
 		}
-
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
-	return &filteredResult, nil
 
+	return &result, nil
 }

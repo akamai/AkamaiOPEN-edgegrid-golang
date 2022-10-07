@@ -34,9 +34,6 @@ func (p *appsec) GetSiemDefinitions(ctx context.Context, params GetSiemDefinitio
 	logger := p.Log(ctx)
 	logger.Debug("GetSiemDefinitions")
 
-	var result GetSiemDefinitionsResponse
-	var filteredResult GetSiemDefinitionsResponse
-
 	uri := "/appsec/v1/siem-definitions"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
@@ -44,26 +41,24 @@ func (p *appsec) GetSiemDefinitions(ctx context.Context, params GetSiemDefinitio
 		return nil, fmt.Errorf("failed to create GetSiemDefinitions request: %w", err)
 	}
 
+	var result GetSiemDefinitionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetSiemDefinitions request failed: %w", err)
+		return nil, fmt.Errorf("get siem definitions request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.SiemDefinitionName != "" {
+		var filteredResult GetSiemDefinitionsResponse
 		for _, val := range result.SiemDefinitions {
 			if val.Name == params.SiemDefinitionName {
 				filteredResult.SiemDefinitions = append(filteredResult.SiemDefinitions, val)
 			}
 		}
-
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
 
-	return &filteredResult, nil
-
+	return &result, nil
 }
