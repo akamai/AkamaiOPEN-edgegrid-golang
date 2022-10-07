@@ -1120,3 +1120,255 @@ func TestDs_setConnectorTypes(t *testing.T) {
 
 	assert.True(t, mockConnector.Called)
 }
+
+func TestDs_ListStreams(t *testing.T) {
+	tests := map[string]struct {
+		request          ListStreamsRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse []StreamDetails
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			request:        ListStreamsRequest{},
+			responseStatus: http.StatusOK,
+			responseBody: `
+[
+  {
+    "streamId": 1,
+    "streamName": "Stream1",
+    "streamVersionId": 2,
+    "createdBy": "user1",
+    "createdDate": "14-07-2020 07:07:40 GMT",
+    "currentVersionId": 2,
+    "archived": false,
+    "activationStatus": "DEACTIVATED",
+    "groupId": 1234,
+    "groupName": "Default Group",
+    "contractId": "1-ABCDE",
+    "connectors": "S3-S1",
+    "streamTypeName": "Logs - Raw",
+    "properties": [
+      {
+        "propertyId": 13371337,
+        "propertyName": "property_name_1"
+      }
+    ],
+	"errors": [
+      {
+        "type": "ACTIVATION_ERROR",
+        "title": "Activation/Deactivation Error",
+        "detail": "Contact technical support."
+      }
+	]
+  },
+  {
+    "streamId": 2,
+    "streamName": "Stream2",
+    "streamVersionId": 3,
+    "createdBy": "user2",
+    "createdDate": "24-07-2020 07:07:40 GMT",
+    "currentVersionId": 3,
+    "archived": true,
+    "activationStatus": "ACTIVATED",
+    "groupId": 4321,
+    "groupName": "Default Group",
+    "contractId": "2-ABCDE",
+    "connectors": "S3-S2",
+    "streamTypeName": "Logs - Raw",
+    "properties": [
+      {
+        "propertyId": 23372337,
+        "propertyName": "property_name_2"
+      },
+      {
+        "propertyId": 33373337,
+        "propertyName": "property_name_3"
+      }
+    ]
+  }
+]
+`,
+			expectedPath: "/datastream-config-api/v1/log/streams",
+			expectedResponse: []StreamDetails{
+				{
+					ActivationStatus: ActivationStatusDeactivated,
+					Archived:         false,
+					Connectors:       "S3-S1",
+					ContractID:       "1-ABCDE",
+					CreatedBy:        "user1",
+					CreatedDate:      "14-07-2020 07:07:40 GMT",
+					CurrentVersionID: 2,
+					Errors: []Errors{
+						{
+							Detail: "Contact technical support.",
+							Title:  "Activation/Deactivation Error",
+							Type:   "ACTIVATION_ERROR",
+						},
+					},
+					GroupID:   1234,
+					GroupName: "Default Group",
+					Properties: []Property{
+						{
+							PropertyID:   13371337,
+							PropertyName: "property_name_1",
+						},
+					},
+					StreamID:        1,
+					StreamName:      "Stream1",
+					StreamTypeName:  "Logs - Raw",
+					StreamVersionID: 2,
+				},
+				{
+					ActivationStatus: ActivationStatusActivated,
+					Archived:         true,
+					Connectors:       "S3-S2",
+					ContractID:       "2-ABCDE",
+					CreatedBy:        "user2",
+					CreatedDate:      "24-07-2020 07:07:40 GMT",
+					CurrentVersionID: 3,
+					Errors:           nil,
+					GroupID:          4321,
+					GroupName:        "Default Group",
+					Properties: []Property{
+						{
+							PropertyID:   23372337,
+							PropertyName: "property_name_2",
+						},
+						{
+							PropertyID:   33373337,
+							PropertyName: "property_name_3",
+						},
+					},
+					StreamID:        2,
+					StreamName:      "Stream2",
+					StreamTypeName:  "Logs - Raw",
+					StreamVersionID: 3,
+				},
+			},
+		},
+		"200 OK - with groupId": {
+			request: ListStreamsRequest{
+				GroupID: tools.IntPtr(1234),
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+[
+  {
+    "streamId": 2,
+    "streamName": "Stream2",
+    "streamVersionId": 3,
+    "createdBy": "user2",
+    "createdDate": "24-07-2020 07:07:40 GMT",
+    "currentVersionId": 3,
+    "archived": true,
+    "activationStatus": "ACTIVATED",
+    "groupId": 1234,
+    "groupName": "Default Group",
+    "contractId": "2-ABCDE",
+    "connectors": "S3-S2",
+    "streamTypeName": "Logs - Raw",
+    "properties": [
+      {
+        "propertyId": 23372337,
+        "propertyName": "property_name_2"
+      },
+      {
+        "propertyId": 33373337,
+        "propertyName": "property_name_3"
+      }
+    ]
+  }
+]
+`,
+			expectedPath: "/datastream-config-api/v1/log/streams?groupId=1234",
+			expectedResponse: []StreamDetails{
+				{
+					ActivationStatus: ActivationStatusActivated,
+					Archived:         true,
+					Connectors:       "S3-S2",
+					ContractID:       "2-ABCDE",
+					CreatedBy:        "user2",
+					CreatedDate:      "24-07-2020 07:07:40 GMT",
+					CurrentVersionID: 3,
+					Errors:           nil,
+					GroupID:          1234,
+					GroupName:        "Default Group",
+					Properties: []Property{
+						{
+							PropertyID:   23372337,
+							PropertyName: "property_name_2",
+						},
+						{
+							PropertyID:   33373337,
+							PropertyName: "property_name_3",
+						},
+					},
+					StreamID:        2,
+					StreamName:      "Stream2",
+					StreamTypeName:  "Logs - Raw",
+					StreamVersionID: 3,
+				},
+			},
+		},
+		"400 bad request": {
+			request:        ListStreamsRequest{},
+			responseStatus: http.StatusBadRequest,
+			expectedPath:   "/datastream-config-api/v1/log/streams",
+			responseBody: `
+{
+	"type": "bad-request",
+	"title": "Bad Request",
+	"detail": "bad request",
+	"instance": "82b67b97-d98d-4bee-ac1e-ef6eaf7cac82",
+	"statusCode": 400,
+	"errors": [
+		{
+			"type": "bad-request",
+			"title": "Bad Request",
+			"detail": "Stream does not exist. Please provide valid stream."
+		}
+	]
+}
+`,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "bad-request",
+					Title:      "Bad Request",
+					Detail:     "bad request",
+					Instance:   "82b67b97-d98d-4bee-ac1e-ef6eaf7cac82",
+					StatusCode: http.StatusBadRequest,
+					Errors: []RequestErrors{
+						{
+							Type:   "bad-request",
+							Title:  "Bad Request",
+							Detail: "Stream does not exist. Please provide valid stream.",
+						},
+					},
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListStreams(context.Background(), test.request)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
