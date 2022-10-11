@@ -1,5 +1,15 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## xxxx (xxx, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+
+* Datastream
+  * Add ListStreams
+  * Add new connectors: Elasticsearch, NewRelic and Loggly
+  * Extend Splunk and Custom HTTPS connectors mTLS certificates configuration
+  * Extend SumoLogic, Splunk and Custom HTTPS connectors with ability to specify custom HTTP headers
+
 ## 2.16.0 (September 26, 2022)
 
 #### FEATURES/ENHANCEMENTS:
