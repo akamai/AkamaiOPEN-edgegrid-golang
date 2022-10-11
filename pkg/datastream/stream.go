@@ -221,7 +221,7 @@ type (
 		GroupID *int
 	}
 
-	// StreamDetails list is returned from ListStreams method
+	// StreamDetails contains information about stream
 	StreamDetails struct {
 		ActivationStatus ActivationStatus `json:"activationStatus"`
 		Archived         bool             `json:"archived"`
