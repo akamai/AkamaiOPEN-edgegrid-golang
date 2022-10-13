@@ -387,7 +387,7 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateEnrollment, err)
 	}
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
-	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v9+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v11+json")
 
 	var result CreateEnrollmentResponse
 
@@ -446,7 +446,7 @@ func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentReque
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateEnrollment, err)
 	}
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
-	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v9+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v11+json")
 
 	var result UpdateEnrollmentResponse
 
