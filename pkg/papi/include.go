@@ -80,7 +80,7 @@ type (
 	// CreateIncludeResponse represents a response object returned by CreateInclude
 	CreateIncludeResponse struct {
 		IncludeLink     string `json:"includeLink"`
-		ResponseHeaders ResponseHeaders
+		ResponseHeaders CreateIncludeResponseHeaders
 	}
 
 	// DeleteIncludeRequest contains parameters used to delete an include
@@ -102,8 +102,8 @@ type (
 		Version              int    `json:"version"`
 	}
 
-	// ResponseHeaders contains information received in response headers when making a request to create new include
-	ResponseHeaders struct {
+	// CreateIncludeResponseHeaders contains information received in response headers when making a request to create new include
+	CreateIncludeResponseHeaders struct {
 		IncludesLimitTotal     string
 		IncludesLimitRemaining string
 	}

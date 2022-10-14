@@ -27,6 +27,7 @@ type (
 		EdgeHostnames
 		Groups
 		Includes
+		IncludeRules
 		Products
 		Properties
 		PropertyRules

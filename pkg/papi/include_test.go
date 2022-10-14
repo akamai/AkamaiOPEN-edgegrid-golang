@@ -535,7 +535,7 @@ func TestCreateInclude(t *testing.T) {
 			expectedPath: "/papi/v1/includes?contractId=test_contract&groupId=test_group",
 			expectedResponse: &CreateIncludeResponse{
 				IncludeLink: "/papi/v1/includes/inc_123456?contractId=test_contract&groupId=test_group",
-				ResponseHeaders: ResponseHeaders{
+				ResponseHeaders: CreateIncludeResponseHeaders{
 					IncludesLimitTotal:     "500",
 					IncludesLimitRemaining: "499",
 				},
@@ -566,7 +566,7 @@ func TestCreateInclude(t *testing.T) {
 			expectedPath: "/papi/v1/includes?contractId=test_contract&groupId=test_group",
 			expectedResponse: &CreateIncludeResponse{
 				IncludeLink: "/papi/v1/includes/inc_123456?contractId=test_contract&groupId=test_group",
-				ResponseHeaders: ResponseHeaders{
+				ResponseHeaders: CreateIncludeResponseHeaders{
 					IncludesLimitTotal:     "700",
 					IncludesLimitRemaining: "654",
 				},
