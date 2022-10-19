@@ -28,6 +28,7 @@ type (
 		Groups
 		Includes
 		IncludeRules
+		IncludeVersions
 		Products
 		Properties
 		PropertyRules
