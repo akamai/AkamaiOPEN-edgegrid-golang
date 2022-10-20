@@ -237,7 +237,7 @@ func (p *appsec) GetCustomDenyList(ctx context.Context, params GetCustomDenyList
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create GetlustomDenyList request: %w", err)
+		return nil, fmt.Errorf("failed to create GetCustomDenyList request: %w", err)
 	}
 
 	var result GetCustomDenyListResponse

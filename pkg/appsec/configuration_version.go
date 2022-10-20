@@ -59,7 +59,7 @@ func (p *appsec) GetConfigurationVersions(ctx context.Context, params GetConfigu
 	var result GetConfigurationVersionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("get configuration cersions request failed: %w", err)
+		return nil, fmt.Errorf("get configuration versions request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)

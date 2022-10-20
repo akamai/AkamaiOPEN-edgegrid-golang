@@ -164,7 +164,7 @@ func (p *appsec) GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*G
 	var result GetWAFModesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("get WAF Modes request failed: %w", err)
+		return nil, fmt.Errorf("get WAF modes request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
