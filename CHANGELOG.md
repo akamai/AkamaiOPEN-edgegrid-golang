@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## xxxx (xxx, 2022)
+## 2.17.0 (October 24, 2022)
 
 #### FEATURES/ENHANCEMENTS:
 
@@ -9,6 +9,11 @@
   * Add new connectors: Elasticsearch, NewRelic and Loggly
   * Extend Splunk and Custom HTTPS connectors mTLS certificates configuration
   * Extend SumoLogic, Splunk and Custom HTTPS connectors with ability to specify custom HTTP headers
+
+#### BUG FIXES:
+
+* APPSEC
+  * Fix incorrect JSON sent when applying appsec_ip_geo resource in allow mode
 
 ## 2.16.0 (September 26, 2022)
 
