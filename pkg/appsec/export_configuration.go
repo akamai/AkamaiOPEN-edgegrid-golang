@@ -221,22 +221,7 @@ type (
 			} `json:"clientReputation"`
 			RatePolicyActions    *SecurityPoliciesRatePolicyActions `json:"ratePolicyActions,omitempty"`
 			MalwarePolicyActions []MalwarePolicyActionBody          `json:"malwarePolicyActions,omitempty"`
-			IPGeoFirewall        struct {
-				Block       string `json:"block"`
-				GeoControls struct {
-					BlockedIPNetworkLists struct {
-						NetworkList []string `json:"networkList,omitempty"`
-					} `json:"blockedIPNetworkLists"`
-				} `json:"geoControls"`
-				IPControls struct {
-					AllowedIPNetworkLists struct {
-						NetworkList []string `json:"networkList,omitempty"`
-					} `json:"allowedIPNetworkLists"`
-					BlockedIPNetworkLists struct {
-						NetworkList []string `json:"networkList,omitempty"`
-					} `json:"blockedIPNetworkLists"`
-				} `json:"ipControls"`
-			} `json:"ipGeoFirewall,omitempty"`
+			IPGeoFirewall        *IPGeoFirewall                     `json:"ipGeoFirewall,omitempty"`
 			PenaltyBox           *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
 			EvaluationPenaltyBox *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
 			SlowPost             *SlowPostexp                       `json:"slowPost,omitempty"`
@@ -499,7 +484,7 @@ type (
 			AllExtensions      bool     `json:"allExtensions"`
 			EnableAppLayer     bool     `json:"enableAppLayer"`
 			EnableRateControls bool     `json:"enableRateControls"`
-			Extensions         []string `json:"extensions"`
+			Extensions         []string `json:"extensions,omitempty"`
 		} `json:"prefetch"`
 		PragmaHeader *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
 	}
@@ -756,11 +741,8 @@ func (c *ConditionsValue) UnmarshalJSON(data []byte) error {
 }
 
 func (p *appsec) GetExportConfiguration(ctx context.Context, params GetExportConfigurationRequest) (*GetExportConfigurationResponse, error) {
-
 	logger := p.Log(ctx)
-	logger.Debug("GetExportConfigurations")
-
-	var rval GetExportConfigurationResponse
+	logger.Debug("GetExportConfiguration")
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/export/configs/%d/versions/%d",
@@ -772,26 +754,22 @@ func (p *appsec) GetExportConfiguration(ctx context.Context, params GetExportCon
 		return nil, fmt.Errorf("failed to create GetExportConfiguration request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	var result GetExportConfigurationResponse
+	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetExportConfiguration request failed: %w", err)
+		return nil, fmt.Errorf("get export configuration request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
-
+	return &result, nil
 }
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) GetExportConfigurations(ctx context.Context, params GetExportConfigurationsRequest) (*GetExportConfigurationsResponse, error) {
-
 	logger := p.Log(ctx)
 	logger.Debug("GetExportConfigurations")
-
-	var rval GetExportConfigurationsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/export/configs/%d/versions/%d",
@@ -803,15 +781,14 @@ func (p *appsec) GetExportConfigurations(ctx context.Context, params GetExportCo
 		return nil, fmt.Errorf("failed to create GetExportConfigurations request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rval)
+	var result GetExportConfigurationsResponse
+	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetExportConfigurations request failed: %w", err)
+		return nil, fmt.Errorf("get export configurations request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
-	return &rval, nil
-
+	return &result, nil
 }

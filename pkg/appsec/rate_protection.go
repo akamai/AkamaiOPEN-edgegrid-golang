@@ -101,8 +101,6 @@ func (p *appsec) GetRateProtection(ctx context.Context, params GetRateProtection
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetRateProtectionResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
@@ -114,17 +112,16 @@ func (p *appsec) GetRateProtection(ctx context.Context, params GetRateProtection
 		return nil, fmt.Errorf("failed to create GetRateProtection request: %w", err)
 	}
 
+	var result GetRateProtectionResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetRateProtection request failed: %w", err)
+		return nil, fmt.Errorf("get rate protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetRateProtections(ctx context.Context, params GetRateProtectionsRequest) (*GetRateProtectionsResponse, error) {
@@ -134,8 +131,6 @@ func (p *appsec) GetRateProtections(ctx context.Context, params GetRateProtectio
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetRateProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -148,17 +143,16 @@ func (p *appsec) GetRateProtections(ctx context.Context, params GetRateProtectio
 		return nil, fmt.Errorf("failed to create GetRateProtections request: %w", err)
 	}
 
+	var result GetRateProtectionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetRateProtections request failed: %w", err)
+		return nil, fmt.Errorf("get rate protections request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateRateProtection(ctx context.Context, params UpdateRateProtectionRequest) (*UpdateRateProtectionResponse, error) {
@@ -184,9 +178,8 @@ func (p *appsec) UpdateRateProtection(ctx context.Context, params UpdateRateProt
 	var result UpdateRateProtectionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateRateProtection request failed: %w", err)
+		return nil, fmt.Errorf("update rate protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

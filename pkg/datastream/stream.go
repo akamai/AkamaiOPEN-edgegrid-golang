@@ -16,27 +16,31 @@ type (
 	Stream interface {
 		// CreateStream creates a stream
 		//
-		// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#poststreams
+		// See: https://techdocs.akamai.com/datastream2/reference/post-stream
 		CreateStream(context.Context, CreateStreamRequest) (*StreamUpdate, error)
 
 		// GetStream gets stream details
 		//
-		// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#getstream
+		// See: https://techdocs.akamai.com/datastream2/reference/get-stream
 		GetStream(context.Context, GetStreamRequest) (*DetailedStreamVersion, error)
 
 		// UpdateStream updates a stream
 		//
-		// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#putstream
+		// See: https://techdocs.akamai.com/datastream2/reference/put-stream
 		UpdateStream(context.Context, UpdateStreamRequest) (*StreamUpdate, error)
 
 		// DeleteStream deletes a stream
 		//
-		// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#deletestream
+		// See: https://techdocs.akamai.com/datastream2/reference/delete-stream
 		DeleteStream(context.Context, DeleteStreamRequest) (*DeleteStreamResponse, error)
+
+		// ListStreams retrieves list of streams
+		//
+		// See: https://techdocs.akamai.com/datastream2/reference/get-streams
+		ListStreams(context.Context, ListStreamsRequest) ([]StreamDetails, error)
 	}
 
 	// DetailedStreamVersion is returned from GetStream
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#detailedstreamversion
 	DetailedStreamVersion struct {
 		ActivationStatus ActivationStatus   `json:"activationStatus"`
 		Config           Config             `json:"config"`
@@ -71,6 +75,7 @@ type (
 		Path               string             `json:"path"`
 		URL                string             `json:"url"`
 		Endpoint           string             `json:"endpoint"`
+		IndexName          string             `json:"indexName"`
 		ServiceAccountName string             `json:"serviceAccountName"`
 		ProjectID          string             `json:"projectId"`
 		Service            string             `json:"service"`
@@ -81,10 +86,14 @@ type (
 		Namespace          string             `json:"namespace"`
 		ContainerName      string             `json:"containerName"`
 		Source             string             `json:"source"`
+		ContentType        string             `json:"contentType"`
+		CustomHeaderName   string             `json:"customHeaderName"`
+		CustomHeaderValue  string             `json:"customHeaderValue"`
+		TLSHostname        string             `json:"tlsHostname"`
+		MTLS               string             `json:"mTLS"`
 	}
 
 	// StreamConfiguration is used in CreateStream as a request body
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#streamconfigurationcf8299f3
 	StreamConfiguration struct {
 		ActivateNow     bool                `json:"activateNow"`
 		Config          Config              `json:"config"`
@@ -100,7 +109,6 @@ type (
 	}
 
 	// Config of the configuration of log lines, names of the files sent to a destination, and delivery frequency for these files
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#e6140e78
 	Config struct {
 		Delimiter        *DelimiterType `json:"delimiter,omitempty"`
 		Format           FormatType     `json:"format,omitempty"`
@@ -207,6 +215,30 @@ type (
 	DeleteStreamResponse struct {
 		Message string `json:"message"`
 	}
+
+	// ListStreamsRequest is passed to ListStreams
+	ListStreamsRequest struct {
+		GroupID *int
+	}
+
+	// StreamDetails contains information about stream
+	StreamDetails struct {
+		ActivationStatus ActivationStatus `json:"activationStatus"`
+		Archived         bool             `json:"archived"`
+		Connectors       string           `json:"connectors"`
+		ContractID       string           `json:"contractId"`
+		CreatedBy        string           `json:"createdBy"`
+		CreatedDate      string           `json:"createdDate"`
+		CurrentVersionID int64            `json:"currentVersionId"`
+		Errors           []Errors         `json:"errors"`
+		GroupID          int              `json:"groupId"`
+		GroupName        string           `json:"groupName"`
+		Properties       []Property       `json:"properties"`
+		StreamID         int64            `json:"streamId"`
+		StreamName       string           `json:"streamName"`
+		StreamTypeName   string           `json:"streamTypeName"`
+		StreamVersionID  int64            `json:"streamVersionId"`
+	}
 )
 
 const (
@@ -302,6 +334,8 @@ var (
 	ErrUpdateStream = errors.New("updating stream")
 	// ErrDeleteStream represents error when deleting stream fails
 	ErrDeleteStream = errors.New("deleting stream")
+	// ErrListStreams represents error when listing streams fails
+	ErrListStreams = errors.New("listing streams")
 )
 
 func (d *ds) CreateStream(ctx context.Context, params CreateStreamRequest) (*StreamUpdate, error) {
@@ -439,6 +473,39 @@ func (d *ds) DeleteStream(ctx context.Context, params DeleteStreamRequest) (*Del
 	}
 
 	return &rval, nil
+}
+
+func (d *ds) ListStreams(ctx context.Context, params ListStreamsRequest) ([]StreamDetails, error) {
+	logger := d.Log(ctx)
+	logger.Debug("ListStreams")
+
+	uri, err := url.Parse("/datastream-config-api/v1/log/streams")
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListStreams, err)
+	}
+
+	q := uri.Query()
+	if params.GroupID != nil {
+		q.Add("groupId", fmt.Sprintf("%d", *params.GroupID))
+	}
+
+	uri.RawQuery = q.Encode()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListStreams, err)
+	}
+
+	var result []StreamDetails
+	resp, err := d.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListStreams, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListStreams, d.Error(resp))
+	}
+
+	return result, nil
 }
 
 func setConnectorTypes(configuration *StreamConfiguration) {

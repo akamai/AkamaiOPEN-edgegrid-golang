@@ -130,7 +130,7 @@ func (p *appsec) GetCustomRuleAction(ctx context.Context, params GetCustomRuleAc
 
 	resp, err := p.Exec(req, &results)
 	if err != nil {
-		return nil, fmt.Errorf("GetCustomRuleAction request failed: %w", err)
+		return nil, fmt.Errorf("get custom rule action request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -145,7 +145,6 @@ func (p *appsec) GetCustomRuleAction(ctx context.Context, params GetCustomRuleAc
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetCustomRuleActions(ctx context.Context, params GetCustomRuleActionsRequest) (*GetCustomRuleActionsResponse, error) {
@@ -155,9 +154,6 @@ func (p *appsec) GetCustomRuleActions(ctx context.Context, params GetCustomRuleA
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetCustomRuleActionsResponse
-	var filteredResult GetCustomRuleActionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/custom-rules",
@@ -170,26 +166,26 @@ func (p *appsec) GetCustomRuleActions(ctx context.Context, params GetCustomRuleA
 		return nil, fmt.Errorf("failed to create GetCustomRuleActions request: %w", err)
 	}
 
+	var result GetCustomRuleActionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetCustomRuleActions request failed: %w", err)
+		return nil, fmt.Errorf("get custom rule actions request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.RuleID != 0 {
+		var filteredResult GetCustomRuleActionsResponse
 		for _, val := range result {
 			if val.RuleID == params.RuleID {
 				filteredResult = append(filteredResult, val)
 			}
 		}
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
-	return &filteredResult, nil
 
+	return &result, nil
 }
 
 func (p *appsec) UpdateCustomRuleAction(ctx context.Context, params UpdateCustomRuleActionRequest) (*UpdateCustomRuleActionResponse, error) {
@@ -216,7 +212,7 @@ func (p *appsec) UpdateCustomRuleAction(ctx context.Context, params UpdateCustom
 	var result UpdateCustomRuleActionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateCustomRuleAction request failed: %w", err)
+		return nil, fmt.Errorf("update custom rule action request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {

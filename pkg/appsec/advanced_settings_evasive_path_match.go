@@ -90,15 +90,13 @@ func (v RemoveAdvancedSettingsEvasivePathMatchRequest) Validate() error {
 
 func (p *appsec) GetAdvancedSettingsEvasivePathMatch(ctx context.Context, params GetAdvancedSettingsEvasivePathMatchRequest) (*GetAdvancedSettingsEvasivePathMatchResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("GetAdvancedSettingsLoggings")
+	logger.Debug("GetAdvancedSettingsEvasivePathMatch")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetAdvancedSettingsEvasivePathMatchResponse
 	var uri string
-
 	if params.PolicyID != "" {
 		uri = fmt.Sprintf(
 			"/appsec/v1/configs/%d/versions/%d/security-policies/%s/advanced-settings/evasive-path-match",
@@ -114,12 +112,13 @@ func (p *appsec) GetAdvancedSettingsEvasivePathMatch(ctx context.Context, params
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create getadvancedsettingsloggings request: %w", err)
+		return nil, fmt.Errorf("failed to create GetAdvancedSettingsEvasivePathMatch request: %w", err)
 	}
 
+	var result GetAdvancedSettingsEvasivePathMatchResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("getadvancedsettingsloggings request failed: %w", err)
+		return nil, fmt.Errorf("get advanced settings evasive path match request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -131,7 +130,7 @@ func (p *appsec) GetAdvancedSettingsEvasivePathMatch(ctx context.Context, params
 
 func (p *appsec) UpdateAdvancedSettingsEvasivePathMatch(ctx context.Context, params UpdateAdvancedSettingsEvasivePathMatchRequest) (*UpdateAdvancedSettingsEvasivePathMatchResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("UpdateAdvancedSettingsLogging")
+	logger.Debug("UpdateAdvancedSettingsEvasivePathMatch")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -153,14 +152,14 @@ func (p *appsec) UpdateAdvancedSettingsEvasivePathMatch(ctx context.Context, par
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create create AdvancedSettingsLoggingrequest: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateAdvancedSettingsEvasivePathMatch request: %w", err)
 	}
-
 	req.Header.Set("Content-Type", "application/json")
+
 	var result UpdateAdvancedSettingsEvasivePathMatchResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("create AdvancedSettingsLogging request failed: %w", err)
+		return nil, fmt.Errorf("update advanced settings evasive path match request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -171,6 +170,9 @@ func (p *appsec) UpdateAdvancedSettingsEvasivePathMatch(ctx context.Context, par
 }
 
 func (p *appsec) RemoveAdvancedSettingsEvasivePathMatch(ctx context.Context, params RemoveAdvancedSettingsEvasivePathMatchRequest) (*RemoveAdvancedSettingsEvasivePathMatchResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("RemoveAdvancedSettingsEvasivePathMatch")
+
 	request := UpdateAdvancedSettingsEvasivePathMatchRequest{
 		ConfigID:        params.ConfigID,
 		Version:         params.Version,
@@ -179,7 +181,7 @@ func (p *appsec) RemoveAdvancedSettingsEvasivePathMatch(ctx context.Context, par
 	}
 	_, err := p.UpdateAdvancedSettingsEvasivePathMatch(ctx, request)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateAdvancedSettingsEvasivePathMatch request failed: %w", err)
+		return nil, fmt.Errorf("remove advanced settings evasive path match request failed: %w", err)
 	}
 	response := RemoveAdvancedSettingsEvasivePathMatchResponse{
 		ConfigID:        params.ConfigID,

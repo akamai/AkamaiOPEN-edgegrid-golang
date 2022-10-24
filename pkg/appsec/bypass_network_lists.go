@@ -112,13 +112,11 @@ func (v RemoveBypassNetworkListsRequest) Validate() error {
 
 func (p *appsec) GetBypassNetworkLists(ctx context.Context, params GetBypassNetworkListsRequest) (*GetBypassNetworkListsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debugf("GetBypassNetworkLists(%+v)", params)
+	logger.Debugf("GetBypassNetworkLists")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetBypassNetworkListsResponse
 
 	var uri string
 	if params.PolicyID == "" {
@@ -141,22 +139,21 @@ func (p *appsec) GetBypassNetworkLists(ctx context.Context, params GetBypassNetw
 		return nil, fmt.Errorf("failed to create GetBypassNetworkLists request: %w", err)
 	}
 
+	var result GetBypassNetworkListsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetBypassNetworkLists request failed: %w", err)
+		return nil, fmt.Errorf("get bypass network lists request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateBypassNetworkLists(ctx context.Context, params UpdateBypassNetworkListsRequest) (*UpdateBypassNetworkListsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debugf("UpdateBypassNetworkLists(%+v)", params)
+	logger.Debugf("UpdateBypassNetworkLists")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -186,9 +183,8 @@ func (p *appsec) UpdateBypassNetworkLists(ctx context.Context, params UpdateBypa
 	var result UpdateBypassNetworkListsResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateBypassNetworkLists request failed: %w", err)
+		return nil, fmt.Errorf("update bypass network lists request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -199,7 +195,7 @@ func (p *appsec) UpdateBypassNetworkLists(ctx context.Context, params UpdateBypa
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) RemoveBypassNetworkLists(ctx context.Context, params RemoveBypassNetworkListsRequest) (*RemoveBypassNetworkListsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debugf("RemoveBypassNetworkLists(%+v)", params)
+	logger.Debugf("RemoveBypassNetworkLists")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -229,9 +225,8 @@ func (p *appsec) RemoveBypassNetworkLists(ctx context.Context, params RemoveBypa
 	var result RemoveBypassNetworkListsResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveBypassNetworkLists request failed: %w", err)
+		return nil, fmt.Errorf("remove bypass network lists request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

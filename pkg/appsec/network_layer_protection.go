@@ -129,8 +129,6 @@ func (p *appsec) GetNetworkLayerProtection(ctx context.Context, params GetNetwor
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetNetworkLayerProtectionResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
@@ -142,17 +140,16 @@ func (p *appsec) GetNetworkLayerProtection(ctx context.Context, params GetNetwor
 		return nil, fmt.Errorf("failed to create GetNetworkLayerProtection request: %w", err)
 	}
 
+	var result GetNetworkLayerProtectionResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetNetworkLayerProtection request failed: %w", err)
+		return nil, fmt.Errorf("get network layer protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetNetworkLayerProtections(ctx context.Context, params GetNetworkLayerProtectionsRequest) (*GetNetworkLayerProtectionsResponse, error) {
@@ -162,8 +159,6 @@ func (p *appsec) GetNetworkLayerProtections(ctx context.Context, params GetNetwo
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetNetworkLayerProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -176,17 +171,16 @@ func (p *appsec) GetNetworkLayerProtections(ctx context.Context, params GetNetwo
 		return nil, fmt.Errorf("failed to create GetNetworkLayerProtections request: %w", err)
 	}
 
+	var result GetNetworkLayerProtectionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetNetworkLayerProtections request failed: %w", err)
+		return nil, fmt.Errorf("get network layer protections request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateNetworkLayerProtection(ctx context.Context, params UpdateNetworkLayerProtectionRequest) (*UpdateNetworkLayerProtectionResponse, error) {
@@ -212,9 +206,8 @@ func (p *appsec) UpdateNetworkLayerProtection(ctx context.Context, params Update
 	var result UpdateNetworkLayerProtectionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateNetworkLayerProtection request failed: %w", err)
+		return nil, fmt.Errorf("update network layer protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -245,9 +238,8 @@ func (p *appsec) RemoveNetworkLayerProtection(ctx context.Context, params Remove
 	var result RemoveNetworkLayerProtectionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveNetworkLayerProtection request failed: %w", err)
+		return nil, fmt.Errorf("remove network layer protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

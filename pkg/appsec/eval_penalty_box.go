@@ -42,15 +42,13 @@ func (p *appsec) GetEvalPenaltyBox(ctx context.Context, params GetPenaltyBoxRequ
 	var result GetPenaltyBoxResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetEvalPenaltyBox request failed: %w", err)
+		return nil, fmt.Errorf("get eval penalty box request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateEvalPenaltyBox(ctx context.Context, params UpdatePenaltyBoxRequest) (*UpdatePenaltyBoxResponse, error) {
@@ -76,9 +74,8 @@ func (p *appsec) UpdateEvalPenaltyBox(ctx context.Context, params UpdatePenaltyB
 	var result UpdatePenaltyBoxResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateEvalPenaltyBox request failed: %w", err)
+		return nil, fmt.Errorf("update eval penalty box request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

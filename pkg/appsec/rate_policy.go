@@ -346,8 +346,6 @@ func (p *appsec) GetRatePolicy(ctx context.Context, params GetRatePolicyRequest)
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetRatePolicyResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/rate-policies/%d",
 		params.ConfigID,
@@ -359,17 +357,16 @@ func (p *appsec) GetRatePolicy(ctx context.Context, params GetRatePolicyRequest)
 		return nil, fmt.Errorf("failed to create GetRatePolicy request: %w", err)
 	}
 
+	var result GetRatePolicyResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetRatePolicy request failed: %w", err)
+		return nil, fmt.Errorf("get rate policy request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetRatePolicies(ctx context.Context, params GetRatePoliciesRequest) (*GetRatePoliciesResponse, error) {
@@ -379,9 +376,6 @@ func (p *appsec) GetRatePolicies(ctx context.Context, params GetRatePoliciesRequ
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetRatePoliciesResponse
-	var filteredResult GetRatePoliciesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/rate-policies",
@@ -394,28 +388,26 @@ func (p *appsec) GetRatePolicies(ctx context.Context, params GetRatePoliciesRequ
 		return nil, fmt.Errorf("failed to create GetRatePolicies request: %w", err)
 	}
 
+	var result GetRatePoliciesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetRatePolicies request failed: %w", err)
+		return nil, fmt.Errorf("get rate policies request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.RatePolicyID != 0 {
+		var filteredResult GetRatePoliciesResponse
 		for _, val := range result.RatePolicies {
 			if val.ID == params.RatePolicyID {
 				filteredResult.RatePolicies = append(filteredResult.RatePolicies, val)
 			}
 		}
-
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
 
-	return &filteredResult, nil
-
+	return &result, nil
 }
 
 func (p *appsec) UpdateRatePolicy(ctx context.Context, params UpdateRatePolicyRequest) (*UpdateRatePolicyResponse, error) {
@@ -442,9 +434,8 @@ func (p *appsec) UpdateRatePolicy(ctx context.Context, params UpdateRatePolicyRe
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateRatePolicy request failed: %w", err)
+		return nil, fmt.Errorf("update rate policy request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -475,15 +466,13 @@ func (p *appsec) CreateRatePolicy(ctx context.Context, params CreateRatePolicyRe
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("CreateRatePolicy request failed: %w", err)
+		return nil, fmt.Errorf("create rate policy request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) RemoveRatePolicy(ctx context.Context, params RemoveRatePolicyRequest) (*RemoveRatePolicyResponse, error) {
@@ -494,19 +483,17 @@ func (p *appsec) RemoveRatePolicy(ctx context.Context, params RemoveRatePolicyRe
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result RemoveRatePolicyResponse
-
 	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/rate-policies/%d", params.ConfigID, params.ConfigVersion, params.RatePolicyID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveRatePolicy request: %w", err)
 	}
 
+	var result RemoveRatePolicyResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveRatePolicy request failed: %w", err)
+		return nil, fmt.Errorf("remove rate policy request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

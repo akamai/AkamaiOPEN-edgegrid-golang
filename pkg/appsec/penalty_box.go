@@ -112,8 +112,6 @@ func (p *appsec) GetPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest)
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetPenaltyBoxResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/penalty-box",
 		params.ConfigID,
@@ -125,23 +123,22 @@ func (p *appsec) GetPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest)
 		return nil, fmt.Errorf("failed to create GetPenaltyBox request: %w", err)
 	}
 
+	var result GetPenaltyBoxResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetPenaltyBox request failed: %w", err)
+		return nil, fmt.Errorf("get penalty box request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequest) (*GetPenaltyBoxesResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("GetPenaltyBoxs")
+	logger.Debug("GetPenaltyBoxes")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -162,15 +159,13 @@ func (p *appsec) GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequ
 
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetPenaltyBoxes request failed: %w", err)
+		return nil, fmt.Errorf("get penalty boxes request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRequest) (*UpdatePenaltyBoxResponse, error) {
@@ -196,9 +191,8 @@ func (p *appsec) UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRe
 	var result UpdatePenaltyBoxResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdatePenaltyBox request failed: %w", err)
+		return nil, fmt.Errorf("update penalty box request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

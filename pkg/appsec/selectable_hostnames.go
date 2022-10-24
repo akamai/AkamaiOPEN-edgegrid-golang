@@ -45,8 +45,6 @@ func (p *appsec) GetSelectableHostnames(ctx context.Context, params GetSelectabl
 	logger := p.Log(ctx)
 	logger.Debug("GetSelectableHostnamess")
 
-	var result GetSelectableHostnamesResponse
-
 	var uri string
 
 	if params.ConfigID != 0 {
@@ -66,15 +64,14 @@ func (p *appsec) GetSelectableHostnames(ctx context.Context, params GetSelectabl
 		return nil, fmt.Errorf("failed to create GetSelectableHostnames request: %w", err)
 	}
 
+	var result GetSelectableHostnamesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetSelectableHostnames request failed: %w", err)
+		return nil, fmt.Errorf("get selectable hostnames request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }

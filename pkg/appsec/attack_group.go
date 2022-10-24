@@ -199,8 +199,6 @@ func (p *appsec) GetAttackGroup(ctx context.Context, params GetAttackGroupReques
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetAttackGroupResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/attack-groups/%s?includeConditionException=true",
 		params.ConfigID,
@@ -212,30 +210,26 @@ func (p *appsec) GetAttackGroup(ctx context.Context, params GetAttackGroupReques
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetAttackGroup request: %w", err)
 	}
-	logger.Debugf("BEFORE GetAttackGroup %v", result)
+
+	var result GetAttackGroupResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetAttackGroup request failed: %w", err)
+		return nil, fmt.Errorf("get attack group request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
-	logger.Debugf("GetAttackGroup %v", result)
-	return &result, nil
 
+	return &result, nil
 }
 
 func (p *appsec) GetAttackGroups(ctx context.Context, params GetAttackGroupsRequest) (*GetAttackGroupsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("GetAttackGroupConditionExceptions")
+	logger.Debug("GetAttackGroups")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetAttackGroupsResponse
-	var filteredResult GetAttackGroupsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/attack-groups?includeConditionException=true",
@@ -247,28 +241,27 @@ func (p *appsec) GetAttackGroups(ctx context.Context, params GetAttackGroupsRequ
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetAttackGroups request: %w", err)
 	}
-	logger.Debugf("BEFORE GetAttackGroupConditionException %v", result)
+
+	var result GetAttackGroupsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetAttackGroups request failed: %w", err)
+		return nil, fmt.Errorf("get attack groups request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.Group != "" {
+		var filteredResult GetAttackGroupsResponse
 		for k, val := range result.AttackGroups {
 			if val.Group == params.Group {
 				filteredResult.AttackGroups = append(filteredResult.AttackGroups, result.AttackGroups[k])
 			}
 		}
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
 
-	return &filteredResult, nil
-
+	return &result, nil
 }
 
 func (p *appsec) UpdateAttackGroup(ctx context.Context, params UpdateAttackGroupRequest) (*UpdateAttackGroupResponse, error) {
@@ -296,7 +289,7 @@ func (p *appsec) UpdateAttackGroup(ctx context.Context, params UpdateAttackGroup
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateAttackGroup request failed: %w", err)
+		return nil, fmt.Errorf("update attack group request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

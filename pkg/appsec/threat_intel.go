@@ -72,8 +72,6 @@ func (p *appsec) GetThreatIntel(ctx context.Context, params GetThreatIntelReques
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetThreatIntelResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/threat-intel",
 		params.ConfigID,
@@ -84,18 +82,17 @@ func (p *appsec) GetThreatIntel(ctx context.Context, params GetThreatIntelReques
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetThreatIntel request: %w", err)
 	}
-	logger.Debugf("BEFORE GetThreatIntel %v", result)
+
+	var result GetThreatIntelResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetThreatIntel  request failed: %w", err)
+		return nil, fmt.Errorf("get threat intel request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
-	logger.Debugf("GetThreatIntel %v", result)
-	return &result, nil
 
+	return &result, nil
 }
 
 func (p *appsec) UpdateThreatIntel(ctx context.Context, params UpdateThreatIntelRequest) (*UpdateThreatIntelResponse, error) {
@@ -121,9 +118,8 @@ func (p *appsec) UpdateThreatIntel(ctx context.Context, params UpdateThreatIntel
 	var result UpdateThreatIntelResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateThreatIntel request failed: %w", err)
+		return nil, fmt.Errorf("update threat intel request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

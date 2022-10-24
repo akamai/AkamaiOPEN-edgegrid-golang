@@ -80,8 +80,6 @@ func (p *appsec) GetMatchTargetSequence(ctx context.Context, params GetMatchTarg
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetMatchTargetSequenceResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/match-targets/sequence?type=%s",
 		params.ConfigID,
@@ -94,17 +92,16 @@ func (p *appsec) GetMatchTargetSequence(ctx context.Context, params GetMatchTarg
 		return nil, fmt.Errorf("failed to create GetMatchTargetSequence request: %w", err)
 	}
 
+	var result GetMatchTargetSequenceResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetMatchTargetSequence request failed: %w", err)
+		return nil, fmt.Errorf("get match target sequence request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateMatchTargetSequence(ctx context.Context, params UpdateMatchTargetSequenceRequest) (*UpdateMatchTargetSequenceResponse, error) {
@@ -129,9 +126,8 @@ func (p *appsec) UpdateMatchTargetSequence(ctx context.Context, params UpdateMat
 	var result UpdateMatchTargetSequenceResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateMatchTargetSequence request failed: %w", err)
+		return nil, fmt.Errorf("update match target sequence request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

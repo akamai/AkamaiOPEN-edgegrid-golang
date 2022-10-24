@@ -263,8 +263,6 @@ func (p *appsec) GetCustomRule(ctx context.Context, params GetCustomRuleRequest)
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetCustomRuleResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/custom-rules/%d",
 		params.ConfigID,
@@ -275,17 +273,16 @@ func (p *appsec) GetCustomRule(ctx context.Context, params GetCustomRuleRequest)
 		return nil, fmt.Errorf("failed to create GetCustomRule request: %w", err)
 	}
 
+	var result GetCustomRuleResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetCustomRule request failed: %w", err)
+		return nil, fmt.Errorf("get custom rule request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesRequest) (*GetCustomRulesResponse, error) {
@@ -295,9 +292,6 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetCustomRulesResponse
-	var filteredResult GetCustomRulesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/custom-rules",
@@ -309,28 +303,26 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 		return nil, fmt.Errorf("failed to create GetCustomRules request: %w", err)
 	}
 
+	var result GetCustomRulesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetCustomRules request failed: %w", err)
+		return nil, fmt.Errorf("get custom rules request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.ID != 0 {
+		var filteredResult GetCustomRulesResponse
 		for _, val := range result.CustomRules {
 			if val.ID == params.ID {
 				filteredResult.CustomRules = append(filteredResult.CustomRules, val)
 			}
 		}
-
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
 
-	return &filteredResult, nil
-
+	return &result, nil
 }
 
 func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRequest) (*UpdateCustomRuleResponse, error) {
@@ -356,9 +348,8 @@ func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRe
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateCustomRule request failed: %w", err)
+		return nil, fmt.Errorf("update custom rule request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -388,15 +379,13 @@ func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRe
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := p.Exec(req, &result, params.JsonPayloadRaw)
 	if err != nil {
-		return nil, fmt.Errorf("CreateCustomRule request failed: %w", err)
+		return nil, fmt.Errorf("create custom rule request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRequest) (*RemoveCustomRuleResponse, error) {
@@ -408,7 +397,6 @@ func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRe
 	}
 
 	var result RemoveCustomRuleResponse
-
 	uri := fmt.Sprintf("/appsec/v1/configs/%d/custom-rules/%d", params.ConfigID, params.ID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
@@ -417,9 +405,8 @@ func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRe
 
 	resp, err := p.Exec(req, nil)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveCustomRule request failed: %w", err)
+		return nil, fmt.Errorf("remove custom rule request failed: %w", err)
 	}
-	logger.Debugf("RemoveCustomRule RESP CODE %v", resp.StatusCode)
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		return nil, p.Error(resp)
 	}

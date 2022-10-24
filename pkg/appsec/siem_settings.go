@@ -130,8 +130,6 @@ func (p *appsec) GetSiemSettings(ctx context.Context, params GetSiemSettingsRequ
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetSiemSettingsResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/siem",
 		params.ConfigID,
@@ -143,17 +141,16 @@ func (p *appsec) GetSiemSettings(ctx context.Context, params GetSiemSettingsRequ
 		return nil, fmt.Errorf("failed to create GetSiemSettings request: %w", err)
 	}
 
+	var result GetSiemSettingsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetSiemSettings request failed: %w", err)
+		return nil, fmt.Errorf("get siem settings request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettingsRequest) (*UpdateSiemSettingsResponse, error) {
@@ -178,9 +175,8 @@ func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettin
 	var result UpdateSiemSettingsResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateSiemSettings request failed: %w", err)
+		return nil, fmt.Errorf("update siem settings request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -211,9 +207,8 @@ func (p *appsec) RemoveSiemSettings(ctx context.Context, params RemoveSiemSettin
 	var result RemoveSiemSettingsResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveSiemSettings request failed: %w", err)
+		return nil, fmt.Errorf("remove siem settings request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

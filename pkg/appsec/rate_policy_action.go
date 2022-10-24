@@ -128,8 +128,6 @@ func (p *appsec) GetRatePolicyAction(ctx context.Context, params GetRatePolicyAc
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetRatePolicyActionResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rate-policies",
 		params.ConfigID,
@@ -141,17 +139,16 @@ func (p *appsec) GetRatePolicyAction(ctx context.Context, params GetRatePolicyAc
 		return nil, fmt.Errorf("failed to create GetRatePolicyAction request: %w", err)
 	}
 
+	var result GetRatePolicyActionResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetRatePolicyAction request failed: %w", err)
+		return nil, fmt.Errorf("get rate policy action request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyActionsRequest) (*GetRatePolicyActionsResponse, error) {
@@ -161,9 +158,6 @@ func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyA
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetRatePolicyActionsResponse
-	var filteredResult GetRatePolicyActionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rate-policies",
@@ -176,28 +170,26 @@ func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyA
 		return nil, fmt.Errorf("failed to create GetRatePolicyActions request: %w", err)
 	}
 
+	var result GetRatePolicyActionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetRatePolicyActions request failed: %w", err)
+		return nil, fmt.Errorf("get rate policy actions request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.RatePolicyID != 0 {
+		var filteredResult GetRatePolicyActionsResponse
 		for _, val := range result.RatePolicyActions {
 			if val.ID == params.RatePolicyID {
 				filteredResult.RatePolicyActions = append(filteredResult.RatePolicyActions, val)
 			}
 		}
-
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
 
-	return &filteredResult, nil
-
+	return &result, nil
 }
 
 func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePolicyActionRequest) (*UpdateRatePolicyActionResponse, error) {
@@ -218,15 +210,14 @@ func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePo
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create UpdateRatePolicyAction: %w", err)
+		return nil, fmt.Errorf("failed to create UpdateRatePolicyAction request: %w", err)
 	}
 
 	var result UpdateRatePolicyActionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateRatePolicyAction request failed: %w", err)
+		return nil, fmt.Errorf("update rate policy action request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

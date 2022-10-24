@@ -103,8 +103,6 @@ func (p *appsec) GetRuleUpgrade(ctx context.Context, params GetRuleUpgradeReques
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetRuleUpgradeResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules/upgrade-details",
 		params.ConfigID,
@@ -117,17 +115,16 @@ func (p *appsec) GetRuleUpgrade(ctx context.Context, params GetRuleUpgradeReques
 		return nil, fmt.Errorf("failed to create GetRuleUpgrade request: %w", err)
 	}
 
+	var result GetRuleUpgradeResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetRuleUpgrade request failed: %w", err)
+		return nil, fmt.Errorf("get rule upgrade request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateRuleUpgrade(ctx context.Context, params UpdateRuleUpgradeRequest) (*UpdateRuleUpgradeResponse, error) {
@@ -153,9 +150,8 @@ func (p *appsec) UpdateRuleUpgrade(ctx context.Context, params UpdateRuleUpgrade
 	var result UpdateRuleUpgradeResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateRuleUpgrade request failed: %w", err)
+		return nil, fmt.Errorf("update rule upgrade request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

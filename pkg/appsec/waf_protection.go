@@ -101,8 +101,6 @@ func (p *appsec) GetWAFProtection(ctx context.Context, params GetWAFProtectionRe
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetWAFProtectionResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
@@ -114,17 +112,16 @@ func (p *appsec) GetWAFProtection(ctx context.Context, params GetWAFProtectionRe
 		return nil, fmt.Errorf("failed to create GetWAFProtection request: %w", err)
 	}
 
+	var result GetWAFProtectionResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetWAFProtection request failed: %w", err)
+		return nil, fmt.Errorf("get WAF protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetWAFProtections(ctx context.Context, params GetWAFProtectionsRequest) (*GetWAFProtectionsResponse, error) {
@@ -134,8 +131,6 @@ func (p *appsec) GetWAFProtections(ctx context.Context, params GetWAFProtections
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetWAFProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -148,17 +143,16 @@ func (p *appsec) GetWAFProtections(ctx context.Context, params GetWAFProtections
 		return nil, fmt.Errorf("failed to create GetWAFProtections request: %w", err)
 	}
 
+	var result GetWAFProtectionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetWAFProtections request failed: %w", err)
+		return nil, fmt.Errorf("get WAF protections request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateWAFProtection(ctx context.Context, params UpdateWAFProtectionRequest) (*UpdateWAFProtectionResponse, error) {
@@ -184,9 +178,8 @@ func (p *appsec) UpdateWAFProtection(ctx context.Context, params UpdateWAFProtec
 	var result UpdateWAFProtectionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateWAFProtection request failed: %w", err)
+		return nil, fmt.Errorf("update WAF protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

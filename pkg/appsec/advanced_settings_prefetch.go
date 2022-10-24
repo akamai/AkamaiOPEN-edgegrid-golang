@@ -93,8 +93,6 @@ func (p *appsec) GetAdvancedSettingsPrefetch(ctx context.Context, params GetAdva
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetAdvancedSettingsPrefetchResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/advanced-settings/prefetch",
 		params.ConfigID,
@@ -106,9 +104,10 @@ func (p *appsec) GetAdvancedSettingsPrefetch(ctx context.Context, params GetAdva
 		return nil, fmt.Errorf("failed to create GetAdvancedSettingsPrefetch request: %w", err)
 	}
 
+	var result GetAdvancedSettingsPrefetchResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetAdvancedSettingsPrefetch request failed: %w", err)
+		return nil, fmt.Errorf("get advanced settings prefetch request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -116,7 +115,6 @@ func (p *appsec) GetAdvancedSettingsPrefetch(ctx context.Context, params GetAdva
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateAdvancedSettingsPrefetch(ctx context.Context, params UpdateAdvancedSettingsPrefetchRequest) (*UpdateAdvancedSettingsPrefetchResponse, error) {
@@ -141,7 +139,7 @@ func (p *appsec) UpdateAdvancedSettingsPrefetch(ctx context.Context, params Upda
 	var result UpdateAdvancedSettingsPrefetchResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateAdvancedSettingsPrefetch request failed: %w", err)
+		return nil, fmt.Errorf("update advanced settings prefetch request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {

@@ -101,8 +101,6 @@ func (p *appsec) GetIPGeoProtection(ctx context.Context, params GetIPGeoProtecti
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetIPGeoProtectionResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
@@ -114,17 +112,16 @@ func (p *appsec) GetIPGeoProtection(ctx context.Context, params GetIPGeoProtecti
 		return nil, fmt.Errorf("failed to create GetIPGeoProtection request: %w", err)
 	}
 
+	var result GetIPGeoProtectionResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetIPGeoProtection request failed: %w", err)
+		return nil, fmt.Errorf("get IPGeo protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetIPGeoProtections(ctx context.Context, params GetIPGeoProtectionsRequest) (*GetIPGeoProtectionsResponse, error) {
@@ -134,8 +131,6 @@ func (p *appsec) GetIPGeoProtections(ctx context.Context, params GetIPGeoProtect
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetIPGeoProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -148,17 +143,16 @@ func (p *appsec) GetIPGeoProtections(ctx context.Context, params GetIPGeoProtect
 		return nil, fmt.Errorf("failed to create GetIPGeoProtections request: %w", err)
 	}
 
+	var result GetIPGeoProtectionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetIPGeoProtections request failed: %w", err)
+		return nil, fmt.Errorf("get IPGeo protections request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateIPGeoProtection(ctx context.Context, params UpdateIPGeoProtectionRequest) (*UpdateIPGeoProtectionResponse, error) {
@@ -184,9 +178,8 @@ func (p *appsec) UpdateIPGeoProtection(ctx context.Context, params UpdateIPGeoPr
 	var result UpdateIPGeoProtectionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateIPGeoProtection request failed: %w", err)
+		return nil, fmt.Errorf("update IPGeo protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

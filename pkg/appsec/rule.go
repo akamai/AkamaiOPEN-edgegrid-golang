@@ -206,8 +206,6 @@ func (p *appsec) GetRule(ctx context.Context, params GetRuleRequest) (*GetRuleRe
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetRuleResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules/%d?includeConditionException=true",
 		params.ConfigID,
@@ -220,17 +218,16 @@ func (p *appsec) GetRule(ctx context.Context, params GetRuleRequest) (*GetRuleRe
 		return nil, fmt.Errorf("failed to create GetRule request: %w", err)
 	}
 
+	var result GetRuleResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetRule request failed: %w", err)
+		return nil, fmt.Errorf("get rule request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetRules(ctx context.Context, params GetRulesRequest) (*GetRulesResponse, error) {
@@ -240,9 +237,6 @@ func (p *appsec) GetRules(ctx context.Context, params GetRulesRequest) (*GetRule
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetRulesResponse
-	var filteredResult GetRulesResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rules?includeConditionException=true",
@@ -255,28 +249,26 @@ func (p *appsec) GetRules(ctx context.Context, params GetRulesRequest) (*GetRule
 		return nil, fmt.Errorf("failed to create GetRules request: %w", err)
 	}
 
+	var result GetRulesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetRules request failed: %w", err)
+		return nil, fmt.Errorf("get rules request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.RuleID != 0 {
+		var filteredResult GetRulesResponse
 		for _, val := range result.Rules {
 			if val.ID == params.RuleID {
 				filteredResult.Rules = append(filteredResult.Rules, val)
 			}
 		}
-
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
 
-	return &filteredResult, nil
-
+	return &result, nil
 }
 
 func (p *appsec) UpdateRule(ctx context.Context, params UpdateRuleRequest) (*UpdateRuleResponse, error) {
@@ -303,9 +295,8 @@ func (p *appsec) UpdateRule(ctx context.Context, params UpdateRuleRequest) (*Upd
 	var result UpdateRuleResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateRule request failed: %w", err)
+		return nil, fmt.Errorf("update rule request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -337,9 +328,8 @@ func (p *appsec) UpdateRuleConditionException(ctx context.Context, params Update
 	var result UpdateConditionExceptionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateRuleConditionException request failed: %w", err)
+		return nil, fmt.Errorf("update rule condition exception request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

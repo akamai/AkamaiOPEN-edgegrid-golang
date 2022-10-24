@@ -54,8 +54,6 @@ func (p *appsec) GetApiHostnameCoverageOverlapping(ctx context.Context, params G
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetApiHostnameCoverageOverlappingResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/hostname-coverage/overlapping?hostname=%s",
 		params.ConfigID,
@@ -68,15 +66,14 @@ func (p *appsec) GetApiHostnameCoverageOverlapping(ctx context.Context, params G
 		return nil, fmt.Errorf("failed to create GetApiHostnameCoverageOverlapping request: %w", err)
 	}
 
+	var result GetApiHostnameCoverageOverlappingResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetApiHostnameCoverageOverlapping request failed: %w", err)
+		return nil, fmt.Errorf("get API hostname coverage overlapping request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }

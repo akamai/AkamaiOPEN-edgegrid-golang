@@ -40,9 +40,6 @@ func (p *appsec) GetContractsGroups(ctx context.Context, params GetContractsGrou
 	logger := p.Log(ctx)
 	logger.Debug("GetContractsGroups")
 
-	var result GetContractsGroupsResponse
-	var filteredResult GetContractsGroupsResponse
-
 	uri :=
 		"/appsec/v1/contracts-groups"
 
@@ -51,24 +48,24 @@ func (p *appsec) GetContractsGroups(ctx context.Context, params GetContractsGrou
 		return nil, fmt.Errorf("failed to create GetContractsGroups request: %w", err)
 	}
 
+	var result GetContractsGroupsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetContractsGroups request failed: %w", err)
+		return nil, fmt.Errorf("get contracts groups request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.GroupID != 0 {
+		var filteredResult GetContractsGroupsResponse
 		for _, val := range result.ContractGroups {
 			if val.ContractID == params.ContractID && val.GroupID == params.GroupID {
 				filteredResult.ContractGroups = append(filteredResult.ContractGroups, val)
 			}
 		}
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
-	return &filteredResult, nil
 
+	return &result, nil
 }

@@ -204,10 +204,7 @@ func (v RemoveSecurityPolicyRequest) Validate() error {
 
 func (p *appsec) GetSecurityPolicies(ctx context.Context, params GetSecurityPoliciesRequest) (*GetSecurityPoliciesResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("GetSecurityPolicys")
-
-	var result GetSecurityPoliciesResponse
-	var filteredResult GetSecurityPoliciesResponse
+	logger.Debug("GetSecurityPolicies")
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies",
@@ -219,35 +216,31 @@ func (p *appsec) GetSecurityPolicies(ctx context.Context, params GetSecurityPoli
 		return nil, fmt.Errorf("failed to create GetSecurityPolicies request: %w", err)
 	}
 
+	var result GetSecurityPoliciesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetSecurityPolicies request failed: %w", err)
+		return nil, fmt.Errorf("get security policies request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	if params.PolicyName != "" {
+		var filteredResult GetSecurityPoliciesResponse
 		for _, val := range result.Policies {
 			if val.PolicyName == params.PolicyName {
 				filteredResult.Policies = append(filteredResult.Policies, val)
 			}
 		}
-
-	} else {
-		filteredResult = result
+		return &filteredResult, nil
 	}
 
-	return &filteredResult, nil
-
+	return &result, nil
 }
 
 func (p *appsec) GetSecurityPolicy(ctx context.Context, params GetSecurityPolicyRequest) (*GetSecurityPolicyResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("GetSecurityPolicys")
-
-	var result GetSecurityPolicyResponse
+	logger.Debug("GetSecurityPolicy")
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s",
@@ -260,17 +253,16 @@ func (p *appsec) GetSecurityPolicy(ctx context.Context, params GetSecurityPolicy
 		return nil, fmt.Errorf("failed to create GetSecurityPolicy request: %w", err)
 	}
 
+	var result GetSecurityPolicyResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetSecurityPolicy request failed: %w", err)
+		return nil, fmt.Errorf("get security policy request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateSecurityPolicy(ctx context.Context, params UpdateSecurityPolicyRequest) (*UpdateSecurityPolicyResponse, error) {
@@ -296,9 +288,8 @@ func (p *appsec) UpdateSecurityPolicy(ctx context.Context, params UpdateSecurity
 	var result UpdateSecurityPolicyResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateSecurityPolicy request failed: %w", err)
+		return nil, fmt.Errorf("update security policy request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -325,18 +316,15 @@ func (p *appsec) CreateSecurityPolicy(ctx context.Context, params CreateSecurity
 	}
 
 	var result CreateSecurityPolicyResponse
-
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("CreateSecurityPolicy request failed: %w", err)
+		return nil, fmt.Errorf("create security policy request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) RemoveSecurityPolicy(ctx context.Context, params RemoveSecurityPolicyRequest) (*RemoveSecurityPolicyResponse, error) {
@@ -347,19 +335,17 @@ func (p *appsec) RemoveSecurityPolicy(ctx context.Context, params RemoveSecurity
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result RemoveSecurityPolicyResponse
-
 	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/security-policies/%s", params.ConfigID, params.Version, params.PolicyID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveSecurityPolicy request: %w", err)
 	}
 
+	var result RemoveSecurityPolicyResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveSecurityPolicy request failed: %w", err)
+		return nil, fmt.Errorf("remove security policy request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

@@ -101,8 +101,6 @@ func (p *appsec) GetEvalProtectHost(ctx context.Context, params GetEvalProtectHo
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetEvalProtectHostResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames/eval-hostnames",
 		params.ConfigID,
@@ -113,17 +111,16 @@ func (p *appsec) GetEvalProtectHost(ctx context.Context, params GetEvalProtectHo
 		return nil, fmt.Errorf("failed to create GetEvalProtectHost request: %w", err)
 	}
 
+	var result GetEvalProtectHostResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetEvalProtectHost request failed: %w", err)
+		return nil, fmt.Errorf("get eval protect host request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetEvalProtectHosts(ctx context.Context, params GetEvalProtectHostsRequest) (*GetEvalProtectHostsResponse, error) {
@@ -133,8 +130,6 @@ func (p *appsec) GetEvalProtectHosts(ctx context.Context, params GetEvalProtectH
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetEvalProtectHostsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/selected-hostnames/eval-hostnames",
@@ -146,17 +141,16 @@ func (p *appsec) GetEvalProtectHosts(ctx context.Context, params GetEvalProtectH
 		return nil, fmt.Errorf("failed to create GetEvalProtectHosts request: %w", err)
 	}
 
+	var result GetEvalProtectHostsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetEvalProtectHosts request failed: %w", err)
+		return nil, fmt.Errorf("get eval protect hosts request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateEvalProtectHost(ctx context.Context, params UpdateEvalProtectHostRequest) (*UpdateEvalProtectHostResponse, error) {
@@ -181,9 +175,8 @@ func (p *appsec) UpdateEvalProtectHost(ctx context.Context, params UpdateEvalPro
 	var result UpdateEvalProtectHostResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateEvalProtectHost request failed: %w", err)
+		return nil, fmt.Errorf("update eval protect host request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

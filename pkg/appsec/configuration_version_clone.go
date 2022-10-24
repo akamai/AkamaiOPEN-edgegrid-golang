@@ -131,8 +131,6 @@ func (p *appsec) GetConfigurationVersionClone(ctx context.Context, params GetCon
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetConfigurationVersionCloneResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d",
 		params.ConfigID,
@@ -143,17 +141,16 @@ func (p *appsec) GetConfigurationVersionClone(ctx context.Context, params GetCon
 		return nil, fmt.Errorf("failed to create GetConfigurationVersionClone request: %w", err)
 	}
 
+	var result GetConfigurationVersionCloneResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetConfigurationVersionClone request failed: %w", err)
+		return nil, fmt.Errorf("get configuration version clone request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) CreateConfigurationVersionClone(ctx context.Context, params CreateConfigurationVersionCloneRequest) (*CreateConfigurationVersionCloneResponse, error) {
@@ -172,23 +169,20 @@ func (p *appsec) CreateConfigurationVersionClone(ctx context.Context, params Cre
 	}
 
 	var result CreateConfigurationVersionCloneResponse
-
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("CreateConfigurationVersionClone request failed: %w", err)
+		return nil, fmt.Errorf("create configuration version clone request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) RemoveConfigurationVersionClone(ctx context.Context, params RemoveConfigurationVersionCloneRequest) (*RemoveConfigurationVersionCloneResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("RemoveConfiguration")
+	logger.Debug("RemoveConfigurationVersionClone")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -203,9 +197,8 @@ func (p *appsec) RemoveConfigurationVersionClone(ctx context.Context, params Rem
 	var result RemoveConfigurationVersionCloneResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveConfigurationVersionClone request failed: %w", err)
+		return nil, fmt.Errorf("remove configuration version clone request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

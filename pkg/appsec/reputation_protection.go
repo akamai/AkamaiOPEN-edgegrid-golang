@@ -129,8 +129,6 @@ func (p *appsec) GetReputationProtection(ctx context.Context, params GetReputati
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetReputationProtectionResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
@@ -142,17 +140,16 @@ func (p *appsec) GetReputationProtection(ctx context.Context, params GetReputati
 		return nil, fmt.Errorf("failed to create GetReputationProtection request: %w", err)
 	}
 
+	var result GetReputationProtectionResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetReputationProtection request failed: %w", err)
+		return nil, fmt.Errorf("get reputation protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) GetReputationProtections(ctx context.Context, params GetReputationProtectionsRequest) (*GetReputationProtectionsResponse, error) {
@@ -162,8 +159,6 @@ func (p *appsec) GetReputationProtections(ctx context.Context, params GetReputat
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
-
-	var result GetReputationProtectionsResponse
 
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
@@ -176,17 +171,16 @@ func (p *appsec) GetReputationProtections(ctx context.Context, params GetReputat
 		return nil, fmt.Errorf("failed to create GetReputationProtections request: %w", err)
 	}
 
+	var result GetReputationProtectionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetReputationProtections request failed: %w", err)
+		return nil, fmt.Errorf("get reputation protections request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateReputationProtection(ctx context.Context, params UpdateReputationProtectionRequest) (*UpdateReputationProtectionResponse, error) {
@@ -212,9 +206,8 @@ func (p *appsec) UpdateReputationProtection(ctx context.Context, params UpdateRe
 	var result UpdateReputationProtectionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateReputationProtection request failed: %w", err)
+		return nil, fmt.Errorf("update reputation protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -245,9 +238,8 @@ func (p *appsec) RemoveReputationProtection(ctx context.Context, params RemoveRe
 	var result RemoveReputationProtectionResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveReputationProtection request failed: %w", err)
+		return nil, fmt.Errorf("remove reputation protection request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

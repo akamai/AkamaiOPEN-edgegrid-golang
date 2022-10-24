@@ -116,8 +116,6 @@ func (p *appsec) GetPolicyProtections(ctx context.Context, params GetPolicyProte
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result PolicyProtectionsResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
 		params.ConfigID,
@@ -129,17 +127,16 @@ func (p *appsec) GetPolicyProtections(ctx context.Context, params GetPolicyProte
 		return nil, fmt.Errorf("failed to create GetPolicyProtections request: %w", err)
 	}
 
+	var result PolicyProtectionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetPolicyProtections request failed: %w", err)
+		return nil, fmt.Errorf("get policy protections request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdatePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error) {
@@ -165,9 +162,8 @@ func (p *appsec) UpdatePolicyProtections(ctx context.Context, params UpdatePolic
 	var result PolicyProtectionsResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdatePolicyProtections request failed: %w", err)
+		return nil, fmt.Errorf("update policy protections request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -198,9 +194,8 @@ func (p *appsec) RemovePolicyProtections(ctx context.Context, params UpdatePolic
 	var result PolicyProtectionsResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("RemovePolicyProtections request failed: %w", err)
+		return nil, fmt.Errorf("remove policy protections request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

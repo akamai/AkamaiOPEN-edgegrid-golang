@@ -69,8 +69,6 @@ func (p *appsec) GetVersionNotes(ctx context.Context, params GetVersionNotesRequ
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetVersionNotesResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/version-notes",
 		params.ConfigID,
@@ -82,17 +80,16 @@ func (p *appsec) GetVersionNotes(ctx context.Context, params GetVersionNotesRequ
 		return nil, fmt.Errorf("failed to create GetVersionNotes request: %w", err)
 	}
 
+	var result GetVersionNotesResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetVersionNotes request failed: %w", err)
+		return nil, fmt.Errorf("get version notes request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateVersionNotes(ctx context.Context, params UpdateVersionNotesRequest) (*UpdateVersionNotesResponse, error) {
@@ -117,9 +114,8 @@ func (p *appsec) UpdateVersionNotes(ctx context.Context, params UpdateVersionNot
 	var result UpdateVersionNotesResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateVersionNotes request failed: %w", err)
+		return nil, fmt.Errorf("update version notes request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

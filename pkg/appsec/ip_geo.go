@@ -28,62 +28,44 @@ type (
 		PolicyID string `json:"-"`
 	}
 
-	// GetIPGeoResponse is returned from a call to GetIpGeo.
-	GetIPGeoResponse struct {
-		Block       string `json:"block,omitempty"`
-		GeoControls struct {
-			BlockedIPNetworkLists struct {
-				NetworkList []string `json:"networkList,omitempty"`
-			} `json:"blockedIPNetworkLists,omitempty"`
-		} `json:"geoControls,omitempty"`
-		IPControls struct {
-			AllowedIPNetworkLists struct {
-				NetworkList []string `json:"networkList,omitempty"`
-			} `json:"allowedIPNetworkLists,omitempty"`
-			BlockedIPNetworkLists struct {
-				NetworkList []string `json:"networkList,omitempty"`
-			} `json:"blockedIPNetworkLists,omitempty"`
-		} `json:"ipControls,omitempty"`
+	// IPGeoNetworkLists is used to specify IP or GEO network lists to be blocked or allowed.
+	IPGeoNetworkLists struct {
+		NetworkList []string `json:"networkList,omitempty"`
+	}
+
+	// IPGeoGeoControls is used to specify GEO network lists to be blocked.
+	IPGeoGeoControls struct {
+		BlockedIPNetworkLists *IPGeoNetworkLists `json:"blockedIPNetworkLists,omitempty"`
+	}
+
+	// IPGeoIPControls is used to specify IP or GEO network lists to be blocked or allowed.
+	IPGeoIPControls struct {
+		AllowedIPNetworkLists *IPGeoNetworkLists `json:"allowedIPNetworkLists,omitempty"`
+		BlockedIPNetworkLists *IPGeoNetworkLists `json:"blockedIPNetworkLists,omitempty"`
 	}
 
 	// UpdateIPGeoRequest is used to update the method and which network lists are used for IP/Geo firewall blocking.
 	UpdateIPGeoRequest struct {
-		ConfigID    int    `json:"-"`
-		Version     int    `json:"-"`
-		PolicyID    string `json:"-"`
-		Block       string `json:"block"`
-		GeoControls struct {
-			BlockedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"blockedIPNetworkLists"`
-		} `json:"geoControls"`
-		IPControls struct {
-			AllowedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"allowedIPNetworkLists"`
-			BlockedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"blockedIPNetworkLists"`
-		} `json:"ipControls"`
+		ConfigID    int               `json:"-"`
+		Version     int               `json:"-"`
+		PolicyID    string            `json:"-"`
+		Block       string            `json:"block"`
+		GeoControls *IPGeoGeoControls `json:"geoControls,omitempty"`
+		IPControls  *IPGeoIPControls  `json:"ipControls,omitempty"`
 	}
 
-	// UpdateIPGeoResponse is returned from a call to UpdateIPGeo.
-	UpdateIPGeoResponse struct {
-		Block       string `json:"block"`
-		GeoControls struct {
-			BlockedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"blockedIPNetworkLists"`
-		} `json:"geoControls"`
-		IPControls struct {
-			AllowedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"allowedIPNetworkLists"`
-			BlockedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"blockedIPNetworkLists"`
-		} `json:"ipControls"`
+	// IPGeoFirewall is used to describe an IP/Geo firewall.
+	IPGeoFirewall struct {
+		Block       string            `json:"block"`
+		GeoControls *IPGeoGeoControls `json:"geoControls,omitempty"`
+		IPControls  *IPGeoIPControls  `json:"ipControls,omitempty"`
 	}
+
+	// GetIPGeoResponse is returned from a call to GetIPGeo
+	GetIPGeoResponse IPGeoFirewall
+
+	// UpdateIPGeoResponse is returned from a call to UpdateIPGeo
+	UpdateIPGeoResponse IPGeoFirewall
 )
 
 // Validate validates a GetIPGeoRequest.
@@ -112,8 +94,6 @@ func (p *appsec) GetIPGeo(ctx context.Context, params GetIPGeoRequest) (*GetIPGe
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result GetIPGeoResponse
-
 	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/ip-geo-firewall",
 		params.ConfigID,
@@ -125,17 +105,16 @@ func (p *appsec) GetIPGeo(ctx context.Context, params GetIPGeoRequest) (*GetIPGe
 		return nil, fmt.Errorf("failed to create GetIPGeo request: %w", err)
 	}
 
+	var result GetIPGeoResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetIPGeo request failed: %w", err)
+		return nil, fmt.Errorf("get IPGeo request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateIPGeo(ctx context.Context, params UpdateIPGeoRequest) (*UpdateIPGeoResponse, error) {
@@ -161,9 +140,8 @@ func (p *appsec) UpdateIPGeo(ctx context.Context, params UpdateIPGeoRequest) (*U
 	var result UpdateIPGeoResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateIPGeo request failed: %w", err)
+		return nil, fmt.Errorf("update IPGeo request failed: %w", err)
 	}
-
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

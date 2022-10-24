@@ -155,7 +155,7 @@ func (p *appsec) GetConfiguration(ctx context.Context, params GetConfigurationRe
 
 	resp, err := p.Exec(req, &getConfigurationResponse)
 	if err != nil {
-		return nil, fmt.Errorf("GetConfiguration request failed: %w", err)
+		return nil, fmt.Errorf("get configuration request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -181,7 +181,7 @@ func (p *appsec) GetConfigurations(ctx context.Context, _ GetConfigurationsReque
 
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetConfigurations request failed: %w", err)
+		return nil, fmt.Errorf("get configurations request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -189,7 +189,6 @@ func (p *appsec) GetConfigurations(ctx context.Context, _ GetConfigurationsReque
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) UpdateConfiguration(ctx context.Context, params UpdateConfigurationRequest) (*UpdateConfigurationResponse, error) {
@@ -213,7 +212,7 @@ func (p *appsec) UpdateConfiguration(ctx context.Context, params UpdateConfigura
 	var result UpdateConfigurationResponse
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("UpdateConfiguration request failed: %w", err)
+		return nil, fmt.Errorf("update configuration request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -236,10 +235,9 @@ func (p *appsec) CreateConfiguration(ctx context.Context, params CreateConfigura
 	}
 
 	var result CreateConfigurationResponse
-
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("CreateConfiguration request failed: %w", err)
+		return nil, fmt.Errorf("create configuration request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
@@ -247,7 +245,6 @@ func (p *appsec) CreateConfiguration(ctx context.Context, params CreateConfigura
 	}
 
 	return &result, nil
-
 }
 
 func (p *appsec) RemoveConfiguration(ctx context.Context, params RemoveConfigurationRequest) (*RemoveConfigurationResponse, error) {
@@ -258,17 +255,16 @@ func (p *appsec) RemoveConfiguration(ctx context.Context, params RemoveConfigura
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	var result RemoveConfigurationResponse
-
 	uri := fmt.Sprintf("/appsec/v1/configs/%d", params.ConfigID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveConfiguration request: %w", err)
 	}
 
+	var result RemoveConfigurationResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("RemoveConfiguration request failed: %w", err)
+		return nil, fmt.Errorf("remove configuration request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
