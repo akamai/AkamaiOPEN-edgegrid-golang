@@ -10,7 +10,7 @@
 #### FEATURES/ENHANCEMENTS:
 
 * CPS
-  * ChangeManagementInfo - get change management info, get or acknowledge change deployment info
+  * ChangeManagementInfo - get or acknowledge change management info, get change deployment info
   * Deployments - list deployments, get production deployment, get staging deployment
   * DeploymentSchedules - get deployment schedule, update deployment schedule
   * History - get DV history, get certificate history, get change history
@@ -21,6 +21,7 @@
 
 * CPS
   * Renamed structs: Challenges and ValidationRecords to Challenge and ValidationRecord accordingly
+  * Type change: `NotAfter` and `NotBefore` fields in `DeploymentSchedule` struct used in response for `GetChangeStatus` are `*string` instead of `string`
 
 ## 2.17.0 (October 24, 2022)
 
