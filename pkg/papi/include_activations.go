@@ -48,11 +48,13 @@ type (
 
 	// ActivationIncludeResponse represents a response object returned by ActivateInclude operation
 	ActivationIncludeResponse struct {
+		ActivationID   string `json:"-"`
 		ActivationLink string `json:"activationLink"`
 	}
 
 	// DeactivationIncludeResponse represents a response object returned by DeactivateInclude operation
 	DeactivationIncludeResponse struct {
+		ActivationID   string `json:"-"`
 		ActivationLink string `json:"activationLink"`
 	}
 
@@ -228,6 +230,12 @@ func (p *papi) ActivateInclude(ctx context.Context, params ActivateIncludeReques
 		return nil, fmt.Errorf("%s: %w", ErrActivateInclude, p.Error(resp))
 	}
 
+	id, err := ResponseLinkParse(result.ActivationLink)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrActivateInclude, ErrInvalidResponseLink, err)
+	}
+	result.ActivationID = id
+
 	return &result, nil
 }
 
@@ -267,6 +275,12 @@ func (p *papi) DeactivateInclude(ctx context.Context, params DeactivateIncludeRe
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrDeactivateInclude, p.Error(resp))
 	}
+
+	id, err := ResponseLinkParse(result.ActivationLink)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrDeactivateInclude, ErrInvalidResponseLink, err)
+	}
+	result.ActivationID = id
 
 	return &result, nil
 }

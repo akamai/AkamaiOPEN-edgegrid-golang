@@ -39,6 +39,7 @@ func TestActivateInclude(t *testing.T) {
     "activationLink": "/papi/v1/includes/inc_12345/activations/temporary-activation-id"
 }`,
 			expectedResponse: &ActivationIncludeResponse{
+				ActivationID:   "temporary-activation-id",
 				ActivationLink: "/papi/v1/includes/inc_12345/activations/temporary-activation-id",
 			},
 		},
@@ -58,6 +59,7 @@ func TestActivateInclude(t *testing.T) {
     "activationLink": "/papi/v1/includes/inc_12345/activations/temporary-activation-id"
 }`,
 			expectedResponse: &ActivationIncludeResponse{
+				ActivationID:   "temporary-activation-id",
 				ActivationLink: "/papi/v1/includes/inc_12345/activations/temporary-activation-id",
 			},
 		},
@@ -173,6 +175,7 @@ func TestDeactivateInclude(t *testing.T) {
     "activationLink": "/papi/v1/includes/inc_12345/activations/temporary-activation-id"
 }`,
 			expectedResponse: &DeactivationIncludeResponse{
+				ActivationID:   "temporary-activation-id",
 				ActivationLink: "/papi/v1/includes/inc_12345/activations/temporary-activation-id",
 			},
 		},
@@ -192,6 +195,7 @@ func TestDeactivateInclude(t *testing.T) {
 		   "activationLink": "/papi/v1/includes/inc_12345/activations/temporary-activation-id"
 		}`,
 			expectedResponse: &DeactivationIncludeResponse{
+				ActivationID:   "temporary-activation-id",
 				ActivationLink: "/papi/v1/includes/inc_12345/activations/temporary-activation-id",
 			},
 		},
