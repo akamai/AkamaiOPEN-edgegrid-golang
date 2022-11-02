@@ -152,7 +152,7 @@ const (
 	// ActivationStatusActive is an activation that is currently serving traffic
 	ActivationStatusActive ActivationStatus = "ACTIVE"
 
-	// ActivationStatusInactive is an activation that has been superceded by another
+	// ActivationStatusInactive is an activation that has been superseded by another
 	ActivationStatusInactive ActivationStatus = "INACTIVE"
 
 	// ActivationStatusNew is a not yet active activation
