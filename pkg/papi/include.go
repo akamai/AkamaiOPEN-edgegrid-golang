@@ -79,6 +79,7 @@ type (
 
 	// CreateIncludeResponse represents a response object returned by CreateInclude
 	CreateIncludeResponse struct {
+		IncludeID       string `json:"-"`
 		IncludeLink     string `json:"includeLink"`
 		ResponseHeaders CreateIncludeResponseHeaders
 	}
@@ -396,6 +397,12 @@ func (p *papi) CreateInclude(ctx context.Context, params CreateIncludeRequest) (
 
 	result.ResponseHeaders.IncludesLimitTotal = resp.Header.Get("x-limit-includes-per-contract-limit")
 	result.ResponseHeaders.IncludesLimitRemaining = resp.Header.Get("x-limit-includes-per-contract-remaining")
+
+	id, err := ResponseLinkParse(result.IncludeLink)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateInclude, ErrInvalidResponseLink, err)
+	}
+	result.IncludeID = id
 
 	return &result, nil
 }
