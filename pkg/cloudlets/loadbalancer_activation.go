@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

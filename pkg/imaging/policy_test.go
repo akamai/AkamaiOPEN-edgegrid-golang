@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

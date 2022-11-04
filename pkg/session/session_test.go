@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/edgegrid"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/discard"
 	"github.com/stretchr/testify/require"

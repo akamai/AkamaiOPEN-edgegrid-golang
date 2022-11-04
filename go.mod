@@ -1,4 +1,4 @@
-module github.com/akamai/AkamaiOPEN-edgegrid-golang/v2
+module github.com/akamai/AkamaiOPEN-edgegrid-golang/v3
 
 go 1.17
 
@@ -25,4 +25,3 @@ require (
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c // indirect
 )
-

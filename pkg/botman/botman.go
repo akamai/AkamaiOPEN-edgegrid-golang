@@ -4,7 +4,7 @@ package botman
 import (
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
 )
 
 var (
