@@ -2,6 +2,7 @@ package papi
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -44,6 +45,7 @@ type (
 		AcknowledgeWarnings    []string          `json:"acknowledgeWarnings,omitempty"`
 		AcknowledgeAllWarnings bool              `json:"acknowledgeAllWarnings"`
 		IgnoreHTTPErrors       *bool             `json:"ignoreHttpErrors,omitempty"`
+		ComplianceRecord       complianceRecord  `json:"complianceRecord,omitempty"`
 	}
 
 	// ActivationIncludeResponse represents a response object returned by ActivateInclude operation
@@ -143,6 +145,35 @@ type (
 		IncludeVersion      int                     `json:"includeVersion"`
 		IncludeActivationID string                  `json:"includeActivationId"`
 	}
+
+	// complianceRecord is an interface for ComplianceRecord data type
+	complianceRecord interface {
+		noncomplianceReasonType() string
+	}
+
+	// ComplianceRecordNone holds data relevant for ComplianceRecord with noncomplianceReason 'None'
+	ComplianceRecordNone struct {
+		CustomerEmail  string `json:"customerEmail"`
+		PeerReviewedBy string `json:"peerReviewedBy"`
+		UnitTested     bool   `json:"unitTested"`
+		TicketID       string `json:"ticketId,omitempty"`
+	}
+
+	// ComplianceRecordOther holds data relevant for ComplianceRecord with noncomplianceReason 'Other'
+	ComplianceRecordOther struct {
+		OtherNoncomplianceReason string `json:"otherNoncomplianceReason"`
+		TicketID                 string `json:"ticketId,omitempty"`
+	}
+
+	// ComplianceRecordNoProductionTraffic holds data relevant for ComplianceRecord with noncomplianceReason 'NoProductionTraffic'
+	ComplianceRecordNoProductionTraffic struct {
+		TicketID string `json:"ticketId,omitempty"`
+	}
+
+	// ComplianceRecordEmergency holds data relevant for ComplianceRecord with noncomplianceReason 'Emergency'
+	ComplianceRecordEmergency struct {
+		TicketID string `json:"ticketId,omitempty"`
+	}
 )
 
 // Validate validates ActivateIncludeRequest
@@ -152,7 +183,93 @@ func (i ActivateIncludeRequest) Validate() error {
 		"Version":      validation.Validate(i.Version, validation.Required),
 		"Network":      validation.Validate(i.Network, validation.Required),
 		"NotifyEmails": validation.Validate(i.NotifyEmails, validation.Required),
+		"ComplianceRecord": validation.Validate(i.ComplianceRecord,
+			validation.Required.When(i.Network == ActivationNetworkProduction).
+				Error("ComplianceRecord is required for production network")),
 	})
+}
+
+func (c *ComplianceRecordNone) noncomplianceReasonType() string {
+	return "NONE"
+}
+
+// Validation validates ComplianceRecordNone
+func (c *ComplianceRecordNone) Validation() error {
+	return validation.Errors{
+		"CustomerEmail":  validation.Validate(c.CustomerEmail, validation.Required),
+		"PeerReviewedBy": validation.Validate(c.PeerReviewedBy, validation.Required),
+	}.Filter()
+}
+
+// MarshalJSON is a custom marshaller for ComplianceRecordNone struct
+func (c ComplianceRecordNone) MarshalJSON() ([]byte, error) {
+	type ComplianceRecord ComplianceRecordNone
+	v := struct {
+		ComplianceRecord
+		NoncomplianceReason string `json:"noncomplianceReason"`
+	}{
+		ComplianceRecord(c),
+		c.noncomplianceReasonType(),
+	}
+	return json.Marshal(v)
+}
+
+func (c *ComplianceRecordOther) noncomplianceReasonType() string {
+	return "OTHER"
+}
+
+// Validation validates ComplianceRecordOther
+func (c *ComplianceRecordOther) Validation() error {
+	return validation.Errors{
+		"OtherNoncomplianceReason": validation.Validate(c.OtherNoncomplianceReason, validation.Required),
+	}.Filter()
+}
+
+// MarshalJSON is a custom marshaller for ComplianceRecordOther struct
+func (c ComplianceRecordOther) MarshalJSON() ([]byte, error) {
+	type ComplianceRecord ComplianceRecordOther
+	v := struct {
+		ComplianceRecord
+		NoncomplianceReason string `json:"noncomplianceReason"`
+	}{
+		ComplianceRecord(c),
+		c.noncomplianceReasonType(),
+	}
+	return json.Marshal(v)
+}
+
+func (c *ComplianceRecordNoProductionTraffic) noncomplianceReasonType() string {
+	return "NO_PRODUCTION_TRAFFIC"
+}
+
+// MarshalJSON is a custom marshaller for ComplianceRecordNoProductionTraffic struct
+func (c ComplianceRecordNoProductionTraffic) MarshalJSON() ([]byte, error) {
+	type ComplianceRecord ComplianceRecordNoProductionTraffic
+	v := struct {
+		ComplianceRecord
+		NoncomplianceReason string `json:"noncomplianceReason"`
+	}{
+		ComplianceRecord(c),
+		c.noncomplianceReasonType(),
+	}
+	return json.Marshal(v)
+}
+
+func (c *ComplianceRecordEmergency) noncomplianceReasonType() string {
+	return "EMERGENCY"
+}
+
+// MarshalJSON is a custom marshaller for ComplianceRecordEmergency struct
+func (c ComplianceRecordEmergency) MarshalJSON() ([]byte, error) {
+	type ComplianceRecord ComplianceRecordEmergency
+	v := struct {
+		ComplianceRecord
+		NoncomplianceReason string `json:"noncomplianceReason"`
+	}{
+		ComplianceRecord(c),
+		c.noncomplianceReasonType(),
+	}
+	return json.Marshal(v)
 }
 
 // Validate validates DeactivateIncludeRequest

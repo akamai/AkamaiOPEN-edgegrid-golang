@@ -63,6 +63,102 @@ func TestActivateInclude(t *testing.T) {
 				ActivationLink: "/papi/v1/includes/inc_12345/activations/temporary-activation-id",
 			},
 		},
+		"201 Activate include with ComplianceRecord None": {
+			params: ActivateIncludeRequest{
+				IncludeID:    "inc_12345",
+				Version:      4,
+				Network:      ActivationNetworkProduction,
+				Note:         "test activation",
+				NotifyEmails: []string{"jbond@example.com"},
+				ComplianceRecord: &ComplianceRecordNone{
+					CustomerEmail:  "sb@akamai.com",
+					PeerReviewedBy: "sb@akamai.com",
+					UnitTested:     true,
+					TicketID:       "123",
+				},
+			},
+			expectedRequestBody: `{"acknowledgeAllWarnings":false,"activationType":"ACTIVATE","ignoreHttpErrors":true,"includeVersion":4,"network":"PRODUCTION","note":"test activation","notifyEmails":["jbond@example.com"], "complianceRecord":{"customerEmail":"sb@akamai.com", "noncomplianceReason":"NONE", "peerReviewedBy":"sb@akamai.com", "unitTested":true, "ticketId":"123"}}`,
+			expectedPath:        "/papi/v1/includes/inc_12345/activations",
+			responseStatus:      http.StatusCreated,
+			responseBody: `
+{
+    "activationLink": "/papi/v1/includes/inc_12345/activations/temporary-activation-id"
+}`,
+			expectedResponse: &ActivationIncludeResponse{
+				ActivationID:   "temporary-activation-id",
+				ActivationLink: "/papi/v1/includes/inc_12345/activations/temporary-activation-id",
+			},
+		},
+		"201 Activate include with ComplianceRecord Other": {
+			params: ActivateIncludeRequest{
+				IncludeID:    "inc_12345",
+				Version:      4,
+				Network:      ActivationNetworkProduction,
+				Note:         "test activation",
+				NotifyEmails: []string{"jbond@example.com"},
+				ComplianceRecord: &ComplianceRecordOther{
+					OtherNoncomplianceReason: "some other reason",
+					TicketID:                 "123",
+				},
+			},
+			expectedRequestBody: `{"acknowledgeAllWarnings":false,"activationType":"ACTIVATE","ignoreHttpErrors":true,"includeVersion":4,"network":"PRODUCTION","note":"test activation","notifyEmails":["jbond@example.com"], "complianceRecord":{"otherNoncomplianceReason":"some other reason", "noncomplianceReason":"OTHER", "ticketId":"123"}}`,
+			expectedPath:        "/papi/v1/includes/inc_12345/activations",
+			responseStatus:      http.StatusCreated,
+			responseBody: `
+{
+    "activationLink": "/papi/v1/includes/inc_12345/activations/temporary-activation-id"
+}`,
+			expectedResponse: &ActivationIncludeResponse{
+				ActivationID:   "temporary-activation-id",
+				ActivationLink: "/papi/v1/includes/inc_12345/activations/temporary-activation-id",
+			},
+		},
+		"201 Activate include with ComplianceRecord No_Production_Traffic": {
+			params: ActivateIncludeRequest{
+				IncludeID:    "inc_12345",
+				Version:      4,
+				Network:      ActivationNetworkProduction,
+				Note:         "test activation",
+				NotifyEmails: []string{"jbond@example.com"},
+				ComplianceRecord: &ComplianceRecordNoProductionTraffic{
+					TicketID: "123",
+				},
+			},
+			expectedRequestBody: `{"acknowledgeAllWarnings":false,"activationType":"ACTIVATE","ignoreHttpErrors":true,"includeVersion":4,"network":"PRODUCTION","note":"test activation","notifyEmails":["jbond@example.com"], "complianceRecord":{"noncomplianceReason":"NO_PRODUCTION_TRAFFIC", "ticketId":"123"}}`,
+			expectedPath:        "/papi/v1/includes/inc_12345/activations",
+			responseStatus:      http.StatusCreated,
+			responseBody: `
+{
+    "activationLink": "/papi/v1/includes/inc_12345/activations/temporary-activation-id"
+}`,
+			expectedResponse: &ActivationIncludeResponse{
+				ActivationID:   "temporary-activation-id",
+				ActivationLink: "/papi/v1/includes/inc_12345/activations/temporary-activation-id",
+			},
+		},
+		"201 Activate include with ComplianceRecord Emergency": {
+			params: ActivateIncludeRequest{
+				IncludeID:    "inc_12345",
+				Version:      4,
+				Network:      ActivationNetworkProduction,
+				Note:         "test activation",
+				NotifyEmails: []string{"jbond@example.com"},
+				ComplianceRecord: &ComplianceRecordEmergency{
+					TicketID: "123",
+				},
+			},
+			expectedRequestBody: `{"acknowledgeAllWarnings":false,"activationType":"ACTIVATE","ignoreHttpErrors":true,"includeVersion":4,"network":"PRODUCTION","note":"test activation","notifyEmails":["jbond@example.com"], "complianceRecord":{"noncomplianceReason":"EMERGENCY", "ticketId":"123"}}`,
+			expectedPath:        "/papi/v1/includes/inc_12345/activations",
+			responseStatus:      http.StatusCreated,
+			responseBody: `
+{
+    "activationLink": "/papi/v1/includes/inc_12345/activations/temporary-activation-id"
+}`,
+			expectedResponse: &ActivationIncludeResponse{
+				ActivationID:   "temporary-activation-id",
+				ActivationLink: "/papi/v1/includes/inc_12345/activations/temporary-activation-id",
+			},
+		},
 		"500 internal server error": {
 			params: ActivateIncludeRequest{
 				IncludeID:              "inc_12345",
@@ -117,6 +213,17 @@ func TestActivateInclude(t *testing.T) {
 				IncludeID: "inc_12345",
 				Version:   4,
 				Network:   ActivationNetworkStaging,
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error - missing compliance record for production network": {
+			params: ActivateIncludeRequest{
+				IncludeID:              "inc_12345",
+				Version:                4,
+				Network:                ActivationNetworkProduction,
+				Note:                   "test activation",
+				NotifyEmails:           []string{"jbond@example.com"},
+				AcknowledgeAllWarnings: true,
 			},
 			withError: ErrStructValidation,
 		},
