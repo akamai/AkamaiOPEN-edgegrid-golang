@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 2.XX.X (XXXXX XX, 2022)
+## 3.0.0 (November 28, 2022)
 
 ### Deprecations
 
@@ -19,6 +19,8 @@
 
 #### BREAKING CHANGES:
 
+* Rename package `configdns` to `dns`
+* Rename package `configgtm` to `gtm`
 * CPS
   * Renamed structs: Challenges and ValidationRecords to Challenge and ValidationRecord accordingly
   * Type change: `NotAfter` and `NotBefore` fields in `DeploymentSchedule` struct used in response for `GetChangeStatus` are `*string` instead of `string`
