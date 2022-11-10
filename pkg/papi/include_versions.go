@@ -18,10 +18,10 @@ type (
 		CreateIncludeVersion(context.Context, CreateIncludeVersionRequest) (*CreateIncludeVersionResponse, error)
 
 		// GetIncludeVersion polls the state of a specific include version, for example to check its activation status
-		GetIncludeVersion(context.Context, GetIncludeVersionRequest) (*IncludeVersionResponse, error)
+		GetIncludeVersion(context.Context, GetIncludeVersionRequest) (*GetIncludeVersionResponse, error)
 
 		// ListIncludeVersions lists the include versions, with results limited to the 500 most recent versions
-		ListIncludeVersions(context.Context, ListIncludeVersionsRequest) (*IncludeVersionResponse, error)
+		ListIncludeVersions(context.Context, ListIncludeVersionsRequest) (*ListIncludeVersionsResponse, error)
 
 		// ListIncludeVersionAvailableCriteria lists available criteria for the include version
 		ListIncludeVersionAvailableCriteria(context.Context, ListAvailableCriteriaRequest) (*AvailableCriteriaResponse, error)
@@ -45,6 +45,7 @@ type (
 	// CreateIncludeVersionResponse represents a response object returned by CreateIncludeVersion
 	CreateIncludeVersionResponse struct {
 		VersionLink string
+		VersionID   string
 	}
 
 	// GetIncludeVersionRequest contains parameters used to get the include version
@@ -62,8 +63,21 @@ type (
 		GroupID    string
 	}
 
-	// IncludeVersionResponse represents a response object returned by GetIncludeVersion
-	IncludeVersionResponse struct {
+	// GetIncludeVersionResponse represents a response object returned by GetIncludeVersion
+	GetIncludeVersionResponse struct {
+		IncludeID       string         `json:"includeId"`
+		IncludeName     string         `json:"includeName"`
+		AccountID       string         `json:"accountId"`
+		ContractID      string         `json:"contractId"`
+		GroupID         string         `json:"groupId"`
+		AssetID         string         `json:"assetId"`
+		IncludeType     IncludeType    `json:"includeType"`
+		IncludeVersions Versions       `json:"versions"`
+		IncludeVersion  IncludeVersion `json:"-"`
+	}
+
+	// ListIncludeVersionsResponse represents a response object returned by ListIncludeVersions
+	ListIncludeVersionsResponse struct {
 		IncludeID       string      `json:"includeId"`
 		IncludeName     string      `json:"includeName"`
 		AccountID       string      `json:"accountId"`
@@ -81,19 +95,16 @@ type (
 
 	// IncludeVersion represents an include version object
 	IncludeVersion struct {
-		UpdatedByUser    string     `json:"updatedByUser"`
-		UpdatedDate      string     `json:"updatedDate"`
-		ProductionStatus StatusType `json:"productionStatus"`
-		Etag             string     `json:"etag"`
-		ProductID        string     `json:"productId"`
-		Note             string     `json:"note,omitempty"`
-		RuleFormat       string     `json:"ruleFormat,omitempty"`
-		IncludeVersion   int        `json:"includeVersion"`
-		StagingStatus    StatusType `json:"stagingStatus"`
+		UpdatedByUser    string        `json:"updatedByUser"`
+		UpdatedDate      string        `json:"updatedDate"`
+		ProductionStatus VersionStatus `json:"productionStatus"`
+		Etag             string        `json:"etag"`
+		ProductID        string        `json:"productId"`
+		Note             string        `json:"note,omitempty"`
+		RuleFormat       string        `json:"ruleFormat,omitempty"`
+		IncludeVersion   int           `json:"includeVersion"`
+		StagingStatus    VersionStatus `json:"stagingStatus"`
 	}
-
-	// StatusType is type of staging status, whether the include version has been activated to the test network
-	StatusType string
 
 	// ListAvailableCriteriaRequest contains parameters used to get available include version criteria
 	ListAvailableCriteriaRequest struct {
@@ -146,17 +157,6 @@ type (
 		Name       string `json:"name"`
 		SchemaLink string `json:"schemaLink"`
 	}
-)
-
-const (
-	// StagingStatusTypeActive indicates that the include version is read-only
-	StagingStatusTypeActive StatusType = "ACTIVE"
-	// StagingStatusTypeInactive indicates that the include version is inactive
-	StagingStatusTypeInactive StatusType = "INACTIVE"
-	// StagingStatusTypePending indicates that the include version is pending
-	StagingStatusTypePending StatusType = "PENDING"
-	// StagingStatusTypeDeactivated indicates that the include version is deactivated
-	StagingStatusTypeDeactivated StatusType = "DEACTIVATED"
 )
 
 // Validate validates CreateIncludeVersionRequest
@@ -240,10 +240,16 @@ func (p *papi) CreateIncludeVersion(ctx context.Context, params CreateIncludeVer
 		return nil, fmt.Errorf("%s: %w", ErrCreateIncludeVersion, p.Error(resp))
 	}
 
+	id, err := ResponseLinkParse(result.VersionLink)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateIncludeVersion, ErrInvalidResponseLink, err)
+	}
+	result.VersionID = id
+
 	return &result, nil
 }
 
-func (p *papi) GetIncludeVersion(ctx context.Context, params GetIncludeVersionRequest) (*IncludeVersionResponse, error) {
+func (p *papi) GetIncludeVersion(ctx context.Context, params GetIncludeVersionRequest) (*GetIncludeVersionResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("GetIncludeVersion")
 
@@ -266,7 +272,7 @@ func (p *papi) GetIncludeVersion(ctx context.Context, params GetIncludeVersionRe
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetIncludeVersion, err)
 	}
 
-	var result IncludeVersionResponse
+	var result GetIncludeVersionResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetIncludeVersion, err)
@@ -276,10 +282,15 @@ func (p *papi) GetIncludeVersion(ctx context.Context, params GetIncludeVersionRe
 		return nil, fmt.Errorf("%s: %w", ErrGetIncludeVersion, p.Error(resp))
 	}
 
+	if len(result.IncludeVersions.Items) == 0 {
+		return nil, fmt.Errorf("%s: %w: IncludeID: %s", ErrGetIncludeVersion, ErrNotFound, params.IncludeID)
+	}
+	result.IncludeVersion = result.IncludeVersions.Items[0]
+
 	return &result, nil
 }
 
-func (p *papi) ListIncludeVersions(ctx context.Context, params ListIncludeVersionsRequest) (*IncludeVersionResponse, error) {
+func (p *papi) ListIncludeVersions(ctx context.Context, params ListIncludeVersionsRequest) (*ListIncludeVersionsResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("ListIncludeVersions")
 
@@ -302,7 +313,7 @@ func (p *papi) ListIncludeVersions(ctx context.Context, params ListIncludeVersio
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListIncludeVersions, err)
 	}
 
-	var result IncludeVersionResponse
+	var result ListIncludeVersionsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListIncludeVersions, err)

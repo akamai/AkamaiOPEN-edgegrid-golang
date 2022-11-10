@@ -23,10 +23,10 @@ type (
 		DeactivateInclude(context.Context, DeactivateIncludeRequest) (*DeactivationIncludeResponse, error)
 
 		// GetIncludeActivation gets details about an activation
-		GetIncludeActivation(context.Context, GetIncludeActivationRequest) (*IncludeActivationResponse, error)
+		GetIncludeActivation(context.Context, GetIncludeActivationRequest) (*GetIncludeActivationResponse, error)
 
 		// ListIncludeActivations lists all activations for all versions of the include, on both production and staging networks
-		ListIncludeActivations(context.Context, ListIncludeActivationsRequest) (*IncludeActivationsResponse, error)
+		ListIncludeActivations(context.Context, ListIncludeActivationsRequest) (*ListIncludeActivationsResponse, error)
 	}
 
 	// ActivateIncludeRequest contains parameters used to activate include
@@ -66,13 +66,14 @@ type (
 		ActivationID string
 	}
 
-	// IncludeActivationResponse represents a response object returned by GetIncludeActivation
-	IncludeActivationResponse struct {
+	// GetIncludeActivationResponse represents a response object returned by GetIncludeActivation
+	GetIncludeActivationResponse struct {
 		AccountID   string                `json:"accountId"`
 		ContractID  string                `json:"contractId"`
 		GroupID     string                `json:"groupId"`
 		Activations IncludeActivationsRes `json:"activations"`
 		Validations *Validations          `json:"validations,omitempty"`
+		Activation  IncludeActivation     `json:"-"`
 	}
 
 	// Validations represent include activation validation object
@@ -114,8 +115,8 @@ type (
 		GroupID    string
 	}
 
-	// IncludeActivationsResponse represents a response object returned by ListIncludeActivations
-	IncludeActivationsResponse struct {
+	// ListIncludeActivationsResponse represents a response object returned by ListIncludeActivations
+	ListIncludeActivationsResponse struct {
 		AccountID   string                `json:"accountId"`
 		ContractID  string                `json:"contractId"`
 		GroupID     string                `json:"groupId"`
@@ -124,7 +125,7 @@ type (
 
 	// IncludeActivationsRes represents Activations object
 	IncludeActivationsRes struct {
-		Activations []IncludeActivation `json:"items"`
+		Items []IncludeActivation `json:"items"`
 	}
 
 	// IncludeActivation represents an include activation object
@@ -402,7 +403,7 @@ func (p *papi) DeactivateInclude(ctx context.Context, params DeactivateIncludeRe
 	return &result, nil
 }
 
-func (p *papi) GetIncludeActivation(ctx context.Context, params GetIncludeActivationRequest) (*IncludeActivationResponse, error) {
+func (p *papi) GetIncludeActivation(ctx context.Context, params GetIncludeActivationRequest) (*GetIncludeActivationResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("GetIncludeActivation")
 
@@ -417,7 +418,7 @@ func (p *papi) GetIncludeActivation(ctx context.Context, params GetIncludeActiva
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetIncludeActivation, err)
 	}
 
-	var result IncludeActivationResponse
+	var result GetIncludeActivationResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetIncludeActivation, err)
@@ -427,10 +428,15 @@ func (p *papi) GetIncludeActivation(ctx context.Context, params GetIncludeActiva
 		return nil, fmt.Errorf("%s: %w", ErrGetIncludeActivation, p.Error(resp))
 	}
 
+	if len(result.Activations.Items) == 0 {
+		return nil, fmt.Errorf("%s: %w: ActivationID: %s", ErrGetIncludeActivation, ErrNotFound, params.ActivationID)
+	}
+	result.Activation = result.Activations.Items[0]
+
 	return &result, nil
 }
 
-func (p *papi) ListIncludeActivations(ctx context.Context, params ListIncludeActivationsRequest) (*IncludeActivationsResponse, error) {
+func (p *papi) ListIncludeActivations(ctx context.Context, params ListIncludeActivationsRequest) (*ListIncludeActivationsResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("ListIncludeActivations")
 
@@ -453,7 +459,7 @@ func (p *papi) ListIncludeActivations(ctx context.Context, params ListIncludeAct
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListIncludeActivations, err)
 	}
 
-	var result IncludeActivationsResponse
+	var result ListIncludeActivationsResponse
 	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListIncludeActivations, err)

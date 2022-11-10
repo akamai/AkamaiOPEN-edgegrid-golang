@@ -38,6 +38,7 @@ func TestCreateIncludeVersion(t *testing.T) {
 }`,
 			expectedResponse: &CreateIncludeVersionResponse{
 				VersionLink: "/papi/v1/includes/inc_12345/versions/5",
+				VersionID:   "5",
 			},
 		},
 		"500 internal server error": {
@@ -111,7 +112,7 @@ func TestGetIncludeVersion(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *IncludeVersionResponse
+		expectedResponse *GetIncludeVersionResponse
 		withError        error
 	}{
 		"200 OK": {
@@ -147,7 +148,7 @@ func TestGetIncludeVersion(t *testing.T) {
         ]
     }
 }`,
-			expectedResponse: &IncludeVersionResponse{
+			expectedResponse: &GetIncludeVersionResponse{
 				AccountID:   "act_B-3-WNKA123",
 				AssetID:     "aid_11069123",
 				ContractID:  "test_contract",
@@ -160,14 +161,24 @@ func TestGetIncludeVersion(t *testing.T) {
 						{
 							UpdatedByUser:    "test_user",
 							UpdatedDate:      "2022-08-22T07:17:48Z",
-							ProductionStatus: StagingStatusTypeInactive,
+							ProductionStatus: VersionStatusInactive,
 							Etag:             "1d8ed19bce0833a3fe93e62ae5d5579a38cc2dbe",
 							ProductID:        "prd_Site_Defender",
 							RuleFormat:       "v2020-11-02",
 							IncludeVersion:   2,
-							StagingStatus:    StagingStatusTypeActive,
+							StagingStatus:    VersionStatusActive,
 						},
 					},
+				},
+				IncludeVersion: IncludeVersion{
+					UpdatedByUser:    "test_user",
+					UpdatedDate:      "2022-08-22T07:17:48Z",
+					ProductionStatus: VersionStatusInactive,
+					Etag:             "1d8ed19bce0833a3fe93e62ae5d5579a38cc2dbe",
+					ProductID:        "prd_Site_Defender",
+					RuleFormat:       "v2020-11-02",
+					IncludeVersion:   2,
+					StagingStatus:    VersionStatusActive,
 				},
 			},
 		},
@@ -254,7 +265,7 @@ func TestListIncludeVersions(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *IncludeVersionResponse
+		expectedResponse *ListIncludeVersionsResponse
 		withError        error
 	}{
 		"200 OK": {
@@ -319,7 +330,7 @@ func TestListIncludeVersions(t *testing.T) {
         ]
     }
 }`,
-			expectedResponse: &IncludeVersionResponse{
+			expectedResponse: &ListIncludeVersionsResponse{
 				AccountID:   "act_B-3-WNKA123",
 				AssetID:     "aid_11069123",
 				ContractID:  "test_contract",
@@ -332,42 +343,42 @@ func TestListIncludeVersions(t *testing.T) {
 						{
 							UpdatedByUser:    "test_user",
 							UpdatedDate:      "2022-10-14T08:41:00Z",
-							ProductionStatus: StagingStatusTypeInactive,
+							ProductionStatus: VersionStatusInactive,
 							Etag:             "c925d2b5fa4cc002774c752186d8faafeac7f28a",
 							ProductID:        "prd_Site_Defender",
 							RuleFormat:       "v2020-11-02",
 							IncludeVersion:   4,
-							StagingStatus:    StagingStatusTypeInactive,
+							StagingStatus:    VersionStatusInactive,
 						},
 						{
 							UpdatedByUser:    "test_user",
 							UpdatedDate:      "2022-08-23T12:39:33Z",
-							ProductionStatus: StagingStatusTypeInactive,
+							ProductionStatus: VersionStatusInactive,
 							Etag:             "f5230dfe9d50e0a4a8b643388226b36db494d7c4",
 							ProductID:        "prd_Site_Defender",
 							RuleFormat:       "v2020-11-02",
 							IncludeVersion:   3,
-							StagingStatus:    StagingStatusTypeInactive,
+							StagingStatus:    VersionStatusInactive,
 						},
 						{
 							UpdatedByUser:    "test_user",
 							UpdatedDate:      "2022-08-22T07:17:48Z",
-							ProductionStatus: StagingStatusTypeInactive,
+							ProductionStatus: VersionStatusInactive,
 							Etag:             "1d8ed19bce0833a3fe93e62ae5d5579a38cc2dbe",
 							ProductID:        "prd_Site_Defender",
 							RuleFormat:       "v2020-11-02",
 							IncludeVersion:   2,
-							StagingStatus:    StagingStatusTypeActive,
+							StagingStatus:    VersionStatusActive,
 						},
 						{
 							UpdatedByUser:    "test_user",
 							UpdatedDate:      "2022-08-16T10:29:43Z",
-							ProductionStatus: StagingStatusTypeInactive,
+							ProductionStatus: VersionStatusInactive,
 							Etag:             "d2be894768ae4e587eae91f93f15d2217ef517d8",
 							ProductID:        "prd_Site_Defender",
 							RuleFormat:       "v2020-11-02",
 							IncludeVersion:   1,
-							StagingStatus:    StagingStatusTypeDeactivated,
+							StagingStatus:    VersionStatusDeactivated,
 						},
 					},
 				},

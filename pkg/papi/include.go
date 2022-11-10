@@ -64,6 +64,7 @@ type (
 	// GetIncludeResponse represents a response object returned by GetInclude
 	GetIncludeResponse struct {
 		Includes IncludeItems `json:"includes"`
+		Include  Include      `json:"-"`
 	}
 
 	// CreateIncludeRequest contains parameters used to create an include
@@ -358,6 +359,11 @@ func (p *papi) GetInclude(ctx context.Context, params GetIncludeRequest) (*GetIn
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetInclude, p.Error(resp))
 	}
+
+	if len(result.Includes.Items) == 0 {
+		return nil, fmt.Errorf("%s: %w: IncludeID: %s", ErrGetInclude, ErrNotFound, params.IncludeID)
+	}
+	result.Include = result.Includes.Items[0]
 
 	return &result, nil
 }

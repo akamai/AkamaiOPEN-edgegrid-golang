@@ -435,6 +435,17 @@ func TestGetInclude(t *testing.T) {
 						},
 					},
 				},
+				Include: Include{
+					AccountID:     "test_account",
+					AssetID:       "test_asset",
+					ContractID:    "test_contract",
+					GroupID:       "test_group",
+					IncludeID:     "inc_123456",
+					IncludeName:   "test_include",
+					IncludeType:   "MICROSERVICES",
+					LatestVersion: 1,
+					PropertyType:  tools.StringPtr("INCLUDE"),
+				},
 			},
 		},
 		"500 internal server error": {

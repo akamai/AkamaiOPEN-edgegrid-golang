@@ -424,7 +424,7 @@ func TestGetIncludeActivation(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *IncludeActivationResponse
+		expectedResponse *GetIncludeActivationResponse
 		withError        error
 	}{
 		"200 Get include activation": {
@@ -469,12 +469,12 @@ func TestGetIncludeActivation(t *testing.T) {
         ]
     }
 }`,
-			expectedResponse: &IncludeActivationResponse{
+			expectedResponse: &GetIncludeActivationResponse{
 				AccountID:  "test_account",
 				ContractID: "test_contract",
 				GroupID:    "test_group",
 				Activations: IncludeActivationsRes{
-					Activations: []IncludeActivation{
+					Items: []IncludeActivation{
 						{
 							ActivationID:       "atv_12345",
 							Network:            "STAGING",
@@ -498,6 +498,28 @@ func TestGetIncludeActivation(t *testing.T) {
 							IncludeVersion: 4,
 						},
 					},
+				},
+				Activation: IncludeActivation{
+					ActivationID:       "atv_12345",
+					Network:            "STAGING",
+					ActivationType:     ActivationTypeActivate,
+					Status:             ActivationStatusActive,
+					SubmitDate:         "2022-10-27T12:27:54Z",
+					UpdateDate:         "2022-10-27T12:28:54Z",
+					Note:               "DXE test activation",
+					NotifyEmails:       []string{"test@example.com"},
+					FMAActivationState: "steady",
+					FallbackInfo: &ActivationFallbackInfo{
+						FastFallbackAttempted:      false,
+						FallbackVersion:            3,
+						CanFastFallback:            false,
+						SteadyStateTime:            1666873734,
+						FastFallbackExpirationTime: 1666877334,
+					},
+					IncludeID:      "inc_12345",
+					IncludeName:    "tfp_test1",
+					IncludeType:    "MICROSERVICES",
+					IncludeVersion: 4,
 				},
 			},
 		},
@@ -543,12 +565,12 @@ func TestGetIncludeActivation(t *testing.T) {
         ]
     }
 }`,
-			expectedResponse: &IncludeActivationResponse{
+			expectedResponse: &GetIncludeActivationResponse{
 				AccountID:  "test_account",
 				ContractID: "test_contract",
 				GroupID:    "test_group",
 				Activations: IncludeActivationsRes{
-					Activations: []IncludeActivation{
+					Items: []IncludeActivation{
 						{
 							IncludeActivationID: "5e597860-1107-461e-8dbe-4e7526e8dd02",
 							Network:             "STAGING",
@@ -572,6 +594,28 @@ func TestGetIncludeActivation(t *testing.T) {
 							IncludeVersion: 4,
 						},
 					},
+				},
+				Activation: IncludeActivation{
+					IncludeActivationID: "5e597860-1107-461e-8dbe-4e7526e8dd02",
+					Network:             "STAGING",
+					ActivationType:      ActivationTypeActivate,
+					Status:              ActivationStatusActive,
+					SubmitDate:          "2022-10-27T12:27:54Z",
+					UpdateDate:          "2022-10-27T12:28:54Z",
+					Note:                "DXE test activation",
+					NotifyEmails:        []string{"test@example.com"},
+					FMAActivationState:  "steady",
+					FallbackInfo: &ActivationFallbackInfo{
+						FastFallbackAttempted:      false,
+						FallbackVersion:            3,
+						CanFastFallback:            false,
+						SteadyStateTime:            1666873734,
+						FastFallbackExpirationTime: 1666877334,
+					},
+					IncludeID:      "inc_12345",
+					IncludeName:    "tfp_test1",
+					IncludeType:    "MICROSERVICES",
+					IncludeVersion: 4,
 				},
 			},
 		},
@@ -636,7 +680,7 @@ func TestListIncludeActivations(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *IncludeActivationsResponse
+		expectedResponse *ListIncludeActivationsResponse
 		withError        error
 	}{
 		"200 List include activations": {
@@ -773,12 +817,12 @@ func TestListIncludeActivations(t *testing.T) {
         ]
     }
 }`,
-			expectedResponse: &IncludeActivationsResponse{
+			expectedResponse: &ListIncludeActivationsResponse{
 				AccountID:  "test_account",
 				ContractID: "test_contract",
 				GroupID:    "test_group",
 				Activations: IncludeActivationsRes{
-					Activations: []IncludeActivation{
+					Items: []IncludeActivation{
 						{
 							ActivationID:       "atv_12344",
 							Network:            "STAGING",
