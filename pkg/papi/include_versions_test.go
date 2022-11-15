@@ -38,7 +38,7 @@ func TestCreateIncludeVersion(t *testing.T) {
 }`,
 			expectedResponse: &CreateIncludeVersionResponse{
 				VersionLink: "/papi/v1/includes/inc_12345/versions/5",
-				VersionID:   "5",
+				Version:     5,
 			},
 		},
 		"500 internal server error": {

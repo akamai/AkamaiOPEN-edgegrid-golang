@@ -15,6 +15,12 @@ var (
 
 	// ErrNotFound is returned when requested resource was not found
 	ErrNotFound = errors.New("resource not found")
+
+	// ErrSBDNotEnabled indicates that secure-by-default is not enabled on the given account
+	ErrSBDNotEnabled = errors.New("secure-by-default is not enabled")
+
+	// ErrDefaultCertLimitReached indicates that the limit for DEFAULT certificates has been reached
+	ErrDefaultCertLimitReached = errors.New("the limit for DEFAULT certificates has been reached")
 )
 
 type (

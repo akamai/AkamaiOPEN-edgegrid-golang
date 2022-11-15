@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -45,7 +46,7 @@ type (
 	// CreateIncludeVersionResponse represents a response object returned by CreateIncludeVersion
 	CreateIncludeVersionResponse struct {
 		VersionLink string
-		VersionID   string
+		Version     int
 	}
 
 	// GetIncludeVersionRequest contains parameters used to get the include version
@@ -244,7 +245,10 @@ func (p *papi) CreateIncludeVersion(ctx context.Context, params CreateIncludeVer
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateIncludeVersion, ErrInvalidResponseLink, err)
 	}
-	result.VersionID = id
+	result.Version, err = strconv.Atoi(id)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateIncludeVersion, ErrInvalidResponseLink, err)
+	}
 
 	return &result, nil
 }
