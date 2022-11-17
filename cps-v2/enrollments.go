@@ -33,9 +33,10 @@ type Enrollment struct {
 }
 
 type CreateEnrollmentQueryParams struct {
-	ContractID      string
-	DeployNotAfter  *string
-	DeployNotBefore *string
+	AllowDuplicateCN bool
+	ContractID       string
+	DeployNotAfter   *string
+	DeployNotBefore  *string
 }
 
 type ListEnrollmentsQueryParams struct {
@@ -75,6 +76,13 @@ func (enrollment *Enrollment) Create(params CreateEnrollmentQueryParams) (*Creat
 			"%s&deploy-not-before=%s",
 			request,
 			*params.DeployNotBefore,
+		)
+	}
+
+	if params.AllowDuplicateCN {
+		request = fmt.Sprintf(
+			"%s&allow-duplicate-cn=true",
+			request,
 		)
 	}
 
