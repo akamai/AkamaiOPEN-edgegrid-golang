@@ -245,7 +245,7 @@ func (c CSR) Validate() error {
 // Validate performs validation on ThirdParty
 func (t ThirdParty) Validate() error {
 	return validation.Errors{
-		"excludeSans": validation.Validate(t.ExcludeSANS, validation.Required),
+		"excludeSans": validation.Validate(t.ExcludeSANS, validation.NotNil),
 	}.Filter()
 }
 
