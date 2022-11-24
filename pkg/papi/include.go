@@ -132,16 +132,14 @@ type (
 
 	// ParentProperty represents an include parent object
 	ParentProperty struct {
-		AccountID                        string `json:"accountId"`
-		AssetID                          string `json:"assetId"`
-		ContractID                       string `json:"contractId"`
-		GroupID                          string `json:"groupId"`
-		IsIncludeUsedInProductionVersion bool   `json:"isIncludeUsedInProductionVersion"`
-		IsIncludeUsedInStagingVersion    bool   `json:"isIncludeUsedInStagingVersion"`
-		ProductionVersion                *int   `json:"productionVersion,omitempty"`
-		PropertyID                       string `json:"propertyId"`
-		PropertyName                     string `json:"propertyName"`
-		StagingVersion                   *int   `json:"stagingVersion,omitempty"`
+		AccountID         string `json:"accountId"`
+		AssetID           string `json:"assetId"`
+		ContractID        string `json:"contractId"`
+		GroupID           string `json:"groupId"`
+		ProductionVersion *int   `json:"productionVersion,omitempty"`
+		PropertyID        string `json:"propertyId"`
+		PropertyName      string `json:"propertyName"`
+		StagingVersion    *int   `json:"stagingVersion,omitempty"`
 	}
 
 	// ParentPropertyItems represents a list of ParentProperty objects

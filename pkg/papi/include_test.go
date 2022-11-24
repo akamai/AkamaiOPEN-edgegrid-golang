@@ -241,9 +241,7 @@ func TestListIncludeParents(t *testing.T) {
                 "propertyName": "test_property",
                 "stagingVersion": 1,
                 "productionVersion": null,
-                "assetId": "test_asset",
-                "isIncludeUsedInProductionVersion": false,
-                "isIncludeUsedInStagingVersion": true
+                "assetId": "test_asset"
             }
         ]
     }
@@ -258,15 +256,13 @@ func TestListIncludeParents(t *testing.T) {
 				Properties: ParentPropertyItems{
 					Items: []ParentProperty{
 						{
-							AccountID:                        "test_account",
-							AssetID:                          "test_asset",
-							ContractID:                       "test_contract",
-							GroupID:                          "test_group",
-							IsIncludeUsedInProductionVersion: false,
-							IsIncludeUsedInStagingVersion:    true,
-							PropertyID:                       "prp_123456",
-							PropertyName:                     "test_property",
-							StagingVersion:                   tools.IntPtr(1),
+							AccountID:      "test_account",
+							AssetID:        "test_asset",
+							ContractID:     "test_contract",
+							GroupID:        "test_group",
+							PropertyID:     "prp_123456",
+							PropertyName:   "test_property",
+							StagingVersion: tools.IntPtr(1),
 						},
 					},
 				},
@@ -286,9 +282,7 @@ func TestListIncludeParents(t *testing.T) {
                 "propertyName": "test_property",
                 "stagingVersion": 1,
                 "productionVersion": null,
-                "assetId": "test_asset",
-                "isIncludeUsedInProductionVersion": false,
-                "isIncludeUsedInStagingVersion": true
+                "assetId": "test_asset"
             }
         ]
     }
@@ -301,15 +295,13 @@ func TestListIncludeParents(t *testing.T) {
 				Properties: ParentPropertyItems{
 					Items: []ParentProperty{
 						{
-							AccountID:                        "test_account",
-							AssetID:                          "test_asset",
-							ContractID:                       "test_contract",
-							GroupID:                          "test_group",
-							IsIncludeUsedInProductionVersion: false,
-							IsIncludeUsedInStagingVersion:    true,
-							PropertyID:                       "prp_123456",
-							PropertyName:                     "test_property",
-							StagingVersion:                   tools.IntPtr(1),
+							AccountID:      "test_account",
+							AssetID:        "test_asset",
+							ContractID:     "test_contract",
+							GroupID:        "test_group",
+							PropertyID:     "prp_123456",
+							PropertyName:   "test_property",
+							StagingVersion: tools.IntPtr(1),
 						},
 					},
 				},
