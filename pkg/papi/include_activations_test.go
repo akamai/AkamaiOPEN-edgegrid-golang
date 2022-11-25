@@ -21,6 +21,7 @@ func TestActivateInclude(t *testing.T) {
 		expectedPath        string
 		expectedResponse    *ActivationIncludeResponse
 		withError           error
+		assertError         func(*testing.T, error)
 	}{
 		"201 Activate include acknowledging all the warnings": {
 			params: ActivateIncludeRequest{
@@ -227,6 +228,37 @@ func TestActivateInclude(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
+		"validation error - not valid ComplianceRecordNone": {
+			params: ActivateIncludeRequest{
+				IncludeID:              "inc_12345",
+				Version:                4,
+				Network:                ActivationNetworkProduction,
+				Note:                   "test activation",
+				NotifyEmails:           []string{"jbond@example.com"},
+				AcknowledgeAllWarnings: true,
+				ComplianceRecord:       &ComplianceRecordNone{},
+			},
+			withError: ErrStructValidation,
+			assertError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "CustomerEmail: cannot be blank")
+				assert.Contains(t, err.Error(), "PeerReviewedBy: cannot be blank")
+			},
+		},
+		"validation error - not valid ComplianceRecordOther": {
+			params: ActivateIncludeRequest{
+				IncludeID:              "inc_12345",
+				Version:                4,
+				Network:                ActivationNetworkProduction,
+				Note:                   "test activation",
+				NotifyEmails:           []string{"jbond@example.com"},
+				AcknowledgeAllWarnings: true,
+				ComplianceRecord:       &ComplianceRecordOther{},
+			},
+			withError: ErrStructValidation,
+			assertError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "OtherNoncomplianceReason: cannot be blank")
+			},
+		},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -245,10 +277,17 @@ func TestActivateInclude(t *testing.T) {
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivateInclude(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+
+			if test.withError != nil || test.assertError != nil {
+				if test.withError != nil {
+					assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				}
+				if test.assertError != nil {
+					test.assertError(t, err)
+				}
 				return
 			}
+
 			require.NoError(t, err)
 			assert.Equal(t, test.expectedResponse, result)
 		})

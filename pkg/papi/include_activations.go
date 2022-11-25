@@ -194,8 +194,8 @@ func (c *ComplianceRecordNone) noncomplianceReasonType() string {
 	return "NONE"
 }
 
-// Validation validates ComplianceRecordNone
-func (c *ComplianceRecordNone) Validation() error {
+// Validate validates ComplianceRecordNone
+func (c *ComplianceRecordNone) Validate() error {
 	return validation.Errors{
 		"CustomerEmail":  validation.Validate(c.CustomerEmail, validation.Required),
 		"PeerReviewedBy": validation.Validate(c.PeerReviewedBy, validation.Required),
@@ -219,8 +219,8 @@ func (c *ComplianceRecordOther) noncomplianceReasonType() string {
 	return "OTHER"
 }
 
-// Validation validates ComplianceRecordOther
-func (c *ComplianceRecordOther) Validation() error {
+// Validate validates ComplianceRecordOther
+func (c *ComplianceRecordOther) Validate() error {
 	return validation.Errors{
 		"OtherNoncomplianceReason": validation.Validate(c.OtherNoncomplianceReason, validation.Required),
 	}.Filter()
