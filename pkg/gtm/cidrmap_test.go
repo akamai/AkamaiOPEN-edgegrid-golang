@@ -9,52 +9,23 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestGtm_NewTrafficTarget(t *testing.T) {
+func TestGtm_NewCidrMap(t *testing.T) {
 	client := Client(session.Must(session.New()))
 
-	tgt := client.NewTrafficTarget(context.Background())
+	cmap := client.NewCidrMap(context.Background(), "foo")
 
-	assert.NotNil(t, tgt)
+	assert.Equal(t, "foo", cmap.Name)
 }
 
-func TestGtm_NewStaticRRSet(t *testing.T) {
-	client := Client(session.Must(session.New()))
+func TestGtm_ListCidrMaps(t *testing.T) {
+	var result CidrMapList
 
-	set := client.NewStaticRRSet(context.Background())
-
-	assert.NotNil(t, set)
-}
-
-func TestGtm_NewLivenessTest(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	test := client.NewLivenessTest(context.Background(), "foo", "bar", 1, 1000)
-
-	assert.NotNil(t, test)
-	assert.Equal(t, "foo", test.Name)
-	assert.Equal(t, "bar", test.TestObjectProtocol)
-	assert.Equal(t, 1, test.TestInterval)
-	assert.Equal(t, float32(1000), test.TestTimeout)
-}
-
-func TestGtm_NewProperty(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	prop := client.NewProperty(context.Background(), "foo")
-
-	assert.NotNil(t, prop)
-	assert.Equal(t, prop.Name, "foo")
-}
-
-func TestGtm_ListProperties(t *testing.T) {
-	var result PropertyList
-
-	respData, err := loadTestData("TestGtm_ListProperties.resp.json")
+	respData, err := loadTestData("TestGtm_ListCidrMap.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,40 +35,40 @@ func TestGtm_ListProperties(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		domain           string
+		domainName       string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse []*Property
+		expectedResponse []*CidrMap
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			domain: "example.akadns.net",
+			domainName: "example.akadns.net",
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/properties",
-			expectedResponse: result.PropertyItems,
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps",
+			expectedResponse: result.CidrMapItems,
 		},
 		"500 internal server error": {
-			domain:         "example.akadns.net",
+			domainName:     "example.akadns.net",
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching propertys",
+    "detail": "Error fetching asmap",
     "status": 500
 }`,
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net/properties",
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/cidr-maps",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching propertys",
+				Detail:     "Error fetching asmap",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -113,10 +84,10 @@ func TestGtm_ListProperties(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListProperties(
+			result, err := client.ListCidrMaps(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.domain)
+					session.WithContextHeaders(test.headers)), test.domainName)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -127,12 +98,10 @@ func TestGtm_ListProperties(t *testing.T) {
 	}
 }
 
-// Test GetProperty
-// GetProperty(context.Context, string) (*Property, error)
-func TestGtm_GetProperty(t *testing.T) {
-	var result Property
+func TestGtm_GetCidrMap(t *testing.T) {
+	var result CidrMap
 
-	respData, err := loadTestData("TestGtm_GetProperty.resp.json")
+	respData, err := loadTestData("TestGtm_GetCidrMap.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,36 +112,42 @@ func TestGtm_GetProperty(t *testing.T) {
 
 	tests := map[string]struct {
 		name             string
-		domain           string
+		domainName       string
 		responseStatus   int
-		responseBody     []byte
+		responseBody     string
 		expectedPath     string
-		expectedResponse *Property
+		expectedResponse *CidrMap
 		withError        error
+		headers          http.Header
 	}{
 		"200 OK": {
-			name:             "www",
-			domain:           "example.akadns.net",
+			name:       "Software-rollout",
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
 			responseStatus:   http.StatusOK,
-			responseBody:     respData,
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/properties/www",
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/Software-rollout",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			name:           "www",
-			domain:         "example.akadns.net",
+			name:           "Software-rollout",
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: []byte(`
+			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching property"
-}`),
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net/properties/www",
+    "detail": "Error fetching asmap",
+    "status": 500
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/cidr-maps/Software-rollout",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching property",
+				Detail:     "Error fetching asmap",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -184,101 +159,14 @@ func TestGtm_GetProperty(t *testing.T) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
-				_, err := w.Write(test.responseBody)
+				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetProperty(context.Background(), test.name, test.domain)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
-		})
-	}
-}
-
-// Test Create domain.
-// CreateProperty(context.Context, *Property, map[string]string) (*PropertyResponse, error)
-func TestGtm_CreateProperty(t *testing.T) {
-	var result PropertyResponse
-	var req Property
-
-	respData, err := loadTestData("TestGtm_CreateProperty.resp.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
-		t.Fatal(err)
-	}
-
-	reqData, err := loadTestData("TestGtm_CreateProperty.req.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
-		t.Fatal(err)
-	}
-
-	tests := map[string]struct {
-		domain           string
-		prop             *Property
-		responseStatus   int
-		responseBody     []byte
-		expectedPath     string
-		expectedResponse *PropertyResponse
-		withError        error
-		headers          http.Header
-	}{
-		"201 Created": {
-			prop:   &req,
-			domain: "example.akadns.net",
-			headers: http.Header{
-				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
-			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     respData,
-			expectedResponse: &result,
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
-		},
-		"500 internal server error": {
-			prop:           &req,
-			domain:         "example.akadns.net",
-			responseStatus: http.StatusInternalServerError,
-			responseBody: []byte(`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating domain"
-}`),
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error creating domain",
-				StatusCode: http.StatusInternalServerError,
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				if len(test.responseBody) > 0 {
-					_, err := w.Write(test.responseBody)
-					assert.NoError(t, err)
-				}
-			}))
-			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateProperty(
+			result, err := client.GetCidrMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.prop, test.domain)
+					session.WithContextHeaders(test.headers)), test.name, test.domainName)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -289,101 +177,20 @@ func TestGtm_CreateProperty(t *testing.T) {
 	}
 }
 
-// Test Update domain.
-// UpdateProperty(context.Context, *Property, map[string]string) (*PropertyResponse, error)
-func TestGtm_UpdateProperty(t *testing.T) {
-	var result PropertyResponse
-	var req Property
+func TestGtm_NewCidrAssignment(t *testing.T) {
+	client := Client(session.Must(session.New()))
 
-	respData, err := loadTestData("TestGtm_CreateProperty.resp.json")
-	if err != nil {
-		t.Fatal(err)
-	}
+	asn := client.NewCidrAssignment(context.Background(), nil, 100, "foo")
 
-	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
-		t.Fatal(err)
-	}
-
-	reqData, err := loadTestData("TestGtm_CreateProperty.req.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
-		t.Fatal(err)
-	}
-
-	tests := map[string]struct {
-		prop             *Property
-		domain           string
-		responseStatus   int
-		responseBody     []byte
-		expectedPath     string
-		expectedResponse *ResponseStatus
-		withError        error
-		headers          http.Header
-	}{
-		"200 Success": {
-			prop:   &req,
-			domain: "example.akadns.net",
-			headers: http.Header{
-				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
-			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     respData,
-			expectedResponse: result.Status,
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
-		},
-		"500 internal server error": {
-			prop:           &req,
-			domain:         "example.akadns.net",
-			responseStatus: http.StatusInternalServerError,
-			responseBody: []byte(`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating zone"
-}`),
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error creating zone",
-				StatusCode: http.StatusInternalServerError,
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				if len(test.responseBody) > 0 {
-					_, err := w.Write(test.responseBody)
-					assert.NoError(t, err)
-				}
-			}))
-			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateProperty(
-				session.ContextWithOptions(
-					context.Background(),
-					session.WithContextHeaders(test.headers)), test.prop, test.domain)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
-		})
-	}
+	assert.Equal(t, 100, asn.DatacenterId)
+	assert.Equal(t, "foo", asn.Nickname)
 }
 
-func TestGtm_DeleteProperty(t *testing.T) {
-	var result PropertyResponse
-	var req Property
+func TestGtm_CreateCidrMap(t *testing.T) {
+	var result CidrMapResponse
+	var req CidrMap
 
-	respData, err := loadTestData("TestGtm_CreateProperty.resp.json")
+	respData, err := loadTestData("TestGtm_CreateCidrMap.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -392,7 +199,7 @@ func TestGtm_DeleteProperty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateProperty.req.json")
+	reqData, err := loadTestData("TestGtm_CreateCidrMap.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -402,41 +209,42 @@ func TestGtm_DeleteProperty(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		prop             *Property
-		domain           string
+		cmap             *CidrMap
+		domainName       string
 		responseStatus   int
-		responseBody     []byte
+		responseBody     string
 		expectedPath     string
-		expectedResponse *ResponseStatus
+		expectedResponse *CidrMapResponse
 		withError        error
 		headers          http.Header
 	}{
-		"200 Success": {
-			prop:   &req,
-			domain: "example.akadns.net",
+		"200 OK": {
+			cmap:       &req,
+			domainName: "example.akadns.net",
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
-			responseBody:     respData,
-			expectedResponse: result.Status,
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			prop:           &req,
-			domain:         "example.akadns.net",
+			cmap:           &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: []byte(`
+			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error creating zone"
-}`),
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
+    "detail": "Error creating asmap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error creating zone",
+				Detail:     "Error creating asmap",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -445,18 +253,193 @@ func TestGtm_DeleteProperty(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, http.MethodDelete, r.Method)
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
 				w.WriteHeader(test.responseStatus)
-				if len(test.responseBody) > 0 {
-					_, err := w.Write(test.responseBody)
-					assert.NoError(t, err)
-				}
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.DeleteProperty(
+			result, err := client.CreateCidrMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.prop, test.domain)
+					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestGtm_UpdateCidrMap(t *testing.T) {
+	var result CidrMapResponse
+	var req CidrMap
+
+	respData, err := loadTestData("TestGtm_CreateCidrMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
+
+	reqData, err := loadTestData("TestGtm_CreateCidrMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := map[string]struct {
+		cmap             *CidrMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ResponseStatus
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			cmap:       &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			expectedResponse: result.Status,
+		},
+		"500 internal server error": {
+			cmap:           &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating asmap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.UpdateCidrMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestGtm_DeleteCidrMap(t *testing.T) {
+	var result CidrMapResponse
+	var req CidrMap
+
+	respData, err := loadTestData("TestGtm_CreateCidrMap.resp.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
+
+	reqData, err := loadTestData("TestGtm_CreateCidrMap.req.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
+		t.Fatal(err)
+	}
+
+	tests := map[string]struct {
+		cmap             *CidrMap
+		domainName       string
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ResponseStatus
+		withError        error
+		headers          http.Header
+	}{
+		"200 OK": {
+			cmap:       &req,
+			domainName: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			expectedResponse: result.Status,
+		},
+		"500 internal server error": {
+			cmap:           &req,
+			domainName:     "example.akadns.net",
+			headers:        http.Header{},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error creating asmap"
+}`,
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error creating asmap",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.DeleteCidrMap(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

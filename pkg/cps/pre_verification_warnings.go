@@ -13,12 +13,12 @@ type (
 	PreVerification interface {
 		// GetChangePreVerificationWarnings gets detailed information about Domain Validation challenges
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getallowedinputtypeforinfo
+		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
 		GetChangePreVerificationWarnings(ctx context.Context, params GetChangeRequest) (*PreVerificationWarnings, error)
 
 		// AcknowledgePreVerificationWarnings sends acknowledgement request to CPS informing that the warnings should be ignored
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#acknowledgement
+		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
 		AcknowledgePreVerificationWarnings(context.Context, AcknowledgementRequest) error
 	}
 
@@ -43,7 +43,7 @@ func (c *cps) GetChangePreVerificationWarnings(ctx context.Context, params GetCh
 	var rval PreVerificationWarnings
 
 	logger := c.Log(ctx)
-	logger.Debug("GetChangeLetsEncryptChallenges")
+	logger.Debug("GetChangePreVerificationWarnings")
 
 	uri, err := url.Parse(fmt.Sprintf(
 		"/cps/v2/enrollments/%d/changes/%d/input/info/pre-verification-warnings",

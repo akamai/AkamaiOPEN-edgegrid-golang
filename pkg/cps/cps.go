@@ -3,7 +3,7 @@ package cps
 import (
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
 )
 
 var (
@@ -14,10 +14,16 @@ var (
 type (
 	// CPS is the cps api interface
 	CPS interface {
-		Enrollments
+		ChangeManagementInfo
 		ChangeOperations
+		Deployments
+		DeploymentSchedules
 		DVChallenges
+		Enrollments
+		History
+		PostVerification
 		PreVerification
+		ThirdPartyCSR
 	}
 
 	cps struct {

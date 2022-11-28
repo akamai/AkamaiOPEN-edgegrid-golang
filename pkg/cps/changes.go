@@ -15,17 +15,21 @@ type (
 	ChangeOperations interface {
 		// GetChangeStatus fetches change status for given enrollment and change ID
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getasinglechange
+		// See: https://techdocs.akamai.com/cps/reference/get-enrollment-change
 		GetChangeStatus(context.Context, GetChangeStatusRequest) (*Change, error)
 
 		// CancelChange cancels a pending change
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#deleteasinglechange
+		// See: https://techdocs.akamai.com/cps/reference/delete-enrollment-change
 		CancelChange(context.Context, CancelChangeRequest) (*CancelChangeResponse, error)
 
 		// UpdateChange updates a pending change
+		// Deprecated: this function will be removed in a future release. Use one of:
+		// AcknowledgeChangeManagement(), AcknowledgePostVerificationWarnings(),
+		// AcknowledgePreVerificationWarnings(), UploadThirdPartyCertAndTrustChain()
+		// or AcknowledgeDVChallenges()
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#postallowedinputtypeforupdate
+		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
 		UpdateChange(context.Context, UpdateChangeRequest) (*UpdateChangeResponse, error)
 	}
 
@@ -52,12 +56,6 @@ type (
 		Status             string              `json:"status"`
 	}
 
-	// DeploymentSchedule contains the schedule for when you want this change deploy
-	DeploymentSchedule struct {
-		NotAfter  string `json:"notAfter,omitempty"`
-		NotBefore string `json:"notBefore,omitempty"`
-	}
-
 	// StatusInfoError contains error information for this Change
 	StatusInfoError struct {
 		Code        string `json:"code"`
@@ -68,7 +66,7 @@ type (
 	// Certificate is a digital certificate object
 	Certificate struct {
 		Certificate string `json:"certificate"`
-		TrustChain  string `json:"trustChain"`
+		TrustChain  string `json:"trustChain,omitempty"`
 	}
 
 	// GetChangeStatusRequest contains params required to perform GetChangeStatus
@@ -156,61 +154,63 @@ var AllowedInputContentTypeHeader = map[AllowedInputType]string{
 // Validate validates GetChangeRequest
 func (c GetChangeRequest) Validate() error {
 	return validation.Errors{
-		"enrollmentId": validation.Validate(c.EnrollmentID, validation.Required),
-		"changeId":     validation.Validate(c.ChangeID, validation.Required),
+		"EnrollmentID": validation.Validate(c.EnrollmentID, validation.Required),
+		"ChangeID":     validation.Validate(c.ChangeID, validation.Required),
 	}.Filter()
 }
 
 // Validate validates GetChangeStatusRequest
 func (c GetChangeStatusRequest) Validate() error {
 	return validation.Errors{
-		"enrollmentId": validation.Validate(c.EnrollmentID, validation.Required),
-		"changeId":     validation.Validate(c.ChangeID, validation.Required),
+		"EnrollmentID": validation.Validate(c.EnrollmentID, validation.Required),
+		"ChangeID":     validation.Validate(c.ChangeID, validation.Required),
 	}.Filter()
 }
 
 // Validate validates CancelChangeRequest
 func (c CancelChangeRequest) Validate() error {
 	return validation.Errors{
-		"enrollmentId": validation.Validate(c.EnrollmentID, validation.Required),
-		"changeId":     validation.Validate(c.ChangeID, validation.Required),
+		"EnrollmentID": validation.Validate(c.EnrollmentID, validation.Required),
+		"ChangeID":     validation.Validate(c.ChangeID, validation.Required),
 	}.Filter()
 }
 
 // Validate validates UpdateChangeRequest
 func (c UpdateChangeRequest) Validate() error {
 	return validation.Errors{
-		"enrollmentId": validation.Validate(c.EnrollmentID, validation.Required),
-		"changeId":     validation.Validate(c.ChangeID, validation.Required),
-		"allowedInputTypeParam": validation.Validate(c.AllowedInputTypeParam, validation.In(
+		"EnrollmentID": validation.Validate(c.EnrollmentID, validation.Required),
+		"ChangeID":     validation.Validate(c.ChangeID, validation.Required),
+		"AllowedInputTypeParam": validation.Validate(c.AllowedInputTypeParam, validation.In(
 			AllowedInputTypeChangeManagementACK,
 			AllowedInputTypeLetsEncryptChallengesCompleted,
 			AllowedInputTypePostVerificationWarningsACK,
 			AllowedInputTypePreVerificationWarningsACK,
 			AllowedInputTypeThirdPartyCertAndTrustChain,
 		)),
-		"certificate": validation.Validate(c.Certificate, validation.Required),
+		"Certificate": validation.Validate(c.Certificate, validation.Required),
 	}.Filter()
 }
 
 // Validate validates AcknowledgementRequest
 func (a AcknowledgementRequest) Validate() error {
 	return validation.Errors{
-		"acknowledgement": validation.Validate(a.Acknowledgement),
+		"EnrollmentID":    validation.Validate(a.EnrollmentID, validation.Required),
+		"ChangeID":        validation.Validate(a.ChangeID, validation.Required),
+		"Acknowledgement": validation.Validate(a.Acknowledgement),
 	}.Filter()
 }
 
 // Validate validates Acknowledgement
 func (a Acknowledgement) Validate() error {
 	return validation.Errors{
-		"acknowledgement": validation.Validate(a.Acknowledgement, validation.Required, validation.In(AcknowledgementAcknowledge, AcknowledgementDeny)),
+		"Acknowledgement": validation.Validate(a.Acknowledgement, validation.Required, validation.In(AcknowledgementAcknowledge, AcknowledgementDeny)),
 	}.Filter()
 }
 
 // Validate validates Certificate
 func (c Certificate) Validate() error {
 	return validation.Errors{
-		"certificate": validation.Validate(c.Certificate, validation.Required),
+		"Certificate": validation.Validate(c.Certificate, validation.Required),
 	}.Filter()
 }
 

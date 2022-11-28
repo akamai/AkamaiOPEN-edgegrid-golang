@@ -1,5 +1,30 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 3.0.0 (November 28, 2022)
+
+### Deprecations
+
+* CPS
+  * UpdateChange() function has been deprecated
+
+#### FEATURES/ENHANCEMENTS:
+
+* CPS
+  * ChangeManagementInfo - get or acknowledge change management info, get change deployment info
+  * Deployments - list deployments, get production deployment, get staging deployment
+  * DeploymentSchedules - get deployment schedule, update deployment schedule
+  * History - get DV history, get certificate history, get change history
+  * PostVerification - get or acknowledge post verification warnings 
+  * ThirdPartyCSR - get third-party CSR, upload certificate
+
+#### BREAKING CHANGES:
+
+* Rename package `configdns` to `dns`
+* Rename package `configgtm` to `gtm`
+* CPS
+  * Renamed structs: Challenges and ValidationRecords to Challenge and ValidationRecord accordingly
+  * Type change: `NotAfter` and `NotBefore` fields in `DeploymentSchedule` struct used in response for `GetChangeStatus` are `*string` instead of `string`
+
 ## 2.17.0 (October 24, 2022)
 
 #### FEATURES/ENHANCEMENTS:

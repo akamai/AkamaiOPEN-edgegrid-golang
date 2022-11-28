@@ -21,22 +21,22 @@ type (
 
 		// GetEnrollment fetches enrollment object with given ID
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getasingleenrollment
+		// See: https://techdocs.akamai.com/cps/reference/get-enrollment
 		GetEnrollment(context.Context, GetEnrollmentRequest) (*Enrollment, error)
 
 		// CreateEnrollment creates a new enrollment
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#postenrollments
+		// See: https://techdocs.akamai.com/cps/reference/post-enrollment
 		CreateEnrollment(context.Context, CreateEnrollmentRequest) (*CreateEnrollmentResponse, error)
 
 		// UpdateEnrollment updates a single enrollment entry with given ID
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#putasingleenrollment
+		// See: https://techdocs.akamai.com/cps/reference/put-enrollment
 		UpdateEnrollment(context.Context, UpdateEnrollmentRequest) (*UpdateEnrollmentResponse, error)
 
 		// RemoveEnrollment removes an enrollment with given ID
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#deleteasingleenrollment
+		// See: https://techdocs.akamai.com/cps/reference/delete-enrollment
 		RemoveEnrollment(context.Context, RemoveEnrollmentRequest) (*RemoveEnrollmentResponse, error)
 	}
 
@@ -242,13 +242,6 @@ func (c CSR) Validate() error {
 	}.Filter()
 }
 
-// Validate performs validation on ThirdParty
-func (t ThirdParty) Validate() error {
-	return validation.Errors{
-		"excludeSans": validation.Validate(t.ExcludeSANS, validation.Required),
-	}.Filter()
-}
-
 // Validate performs validation on NetworkConfiguration
 func (n NetworkConfiguration) Validate() error {
 	return validation.Errors{
@@ -394,7 +387,7 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateEnrollment, err)
 	}
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
-	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v9+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v11+json")
 
 	var result CreateEnrollmentResponse
 
@@ -453,7 +446,7 @@ func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentReque
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateEnrollment, err)
 	}
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment-status.v1+json")
-	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v9+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.enrollment.v11+json")
 
 	var result UpdateEnrollmentResponse
 

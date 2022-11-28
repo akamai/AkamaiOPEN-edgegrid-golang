@@ -55,14 +55,14 @@ func TestGetChangeLetsEncryptChallenges(t *testing.T) {
 			expectedPath: "/cps/v2/enrollments/1/changes/2/input/info/lets-encrypt-challenges",
 			expectedResponse: &DVArray{DV: []DV{
 				{
-					Challenges: []Challenges{
+					Challenges: []Challenge{
 						{
 							FullPath:          "_acme-challenge.www.cps-example-dv.com.",
 							ResponseBody:      "0yVISDJjpXR7BXzR5QgfA51tt-I6aKremGnPwK_lvH4",
 							Status:            "pending",
 							Token:             "cGBnw-3YO7rUhq61EuuHqcGrYkaQWALAgi8szTqRoHA",
 							Type:              "dns-01",
-							ValidationRecords: []ValidationRecords{},
+							ValidationRecords: []ValidationRecord{},
 						},
 					},
 					Domain:             "www.cps-example-dv.com",

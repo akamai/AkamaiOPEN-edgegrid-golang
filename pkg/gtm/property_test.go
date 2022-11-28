@@ -9,23 +9,52 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v2/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestGtm_NewGeoMap(t *testing.T) {
+func TestGtm_NewTrafficTarget(t *testing.T) {
 	client := Client(session.Must(session.New()))
 
-	geomap := client.NewGeoMap(context.Background(), "foo")
+	tgt := client.NewTrafficTarget(context.Background())
 
-	assert.Equal(t, "foo", geomap.Name)
+	assert.NotNil(t, tgt)
 }
 
-func TestGtm_ListGeoMap(t *testing.T) {
-	var result GeoMapList
+func TestGtm_NewStaticRRSet(t *testing.T) {
+	client := Client(session.Must(session.New()))
 
-	respData, err := loadTestData("TestGtm_ListGeoMap.resp.json")
+	set := client.NewStaticRRSet(context.Background())
+
+	assert.NotNil(t, set)
+}
+
+func TestGtm_NewLivenessTest(t *testing.T) {
+	client := Client(session.Must(session.New()))
+
+	test := client.NewLivenessTest(context.Background(), "foo", "bar", 1, 1000)
+
+	assert.NotNil(t, test)
+	assert.Equal(t, "foo", test.Name)
+	assert.Equal(t, "bar", test.TestObjectProtocol)
+	assert.Equal(t, 1, test.TestInterval)
+	assert.Equal(t, float32(1000), test.TestTimeout)
+}
+
+func TestGtm_NewProperty(t *testing.T) {
+	client := Client(session.Must(session.New()))
+
+	prop := client.NewProperty(context.Background(), "foo")
+
+	assert.NotNil(t, prop)
+	assert.Equal(t, prop.Name, "foo")
+}
+
+func TestGtm_ListProperties(t *testing.T) {
+	var result PropertyList
+
+	respData, err := loadTestData("TestGtm_ListProperties.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,40 +64,40 @@ func TestGtm_ListGeoMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		domainName       string
+		domain           string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse []*GeoMap
+		expectedResponse []*Property
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			domainName: "example.akadns.net",
+			domain: "example.akadns.net",
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps",
-			expectedResponse: result.GeoMapItems,
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/properties",
+			expectedResponse: result.PropertyItems,
 		},
 		"500 internal server error": {
-			domainName:     "example.akadns.net",
+			domain:         "example.akadns.net",
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching geomap",
+    "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net/geographic-maps",
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/properties",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching geomap",
+				Detail:     "Error fetching propertys",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -84,10 +113,10 @@ func TestGtm_ListGeoMap(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListGeoMaps(
+			result, err := client.ListProperties(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.domainName)
+					session.WithContextHeaders(test.headers)), test.domain)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -98,10 +127,12 @@ func TestGtm_ListGeoMap(t *testing.T) {
 	}
 }
 
-func TestGtm_GetGeoMap(t *testing.T) {
-	var result GeoMap
+// Test GetProperty
+// GetProperty(context.Context, string) (*Property, error)
+func TestGtm_GetProperty(t *testing.T) {
+	var result Property
 
-	respData, err := loadTestData("TestGtm_GetGeoMap.resp.json")
+	respData, err := loadTestData("TestGtm_GetProperty.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,42 +143,36 @@ func TestGtm_GetGeoMap(t *testing.T) {
 
 	tests := map[string]struct {
 		name             string
-		domainName       string
+		domain           string
 		responseStatus   int
-		responseBody     string
+		responseBody     []byte
 		expectedPath     string
-		expectedResponse *GeoMap
+		expectedResponse *Property
 		withError        error
-		headers          http.Header
 	}{
 		"200 OK": {
-			name:       "Software-rollout",
-			domainName: "example.akadns.net",
-			headers: http.Header{
-				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
-			},
+			name:             "www",
+			domain:           "example.akadns.net",
 			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/Software-rollout",
+			responseBody:     respData,
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/properties/www",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			name:           "Software-rollout",
-			domainName:     "example.akadns.net",
-			headers:        http.Header{},
+			name:           "www",
+			domain:         "example.akadns.net",
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
+			responseBody: []byte(`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error fetching geomap",
-    "status": 500
-}`,
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net/geographic-maps/Software-rollout",
+    "detail": "Error fetching property"
+}`),
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/properties/www",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error fetching geomap",
+				Detail:     "Error fetching property",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -159,14 +184,11 @@ func TestGtm_GetGeoMap(t *testing.T) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				_, err := w.Write(test.responseBody)
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetGeoMap(
-				session.ContextWithOptions(
-					context.Background(),
-					session.WithContextHeaders(test.headers)), test.name, test.domainName)
+			result, err := client.GetProperty(context.Background(), test.name, test.domain)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -177,20 +199,13 @@ func TestGtm_GetGeoMap(t *testing.T) {
 	}
 }
 
-func TestGtm_NewGeoAssignment(t *testing.T) {
-	client := Client(session.Must(session.New()))
+// Test Create domain.
+// CreateProperty(context.Context, *Property, map[string]string) (*PropertyResponse, error)
+func TestGtm_CreateProperty(t *testing.T) {
+	var result PropertyResponse
+	var req Property
 
-	asn := client.NewGeoAssignment(context.Background(), nil, 100, "foo")
-
-	assert.Equal(t, 100, asn.DatacenterId)
-	assert.Equal(t, "foo", asn.Nickname)
-}
-
-func TestGtm_CreateGeoMap(t *testing.T) {
-	var result GeoMapResponse
-	var req GeoMap
-
-	respData, err := loadTestData("TestGtm_CreateGeoMap.resp.json")
+	respData, err := loadTestData("TestGtm_CreateProperty.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -199,7 +214,7 @@ func TestGtm_CreateGeoMap(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateGeoMap.req.json")
+	reqData, err := loadTestData("TestGtm_CreateProperty.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -209,42 +224,41 @@ func TestGtm_CreateGeoMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		geomap           *GeoMap
-		domainName       string
+		domain           string
+		prop             *Property
 		responseStatus   int
-		responseBody     string
+		responseBody     []byte
 		expectedPath     string
-		expectedResponse *GeoMapResponse
+		expectedResponse *PropertyResponse
 		withError        error
 		headers          http.Header
 	}{
-		"200 OK": {
-			geomap:     &req,
-			domainName: "example.akadns.net",
+		"201 Created": {
+			prop:   &req,
+			domain: "example.akadns.net",
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+			responseStatus:   http.StatusCreated,
+			responseBody:     respData,
 			expectedResponse: &result,
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
 		},
 		"500 internal server error": {
-			geomap:         &req,
-			domainName:     "example.akadns.net",
-			headers:        http.Header{},
+			prop:           &req,
+			domain:         "example.akadns.net",
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
+			responseBody: []byte(`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error creating geomap"
-}`,
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+    "detail": "Error creating domain"
+}`),
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error creating geomap",
+				Detail:     "Error creating domain",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -253,17 +267,18 @@ func TestGtm_CreateGeoMap(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
 				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
+				if len(test.responseBody) > 0 {
+					_, err := w.Write(test.responseBody)
+					assert.NoError(t, err)
+				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateGeoMap(
+			result, err := client.CreateProperty(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.geomap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.prop, test.domain)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -274,11 +289,13 @@ func TestGtm_CreateGeoMap(t *testing.T) {
 	}
 }
 
-func TestGtm_UpdateGeoMap(t *testing.T) {
-	var result GeoMapResponse
-	var req GeoMap
+// Test Update domain.
+// UpdateProperty(context.Context, *Property, map[string]string) (*PropertyResponse, error)
+func TestGtm_UpdateProperty(t *testing.T) {
+	var result PropertyResponse
+	var req Property
 
-	respData, err := loadTestData("TestGtm_CreateGeoMap.resp.json")
+	respData, err := loadTestData("TestGtm_CreateProperty.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -287,7 +304,7 @@ func TestGtm_UpdateGeoMap(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateGeoMap.req.json")
+	reqData, err := loadTestData("TestGtm_CreateProperty.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -297,42 +314,41 @@ func TestGtm_UpdateGeoMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		geomap           *GeoMap
-		domainName       string
+		prop             *Property
+		domain           string
 		responseStatus   int
-		responseBody     string
+		responseBody     []byte
 		expectedPath     string
 		expectedResponse *ResponseStatus
 		withError        error
 		headers          http.Header
 	}{
-		"200 OK": {
-			geomap:     &req,
-			domainName: "example.akadns.net",
+		"200 Success": {
+			prop:   &req,
+			domain: "example.akadns.net",
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+			responseStatus:   http.StatusCreated,
+			responseBody:     respData,
 			expectedResponse: result.Status,
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
 		},
 		"500 internal server error": {
-			geomap:         &req,
-			domainName:     "example.akadns.net",
-			headers:        http.Header{},
+			prop:           &req,
+			domain:         "example.akadns.net",
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
+			responseBody: []byte(`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error updating geomap"
-}`,
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+    "detail": "Error creating zone"
+}`),
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error updating geomap",
+				Detail:     "Error creating zone",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -341,17 +357,18 @@ func TestGtm_UpdateGeoMap(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
 				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
+				if len(test.responseBody) > 0 {
+					_, err := w.Write(test.responseBody)
+					assert.NoError(t, err)
+				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateGeoMap(
+			result, err := client.UpdateProperty(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.geomap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.prop, test.domain)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -362,11 +379,11 @@ func TestGtm_UpdateGeoMap(t *testing.T) {
 	}
 }
 
-func TestGtm_DeleteGeoMap(t *testing.T) {
-	var result GeoMapResponse
-	var req GeoMap
+func TestGtm_DeleteProperty(t *testing.T) {
+	var result PropertyResponse
+	var req Property
 
-	respData, err := loadTestData("TestGtm_CreateGeoMap.resp.json")
+	respData, err := loadTestData("TestGtm_CreateProperty.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -375,7 +392,7 @@ func TestGtm_DeleteGeoMap(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateGeoMap.req.json")
+	reqData, err := loadTestData("TestGtm_CreateProperty.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -385,42 +402,41 @@ func TestGtm_DeleteGeoMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		geomap           *GeoMap
-		domainName       string
+		prop             *Property
+		domain           string
 		responseStatus   int
-		responseBody     string
+		responseBody     []byte
 		expectedPath     string
 		expectedResponse *ResponseStatus
 		withError        error
 		headers          http.Header
 	}{
-		"200 OK": {
-			geomap:     &req,
-			domainName: "example.akadns.net",
+		"200 Success": {
+			prop:   &req,
+			domain: "example.akadns.net",
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+			responseBody:     respData,
 			expectedResponse: result.Status,
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
 		},
 		"500 internal server error": {
-			geomap:         &req,
-			domainName:     "example.akadns.net",
-			headers:        http.Header{},
+			prop:           &req,
+			domain:         "example.akadns.net",
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
+			responseBody: []byte(`
 {
     "type": "internal_error",
     "title": "Internal Server Error",
-    "detail": "Error updating geomap"
-}`,
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
+    "detail": "Error creating zone"
+}`),
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
-				Detail:     "Error updating geomap",
+				Detail:     "Error creating zone",
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
@@ -429,17 +445,18 @@ func TestGtm_DeleteGeoMap(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
 				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
+				if len(test.responseBody) > 0 {
+					_, err := w.Write(test.responseBody)
+					assert.NoError(t, err)
+				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.DeleteGeoMap(
+			result, err := client.DeleteProperty(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.geomap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.prop, test.domain)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

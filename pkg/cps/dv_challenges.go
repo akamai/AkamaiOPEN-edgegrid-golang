@@ -13,12 +13,12 @@ type (
 	DVChallenges interface {
 		// GetChangeLetsEncryptChallenges gets detailed information about Domain Validation challenges
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#getallowedinputtypeforinfo
+		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
 		GetChangeLetsEncryptChallenges(context.Context, GetChangeRequest) (*DVArray, error)
 
 		// AcknowledgeDVChallenges sends acknowledgement request to CPS informing that the validation is completed
 		//
-		// See: https://developer.akamai.com/api/core_features/certificate_provisioning_system/v2.html#acknowledgement
+		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
 		AcknowledgeDVChallenges(context.Context, AcknowledgementRequest) error
 	}
 
@@ -29,30 +29,30 @@ type (
 
 	// DV is a Domain Validation entity
 	DV struct {
-		Challenges         []Challenges `json:"challenges"`
-		Domain             string       `json:"domain"`
-		Error              string       `json:"error"`
-		Expires            string       `json:"expires"`
-		RequestTimestamp   string       `json:"requestTimestamp"`
-		Status             string       `json:"status"`
-		ValidatedTimestamp string       `json:"validatedTimestamp"`
-		ValidationStatus   string       `json:"validationStatus"`
+		Challenges         []Challenge `json:"challenges"`
+		Domain             string      `json:"domain"`
+		Error              string      `json:"error"`
+		Expires            string      `json:"expires"`
+		RequestTimestamp   string      `json:"requestTimestamp"`
+		Status             string      `json:"status"`
+		ValidatedTimestamp string      `json:"validatedTimestamp"`
+		ValidationStatus   string      `json:"validationStatus"`
 	}
 
-	// Challenges contains domain information of a specific domain to be validated
-	Challenges struct {
-		Error             string              `json:"error"`
-		FullPath          string              `json:"fullPath"`
-		RedirectFullPath  string              `json:"redirectFullPath"`
-		ResponseBody      string              `json:"responseBody"`
-		Status            string              `json:"status"`
-		Token             string              `json:"token"`
-		Type              string              `json:"type"`
-		ValidationRecords []ValidationRecords `json:"validationRecords"`
+	// Challenge contains domain information of a specific domain to be validated
+	Challenge struct {
+		Error             string             `json:"error"`
+		FullPath          string             `json:"fullPath"`
+		RedirectFullPath  string             `json:"redirectFullPath"`
+		ResponseBody      string             `json:"responseBody"`
+		Status            string             `json:"status"`
+		Token             string             `json:"token"`
+		Type              string             `json:"type"`
+		ValidationRecords []ValidationRecord `json:"validationRecords"`
 	}
 
-	// ValidationRecords represents validation attempt
-	ValidationRecords struct {
+	// ValidationRecord represents validation attempt
+	ValidationRecord struct {
 		Authorities []string `json:"authorities"`
 		Hostname    string   `json:"hostname"`
 		Port        string   `json:"port"`
