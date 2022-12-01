@@ -186,8 +186,19 @@ func (i ActivateIncludeRequest) Validate() error {
 		"NotifyEmails": validation.Validate(i.NotifyEmails, validation.Required),
 		"ComplianceRecord": validation.Validate(i.ComplianceRecord,
 			validation.Required.When(i.Network == ActivationNetworkProduction).
-				Error("ComplianceRecord is required for production network")),
+				Error("ComplianceRecord is required for production network"),
+			validation.When(i.Network == ActivationNetworkProduction, validation.By(unitTestedFieldValidationRule))),
 	})
+}
+
+func unitTestedFieldValidationRule(value interface{}) error {
+	switch value.(type) {
+	case *ComplianceRecordNone:
+		if value.(*ComplianceRecordNone).UnitTested == false {
+			return errors.New("for PRODUCTION activation network and nonComplianceRecord, UnitTested value has to be set to true, otherwise API will not work correctly")
+		}
+	}
+	return nil
 }
 
 func (c *ComplianceRecordNone) noncomplianceReasonType() string {

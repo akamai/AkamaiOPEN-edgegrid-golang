@@ -236,12 +236,34 @@ func TestActivateInclude(t *testing.T) {
 				Note:                   "test activation",
 				NotifyEmails:           []string{"jbond@example.com"},
 				AcknowledgeAllWarnings: true,
-				ComplianceRecord:       &ComplianceRecordNone{},
+				ComplianceRecord: &ComplianceRecordNone{
+					UnitTested: true,
+					TicketID:   "123",
+				},
 			},
 			withError: ErrStructValidation,
 			assertError: func(t *testing.T, err error) {
 				assert.Contains(t, err.Error(), "CustomerEmail: cannot be blank")
 				assert.Contains(t, err.Error(), "PeerReviewedBy: cannot be blank")
+			},
+		},
+		"validation error - not valid UnitTested field for PRODUCTION activation network and ComplianceRecordNone": {
+			params: ActivateIncludeRequest{
+				IncludeID:    "inc_12345",
+				Version:      4,
+				Network:      ActivationNetworkProduction,
+				Note:         "test activation",
+				NotifyEmails: []string{"jbond@example.com"},
+				ComplianceRecord: &ComplianceRecordNone{
+					CustomerEmail:  "sb@akamai.com",
+					PeerReviewedBy: "sb@akamai.com",
+					UnitTested:     false,
+					TicketID:       "123",
+				},
+			},
+			withError: ErrStructValidation,
+			assertError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "for PRODUCTION activation network and nonComplianceRecord, UnitTested value has to be set to true, otherwise API will not work correctly")
 			},
 		},
 		"validation error - not valid ComplianceRecordOther": {
