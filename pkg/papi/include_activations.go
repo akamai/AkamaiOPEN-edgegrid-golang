@@ -177,6 +177,17 @@ type (
 	}
 )
 
+const (
+	// NoncomplianceReasonNoProductionTraffic is noncompliance reason type for compliance record
+	NoncomplianceReasonNoProductionTraffic = "NO_PRODUCTION_TRAFFIC"
+	// NoncomplianceReasonOther is noncompliance reason type for compliance record
+	NoncomplianceReasonOther = "OTHER"
+	// NoncomplianceReasonEmergency is noncompliance reason type for compliance record
+	NoncomplianceReasonEmergency = "EMERGENCY"
+	// NoncomplianceReasonNone is noncompliance reason type for compliance record
+	NoncomplianceReasonNone = "NONE"
+)
+
 // Validate validates ActivateIncludeRequest
 func (i ActivateIncludeRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
@@ -202,7 +213,7 @@ func unitTestedFieldValidationRule(value interface{}) error {
 }
 
 func (c *ComplianceRecordNone) noncomplianceReasonType() string {
-	return "NONE"
+	return NoncomplianceReasonNone
 }
 
 // Validate validates ComplianceRecordNone
@@ -227,7 +238,7 @@ func (c ComplianceRecordNone) MarshalJSON() ([]byte, error) {
 }
 
 func (c *ComplianceRecordOther) noncomplianceReasonType() string {
-	return "OTHER"
+	return NoncomplianceReasonOther
 }
 
 // Validate validates ComplianceRecordOther
@@ -251,7 +262,7 @@ func (c ComplianceRecordOther) MarshalJSON() ([]byte, error) {
 }
 
 func (c *ComplianceRecordNoProductionTraffic) noncomplianceReasonType() string {
-	return "NO_PRODUCTION_TRAFFIC"
+	return NoncomplianceReasonNoProductionTraffic
 }
 
 // MarshalJSON is a custom marshaller for ComplianceRecordNoProductionTraffic struct
@@ -268,7 +279,7 @@ func (c ComplianceRecordNoProductionTraffic) MarshalJSON() ([]byte, error) {
 }
 
 func (c *ComplianceRecordEmergency) noncomplianceReasonType() string {
-	return "EMERGENCY"
+	return NoncomplianceReasonEmergency
 }
 
 // MarshalJSON is a custom marshaller for ComplianceRecordEmergency struct
