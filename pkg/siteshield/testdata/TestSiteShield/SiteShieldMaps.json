@@ -1,0 +1,67 @@
+{
+    "siteShieldMaps": [
+        {
+            "acknowledged": true,
+            "contacts": [ "kona@akamai.com" ],
+            "currentCidrs": [
+                "165.254.26.0/24", "165.254.94.0/24",
+                "184.51.120.0/24", "63.162.234.0/24",
+                "63.233.110.0/24", "64.145.75.0/24", "69.31.102.0/24"
+            ],
+            "id": 1234,
+            "latestTicketId": 1,
+            "mapAlias": "SampleTest1",
+            "mcmMapRuleId": 123,
+            "proposedCidrs": [],
+            "ruleName": "a;s12.akamai.net",
+            "service": "W",
+            "shared": false,
+            "type": "Production"
+        },
+        {
+            "acknowledged": true,
+            "contacts": [
+                "luna@akamai.com",
+                "new@email.com"
+            ],
+            "currentCidrs": [
+                "107.14.42.0/24", "117.103.188.0/24",
+                "195.59.54.0/24", "209.211.216.0/24",
+                "216.246.75.0/24", "63.130.161.0/24",
+                "63.235.29.0/24", "63.83.61.0/24", "69.22.163.0/24"
+            ],
+            "id": 7964,
+            "latestTicketId": 5884,
+            "mapAlias": "Sample Test-2",
+            "mcmMapRuleId": 957,
+            "proposedCidrs": [],
+            "ruleName": "e;s9.akamaiedge.net",
+            "service": "S",
+            "shared": false,
+            "type": "Production"
+        },
+        {
+            "acknowledged": false,
+            "contacts": [ "pulse@akamai.com" ],
+            "currentCidrs": [],
+            "id": 65,
+            "latestTicketId": 883,
+            "mapAlias": "mapAlias",
+            "mcmMapRuleId": 4255,
+            "proposedCidrs": [
+                "131.103.136.0/24", "131.103.137.0/24", "165.254.137.0/24",
+                "184.25.254.0/24", "184.51.199.0/24", "184.84.221.0/24",
+                "184.84.223.0/24", "195.10.11.0/24", "204.156.15.0/24",
+                "209.170.78.0/24", "216.246.75.0/24", "23.57.69.0/24",
+                "23.57.74.0/24", "23.62.238.0/24", "61.246.63.0/24",
+                "63.218.71.0/24", "66.171.227.0/24", "69.192.3.0/24",
+                "69.192.4.0/24", "72.246.184.0/24", "77.67.40.0/24",
+                "77.67.85.0/24", "80.157.149.0/24", "80.239.234.0/24"
+            ],
+            "ruleName": "e;s1.akamaiedge.net",
+            "service": "S",
+            "shared": false,
+            "type": "Production"
+        }
+    ]
+}
