@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ GTM = &Mock{}
+
 func (p *Mock) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapStruct, error) {
 	args := p.Called(ctx, domain)
 

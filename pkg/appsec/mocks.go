@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ APPSEC = &Mock{}
+
 func (m *Mock) UpdateWAPSelectedHostnames(ctx context.Context, req UpdateWAPSelectedHostnamesRequest) (*UpdateWAPSelectedHostnamesResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {

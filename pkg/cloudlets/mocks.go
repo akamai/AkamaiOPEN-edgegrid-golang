@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ Cloudlets = &Mock{}
+
 func (m *Mock) DeletePolicyProperty(ctx context.Context, req DeletePolicyPropertyRequest) error {
 	args := m.Called(ctx, req)
 	return args.Error(0)

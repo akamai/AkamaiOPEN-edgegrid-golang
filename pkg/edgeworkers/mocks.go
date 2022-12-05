@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ Edgeworkers = &Mock{}
+
 // Activations
 
 func (m *Mock) ListActivations(ctx context.Context, req ListActivationsRequest) (*ListActivationsResponse, error) {

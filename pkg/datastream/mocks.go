@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ Stream = &Mock{}
+
 func (m *Mock) CreateStream(ctx context.Context, r CreateStreamRequest) (*StreamUpdate, error) {
 	args := m.Called(ctx, r)
 

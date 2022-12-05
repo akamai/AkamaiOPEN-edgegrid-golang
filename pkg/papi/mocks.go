@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ PAPI = &Mock{}
+
 type (
 	// GetGroupsFn is any function having the same signature as GetGroups
 	GetGroupsFn func(context.Context) (*GetGroupsResponse, error)
@@ -666,4 +668,14 @@ func (p *Mock) ListReferencedIncludes(ctx context.Context, r ListReferencedInclu
 	}
 
 	return args.Get(0).(*ListReferencedIncludesResponse), args.Error(1)
+}
+
+func (p *Mock) CancelIncludeActivation(ctx context.Context, r CancelIncludeActivationRequest) (*CancelIncludeActivationResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*CancelIncludeActivationResponse), args.Error(1)
 }

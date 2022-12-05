@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ CPS = &Mock{}
+
 func (m *Mock) ListEnrollments(ctx context.Context, r ListEnrollmentsRequest) (*ListEnrollmentsResponse, error) {
 	args := m.Called(ctx, r)
 
