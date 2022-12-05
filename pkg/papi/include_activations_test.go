@@ -479,6 +479,151 @@ func TestDeactivateInclude(t *testing.T) {
 	}
 }
 
+func TestCancelIncludeActivation(t *testing.T) {
+	tests := map[string]struct {
+		params           CancelIncludeActivationRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *CancelIncludeActivationResponse
+		withError        error
+	}{
+		"200 cancel include activation": {
+			params: CancelIncludeActivationRequest{
+				IncludeID:    "inc_12345",
+				ContractID:   "test_contract",
+				GroupID:      "test_group",
+				ActivationID: "test_activation_123",
+			},
+			expectedPath:   "/papi/v1/includes/inc_12345/activations/test_activation_123?contractId=test_contract&groupId=test_group",
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "accountId": "test_account",
+    "contractId": "test_contract",
+    "groupId": "test_group",
+    "activations": {
+        "items": [
+            {
+                "network": "STAGING",
+                "activationType": "ACTIVATE",
+                "status": "PENDING_CANCELLATION",
+                "submitDate": "2022-12-01T13:18:57Z",
+                "updateDate": "2022-12-01T13:19:04Z",
+                "note": "test_note_1",
+                "notifyEmails": [
+                    "nomail@nomail.com"
+                ],
+                "fmaActivationState": "received",
+                "includeId": "inc_12345",
+                "includeName": "test_include_name",
+                "includeVersion": 1,
+                "includeActivationId": "test_activation_123"
+            }
+        ]
+    }
+}`,
+			expectedResponse: &CancelIncludeActivationResponse{
+				AccountID:  "test_account",
+				ContractID: "test_contract",
+				GroupID:    "test_group",
+				Activations: IncludeActivationsRes{
+					Items: []IncludeActivation{
+						{
+							Network:             "STAGING",
+							ActivationType:      ActivationTypeActivate,
+							Status:              ActivationStatusCancelling,
+							SubmitDate:          "2022-12-01T13:18:57Z",
+							UpdateDate:          "2022-12-01T13:19:04Z",
+							Note:                "test_note_1",
+							NotifyEmails:        []string{"nomail@nomail.com"},
+							FMAActivationState:  "received",
+							IncludeID:           "inc_12345",
+							IncludeName:         "test_include_name",
+							IncludeVersion:      1,
+							IncludeActivationID: "test_activation_123",
+						},
+					},
+				},
+			},
+		},
+		"500 internal server error": {
+			params: CancelIncludeActivationRequest{
+				IncludeID:    "inc_12345",
+				ContractID:   "test_contract",
+				GroupID:      "test_group",
+				ActivationID: "test_activation_123",
+			},
+			expectedPath:   "/papi/v1/includes/inc_12345/activations/test_activation_123?contractId=test_contract&groupId=test_group",
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+				{
+					"type": "internal_error",
+				   "title": "Internal Server Error",
+				   "detail": "Error cancelling include activation",
+				   "status": 500
+				}`,
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error cancelling include activation",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+		"validation error - missing include id": {
+			params: CancelIncludeActivationRequest{
+				ContractID:   "test_contract",
+				GroupID:      "test_group",
+				ActivationID: "test_activation_123",
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error - contract id": {
+			params: CancelIncludeActivationRequest{
+				IncludeID:    "inc_12345",
+				GroupID:      "test_group",
+				ActivationID: "test_activation_123",
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error - group id": {
+			params: CancelIncludeActivationRequest{
+				IncludeID:    "inc_12345",
+				ContractID:   "test_contract",
+				ActivationID: "test_activation_123",
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error - activation id": {
+			params: CancelIncludeActivationRequest{
+				IncludeID:  "inc_12345",
+				ContractID: "test_contract",
+				GroupID:    "test_group",
+			},
+			withError: ErrStructValidation,
+		},
+	}
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.CancelIncludeActivation(context.Background(), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
 func TestGetIncludeActivation(t *testing.T) {
 	tests := map[string]struct {
 		params           GetIncludeActivationRequest

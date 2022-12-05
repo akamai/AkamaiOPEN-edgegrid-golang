@@ -179,6 +179,9 @@ const (
 	// ActivationStatusDeactivating is pending deactivation
 	ActivationStatusDeactivating ActivationStatus = "PENDING_DEACTIVATION"
 
+	// ActivationStatusCancelling is returned when cancellation is in progress
+	ActivationStatusCancelling ActivationStatus = "PENDING_CANCELLATION"
+
 	// ActivationStatusDeactivated is deactivated
 	ActivationStatusDeactivated ActivationStatus = "DEACTIVATED"
 

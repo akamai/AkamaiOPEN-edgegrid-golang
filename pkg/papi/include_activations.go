@@ -22,6 +22,9 @@ type (
 		// DeactivateInclude deactivates the include activation
 		DeactivateInclude(context.Context, DeactivateIncludeRequest) (*DeactivationIncludeResponse, error)
 
+		// CancelIncludeActivation cancels specified include activation, if it is still in `PENDING` state
+		CancelIncludeActivation(context.Context, CancelIncludeActivationRequest) (*CancelIncludeActivationResponse, error)
+
 		// GetIncludeActivation gets details about an activation
 		GetIncludeActivation(context.Context, GetIncludeActivationRequest) (*GetIncludeActivationResponse, error)
 
@@ -47,6 +50,17 @@ type (
 		IgnoreHTTPErrors       *bool             `json:"ignoreHttpErrors,omitempty"`
 		ComplianceRecord       complianceRecord  `json:"complianceRecord,omitempty"`
 	}
+
+	// CancelIncludeActivationRequest contains parameters used to cancel pending activation of include
+	CancelIncludeActivationRequest struct {
+		ContractID   string
+		GroupID      string
+		IncludeID    string
+		ActivationID string
+	}
+
+	// CancelIncludeActivationResponse represents a response object returned by CancelIncludeActivation operation
+	CancelIncludeActivationResponse ListIncludeActivationsResponse
 
 	// ActivationIncludeResponse represents a response object returned by ActivateInclude operation
 	ActivationIncludeResponse struct {
@@ -313,6 +327,16 @@ func (i GetIncludeActivationRequest) Validate() error {
 	})
 }
 
+// Validate validates CancelIncludeActivationRequest
+func (i CancelIncludeActivationRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"ContractID":   validation.Validate(i.ContractID, validation.Required),
+		"GroupID":      validation.Validate(i.GroupID, validation.Required),
+		"IncludeID":    validation.Validate(i.IncludeID, validation.Required),
+		"ActivationID": validation.Validate(i.ActivationID, validation.Required),
+	})
+}
+
 // Validate validates ListIncludeActivationsRequest
 func (i ListIncludeActivationsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
@@ -327,6 +351,8 @@ var (
 	ErrActivateInclude = errors.New("activate include")
 	// ErrDeactivateInclude is returned in case an error occurs on DeactivateInclude operation
 	ErrDeactivateInclude = errors.New("deactivate include")
+	// ErrCancelIncludeActivation is returned in case an error occurs on CancelIncludeActivation operation
+	ErrCancelIncludeActivation = errors.New("cancel include activation")
 	// ErrGetIncludeActivation is returned in case an error occurs on GetIncludeActivation operation
 	ErrGetIncludeActivation = errors.New("get include activation")
 	// ErrListIncludeActivations is returned in case an error occurs on ListIncludeActivations operation
@@ -421,6 +447,42 @@ func (p *papi) DeactivateInclude(ctx context.Context, params DeactivateIncludeRe
 		return nil, fmt.Errorf("%s: %w: %s", ErrDeactivateInclude, ErrInvalidResponseLink, err)
 	}
 	result.ActivationID = id
+
+	return &result, nil
+}
+
+func (p *papi) CancelIncludeActivation(ctx context.Context, params CancelIncludeActivationRequest) (*CancelIncludeActivationResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("CancelIncludeActivation")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCancelIncludeActivation, ErrStructValidation, err)
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/papi/v1/includes/%s/activations/%s", params.IncludeID, params.ActivationID))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCancelIncludeActivation, err)
+	}
+
+	q := uri.Query()
+	q.Add("contractId", params.ContractID)
+	q.Add("groupId", params.GroupID)
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCancelIncludeActivation, err)
+	}
+
+	var result CancelIncludeActivationResponse
+	resp, err := p.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCancelIncludeActivation, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrCancelIncludeActivation, p.Error(resp))
+	}
 
 	return &result, nil
 }
