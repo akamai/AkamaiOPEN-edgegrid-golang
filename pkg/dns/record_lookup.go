@@ -163,7 +163,7 @@ func (p *dns) ProcessRdata(ctx context.Context, rdata []string, rtype string) []
 
 }
 
-// Utility method to parse RData in context of type. Return map of fields and values
+// ParseRData is a utility method to parse RData in context of type. Return map of fields and values
 func (p *dns) ParseRData(ctx context.Context, rtype string, rdata []string) map[string]interface{} {
 
 	logger := p.Log(ctx)
@@ -178,57 +178,16 @@ func (p *dns) ParseRData(ctx context.Context, rtype string, rdata []string) map[
 
 	switch rtype {
 	case "AFSDB":
-		parts := strings.Split(rdata[0], " ")
-		fieldMap["subtype"], _ = strconv.Atoi(parts[0])
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			newrdata = append(newrdata, parts[1])
-		}
-		fieldMap["target"] = newrdata
+		resolveAFSDBType(rdata, newrdata, fieldMap)
 
 	case "DNSKEY":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["flags"], _ = strconv.Atoi(parts[0])
-			fieldMap["protocol"], _ = strconv.Atoi(parts[1])
-			fieldMap["algorithm"], _ = strconv.Atoi(parts[2])
-			key := parts[3]
-			// key can have whitespace
-			if len(parts) > 4 {
-				i := 4
-				for i < len(parts) {
-					key += " " + parts[i]
-				}
-			}
-			fieldMap["key"] = key
-			break
-		}
+		resolveDNSKEYType(rdata, fieldMap)
 
 	case "DS":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["keytag"], _ = strconv.Atoi(parts[0])
-			fieldMap["digest_type"], _ = strconv.Atoi(parts[2])
-			fieldMap["algorithm"], _ = strconv.Atoi(parts[1])
-			dig := parts[3]
-			// digest can have whitespace
-			if len(parts) > 4 {
-				i := 4
-				for i < len(parts) {
-					dig += " " + parts[i]
-				}
-			}
-			fieldMap["digest"] = dig
-			break
-		}
+		resolveDSType(rdata, fieldMap)
 
 	case "HINFO":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["hardware"] = parts[0]
-			fieldMap["software"] = parts[1]
-			break
-		}
+		resolveHINFOType(rdata, fieldMap)
 	/*
 		// too many variations to calculate pri and increment
 		case "MX":
@@ -248,194 +207,55 @@ func (p *dns) ParseRData(ctx context.Context, rtype string, rdata []string) map[
 	*/
 
 	case "NAPTR":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["order"], _ = strconv.Atoi(parts[0])
-			fieldMap["preference"], _ = strconv.Atoi(parts[1])
-			fieldMap["flagsnaptr"] = parts[2]
-			fieldMap["service"] = parts[3]
-			fieldMap["regexp"] = parts[4]
-			fieldMap["replacement"] = parts[5]
-			break
-		}
+		resolveNAPTRType(rdata, fieldMap)
 
 	case "NSEC3":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["flags"], _ = strconv.Atoi(parts[1])
-			fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
-			fieldMap["iterations"], _ = strconv.Atoi(parts[2])
-			fieldMap["salt"] = parts[3]
-			fieldMap["next_hashed_owner_name"] = parts[4]
-			fieldMap["type_bitmaps"] = parts[5]
-			break
-		}
+		resolveNSEC3Type(rdata, fieldMap)
 
 	case "NSEC3PARAM":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["flags"], _ = strconv.Atoi(parts[1])
-			fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
-			fieldMap["iterations"], _ = strconv.Atoi(parts[2])
-			fieldMap["salt"] = parts[3]
-			break
-		}
+		resolveNSEC3PARAMType(rdata, fieldMap)
 
 	case "RP":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["mailbox"] = parts[0]
-			fieldMap["txt"] = parts[1]
-			break
-		}
+		resolveRPType(rdata, fieldMap)
 
 	case "RRSIG":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["type_covered"] = parts[0]
-			fieldMap["algorithm"], _ = strconv.Atoi(parts[1])
-			fieldMap["labels"], _ = strconv.Atoi(parts[2])
-			fieldMap["original_ttl"], _ = strconv.Atoi(parts[3])
-			fieldMap["expiration"] = parts[4]
-			fieldMap["inception"] = parts[5]
-			fieldMap["signer"] = parts[7]
-			fieldMap["keytag"], _ = strconv.Atoi(parts[6])
-			sig := parts[8]
-			// sig can have whitespace
-			if len(parts) > 9 {
-				i := 9
-				for i < len(parts) {
-					sig += " " + parts[i]
-				}
-			}
-			fieldMap["signature"] = sig
-			break
-		}
+		resolveRRSIGType(rdata, fieldMap)
 
 	case "SRV":
-		// pull out some fields
-		parts := strings.Split(rdata[0], " ")
-		fieldMap["priority"], _ = strconv.Atoi(parts[0])
-		fieldMap["weight"], _ = strconv.Atoi(parts[1])
-		fieldMap["port"], _ = strconv.Atoi(parts[2])
-		// populate target
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			newrdata = append(newrdata, parts[3])
-		}
-		fieldMap["target"] = newrdata
+		resolveSRVType(rdata, newrdata, fieldMap)
 
 	case "SSHFP":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
-			fieldMap["fingerprint_type"], _ = strconv.Atoi(parts[1])
-			fieldMap["fingerprint"] = parts[2]
-			break
-		}
+		resolveSSHFPType(rdata, fieldMap)
 
 	case "SOA":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["name_server"] = parts[0]
-			fieldMap["email_address"] = parts[1]
-			fieldMap["serial"], _ = strconv.Atoi(parts[2])
-			fieldMap["refresh"], _ = strconv.Atoi(parts[3])
-			fieldMap["retry"], _ = strconv.Atoi(parts[4])
-			fieldMap["expiry"], _ = strconv.Atoi(parts[5])
-			fieldMap["nxdomain_ttl"], _ = strconv.Atoi(parts[6])
-			break
-		}
+		resolveSOAType(rdata, fieldMap)
 
 	case "AKAMAITLC":
-		parts := strings.Split(rdata[0], " ")
-		fieldMap["answer_type"] = parts[0]
-		fieldMap["dns_name"] = parts[1]
+		resolveAKAMAITLCType(rdata, fieldMap)
 
 	case "SPF":
-		for _, rcontent := range rdata {
-			newrdata = append(newrdata, rcontent)
-		}
-		fieldMap["target"] = newrdata
+		resolveSPFType(rdata, newrdata, fieldMap)
 
 	case "TXT":
-		for _, rcontent := range rdata {
-			newrdata = append(newrdata, rcontent)
-		}
-		fieldMap["target"] = newrdata
+		resolveTXTType(rdata, newrdata, fieldMap)
 
 	case "AAAA":
-		for _, i := range rdata {
-			str := i
-			addr := net.ParseIP(str)
-			result := p.FullIPv6(ctx, addr)
-			str = result
-			newrdata = append(newrdata, str)
-		}
-		fieldMap["target"] = newrdata
+		resolveAAAAType(ctx, p, rdata, newrdata, fieldMap)
 
 	case "LOC":
-		for _, i := range rdata {
-			str := i
-			str = p.PadCoordinates(ctx, str)
-			newrdata = append(newrdata, str)
-		}
-		fieldMap["target"] = newrdata
+		resolveLOCType(ctx, p, rdata, newrdata, fieldMap)
 
 	case "CERT":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			val, err := strconv.Atoi(parts[0])
-			if err == nil {
-				fieldMap["type_value"] = val
-			} else {
-				fieldMap["type_mnemonic"] = parts[0]
-			}
-			fieldMap["keytag"], _ = strconv.Atoi(parts[1])
-			fieldMap["algorithm"], _ = strconv.Atoi(parts[2])
-			fieldMap["certificate"] = parts[3]
-			break
-		}
+		resolveCERTType(rdata, fieldMap)
 
 	case "TLSA":
-		for _, rcontent := range rdata {
-			parts := strings.Split(rcontent, " ")
-			fieldMap["usage"], _ = strconv.Atoi(parts[0])
-			fieldMap["selector"], _ = strconv.Atoi(parts[1])
-			fieldMap["match_type"], _ = strconv.Atoi(parts[2])
-			fieldMap["certificate"] = parts[3]
-			break
-		}
+		resolveTLSAType(rdata, fieldMap)
 
 	case "SVCB":
-		for _, rcontent := range rdata {
-			parts := strings.SplitN(rcontent, " ", 3)
-			// has to be at least two fields.
-			if len(parts) < 2 {
-				break
-			}
-			fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
-			fieldMap["target_name"] = parts[1]
-			if len(parts) > 2 {
-				fieldMap["svc_params"] = parts[2]
-			}
-			break
-		}
+		resolveSVCBType(rdata, fieldMap)
 
 	case "HTTPS":
-		for _, rcontent := range rdata {
-			parts := strings.SplitN(rcontent, " ", 3)
-			// has to be at least two fields.
-			if len(parts) < 2 {
-				break
-			}
-			fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
-			fieldMap["target_name"] = parts[1]
-			if len(parts) > 2 {
-				fieldMap["svc_params"] = parts[2]
-			}
-			break
-		}
+		resolveHTTPSType(rdata, fieldMap)
 
 	default:
 		for _, rcontent := range rdata {
@@ -445,4 +265,268 @@ func (p *dns) ParseRData(ctx context.Context, rtype string, rdata []string) map[
 	}
 
 	return fieldMap
+}
+
+func resolveAFSDBType(rdata, newrdata []string, fieldMap map[string]interface{}) {
+	parts := strings.Split(rdata[0], " ")
+	fieldMap["subtype"], _ = strconv.Atoi(parts[0])
+	for _, rcontent := range rdata {
+		parts = strings.Split(rcontent, " ")
+		newrdata = append(newrdata, parts[1])
+	}
+	fieldMap["target"] = newrdata
+}
+
+func resolveDNSKEYType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["flags"], _ = strconv.Atoi(parts[0])
+		fieldMap["protocol"], _ = strconv.Atoi(parts[1])
+		fieldMap["algorithm"], _ = strconv.Atoi(parts[2])
+		key := parts[3]
+		// key can have whitespace
+		if len(parts) > 4 {
+			i := 4
+			for i < len(parts) {
+				key += " " + parts[i]
+			}
+		}
+		fieldMap["key"] = key
+		break
+	}
+}
+
+func resolveSVCBType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.SplitN(rcontent, " ", 3)
+		// has to be at least two fields.
+		if len(parts) < 2 {
+			break
+		}
+		fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
+		fieldMap["target_name"] = parts[1]
+		if len(parts) > 2 {
+			fieldMap["svc_params"] = parts[2]
+		}
+		break
+	}
+}
+
+func resolveDSType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["keytag"], _ = strconv.Atoi(parts[0])
+		fieldMap["digest_type"], _ = strconv.Atoi(parts[2])
+		fieldMap["algorithm"], _ = strconv.Atoi(parts[1])
+		dig := parts[3]
+		// digest can have whitespace
+		if len(parts) > 4 {
+			i := 4
+			for i < len(parts) {
+				dig += " " + parts[i]
+			}
+		}
+		fieldMap["digest"] = dig
+		break
+	}
+}
+
+func resolveHINFOType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["hardware"] = parts[0]
+		fieldMap["software"] = parts[1]
+		break
+	}
+}
+
+func resolveNAPTRType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["order"], _ = strconv.Atoi(parts[0])
+		fieldMap["preference"], _ = strconv.Atoi(parts[1])
+		fieldMap["flagsnaptr"] = parts[2]
+		fieldMap["service"] = parts[3]
+		fieldMap["regexp"] = parts[4]
+		fieldMap["replacement"] = parts[5]
+		break
+	}
+}
+
+func resolveNSEC3Type(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["flags"], _ = strconv.Atoi(parts[1])
+		fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
+		fieldMap["iterations"], _ = strconv.Atoi(parts[2])
+		fieldMap["salt"] = parts[3]
+		fieldMap["next_hashed_owner_name"] = parts[4]
+		fieldMap["type_bitmaps"] = parts[5]
+		break
+	}
+}
+
+func resolveNSEC3PARAMType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["flags"], _ = strconv.Atoi(parts[1])
+		fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
+		fieldMap["iterations"], _ = strconv.Atoi(parts[2])
+		fieldMap["salt"] = parts[3]
+		break
+	}
+}
+
+func resolveRPType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["mailbox"] = parts[0]
+		fieldMap["txt"] = parts[1]
+		break
+	}
+}
+
+func resolveRRSIGType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["type_covered"] = parts[0]
+		fieldMap["algorithm"], _ = strconv.Atoi(parts[1])
+		fieldMap["labels"], _ = strconv.Atoi(parts[2])
+		fieldMap["original_ttl"], _ = strconv.Atoi(parts[3])
+		fieldMap["expiration"] = parts[4]
+		fieldMap["inception"] = parts[5]
+		fieldMap["signer"] = parts[7]
+		fieldMap["keytag"], _ = strconv.Atoi(parts[6])
+		sig := parts[8]
+		// sig can have whitespace
+		if len(parts) > 9 {
+			i := 9
+			for i < len(parts) {
+				sig += " " + parts[i]
+			}
+		}
+		fieldMap["signature"] = sig
+		break
+	}
+}
+
+func resolveSRVType(rdata, newrdata []string, fieldMap map[string]interface{}) {
+	// pull out some fields
+	parts := strings.Split(rdata[0], " ")
+	fieldMap["priority"], _ = strconv.Atoi(parts[0])
+	fieldMap["weight"], _ = strconv.Atoi(parts[1])
+	fieldMap["port"], _ = strconv.Atoi(parts[2])
+	// populate target
+	for _, rcontent := range rdata {
+		parts = strings.Split(rcontent, " ")
+		newrdata = append(newrdata, parts[3])
+	}
+	fieldMap["target"] = newrdata
+}
+
+func resolveSSHFPType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
+		fieldMap["fingerprint_type"], _ = strconv.Atoi(parts[1])
+		fieldMap["fingerprint"] = parts[2]
+		break
+	}
+}
+
+func resolveSOAType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["name_server"] = parts[0]
+		fieldMap["email_address"] = parts[1]
+		fieldMap["serial"], _ = strconv.Atoi(parts[2])
+		fieldMap["refresh"], _ = strconv.Atoi(parts[3])
+		fieldMap["retry"], _ = strconv.Atoi(parts[4])
+		fieldMap["expiry"], _ = strconv.Atoi(parts[5])
+		fieldMap["nxdomain_ttl"], _ = strconv.Atoi(parts[6])
+		break
+	}
+}
+
+func resolveAKAMAITLCType(rdata []string, fieldMap map[string]interface{}) {
+	parts := strings.Split(rdata[0], " ")
+	fieldMap["answer_type"] = parts[0]
+	fieldMap["dns_name"] = parts[1]
+}
+
+func resolveSPFType(rdata, newrdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		newrdata = append(newrdata, rcontent)
+	}
+	fieldMap["target"] = newrdata
+}
+
+func resolveTXTType(rdata, newrdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		newrdata = append(newrdata, rcontent)
+	}
+	fieldMap["target"] = newrdata
+}
+
+func resolveAAAAType(ctx context.Context, p *dns, rdata, newrdata []string, fieldMap map[string]interface{}) {
+	for _, i := range rdata {
+		str := i
+		addr := net.ParseIP(str)
+		result := p.FullIPv6(ctx, addr)
+		str = result
+		newrdata = append(newrdata, str)
+	}
+	fieldMap["target"] = newrdata
+}
+
+func resolveLOCType(ctx context.Context, p *dns, rdata, newrdata []string, fieldMap map[string]interface{}) {
+	for _, i := range rdata {
+		str := i
+		str = p.PadCoordinates(ctx, str)
+		newrdata = append(newrdata, str)
+	}
+	fieldMap["target"] = newrdata
+}
+
+func resolveCERTType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		val, err := strconv.Atoi(parts[0])
+		if err == nil {
+			fieldMap["type_value"] = val
+		} else {
+			fieldMap["type_mnemonic"] = parts[0]
+		}
+		fieldMap["keytag"], _ = strconv.Atoi(parts[1])
+		fieldMap["algorithm"], _ = strconv.Atoi(parts[2])
+		fieldMap["certificate"] = parts[3]
+		break
+	}
+}
+
+func resolveTLSAType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.Split(rcontent, " ")
+		fieldMap["usage"], _ = strconv.Atoi(parts[0])
+		fieldMap["selector"], _ = strconv.Atoi(parts[1])
+		fieldMap["match_type"], _ = strconv.Atoi(parts[2])
+		fieldMap["certificate"] = parts[3]
+		break
+	}
+}
+
+func resolveHTTPSType(rdata []string, fieldMap map[string]interface{}) {
+	for _, rcontent := range rdata {
+		parts := strings.SplitN(rcontent, " ", 3)
+		// has to be at least two fields.
+		if len(parts) < 2 {
+			break
+		}
+		fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
+		fieldMap["target_name"] = parts[1]
+		if len(parts) > 2 {
+			fieldMap["svc_params"] = parts[2]
+		}
+		break
+	}
 }

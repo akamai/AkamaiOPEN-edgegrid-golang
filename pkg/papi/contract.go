@@ -11,7 +11,7 @@ type (
 	// Contracts contains operations available on Contract resource
 	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#contractsgroup
 	Contracts interface {
-		// GetContract provides a read-only list of contract names and identifiers
+		// GetContracts provides a read-only list of contract names and identifiers
 		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcontracts
 		GetContracts(context.Context) (*GetContractsResponse, error)
 	}
@@ -27,8 +27,7 @@ type (
 		Items []*Contract `json:"items"`
 	}
 
-	// GetContractsResponse represents a collection of property manager contracts
-	// This is the reponse to the /papi/v1/contracts request
+	// GetContractsResponse is the response to the /papi/v1/contracts request
 	GetContractsResponse struct {
 		AccountID string         `json:"accountId"`
 		Contracts ContractsItems `json:"contracts"`

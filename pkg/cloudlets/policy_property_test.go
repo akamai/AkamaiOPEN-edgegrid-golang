@@ -100,7 +100,7 @@ func TestGetPolicyProperties(t *testing.T) {
 			`,
 			expectedPath: "/cloudlets/api/v2/policies/11754/properties",
 			expectedResponse: map[string]PolicyProperty{
-				"www.myproperty.com": PolicyProperty{
+				"www.myproperty.com": {
 					GroupID: 40498,
 					ID:      179120478,
 					Name:    "www.myproperty.com",

@@ -1,6 +1,12 @@
 linters:
   disable-all: true
   enable:
+  - gocyclo
+  - gofmt
+  - goimports
+  - govet
+  - ineffassign
+  - misspell
   - revive
 
 output:
@@ -20,24 +26,24 @@ linters-settings:
     - name: context-as-argument
     - name: context-keys-type
     - name: dot-imports
+    - name: empty-block
+    - name: errorf
     - name: error-return
     - name: error-strings
     - name: error-naming
     - name: exported
     - name: if-return
     - name: increment-decrement
-    - name: var-naming
-      arguments: [["JSON", "ID", "API", "UUID", "HTTP", "IP"], []]
-    - name: var-declaration
+    - name: indent-error-flow
     - name: package-comments
     - name: range
     - name: receiver-naming
+    - name: redefines-builtin-id
+    - name: superfluous-else
     - name: time-naming
     - name: unexported-return
-    - name: indent-error-flow
-    - name: errorf
-    - name: empty-block
-    - name: superfluous-else
-    - name: unused-parameter
     - name: unreachable-code
-    - name: redefines-builtin-id
+    - name: unused-parameter
+    - name: var-declaration
+    - name: var-naming
+      arguments: [["JSON", "ID", "API", "UUID", "HTTP", "IP"], []]

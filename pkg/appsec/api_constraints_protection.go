@@ -32,7 +32,7 @@ type (
 		ApplyAPIConstraints bool   `json:"applyApiConstraints"`
 	}
 
-	// ProtectionsResponse is returned from a call to GetAPIConstraintsProtection and similiar security policy protection requests.
+	// ProtectionsResponse is returned from a call to GetAPIConstraintsProtection and similar security policy protection requests.
 	ProtectionsResponse struct {
 		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
