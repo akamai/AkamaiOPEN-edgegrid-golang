@@ -106,8 +106,8 @@ function get_default_branch {
   local __remotes=$(git remote)
   if [[ -n $__remotes ]]; then
     for __remote in $__remotes; do
-      local __default_branch_ref=$(git symbolic-ref --quiet refs/remotes/${__remote}/HEAD || true)
-      local __default_branch=${__default_branch_ref#refs/remotes/${__remote}/}
+      local __default_branch_ref=$(git symbolic-ref --quiet --short HEAD || true)
+      local __default_branch=${__default_branch_ref#refs/heads/}
       if [[ -n ${__default_branch} ]]; then
         break
       fi
