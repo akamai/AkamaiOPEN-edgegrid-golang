@@ -1,5 +1,10 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 1.2.2 (Dec 07, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+* Updated dependencies
+
 ## 1.2.1 (Jul 14, 2022)
 
 #### BUG FIXES:
