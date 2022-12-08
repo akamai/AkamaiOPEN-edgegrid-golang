@@ -15,45 +15,45 @@ import (
 
 type (
 	// PropertyVersions contains operations available on PropertyVersions resource
-	//
-	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#propertyversionsgroup
 	PropertyVersions interface {
 		// GetPropertyVersions fetches available property versions
 		//
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversions
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-versions
 		GetPropertyVersions(context.Context, GetPropertyVersionsRequest) (*GetPropertyVersionsResponse, error)
 
 		// GetPropertyVersion fetches specific property version
 		//
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversion
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version
 		GetPropertyVersion(context.Context, GetPropertyVersionRequest) (*GetPropertyVersionsResponse, error)
 
 		// CreatePropertyVersion creates a new property version
 		//
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyversions
+		// See: https://techdocs.akamai.com/property-mgr/reference/post-property-versions
 		CreatePropertyVersion(context.Context, CreatePropertyVersionRequest) (*CreatePropertyVersionResponse, error)
 
-		// GetLatestVersion fetches latest property version
+		// GetLatestVersion fetches the latest property version
 		//
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getlatestversion
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-latest-property-version
 		GetLatestVersion(context.Context, GetLatestVersionRequest) (*GetPropertyVersionsResponse, error)
 
 		// GetAvailableBehaviors fetches a list of behaviors applied to property version
 		//
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getavailablebehaviors
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors
 		GetAvailableBehaviors(context.Context, GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error)
 
 		// GetAvailableCriteria fetches a list of criteria applied to property version
 		//
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getavailablecriteria
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-available-criteria
 		GetAvailableCriteria(context.Context, GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error)
 
-		// ListAvailableIncludes List of external resources can be applied within a property version's rules
+		// ListAvailableIncludes lists external resources that can be applied within a property version's rules
 		//
 		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version-external-resources
 		ListAvailableIncludes(context.Context, ListAvailableIncludesRequest) (*ListAvailableIncludesResponse, error)
 
-		// ListReferencedIncludes list of referenced includes for parent property
+		// ListReferencedIncludes lists referenced includes for parent property
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version-includes
 		ListReferencedIncludes(context.Context, ListReferencedIncludesRequest) (*ListReferencedIncludesResponse, error)
 	}
 

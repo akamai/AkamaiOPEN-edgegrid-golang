@@ -16,18 +16,28 @@ type (
 	// IncludeVersions contains operations available on IncludeVersion resource
 	IncludeVersions interface {
 		// CreateIncludeVersion creates a new include version based on any previous version
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/post-include-versions
 		CreateIncludeVersion(context.Context, CreateIncludeVersionRequest) (*CreateIncludeVersionResponse, error)
 
 		// GetIncludeVersion polls the state of a specific include version, for example to check its activation status
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-include-version
 		GetIncludeVersion(context.Context, GetIncludeVersionRequest) (*GetIncludeVersionResponse, error)
 
 		// ListIncludeVersions lists the include versions, with results limited to the 500 most recent versions
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-include-versions
 		ListIncludeVersions(context.Context, ListIncludeVersionsRequest) (*ListIncludeVersionsResponse, error)
 
 		// ListIncludeVersionAvailableCriteria lists available criteria for the include version
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-include-available-criteria
 		ListIncludeVersionAvailableCriteria(context.Context, ListAvailableCriteriaRequest) (*AvailableCriteriaResponse, error)
 
 		// ListIncludeVersionAvailableBehaviors lists available behaviors for the include version
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-include-available-behaviors
 		ListIncludeVersionAvailableBehaviors(context.Context, ListAvailableBehaviorsRequest) (*AvailableBehaviorsResponse, error)
 	}
 

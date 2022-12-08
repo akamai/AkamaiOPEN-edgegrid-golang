@@ -13,11 +13,25 @@ import (
 
 type (
 	// Properties contains operations available on Property resource
-	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#propertiesgroup
 	Properties interface {
+		// GetProperties lists properties available for the current contract and group
+		//
+		// https://techdocs.akamai.com/property-mgr/reference/get-products
 		GetProperties(ctx context.Context, r GetPropertiesRequest) (*GetPropertiesResponse, error)
+
+		// CreateProperty creates a new property from scratch or bases one on another property's rule tree and optionally its set of assigned hostnames
+		//
+		// https://techdocs.akamai.com/property-mgr/reference/post-properties
 		CreateProperty(ctx context.Context, params CreatePropertyRequest) (*CreatePropertyResponse, error)
+
+		// GetProperty gets a specific property
+		//
+		// https://techdocs.akamai.com/property-mgr/reference/get-property
 		GetProperty(ctx context.Context, params GetPropertyRequest) (*GetPropertyResponse, error)
+
+		// RemoveProperty removes a specific property, which you can only do if none of its versions are currently active
+		//
+		// https://techdocs.akamai.com/property-mgr/reference/delete-property
 		RemoveProperty(ctx context.Context, params RemovePropertyRequest) (*RemovePropertyResponse, error)
 	}
 

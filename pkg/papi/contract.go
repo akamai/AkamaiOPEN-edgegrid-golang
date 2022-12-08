@@ -9,10 +9,10 @@ import (
 
 type (
 	// Contracts contains operations available on Contract resource
-	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#contractsgroup
 	Contracts interface {
 		// GetContracts provides a read-only list of contract names and identifiers
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getcontracts
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-contracts
 		GetContracts(context.Context) (*GetContractsResponse, error)
 	}
 

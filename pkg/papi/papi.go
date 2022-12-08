@@ -81,7 +81,7 @@ func Client(sess session.Session, opts ...Option) PAPI {
 }
 
 // WithUsePrefixes sets the `PAPI-Use-Prefixes` header on requests
-// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#prefixes
+// See: https://techdocs.akamai.com/property-mgr/reference/id-prefixes
 func WithUsePrefixes(usePrefixes bool) Option {
 	return func(p *papi) {
 		p.usePrefixes = usePrefixes

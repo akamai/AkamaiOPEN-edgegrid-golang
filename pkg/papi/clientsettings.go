@@ -9,13 +9,15 @@ import (
 
 type (
 	// ClientSettings contains operations available on ClientSettings resource
-	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#clientsettingsgroup
 	ClientSettings interface {
 		// GetClientSettings returns client's settings.
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getclientsettings
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-client-settings
 		GetClientSettings(context.Context) (*ClientSettingsBody, error)
+
 		// UpdateClientSettings updates client's settings.
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#putclientsettings
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/put-client-settings
 		UpdateClientSettings(context.Context, ClientSettingsBody) (*ClientSettingsBody, error)
 	}
 
