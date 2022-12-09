@@ -1,5 +1,40 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 3.1.0 (Dec 12, 2022)
+
+#### FEATURES/ENHANCEMENTS:
+
+* General
+  * Add badges to readme and improve code quality
+
+* [IMPORTANT] Added Property Include API support
+  * Includes
+    * [ListIncludes](https://techdocs.akamai.com/property-mgr/reference/get-includes)
+    * [ListIncludeParents](https://techdocs.akamai.com/property-mgr/reference/get-include-parents)
+    * [GetInclude](https://techdocs.akamai.com/property-mgr/reference/get-include)
+    * [CreateInclude](https://techdocs.akamai.com/property-mgr/reference/post-includes)
+    * [DeleteInclude](https://techdocs.akamai.com/property-mgr/reference/delete-include)
+  * Include Activations
+    * [ActivateInclude](https://techdocs.akamai.com/property-mgr/reference/post-include-activation)
+    * [DeactivateInclude](https://techdocs.akamai.com/property-mgr/reference/post-include-activation)
+    * [CancelIncludeActivation](https://techdocs.akamai.com/property-mgr/reference/delete-include-activation)
+    * [GetIncludeActivation](https://techdocs.akamai.com/property-mgr/reference/get-include-activation)
+    * [ListIncludeActivations](https://techdocs.akamai.com/property-mgr/reference/get-include-activations)
+  * Include Rules
+    * [GetIncludeRuleTree](https://techdocs.akamai.com/property-mgr/reference/get-include-version-rules)
+    * [UpdateIncludeRuleTree](https://techdocs.akamai.com/property-mgr/reference/patch-include-version-rules)
+  * Include Versions
+    * [CreateIncludeVersion](https://techdocs.akamai.com/property-mgr/reference/post-include-versions)
+    * [GetIncludeVersion](https://techdocs.akamai.com/property-mgr/reference/get-include-version)
+    * [ListIncludeVersions](https://techdocs.akamai.com/property-mgr/reference/get-include-versions)
+    * [ListIncludeVersionAvailableCriteria](https://techdocs.akamai.com/property-mgr/reference/get-include-available-criteria)
+    * [ListIncludeVersionAvailableBehaviors](https://techdocs.akamai.com/property-mgr/reference/get-include-available-behaviors)
+
+#### BREAKING CHANGES:
+
+* APPSEC
+  * Factor out `PolicySecurityControls` struct
+
 ## 3.0.0 (November 28, 2022)
 
 ### Deprecations
