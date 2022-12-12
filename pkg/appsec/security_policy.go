@@ -41,18 +41,10 @@ type (
 		ConfigID int `json:"configId,omitempty"`
 		Version  int `json:"version,omitempty"`
 		Policies []struct {
-			PolicyID                string `json:"policyId,omitempty"`
-			PolicyName              string `json:"policyName,omitempty"`
-			HasRatePolicyWithAPIKey bool   `json:"hasRatePolicyWithApiKey,omitempty"`
-			PolicySecurityControls  struct {
-				ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-				ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-				ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-				ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-				ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-				ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-				ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-			} `json:"policySecurityControls,omitempty"`
+			PolicyID                string            `json:"policyId,omitempty"`
+			PolicyName              string            `json:"policyName,omitempty"`
+			HasRatePolicyWithAPIKey bool              `json:"hasRatePolicyWithApiKey,omitempty"`
+			PolicySecurityControls  *SecurityControls `json:"policySecurityControls,omitempty"`
 		} `json:"policies,omitempty"`
 	}
 
@@ -65,20 +57,12 @@ type (
 
 	// GetSecurityPolicyResponse is returned from a call to GetSecurityPolicy.
 	GetSecurityPolicyResponse struct {
-		ConfigID               int    `json:"configId,omitempty"`
-		PolicyID               string `json:"policyId,omitempty"`
-		PolicyName             string `json:"policyName,omitempty"`
-		DefaultSettings        bool   `json:"defaultSettings,omitempty"`
-		PolicySecurityControls struct {
-			ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-			ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-			ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-		} `json:"policySecurityControls,omitempty"`
-		Version int `json:"version,omitempty"`
+		ConfigID               int               `json:"configId,omitempty"`
+		PolicyID               string            `json:"policyId,omitempty"`
+		PolicyName             string            `json:"policyName,omitempty"`
+		DefaultSettings        bool              `json:"defaultSettings,omitempty"`
+		PolicySecurityControls *SecurityControls `json:"policySecurityControls,omitempty"`
+		Version                int               `json:"version,omitempty"`
 	}
 
 	// CreateSecurityPolicyRequest is used to create a ecurity policy.
@@ -93,20 +77,12 @@ type (
 
 	// CreateSecurityPolicyResponse is returned from a call to CreateSecurityPolicy.
 	CreateSecurityPolicyResponse struct {
-		ConfigID               int    `json:"configId"`
-		PolicyID               string `json:"policyId"`
-		PolicyName             string `json:"policyName"`
-		DefaultSettings        bool   `json:"defaultSettings,omitempty"`
-		PolicySecurityControls struct {
-			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-			ApplyRateControls             bool `json:"applyRateControls"`
-			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		} `json:"policySecurityControls"`
-		Version int `json:"version"`
+		ConfigID               int               `json:"configId"`
+		PolicyID               string            `json:"policyId"`
+		PolicyName             string            `json:"policyName"`
+		DefaultSettings        bool              `json:"defaultSettings,omitempty"`
+		PolicySecurityControls *SecurityControls `json:"policySecurityControls,omitempty"`
+		Version                int               `json:"version"`
 	}
 
 	// UpdateSecurityPolicyRequest is used to modify a security policy.
@@ -119,20 +95,12 @@ type (
 
 	// UpdateSecurityPolicyResponse is returned from a call to UpdateSecurityPolicy.
 	UpdateSecurityPolicyResponse struct {
-		ConfigID               int    `json:"configId"`
-		PolicyID               string `json:"policyId"`
-		PolicyName             string `json:"policyName"`
-		DefaultSettings        bool   `json:"defaultSettings,omitempty"`
-		PolicySecurityControls struct {
-			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-			ApplyRateControls             bool `json:"applyRateControls"`
-			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		} `json:"policySecurityControls"`
-		Version int `json:"version"`
+		ConfigID               int               `json:"configId"`
+		PolicyID               string            `json:"policyId"`
+		PolicyName             string            `json:"policyName"`
+		DefaultSettings        bool              `json:"defaultSettings,omitempty"`
+		PolicySecurityControls *SecurityControls `json:"policySecurityControls,omitempty"`
+		Version                int               `json:"version"`
 	}
 
 	// RemoveSecurityPolicyRequest is used to remove a security policy.
@@ -144,19 +112,22 @@ type (
 
 	// RemoveSecurityPolicyResponse is returned from a call to RemoveSecurityPolicy.
 	RemoveSecurityPolicyResponse struct {
-		ConfigID               int    `json:"configId"`
-		PolicyID               string `json:"policyId"`
-		PolicyName             string `json:"policyName"`
-		PolicySecurityControls struct {
-			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-			ApplyRateControls             bool `json:"applyRateControls"`
-			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		} `json:"policySecurityControls"`
-		Version int `json:"version"`
+		ConfigID               int               `json:"configId"`
+		PolicyID               string            `json:"policyId"`
+		PolicyName             string            `json:"policyName"`
+		PolicySecurityControls *SecurityControls `json:"policySecurityControls,omitempty"`
+		Version                int               `json:"version"`
+	}
+
+	// SecurityControls is returned as part of GetSecurityPoliciesResponse and similar responses.
+	SecurityControls struct {
+		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
+		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
+		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
+		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
+		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
+		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
+		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
 	}
 )
 

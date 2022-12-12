@@ -11,10 +11,10 @@ import (
 
 type (
 	// Products contains operations available on Products resource
-	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#productsgroup
 	Products interface {
 		// GetProducts lists all available Products
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#productsgroup
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-products
 		GetProducts(context.Context, GetProductsRequest) (*GetProductsResponse, error)
 	}
 

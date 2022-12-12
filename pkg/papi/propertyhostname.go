@@ -11,14 +11,15 @@ import (
 
 type (
 	// PropertyVersionHostnames contains operations available on PropertyVersionHostnames resource
-	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#propertyversionhostnamesgroup
 	PropertyVersionHostnames interface {
 		// GetPropertyVersionHostnames lists all the hostnames assigned to a property version
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversionhostnames
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version-hostnames
 		GetPropertyVersionHostnames(context.Context, GetPropertyVersionHostnamesRequest) (*GetPropertyVersionHostnamesResponse, error)
 
-		// CreatePropertyVersionHostnames lists all the hostnames assigned to a property version
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#putpropertyversionhostnames
+		// UpdatePropertyVersionHostnames modifies the set of hostnames for a property version
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/patch-property-version-hostnames
 		UpdatePropertyVersionHostnames(context.Context, UpdatePropertyVersionHostnamesRequest) (*UpdatePropertyVersionHostnamesResponse, error)
 	}
 

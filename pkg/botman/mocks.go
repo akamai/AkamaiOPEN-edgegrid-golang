@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ BotMan = &Mock{}
+
 func (p *Mock) GetAkamaiBotCategoryList(ctx context.Context, params GetAkamaiBotCategoryListRequest) (*GetAkamaiBotCategoryListResponse, error) {
 	args := p.Called(ctx, params)
 	if args.Error(1) != nil {

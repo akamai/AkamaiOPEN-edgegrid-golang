@@ -47,7 +47,7 @@ type (
 		Update            string `json:"update"`
 	}
 
-	// StatusInfo contains he tstatus for this Change at this time
+	// StatusInfo contains the status for this Change at this time
 	StatusInfo struct {
 		DeploymentSchedule *DeploymentSchedule `json:"deploymentSchedule"`
 		Description        string              `json:"description"`

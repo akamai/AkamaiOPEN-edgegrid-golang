@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/tools"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -863,6 +865,946 @@ func TestPapi_GetAvailableCriteria(t *testing.T) {
 			result, err := client.GetAvailableCriteria(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestPapi_ListAvailableIncludes(t *testing.T) {
+	tests := map[string]struct {
+		params           ListAvailableIncludesRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ListAvailableIncludesResponse
+		withError        error
+	}{
+		"200 OK - available includes given ContractID and GroupID": {
+			params: ListAvailableIncludesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 1,
+				ContractID:      "ctr_1",
+				GroupID:         "grp_2",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/1/external-resources?contractId=ctr_1&groupId=grp_2",
+			responseBody: `
+{
+    "externalResources": {
+        "include": {
+            "test_include_id1": {
+                "id": "test_include_id1",
+                "name": "test_include1",
+                "includeType": "MICROSERVICES",
+                "fileName": "test_include1.xml",
+                "productName": "Example_Name",
+                "ruleFormat": "v2020-11-02"
+            },
+			"test_include_id2": {
+                "id": "test_include_id2",
+                "name": "test_include2",
+                "includeType": "MICROSERVICES",
+                "fileName": "test_include2.xml",
+                "productName": "Example_Name",
+                "ruleFormat": "v2020-11-02"
+            }
+		},
+		"cloudletSharedPolicy": {
+			"123456": {
+                "cloudletType": "TESTCLOUDLETTYPE",
+                "id": 123456,
+                "name": "TestName123456",
+                "policyType": "SHARED"
+            }
+		},
+		"availableCnames": [
+			{
+                "id": 123456,
+                "name": "www.example.com",
+                "domain": "example.net",
+                "serialNumber": 123,
+                "slot": null,
+                "status": "Created",
+                "ipv6": false,
+                "useCases": [],
+                "cname": "www.example.example.net",
+                "isSecure": false,
+                "isEdgeIPBindingEnabled": null
+            }
+		],
+		"customOverrides": {},
+		"customOverrides": {},
+		"blacklistedCertDomains": [
+			"s3.example.com"
+		],
+		"availableNetStorageGroups": [
+			{
+                "id": 123456,
+                "name": "aa-example",
+                "uploadDomainName": "spm.example.example.com",
+                "downloadDomainName": "spm.example.example.com",
+                "cpCodeList": [
+                    {
+                        "cpCode": 123456,
+                        "g2oToken": null
+                    }
+                ]
+            }
+		],
+    	"availableCpCodes": [
+			{
+                "id": 123123,
+                "description": "example-test-subgroup",
+                "products": [
+                    "EXAMPLE"
+                ],
+                "createdDate": 1521566901000,
+                "cpCodeLimits": null,
+                "name": "example-test-subgroup"
+            }
+		],
+    	"availablePolicies": {
+			"applicationLoadBalancer":[
+				{
+                    "id": 123456,
+                    "name": "0000000000000000_EXAMPLE_clone"
+                }
+			],
+			"firstPartyMarketingPlus":[
+				{
+                    "id": 123456,
+                    "name": "Example_Name_123456"
+                }
+			],
+			"firstPartyMarketing":[
+				{
+                    "id": 123456,
+                    "name": "Example_first_party"
+                }	
+			],
+			"forwardRewrite":[
+				{
+                    "id": 123456,
+                    "name": "ExampleName"
+                }
+			],
+			"continuousDeployment":[
+				{
+                    "id": 123456,
+                    "name": "Example_Name_123456"
+                }
+			],
+			"requestControl":[
+				{
+                    "id": 123456,
+                    "name": "EXAMPLE_MATCH_RULE_SIZE_RC"
+                }
+			],
+			"inputValidation":[
+				{
+                    "id": 123456,
+                    "name": "example_name"
+                }
+			],
+			"visitorPrioritization":[
+				{
+                    "id": 123456,
+                    "name": "0000000000000000000000_EXAMPLE"
+                }
+			],
+			"audienceSegmentation":[
+				{
+                    "id": 123456,
+                    "name": "ExampleTest"
+                }
+			],
+			"apiPrioritization":[
+				{
+                    "id": 123456,
+                    "name": "APIExampleTest"
+                }
+			],
+			"edgeRedirector":[
+				{
+                    "id": 123456,
+                    "name": "00000000_EXAMPLE"
+                }
+			]
+		},
+    	"cloudletSharedPolicyVirtualWaitingRoom": {
+			"123456": {
+                "cloudletType": "EXAMPLETYPE",
+                "id": 123456,
+                "name": "example_name",
+                "policyType": "SHARED"
+            }
+		}
+    }
+}`,
+			expectedResponse: &ListAvailableIncludesResponse{
+				AvailableIncludes: []ExternalIncludeData{
+
+					{
+						IncludeID:   "test_include_id1",
+						IncludeName: "test_include1",
+						IncludeType: IncludeTypeMicroServices,
+						FileName:    "test_include1.xml",
+						ProductName: "Example_Name",
+						RuleFormat:  "v2020-11-02",
+					},
+					{
+						IncludeID:   "test_include_id2",
+						IncludeName: "test_include2",
+						IncludeType: IncludeTypeMicroServices,
+						FileName:    "test_include2.xml",
+						ProductName: "Example_Name",
+						RuleFormat:  "v2020-11-02",
+					},
+				},
+			},
+		},
+		"200 OK - available includes given only ContractID": {
+			params: ListAvailableIncludesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 1,
+				ContractID:      "ctr_1",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/1/external-resources?contractId=ctr_1",
+			responseBody: `
+{
+    "externalResources": {
+        "include": {
+            "test_include_id1": {
+                "id": "test_include_id1",
+                "name": "test_include1",
+                "includeType": "MICROSERVICES",
+                "fileName": "test_include1.xml",
+                "productName": "Example_Name",
+                "ruleFormat": "v2020-11-02"
+            },
+			"test_include_id2": {
+                "id": "test_include_id2",
+                "name": "test_include2",
+                "includeType": "MICROSERVICES",
+                "fileName": "test_include2.xml",
+                "productName": "Example_Name",
+                "ruleFormat": "v2020-11-02"
+            }
+		},
+		"cloudletSharedPolicy": {
+			"123456": {
+                "cloudletType": "TESTCLOUDLETTYPE",
+                "id": 123456,
+                "name": "TestName123456",
+                "policyType": "SHARED"
+            }
+		},
+		"availableCnames": [
+			{
+                "id": 123456,
+                "name": "www.example.com",
+                "domain": "example.net",
+                "serialNumber": 123,
+                "slot": null,
+                "status": "Created",
+                "ipv6": false,
+                "useCases": [],
+                "cname": "www.example.example.net",
+                "isSecure": false,
+                "isEdgeIPBindingEnabled": null
+            }
+		],
+		"customOverrides": {},
+		"customOverrides": {},
+		"blacklistedCertDomains": [
+			"s3.example.com"
+		],
+		"availableNetStorageGroups": [
+			{
+                "id": 123456,
+                "name": "aa-example",
+                "uploadDomainName": "spm.example.example.com",
+                "downloadDomainName": "spm.example.example.com",
+                "cpCodeList": [
+                    {
+                        "cpCode": 123456,
+                        "g2oToken": null
+                    }
+                ]
+            }
+		],
+    	"availableCpCodes": [
+			{
+                "id": 123123,
+                "description": "example-test-subgroup",
+                "products": [
+                    "EXAMPLE"
+                ],
+                "createdDate": 1521566901000,
+                "cpCodeLimits": null,
+                "name": "example-test-subgroup"
+            }
+		],
+    	"availablePolicies": {
+			"applicationLoadBalancer":[
+				{
+                    "id": 123456,
+                    "name": "0000000000000000_EXAMPLE_clone"
+                }
+			],
+			"firstPartyMarketingPlus":[
+				{
+                    "id": 123456,
+                    "name": "Example_Name_123456"
+                }
+			],
+			"firstPartyMarketing":[
+				{
+                    "id": 123456,
+                    "name": "Example_first_party"
+                }	
+			],
+			"forwardRewrite":[
+				{
+                    "id": 123456,
+                    "name": "ExampleName"
+                }
+			],
+			"continuousDeployment":[
+				{
+                    "id": 123456,
+                    "name": "Example_Name_123456"
+                }
+			],
+			"requestControl":[
+				{
+                    "id": 123456,
+                    "name": "EXAMPLE_MATCH_RULE_SIZE_RC"
+                }
+			],
+			"inputValidation":[
+				{
+                    "id": 123456,
+                    "name": "example_name"
+                }
+			],
+			"visitorPrioritization":[
+				{
+                    "id": 123456,
+                    "name": "0000000000000000000000_EXAMPLE"
+                }
+			],
+			"audienceSegmentation":[
+				{
+                    "id": 123456,
+                    "name": "ExampleTest"
+                }
+			],
+			"apiPrioritization":[
+				{
+                    "id": 123456,
+                    "name": "APIExampleTest"
+                }
+			],
+			"edgeRedirector":[
+				{
+                    "id": 123456,
+                    "name": "00000000_EXAMPLE"
+                }
+			]
+		},
+    	"cloudletSharedPolicyVirtualWaitingRoom": {
+			"123456": {
+                "cloudletType": "EXAMPLETYPE",
+                "id": 123456,
+                "name": "example_name",
+                "policyType": "SHARED"
+            }
+		}
+    }
+}`,
+			expectedResponse: &ListAvailableIncludesResponse{
+				AvailableIncludes: []ExternalIncludeData{
+
+					{
+						IncludeID:   "test_include_id1",
+						IncludeName: "test_include1",
+						IncludeType: IncludeTypeMicroServices,
+						FileName:    "test_include1.xml",
+						ProductName: "Example_Name",
+						RuleFormat:  "v2020-11-02",
+					},
+					{
+						IncludeID:   "test_include_id2",
+						IncludeName: "test_include2",
+						IncludeType: IncludeTypeMicroServices,
+						FileName:    "test_include2.xml",
+						ProductName: "Example_Name",
+						RuleFormat:  "v2020-11-02",
+					},
+				},
+			},
+		},
+		"200 OK - available includes given only GroupID": {
+			params: ListAvailableIncludesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 1,
+				GroupID:         "grp_2",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/1/external-resources?groupId=grp_2",
+			responseBody: `
+{
+    "externalResources": {
+        "include": {
+            "test_include_id1": {
+                "id": "test_include_id1",
+                "name": "test_include1",
+                "includeType": "MICROSERVICES",
+                "fileName": "test_include1.xml",
+                "productName": "Example_Name",
+                "ruleFormat": "v2020-11-02"
+            },
+			"test_include_id2": {
+                "id": "test_include_id2",
+                "name": "test_include2",
+                "includeType": "MICROSERVICES",
+                "fileName": "test_include2.xml",
+                "productName": "Example_Name",
+                "ruleFormat": "v2020-11-02"
+            }
+		},
+		"cloudletSharedPolicy": {
+			"123456": {
+                "cloudletType": "TESTCLOUDLETTYPE",
+                "id": 123456,
+                "name": "TestName123456",
+                "policyType": "SHARED"
+            }
+		},
+		"availableCnames": [
+			{
+                "id": 123456,
+                "name": "www.example.com",
+                "domain": "example.net",
+                "serialNumber": 123,
+                "slot": null,
+                "status": "Created",
+                "ipv6": false,
+                "useCases": [],
+                "cname": "www.example.example.net",
+                "isSecure": false,
+                "isEdgeIPBindingEnabled": null
+            }
+		],
+		"customOverrides": {},
+		"customOverrides": {},
+		"blacklistedCertDomains": [
+			"s3.example.com"
+		],
+		"availableNetStorageGroups": [
+			{
+                "id": 123456,
+                "name": "aa-example",
+                "uploadDomainName": "spm.example.example.com",
+                "downloadDomainName": "spm.example.example.com",
+                "cpCodeList": [
+                    {
+                        "cpCode": 123456,
+                        "g2oToken": null
+                    }
+                ]
+            }
+		],
+    	"availableCpCodes": [
+			{
+                "id": 123123,
+                "description": "example-test-subgroup",
+                "products": [
+                    "EXAMPLE"
+                ],
+                "createdDate": 1521566901000,
+                "cpCodeLimits": null,
+                "name": "example-test-subgroup"
+            }
+		],
+    	"availablePolicies": {
+			"applicationLoadBalancer":[
+				{
+                    "id": 123456,
+                    "name": "0000000000000000_EXAMPLE_clone"
+                }
+			],
+			"firstPartyMarketingPlus":[
+				{
+                    "id": 123456,
+                    "name": "Example_Name_123456"
+                }
+			],
+			"firstPartyMarketing":[
+				{
+                    "id": 123456,
+                    "name": "Example_first_party"
+                }	
+			],
+			"forwardRewrite":[
+				{
+                    "id": 123456,
+                    "name": "ExampleName"
+                }
+			],
+			"continuousDeployment":[
+				{
+                    "id": 123456,
+                    "name": "Example_Name_123456"
+                }
+			],
+			"requestControl":[
+				{
+                    "id": 123456,
+                    "name": "EXAMPLE_MATCH_RULE_SIZE_RC"
+                }
+			],
+			"inputValidation":[
+				{
+                    "id": 123456,
+                    "name": "example_name"
+                }
+			],
+			"visitorPrioritization":[
+				{
+                    "id": 123456,
+                    "name": "0000000000000000000000_EXAMPLE"
+                }
+			],
+			"audienceSegmentation":[
+				{
+                    "id": 123456,
+                    "name": "ExampleTest"
+                }
+			],
+			"apiPrioritization":[
+				{
+                    "id": 123456,
+                    "name": "APIExampleTest"
+                }
+			],
+			"edgeRedirector":[
+				{
+                    "id": 123456,
+                    "name": "00000000_EXAMPLE"
+                }
+			]
+		},
+    	"cloudletSharedPolicyVirtualWaitingRoom": {
+			"123456": {
+                "cloudletType": "EXAMPLETYPE",
+                "id": 123456,
+                "name": "example_name",
+                "policyType": "SHARED"
+            }
+		}
+    }
+}`,
+			expectedResponse: &ListAvailableIncludesResponse{
+				AvailableIncludes: []ExternalIncludeData{
+
+					{
+						IncludeID:   "test_include_id1",
+						IncludeName: "test_include1",
+						IncludeType: IncludeTypeMicroServices,
+						FileName:    "test_include1.xml",
+						ProductName: "Example_Name",
+						RuleFormat:  "v2020-11-02",
+					},
+					{
+						IncludeID:   "test_include_id2",
+						IncludeName: "test_include2",
+						IncludeType: IncludeTypeMicroServices,
+						FileName:    "test_include2.xml",
+						ProductName: "Example_Name",
+						RuleFormat:  "v2020-11-02",
+					},
+				},
+			},
+		},
+		"200 OK - available includes ContractID and GroupID not provided": {
+			params: ListAvailableIncludesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 1,
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/1/external-resources",
+			responseBody: `
+{
+    "externalResources": {
+        "include": {
+            "test_include_id1": {
+                "id": "test_include_id1",
+                "name": "test_include1",
+                "includeType": "MICROSERVICES",
+                "fileName": "test_include1.xml",
+                "productName": "Example_Name",
+                "ruleFormat": "v2020-11-02"
+            },
+			"test_include_id2": {
+                "id": "test_include_id2",
+                "name": "test_include2",
+                "includeType": "MICROSERVICES",
+                "fileName": "test_include2.xml",
+                "productName": "Example_Name",
+                "ruleFormat": "v2020-11-02"
+            }
+		},
+		"cloudletSharedPolicy": {
+			"123456": {
+                "cloudletType": "TESTCLOUDLETTYPE",
+                "id": 123456,
+                "name": "TestName123456",
+                "policyType": "SHARED"
+            }
+		},
+		"availableCnames": [
+			{
+                "id": 123456,
+                "name": "www.example.com",
+                "domain": "example.net",
+                "serialNumber": 123,
+                "slot": null,
+                "status": "Created",
+                "ipv6": false,
+                "useCases": [],
+                "cname": "www.example.example.net",
+                "isSecure": false,
+                "isEdgeIPBindingEnabled": null
+            }
+		],
+		"customOverrides": {},
+		"customOverrides": {},
+		"blacklistedCertDomains": [
+			"s3.example.com"
+		],
+		"availableNetStorageGroups": [
+			{
+                "id": 123456,
+                "name": "aa-example",
+                "uploadDomainName": "spm.example.example.com",
+                "downloadDomainName": "spm.example.example.com",
+                "cpCodeList": [
+                    {
+                        "cpCode": 123456,
+                        "g2oToken": null
+                    }
+                ]
+            }
+		],
+    	"availableCpCodes": [
+			{
+                "id": 123123,
+                "description": "example-test-subgroup",
+                "products": [
+                    "EXAMPLE"
+                ],
+                "createdDate": 1521566901000,
+                "cpCodeLimits": null,
+                "name": "example-test-subgroup"
+            }
+		],
+    	"availablePolicies": {
+			"applicationLoadBalancer":[
+				{
+                    "id": 123456,
+                    "name": "0000000000000000_EXAMPLE_clone"
+                }
+			],
+			"firstPartyMarketingPlus":[
+				{
+                    "id": 123456,
+                    "name": "Example_Name_123456"
+                }
+			],
+			"firstPartyMarketing":[
+				{
+                    "id": 123456,
+                    "name": "Example_first_party"
+                }	
+			],
+			"forwardRewrite":[
+				{
+                    "id": 123456,
+                    "name": "ExampleName"
+                }
+			],
+			"continuousDeployment":[
+				{
+                    "id": 123456,
+                    "name": "Example_Name_123456"
+                }
+			],
+			"requestControl":[
+				{
+                    "id": 123456,
+                    "name": "EXAMPLE_MATCH_RULE_SIZE_RC"
+                }
+			],
+			"inputValidation":[
+				{
+                    "id": 123456,
+                    "name": "example_name"
+                }
+			],
+			"visitorPrioritization":[
+				{
+                    "id": 123456,
+                    "name": "0000000000000000000000_EXAMPLE"
+                }
+			],
+			"audienceSegmentation":[
+				{
+                    "id": 123456,
+                    "name": "ExampleTest"
+                }
+			],
+			"apiPrioritization":[
+				{
+                    "id": 123456,
+                    "name": "APIExampleTest"
+                }
+			],
+			"edgeRedirector":[
+				{
+                    "id": 123456,
+                    "name": "00000000_EXAMPLE"
+                }
+			]
+		},
+    	"cloudletSharedPolicyVirtualWaitingRoom": {
+			"123456": {
+                "cloudletType": "EXAMPLETYPE",
+                "id": 123456,
+                "name": "example_name",
+                "policyType": "SHARED"
+            }
+		}
+    }
+}`,
+			expectedResponse: &ListAvailableIncludesResponse{
+				AvailableIncludes: []ExternalIncludeData{
+
+					{
+						IncludeID:   "test_include_id1",
+						IncludeName: "test_include1",
+						IncludeType: IncludeTypeMicroServices,
+						FileName:    "test_include1.xml",
+						ProductName: "Example_Name",
+						RuleFormat:  "v2020-11-02",
+					},
+					{
+						IncludeID:   "test_include_id2",
+						IncludeName: "test_include2",
+						IncludeType: IncludeTypeMicroServices,
+						FileName:    "test_include2.xml",
+						ProductName: "Example_Name",
+						RuleFormat:  "v2020-11-02",
+					},
+				},
+			},
+		},
+		"500 Internal Server Error": {
+			params: ListAvailableIncludesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 1,
+				ContractID:      "ctr_1",
+				GroupID:         "grp_2",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+  "type": "internal_error",
+  "title": "Internal Server Error",
+  "detail": "Error fetching available includes",
+  "status": 500
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/1/external-resources?contractId=ctr_1&groupId=grp_2",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching available includes",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+		"validation error - missing property ID": {
+			params: ListAvailableIncludesRequest{
+				PropertyVersion: 2,
+				ContractID:      "ctr_1",
+				GroupID:         "grp_2",
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error - missing property version": {
+			params: ListAvailableIncludesRequest{
+				PropertyID: "propertyID",
+				ContractID: "ctr_1",
+				GroupID:    "grp_2",
+			},
+			withError: ErrStructValidation,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListAvailableIncludes(context.Background(), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, len(test.expectedResponse.AvailableIncludes), len(result.AvailableIncludes))
+			for _, element := range test.expectedResponse.AvailableIncludes {
+				assert.Contains(t, result.AvailableIncludes, element)
+			}
+		})
+	}
+}
+
+func TestPapi_ListReferencedIncludes(t *testing.T) {
+	tests := map[string]struct {
+		params           ListReferencedIncludesRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ListReferencedIncludesResponse
+		withError        error
+	}{
+		"200 OK": {
+			params: ListReferencedIncludesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 1,
+				ContractID:      "ctr_1",
+				GroupID:         "grp_2",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/1/includes?contractId=ctr_1&groupId=grp_2",
+			responseBody: `
+{
+    "includes": {
+        "items": [
+            {
+                "accountId": "test_account",
+                "contractId": "test_contract",
+                "groupId": "test_group",
+                "latestVersion": 1,
+                "stagingVersion": 1,
+                "productionVersion": null,
+                "assetId": "test_asset",
+                "includeId": "inc_123456",
+                "includeName": "test_include",
+                "includeType": "MICROSERVICES"
+            }
+        ]
+    }
+}`,
+			expectedResponse: &ListReferencedIncludesResponse{
+				Includes: IncludeItems{
+					Items: []Include{
+						{
+							AccountID:         "test_account",
+							AssetID:           "test_asset",
+							ContractID:        "test_contract",
+							GroupID:           "test_group",
+							IncludeID:         "inc_123456",
+							IncludeName:       "test_include",
+							IncludeType:       IncludeTypeMicroServices,
+							LatestVersion:     1,
+							ProductionVersion: nil,
+							StagingVersion:    tools.IntPtr(1),
+						},
+					},
+				},
+			},
+		},
+		"500 Internal Server Error": {
+			params: ListReferencedIncludesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 1,
+				ContractID:      "ctr_1",
+				GroupID:         "grp_2",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+  "type": "internal_error",
+  "title": "Internal Server Error",
+  "detail": "Error fetching referenced includes",
+  "status": 500
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/1/includes?contractId=ctr_1&groupId=grp_2",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching referenced includes",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+		"validation error - missing property ID": {
+			params: ListReferencedIncludesRequest{
+				PropertyVersion: 1,
+				ContractID:      "ctr_1",
+				GroupID:         "grp_2",
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error - missing property version": {
+			params: ListReferencedIncludesRequest{
+				PropertyID: "propertyID",
+				ContractID: "ctr_1",
+				GroupID:    "grp_2",
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error - missing contractID": {
+			params: ListReferencedIncludesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 1,
+				GroupID:         "grp_2",
+			},
+			withError: ErrStructValidation,
+		},
+		"validation error - missing groupID": {
+			params: ListReferencedIncludesRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 1,
+				ContractID:      "ctr_1",
+			},
+			withError: ErrStructValidation,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListReferencedIncludes(context.Background(), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
 			}
 			require.NoError(t, err)

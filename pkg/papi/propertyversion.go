@@ -2,9 +2,11 @@ package papi
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/edgegriderr"
@@ -13,31 +15,46 @@ import (
 
 type (
 	// PropertyVersions contains operations available on PropertyVersions resource
-	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#propertyversionsgroup
 	PropertyVersions interface {
 		// GetPropertyVersions fetches available property versions
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversions
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-versions
 		GetPropertyVersions(context.Context, GetPropertyVersionsRequest) (*GetPropertyVersionsResponse, error)
 
 		// GetPropertyVersion fetches specific property version
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversion
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version
 		GetPropertyVersion(context.Context, GetPropertyVersionRequest) (*GetPropertyVersionsResponse, error)
 
 		// CreatePropertyVersion creates a new property version
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyversions
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/post-property-versions
 		CreatePropertyVersion(context.Context, CreatePropertyVersionRequest) (*CreatePropertyVersionResponse, error)
 
-		// GetLatestVersion fetches latest property version
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getlatestversion
+		// GetLatestVersion fetches the latest property version
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-latest-property-version
 		GetLatestVersion(context.Context, GetLatestVersionRequest) (*GetPropertyVersionsResponse, error)
 
 		// GetAvailableBehaviors fetches a list of behaviors applied to property version
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getavailablebehaviors
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors
 		GetAvailableBehaviors(context.Context, GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error)
 
 		// GetAvailableCriteria fetches a list of criteria applied to property version
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getavailablecriteria
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-available-criteria
 		GetAvailableCriteria(context.Context, GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error)
+
+		// ListAvailableIncludes lists external resources that can be applied within a property version's rules
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version-external-resources
+		ListAvailableIncludes(context.Context, ListAvailableIncludesRequest) (*ListAvailableIncludesResponse, error)
+
+		// ListReferencedIncludes lists referenced includes for parent property
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version-includes
+		ListReferencedIncludes(context.Context, ListReferencedIncludesRequest) (*ListReferencedIncludesResponse, error)
 	}
 
 	// GetPropertyVersionsRequest contains path and query params used for listing property versions
@@ -145,6 +162,41 @@ type (
 
 	// VersionStatus represents ProductionVersion and StagingVersion of a Version struct
 	VersionStatus string
+
+	// ListAvailableIncludesRequest contains path and query params required to fetch list of available includes
+	ListAvailableIncludesRequest ListAvailableReferencedIncludesRequest
+
+	// ListReferencedIncludesRequest contains path and query params required to fetch  list of referenced includes
+	ListReferencedIncludesRequest ListAvailableReferencedIncludesRequest
+
+	//ListAvailableReferencedIncludesRequest common request struct for ListReferencedIncludesRequest and ListAvailableIncludesRequest
+	ListAvailableReferencedIncludesRequest struct {
+		PropertyID      string
+		PropertyVersion int
+		ContractID      string
+		GroupID         string
+	}
+
+	// ListAvailableIncludesResponse contains response received when fetching list of available includes
+	ListAvailableIncludesResponse struct {
+		AvailableIncludes []ExternalIncludeData
+	}
+
+	// ListReferencedIncludesResponse contains response received when fetching list of referenced includes
+	// The response from the API is a map, but we convert it to the array for better usability.
+	ListReferencedIncludesResponse struct {
+		Includes IncludeItems `json:"includes"`
+	}
+
+	// ExternalIncludeData contains data for a specific include from AvailableIncludes
+	ExternalIncludeData struct {
+		IncludeID   string      `json:"id"`
+		IncludeName string      `json:"name"`
+		IncludeType IncludeType `json:"includeType"`
+		FileName    string      `json:"fileName"`
+		ProductName string      `json:"productName"`
+		RuleFormat  string      `json:"ruleFormat"`
+	}
 )
 
 const (
@@ -209,6 +261,24 @@ func (v GetFeaturesRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate validates ListAvailableIncludesRequest
+func (v ListAvailableIncludesRequest) Validate() error {
+	return validation.Errors{
+		"PropertyID":      validation.Validate(v.PropertyID, validation.Required),
+		"PropertyVersion": validation.Validate(v.PropertyVersion, validation.Required),
+	}.Filter()
+}
+
+// Validate validates ListReferencedIncludesRequest
+func (v ListReferencedIncludesRequest) Validate() error {
+	return validation.Errors{
+		"PropertyID":      validation.Validate(v.PropertyID, validation.Required),
+		"PropertyVersion": validation.Validate(v.PropertyVersion, validation.Required),
+		"GroupID":         validation.Validate(v.GroupID, validation.Required),
+		"ContractID":      validation.Validate(v.ContractID, validation.Required),
+	}.Filter()
+}
+
 var (
 	// ErrGetPropertyVersions represents error when fetching property versions fails
 	ErrGetPropertyVersions = errors.New("fetching property versions")
@@ -222,9 +292,12 @@ var (
 	ErrGetAvailableBehaviors = errors.New("fetching available behaviors")
 	// ErrGetAvailableCriteria represents error when fetching available criteria fails
 	ErrGetAvailableCriteria = errors.New("fetching available criteria")
+	// ErrListAvailableIncludes represents error when fetching available includes
+	ErrListAvailableIncludes = errors.New("fetching available includes")
+	// ErrListReferencedIncludes represents error when fetching referenced includes
+	ErrListReferencedIncludes = errors.New("fetching referenced includes")
 )
 
-// GetPropertyVersions returns list of property versions for give propertyID, contractID and groupID
 func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersionsRequest) (*GetPropertyVersionsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetPropertyVersions, ErrStructValidation, err)
@@ -263,7 +336,6 @@ func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersio
 	return &versions, nil
 }
 
-// GetLatestVersion returns either the latest property version overall, or the latest ACTIVE version on production or staging network
 func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequest) (*GetPropertyVersionsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetLatestVersion, ErrStructValidation, err)
@@ -302,7 +374,6 @@ func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequ
 	return &version, nil
 }
 
-// GetPropertyVersion returns property version with provided version number
 func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersionRequest) (*GetPropertyVersionsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetPropertyVersion, ErrStructValidation, err)
@@ -446,4 +517,104 @@ func (p *papi) GetAvailableCriteria(ctx context.Context, params GetFeaturesReque
 	}
 
 	return &versions, nil
+}
+
+func (p *papi) ListAvailableIncludes(ctx context.Context, params ListAvailableIncludesRequest) (*ListAvailableIncludesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("ListAvailableIncludes")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListAvailableIncludes, ErrStructValidation, err)
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/papi/v1/properties/%s/versions/%d/external-resources", params.PropertyID, params.PropertyVersion))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListAvailableIncludes, err)
+	}
+
+	q := uri.Query()
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAvailableIncludes, err)
+	}
+
+	var result ListAvailableIncludesResponse
+	resp, err := p.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListAvailableIncludes, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListAvailableIncludes, p.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func (p *papi) ListReferencedIncludes(ctx context.Context, params ListReferencedIncludesRequest) (*ListReferencedIncludesResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("ListReferencedIncludes")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListReferencedIncludes, ErrStructValidation, err)
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/papi/v1/properties/%s/versions/%d/includes", params.PropertyID, params.PropertyVersion))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListReferencedIncludes, err)
+	}
+
+	q := uri.Query()
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListReferencedIncludes, err)
+	}
+
+	var result ListReferencedIncludesResponse
+	resp, err := p.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListReferencedIncludes, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListReferencedIncludes, p.Error(resp))
+	}
+
+	return &result, nil
+}
+
+// UnmarshalJSON reads a ListAvailableIncludesResponse struct from its data argument and transform map of includes into array for better usability.
+func (r *ListAvailableIncludesResponse) UnmarshalJSON(data []byte) error {
+	var response struct {
+		ExternalResources struct {
+			ExternalIncludes map[string]ExternalIncludeData `json:"include"`
+		} `json:"externalResources"`
+	}
+
+	if err := json.Unmarshal(data, &response); err != nil {
+		return err
+	}
+
+	r.AvailableIncludes = make([]ExternalIncludeData, 0, len(response.ExternalResources.ExternalIncludes))
+	for _, include := range response.ExternalResources.ExternalIncludes {
+		r.AvailableIncludes = append(r.AvailableIncludes, include)
+	}
+
+	return nil
 }

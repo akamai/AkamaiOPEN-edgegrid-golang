@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ HAPI = &Mock{}
+
 func (m *Mock) DeleteEdgeHostname(ctx context.Context, request DeleteEdgeHostnameRequest) (*DeleteEdgeHostnameResponse, error) {
 	args := m.Called(ctx, request)
 

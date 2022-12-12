@@ -12,7 +12,7 @@ type (
 	// Error is a papi error interface
 	Error struct {
 		Type          string          `json:"type"`
-		Title         string          `json:"title"`
+		Title         string          `json:"title,omitempty"`
 		Detail        string          `json:"detail"`
 		Instance      string          `json:"instance,omitempty"`
 		BehaviorName  string          `json:"behaviorName,omitempty"`
@@ -20,9 +20,9 @@ type (
 		StatusCode    int             `json:"statusCode,omitempty"`
 		Errors        json.RawMessage `json:"errors,omitempty"`
 		Warnings      json.RawMessage `json:"warnings,omitempty"`
-		LimitKey      string          `json:"limitKey"`
-		Limit         int             `json:"limit"`
-		Remaining     int             `json:"remaining"`
+		LimitKey      string          `json:"limitKey,omitempty"`
+		Limit         *int            `json:"limit,omitempty"`
+		Remaining     *int            `json:"remaining,omitempty"`
 	}
 )
 
@@ -62,6 +62,13 @@ func (e *Error) Error() string {
 
 // Is handles error comparisons
 func (e *Error) Is(target error) bool {
+	if errors.Is(target, ErrSBDNotEnabled) {
+		return e.isErrSBDNotEnabled()
+	}
+	if errors.Is(target, ErrDefaultCertLimitReached) {
+		return e.isErrDefaultCertLimitReached()
+	}
+
 	var t *Error
 	if !errors.As(target, &t) {
 		return false
@@ -76,4 +83,12 @@ func (e *Error) Is(target error) bool {
 	}
 
 	return e.Error() == t.Error()
+}
+
+func (e *Error) isErrSBDNotEnabled() bool {
+	return e.StatusCode == http.StatusForbidden && e.Type == "https://problems.luna.akamaiapis.net/papi/v0/property-version-hostname/default-cert-provisioning-unavailable"
+}
+
+func (e *Error) isErrDefaultCertLimitReached() bool {
+	return e.StatusCode == http.StatusTooManyRequests && e.LimitKey == "DEFAULT_CERTS_PER_CONTRACT" && e.Remaining != nil && *e.Remaining == 0
 }

@@ -13,14 +13,15 @@ import (
 
 type (
 	// PropertyRules contains operations available on PropertyRule resource
-	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#propertyversionrulesgroup
 	PropertyRules interface {
-		// GetRuleTree lists all available CP codes
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyversionrules
+		// GetRuleTree gets the entire rule tree for a property version.
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version-rules
 		GetRuleTree(context.Context, GetRuleTreeRequest) (*GetRuleTreeResponse, error)
 
-		// UpdateRuleTree lists all available CP codes
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#putpropertyversionrules
+		// UpdateRuleTree updates the rule tree for a property version
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/put-property-version-rules
 		UpdateRuleTree(context.Context, UpdateRulesRequest) (*UpdateRulesResponse, error)
 	}
 

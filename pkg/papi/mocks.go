@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ PAPI = &Mock{}
+
 type (
 	// GetGroupsFn is any function having the same signature as GetGroups
 	GetGroupsFn func(context.Context) (*GetGroupsResponse, error)
@@ -486,4 +488,194 @@ func (p *Mock) OnUpdateRuleTree(ctx, req interface{}, impl UpdateRuleTreeFn) *mo
 	})
 
 	return call
+}
+
+func (p *Mock) ListIncludes(ctx context.Context, r ListIncludesRequest) (*ListIncludesResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListIncludesResponse), args.Error(1)
+}
+
+func (p *Mock) ListIncludeParents(ctx context.Context, r ListIncludeParentsRequest) (*ListIncludeParentsResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListIncludeParentsResponse), args.Error(1)
+}
+
+func (p *Mock) GetInclude(ctx context.Context, r GetIncludeRequest) (*GetIncludeResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetIncludeResponse), args.Error(1)
+}
+
+func (p *Mock) CreateInclude(ctx context.Context, r CreateIncludeRequest) (*CreateIncludeResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*CreateIncludeResponse), args.Error(1)
+}
+
+func (p *Mock) DeleteInclude(ctx context.Context, r DeleteIncludeRequest) (*DeleteIncludeResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*DeleteIncludeResponse), args.Error(1)
+}
+
+func (p *Mock) GetIncludeRuleTree(ctx context.Context, r GetIncludeRuleTreeRequest) (*GetIncludeRuleTreeResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetIncludeRuleTreeResponse), args.Error(1)
+}
+
+func (p *Mock) UpdateIncludeRuleTree(ctx context.Context, r UpdateIncludeRuleTreeRequest) (*UpdateIncludeRuleTreeResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*UpdateIncludeRuleTreeResponse), args.Error(1)
+}
+
+func (p *Mock) ActivateInclude(ctx context.Context, r ActivateIncludeRequest) (*ActivationIncludeResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ActivationIncludeResponse), args.Error(1)
+}
+
+func (p *Mock) DeactivateInclude(ctx context.Context, r DeactivateIncludeRequest) (*DeactivationIncludeResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*DeactivationIncludeResponse), args.Error(1)
+}
+
+func (p *Mock) GetIncludeActivation(ctx context.Context, r GetIncludeActivationRequest) (*GetIncludeActivationResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetIncludeActivationResponse), args.Error(1)
+}
+
+func (p *Mock) ListIncludeActivations(ctx context.Context, r ListIncludeActivationsRequest) (*ListIncludeActivationsResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListIncludeActivationsResponse), args.Error(1)
+}
+
+func (p *Mock) CreateIncludeVersion(ctx context.Context, r CreateIncludeVersionRequest) (*CreateIncludeVersionResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*CreateIncludeVersionResponse), args.Error(1)
+}
+
+func (p *Mock) GetIncludeVersion(ctx context.Context, r GetIncludeVersionRequest) (*GetIncludeVersionResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetIncludeVersionResponse), args.Error(1)
+}
+
+func (p *Mock) ListIncludeVersions(ctx context.Context, r ListIncludeVersionsRequest) (*ListIncludeVersionsResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListIncludeVersionsResponse), args.Error(1)
+}
+
+func (p *Mock) ListIncludeVersionAvailableCriteria(ctx context.Context, r ListAvailableCriteriaRequest) (*AvailableCriteriaResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*AvailableCriteriaResponse), args.Error(1)
+}
+
+func (p *Mock) ListIncludeVersionAvailableBehaviors(ctx context.Context, r ListAvailableBehaviorsRequest) (*AvailableBehaviorsResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*AvailableBehaviorsResponse), args.Error(1)
+}
+
+func (p *Mock) ListAvailableIncludes(ctx context.Context, r ListAvailableIncludesRequest) (*ListAvailableIncludesResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListAvailableIncludesResponse), args.Error(1)
+}
+
+func (p *Mock) ListReferencedIncludes(ctx context.Context, r ListReferencedIncludesRequest) (*ListReferencedIncludesResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListReferencedIncludesResponse), args.Error(1)
+}
+
+func (p *Mock) CancelIncludeActivation(ctx context.Context, r CancelIncludeActivationRequest) (*CancelIncludeActivationResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*CancelIncludeActivationResponse), args.Error(1)
 }

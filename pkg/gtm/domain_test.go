@@ -24,7 +24,6 @@ func TestGtm_NewDomain(t *testing.T) {
 	assert.Equal(t, "primary", dom.Type)
 }
 
-// Verify GetListDomains. Sould pass, e.g. no API errors and non nil list.
 func TestGtm_ListDomains(t *testing.T) {
 	var result DomainsList
 

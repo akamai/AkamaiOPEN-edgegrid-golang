@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ NetworkList = &Mock{}
+
 func (p *Mock) CreateActivations(ctx context.Context, params CreateActivationsRequest) (*CreateActivationsResponse, error) {
 	args := p.Called(ctx, params)
 

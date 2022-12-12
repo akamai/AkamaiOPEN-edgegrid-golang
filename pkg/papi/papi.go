@@ -10,29 +10,39 @@ import (
 )
 
 var (
-	// ErrStructValidation is returned returned when given struct validation failed
+	// ErrStructValidation is returned when given struct validation failed
 	ErrStructValidation = errors.New("struct validation")
 
 	// ErrNotFound is returned when requested resource was not found
 	ErrNotFound = errors.New("resource not found")
+
+	// ErrSBDNotEnabled indicates that secure-by-default is not enabled on the given account
+	ErrSBDNotEnabled = errors.New("secure-by-default is not enabled")
+
+	// ErrDefaultCertLimitReached indicates that the limit for DEFAULT certificates has been reached
+	ErrDefaultCertLimitReached = errors.New("the limit for DEFAULT certificates has been reached")
 )
 
 type (
 	// PAPI is the papi api interface
 	PAPI interface {
-		Groups
-		Contracts
 		Activations
-		CPCodes
-		Properties
-		PropertyVersions
-		EdgeHostnames
-		Products
-		Search
-		PropertyVersionHostnames
 		ClientSettings
+		Contracts
+		CPCodes
+		EdgeHostnames
+		Groups
+		Includes
+		IncludeRules
+		IncludeActivations
+		IncludeVersions
+		Products
+		Properties
 		PropertyRules
+		PropertyVersionHostnames
+		PropertyVersions
 		RuleFormats
+		Search
 	}
 
 	papi struct {
@@ -71,7 +81,7 @@ func Client(sess session.Session, opts ...Option) PAPI {
 }
 
 // WithUsePrefixes sets the `PAPI-Use-Prefixes` header on requests
-// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#prefixes
+// See: https://techdocs.akamai.com/property-mgr/reference/id-prefixes
 func WithUsePrefixes(usePrefixes bool) Option {
 	return func(p *papi) {
 		p.usePrefixes = usePrefixes

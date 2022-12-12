@@ -13,22 +13,25 @@ import (
 
 type (
 	// Activations contains operations available on Activation resource
-	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#propertyactivationsgroup
 	Activations interface {
 		// CreateActivation creates a new activation or deactivation request
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postpropertyactivations
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/post-property-activations
 		CreateActivation(context.Context, CreateActivationRequest) (*CreateActivationResponse, error)
 
 		// GetActivations returns a list of the property activations
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivations
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-activations
 		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
 
 		// GetActivation gets details about an activation
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getpropertyactivation
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-activation
 		GetActivation(context.Context, GetActivationRequest) (*GetActivationResponse, error)
 
 		// CancelActivation allows for canceling an activation while it is still PENDING
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#deletepropertyactivation
+		//
+		// https://techdocs.akamai.com/property-mgr/reference/delete-property-activation
 		CancelActivation(context.Context, CancelActivationRequest) (*CancelActivationResponse, error)
 	}
 
@@ -152,7 +155,7 @@ const (
 	// ActivationStatusActive is an activation that is currently serving traffic
 	ActivationStatusActive ActivationStatus = "ACTIVE"
 
-	// ActivationStatusInactive is an activation that has been superceded by another
+	// ActivationStatusInactive is an activation that has been superseded by another
 	ActivationStatusInactive ActivationStatus = "INACTIVE"
 
 	// ActivationStatusNew is a not yet active activation
@@ -178,6 +181,9 @@ const (
 
 	// ActivationStatusDeactivating is pending deactivation
 	ActivationStatusDeactivating ActivationStatus = "PENDING_DEACTIVATION"
+
+	// ActivationStatusCancelling is returned when cancellation is in progress
+	ActivationStatusCancelling ActivationStatus = "PENDING_CANCELLATION"
 
 	// ActivationStatusDeactivated is deactivated
 	ActivationStatusDeactivated ActivationStatus = "DEACTIVATED"

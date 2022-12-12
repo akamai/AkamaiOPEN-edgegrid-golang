@@ -13,6 +13,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ DNS = &Mock{}
+
 func (d *Mock) ListZones(ctx context.Context, query ...ZoneListQueryArgs) (*ZoneListResponse, error) {
 	var args mock.Arguments
 

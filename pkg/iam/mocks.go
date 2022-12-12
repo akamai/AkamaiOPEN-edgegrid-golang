@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ IAM = &Mock{}
+
 func (m *Mock) ListGroups(ctx context.Context, request ListGroupsRequest) ([]Group, error) {
 	args := m.Called(ctx, request)
 

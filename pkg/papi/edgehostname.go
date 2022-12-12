@@ -13,18 +13,20 @@ import (
 
 type (
 	// EdgeHostnames contains operations available on EdgeHostnames resource
-	// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#edgehostnamesgroup
 	EdgeHostnames interface {
 		// GetEdgeHostnames fetches a list of edge hostnames
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getedgehostnames
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-edgehostnames
 		GetEdgeHostnames(context.Context, GetEdgeHostnamesRequest) (*GetEdgeHostnamesResponse, error)
 
 		// GetEdgeHostname fetches edge hostname with given ID
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#getedgehostname
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-edgehostname
 		GetEdgeHostname(context.Context, GetEdgeHostnameRequest) (*GetEdgeHostnamesResponse, error)
 
 		// CreateEdgeHostname creates a new edge hostname
-		// See: https://developer.akamai.com/api/core_features/property_manager/v1.html#postedgehostnames
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/post-edgehostnames
 		CreateEdgeHostname(context.Context, CreateEdgeHostnameRequest) (*CreateEdgeHostnameResponse, error)
 	}
 

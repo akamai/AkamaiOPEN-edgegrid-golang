@@ -11,10 +11,10 @@ import (
 
 type (
 	// Search contains SearchProperty method used for fetching properties
-	// https://developer.akamai.com/api/core_features/property_manager/v1.html#searchgroup
 	Search interface {
-		// Search earches properties by name, or by the hostname or edge hostname for which it’s currently active
-		// https://developer.akamai.com/api/core_features/property_manager/v1.html#postfindbyvalue
+		// SearchProperties searches properties by name, or by the hostname or edge hostname for which it’s currently active
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/post-search-find-by-value
 		SearchProperties(context.Context, SearchRequest) (*SearchResponse, error)
 	}
 

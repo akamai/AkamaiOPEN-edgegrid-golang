@@ -12,6 +12,8 @@ type Mock struct {
 	mock.Mock
 }
 
+var _ Imaging = &Mock{}
+
 func (m *Mock) GetPolicy(ctx context.Context, req GetPolicyRequest) (PolicyOutput, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
