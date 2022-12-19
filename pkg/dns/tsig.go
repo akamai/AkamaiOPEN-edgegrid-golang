@@ -244,11 +244,9 @@ func (p *dns) GetTsigKeyZones(ctx context.Context, tsigKey *TSIGKey) (*ZoneNameL
 }
 
 // GetTsigKeyAliases retrieves a DNS Zone's aliases
-//func GetZoneKeyAliases(zone string) (*TSIGZoneAliases, error) {
 //
-// There is a discrepency between the technical doc and API operation. API currently returns a zone name list.
+// There is a discrepancy between the technical doc and API operation. API currently returns a zone name list.
 // TODO: Reconcile
-//
 func (p *dns) GetTsigKeyAliases(ctx context.Context, zone string) (*ZoneNameListResponse, error) {
 
 	logger := p.Log(ctx)
@@ -273,7 +271,7 @@ func (p *dns) GetTsigKeyAliases(ctx context.Context, zone string) (*ZoneNameList
 	return &zonesList, nil
 }
 
-//  TsigKeyBulkUpdate bulk tsig key update
+// TsigKeyBulkUpdate bulk tsig key update
 func (p *dns) TsigKeyBulkUpdate(ctx context.Context, tsigBulk *TSIGKeyBulkPost) error {
 
 	logger := p.Log(ctx)

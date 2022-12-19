@@ -1,3 +1,4 @@
+// Package cps provides access to the Akamai CPS APIs
 package cps
 
 import (

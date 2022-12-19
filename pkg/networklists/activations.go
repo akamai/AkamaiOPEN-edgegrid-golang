@@ -335,7 +335,7 @@ func (p *networklists) GetActivation(ctx context.Context, params GetActivationRe
 //
 // If acknowledgeWarnings is true and warnings are returned on the first attempt,
 // a second attempt is made, acknowledging the warnings.
-//
+
 func (p *networklists) CreateActivations(ctx context.Context, params CreateActivationsRequest) (*CreateActivationsResponse, error) {
 
 	logger := p.Log(ctx)
@@ -383,8 +383,7 @@ func (p *networklists) CreateActivations(ctx context.Context, params CreateActiv
 
 }
 
-// Delete will delete a Activations
-//
+// RemoveActivations will delete Activations
 //
 // API Docs: // appsec v1
 //

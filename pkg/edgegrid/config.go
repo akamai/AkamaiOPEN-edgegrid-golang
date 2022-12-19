@@ -1,3 +1,4 @@
+// Package edgegrid provides Akamai .edgerc configuration parsing and http.Request signing.
 package edgegrid
 
 import (

@@ -1,3 +1,4 @@
+// Package cloudlets provides access to the Akamai Cloudlets APIs
 package cloudlets
 
 import (

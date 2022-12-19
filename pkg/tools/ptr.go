@@ -1,3 +1,4 @@
+// Package tools contains utilities used in EdgeGrid
 package tools
 
 // BoolPtr returns the address of the bool

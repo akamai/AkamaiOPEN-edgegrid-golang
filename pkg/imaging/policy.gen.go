@@ -46,9 +46,9 @@ type (
 		Var string `json:"var"`
 	}
 
-	////////////////////////////////////////
-	////////// Generated types /////////////
-	////////////////////////////////////////
+	/*-----------------------------------------------*/
+	///////////////// Generated types /////////////////
+	/*-----------------------------------------------*/
 
 	// Append Places a specified `image` beside the source image. The API places the `image` on a major dimension, then aligns it on the minor dimension. Transparent pixels fill any area not covered by either image.
 	Append struct {
@@ -1126,9 +1126,9 @@ type (
 	PolicyOutputVideoVideo bool
 )
 
-////////////////////////////////////////////
-////////// Generated constants /////////////
-////////////////////////////////////////////
+/*-----------------------------------------------*/
+/////////////// Generated constants ///////////////
+/*-----------------------------------------------*/
 const (
 
 	// AppendGravityPriorityHorizontal const
@@ -1558,9 +1558,9 @@ const (
 	PolicyOutputVideoVideoTrue PolicyOutputVideoVideo = true
 )
 
-//////////////////////////////////////////////////
-////////// Interface implementations /////////////
-//////////////////////////////////////////////////
+/*-----------------------------------------------*/
+//////////// Interface implementations ////////////
+/*-----------------------------------------------*/
 
 func (Append) transformationType() string {
 	return "Append"
@@ -1814,9 +1814,9 @@ func (UnsharpMask) transformationTypePost() string {
 	return "UnsharpMask"
 }
 
-//////////////////////////////////////////////////////
-////////////// Pointer functions /////////////////////
-//////////////////////////////////////////////////////
+/*-----------------------------------------------*/
+//////////////// Pointer functions ////////////////
+/*-----------------------------------------------*/
 
 // AppendGravityPriorityPtr returns pointer of AppendGravityPriority
 func AppendGravityPriorityPtr(v AppendGravityPriority) *AppendGravityPriority {
@@ -2158,9 +2158,9 @@ func OutputVideoVideoAdaptiveQualityPtr(v OutputVideoVideoAdaptiveQuality) *Outp
 	return &v
 }
 
-////////////////////////////////////////////
-////////////// Validators //////////////////
-////////////////////////////////////////////
+/*-----------------------------------------------*/
+/////////////////// Validators ////////////////////
+/*-----------------------------------------------*/
 
 // Validate validates Append
 func (a Append) Validate() error {
@@ -3368,9 +3368,9 @@ func (p PolicyOutputVideo) Validate() error {
 	}.Filter()
 }
 
-//////////////////////////////////////////////////////////////////
-////////// Variable type marshalers and unmarshalers /////////////
-//////////////////////////////////////////////////////////////////
+/*-----------------------------------------------*/
+//// Variable type marshalers and unmarshalers ////
+/*-----------------------------------------------*/
 var (
 
 	// ErrUnmarshalVariableAppendGravityPriorityVariableInline represents an error while unmarshalling AppendGravityPriorityVariableInline
@@ -4140,9 +4140,9 @@ func (o *OutputVideoVideoAdaptiveQualityVariableInline) MarshalJSON() ([]byte, e
 	return nil, nil
 }
 
-////////////////////////////////////////////////
-////////// Image type unmarshalers /////////////
-////////////////////////////////////////////////
+/*-----------------------------------------------*/
+///////////// Image type unmarshalers /////////////
+/*-----------------------------------------------*/
 
 // ImageTypeValueHandlers is a map of available image types
 var ImageTypeValueHandlers = map[string]func() ImageType{
@@ -4309,9 +4309,9 @@ func (c *CompositePost) UnmarshalJSON(in []byte) error {
 	return nil
 }
 
-////////////////////////////////////////////////
-////////// Shape type unmarshalers /////////////
-////////////////////////////////////////////////
+/*-----------------------------------------------*/
+///////////// Shape type unmarshalers /////////////
+/*-----------------------------------------------*/
 
 // ShapeTypes is a map of available shape types
 var ShapeTypes = map[string]func() ShapeType{
@@ -4381,9 +4381,9 @@ func (r *RegionOfInterestCrop) UnmarshalJSON(in []byte) error {
 	return nil
 }
 
-/////////////////////////////////////////////////////
-////////// Transformation unmarshallers /////////////
-/////////////////////////////////////////////////////
+/*-----------------------------------------------*/
+////////// Transformation unmarshallers ///////////
+/*-----------------------------------------------*/
 
 var (
 

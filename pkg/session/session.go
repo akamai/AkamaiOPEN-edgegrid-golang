@@ -95,7 +95,6 @@ func New(opts ...Option) (Session, error) {
 
 // Must is a helper tthat will result in a panic if an error is returned
 // ex. sess := Must(New())
-//
 func Must(sess Session, err error) Session {
 	if err != nil {
 		panic(err)

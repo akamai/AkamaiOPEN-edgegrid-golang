@@ -1,3 +1,4 @@
+// Package edgeworkers provides access to the Akamai EdgeWorkers and EdgeKV APIs
 package edgeworkers
 
 import (

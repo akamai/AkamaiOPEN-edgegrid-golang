@@ -35,7 +35,7 @@ type CidrMaps interface {
 	UpdateCidrMap(context.Context, *CidrMap, string) (*ResponseStatus, error)
 }
 
-//CidrAssignment represents a GTM cidr assignment element
+// CidrAssignment represents a GTM cidr assignment element
 type CidrAssignment struct {
 	DatacenterBase
 	Blocks []string `json:"blocks"`

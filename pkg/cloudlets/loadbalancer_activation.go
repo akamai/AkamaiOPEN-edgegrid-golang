@@ -117,7 +117,7 @@ func (v ListLoadBalancerActivationsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(errs)
 }
 
-//Validate validates LoadBalancerVersionActivation Struct
+// Validate validates LoadBalancerVersionActivation struct
 func (v LoadBalancerVersionActivation) Validate() error {
 	return validation.Errors{
 		"Network": validation.Validate(v.Network, validation.Required, validation.In(LoadBalancerActivationNetworkStaging, LoadBalancerActivationNetworkProduction).Error(

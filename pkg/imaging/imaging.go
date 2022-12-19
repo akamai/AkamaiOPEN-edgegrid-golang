@@ -1,3 +1,4 @@
+// Package imaging provides access to the Akamai Image & Video Manager APIs
 package imaging
 
 import (

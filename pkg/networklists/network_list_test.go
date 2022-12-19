@@ -380,7 +380,6 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 	}
 }
 
-//Test delete NetworkList
 func TestNetworkList_DeleteNetworkList(t *testing.T) {
 
 	result := RemoveNetworkListResponse{}

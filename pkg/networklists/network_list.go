@@ -390,8 +390,7 @@ func (p *networklists) UpdateNetworkList(ctx context.Context, params UpdateNetwo
 	return &rval, nil
 }
 
-// Create will create a new networklist.
-//
+// CreateNetworkList will create a new networklist.
 //
 // API Docs: // network_lists v2
 //
