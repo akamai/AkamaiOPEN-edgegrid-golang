@@ -180,7 +180,7 @@ func TestUploadThirdPartyCertAndTrustChain(t *testing.T) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 				assert.Equal(t, "application/vnd.akamai.cps.change-id.v1+json", r.Header.Get("Accept"))
-				assert.Equal(t, "application/vnd.akamai.cps.certificate-and-trust-chain.v2+json", r.Header.Get("Content-Type"))
+				assert.Equal(t, "application/vnd.akamai.cps.certificate-and-trust-chain.v2+json; charset=utf-8", r.Header.Get("Content-Type"))
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
