@@ -104,16 +104,6 @@ func (m *Mock) GetProperties(ctx context.Context, r GetPropertiesRequest) ([]Pro
 	return args.Get(0).([]Property), args.Error(1)
 }
 
-func (m *Mock) GetPropertiesByGroup(ctx context.Context, r GetPropertiesByGroupRequest) ([]Property, error) {
-	args := m.Called(ctx, r)
-
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-
-	return args.Get(0).([]Property), args.Error(1)
-}
-
 func (m *Mock) GetDatasetFields(ctx context.Context, r GetDatasetFieldsRequest) ([]DataSets, error) {
 	args := m.Called(ctx, r)
 

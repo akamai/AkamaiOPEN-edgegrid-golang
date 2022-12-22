@@ -124,18 +124,16 @@ type (
 
 	// DataSets is a list of fields selected from the associated template that the stream monitors in logs
 	DataSets struct {
-		DatasetFields           []DatasetFields `json:"datasetFields"`
-		DatasetGroupDescription string          `json:"datasetGroupDescription"`
-		DatasetGroupName        string          `json:"datasetGroupName"`
+		DataSetFields []DataSetField `json:"datasetFields"`
 	}
 
-	// DatasetFields is list of data set fields selected from the associated template that the stream monitors in logs
-	DatasetFields struct {
+	// DataSetField is a data set field selected from the associated template that the stream monitors in logs
+	DataSetField struct {
 		DatasetFieldID          int    `json:"datasetFieldId"`
 		DatasetFieldDescription string `json:"datasetFieldDescription"`
 		DatasetFieldJsonKey     string `json:"datasetFieldJsonKey"`
 		DatasetFieldName        string `json:"datasetFieldName"`
-		Order                   int    `json:"order"`
+		DatasetFieldGroup       string `json:"datasetFieldGroup"`
 	}
 
 	// Errors associated to the stream
@@ -152,6 +150,13 @@ type (
 		ProductName  string   `json:"productName"`
 		PropertyID   int      `json:"propertyId"`
 		PropertyName string   `json:"propertyName"`
+		ContractID   string   `json:"contractId"`
+	}
+
+	// PropertyDetails identifies the properties belong to the given group.
+	PropertyDetails struct {
+		Properties []Property `json:"properties"`
+		GroupID    int        `json:"groupId"`
 	}
 
 	// ActivationStatus is used to create an enum of possible ActivationStatus values

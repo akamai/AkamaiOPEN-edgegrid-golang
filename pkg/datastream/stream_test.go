@@ -134,31 +134,25 @@ func TestDs_GetStream(t *testing.T) {
 				CreatedDate: "08-07-2021 06:00:27 GMT",
 				Datasets: []DataSets{
 					{
-						DatasetGroupName:        "group_name_1",
-						DatasetGroupDescription: "group_desc_1",
-						DatasetFields: []DatasetFields{
+						DataSetFields: []DataSetField{
 							{
 								DatasetFieldID:          1000,
 								DatasetFieldName:        "dataset_field_name_1",
 								DatasetFieldDescription: "dataset_field_desc_1",
-								Order:                   0,
 							},
 							{
 								DatasetFieldID:          1002,
 								DatasetFieldName:        "dataset_field_name_2",
 								DatasetFieldDescription: "dataset_field_desc_2",
-								Order:                   1,
 							},
 						},
 					},
 					{
-						DatasetGroupName: "group_name_2",
-						DatasetFields: []DatasetFields{
+						DataSetFields: []DataSetField{
 							{
 								DatasetFieldID:          1082,
 								DatasetFieldName:        "dataset_field_name_3",
 								DatasetFieldDescription: "dataset_field_desc_3",
-								Order:                   32,
 							},
 						},
 					},

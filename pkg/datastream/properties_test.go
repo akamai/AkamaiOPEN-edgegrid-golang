@@ -17,18 +17,20 @@ func TestDs_GetProperties(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse []Property
+		expectedResponse *PropertyDetails
 		withError        error
 	}{
 		"200 OK": {
 			request: GetPropertiesRequest{
-				GroupId:   12345,
-				ProductId: "Download_Delivery",
+				GroupId: 12345,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
-[
+{
+    "groupId": 12345,
+    "properties": [
     {
+        "contractId": "1-7KLGU",
         "propertyId": 382631,
         "propertyName": "customp.akamai.com",
         "productId": "Ion_Standard",
@@ -39,6 +41,7 @@ func TestDs_GetProperties(t *testing.T) {
         ]
     },
     {
+        "contractId": "1-7KLGU",
         "propertyId": 347459,
         "propertyName": "example.com",
         "productId": "Dynamic_Site_Accelerator",
@@ -48,26 +51,32 @@ func TestDs_GetProperties(t *testing.T) {
         ]
     }
 ]
+}
 `,
-			expectedPath: "/datastream-config-api/v1/log/properties/product/Download_Delivery/group/12345",
-			expectedResponse: []Property{
-				{
-					PropertyID:   382631,
-					PropertyName: "customp.akamai.com",
-					ProductID:    "Ion_Standard",
-					ProductName:  "Ion Standard",
-					Hostnames: []string{
-						"customp.akamaize.net",
-						"customp.akamaized-staging.net",
+			expectedPath: "/datastream-config-api/v2/log/groups/12345/properties",
+			expectedResponse: &PropertyDetails{
+				GroupID: 12345,
+				Properties: []Property{
+					{
+						ContractID:   "1-7KLGU",
+						PropertyID:   382631,
+						PropertyName: "customp.akamai.com",
+						ProductID:    "Ion_Standard",
+						ProductName:  "Ion Standard",
+						Hostnames: []string{
+							"customp.akamaize.net",
+							"customp.akamaized-staging.net",
+						},
 					},
-				},
-				{
-					PropertyID:   347459,
-					PropertyName: "example.com",
-					ProductID:    "Dynamic_Site_Accelerator",
-					ProductName:  "Dynamic Site Accelerator",
-					Hostnames: []string{
-						"example.edgekey.net",
+					{
+						ContractID:   "1-7KLGU",
+						PropertyID:   347459,
+						PropertyName: "example.com",
+						ProductID:    "Dynamic_Site_Accelerator",
+						ProductName:  "Dynamic Site Accelerator",
+						Hostnames: []string{
+							"example.edgekey.net",
+						},
 					},
 				},
 			},
@@ -77,7 +86,7 @@ func TestDs_GetProperties(t *testing.T) {
 			withError: ErrStructValidation,
 		},
 		"400 bad request": {
-			request:        GetPropertiesRequest{GroupId: 12345, ProductId: "testProductName"},
+			request:        GetPropertiesRequest{GroupId: 12345},
 			responseStatus: http.StatusBadRequest,
 			responseBody: `
 {
@@ -95,7 +104,7 @@ func TestDs_GetProperties(t *testing.T) {
 	]
 }
 `,
-			expectedPath: "/datastream-config-api/v1/log/properties/product/testProductName/group/12345",
+			expectedPath: "/datastream-config-api/v2/log/groups/12345/properties",
 			withError: &Error{
 				Type:       "bad-request",
 				Title:      "Bad Request",
@@ -111,7 +120,7 @@ func TestDs_GetProperties(t *testing.T) {
 			},
 		},
 		"403 forbidden": {
-			request:        GetPropertiesRequest{GroupId: 12345, ProductId: "testProductName"},
+			request:        GetPropertiesRequest{GroupId: 12345},
 			responseStatus: http.StatusForbidden,
 			responseBody: `
 {
@@ -129,7 +138,7 @@ func TestDs_GetProperties(t *testing.T) {
 	]
 }
 `,
-			expectedPath: "/datastream-config-api/v1/log/properties/product/testProductName/group/12345",
+			expectedPath: "/datastream-config-api/v2/log/groups/12345/properties",
 			withError: &Error{
 				Type:       "forbidden",
 				Title:      "Forbidden",
@@ -167,208 +176,109 @@ func TestDs_GetProperties(t *testing.T) {
 	}
 }
 
-func TestDs_GetPropertiesByGroup(t *testing.T) {
-	tests := map[string]struct {
-		request          GetPropertiesByGroupRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse []Property
-		withError        error
-	}{
-		"200 OK": {
-			request: GetPropertiesByGroupRequest{
-				GroupId: 12345,
-			},
-			responseStatus: http.StatusOK,
-			responseBody: `
-[
-    {
-        "propertyId": 382631,
-        "propertyName": "customp.akamai.com",
-        "productId": "Ion_Standard",
-        "productName": "Ion Standard",
-        "hostnames": [
-            "customp.akamaize.net",
-            "customp.akamaized-staging.net"
-        ]
-    },
-    {
-        "propertyId": 347459,
-        "propertyName": "example.com",
-        "productId": "Dynamic_Site_Accelerator",
-        "productName": "Dynamic Site Accelerator",
-        "hostnames": [
-            "example.edgekey.net"
-        ]
-    }
-]
-`,
-			expectedPath: "/datastream-config-api/v1/log/properties/group/12345",
-			expectedResponse: []Property{
-				{
-					PropertyID:   382631,
-					PropertyName: "customp.akamai.com",
-					ProductID:    "Ion_Standard",
-					ProductName:  "Ion Standard",
-					Hostnames: []string{
-						"customp.akamaize.net",
-						"customp.akamaized-staging.net",
-					},
-				},
-				{
-					PropertyID:   347459,
-					PropertyName: "example.com",
-					ProductID:    "Dynamic_Site_Accelerator",
-					ProductName:  "Dynamic Site Accelerator",
-					Hostnames: []string{
-						"example.edgekey.net",
-					},
-				},
-			},
-		},
-		"validation error": {
-			request:   GetPropertiesByGroupRequest{},
-			withError: ErrStructValidation,
-		},
-		"403 access forbidden": {
-			request:        GetPropertiesByGroupRequest{GroupId: 12345},
-			responseStatus: http.StatusForbidden,
-			responseBody: `
-{
-	"type": "forbidden",
-	"title": "Forbidden",
-	"detail": "",
-	"instance": "04fde003-428b-4c2c-94fe-6109af9d231c",
-	"statusCode": 403,
-	"errors": [
-		{
-			"type": "forbidden",
-			"title": "Forbidden",
-			"detail": "User is not having access for the group. Access denied, please contact support."
-		}
-	]
-}
-`,
-			expectedPath: "/datastream-config-api/v1/log/properties/group/12345",
-			withError: &Error{
-				Type:       "forbidden",
-				Title:      "Forbidden",
-				Instance:   "04fde003-428b-4c2c-94fe-6109af9d231c",
-				StatusCode: http.StatusForbidden,
-				Errors: []RequestErrors{
-					{
-						Type:   "forbidden",
-						Title:  "Forbidden",
-						Detail: "User is not having access for the group. Access denied, please contact support.",
-					},
-				},
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			client := mockAPIClient(t, mockServer)
-			result, err := client.GetPropertiesByGroup(context.Background(), test.request)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
-		})
-	}
-}
-
 func TestDs_GetDatasetFields(t *testing.T) {
+	invalidProductID := "INVALID_PROD_ID"
 	tests := map[string]struct {
 		request          GetDatasetFieldsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse []DataSets
+		expectedResponse *DataSets
 		withError        error
 	}{
 		"200 OK": {
 			request: GetDatasetFieldsRequest{
-				TemplateName: TemplateNameEdgeLogs,
+				ProductID: nil,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
-[
-	{
-	    "datasetGroupName":"group_name_1",
-	    "datasetGroupDescription":"group_desc_1",
-	    "datasetFields":[
-	        {
-	            "datasetFieldId":1000,
-	            "datasetFieldName":"dataset_field_name_1",
-	            "datasetFieldDescription":"dataset_field_desc_1"
-	        },
-	        {
-	            "datasetFieldId":1002,
-	            "datasetFieldName":"dataset_field_name_2",
-	            "datasetFieldDescription":"dataset_field_desc_2"
-	        }
-	    ]
-	},
-	{
-	    "datasetGroupName":"group_name_2",
-	    "datasetFields":[
-	        {
-	            "datasetFieldId":1082,
-	            "datasetFieldName":"dataset_field_name_3",
-	            "datasetFieldDescription":"dataset_field_desc_3"
-	        }
-	    ]
-	}
-]
+{
+    "datasetFields": [
+        {
+            "datasetFieldDescription": "The unique identifier of the stream that handled the request.",
+            "datasetFieldGroup": "Log information",
+            "datasetFieldId": 999,
+            "datasetFieldJsonKey": "streamId",
+            "datasetFieldName": "Stream ID"
+        },
+        {
+            "datasetFieldDescription": "The Content Provider code associated with the request.",
+            "datasetFieldGroup": "Log information",
+            "datasetFieldId": 1000,
+            "datasetFieldJsonKey": "cp",
+            "datasetFieldName": "CP code"
+        },
+        {
+            "datasetFieldDescription": "The Akamai geographical price zone from where the request was served.",
+            "datasetFieldGroup": "Geo data",
+            "datasetFieldId": 2053,
+            "datasetFieldJsonKey": "billingRegion",
+            "datasetFieldName": "Billing region"
+        }
+    ]
+}
 `,
-			expectedPath: "/datastream-config-api/v1/log/datasets/template/EDGE_LOGS",
-			expectedResponse: []DataSets{
-				{
-					DatasetGroupName:        "group_name_1",
-					DatasetGroupDescription: "group_desc_1",
-					DatasetFields: []DatasetFields{
-						{
-							DatasetFieldID:          1000,
-							DatasetFieldName:        "dataset_field_name_1",
-							DatasetFieldDescription: "dataset_field_desc_1",
-						},
-						{
-							DatasetFieldID:          1002,
-							DatasetFieldName:        "dataset_field_name_2",
-							DatasetFieldDescription: "dataset_field_desc_2",
-						},
+			expectedPath: "/datastream-config-api/v2/log/datasets-fields",
+			expectedResponse: &DataSets{
+				DataSetFields: []DataSetField{
+					{
+						DatasetFieldID:          999,
+						DatasetFieldName:        "Stream ID",
+						DatasetFieldDescription: "The unique identifier of the stream that handled the request.",
+						DatasetFieldGroup:       "Log information",
+						DatasetFieldJsonKey:     "streamId",
 					},
-				},
-				{
-					DatasetGroupName: "group_name_2",
-					DatasetFields: []DatasetFields{
-						{
-							DatasetFieldID:          1082,
-							DatasetFieldName:        "dataset_field_name_3",
-							DatasetFieldDescription: "dataset_field_desc_3",
-						},
+					{
+						DatasetFieldID:          1000,
+						DatasetFieldName:        "CP code",
+						DatasetFieldDescription: "The Content Provider code associated with the request.",
+						DatasetFieldGroup:       "Log information",
+						DatasetFieldJsonKey:     "cp",
+					},
+					{
+						DatasetFieldID:          2053,
+						DatasetFieldName:        "Billing region",
+						DatasetFieldDescription: "The Akamai geographical price zone from where the request was served.",
+						DatasetFieldGroup:       "Geo data",
+						DatasetFieldJsonKey:     "billingRegion",
 					},
 				},
 			},
 		},
-		"validation error - empty request": {
-			request:   GetDatasetFieldsRequest{},
-			withError: ErrStructValidation,
-		},
-		"validation error - invalid enum value": {
-			request:   GetDatasetFieldsRequest{TemplateName: "invalidTemplateName"},
-			withError: ErrStructValidation,
+		"validation error - invalid product id": {
+			request:        GetDatasetFieldsRequest{ProductID: &invalidProductID},
+			responseStatus: http.StatusBadRequest,
+			responseBody: `
+{
+    "errors": [
+        {
+            "detail": "Invalid product ID. Provide the correct product ID and try again.", 
+            "problemId": "800a7291-c694-434a-99b7-8940d788239a", 
+            "title": "Bad Request", 
+            "type": "bad-request"
+        }
+    ], 
+    "instance": "6e067164-4a61-429a-abaf-87452fd47036", 
+    "problemId": "6e067164-4a61-429a-abaf-87452fd47036", 
+    "status": 400, 
+    "title": "Bad Request", 
+    "type": "bad-request"
+}
+`,
+			expectedPath: "/datastream-config-api/v2/log/datasets-fields?productId=INVALID_PROD_ID",
+			withError: &Error{
+				Type:       "bad-request",
+				Title:      "Bad Request",
+				Instance:   "6e067164-4a61-429a-abaf-87452fd47036",
+				StatusCode: http.StatusBadRequest,
+				Errors: []RequestErrors{
+					{
+						Type:   "bad-request",
+						Title:  "Bad Request",
+						Detail: "Invalid product ID. Provide the correct product ID and try again.",
+					},
+				},
+			},
 		},
 	}
 
