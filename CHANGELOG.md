@@ -1,5 +1,11 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## x.x.x (xxx xx, 2023)
+
+#### BREAKING CHANGES:
+
+* Migrate to go 1.18
+
 ## 3.1.0 (Dec 12, 2022)
 
 #### FEATURES/ENHANCEMENTS:
