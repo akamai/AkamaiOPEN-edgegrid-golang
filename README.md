@@ -12,7 +12,8 @@ This module is presently in active development and provides Akamai REST API supp
 
 This module is not backward compatible with the version `v1`.
 
-Originally branch `master` was representing version `v1`. Now it is representing latest version `v3` and version `v1`
+Originally branch `master` was representing version `v1`. Now it is representing the latest version `v3` and
+version `v1`
 was moved to dedicated `v1` branch.
 
 ## Concurrent Usage
