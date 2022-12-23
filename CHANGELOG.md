@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## x.x.x (xxx xx, 2023)
+## 4.x.x (xxx xx, 2023)
 
 #### BREAKING CHANGES:
 
