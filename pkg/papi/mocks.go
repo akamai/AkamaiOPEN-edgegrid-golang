@@ -229,24 +229,24 @@ func (p *Mock) GetLatestVersion(ctx context.Context, r GetLatestVersionRequest) 
 	return args.Get(0).(*GetPropertyVersionsResponse), args.Error(1)
 }
 
-func (p *Mock) GetAvailableBehaviors(ctx context.Context, r GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error) {
+func (p *Mock) GetAvailableBehaviors(ctx context.Context, r GetAvailableBehaviorsRequest) (*GetBehaviorsResponse, error) {
 	args := p.Called(ctx, r)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*GetFeaturesCriteriaResponse), args.Error(1)
+	return args.Get(0).(*GetBehaviorsResponse), args.Error(1)
 }
 
-func (p *Mock) GetAvailableCriteria(ctx context.Context, r GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error) {
+func (p *Mock) GetAvailableCriteria(ctx context.Context, r GetAvailableCriteriaRequest) (*GetCriteriaResponse, error) {
 	args := p.Called(ctx, r)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*GetFeaturesCriteriaResponse), args.Error(1)
+	return args.Get(0).(*GetCriteriaResponse), args.Error(1)
 }
 
 func (p *Mock) GetEdgeHostnames(ctx context.Context, r GetEdgeHostnamesRequest) (*GetEdgeHostnamesResponse, error) {

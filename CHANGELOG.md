@@ -6,6 +6,11 @@
 
 * Migrate to go 1.18
 
+* PAPI
+  * Fixed endpoints:
+    * [GetAvailableCriteria](https://techdocs.akamai.com/property-mgr/reference/get-available-criteria)
+    * [GetAvailableBehaviors](https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors)
+
 ## 3.1.0 (Dec 12, 2022)
 
 #### FEATURES/ENHANCEMENTS:
