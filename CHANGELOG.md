@@ -11,6 +11,11 @@
     * [GetAvailableCriteria](https://techdocs.akamai.com/property-mgr/reference/get-available-criteria)
     * [GetAvailableBehaviors](https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors)
 
+#### FEATURES/ENHANCEMENTS:
+
+* CPS
+  * Add `preferredTrustChain` field to `csr` struct
+
 ## 3.1.0 (Dec 12, 2022)
 
 #### FEATURES/ENHANCEMENTS:

@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -571,7 +572,8 @@ func TestGetEnrollment(t *testing.T) {
         "ou": "WebEx",
         "sans": [
             "www.example.com"
-        ]
+        ],
+		"preferredTrustChain": null
     },
     "org": {
         "name": "Akamai Technologies",
@@ -644,13 +646,14 @@ func TestGetEnrollment(t *testing.T) {
 				CertificateType:      "third-party",
 				ChangeManagement:     true,
 				CSR: &CSR{
-					C:    "US",
-					CN:   "www.example.com",
-					L:    "Cambridge",
-					O:    "Akamai",
-					OU:   "WebEx",
-					SANS: []string{"www.example.com"},
-					ST:   "MA",
+					C:                   "US",
+					CN:                  "www.example.com",
+					L:                   "Cambridge",
+					O:                   "Akamai",
+					OU:                  "WebEx",
+					SANS:                []string{"www.example.com"},
+					ST:                  "MA",
+					PreferredTrustChain: nil,
 				},
 				EnableMultiStackedCertificates: false,
 				Location:                       "/cps-api/enrollments/1",
@@ -703,6 +706,198 @@ func TestGetEnrollment(t *testing.T) {
 				},
 				ThirdParty:     &ThirdParty{ExcludeSANS: false},
 				ValidationType: "third-party",
+			},
+		},
+		"200 OK - DV": {
+			params:         GetEnrollmentRequest{EnrollmentID: 1},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "id": 1,
+    "productionSlots": [],
+    "stagingSlots": [],
+    "assignedSlots": [
+        12345
+    ],
+    "location": "/cps/v2/enrollments/1",
+    "ra": "lets-encrypt",
+    "validationType": "dv",
+    "certificateType": "san",
+    "certificateChainType": "default",
+    "networkConfiguration": {
+        "geography": "core",
+        "secureNetwork": "enhanced-tls",
+        "mustHaveCiphers": "ak-akamai-default",
+        "preferredCiphers": "ak-akamai-default-interim",
+        "disallowedTlsVersions": [
+            "TLSv1"
+        ],
+        "sniOnly": true,
+        "quicEnabled": false,
+        "dnsNameSettings": {
+            "cloneDnsNames": false,
+            "dnsNames": [
+                "san1.example.com"
+            ]
+        },
+        "ocspStapling": "on",
+        "clientMutualAuthentication": {
+            "setId": "Custom_CPS-6134b_B-3-1AHBENT.xml",
+            "authenticationOptions": {
+                "sendCaListToClient": false,
+                "ocsp": {
+                    "enabled": false
+                }
+            }
+        }
+    },
+    "signatureAlgorithm": "SHA-256",
+    "changeManagement": true,
+    "csr": {
+        "cn": "www.example-test.com",
+        "c": "US",
+        "st": "MA",
+        "l": "Cambridge",
+        "o": "Akamai",
+        "ou": "WebEx",
+        "sans": [
+            "www.example-test.com"
+        ],
+        "preferredTrustChain": "intermediate-a"
+    },
+    "org": {
+        "name": "Akamai Technologies",
+        "addressLineOne": "1 Address",
+        "addressLineTwo": null,
+        "city": "Cambridge",
+        "region": "MA",
+        "postalCode": "012345",
+        "country": "US",
+        "phone": "555-111-1111"
+    },
+    "orgId": null,
+    "adminContact": {
+        "firstName": "R1",
+        "lastName": "D1",
+        "phone": "617-555-0111",
+        "email": "r1d1@akamai.com",
+        "addressLineOne": "150 Broadway",
+        "addressLineTwo": null,
+        "city": "Cambridge",
+        "country": "US",
+        "organizationName": "Akamai",
+        "postalCode": "02142",
+        "region": "MA",
+        "title": "Administrator"
+    },
+    "techContact": {
+        "firstName": "R2",
+        "lastName": "D2",
+        "phone": "617-555-0111",
+        "email": "r2d2@akamai.com",
+        "addressLineOne": "150 Broadway",
+        "addressLineTwo": null,
+        "city": "Cambridge",
+        "country": "US",
+        "organizationName": "Akamai",
+        "postalCode": "02142",
+        "region": "MA",
+        "title": "Technical Engineer"
+    },
+    "thirdParty": null,
+    "enableMultiStackedCertificates": false,
+    "autoRenewalStartTime": null,
+    "pendingChanges": [
+        "/cps-api/enrollments/1/changes/1"
+    ],
+    "maxAllowedSanNames": 100,
+    "maxAllowedWildcardSanNames": 25
+}`,
+			expectedPath: "/cps/v2/enrollments/1",
+			expectedHeaders: map[string]string{
+				"Accept": "application/vnd.akamai.cps.enrollment.v9+json",
+			},
+			expectedResponse: &Enrollment{
+				AdminContact: &Contact{
+					AddressLineOne:   "150 Broadway",
+					City:             "Cambridge",
+					Country:          "US",
+					Email:            "r1d1@akamai.com",
+					FirstName:        "R1",
+					LastName:         "D1",
+					OrganizationName: "Akamai",
+					Phone:            "617-555-0111",
+					PostalCode:       "02142",
+					Region:           "MA",
+					Title:            "Administrator",
+				},
+				CertificateChainType: "default",
+				CertificateType:      "san",
+				ChangeManagement:     true,
+				CSR: &CSR{
+					CN: "www.example-test.com",
+					C:  "US",
+					ST: "MA",
+					L:  "Cambridge",
+					O:  "Akamai",
+					OU: "WebEx",
+					SANS: []string{
+						"www.example-test.com",
+					},
+					PreferredTrustChain: tools.StringPtr("intermediate-a"),
+				},
+				EnableMultiStackedCertificates: false,
+				Location:                       "/cps/v2/enrollments/1",
+				MaxAllowedSanNames:             100,
+				MaxAllowedWildcardSanNames:     25,
+				NetworkConfiguration: &NetworkConfiguration{
+					ClientMutualAuthentication: &ClientMutualAuthentication{
+						AuthenticationOptions: &AuthenticationOptions{
+							OCSP:               &OCSP{BoolPtr(false)},
+							SendCAListToClient: BoolPtr(false),
+						},
+						SetID: "Custom_CPS-6134b_B-3-1AHBENT.xml",
+					},
+					DisallowedTLSVersions: []string{"TLSv1"},
+					DNSNameSettings: &DNSNameSettings{
+						CloneDNSNames: false,
+						DNSNames:      []string{"san1.example.com"},
+					},
+					Geography:        "core",
+					MustHaveCiphers:  "ak-akamai-default",
+					OCSPStapling:     "on",
+					PreferredCiphers: "ak-akamai-default-interim",
+					QuicEnabled:      false,
+					SecureNetwork:    "enhanced-tls",
+					SNIOnly:          true,
+				},
+				Org: &Org{
+					AddressLineOne: "1 Address",
+					City:           "Cambridge",
+					Country:        "US",
+					Name:           "Akamai Technologies",
+					Phone:          "555-111-1111",
+					PostalCode:     "012345",
+					Region:         "MA",
+				},
+				PendingChanges:     []string{"/cps-api/enrollments/1/changes/1"},
+				RA:                 "lets-encrypt",
+				SignatureAlgorithm: "SHA-256",
+				TechContact: &Contact{
+					AddressLineOne:   "150 Broadway",
+					City:             "Cambridge",
+					Country:          "US",
+					Email:            "r2d2@akamai.com",
+					FirstName:        "R2",
+					LastName:         "D2",
+					OrganizationName: "Akamai",
+					Phone:            "617-555-0111",
+					PostalCode:       "02142",
+					Region:           "MA",
+					Title:            "Technical Engineer",
+				},
+				ThirdParty:     nil,
+				ValidationType: "dv",
 			},
 		},
 		"500 internal server error": {
@@ -829,6 +1024,42 @@ func TestCreateEnrollment(t *testing.T) {
 	"changes": ["/cps-api/enrollments/1/changes/10002"]
 }`,
 			expectedPath: "/cps/v2/enrollments?allow-duplicate-cn=true&contractId=ctr-1&deploy-not-after=12-12-2021&deploy-not-before=12-07-2020",
+			expectedResponse: &CreateEnrollmentResponse{
+				Enrollment: "/cps-api/enrollments/1",
+				Changes:    []string{"/cps-api/enrollments/1/changes/10002"},
+				ID:         1,
+			},
+		},
+		"202 accepted dv enrollment": {
+			request: CreateEnrollmentRequest{
+				Enrollment: Enrollment{
+					AdminContact: &Contact{
+						Email: "r1d1@akamai.com",
+					},
+					CertificateType: "san",
+					CSR: &CSR{
+						CN:                  "www.example.com",
+						PreferredTrustChain: tools.StringPtr("intermediate-a"),
+					},
+					NetworkConfiguration: &NetworkConfiguration{},
+					Org:                  &Org{Name: "Akamai"},
+					RA:                   "lets-encrypt",
+					TechContact: &Contact{
+						Email: "r2d2@akamai.com",
+					},
+					ValidationType: "dv",
+				},
+				ContractID:      "ctr-1",
+				DeployNotAfter:  "12-12-2021",
+				DeployNotBefore: "12-07-2020",
+			},
+			responseStatus: http.StatusAccepted,
+			responseBody: `
+{
+	"enrollment": "/cps-api/enrollments/1",
+	"changes": ["/cps-api/enrollments/1/changes/10002"]
+}`,
+			expectedPath: "/cps/v2/enrollments?contractId=ctr-1&deploy-not-after=12-12-2021&deploy-not-before=12-07-2020",
 			expectedResponse: &CreateEnrollmentResponse{
 				Enrollment: "/cps-api/enrollments/1",
 				Changes:    []string{"/cps-api/enrollments/1/changes/10002"},

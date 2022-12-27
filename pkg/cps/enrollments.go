@@ -85,13 +85,14 @@ type (
 
 	// CSR is a Certificate Signing Request object
 	CSR struct {
-		C    string   `json:"c,omitempty"`
-		CN   string   `json:"cn"`
-		L    string   `json:"l,omitempty"`
-		O    string   `json:"o,omitempty"`
-		OU   string   `json:"ou,omitempty"`
-		SANS []string `json:"sans,omitempty"`
-		ST   string   `json:"st,omitempty"`
+		C                   string   `json:"c,omitempty"`
+		CN                  string   `json:"cn"`
+		L                   string   `json:"l,omitempty"`
+		O                   string   `json:"o,omitempty"`
+		OU                  string   `json:"ou,omitempty"`
+		PreferredTrustChain *string  `json:"preferredTrustChain,omitempty"`
+		SANS                []string `json:"sans,omitempty"`
+		ST                  string   `json:"st,omitempty"`
 	}
 
 	// NetworkConfiguration contains settings that specify any network information and TLS Metadata you want CPS to use to push the completed certificate to the network
