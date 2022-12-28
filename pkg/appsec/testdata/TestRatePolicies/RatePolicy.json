@@ -1,0 +1,135 @@
+{
+	"additionalMatchOptions": [
+		{
+			"positiveMatch": true,
+			"type": "IpAddressCondition",
+			"values": [
+				"198.129.76.39"
+			]
+		},
+		{
+			"positiveMatch": true,
+			"type": "RequestMethodCondition",
+			"values": [
+				"GET"
+			]
+		}
+	],
+	"allTraffic": false,
+	"averageThreshold": 5,
+	"burstThreshold": 10,
+	"burstWindow": 1,
+	"clientIdentifier": "ip",
+	"createDate": "2020-10-29T04:00:22Z",
+	"description": "AFW Test Extensions",
+	"fileExtensions": {
+		"positiveMatch": false,
+		"values": [
+			"3g2",
+			"3gp",
+			"aif",
+			"aiff",
+			"au",
+			"avi",
+			"bin",
+			"bmp",
+			"cab"
+		]
+	},
+	"id": 134644,
+	"matchType": "path",
+	"name": "Test_Paths 2",
+	"path": {
+		"positiveMatch": true,
+		"values": [
+			"/login/",
+			"/path/"
+		]
+	},
+	"pathMatchType": "Custom",
+	"pathUriPositiveMatch": true,
+	"queryParameters": [
+		{
+			"name": "productId",
+			"positiveMatch": true,
+			"valueInRange": false,
+			"values": [
+				"BUB_12",
+				"SUSH_11"
+			]
+		}
+	],
+	"requestType": "ClientRequest",
+	"sameActionOnIpv6": true,
+	"type": "WAF",
+	"updateDate": "2020-10-29T04:00:22Z",
+	"useXForwardForHeaders": true,
+	"used": false,
+	"condition": {
+		"atomicConditions": [
+			{
+				"positiveMatch": true,
+				"nameWildcard": true,
+				"valueWildcard": true,
+				"value": [
+					"json",
+					"xml"
+				],
+				"name": [
+					"Accept",
+					"Accept-Datetime"
+				],
+				"valueCase": true,
+				"nameCase": false
+			},
+			{
+				"positiveMatch": false,
+				"nameWildcard": true,
+				"className": "RequestHeaderCondition",
+				"value": [],
+				"name": [
+					"custom1",
+					"custom2"
+				]
+			},
+			{
+				"positiveMatch": false,
+				"nameWildcard": false,
+				"value": [],
+				"name": [
+					"custom4",
+					"custom5"
+				]
+			},
+			{
+				"className": "RequestHeaderCondition",
+				"name": [
+					"Accept",
+					"custom3"
+				],
+				"nameWildcard": false,
+				"valueWildcard": true,
+				"positiveMatch": false,
+				"value": [
+					"json"
+				]
+			},
+			{
+				"className": "TlsFingerprintCondition",
+				"positiveMatch": true,
+				"value": [
+					"11111aaaaaaa",
+					"22222bbbbbb"
+				]
+			},
+			{
+				"className": "ClientReputationCondition",
+				"name": [
+					"WEBSCRP"
+				],
+				"sharedIpHandling": "SHARED_ONLY",
+				"value": 7
+			}
+		]
+	}
+}

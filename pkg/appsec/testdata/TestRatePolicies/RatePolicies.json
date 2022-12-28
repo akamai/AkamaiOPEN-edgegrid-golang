@@ -20,6 +20,7 @@
             "allTraffic": false,
             "averageThreshold": 5,
             "burstThreshold": 10,
+            "burstWindow": 1,
             "clientIdentifier": "ip",
             "createDate": "2020-10-29T04:00:22Z",
             "description": "AFW Test Extensions",
@@ -65,7 +66,76 @@
             "type": "WAF",
             "updateDate": "2020-10-29T04:00:22Z",
             "useXForwardForHeaders": true,
-            "used": false
+            "used": false,
+            "condition": {
+                "atomicConditions": [
+                    {
+                        "positiveMatch": true,
+                        "nameWildcard": true,
+                        "valueWildcard": true,
+                        "className": "RequestHeaderCondition",
+                        "value": [
+                            "json",
+                            "xml"
+                        ],
+                        "name": [
+                            "Accept",
+                            "Accept-Datetime"
+                        ],
+                        "valueCase": true,
+                        "nameCase": false
+                    },
+                    {
+                        "positiveMatch": false,
+                        "nameWildcard": true,
+                        "className": "RequestHeaderCondition",
+                        "value": [],
+                        "name": [
+                            "custom1",
+                            "custom2"
+                        ]
+                    },
+                    {
+                        "positiveMatch": false,
+                        "nameWildcard": false,
+
+                        "value": [],
+                        "name": [
+                            "custom4",
+                            "custom5"
+                        ]
+                    },
+                    {
+                        "className": "RequestHeaderCondition",
+                        "name": [
+                            "Accept",
+                            "custom3"
+                        ],
+                        "nameWildcard": false,
+                        "valueWildcard": true,
+                        "positiveMatch": false,
+                        "value": [
+                            "json"
+                        ]
+                    },
+                    {
+                        "className": "TlsFingerprintCondition",
+                        "positiveMatch": true,
+                        "value": [
+                            "11111aaaaaaa",
+                            "22222bbbbbb"
+                        ]
+                    },
+                    {
+                        "className": "ClientReputationCondition",
+                        "name": [
+                            "WEBSCRP"
+                        ],
+                        "sharedIpHandling": "SHARED_ONLY",
+                        "value": 7
+                    }
+                ]
+            }
         }
     ]
 }
