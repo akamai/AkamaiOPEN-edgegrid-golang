@@ -11,21 +11,21 @@ import (
 )
 
 type (
-	// Activation is a ds stream activations API interface
+	// Activation is a ds stream activations API interface.
 	Activation interface {
-		// ActivateStream activates stream with given ID
+		// ActivateStream activates stream with given ID.
 		//
-		// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#putactivate
+		// See: https://techdocs.akamai.com/datastream2/reference/put-stream-activate
 		ActivateStream(context.Context, ActivateStreamRequest) (*ActivateStreamResponse, error)
 
-		// DeactivateStream deactivates stream with given ID
+		// DeactivateStream deactivates stream with given ID.
 		//
-		// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#putdeactivate
+		// See: https://techdocs.akamai.com/datastream2/reference/put-stream-deactivate
 		DeactivateStream(context.Context, DeactivateStreamRequest) (*DeactivateStreamResponse, error)
 
-		// GetActivationHistory returns a history of activation status changes for all versions of a stream
+		// GetActivationHistory returns a history of activation status changes for all versions of a stream.
 		//
-		// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#getactivationhistory
+		// See: https://techdocs.akamai.com/datastream2/reference/get-stream-activation-history
 		GetActivationHistory(context.Context, GetActivationHistoryRequest) ([]ActivationHistoryEntry, error)
 	}
 

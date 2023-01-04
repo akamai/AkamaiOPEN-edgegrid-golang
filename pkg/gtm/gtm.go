@@ -1,4 +1,6 @@
 // Package gtm provides access to the Akamai GTM V1_4 APIs
+//
+// See: https://techdocs.akamai.com/gtm/reference/api
 package gtm
 
 import (

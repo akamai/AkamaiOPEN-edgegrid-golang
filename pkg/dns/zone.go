@@ -20,72 +20,89 @@ var (
 )
 
 type (
-	// Zones contains operations available on Zone resources
-	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html
+	// Zones contains operations available on Zone resources.
 	Zones interface {
-		// ListZones retrieves a list of all zones user can access
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getzones
+		// ListZones retrieves a list of all zones user can access.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones
 		ListZones(context.Context, ...ZoneListQueryArgs) (*ZoneListResponse, error)
-		// NewZone returns a new ZoneCreate object
+		// NewZone returns a new ZoneCreate object.
 		NewZone(context.Context, ZoneCreate) *ZoneCreate
-		// NewZoneResponse returns a new ZoneResponse object
+		// NewZoneResponse returns a new ZoneResponse object.
 		NewZoneResponse(context.Context, string) *ZoneResponse
-		// NewChangeListResponse returns a new ChangeListResponse object
+		// NewChangeListResponse returns a new ChangeListResponse object.
 		NewChangeListResponse(context.Context, string) *ChangeListResponse
-		// NewZoneQueryString returns a new ZoneQueryString object
+		// NewZoneQueryString returns a new ZoneQueryString object.
 		NewZoneQueryString(context.Context, string, string) *ZoneQueryString
-		// GetZone retrieves Zone metadata
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getzone
+		// GetZone retrieves Zone metadata.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zone
 		GetZone(context.Context, string) (*ZoneResponse, error)
-		//GetChangeList treieves Zone changelist
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getchangelist
+		//GetChangeList retrieves Zone changelist.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-changelists-zone
 		GetChangeList(context.Context, string) (*ChangeListResponse, error)
-		// GetMasterZoneFile retrieves master zone file
-		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getversionmasterzonefile
+		// GetMasterZoneFile retrieves master zone file.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-zone-zone-file
 		GetMasterZoneFile(context.Context, string) (string, error)
-		// PostMasterZoneFile updates master zone file
-		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postmasterzonefile
+		// PostMasterZoneFile updates master zone file.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/post-zones-zone-zone-file
 		PostMasterZoneFile(context.Context, string, string) error
-		// CreateZone
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postzones
+		// CreateZone creates new zone.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/post-zone
 		CreateZone(context.Context, *ZoneCreate, ZoneQueryString, ...bool) error
-		// SaveChangelist
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postchangelists
+		// SaveChangelist creates a new Change List based on the most recent version of a zone.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/post-changelists
 		SaveChangelist(context.Context, *ZoneCreate) error
-		// SubmitChangelist submits changelist for the Zone to create default NS SOA records
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postchangelistsubmit
+		// SubmitChangelist submits changelist for the Zone to create default NS SOA records.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/post-changelists-zone-submit
 		SubmitChangelist(context.Context, *ZoneCreate) error
-		// UpdateZone updates the Zone
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#putzone
+		// UpdateZone updates zone.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/put-zone
 		UpdateZone(context.Context, *ZoneCreate, ZoneQueryString) error
-		// DeleteZone a zone
+		// DeleteZone deletes zone.
+		//
 		// See: N/A
 		DeleteZone(context.Context, *ZoneCreate, ZoneQueryString) error
-		// ValidateZone validates zone metadata based on type
+		// ValidateZone validates zone metadata based on type.
 		ValidateZone(context.Context, *ZoneCreate) error
-		// GetZoneNames retrieves a list of a zone's record names
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getzonerecordsetnames
+		// GetZoneNames retrieves a list of a zone's record names.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zone-names
 		GetZoneNames(context.Context, string) (*ZoneNamesResponse, error)
-		// GetZoneNameTypes retrieves a zone name's record types
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getzonerecordsettypes
+		// GetZoneNameTypes retrieves a zone name's record types.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zone-name-types
 		GetZoneNameTypes(context.Context, string, string) (*ZoneNameTypesResponse, error)
-		// CreateBulkZones submits create bulk zone request
-		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postbulkzonecreate
+		// CreateBulkZones submits create bulk zone request.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/post-zones-create-requests
 		CreateBulkZones(context.Context, *BulkZonesCreate, ZoneQueryString) (*BulkZonesResponse, error)
-		// DeleteBulkZones submits delete bulk zone request
-		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postbulkzonedelete
+		// DeleteBulkZones submits delete bulk zone request.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/post-zones-delete-requests
 		DeleteBulkZones(context.Context, *ZoneNameListResponse, ...bool) (*BulkZonesResponse, error)
-		// GetBulkZoneCreateStatus retrieves submit request status
-		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getbulkzonecreatestatus
+		// GetBulkZoneCreateStatus retrieves submit request status.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-create-requests-requestid
 		GetBulkZoneCreateStatus(context.Context, string) (*BulkStatusResponse, error)
-		//GetBulkZoneDeleteStatus retrieves submit request status
-		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getbulkzonedeletestatus
+		//GetBulkZoneDeleteStatus retrieves submit request status.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-delete-requests-requestid
 		GetBulkZoneDeleteStatus(context.Context, string) (*BulkStatusResponse, error)
-		// GetBulkZoneCreateResult retrieves create request result
-		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getbulkzonecreateresult
+		// GetBulkZoneCreateResult retrieves create request result.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-create-requests-requestid-result
 		GetBulkZoneCreateResult(ctx context.Context, requestid string) (*BulkCreateResultResponse, error)
-		// GetBulkZoneDeleteResult retrieves delete request result
-		// https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getbulkzonedeleteresult
+		// GetBulkZoneDeleteResult retrieves delete request result.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-delete-requests-requestid-result
 		GetBulkZoneDeleteResult(context.Context, string) (*BulkDeleteResultResponse, error)
 	}
 
@@ -203,7 +220,6 @@ func convertStructToReqBody(srcstruct interface{}) (io.Reader, error) {
 	return bytes.NewBuffer(reqbody), nil
 }
 
-// List Zones
 func (p *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*ZoneListResponse, error) {
 
 	logger := p.Log(ctx)
@@ -257,7 +273,6 @@ func (p *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*Z
 	return &zonelist, nil
 }
 
-// NewZone creates a new Zone. Supports subset of fields
 func (p *dns) NewZone(ctx context.Context, params ZoneCreate) *ZoneCreate {
 
 	logger := p.Log(ctx)
@@ -305,7 +320,6 @@ func (p *dns) NewZoneQueryString(ctx context.Context, contract string, group str
 	return zonequerystring
 }
 
-// GetZone retrieves a DNS Zone for a given hostname
 func (p *dns) GetZone(ctx context.Context, zonename string) (*ZoneResponse, error) {
 
 	logger := p.Log(ctx)
@@ -331,7 +345,6 @@ func (p *dns) GetZone(ctx context.Context, zonename string) (*ZoneResponse, erro
 	return &zone, nil
 }
 
-// GetChangeList retrieves a changelist for a zone
 func (p *dns) GetChangeList(ctx context.Context, zone string) (*ChangeListResponse, error) {
 
 	logger := p.Log(ctx)
@@ -356,7 +369,6 @@ func (p *dns) GetChangeList(ctx context.Context, zone string) (*ChangeListRespon
 	return &changelist, nil
 }
 
-// GetMasterZoneFile retrieves the zone's master file
 func (p *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error) {
 
 	logger := p.Log(ctx)
@@ -386,7 +398,6 @@ func (p *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error
 	return string(masterfile), nil
 }
 
-// Update Master Zone file
 func (p *dns) PostMasterZoneFile(ctx context.Context, zone string, filedata string) error {
 
 	logger := p.Log(ctx)
@@ -414,7 +425,6 @@ func (p *dns) PostMasterZoneFile(ctx context.Context, zone string, filedata stri
 	return nil
 }
 
-// Create a Zone
 func (p *dns) CreateZone(ctx context.Context, zone *ZoneCreate, zonequerystring ZoneQueryString, clearConn ...bool) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
@@ -473,7 +483,6 @@ func (p *dns) CreateZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	return nil
 }
 
-// Create changelist for the Zone. Side effect is to create default NS SOA records
 func (p *dns) SaveChangelist(ctx context.Context, zone *ZoneCreate) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
@@ -510,7 +519,6 @@ func (p *dns) SaveChangelist(ctx context.Context, zone *ZoneCreate) error {
 	return nil
 }
 
-// Save changelist for the Zone to create default NS SOA records
 func (p *dns) SubmitChangelist(ctx context.Context, zone *ZoneCreate) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
@@ -547,7 +555,6 @@ func (p *dns) SubmitChangelist(ctx context.Context, zone *ZoneCreate) error {
 	return nil
 }
 
-// Save updates the Zone
 func (p *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryString) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
@@ -591,7 +598,6 @@ func (p *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryStrin
 
 }
 
-// Zone Delete.
 func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryString) error {
 	// remove all the records except for SOA
 	// which is required and save the zone
@@ -667,7 +673,7 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 	return filteredZone
 }
 
-// Validate ZoneCreate Object
+// ValidateZone validates ZoneCreate Object
 func (p *dns) ValidateZone(ctx context.Context, zone *ZoneCreate) error {
 
 	logger := p.Log(ctx)
@@ -709,7 +715,6 @@ func (p *dns) ValidateZone(ctx context.Context, zone *ZoneCreate) error {
 	return nil
 }
 
-// Get Zone's Names
 func (p *dns) GetZoneNames(ctx context.Context, zone string) (*ZoneNamesResponse, error) {
 
 	logger := p.Log(ctx)
@@ -734,7 +739,6 @@ func (p *dns) GetZoneNames(ctx context.Context, zone string) (*ZoneNamesResponse
 	return &znresponse, nil
 }
 
-// Get Zone Name's record types
 func (p *dns) GetZoneNameTypes(ctx context.Context, zname string, zone string) (*ZoneNameTypesResponse, error) {
 
 	logger := p.Log(ctx)

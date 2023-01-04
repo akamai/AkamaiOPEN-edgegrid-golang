@@ -15,26 +15,26 @@ import (
 )
 
 type (
-	// LoadBalancerVersions is a cloudlets LoadBalancer version API interface
+	// LoadBalancerVersions is a cloudlets LoadBalancer version API interface.
 	LoadBalancerVersions interface {
-		// CreateLoadBalancerVersion creates load balancer version
+		// CreateLoadBalancerVersion creates load balancer version.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#postloadbalancingversions
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-origin-versions
 		CreateLoadBalancerVersion(context.Context, CreateLoadBalancerVersionRequest) (*LoadBalancerVersion, error)
 
-		// GetLoadBalancerVersion gets specific load balancer version by originID and version
+		// GetLoadBalancerVersion gets specific load balancer version by originID and version.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getloadbalancingconfigversion
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-origin-version
 		GetLoadBalancerVersion(context.Context, GetLoadBalancerVersionRequest) (*LoadBalancerVersion, error)
 
-		// UpdateLoadBalancerVersion updates specific load balancer version by originID and version
+		// UpdateLoadBalancerVersion updates specific load balancer version by originID and version.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#putloadbalancingconfigversion
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/put-origin-version
 		UpdateLoadBalancerVersion(context.Context, UpdateLoadBalancerVersionRequest) (*LoadBalancerVersion, error)
 
-		// ListLoadBalancerVersions lists all versions of Origin with type APPLICATION_LOAD_BALANCER
+		// ListLoadBalancerVersions lists all versions of Origin with type APPLICATION_LOAD_BALANCER.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getloadbalancingversions
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-origin-versions
 		ListLoadBalancerVersions(context.Context, ListLoadBalancerVersionsRequest) ([]LoadBalancerVersion, error)
 	}
 

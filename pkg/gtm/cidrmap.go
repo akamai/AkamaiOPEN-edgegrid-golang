@@ -11,27 +11,31 @@ import (
 // Based on 1.4 schema
 //
 
-// CidrMaps contains operations available on a Cidrmap resource
-// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html
+// CidrMaps contains operations available on a Cidrmap resource.
 type CidrMaps interface {
 	// NewCidrMap creates a new CidrMap object.
 	NewCidrMap(context.Context, string) *CidrMap
-	// Instantiate new Assignment struct
+	// NewCidrAssignment instantiates new Assignment struct.
 	NewCidrAssignment(context.Context, *CidrMap, int, string) *CidrAssignment
-	// ListCidrMaps retreieves all CidrMaps
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getcidrmaps
+	// ListCidrMaps retreieves all CidrMaps.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-cidr-maps
 	ListCidrMaps(context.Context, string) ([]*CidrMap, error)
 	// GetCidrMap retrieves a CidrMap with the given name.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getcidrmap
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-cidr-map
 	GetCidrMap(context.Context, string, string) (*CidrMap, error)
-	// Create the datacenter identified by the receiver argument in the specified domain.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putcidrmap
+	// CreateCidrMap creates the datacenter identified by the receiver argument in the specified domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-cidr-map
 	CreateCidrMap(context.Context, *CidrMap, string) (*CidrMapResponse, error)
-	// Delete the datacenter identified by the receiver argument from the domain specified.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#deletecidrmap
+	// DeleteCidrMap deletes the datacenter identified by the receiver argument from the domain specified.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/delete-cidr-maps
 	DeleteCidrMap(context.Context, *CidrMap, string) (*ResponseStatus, error)
-	// Update the datacenter identified in the receiver argument in the provided domain.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putcidrmap
+	// UpdateCidrMap updates the datacenter identified in the receiver argument in the provided domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-cidr-map
 	UpdateCidrMap(context.Context, *CidrMap, string) (*ResponseStatus, error)
 }
 
@@ -66,7 +70,6 @@ func (cidr *CidrMap) Validate() error {
 	return nil
 }
 
-// NewCidrMap creates a new CidrMap object
 func (p *gtm) NewCidrMap(ctx context.Context, name string) *CidrMap {
 
 	logger := p.Log(ctx)
@@ -76,7 +79,6 @@ func (p *gtm) NewCidrMap(ctx context.Context, name string) *CidrMap {
 	return cidrmap
 }
 
-// ListCidrMaps retrieves all CidrMaps
 func (p *gtm) ListCidrMaps(ctx context.Context, domainName string) ([]*CidrMap, error) {
 
 	logger := p.Log(ctx)
@@ -101,7 +103,6 @@ func (p *gtm) ListCidrMaps(ctx context.Context, domainName string) ([]*CidrMap, 
 	return cidrs.CidrMapItems, nil
 }
 
-// GetCidrMap retrieves a CidrMap with the given name.
 func (p *gtm) GetCidrMap(ctx context.Context, name, domainName string) (*CidrMap, error) {
 
 	logger := p.Log(ctx)
@@ -126,7 +127,6 @@ func (p *gtm) GetCidrMap(ctx context.Context, name, domainName string) (*CidrMap
 	return &cidr, nil
 }
 
-// NewCidrAssignment instantiate new Assignment struct
 func (p *gtm) NewCidrAssignment(ctx context.Context, _ *CidrMap, dcid int, nickname string) *CidrAssignment {
 
 	logger := p.Log(ctx)
@@ -139,7 +139,6 @@ func (p *gtm) NewCidrAssignment(ctx context.Context, _ *CidrMap, dcid int, nickn
 	return cidrAssign
 }
 
-// CreateCidrMap creates CidrMap in provided domain
 func (p *gtm) CreateCidrMap(ctx context.Context, cidr *CidrMap, domainName string) (*CidrMapResponse, error) {
 
 	logger := p.Log(ctx)
@@ -149,7 +148,6 @@ func (p *gtm) CreateCidrMap(ctx context.Context, cidr *CidrMap, domainName strin
 	return cidr.save(ctx, p, domainName)
 }
 
-// UpdateCidrMap updates CidrMap in given domain
 func (p *gtm) UpdateCidrMap(ctx context.Context, cidr *CidrMap, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -163,7 +161,7 @@ func (p *gtm) UpdateCidrMap(ctx context.Context, cidr *CidrMap, domainName strin
 	return stat.Status, err
 }
 
-// save CidrMap in given domain. Common path for Create and Update.
+// Save CidrMap in given domain. Common path for Create and Update.
 func (cidr *CidrMap) save(ctx context.Context, p *gtm, domainName string) (*CidrMapResponse, error) {
 
 	if err := cidr.Validate(); err != nil {
@@ -190,7 +188,6 @@ func (cidr *CidrMap) save(ctx context.Context, p *gtm, domainName string) (*Cidr
 	return &mapresp, nil
 }
 
-// DeleteCidrMap deletes CidrMap in provided domain
 func (p *gtm) DeleteCidrMap(ctx context.Context, cidr *CidrMap, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)

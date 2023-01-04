@@ -13,29 +13,29 @@ import (
 )
 
 type (
-	// LoadBalancers is a cloudlets LoadBalancer API interface
+	// LoadBalancers is a cloudlets LoadBalancer API interface.
 	LoadBalancers interface {
-		// ListOrigins lists all origins of specified type for the current account
+		// ListOrigins lists all origins of specified type for the current account.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getloadbalancingconfigs
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-origins
 		ListOrigins(context.Context, ListOriginsRequest) ([]OriginResponse, error)
 
 		// GetOrigin gets specific origin by originID.
 		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getorigin
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-origin
 		GetOrigin(context.Context, GetOriginRequest) (*Origin, error)
 
 		// CreateOrigin creates configuration for an origin.
 		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#postloadbalancingconfigs
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-origin
 		CreateOrigin(context.Context, CreateOriginRequest) (*Origin, error)
 
 		// UpdateOrigin creates configuration for an origin.
 		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#putloadbalancingconfig
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/put-origin
 		UpdateOrigin(context.Context, UpdateOriginRequest) (*Origin, error)
 	}
 

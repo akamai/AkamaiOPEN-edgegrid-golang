@@ -1,4 +1,6 @@
 // Package hapi provides access to the Akamai Edge Hostnames APIs
+//
+// See: https://techdocs.akamai.com/edge-hostnames/reference/api
 package hapi
 
 import (

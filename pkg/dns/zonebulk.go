@@ -47,7 +47,6 @@ type BulkDeleteResultResponse struct {
 	FailedZones              []*BulkFailedZone `json:"failedZones"`
 }
 
-// Get Bulk Zone Create Status
 func (p *dns) GetBulkZoneCreateStatus(ctx context.Context, requestid string) (*BulkStatusResponse, error) {
 
 	logger := p.Log(ctx)
@@ -73,7 +72,6 @@ func (p *dns) GetBulkZoneCreateStatus(ctx context.Context, requestid string) (*B
 	return &status, nil
 }
 
-// Get Bulk Zone Delete Status
 func (p *dns) GetBulkZoneDeleteStatus(ctx context.Context, requestid string) (*BulkStatusResponse, error) {
 
 	logger := p.Log(ctx)
@@ -99,7 +97,6 @@ func (p *dns) GetBulkZoneDeleteStatus(ctx context.Context, requestid string) (*B
 	return &status, nil
 }
 
-// Get Bulk Zone Create Result
 func (p *dns) GetBulkZoneCreateResult(ctx context.Context, requestid string) (*BulkCreateResultResponse, error) {
 
 	logger := p.Log(ctx)
@@ -125,7 +122,6 @@ func (p *dns) GetBulkZoneCreateResult(ctx context.Context, requestid string) (*B
 	return &status, nil
 }
 
-// Get Bulk Zone Delete Result
 func (p *dns) GetBulkZoneDeleteResult(ctx context.Context, requestid string) (*BulkDeleteResultResponse, error) {
 
 	logger := p.Log(ctx)
@@ -151,7 +147,6 @@ func (p *dns) GetBulkZoneDeleteResult(ctx context.Context, requestid string) (*B
 	return &status, nil
 }
 
-// Bulk Create Zones
 func (p *dns) CreateBulkZones(ctx context.Context, bulkzones *BulkZonesCreate, zonequerystring ZoneQueryString) (*BulkZonesResponse, error) {
 
 	logger := p.Log(ctx)
@@ -181,7 +176,6 @@ func (p *dns) CreateBulkZones(ctx context.Context, bulkzones *BulkZonesCreate, z
 	return &status, nil
 }
 
-// Bulk Delete Zones
 func (p *dns) DeleteBulkZones(ctx context.Context, zoneslist *ZoneNameListResponse, bypassSafetyChecks ...bool) (*BulkZonesResponse, error) {
 
 	logger := p.Log(ctx)

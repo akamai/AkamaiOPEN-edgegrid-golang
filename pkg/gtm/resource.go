@@ -11,27 +11,31 @@ import (
 // Based on 1.4 schema
 //
 
-// Resources contains operations available on a Resource resource
-// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html
+// Resources contains operations available on a Resource resource.
 type Resources interface {
 	// NewResourceInstance instantiates a new ResourceInstance.
 	NewResourceInstance(context.Context, *Resource, int) *ResourceInstance
 	// NewResource creates a new Resource object.
 	NewResource(context.Context, string) *Resource
 	// ListResources retreieves all Resources
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getresources
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-resources
 	ListResources(context.Context, string) ([]*Resource, error)
 	// GetResource retrieves a Resource with the given name.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getresource
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-resource
 	GetResource(context.Context, string, string) (*Resource, error)
-	// Create the datacenter identified by the receiver argument in the specified domain.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putresource
+	// CreateResource creates the datacenter identified by the receiver argument in the specified domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-resource
 	CreateResource(context.Context, *Resource, string) (*ResourceResponse, error)
-	// Delete the datacenter identified by the receiver argument from the domain specified.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#deleteresource
+	// DeleteResource deletes the datacenter identified by the receiver argument from the domain specified.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/delete-resource
 	DeleteResource(context.Context, *Resource, string) (*ResponseStatus, error)
-	// Update the datacenter identified in the receiver argument in the provided domain.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putresource
+	// UpdateResource updates the datacenter identified in the receiver argument in the provided domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-resource
 	UpdateResource(context.Context, *Resource, string) (*ResponseStatus, error)
 }
 
@@ -78,7 +82,6 @@ func (rsrc *Resource) Validate() error {
 	return nil
 }
 
-// NewResourceInstance instantiates a new ResourceInstance.
 func (p *gtm) NewResourceInstance(ctx context.Context, _ *Resource, dcID int) *ResourceInstance {
 
 	logger := p.Log(ctx)
@@ -88,7 +91,6 @@ func (p *gtm) NewResourceInstance(ctx context.Context, _ *Resource, dcID int) *R
 
 }
 
-// NewResource creates a new Resource object.
 func (p *gtm) NewResource(ctx context.Context, name string) *Resource {
 
 	logger := p.Log(ctx)
@@ -98,7 +100,6 @@ func (p *gtm) NewResource(ctx context.Context, name string) *Resource {
 	return resource
 }
 
-// ListResources retreieves all Resources in the specified domain.
 func (p *gtm) ListResources(ctx context.Context, domainName string) ([]*Resource, error) {
 
 	logger := p.Log(ctx)
@@ -123,7 +124,6 @@ func (p *gtm) ListResources(ctx context.Context, domainName string) ([]*Resource
 	return rsrcs.ResourceItems, nil
 }
 
-// GetResource retrieves a Resource with the given name in the specified domain.
 func (p *gtm) GetResource(ctx context.Context, name, domainName string) (*Resource, error) {
 
 	logger := p.Log(ctx)
@@ -148,7 +148,6 @@ func (p *gtm) GetResource(ctx context.Context, name, domainName string) (*Resour
 	return &rsc, nil
 }
 
-// CreateResource creates the resource identified by the receiver argument in the specified domain.
 func (p *gtm) CreateResource(ctx context.Context, rsrc *Resource, domainName string) (*ResourceResponse, error) {
 
 	logger := p.Log(ctx)
@@ -159,7 +158,6 @@ func (p *gtm) CreateResource(ctx context.Context, rsrc *Resource, domainName str
 
 }
 
-// UpdateResource updates the resource identified in the receiver argument in the specified domain.
 func (p *gtm) UpdateResource(ctx context.Context, rsrc *Resource, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -174,7 +172,7 @@ func (p *gtm) UpdateResource(ctx context.Context, rsrc *Resource, domainName str
 
 }
 
-// save is a methon that saves Resource in given domain. Common path for Create and Update.
+// save is a function that saves Resource in given domain. Common path for Create and Update.
 func (rsrc *Resource) save(ctx context.Context, p *gtm, domainName string) (*ResourceResponse, error) {
 
 	if err := rsrc.Validate(); err != nil {
@@ -202,7 +200,6 @@ func (rsrc *Resource) save(ctx context.Context, p *gtm, domainName string) (*Res
 
 }
 
-// DeleteResource deletes the resource identified in the receiver argument from the specified domain.
 func (p *gtm) DeleteResource(ctx context.Context, rsrc *Resource, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)

@@ -1,4 +1,6 @@
 // Package dns provides access to the Akamai DNS V2 APIs
+//
+// See: https://techdocs.akamai.com/edge-dns/reference/edge-dns-api
 package dns
 
 import (

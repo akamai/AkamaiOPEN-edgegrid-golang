@@ -9,40 +9,41 @@ import (
 	"sync"
 )
 
-// The record types implemented and their fields are as defined here
-// https://developer.akamai.com/api/luna/config-dns/data.html
-
-// Records contains operations available on a Record resource
-// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html
+// Records contains operations available on a Record resource.
 type Records interface {
-	// RecordToMap returns a map containing record content
+	// RecordToMap returns a map containing record content.
 	RecordToMap(context.Context, *RecordBody) map[string]interface{}
-	// Return bare bones tsig key struct
+	// NewRecordBody returns bare bones tsig key struct.
 	NewRecordBody(context.Context, RecordBody) *RecordBody
-	//  GetRecordList retrieves recordset list based on type
-	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getzonerecordsets
+	// GetRecordList retrieves recordset list based on type.
+	//
+	// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-zone-recordsets
 	GetRecordList(context.Context, string, string, string) (*RecordSetResponse, error)
-	// GetRdata retrieves record rdata, e.g. target
+	// GetRdata retrieves record rdata, e.g. target.
 	GetRdata(context.Context, string, string, string) ([]string, error)
-	// ProcessRdata
+	// ProcessRdata process rdata.
 	ProcessRdata(context.Context, []string, string) []string
-	// ParseRData parses rdata. returning map
+	// ParseRData parses rdata. returning map.
 	ParseRData(context.Context, string, []string) map[string]interface{}
-	// GetRecord retrieves a recordset and returns as RecordBody
-	// See:  https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getzonerecordset
+	// GetRecord retrieves a recordset and returns as RecordBody.
+	//
+	// See:  https://techdocs.akamai.com/edge-dns/reference/get-zone-name-type
 	GetRecord(context.Context, string, string, string) (*RecordBody, error)
-	// CreateRecord creates recordset
-	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postzonerecordset
+	// CreateRecord creates recordset.
+	//
+	// See: https://techdocs.akamai.com/edge-dns/reference/post-zones-zone-names-name-types-type
 	CreateRecord(context.Context, *RecordBody, string, ...bool) error
-	// DeleteRecord removes recordset
-	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#deletezonerecordset
+	// DeleteRecord removes recordset.
+	//
+	// See: https://techdocs.akamai.com/edge-dns/reference/delete-zone-name-type
 	DeleteRecord(context.Context, *RecordBody, string, ...bool) error
-	// UpdateRecord replaces the recordset
-	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#putzonerecordset
+	// UpdateRecord replaces the recordset.
+	//
+	// See: https://techdocs.akamai.com/edge-dns/reference/put-zones-zone-names-name-types-type
 	UpdateRecord(context.Context, *RecordBody, string, ...bool) error
-	// FullIPv6 is utility method to convert IP to string
+	// FullIPv6 is utility method to convert IP to string.
 	FullIPv6(context.Context, net.IP) string
-	// PadCoordinates is utility method to convert IP to normalize coordinates
+	// PadCoordinates is utility method to convert IP to normalize coordinates.
 	PadCoordinates(context.Context, string) string
 }
 

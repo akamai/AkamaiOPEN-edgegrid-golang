@@ -13,14 +13,14 @@ import (
 )
 
 type (
-	// PolicyProperties interface is a cloudlets API interface for policy associated properties
+	// PolicyProperties interface is a cloudlets API interface for policy associated properties.
 	PolicyProperties interface {
-		// GetPolicyProperties gets all the associated properties by the policyID
+		// GetPolicyProperties gets all the associated properties by the policyID.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicyproperties
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-policy-properties
 		GetPolicyProperties(context.Context, GetPolicyPropertiesRequest) (map[string]PolicyProperty, error)
 
-		// DeletePolicyProperty removes a property from a policy activation associated_properties list
+		// DeletePolicyProperty removes a property from a policy activation associated_properties list.
 		DeletePolicyProperty(context.Context, DeletePolicyPropertyRequest) error
 	}
 
@@ -82,7 +82,6 @@ func (r DeletePolicyPropertyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(errs)
 }
 
-// GetPolicyProperties gets all the associated properties by the policyID
 func (c *cloudlets) GetPolicyProperties(ctx context.Context, params GetPolicyPropertiesRequest) (map[string]PolicyProperty, error) {
 	logger := c.Log(ctx)
 	logger.Debug("GetPolicyProperties")

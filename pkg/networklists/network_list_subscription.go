@@ -8,16 +8,20 @@ import (
 
 type (
 	// The NetworkListSubscription interface supports creating, modifying and removing network list subscriptions.
-	//
-	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#networklist
 	NetworkListSubscription interface {
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postsubscribe
+		// GetNetworkListSubscription retrieves networklist subscription.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/post-notifications-subscribe
 		GetNetworkListSubscription(ctx context.Context, params GetNetworkListSubscriptionRequest) (*GetNetworkListSubscriptionResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postsubscribe
+		// UpdateNetworkListSubscription updates networklist subscription.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/post-notifications-subscribe
 		UpdateNetworkListSubscription(ctx context.Context, params UpdateNetworkListSubscriptionRequest) (*UpdateNetworkListSubscriptionResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postunsubscribe
+		// RemoveNetworkListSubscription unsubscribes networklist.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/post-notifications-unsubscribe
 		RemoveNetworkListSubscription(ctx context.Context, params RemoveNetworkListSubscriptionRequest) (*RemoveNetworkListSubscriptionResponse, error)
 	}
 
@@ -131,12 +135,6 @@ func (p *networklists) GetNetworkListSubscription(ctx context.Context, _ GetNetw
 
 }
 
-// Update will update a NetworkListSubscription.
-//
-// API Docs: // network_lists v2
-//
-// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#putnetworklistsubscription
-
 func (p *networklists) UpdateNetworkListSubscription(ctx context.Context, params UpdateNetworkListSubscriptionRequest) (*UpdateNetworkListSubscriptionResponse, error) {
 
 	logger := p.Log(ctx)
@@ -161,12 +159,6 @@ func (p *networklists) UpdateNetworkListSubscription(ctx context.Context, params
 
 	return &rval, nil
 }
-
-// Remove will remove a NetworkListSubscription.
-//
-// API Docs: // network_lists v2
-//
-// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#putnetworklistsubscription
 
 func (p *networklists) RemoveNetworkListSubscription(ctx context.Context, params RemoveNetworkListSubscriptionRequest) (*RemoveNetworkListSubscriptionResponse, error) {
 

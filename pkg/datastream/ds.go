@@ -1,4 +1,6 @@
 // Package datastream provides access to the Akamai DataStream APIs
+//
+// See: https://techdocs.akamai.com/datastream2/reference/api
 package datastream
 
 import (

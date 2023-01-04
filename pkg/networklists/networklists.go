@@ -1,4 +1,6 @@
 // Package networklists provides access to the Akamai Networklist APIs
+//
+// See: https://techdocs.akamai.com/network-lists/reference/api#networklist
 package networklists
 
 import (

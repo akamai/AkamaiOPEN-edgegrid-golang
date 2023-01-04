@@ -11,27 +11,31 @@ import (
 // Based on 1.4 schema
 //
 
-// ASMaps contains operations available on a ASmap resource
-// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html
+// ASMaps contains operations available on a ASmap resource.
 type ASMaps interface {
 	// NewAsMap creates a new AsMap object.
 	NewAsMap(context.Context, string) *AsMap
-	// Instantiate new Assignment struct
+	// NewASAssignment instantiates new Assignment struct.
 	NewASAssignment(context.Context, *AsMap, int, string) *AsAssignment
-	// ListAsMaps retreieves all AsMaps
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getasmaps
+	// ListAsMaps retrieves all AsMaps.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-as-maps
 	ListAsMaps(context.Context, string) ([]*AsMap, error)
 	// GetAsMap retrieves a AsMap with the given name.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getasmap
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-as-map
 	GetAsMap(context.Context, string, string) (*AsMap, error)
-	// Create the datacenter identified by the receiver argument in the specified domain.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putasmap
+	// CreateAsMap creates the datacenter identified by the receiver argument in the specified domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-as-map
 	CreateAsMap(context.Context, *AsMap, string) (*AsMapResponse, error)
-	// Delete the datacenter identified by the receiver argument from the domain specified.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#deleteasmap
+	// DeleteAsMap deletes the datacenter identified by the receiver argument from the domain specified.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/delete-as-map
 	DeleteAsMap(context.Context, *AsMap, string) (*ResponseStatus, error)
-	// Update the datacenter identified in the receiver argument in the provided domain.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putasmap
+	// UpdateAsMap updates the datacenter identified in the receiver argument in the provided domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-as-map
 	UpdateAsMap(context.Context, *AsMap, string) (*ResponseStatus, error)
 }
 
@@ -67,7 +71,6 @@ func (asm *AsMap) Validate() error {
 	return nil
 }
 
-// NewAsMap creates a new asMap
 func (p *gtm) NewAsMap(ctx context.Context, name string) *AsMap {
 
 	logger := p.Log(ctx)
@@ -77,7 +80,6 @@ func (p *gtm) NewAsMap(ctx context.Context, name string) *AsMap {
 	return asmap
 }
 
-// ListAsMaps retreieves all AsMaps
 func (p *gtm) ListAsMaps(ctx context.Context, domainName string) ([]*AsMap, error) {
 
 	logger := p.Log(ctx)
@@ -102,7 +104,6 @@ func (p *gtm) ListAsMaps(ctx context.Context, domainName string) ([]*AsMap, erro
 	return aslist.AsMapItems, nil
 }
 
-// GetAsMap retrieves a asMap with the given name.
 func (p *gtm) GetAsMap(ctx context.Context, name, domainName string) (*AsMap, error) {
 
 	logger := p.Log(ctx)
@@ -127,7 +128,6 @@ func (p *gtm) GetAsMap(ctx context.Context, name, domainName string) (*AsMap, er
 	return &as, nil
 }
 
-// Instantiate new Assignment struct
 func (p *gtm) NewASAssignment(ctx context.Context, _ *AsMap, dcID int, nickname string) *AsAssignment {
 
 	logger := p.Log(ctx)
@@ -140,7 +140,6 @@ func (p *gtm) NewASAssignment(ctx context.Context, _ *AsMap, dcID int, nickname 
 	return asAssign
 }
 
-// Create asMap in provided domain
 func (p *gtm) CreateAsMap(ctx context.Context, as *AsMap, domainName string) (*AsMapResponse, error) {
 
 	logger := p.Log(ctx)
@@ -150,7 +149,6 @@ func (p *gtm) CreateAsMap(ctx context.Context, as *AsMap, domainName string) (*A
 	return as.save(ctx, p, domainName)
 }
 
-// Update AsMap in given domain
 func (p *gtm) UpdateAsMap(ctx context.Context, as *AsMap, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -164,7 +162,7 @@ func (p *gtm) UpdateAsMap(ctx context.Context, as *AsMap, domainName string) (*R
 	return stat.Status, err
 }
 
-// Save AsMap in given domain. Common path for Create and Update.
+// save AsMap in given domain. Common path for Create and Update.
 func (asm *AsMap) save(ctx context.Context, p *gtm, domainName string) (*AsMapResponse, error) {
 
 	if err := asm.Validate(); err != nil {
@@ -191,7 +189,6 @@ func (asm *AsMap) save(ctx context.Context, p *gtm, domainName string) (*AsMapRe
 	return &mapresp, nil
 }
 
-// Delete AsMap method
 func (p *gtm) DeleteAsMap(ctx context.Context, as *AsMap, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)

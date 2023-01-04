@@ -14,16 +14,16 @@ import (
 )
 
 type (
-	// LoadBalancerActivations is a cloudlets LoadBalancer Activation API interface
+	// LoadBalancerActivations is a cloudlets LoadBalancer Activation API interface.
 	LoadBalancerActivations interface {
-		// ListLoadBalancerActivations fetches activations with the most recent listed first
+		// ListLoadBalancerActivations fetches activations with the most recent listed first.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getloadbalancingconfigactivations
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-origin-activations
 		ListLoadBalancerActivations(context.Context, ListLoadBalancerActivationsRequest) ([]LoadBalancerActivation, error)
 
-		// ActivateLoadBalancerVersion activates the load balancing version
+		// ActivateLoadBalancerVersion activates the load balancing version.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#postloadbalancingconfigactivations
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-origin-activations
 		ActivateLoadBalancerVersion(context.Context, ActivateLoadBalancerVersionRequest) (*LoadBalancerActivation, error)
 	}
 
@@ -126,7 +126,6 @@ func (v LoadBalancerVersionActivation) Validate() error {
 	}.Filter()
 }
 
-// ListLoadBalancerActivations fetches activations with the most recent listed first
 func (c *cloudlets) ListLoadBalancerActivations(ctx context.Context, params ListLoadBalancerActivationsRequest) ([]LoadBalancerActivation, error) {
 	logger := c.Log(ctx)
 	logger.Debug("ListLoadBalancerActivations")
@@ -173,7 +172,6 @@ func (c *cloudlets) ListLoadBalancerActivations(ctx context.Context, params List
 	return result, nil
 }
 
-// ActivateLoadBalancerVersion activates the load balacing version
 func (c *cloudlets) ActivateLoadBalancerVersion(ctx context.Context, params ActivateLoadBalancerVersionRequest) (*LoadBalancerActivation, error) {
 	logger := c.Log(ctx)
 	logger.Debug("ActivateLoadBalancerVersion")

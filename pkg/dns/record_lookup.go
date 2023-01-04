@@ -38,7 +38,6 @@ func padvalue(str string) string {
 	return fmt.Sprintf("%.2f", vfloat)
 }
 
-// Used to pad coordinates to x.xxm format
 func (p *dns) PadCoordinates(ctx context.Context, str string) string {
 
 	logger := p.Log(ctx)
@@ -55,7 +54,6 @@ func (p *dns) PadCoordinates(ctx context.Context, str string) string {
 
 }
 
-// Get single Recordset. Following convention for other single record CRUD operations, return a RecordBody.
 func (p *dns) GetRecord(ctx context.Context, zone string, name string, recordType string) (*RecordBody, error) {
 
 	logger := p.Log(ctx)
@@ -163,7 +161,6 @@ func (p *dns) ProcessRdata(ctx context.Context, rdata []string, rtype string) []
 
 }
 
-// ParseRData is a utility method to parse RData in context of type. Return map of fields and values
 func (p *dns) ParseRData(ctx context.Context, rtype string, rdata []string) map[string]interface{} {
 
 	logger := p.Log(ctx)

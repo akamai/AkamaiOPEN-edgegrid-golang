@@ -7,16 +7,17 @@ import (
 )
 
 type (
-	// Authorities contains operations available on Authorities data sources
-	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getauthoritativenameserverdata
+	// Authorities contains operations available on Authorities data sources.
 	Authorities interface {
-		// GetAuthorities provides a list of structured read-only list of name serveers
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getauthoritativenameserverdata
-		GetAuthorities(context.Context, string) (*AuthorityResponse, error)
-		// GetNameServerRecordList provides a list of name server records
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getauthoritativenameserverdata
-		GetNameServerRecordList(context.Context, string) ([]string, error)
+		// GetAuthorities provides a list of structured read-only list of name servers.
 		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-data-authorities
+		GetAuthorities(context.Context, string) (*AuthorityResponse, error)
+		// GetNameServerRecordList provides a list of name server records.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-data-authorities
+		GetNameServerRecordList(context.Context, string) ([]string, error)
+		// NewAuthorityResponse instantiate authority response.
 		NewAuthorityResponse(context.Context, string) *AuthorityResponse
 	}
 
