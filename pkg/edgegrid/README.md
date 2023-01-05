@@ -30,7 +30,7 @@ func main() {
 
     req, _ := http.NewRequest(http.MethodGet, "/papi/v1/contracts", nil)
 
-	edgerc.SignRequest(req)
+    edgerc.SignRequest(req)
 
     resp, err := client.Do(req)
     if err != nil {
