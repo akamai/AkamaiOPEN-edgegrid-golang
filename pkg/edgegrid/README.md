@@ -30,9 +30,7 @@ func main() {
 
     req, _ := http.NewRequest(http.MethodGet, "/papi/v1/contracts", nil)
 
-    if err := edgerc.Sign(r); err != nil {
-        log.Fatalln(err)
-    }
+	edgerc.SignRequest(req)
 
     resp, err := client.Do(req)
     if err != nil {
