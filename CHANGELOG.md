@@ -11,6 +11,12 @@
     * [GetAvailableCriteria](https://techdocs.akamai.com/property-mgr/reference/get-available-criteria)
     * [GetAvailableBehaviors](https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors)
 
+* CPS
+  * Update `Accept` header to the latest schema `application/vnd.akamai.cps.enrollment.v11+json` for the following
+    endpoints:
+    * [ListEnrollments](https://techdocs.akamai.com/cps/reference/get-enrollments)
+    * [GetEnrollment](https://techdocs.akamai.com/cps/reference/get-enrollment)
+
 #### FEATURES/ENHANCEMENTS:
 
 * CPS

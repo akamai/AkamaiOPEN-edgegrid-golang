@@ -59,7 +59,7 @@ type (
 		MaxAllowedWildcardSanNames     int                   `json:"maxAllowedWildcardSanNames,omitempty"`
 		NetworkConfiguration           *NetworkConfiguration `json:"networkConfiguration"`
 		Org                            *Org                  `json:"org"`
-		PendingChanges                 []string              `json:"pendingChanges,omitempty"`
+		PendingChanges                 []PendingChange       `json:"pendingChanges,omitempty"`
 		RA                             string                `json:"ra"`
 		SignatureAlgorithm             string                `json:"signatureAlgorithm,omitempty"`
 		TechContact                    *Contact              `json:"techContact"`
@@ -90,7 +90,7 @@ type (
 		L                   string   `json:"l,omitempty"`
 		O                   string   `json:"o,omitempty"`
 		OU                  string   `json:"ou,omitempty"`
-		PreferredTrustChain *string  `json:"preferredTrustChain,omitempty"`
+		PreferredTrustChain string   `json:"preferredTrustChain,omitempty"`
 		SANS                []string `json:"sans,omitempty"`
 		ST                  string   `json:"st,omitempty"`
 	}
@@ -142,6 +142,12 @@ type (
 		Phone          string `json:"phone,omitempty"`
 		PostalCode     string `json:"postalCode,omitempty"`
 		Region         string `json:"region,omitempty"`
+	}
+
+	// PendingChange represents pending change information
+	PendingChange struct {
+		ChangeType string `json:"changeType,omitempty"`
+		Location   string `json:"location,omitempty"`
 	}
 
 	// ThirdParty specifies that you want to use a third party certificate
@@ -223,7 +229,7 @@ const (
 
 // Validate performs validation on Enrollment
 func (e Enrollment) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"adminContact":         validation.Validate(e.AdminContact, validation.Required),
 		"certificateType":      validation.Validate(e.CertificateType, validation.Required),
 		"csr":                  validation.Validate(e.CSR, validation.Required),
@@ -233,7 +239,14 @@ func (e Enrollment) Validate() error {
 		"techContact":          validation.Validate(e.TechContact, validation.Required),
 		"validationType":       validation.Validate(e.ValidationType, validation.Required),
 		"thirdParty":           validation.Validate(e.ThirdParty),
-	}.Filter()
+	}
+
+	if e.CSR != nil {
+		errs["csr.preferredTrustChain"] = validation.Validate(e.CSR.PreferredTrustChain,
+			validation.When(e.ValidationType != "dv", validation.Empty.Error("must be blank when 'validationType' is not 'dv'")))
+	}
+
+	return errs.Filter()
 }
 
 // Validate performs validation on Enrollment
@@ -314,7 +327,7 @@ func (c *cps) ListEnrollments(ctx context.Context, params ListEnrollmentsRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListEnrollments, err)
 	}
-	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollments.v9+json")
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollments.v11+json")
 
 	var result ListEnrollmentsResponse
 
@@ -344,7 +357,7 @@ func (c *cps) GetEnrollment(ctx context.Context, params GetEnrollmentRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEnrollment, err)
 	}
-	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment.v9+json")
+	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment.v11+json")
 
 	var result Enrollment
 

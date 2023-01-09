@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -102,9 +101,12 @@ func TestListEnrollments(t *testing.T) {
   },
   "enableMultiStackedCertificates" : false,
   "autoRenewalStartTime" : null,
-  "pendingChanges" : [ 
-	"/cps-api/enrollments/1/changes/2"
-   ],
+  "pendingChanges": [
+    {
+     "location": "/cps-api/enrollments/1/changes/2",
+     "changeType": "new-certificate"
+    }
+  ],
   "maxAllowedSanNames" : 100,
   "maxAllowedWildcardSanNames" : 100
 }, {
@@ -181,9 +183,12 @@ func TestListEnrollments(t *testing.T) {
   "thirdParty" : null,
   "enableMultiStackedCertificates" : false,
   "autoRenewalStartTime" : null,
-  "pendingChanges" : [ 
-     "/cps-api/enrollments/2/changes/2"
-   ],
+  "pendingChanges": [
+    {
+     "location": "/cps-api/enrollments/2/changes/2",
+     "changeType": "new-certificate"
+    }
+  ],
   "maxAllowedSanNames" : 100,
   "maxAllowedWildcardSanNames" : 25
 },
@@ -262,14 +267,19 @@ func TestListEnrollments(t *testing.T) {
   },
   "enableMultiStackedCertificates" : true,
   "autoRenewalStartTime" : null,
-  "pendingChanges" : [ "/cps-api/enrollments/3/changes/30" ],
+  "pendingChanges": [
+    {
+     "location": "/cps-api/enrollments/3/changes/30",
+     "changeType": "new-certificate"
+    }
+  ],
   "maxAllowedSanNames" : 100,
   "maxAllowedWildcardSanNames" : 100
 }
 ]}`,
 			expectedPath: "/cps/v2/enrollments?contractId=Contract-123",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.enrollments.v9+json",
+				"Accept": "application/vnd.akamai.cps.enrollments.v11+json",
 			},
 			expectedResponse: &ListEnrollmentsResponse{Enrollments: []Enrollment{
 				{
@@ -326,8 +336,13 @@ func TestListEnrollments(t *testing.T) {
 						PostalCode:     "71",
 						Region:         "KA",
 					},
-					PendingChanges: []string{"/cps-api/enrollments/1/changes/2"},
-					RA:             "third-party",
+					PendingChanges: []PendingChange{
+						{
+							Location:   "/cps-api/enrollments/1/changes/2",
+							ChangeType: "new-certificate",
+						},
+					},
+					RA: "third-party",
 					TechContact: &Contact{
 						AddressLineOne:   "150 Broadway",
 						City:             "Cambridge",
@@ -388,8 +403,13 @@ func TestListEnrollments(t *testing.T) {
 						PostalCode:     "02142",
 						Region:         "MA",
 					},
-					PendingChanges: []string{"/cps-api/enrollments/2/changes/2"},
-					RA:             "lets-encrypt",
+					PendingChanges: []PendingChange{
+						{
+							Location:   "/cps-api/enrollments/2/changes/2",
+							ChangeType: "new-certificate",
+						},
+					},
+					RA: "lets-encrypt",
 					TechContact: &Contact{
 						Email:     "rd4@akamai.com",
 						FirstName: "R4",
@@ -451,8 +471,13 @@ func TestListEnrollments(t *testing.T) {
 						PostalCode:     "560071",
 						Region:         "karnataka",
 					},
-					PendingChanges: []string{"/cps-api/enrollments/3/changes/30"},
-					RA:             "third-party",
+					PendingChanges: []PendingChange{
+						{
+							Location:   "/cps-api/enrollments/3/changes/30",
+							ChangeType: "new-certificate",
+						},
+					},
+					RA: "third-party",
 					TechContact: &Contact{
 						Email:     "john@example.com",
 						FirstName: "John",
@@ -476,7 +501,7 @@ func TestListEnrollments(t *testing.T) {
 }`,
 			expectedPath: "/cps/v2/enrollments?contractId=1",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.enrollments.v9+json",
+				"Accept": "application/vnd.akamai.cps.enrollments.v11+json",
 			},
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -619,14 +644,17 @@ func TestGetEnrollment(t *testing.T) {
     "enableMultiStackedCertificates": false,
     "autoRenewalStartTime": null,
     "pendingChanges": [
-        "/cps-api/enrollments/1/changes/2"
+      {
+       "location": "/cps-api/enrollments/1/changes/2",
+       "changeType": "new-certificate"
+      }
     ],
     "maxAllowedSanNames": 100,
     "maxAllowedWildcardSanNames": 100
 }`,
 			expectedPath: "/cps/v2/enrollments/1",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.enrollment.v9+json",
+				"Accept": "application/vnd.akamai.cps.enrollment.v11+json",
 			},
 			expectedResponse: &Enrollment{
 				AdminContact: &Contact{
@@ -646,14 +674,13 @@ func TestGetEnrollment(t *testing.T) {
 				CertificateType:      "third-party",
 				ChangeManagement:     true,
 				CSR: &CSR{
-					C:                   "US",
-					CN:                  "www.example.com",
-					L:                   "Cambridge",
-					O:                   "Akamai",
-					OU:                  "WebEx",
-					SANS:                []string{"www.example.com"},
-					ST:                  "MA",
-					PreferredTrustChain: nil,
+					C:    "US",
+					CN:   "www.example.com",
+					L:    "Cambridge",
+					O:    "Akamai",
+					OU:   "WebEx",
+					SANS: []string{"www.example.com"},
+					ST:   "MA",
 				},
 				EnableMultiStackedCertificates: false,
 				Location:                       "/cps-api/enrollments/1",
@@ -689,8 +716,13 @@ func TestGetEnrollment(t *testing.T) {
 					PostalCode:     "02142",
 					Region:         "MA",
 				},
-				PendingChanges: []string{"/cps-api/enrollments/1/changes/2"},
-				RA:             "third-party",
+				PendingChanges: []PendingChange{
+					{
+						Location:   "/cps-api/enrollments/1/changes/2",
+						ChangeType: "new-certificate",
+					},
+				},
+				RA: "third-party",
 				TechContact: &Contact{
 					AddressLineOne:   "150 Broadway",
 					City:             "Cambridge",
@@ -808,14 +840,17 @@ func TestGetEnrollment(t *testing.T) {
     "enableMultiStackedCertificates": false,
     "autoRenewalStartTime": null,
     "pendingChanges": [
-        "/cps-api/enrollments/1/changes/1"
+      {
+       "location": "/cps-api/enrollments/1/changes/1",
+       "changeType": "new-certificate"
+      }
     ],
     "maxAllowedSanNames": 100,
     "maxAllowedWildcardSanNames": 25
 }`,
 			expectedPath: "/cps/v2/enrollments/1",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.enrollment.v9+json",
+				"Accept": "application/vnd.akamai.cps.enrollment.v11+json",
 			},
 			expectedResponse: &Enrollment{
 				AdminContact: &Contact{
@@ -844,7 +879,7 @@ func TestGetEnrollment(t *testing.T) {
 					SANS: []string{
 						"www.example-test.com",
 					},
-					PreferredTrustChain: tools.StringPtr("intermediate-a"),
+					PreferredTrustChain: "intermediate-a",
 				},
 				EnableMultiStackedCertificates: false,
 				Location:                       "/cps/v2/enrollments/1",
@@ -880,7 +915,12 @@ func TestGetEnrollment(t *testing.T) {
 					PostalCode:     "012345",
 					Region:         "MA",
 				},
-				PendingChanges:     []string{"/cps-api/enrollments/1/changes/1"},
+				PendingChanges: []PendingChange{
+					{
+						Location:   "/cps-api/enrollments/1/changes/1",
+						ChangeType: "new-certificate",
+					},
+				},
 				RA:                 "lets-encrypt",
 				SignatureAlgorithm: "SHA-256",
 				TechContact: &Contact{
@@ -912,7 +952,7 @@ func TestGetEnrollment(t *testing.T) {
 }`,
 			expectedPath: "/cps/v2/enrollments/1",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.enrollment.v9+json",
+				"Accept": "application/vnd.akamai.cps.enrollment.v11+json",
 			},
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -1039,7 +1079,7 @@ func TestCreateEnrollment(t *testing.T) {
 					CertificateType: "san",
 					CSR: &CSR{
 						CN:                  "www.example.com",
-						PreferredTrustChain: tools.StringPtr("intermediate-a"),
+						PreferredTrustChain: "intermediate-a",
 					},
 					NetworkConfiguration: &NetworkConfiguration{},
 					Org:                  &Org{Name: "Akamai"},
@@ -1106,6 +1146,31 @@ func TestCreateEnrollment(t *testing.T) {
 		},
 		"validation error": {
 			request:   CreateEnrollmentRequest{},
+			withError: ErrStructValidation,
+		},
+		"validation error preferredTrustChain set for non dv enrollment": {
+			request: CreateEnrollmentRequest{
+				Enrollment: Enrollment{
+					AdminContact: &Contact{
+						Email: "r1d1@akamai.com",
+					},
+					CertificateType: "third-party",
+					CSR: &CSR{
+						CN:                  "www.example.com",
+						PreferredTrustChain: "intermediate-a",
+					},
+					NetworkConfiguration: &NetworkConfiguration{},
+					Org:                  &Org{Name: "Akamai"},
+					RA:                   "third-party",
+					TechContact: &Contact{
+						Email: "r2d2@akamai.com",
+					},
+					ValidationType: "third-party",
+				},
+				ContractID:      "ctr-1",
+				DeployNotAfter:  "12-12-2021",
+				DeployNotBefore: "12-07-2020",
+			},
 			withError: ErrStructValidation,
 		},
 		"invalid location": {
@@ -1252,6 +1317,30 @@ func TestUpdateEnrollment(t *testing.T) {
 		},
 		"validation error": {
 			request:   UpdateEnrollmentRequest{},
+			withError: ErrStructValidation,
+		},
+		"validation error preferredTrustChain set for non dv enrollment": {
+			request: UpdateEnrollmentRequest{
+				Enrollment: Enrollment{
+					AdminContact: &Contact{
+						Email: "r1d1@akamai.com",
+					},
+					CertificateType: "third-party",
+					CSR: &CSR{
+						CN:                  "www.example.com",
+						PreferredTrustChain: "intermediate-a",
+					},
+					NetworkConfiguration: &NetworkConfiguration{},
+					Org:                  &Org{Name: "Akamai"},
+					RA:                   "third-party",
+					TechContact: &Contact{
+						Email: "r2d2@akamai.com",
+					},
+					ValidationType: "third-party",
+				},
+				DeployNotAfter:  "12-12-2021",
+				DeployNotBefore: "12-07-2020",
+			},
 			withError: ErrStructValidation,
 		},
 		"invalid location URL": {
