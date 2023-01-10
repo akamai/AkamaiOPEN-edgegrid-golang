@@ -14,7 +14,7 @@ type (
 	SecureTokens interface {
 		// CreateSecureToken creates a new secure token
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/secure-token
+		// See: https://techdocs.akamai.com/edgeworkers/reference/post-secure-token
 		CreateSecureToken(context.Context, CreateSecureTokenRequest) (*CreateSecureTokenResponse, error)
 	}
 

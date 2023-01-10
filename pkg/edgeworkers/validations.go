@@ -15,7 +15,7 @@ type (
 	Validations interface {
 		// ValidateBundle given bundle validates it and returns a list of errors and/or warnings
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/validations#post-validations
+		// See: https://techdocs.akamai.com/edgeworkers/reference/post-validations
 		ValidateBundle(context.Context, ValidateBundleRequest) (*ValidateBundleResponse, error)
 	}
 
