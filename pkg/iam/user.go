@@ -280,7 +280,6 @@ func (r UpdateUserInfoRequest) Validate() error {
 		"lastName":          validation.Validate(r.User.LastName, validation.Required),
 		"country":           validation.Validate(r.User.Country, validation.Required),
 		"phone":             validation.Validate(r.User.Phone, validation.Required),
-		"contactType":       validation.Validate(r.User.ContactType, validation.Required),
 		"timeZone":          validation.Validate(r.User.TimeZone, validation.Required),
 		"preferredLanguage": validation.Validate(r.User.PreferredLanguage, validation.Required),
 		"sessionTimeOut":    validation.Validate(r.User.SessionTimeOut, validation.Required),
