@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -17,7 +18,7 @@ func TestDs_GetProperties(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *PropertyDetails
+		expectedResponse *PropertiesDetails
 		withError        error
 	}{
 		"200 OK": {
@@ -54,9 +55,9 @@ func TestDs_GetProperties(t *testing.T) {
 }
 `,
 			expectedPath: "/datastream-config-api/v2/log/groups/12345/properties",
-			expectedResponse: &PropertyDetails{
+			expectedResponse: &PropertiesDetails{
 				GroupID: 12345,
-				Properties: []Property{
+				Properties: []PropertyDetails{
 					{
 						ContractID:   "1-7KLGU",
 						PropertyID:   382631,
@@ -177,7 +178,6 @@ func TestDs_GetProperties(t *testing.T) {
 }
 
 func TestDs_GetDatasetFields(t *testing.T) {
-	invalidProductID := "INVALID_PROD_ID"
 	tests := map[string]struct {
 		request          GetDatasetFieldsRequest
 		responseStatus   int
@@ -195,25 +195,25 @@ func TestDs_GetDatasetFields(t *testing.T) {
 {
     "datasetFields": [
         {
-            "datasetFieldDescription": "The unique identifier of the stream that handled the request.",
-            "datasetFieldGroup": "Log information",
-            "datasetFieldId": 999,
-            "datasetFieldJsonKey": "streamId",
-            "datasetFieldName": "Stream ID"
-        },
-        {
-            "datasetFieldDescription": "The Content Provider code associated with the request.",
-            "datasetFieldGroup": "Log information",
+            "datasetFieldDescription": "datasetFieldDescription_1",
+            "datasetFieldGroup": "datasetFieldGroup_1",
             "datasetFieldId": 1000,
-            "datasetFieldJsonKey": "cp",
-            "datasetFieldName": "CP code"
+            "datasetFieldJsonKey": "datasetFieldJsonKey_1",
+            "datasetFieldName": "datasetFieldName_1"
         },
         {
-            "datasetFieldDescription": "The Akamai geographical price zone from where the request was served.",
-            "datasetFieldGroup": "Geo data",
-            "datasetFieldId": 2053,
-            "datasetFieldJsonKey": "billingRegion",
-            "datasetFieldName": "Billing region"
+            "datasetFieldDescription": "datasetFieldDescription_2",
+            "datasetFieldGroup": "datasetFieldGroup_2",
+            "datasetFieldId": 1001,
+            "datasetFieldJsonKey": "datasetFieldJsonKey_2",
+            "datasetFieldName": "datasetFieldName_2"
+        },
+        {
+            "datasetFieldDescription": "datasetFieldDescription_3",
+            "datasetFieldGroup": "datasetFieldGroup_3",
+            "datasetFieldId": 1002,
+            "datasetFieldJsonKey": "datasetFieldJsonKey_3",
+            "datasetFieldName": "datasetFieldName_3"
         }
     ]
 }
@@ -222,31 +222,31 @@ func TestDs_GetDatasetFields(t *testing.T) {
 			expectedResponse: &DataSets{
 				DataSetFields: []DataSetField{
 					{
-						DatasetFieldID:          999,
-						DatasetFieldName:        "Stream ID",
-						DatasetFieldDescription: "The unique identifier of the stream that handled the request.",
-						DatasetFieldGroup:       "Log information",
-						DatasetFieldJsonKey:     "streamId",
-					},
-					{
 						DatasetFieldID:          1000,
-						DatasetFieldName:        "CP code",
-						DatasetFieldDescription: "The Content Provider code associated with the request.",
-						DatasetFieldGroup:       "Log information",
-						DatasetFieldJsonKey:     "cp",
+						DatasetFieldName:        "datasetFieldName_1",
+						DatasetFieldJsonKey:     "datasetFieldJsonKey_1",
+						DatasetFieldGroup:       "datasetFieldGroup_1",
+						DatasetFieldDescription: "datasetFieldDescription_1",
 					},
 					{
-						DatasetFieldID:          2053,
-						DatasetFieldName:        "Billing region",
-						DatasetFieldDescription: "The Akamai geographical price zone from where the request was served.",
-						DatasetFieldGroup:       "Geo data",
-						DatasetFieldJsonKey:     "billingRegion",
+						DatasetFieldID:          1001,
+						DatasetFieldName:        "datasetFieldName_2",
+						DatasetFieldJsonKey:     "datasetFieldJsonKey_2",
+						DatasetFieldGroup:       "datasetFieldGroup_2",
+						DatasetFieldDescription: "datasetFieldDescription_2",
+					},
+					{
+						DatasetFieldID:          1002,
+						DatasetFieldName:        "datasetFieldName_3",
+						DatasetFieldJsonKey:     "datasetFieldJsonKey_3",
+						DatasetFieldGroup:       "datasetFieldGroup_3",
+						DatasetFieldDescription: "datasetFieldDescription_3",
 					},
 				},
 			},
 		},
 		"validation error - invalid product id": {
-			request:        GetDatasetFieldsRequest{ProductID: &invalidProductID},
+			request:        GetDatasetFieldsRequest{ProductID: tools.StringPtr("INVALID_PROD_ID")},
 			responseStatus: http.StatusBadRequest,
 			responseBody: `
 {

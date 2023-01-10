@@ -31,7 +31,7 @@ type (
 
 	// ActivateStreamResponse contains response body returned after successful stream activation
 	ActivateStreamResponse struct {
-		StreamVersionKey StreamVersionKey `json:"streamVersionKey"`
+		StreamVersionKey StreamUpdate `json:"streamVersionKey"`
 	}
 
 	// ActivationHistoryEntry contains single ActivationHistory item

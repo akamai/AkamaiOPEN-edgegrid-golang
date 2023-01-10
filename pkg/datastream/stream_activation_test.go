@@ -27,15 +27,15 @@ func TestDs_ActivateStream(t *testing.T) {
 {
     "streamVersionKey": {
         "streamId": 1,
-        "streamVersionId": 3
+        "streamVersion": 3
     }
 }
 `,
 			expectedPath: "/datastream-config-api/v1/log/streams/3/activate",
 			expectedResponse: &ActivateStreamResponse{
-				StreamVersionKey: StreamVersionKey{
-					StreamID:        1,
-					StreamVersionID: 3,
+				StreamVersionKey: StreamUpdate{
+					StreamID:      1,
+					StreamVersion: 3,
 				},
 			},
 		},
@@ -116,15 +116,15 @@ func TestDs_DeactivateStream(t *testing.T) {
 {
     "streamVersionKey": {
         "streamId": 1,
-        "streamVersionId": 3
+        "streamVersion": 3
     }
 }
 `,
 			expectedPath: "/datastream-config-api/v1/log/streams/3/deactivate",
 			expectedResponse: &DeactivateStreamResponse{
-				StreamVersionKey: StreamVersionKey{
-					StreamID:        1,
-					StreamVersionID: 3,
+				StreamVersionKey: StreamUpdate{
+					StreamID:      1,
+					StreamVersion: 3,
 				},
 			},
 		},

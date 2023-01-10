@@ -16,7 +16,7 @@ type (
 		// GetProperties returns properties that are active on the production and staging network for a specific product type that are available within a group
 		//
 		// See: https://techdocs.akamai.com/datastream2/v2/reference/get-group-properties
-		GetProperties(context.Context, GetPropertiesRequest) (*PropertyDetails, error)
+		GetProperties(context.Context, GetPropertiesRequest) (*PropertiesDetails, error)
 
 		// GetDatasetFields returns groups of data set fields available in the template.
 		//
@@ -32,6 +32,22 @@ type (
 	// GetDatasetFieldsRequest contains parameters necessary to send a GetDatasetFields request
 	GetDatasetFieldsRequest struct {
 		ProductID *string
+	}
+
+	// PropertiesDetails identifies the properties belong to the given group.
+	PropertiesDetails struct {
+		Properties []PropertyDetails `json:"properties"`
+		GroupID    int               `json:"groupId"`
+	}
+
+	// PropertyDetails identifies detailed info about the properties monitored in the stream.
+	PropertyDetails struct {
+		Hostnames    []string `json:"hostnames"`
+		ProductID    string   `json:"productId"`
+		ProductName  string   `json:"productName"`
+		PropertyID   int      `json:"propertyId"`
+		PropertyName string   `json:"propertyName"`
+		ContractID   string   `json:"contractId"`
 	}
 )
 
@@ -49,7 +65,7 @@ var (
 	ErrGetDatasetFields = errors.New("list data set fields")
 )
 
-func (d *ds) GetProperties(ctx context.Context, params GetPropertiesRequest) (*PropertyDetails, error) {
+func (d *ds) GetProperties(ctx context.Context, params GetPropertiesRequest) (*PropertiesDetails, error) {
 	logger := d.Log(ctx)
 	logger.Debug("GetProperties")
 
@@ -69,7 +85,7 @@ func (d *ds) GetProperties(ctx context.Context, params GetPropertiesRequest) (*P
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProperties, err)
 	}
 
-	var rval PropertyDetails
+	var rval PropertiesDetails
 	resp, err := d.Exec(req, &rval)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProperties, err)

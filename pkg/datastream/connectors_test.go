@@ -9,11 +9,11 @@ import (
 
 func TestCustomHTPPSValidation(t *testing.T) {
 	baseConnectorStruct := CustomHTTPSConnector{
-		ConnectorName:      "Test Connector",
+		DisplayName:        "Test Connector",
 		AuthenticationType: AuthenticationTypeNone,
-		URL:                "https://example.com",
+		Endpoint:           "https://example.com",
 	}
-	baseConnectorStruct.SetConnectorType()
+	baseConnectorStruct.SetDestinationType()
 
 	tests := map[string]struct {
 		connectorBuilder      func() CustomHTTPSConnector
