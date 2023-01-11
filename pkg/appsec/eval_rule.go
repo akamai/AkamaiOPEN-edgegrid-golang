@@ -12,16 +12,20 @@ import (
 type (
 	// The EvalRule interface supports retrieving and modifying the rules available for
 	// evaluation and their actions, or the action of a specific rule.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#evalrule
 	EvalRule interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevalrules
+		// GetEvalRules returns the rules available for evaluation and their actions.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-eval-rules
 		GetEvalRules(ctx context.Context, params GetEvalRulesRequest) (*GetEvalRulesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevalrule
+		// GetEvalRule returns the action for a specific rule you want to evaluate.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-eval-rule
 		GetEvalRule(ctx context.Context, params GetEvalRuleRequest) (*GetEvalRuleResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putevalrule
+		// UpdateEvalRule updates the action for a specific rule you want to evaluate.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-eval-rule
 		UpdateEvalRule(ctx context.Context, params UpdateEvalRuleRequest) (*UpdateEvalRuleResponse, error)
 	}
 

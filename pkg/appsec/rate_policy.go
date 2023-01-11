@@ -11,22 +11,30 @@ import (
 
 type (
 	// The RatePolicy interface supports creating, retrieving, updating and removing rate policies.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#ratepolicy
 	RatePolicy interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getratepolicies
+		// GetRatePolicies returns rate policies for a specific security configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-rate-policies
 		GetRatePolicies(ctx context.Context, params GetRatePoliciesRequest) (*GetRatePoliciesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getratepolicy
+		// GetRatePolicy returns the specified rate policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-rate-policy
 		GetRatePolicy(ctx context.Context, params GetRatePolicyRequest) (*GetRatePolicyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postratepolicies
+		// CreateRatePolicy creates a new rate policy for a specific configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-rate-policies
 		CreateRatePolicy(ctx context.Context, params CreateRatePolicyRequest) (*CreateRatePolicyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putratepolicy
+		// UpdateRatePolicy updates details for a specific rate policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-rate-policy
 		UpdateRatePolicy(ctx context.Context, params UpdateRatePolicyRequest) (*UpdateRatePolicyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deleteratepolicy
+		// RemoveRatePolicy deletes the specified rate policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/delete-rate-policy
 		RemoveRatePolicy(ctx context.Context, params RemoveRatePolicyRequest) (*RemoveRatePolicyResponse, error)
 	}
 

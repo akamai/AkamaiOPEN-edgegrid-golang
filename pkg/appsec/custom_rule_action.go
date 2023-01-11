@@ -11,16 +11,20 @@ import (
 type (
 	// The CustomRuleAction interface supports retrieving and updating the actions for the custom
 	// rules of a configuration, or for a specific custom rule.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#customruleactions
 	CustomRuleAction interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomruleactions
+		// GetCustomRuleActions returns a list of all configured custom rules for the specified configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-custom-rules
 		GetCustomRuleActions(ctx context.Context, params GetCustomRuleActionsRequest) (*GetCustomRuleActionsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomruleactions
+		// GetCustomRuleAction returns a specified action of a custom rule.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-custom-rules
 		GetCustomRuleAction(ctx context.Context, params GetCustomRuleActionRequest) (*GetCustomRuleActionResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putactionruleid
+		// UpdateCustomRuleAction updates the action of a custom rule.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-custom-rule
 		UpdateCustomRuleAction(ctx context.Context, params UpdateCustomRuleActionRequest) (*UpdateCustomRuleActionResponse, error)
 	}
 

@@ -11,16 +11,20 @@ import (
 type (
 	// The ReputationAnalysis interface supports retrieving and modifying the reputation analysis
 	// settings for a configuration and policy.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#reputationanalysis
 	ReputationAnalysis interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationanalysis
+		// GetReputationAnalysis returns the current reputation analysis settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-reputation-analysis
 		GetReputationAnalysis(ctx context.Context, params GetReputationAnalysisRequest) (*GetReputationAnalysisResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationanalysis
+		// UpdateReputationAnalysis updates the reputation analysis settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-reputation-analysis
 		UpdateReputationAnalysis(ctx context.Context, params UpdateReputationAnalysisRequest) (*UpdateReputationAnalysisResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationanalysis
+		// RemoveReputationAnalysis removes the reputation analysis settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-reputation-analysis
 		RemoveReputationAnalysis(ctx context.Context, params RemoveReputationAnalysisRequest) (*RemoveReputationAnalysisResponse, error)
 	}
 

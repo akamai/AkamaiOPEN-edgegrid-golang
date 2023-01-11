@@ -10,13 +10,15 @@ import (
 
 type (
 	// The VersionNotes interface supports retrieving and modifying the version notes for a configuration and version.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#versionnotesgroup
 	VersionNotes interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getversionnotes
+		// GetVersionNotes gets the most recent version notes for a configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-version-notes
 		GetVersionNotes(ctx context.Context, params GetVersionNotesRequest) (*GetVersionNotesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putversionnotes
+		// UpdateVersionNotes updates the most recent version notes for a configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-version-notes
 		UpdateVersionNotes(ctx context.Context, params UpdateVersionNotesRequest) (*UpdateVersionNotesResponse, error)
 	}
 

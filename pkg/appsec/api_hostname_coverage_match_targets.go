@@ -11,10 +11,10 @@ import (
 type (
 	// The ApiHostnameCoverageMatchTargets interface supports retrieving the API and website
 	// match targets that protect a hostname.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#hostnamecoverage
 	ApiHostnameCoverageMatchTargets interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#gethostnamecoveragematchtargets
+		// GetApiHostnameCoverageMatchTargets lists the API and website match targets that protect a hostname.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-coverage-match-targets
 		GetApiHostnameCoverageMatchTargets(ctx context.Context, params GetApiHostnameCoverageMatchTargetsRequest) (*GetApiHostnameCoverageMatchTargetsResponse, error)
 	}
 

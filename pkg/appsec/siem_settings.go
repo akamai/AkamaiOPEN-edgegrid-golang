@@ -10,16 +10,20 @@ import (
 
 type (
 	// The SiemSettings interface supports retrieving, modifying and removing the SIEM settings for a configuration.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#siem
 	SiemSettings interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsiemsettings
+		// GetSiemSettings returns SIEM settings for a specific configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-siem
 		GetSiemSettings(ctx context.Context, params GetSiemSettingsRequest) (*GetSiemSettingsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsiemsettings
+		// UpdateSiemSettings updates SIEM settings for a specific configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-siem
 		UpdateSiemSettings(ctx context.Context, params UpdateSiemSettingsRequest) (*UpdateSiemSettingsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsiemsettings
+		// RemoveSiemSettings removes SIEM settings for a specific configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-siem
 		// Deprecated: this method will be removed in a future release.
 		RemoveSiemSettings(ctx context.Context, params RemoveSiemSettingsRequest) (*RemoveSiemSettingsResponse, error)
 	}

@@ -11,24 +11,24 @@ import (
 
 type (
 	// The Activations interface supports the activation and deactivation of security configurations.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#activation
 	Activations interface {
 		// GetActivations returns the status of an activation.
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getactivationid
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-activation
 		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
 
 		// GetActivationHistory lists the activation history for a configuration.
-		// https://techdocs.akamai.com/application-security/reference/get-activation-history
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-activation-history
 		GetActivationHistory(ctx context.Context, params GetActivationHistoryRequest) (*GetActivationHistoryResponse, error)
 
 		// CreateActivations activates a configuration. If acknowledgeWarnings is true and warnings are
 		// returned on the first attempt, a second attempt is made acknowledging the warnings.
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postactivations
+		//
 		CreateActivations(ctx context.Context, params CreateActivationsRequest, acknowledgeWarnings bool) (*CreateActivationsResponse, error)
 
 		// RemoveActivations deactivates a configuration.
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postactivations
+		//
 		RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error)
 	}
 

@@ -12,19 +12,20 @@ type (
 	// The BypassNetworkLists interface supports listing or modifying which network lists are
 	// used in the bypass network lists settings.
 	// Deprecated: this interface will be removed in a future release. Use the WAPBypassNetworkLists interface instead.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#bypassnetworklist
 	BypassNetworkLists interface {
 		// Deprecated: this method will be removed in a future release. Use the GetWAPBypassNetworkLists method of the WAPBypassNetworkLists interface instead.
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getbypassnetworklistsforawapconfigversion
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-bypass-network-lists
 		GetBypassNetworkLists(ctx context.Context, params GetBypassNetworkListsRequest) (*GetBypassNetworkListsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putbypassnetworklistsforawapconfigversion
 		// Deprecated: this method will be removed in a future release. Use the UpdateWAPBypassNetworkLists method of the WAPBypassNetworkLists interface instead.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-bypass-network-lists
 		UpdateBypassNetworkLists(ctx context.Context, params UpdateBypassNetworkListsRequest) (*UpdateBypassNetworkListsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putbypassnetworklistsforawapconfigversion
 		// Deprecated: this method will be removed in a future release. Use the UpdateWAPBypassNetworkLists method of the WAPBypassNetworkLists interface instead.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-bypass-network-lists
 		RemoveBypassNetworkLists(ctx context.Context, params RemoveBypassNetworkListsRequest) (*RemoveBypassNetworkListsResponse, error)
 	}
 

@@ -10,23 +10,21 @@ import (
 
 type (
 	// The IPGeoProtection interface supports retrieving and updating IPGeo protection for a configuration and policy.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	IPGeoProtection interface {
 		// GetIPGeoProtections retrieves the current IPGeo protection protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		// Deprecated: this method will be removed in a future release. Use GetIPGeoProtection instead.
 		GetIPGeoProtections(ctx context.Context, params GetIPGeoProtectionsRequest) (*GetIPGeoProtectionsResponse, error)
 
 		// GetIPGeoProtection retrieves the current IPGeo protection protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		GetIPGeoProtection(ctx context.Context, params GetIPGeoProtectionRequest) (*GetIPGeoProtectionResponse, error)
 
-		// SetIPGeoProtection updates the IPGeo protection protection setting for a configuration and policy.
+		// UpdateIPGeoProtection updates the IPGeo protection protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		UpdateIPGeoProtection(ctx context.Context, params UpdateIPGeoProtectionRequest) (*UpdateIPGeoProtectionResponse, error)
 	}
 

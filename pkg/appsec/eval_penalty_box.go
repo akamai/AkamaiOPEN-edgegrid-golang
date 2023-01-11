@@ -9,13 +9,15 @@ import (
 type (
 	// The EvalPenaltyBox interface supports retrieving or modifying the evaluation penalty box settings for
 	// a specified security policy in evaluation mode.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#evalpenaltybox
 	EvalPenaltyBox interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpenaltybox
+		// GetEvalPenaltyBox returns the penalty box settings for a security policy in evaluation mode.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-eval-policy-penalty-box
 		GetEvalPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest) (*GetPenaltyBoxResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putpenaltybox
+		// UpdateEvalPenaltyBox updates the penalty box settings for a security policy in evaluation mode.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-eval-policy-penalty-box
 		UpdateEvalPenaltyBox(ctx context.Context, params UpdatePenaltyBoxRequest) (*UpdatePenaltyBoxResponse, error)
 	}
 )

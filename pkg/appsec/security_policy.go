@@ -10,22 +10,31 @@ import (
 
 type (
 	// The SecurityPolicy interface supports creating, retrieving, modifying and removing security policies.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#securitypolicy
 	SecurityPolicy interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicies
+		// GetSecurityPolicies returns a list of security policies available for the specified security configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policies
 		GetSecurityPolicies(ctx context.Context, params GetSecurityPoliciesRequest) (*GetSecurityPoliciesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicy
+		// GetSecurityPolicy returns the specified security policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy
 		GetSecurityPolicy(ctx context.Context, params GetSecurityPolicyRequest) (*GetSecurityPolicyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsecuritypolicies
+		// CreateSecurityPolicy creates a new copy of an existing security policy or creates a new security policy from scratch
+		// when you don't specify a policy to clone in the request.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-policy
 		CreateSecurityPolicy(ctx context.Context, params CreateSecurityPolicyRequest) (*CreateSecurityPolicyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsecuritypolicy
+		// UpdateSecurityPolicy updates the name of a specific security policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy
 		UpdateSecurityPolicy(ctx context.Context, params UpdateSecurityPolicyRequest) (*UpdateSecurityPolicyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletesecuritypolicy
+		// RemoveSecurityPolicy deletes the specified security policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/delete-policy
 		RemoveSecurityPolicy(ctx context.Context, params RemoveSecurityPolicyRequest) (*RemoveSecurityPolicyResponse, error)
 	}
 

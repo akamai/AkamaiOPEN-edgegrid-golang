@@ -10,28 +10,26 @@ import (
 
 type (
 	// The NetworkLayerProtection interface supports retrieving and updating network layer protection for a configuration and policy.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	NetworkLayerProtection interface {
 		// GetNetworkLayerProtections retrieves the current network layer protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		// Deprecated: this method will be removed in a future release. Use GetNetworkLayerProtection instead.
 		GetNetworkLayerProtections(ctx context.Context, params GetNetworkLayerProtectionsRequest) (*GetNetworkLayerProtectionsResponse, error)
 
 		// GetNetworkLayerProtection retrieves the current network layer protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		GetNetworkLayerProtection(ctx context.Context, params GetNetworkLayerProtectionRequest) (*GetNetworkLayerProtectionResponse, error)
 
 		// UpdateNetworkLayerProtection updates the network layer protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		UpdateNetworkLayerProtection(ctx context.Context, params UpdateNetworkLayerProtectionRequest) (*UpdateNetworkLayerProtectionResponse, error)
 
-		// UpdateNetworkLayerProtection removes network layer protection for a configuration and policy.
+		// RemoveNetworkLayerProtection removes network layer protection for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		// Deprecated: this method will be removed in a future release. Use UpdateNetworkLayerProtection instead.
 		RemoveNetworkLayerProtection(ctx context.Context, params RemoveNetworkLayerProtectionRequest) (*RemoveNetworkLayerProtectionResponse, error)
 	}

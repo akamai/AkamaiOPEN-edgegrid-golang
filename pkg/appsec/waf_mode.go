@@ -11,17 +11,21 @@ import (
 type (
 	// The WAFMode interface supports retrieving and modifying the mode setting that determines how
 	// rule sets are upgraded.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#mode
 	WAFMode interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmode
+		// GetWAFModes returns which mode your rules are currently set to.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-mode-1
 		// Deprecated: this method will be removed in a future release. Use GetWAFMode instead.
 		GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*GetWAFModesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmode
+		// GetWAFMode returns which mode your rules are currently set to.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-mode-1
 		GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*GetWAFModeResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putmode
+		// UpdateWAFMode updated mode your rules are set to.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-mode-1
 		UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest) (*UpdateWAFModeResponse, error)
 	}
 

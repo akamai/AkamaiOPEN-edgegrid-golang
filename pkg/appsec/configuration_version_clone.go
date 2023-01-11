@@ -13,16 +13,20 @@ import (
 type (
 	// The ConfigurationVersionClone interface supports creating, retrieving, and removing
 	// clones of a configuration version.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#configurationclone
 	ConfigurationVersionClone interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationversion
+		// GetConfigurationVersionClone returns basic detail about a configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-version-number
 		GetConfigurationVersionClone(ctx context.Context, params GetConfigurationVersionCloneRequest) (*GetConfigurationVersionCloneResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsummarylistofconfigurationversions
+		// CreateConfigurationVersionClone  creates a new version of the specified security configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-config-versions
 		CreateConfigurationVersionClone(ctx context.Context, params CreateConfigurationVersionCloneRequest) (*CreateConfigurationVersionCloneResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deleteconfigurationversion
+		// RemoveConfigurationVersionClone deletes the specified configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/delete-version-number
 		RemoveConfigurationVersionClone(ctx context.Context, params RemoveConfigurationVersionCloneRequest) (*RemoveConfigurationVersionCloneResponse, error)
 	}
 

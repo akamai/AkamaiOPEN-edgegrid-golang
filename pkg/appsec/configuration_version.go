@@ -8,10 +8,10 @@ import (
 
 type (
 	// The ConfigurationVersion interface supports retrieving the versions of a configuration.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#configuration
 	ConfigurationVersion interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsummarylistofconfigurationversions
+		// GetConfigurationVersions lists available versions for the specified security configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-config-versions
 		GetConfigurationVersions(ctx context.Context, params GetConfigurationVersionsRequest) (*GetConfigurationVersionsResponse, error)
 	}
 

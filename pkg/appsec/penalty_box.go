@@ -11,17 +11,21 @@ import (
 type (
 	// The PenaltyBox interface supports retrieving or modifying the penalty box settings for
 	// a specified security policy
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#penaltybox
 	PenaltyBox interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpenaltybox
+		// GetPenaltyBoxes returns the penalty boxes settings for the security policy you specify.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-penalty-box
 		// Deprecated: this method will be removed in a future release. Use GetPenaltyBox instead.
 		GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequest) (*GetPenaltyBoxesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpenaltybox
+		// GetPenaltyBox returns the penalty box settings for the security policy you specify.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-penalty-box
 		GetPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest) (*GetPenaltyBoxResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putpenaltybox
+		// UpdatePenaltyBox modifies the penalty box settings for a security policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-penalty-box
 		UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRequest) (*UpdatePenaltyBoxResponse, error)
 	}
 

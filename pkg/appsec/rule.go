@@ -12,20 +12,26 @@ import (
 type (
 	// The Rule interface supports retrieving and modifying the rules in a policy together with their
 	// actions, conditions and exceptions, or the action, condition and exceptions of a specific rule.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#rule
 	Rule interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getrules
+		// GetRules returns the action taken for each rule in a policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-rules
 		GetRules(ctx context.Context, params GetRulesRequest) (*GetRulesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getruleaction
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getruleconditionexception
+		// GetRule returns the action a rule takes when triggered with conditions and exceptions.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-rule-condition-exception-1
+		// See: https://techdocs.akamai.com/application-security/reference/get-rule-1
 		GetRule(ctx context.Context, params GetRuleRequest) (*GetRuleResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putruleaction
+		// UpdateRule updates what action a rule takes when it's triggered.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-rule-1
 		UpdateRule(ctx context.Context, params UpdateRuleRequest) (*UpdateRuleResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putruleconditionexception
+		// UpdateRuleConditionException updates a rule's conditions and exceptions.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-rule-condition-exception-1
 		UpdateRuleConditionException(ctx context.Context, params UpdateConditionExceptionRequest) (*UpdateConditionExceptionResponse, error)
 	}
 

@@ -13,22 +13,30 @@ import (
 type (
 	// The ReputationProfile interface supports creating, retrieving, modifying and removing reputation
 	// profiles for a specific security configuration version.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#reputationprofile
 	ReputationProfile interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationprofiles
+		// GetReputationProfiles returns reputation profiles for a specific security configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-reputation-profiles
 		GetReputationProfiles(ctx context.Context, params GetReputationProfilesRequest) (*GetReputationProfilesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationprofile
+		// GetReputationProfile returns the details for a specific reputation profile.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-reputation-profile
 		GetReputationProfile(ctx context.Context, params GetReputationProfileRequest) (*GetReputationProfileResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postreputationprofiles
+		// CreateReputationProfile creates a new reputation profile for a specific configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-reputation-profiles
 		CreateReputationProfile(ctx context.Context, params CreateReputationProfileRequest) (*CreateReputationProfileResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationprofile
+		// UpdateReputationProfile updates details for a specific reputation profile.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-reputation-profile
 		UpdateReputationProfile(ctx context.Context, params UpdateReputationProfileRequest) (*UpdateReputationProfileResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletereputationprofile
+		// RemoveReputationProfile deletes a reputation profile.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/delete-reputation-profile
 		RemoveReputationProfile(ctx context.Context, params RemoveReputationProfileRequest) (*RemoveReputationProfileResponse, error)
 	}
 

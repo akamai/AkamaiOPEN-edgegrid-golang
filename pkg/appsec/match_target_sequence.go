@@ -10,13 +10,15 @@ import (
 
 type (
 	// The MatchTargetSequence interface supports querying and modifying the order of match targets.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#matchtargetorder
 	MatchTargetSequence interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmatchtargets
+		// GetMatchTargetSequence returns match targets defined in the specified security configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-match-targets
 		GetMatchTargetSequence(ctx context.Context, params GetMatchTargetSequenceRequest) (*GetMatchTargetSequenceResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putsequence
+		// UpdateMatchTargetSequence updates the sequence of Match Targets in a configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-match-targets-sequence
 		UpdateMatchTargetSequence(ctx context.Context, params UpdateMatchTargetSequenceRequest) (*UpdateMatchTargetSequenceResponse, error)
 	}
 

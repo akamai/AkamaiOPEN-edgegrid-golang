@@ -10,28 +10,26 @@ import (
 
 type (
 	// The ReputationProtection interface supports retrieving and updating reputation protection for a configuration and policy.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	ReputationProtection interface {
 		// GetReputationProtections retrieves the current reputation protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		// Deprecated: this method will be removed in a future release. Use GetReputationProtection instead.
 		GetReputationProtections(ctx context.Context, params GetReputationProtectionsRequest) (*GetReputationProtectionsResponse, error)
 
 		// GetReputationProtection retrieves the current reputation protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		GetReputationProtection(ctx context.Context, params GetReputationProtectionRequest) (*GetReputationProtectionResponse, error)
 
 		// UpdateReputationProtection updates the reputation protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		UpdateReputationProtection(ctx context.Context, params UpdateReputationProtectionRequest) (*UpdateReputationProtectionResponse, error)
 
 		// RemoveReputationProtection removes reputation protection for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		// Deprecated: this method will be removed in a future release. Use UpdateReputationProtection instead.
 		RemoveReputationProtection(ctx context.Context, params RemoveReputationProtectionRequest) (*RemoveReputationProtectionResponse, error)
 	}

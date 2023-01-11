@@ -10,10 +10,10 @@ import (
 
 type (
 	// The ApiEndpoints interface supports retrieving the API endpoints associated with a security policy.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#apiendpoint
 	ApiEndpoints interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getapiendpoints
+		// GetApiEndpoints lists the API endpoints associated with a security policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-api-endpoints
 		GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequest) (*GetApiEndpointsResponse, error)
 	}
 

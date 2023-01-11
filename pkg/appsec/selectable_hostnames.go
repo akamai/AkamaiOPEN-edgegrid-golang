@@ -10,10 +10,10 @@ type (
 	// The SelectableHostnames interface supports retrieving the hostnames that a given configuration version
 	// has the ability to protect. Hostnames may show as error hosts when they aren’t currently available. for
 	// example, when a contract expires.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#selectablehostnames
 	SelectableHostnames interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectablehostnames
+		// GetSelectableHostnames lists the hostnames that a given configuration version has the ability to protect.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-selectable-hostnames
 		GetSelectableHostnames(ctx context.Context, params GetSelectableHostnamesRequest) (*GetSelectableHostnamesResponse, error)
 	}
 

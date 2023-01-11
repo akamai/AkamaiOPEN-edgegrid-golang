@@ -11,17 +11,21 @@ import (
 type (
 	// The RatePolicyAction interface supports retrieving and modifying the action associated with
 	// a specified rate policy, or with all rate policies in a security policy.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#ratepolicyaction
 	RatePolicyAction interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getratepolicyactions
+		// GetRatePolicyActions returns a list of all rate policies currently in use with the actions each policy takes when conditions are met.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-rate-policies-actions
 		GetRatePolicyActions(ctx context.Context, params GetRatePolicyActionsRequest) (*GetRatePolicyActionsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getratepolicyactions
+		// GetRatePolicyAction returns a specified rate policy currently in use with the action.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-rate-policies-actions
 		// Deprecated: this method will be removed in a future release. Use GetRatePolicyActions instead.
 		GetRatePolicyAction(ctx context.Context, params GetRatePolicyActionRequest) (*GetRatePolicyActionResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putactionsperratepolicy
+		// UpdateRatePolicyAction
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-rate-policy-action
 		UpdateRatePolicyAction(ctx context.Context, params UpdateRatePolicyActionRequest) (*UpdateRatePolicyActionResponse, error)
 	}
 

@@ -11,23 +11,31 @@ import (
 type (
 	// The SelectedHostname interface supports retrieving and modifying the list of hostnames protected under
 	// a configuration.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#selectedhostnames
 	// Deprecated: this interface will be removed in a future release.  Use the WAPSelectedHostnames interface instead.
 	SelectedHostname interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectedhostnames
+		// GetSelectedHostnames lists the hostnames that the configuration version selects as candidates of protected hostnames,
+		// which you can use in match targets.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-selected-hostnames
 		// Deprecated: this method will be removed in a future release. Use the GetWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		GetSelectedHostnames(ctx context.Context, params GetSelectedHostnamesRequest) (*GetSelectedHostnamesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getselectedhostnames
+		// GetSelectedHostname returns the hostname that the configuration version selects as a candidate of protected hostname,
+		// which you can use in match targets.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-selected-hostnames
 		// Deprecated: this method will be removed in a future release. Use the GetWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		GetSelectedHostname(ctx context.Context, params GetSelectedHostnameRequest) (*GetSelectedHostnameResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putselectedhostnames
+		// UpdateSelectedHostname updates the selected hostname for a configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-selected-hostnames
 		// Deprecated: this method will be removed in a future release. Use the UpdateWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		UpdateSelectedHostname(ctx context.Context, params UpdateSelectedHostnameRequest) (*UpdateSelectedHostnameResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putselectedhostnames
+		// UpdateSelectedHostnames updates the list of selected hostnames for a configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-selected-hostnames
 		// Deprecated: this method will be removed in a future release. Use the UpdateWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		UpdateSelectedHostnames(ctx context.Context, params UpdateSelectedHostnamesRequest) (*UpdateSelectedHostnamesResponse, error)
 	}

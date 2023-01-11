@@ -10,20 +10,30 @@ import (
 
 type (
 	// The Configuration interface supports creating, retrieving, updating and deleting security configurations.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#configuration
 	Configuration interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurations
+		// GetConfigurations lists available security configurations.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-configs
 		GetConfigurations(ctx context.Context, params GetConfigurationsRequest) (*GetConfigurationsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurations
+		// GetConfiguration retrieves the configuration details.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-config
 		GetConfiguration(ctx context.Context, params GetConfigurationRequest) (*GetConfigurationResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postconfigurations
+		// CreateConfiguration creates a new WAP or KSD security configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-config
 		CreateConfiguration(ctx context.Context, params CreateConfigurationRequest) (*CreateConfigurationResponse, error)
 
+		// UpdateConfiguration updates the name of your security configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-config
 		UpdateConfiguration(ctx context.Context, params UpdateConfigurationRequest) (*UpdateConfigurationResponse, error)
 
+		// RemoveConfiguration deletes the specified security configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/delete-config
 		RemoveConfiguration(ctx context.Context, params RemoveConfigurationRequest) (*RemoveConfigurationResponse, error)
 	}
 

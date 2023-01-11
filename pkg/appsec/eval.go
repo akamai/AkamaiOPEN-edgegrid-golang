@@ -11,20 +11,25 @@ import (
 type (
 	// The Eval interface supports retrieving and updating the way evaluation rules would respond if
 	// they were applied to live traffic.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#evalmode
 	Eval interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmode
-		// Deprecated: this method will be removed in a future release. Use GetEval instead.
+		// GetEvals returns which modes your rules are currently set to.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-mode-1
 		GetEvals(ctx context.Context, params GetEvalsRequest) (*GetEvalsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmode
+		// GetEval returns which mode your rules are currently set to.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-mode-1
 		GetEval(ctx context.Context, params GetEvalRequest) (*GetEvalResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postevaluationmode
+		// UpdateEval updated the rule evaluation mode.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-policy-eval
 		UpdateEval(ctx context.Context, params UpdateEvalRequest) (*UpdateEvalResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postevaluationmode
+		// RemoveEval removes the rule evaluation mode.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-policy-eval
 		RemoveEval(ctx context.Context, params RemoveEvalRequest) (*RemoveEvalResponse, error)
 	}
 

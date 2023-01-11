@@ -11,16 +11,21 @@ import (
 type (
 	// The SecurityPolicyClone interface supports cloning an existing security policy and retrieving
 	// existing security policies.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#securitypolicyclone
 	SecurityPolicyClone interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicies
+		// GetSecurityPolicyClones returns a list of security policies available for the specified security configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policies
 		GetSecurityPolicyClones(ctx context.Context, params GetSecurityPolicyClonesRequest) (*GetSecurityPolicyClonesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsecuritypolicies
+		// GetSecurityPolicyClone returns the specified security policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy
 		GetSecurityPolicyClone(ctx context.Context, params GetSecurityPolicyCloneRequest) (*GetSecurityPolicyCloneResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsecuritypolicies
+		// CreateSecurityPolicyClone Creates a new copy of an existing security policy or creates a new security policy from scratch
+		// when you don't specify a policy to clone in the request.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-policy
 		CreateSecurityPolicyClone(ctx context.Context, params CreateSecurityPolicyCloneRequest) (*CreateSecurityPolicyCloneResponse, error)
 	}
 

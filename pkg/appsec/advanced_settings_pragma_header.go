@@ -12,13 +12,15 @@ import (
 type (
 	// The AdvancedSettingsPragma interface supports retrieving or modifying the pragma header
 	// excluded conditions for a configuration or policy.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#pragmaheader
 	AdvancedSettingsPragma interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getpragmaheaderconfiguration
+		// GetAdvancedSettingsPragma returns the Pragma header's excluded conditions.
+		//
+		// See:https://techdocs.akamai.com/application-security/reference/get-policies-pragma-header
 		GetAdvancedSettingsPragma(ctx context.Context, params GetAdvancedSettingsPragmaRequest) (*GetAdvancedSettingsPragmaResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putpragmaheaderconfiguration
+		// UpdateAdvancedSettingsPragma updates the pragma header excluded conditions.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-policies-pragma-header
 		UpdateAdvancedSettingsPragma(ctx context.Context, params UpdateAdvancedSettingsPragmaRequest) (*UpdateAdvancedSettingsPragmaResponse, error)
 	}
 

@@ -8,10 +8,10 @@ import (
 
 type (
 	// The SiemDefinitions interface supports retrieving the available SIEM versions.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#siem
 	SiemDefinitions interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getsiemversions
+		// GetSiemDefinitions gets available SIEM versions.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-siem-definitions
 		GetSiemDefinitions(ctx context.Context, params GetSiemDefinitionsRequest) (*GetSiemDefinitionsResponse, error)
 	}
 

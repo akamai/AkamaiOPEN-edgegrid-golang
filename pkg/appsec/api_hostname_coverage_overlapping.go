@@ -11,10 +11,10 @@ import (
 type (
 	// The ApiHostnameCoverageOverlapping interface supports listing the configuration versions that
 	// contain a hostname also included in the given configuration version.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#hostnameoverlap
 	ApiHostnameCoverageOverlapping interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#gethostnamecoverageoverlapping
+		// GetApiHostnameCoverageOverlapping lists the configuration versions that contain a hostname also included in the current configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-hostname-coverage-overlapping
 		GetApiHostnameCoverageOverlapping(ctx context.Context, params GetApiHostnameCoverageOverlappingRequest) (*GetApiHostnameCoverageOverlappingResponse, error)
 	}
 

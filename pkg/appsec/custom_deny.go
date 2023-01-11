@@ -14,22 +14,30 @@ import (
 type (
 	// The CustomDeny interface supports creating, retrievinfg, modifying and removing custom deny actions
 	// for a configuration.
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#customdeny
-	//
 	CustomDeny interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomdeny
+		// GetCustomDenyList returns custom deny actions for a specific security configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-custom-deny-actions
 		GetCustomDenyList(ctx context.Context, params GetCustomDenyListRequest) (*GetCustomDenyListResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomdenyaction
+		// GetCustomDeny returns the specified custom deny action.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-custom-deny-action
 		GetCustomDeny(ctx context.Context, params GetCustomDenyRequest) (*GetCustomDenyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postcustomdeny
+		// CreateCustomDeny creates a new custom deny action for a specific configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-custom-deny
 		CreateCustomDeny(ctx context.Context, params CreateCustomDenyRequest) (*CreateCustomDenyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putcustomdenyaction
+		// UpdateCustomDeny updates details for a specific custom deny action.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-custom-deny
 		UpdateCustomDeny(ctx context.Context, params UpdateCustomDenyRequest) (*UpdateCustomDenyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletecustomdenyaction
+		// RemoveCustomDeny deletes a custom deny action.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/delete-custom-deny
 		RemoveCustomDeny(ctx context.Context, params RemoveCustomDenyRequest) (*RemoveCustomDenyResponse, error)
 	}
 

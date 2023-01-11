@@ -12,12 +12,17 @@ type (
 	// The AdvancedSettingsEvasivePathMatch interface supports retrieving or modifying the Evasive Path Match setting.
 	AdvancedSettingsEvasivePathMatch interface {
 		// GetAdvancedSettingsEvasivePathMatch retrieves the Evasive Path Match setting.
-		// https://techdocs.akamai.com/application-security/reference/get-evasive-path-match-per-config
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-evasive-path-match-per-config
 		GetAdvancedSettingsEvasivePathMatch(ctx context.Context, params GetAdvancedSettingsEvasivePathMatchRequest) (*GetAdvancedSettingsEvasivePathMatchResponse, error)
+
 		// UpdateAdvancedSettingsEvasivePathMatch modifies the Evasive Path Match setting.
-		// https://techdocs.akamai.com/application-security/reference/put-evasive-path-match-per-config
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-evasive-path-match-per-config
 		UpdateAdvancedSettingsEvasivePathMatch(ctx context.Context, params UpdateAdvancedSettingsEvasivePathMatchRequest) (*UpdateAdvancedSettingsEvasivePathMatchResponse, error)
+
 		// RemoveAdvancedSettingsEvasivePathMatch removes the Evasive Path Match setting.
+		//
 		// Deprecated: this method will be removed in a future release. Use UpdateAdvancedSettingsEvasivePathMatch instead.
 		RemoveAdvancedSettingsEvasivePathMatch(ctx context.Context, params RemoveAdvancedSettingsEvasivePathMatchRequest) (*RemoveAdvancedSettingsEvasivePathMatchResponse, error)
 	}

@@ -10,12 +10,18 @@ type (
 	// The EvalGroup interface supports creating, modifying and retrieving attack groups for evaluation.
 	EvalGroup interface {
 		// GetEvalGroups retrieves all attack groups currently under evaluation.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-eval-groups
 		GetEvalGroups(ctx context.Context, params GetAttackGroupsRequest) (*GetAttackGroupsResponse, error)
 
-		// GetEvalGroups retrieves a specific attack group currently under evaluation.
+		// GetEvalGroup retrieves a specific attack group currently under evaluation.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-eval-group
 		GetEvalGroup(ctx context.Context, params GetAttackGroupRequest) (*GetAttackGroupResponse, error)
 
 		// UpdateEvalGroup supports updating the condition and exception information for an attack group under evaluation.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-eval-group
 		UpdateEvalGroup(ctx context.Context, params UpdateAttackGroupRequest) (*UpdateAttackGroupResponse, error)
 	}
 )
