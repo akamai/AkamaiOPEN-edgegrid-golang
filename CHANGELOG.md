@@ -16,13 +16,17 @@
     * [ListEnrollments](https://techdocs.akamai.com/cps/reference/get-enrollments)
     * [GetEnrollment](https://techdocs.akamai.com/cps/reference/get-enrollment)
 
-#### FEATURES/ENHANCEMENTS:
+* APPSEC
+  * Fix incorrect return type structure in `UpdateBypassNetworkListsResponse`
+  * Return `RatePolicyCondition` via a pointer in response structs of `RatePolicy` APIs
 
-* CPS
-  * Add `preferredTrustChain` field to `csr` struct
+#### FEATURES/ENHANCEMENTS:
 
 * APPSEC
   * Add burstWindow and condition fields to RatePolicy
+
+* CPS
+  * Add `preferredTrustChain` field to `csr` struct
 
 ## 3.1.0 (Dec 12, 2022)
 

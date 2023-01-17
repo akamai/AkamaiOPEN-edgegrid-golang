@@ -18,7 +18,8 @@ func TestAppSec_ListConfigurationVersionClone(t *testing.T) {
 	result := GetConfigurationVersionCloneResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationVersionClone/ConfigurationVersionClone.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetConfigurationVersionCloneRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetConfigurationVersionClone(t *testing.T) {
 	result := GetConfigurationVersionCloneResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationVersionClone/ConfigurationVersionClone.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetConfigurationVersionCloneRequest
@@ -168,12 +170,14 @@ func TestAppSec_CreateConfigurationVersionClone(t *testing.T) {
 	result := CreateConfigurationVersionCloneResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationVersionClone/ConfigurationVersionClone.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := CreateConfigurationVersionCloneRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestConfigurationVersionClone/ConfigurationVersionClone.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           CreateConfigurationVersionCloneRequest

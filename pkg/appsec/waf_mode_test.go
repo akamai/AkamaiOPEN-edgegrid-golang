@@ -18,7 +18,8 @@ func TestAppSec_ListWAFModes(t *testing.T) {
 	result := GetWAFModesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestWAFMode/WAFMode.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetWAFModesRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetWAFMode(t *testing.T) {
 	result := GetWAFModeResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestWAFMode/WAFMode.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetWAFModeRequest
@@ -170,12 +172,14 @@ func TestAppSec_UpdateWAFMode(t *testing.T) {
 	result := UpdateWAFModeResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestWAFMode/WAFMode.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateWAFModeRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestWAFMode/WAFMode.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateWAFModeRequest

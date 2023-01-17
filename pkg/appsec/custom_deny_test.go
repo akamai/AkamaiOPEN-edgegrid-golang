@@ -18,7 +18,8 @@ func TestAppSec_ListCustomDeny(t *testing.T) {
 	result := GetCustomDenyListResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomDeny/CustomDenyList.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetCustomDenyListRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetCustomDeny(t *testing.T) {
 	result := GetCustomDenyResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomDeny/CustomDeny.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetCustomDenyRequest
@@ -169,12 +171,14 @@ func TestAppSec_CreateCustomDeny(t *testing.T) {
 	result := CreateCustomDenyResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomDeny/CustomDeny.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := CreateCustomDenyRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomDeny/CustomDeny.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           CreateCustomDenyRequest
@@ -251,12 +255,14 @@ func TestAppSec_UpdateCustomDeny(t *testing.T) {
 	result := UpdateCustomDenyResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomDeny/CustomDeny.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateCustomDenyRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomDeny/CustomDeny.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateCustomDenyRequest
@@ -335,12 +341,14 @@ func TestAppSec_RemoveCustomDeny(t *testing.T) {
 	result := RemoveCustomDenyResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomDeny/CustomDenyEmpty.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := RemoveCustomDenyRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomDeny/CustomDenyEmpty.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           RemoveCustomDenyRequest

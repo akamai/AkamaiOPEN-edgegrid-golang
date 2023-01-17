@@ -19,7 +19,8 @@ func TestAppSec_GetAPIConstraintsProtection(t *testing.T) {
 	result := GetAPIConstraintsProtectionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAPIConstraintsProtections/APIConstraintsProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetAPIConstraintsProtectionRequest
@@ -89,12 +90,14 @@ func TestAppSec_UpdateAPIConstraintsProtection(t *testing.T) {
 	result := UpdateAPIConstraintsProtectionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAPIConstraintsProtections/APIConstraintsProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateAPIConstraintsProtectionRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestAPIConstraintsProtections/APIConstraintsProtections.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateAPIConstraintsProtectionRequest

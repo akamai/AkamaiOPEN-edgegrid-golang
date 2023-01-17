@@ -18,7 +18,8 @@ func TestAppSec_ListRateProtections(t *testing.T) {
 	result := GetRateProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRateProtections/RateProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetRateProtectionsRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetRateProtection(t *testing.T) {
 	result := GetRateProtectionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRateProtections/RateProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetRateProtectionRequest
@@ -170,12 +172,14 @@ func TestAppSec_UpdateRateProtection(t *testing.T) {
 	result := UpdateRateProtectionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRateProtections/RateProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateRateProtectionRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestRateProtections/RateProtections.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateRateProtectionRequest

@@ -18,7 +18,8 @@ func TestAppSec_ListApiHostnameCoverageMatchTargets(t *testing.T) {
 	result := GetApiHostnameCoverageMatchTargetsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiHostnameCoverageMatchTargets/ApiHostnameCoverageMatchTargets.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetApiHostnameCoverageMatchTargetsRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetApiHostnameCoverageMatchTargets(t *testing.T) {
 	result := GetApiHostnameCoverageMatchTargetsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiHostnameCoverageMatchTargets/ApiHostnameCoverageMatchTargets.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetApiHostnameCoverageMatchTargetsRequest

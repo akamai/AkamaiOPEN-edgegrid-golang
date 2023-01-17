@@ -18,7 +18,8 @@ func TestAppSec_GetWAPSelectedHostnames(t *testing.T) {
 	result := GetWAPSelectedHostnamesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestWAPSelectedHostnames/WAPSelectedHostnames.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetWAPSelectedHostnamesRequest

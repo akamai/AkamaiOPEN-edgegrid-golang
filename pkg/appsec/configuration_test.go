@@ -18,7 +18,8 @@ func TestAppSec_ListConfigurations(t *testing.T) {
 	result := GetConfigurationsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestConfiguration/Configuration.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetConfigurationsRequest

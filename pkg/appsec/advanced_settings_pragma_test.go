@@ -18,7 +18,8 @@ func TestAppSec_ListAdvancedSettingsPragma(t *testing.T) {
 	result := GetAdvancedSettingsPragmaResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetAdvancedSettingsPragmaRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetAdvancedSettingsPrama(t *testing.T) {
 	result := GetAdvancedSettingsPragmaResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetAdvancedSettingsPragmaRequest
@@ -166,12 +168,14 @@ func TestAppSec_UpdateAdvancedSettingsPragma(t *testing.T) {
 	result := UpdateAdvancedSettingsPragmaResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateAdvancedSettingsPragmaRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsPragma/AdvancedSettingsPragma.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateAdvancedSettingsPragmaRequest

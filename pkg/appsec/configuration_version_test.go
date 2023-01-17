@@ -18,7 +18,8 @@ func TestAppSec_ListConfigurationVersions(t *testing.T) {
 	result := GetConfigurationVersionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationVersion/ConfigurationVersion.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetConfigurationVersionsRequest

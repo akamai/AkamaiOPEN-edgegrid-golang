@@ -38,10 +38,7 @@ type (
 
 	// GetBypassNetworkListsResponse is returned from a call to GetBypassNetworkLists.
 	GetBypassNetworkListsResponse struct {
-		NetworkLists []struct {
-			Name string `json:"name"`
-			ID   string `json:"id"`
-		} `json:"networkLists"`
+		NetworkLists []NetworkList `json:"networkLists"`
 	}
 
 	// UpdateBypassNetworkListsRequest is used to modify which network lists are used in the bypass network lists settings.
@@ -54,20 +51,7 @@ type (
 
 	// UpdateBypassNetworkListsResponse is returned from a call to UpdateBypassNetworkLists.
 	UpdateBypassNetworkListsResponse struct {
-		Block       string `json:"block"`
-		GeoControls struct {
-			BlockedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"blockedIPNetworkLists"`
-		} `json:"geoControls"`
-		IPControls struct {
-			AllowedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"allowedIPNetworkLists"`
-			BlockedIPNetworkLists struct {
-				NetworkList []string `json:"networkList"`
-			} `json:"blockedIPNetworkLists"`
-		} `json:"ipControls"`
+		NetworkLists []string `json:"networkLists"`
 	}
 
 	// RemoveBypassNetworkListsRequest is used to modify which network lists are used in the bypass network lists settings.

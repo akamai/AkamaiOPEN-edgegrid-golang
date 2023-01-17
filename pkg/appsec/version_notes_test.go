@@ -18,7 +18,8 @@ func TestAppSec_ListVersionNotes(t *testing.T) {
 	result := GetVersionNotesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestVersionNotes/VersionNotes.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetVersionNotesRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetVersionNotes(t *testing.T) {
 	result := GetVersionNotesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestVersionNotes/VersionNotes.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetVersionNotesRequest
@@ -166,12 +168,14 @@ func TestAppSec_UpdateVersionNotes(t *testing.T) {
 	result := UpdateVersionNotesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestVersionNotes/VersionNotes.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateVersionNotesRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestVersionNotes/VersionNotes.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateVersionNotesRequest

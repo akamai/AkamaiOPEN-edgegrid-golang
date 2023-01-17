@@ -18,7 +18,8 @@ func TestAppSec_ListCustomRules(t *testing.T) {
 	result := GetCustomRulesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRules.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetCustomRulesRequest
@@ -96,7 +97,8 @@ func TestAppSec_GetCustomRule(t *testing.T) {
 	result := GetCustomRuleResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetCustomRuleRequest
@@ -165,12 +167,14 @@ func TestAppSec_CreateCustomRule(t *testing.T) {
 	result := CreateCustomRuleResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := CreateCustomRuleRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           CreateCustomRuleRequest
@@ -245,12 +249,14 @@ func TestAppSec_UpdateCustomRule(t *testing.T) {
 	result := UpdateCustomRuleResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateCustomRuleRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateCustomRuleRequest
@@ -327,12 +333,14 @@ func TestAppSec_RemoveCustomRule(t *testing.T) {
 	result := RemoveCustomRuleResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRulesEmpty.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := RemoveCustomRuleRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRulesEmpty.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           RemoveCustomRuleRequest

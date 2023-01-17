@@ -18,7 +18,8 @@ func TestAppSec_ListEvalProtectHost(t *testing.T) {
 	result := GetEvalProtectHostResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestEvalProtectHost/EvalProtectHost.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetEvalProtectHostRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetEvalProtectHost(t *testing.T) {
 	result := GetEvalProtectHostResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestEvalProtectHost/EvalProtectHost.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetEvalProtectHostRequest
@@ -166,12 +168,14 @@ func TestAppSec_UpdateEvalProtectHost(t *testing.T) {
 	result := UpdateEvalProtectHostResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestEvalProtectHost/EvalProtectHost.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateEvalProtectHostRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestEvalProtectHost/EvalProtectHost.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateEvalProtectHostRequest

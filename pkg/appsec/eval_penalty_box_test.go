@@ -19,7 +19,8 @@ func TestAppSec_GetEvalPenaltyBox(t *testing.T) {
 	result := GetPenaltyBoxResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPenaltyBoxes/PenaltyBox.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetPenaltyBoxRequest
@@ -89,12 +90,14 @@ func TestAppSec_UpdateEvalPenaltyBox(t *testing.T) {
 	result := UpdatePenaltyBoxResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPenaltyBoxes/PenaltyBox.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdatePenaltyBoxRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestPenaltyBoxes/PenaltyBox.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdatePenaltyBoxRequest

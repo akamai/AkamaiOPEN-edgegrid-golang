@@ -18,7 +18,8 @@ func TestAppSec_ListActivations(t *testing.T) {
 	result := GetActivationHistoryResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestActivations/ActivationHistory.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetActivationHistoryRequest

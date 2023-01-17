@@ -18,7 +18,8 @@ func TestAppSec_ListAttackGroup(t *testing.T) {
 	result := GetAttackGroupsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAttackGroup/AttackGroups.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetAttackGroupsRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetAttackGroup(t *testing.T) {
 	result := GetAttackGroupResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAttackGroup/AttackGroup.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetAttackGroupRequest
@@ -172,12 +174,14 @@ func TestAppSec_UpdateAttackGroup(t *testing.T) {
 	result := UpdateAttackGroupResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAttackGroup/AttackGroup.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateAttackGroupRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestAttackGroup/AttackGroup.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateAttackGroupRequest

@@ -16,7 +16,8 @@ import (
 func TestApsec_ListActivations(t *testing.T) {
 	result := GetActivationsResponse{}
 	respData := compactJSON(loadFixtureBytes("testdata/TestActivations/Activations.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 	tests := map[string]struct {
 		params           GetActivationsRequest
 		responseStatus   int
@@ -86,7 +87,8 @@ func TestApsec_ListActivations(t *testing.T) {
 func TestAppSec_GetActivations(t *testing.T) {
 	result := GetActivationsResponse{}
 	respData := compactJSON(loadFixtureBytes("testdata/TestActivations/Activations.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 	tests := map[string]struct {
 		params           GetActivationsRequest
 		responseStatus   int

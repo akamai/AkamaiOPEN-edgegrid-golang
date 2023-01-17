@@ -18,7 +18,8 @@ func TestAppSec_GetContractsGroups(t *testing.T) {
 	result := GetContractsGroupsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestContractsGroups/ContractsGroups.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetContractsGroupsRequest

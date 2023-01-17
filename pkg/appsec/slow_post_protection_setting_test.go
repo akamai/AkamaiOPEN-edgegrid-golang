@@ -18,7 +18,8 @@ func TestAppSec_ListSlowPostProtectionSettings(t *testing.T) {
 	result := GetSlowPostProtectionSettingsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSlowPostProtectionSettings/SlowPostProtectionSettings.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetSlowPostProtectionSettingsRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetSlowPostProtectionSetting(t *testing.T) {
 	result := GetSlowPostProtectionSettingResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSlowPostProtectionSettings/SlowPostProtectionSettings.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetSlowPostProtectionSettingRequest
@@ -170,12 +172,14 @@ func TestAppSec_UpdateSlowPostProtectionSetting(t *testing.T) {
 	result := UpdateSlowPostProtectionSettingResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSlowPostProtectionSettings/SlowPostProtectionSettings.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateSlowPostProtectionSettingRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestSlowPostProtectionSettings/SlowPostProtectionSettings.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateSlowPostProtectionSettingRequest

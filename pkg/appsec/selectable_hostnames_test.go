@@ -18,7 +18,8 @@ func TestAppSec_ListSelectableHostnames(t *testing.T) {
 	result := GetSelectableHostnamesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSelectableHostnames/SelectableHostnames.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetSelectableHostnamesRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetSelectableHostnames(t *testing.T) {
 	result := GetSelectableHostnamesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSelectableHostnames/SelectableHostnames.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetSelectableHostnamesRequest

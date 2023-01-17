@@ -18,7 +18,8 @@ func TestAppSec_ListRatePolicies(t *testing.T) {
 	result := GetRatePoliciesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePolicies.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetRatePoliciesRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetRatePolicy(t *testing.T) {
 	result := GetRatePolicyResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePolicy.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetRatePolicyRequest
@@ -169,12 +171,14 @@ func TestAppSec_CreateRatePolicy(t *testing.T) {
 	result := CreateRatePolicyResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePolicy.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := CreateRatePolicyRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePolicy.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           CreateRatePolicyRequest
@@ -252,12 +256,14 @@ func TestAppSec_CreateRatePolicy_NegativeMatch(t *testing.T) {
 	result := CreateRatePolicyResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePoliciesHosts.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := CreateRatePolicyRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePoliciesHosts.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           CreateRatePolicyRequest
@@ -334,12 +340,14 @@ func TestAppSec_UpdateRatePolicy(t *testing.T) {
 	result := UpdateRatePolicyResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePolicy.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateRatePolicyRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePolicy.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateRatePolicyRequest
@@ -418,12 +426,14 @@ func TestAppSec_RemoveRatePolicy(t *testing.T) {
 	result := RemoveRatePolicyResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePoliciesEmpty.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := RemoveRatePolicyRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePoliciesEmpty.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           RemoveRatePolicyRequest

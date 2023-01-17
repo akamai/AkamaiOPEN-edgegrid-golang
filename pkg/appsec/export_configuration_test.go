@@ -18,7 +18,8 @@ func TestAppSec_ListExportConfiguration(t *testing.T) {
 	result := GetExportConfigurationResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestExportConfiguration/ExportConfiguration.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetExportConfigurationRequest
@@ -97,7 +98,8 @@ func TestAppSec_ListExportConfigurations(t *testing.T) {
 	result := GetExportConfigurationsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestExportConfiguration/ExportConfiguration.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetExportConfigurationsRequest

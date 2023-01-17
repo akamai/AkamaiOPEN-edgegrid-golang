@@ -19,7 +19,8 @@ func TestAppSec_GetIPGeo(t *testing.T) {
 	result := GetIPGeoResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeo/IPGeo.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetIPGeoRequest
@@ -89,12 +90,14 @@ func TestAppSec_UpdateIPGeo(t *testing.T) {
 	result := UpdateIPGeoResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeo/IPGeo.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateIPGeoRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestIPGeo/IPGeo.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateIPGeoRequest

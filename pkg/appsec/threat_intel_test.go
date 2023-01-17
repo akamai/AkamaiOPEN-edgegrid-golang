@@ -18,7 +18,8 @@ func TestAppSec_GetThreatIntel(t *testing.T) {
 	result := GetThreatIntelResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestThreatIntel/ThreatIntel.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetThreatIntelRequest
@@ -87,12 +88,14 @@ func TestAppSec_UpdateThreatIntel(t *testing.T) {
 	result := UpdateThreatIntelResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestThreatIntel/ThreatIntel.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateThreatIntelRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestThreatIntel/ThreatIntel.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateThreatIntelRequest

@@ -18,7 +18,8 @@ func TestAppSec_ListApiHostnameCoverage(t *testing.T) {
 	result := GetApiHostnameCoverageResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiHostnameCoverage/ApiHostnameCoverage.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetApiHostnameCoverageRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetApiHostnameCoverage(t *testing.T) {
 	result := GetApiHostnameCoverageResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiHostnameCoverage/ApiHostnameCoverage.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetApiHostnameCoverageRequest

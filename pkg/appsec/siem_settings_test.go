@@ -18,7 +18,8 @@ func TestAppSec_ListSiemSettings(t *testing.T) {
 	result := GetSiemSettingsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSiemSettings/SiemSettings.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetSiemSettingsRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetSiemSettings(t *testing.T) {
 	result := GetSiemSettingsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSiemSettings/SiemSettings.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetSiemSettingsRequest
@@ -166,12 +168,14 @@ func TestAppSec_UpdateSiemSettings(t *testing.T) {
 	result := UpdateSiemSettingsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSiemSettings/SiemSettings.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateSiemSettingsRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestSiemSettings/SiemSettings.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateSiemSettingsRequest

@@ -18,7 +18,8 @@ func TestAppSec_ListApiHostnameCoverageOverlapping(t *testing.T) {
 	result := GetApiHostnameCoverageOverlappingResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiHostnameCoverageOverlapping/ApiHostnameCoverageOverlapping.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetApiHostnameCoverageOverlappingRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetApiHostnameCoverageOverlapping(t *testing.T) {
 	result := GetApiHostnameCoverageOverlappingResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiHostnameCoverageOverlapping/ApiHostnameCoverageOverlapping.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetApiHostnameCoverageOverlappingRequest

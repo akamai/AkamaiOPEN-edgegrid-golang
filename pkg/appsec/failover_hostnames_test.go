@@ -18,7 +18,8 @@ func TestAppSec_ListFailoverHostnames(t *testing.T) {
 	result := GetFailoverHostnamesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestFailoverHostnames/FailoverHostnames.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetFailoverHostnamesRequest
@@ -96,7 +97,8 @@ func TestAppSec_GetFailoverHostnames(t *testing.T) {
 	result := GetFailoverHostnamesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestFailoverHostnames/FailoverHostnames.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetFailoverHostnamesRequest

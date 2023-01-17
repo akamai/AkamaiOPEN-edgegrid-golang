@@ -18,7 +18,8 @@ func TestAppSec_GetSiemDefinitions(t *testing.T) {
 	result := GetSiemDefinitionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSiemDefinitions/SiemDefinitions.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetSiemDefinitionsRequest

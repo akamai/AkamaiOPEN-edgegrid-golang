@@ -35,15 +35,15 @@ type (
 		PolicyID string `json:"policyId"`
 	}
 
-	// NetworkListsStruct is used to define a network list.
-	NetworkListsStruct struct {
+	// NetworkList is used to define a network list.
+	NetworkList struct {
 		Name string `json:"name"`
 		ID   string `json:"id"`
 	}
 
 	// GetWAPBypassNetworkListsResponse is returned from a call to GetWAPBypassNetworkLists.
 	GetWAPBypassNetworkListsResponse struct {
-		NetworkLists []NetworkListsStruct `json:"networkLists"`
+		NetworkLists []NetworkList `json:"networkLists"`
 	}
 
 	// UpdateWAPBypassNetworkListsRequest is used to modify which network lists are used in the bypass network lists settings.

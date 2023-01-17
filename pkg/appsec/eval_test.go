@@ -18,7 +18,8 @@ func TestAppSec_ListEval(t *testing.T) {
 	result := GetEvalResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestEval/Eval.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetEvalRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetEval(t *testing.T) {
 	result := GetEvalResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestEval/Eval.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetEvalRequest
@@ -170,12 +172,14 @@ func TestAppSec_UpdateEval(t *testing.T) {
 	result := UpdateEvalResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestEval/Eval.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateEvalRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestEval/Eval.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateEvalRequest

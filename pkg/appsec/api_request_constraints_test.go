@@ -18,7 +18,8 @@ func TestAppSec_ListApiRequestConstraints(t *testing.T) {
 	result := GetApiRequestConstraintsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiRequestConstraints/ApiRequestConstraints.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetApiRequestConstraintsRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetApiRequestConstraints(t *testing.T) {
 	result := GetApiRequestConstraintsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiRequestConstraints/ApiRequestConstraints.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetApiRequestConstraintsRequest
@@ -170,12 +172,14 @@ func TestAppSec_UpdateApiRequestConstraints(t *testing.T) {
 	result := UpdateApiRequestConstraintsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiRequestConstraints/ApiRequestConstraints.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateApiRequestConstraintsRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestApiRequestConstraints/ApiRequestConstraints.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateApiRequestConstraintsRequest

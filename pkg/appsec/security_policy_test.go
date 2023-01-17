@@ -18,7 +18,8 @@ func TestAppSec_ListSecurityPolicies(t *testing.T) {
 	result := GetSecurityPoliciesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSecurityPolicy/SecurityPolicy.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetSecurityPoliciesRequest

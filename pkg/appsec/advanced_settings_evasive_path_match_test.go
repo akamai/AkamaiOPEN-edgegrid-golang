@@ -18,7 +18,8 @@ func TestApsec_ListAdvancedSettingsEvasivePathMatch(t *testing.T) {
 	result := GetAdvancedSettingsEvasivePathMatchResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsEvasivePathMatch/AdvancedSettingsEvasivePathMatch.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetAdvancedSettingsEvasivePathMatchRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetAdvancedSettingsEvasivePathmatch(t *testing.T) {
 	result := GetAdvancedSettingsEvasivePathMatchResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsEvasivePathMatch/AdvancedSettingsEvasivePathMatch.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetAdvancedSettingsEvasivePathMatchRequest
@@ -166,12 +168,14 @@ func TestAppSec_UpdateAdvancedSettingsEvasivePathMatch(t *testing.T) {
 	result := UpdateAdvancedSettingsEvasivePathMatchResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsEvasivePathMatch/AdvancedSettingsEvasivePathMatch.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateAdvancedSettingsEvasivePathMatchRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsEvasivePathMatch/AdvancedSettingsEvasivePathMatch.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateAdvancedSettingsEvasivePathMatchRequest

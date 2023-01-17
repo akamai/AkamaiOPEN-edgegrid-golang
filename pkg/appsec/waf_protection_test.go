@@ -18,7 +18,8 @@ func TestAppSec_ListWAFProtections(t *testing.T) {
 	result := GetWAFProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestWAFProtections/WAFProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetWAFProtectionsRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetWAFProtection(t *testing.T) {
 	result := GetWAFProtectionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestWAFProtections/WAFProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetWAFProtectionRequest
@@ -170,12 +172,14 @@ func TestAppSec_UpdateWAFProtection(t *testing.T) {
 	result := UpdateWAFProtectionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestWAFProtections/WAFProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateWAFProtectionRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestWAFProtections/WAFProtections.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateWAFProtectionRequest

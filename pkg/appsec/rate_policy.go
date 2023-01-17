@@ -75,7 +75,7 @@ type (
 		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
 		Hostnames              []string                `json:"hostnames"`
 		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
-		Condition              RatePolicyCondition     `json:"condition,omitempty"`
+		Condition              *RatePolicyCondition    `json:"condition,omitempty"`
 		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
@@ -124,7 +124,7 @@ type (
 		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
 		Hostnames              []string                `json:"hostnames"`
 		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
-		Condition              RatePolicyCondition     `json:"condition,omitempty"`
+		Condition              *RatePolicyCondition    `json:"condition,omitempty"`
 		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
@@ -172,7 +172,7 @@ type (
 		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
 		Hostnames              []string                `json:"hostnames"`
 		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
-		Condition              RatePolicyCondition     `json:"condition,omitempty"`
+		Condition              *RatePolicyCondition    `json:"condition,omitempty"`
 		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
@@ -215,7 +215,7 @@ type (
 			Hosts                  *RatePoliciesHosts         `json:"hosts,omitempty"`
 			Hostnames              []string                   `json:"hostnames,omitempty"`
 			AdditionalMatchOptions []RatePolicyMatchOption    `json:"additionalMatchOptions,omitempty"`
-			Condition              RatePolicyCondition        `json:"condition,omitempty"`
+			Condition              *RatePolicyCondition       `json:"condition,omitempty"`
 			QueryParameters        *RatePolicyQueryParameters `json:"queryParameters,omitempty"`
 			CreateDate             string                     `json:"-"`
 			UpdateDate             string                     `json:"-"`
@@ -256,7 +256,7 @@ type (
 		Hosts                  *RatePoliciesHosts         `json:"hosts,omitempty"`
 		Hostnames              []string                   `json:"hostnames,omitempty"`
 		AdditionalMatchOptions []RatePolicyMatchOption    `json:"additionalMatchOptions,omitempty"`
-		Condition              RatePolicyCondition        `json:"condition,omitempty"`
+		Condition              *RatePolicyCondition       `json:"condition,omitempty"`
 		QueryParameters        *RatePolicyQueryParameters `json:"queryParameters,omitempty"`
 		CreateDate             string                     `json:"-"`
 		UpdateDate             string                     `json:"-"`

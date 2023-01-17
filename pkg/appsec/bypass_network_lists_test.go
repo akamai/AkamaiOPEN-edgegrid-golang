@@ -17,8 +17,9 @@ func TestAppSec_ListBypassNetworkLists(t *testing.T) {
 
 	result := GetBypassNetworkListsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/BypassNetworkLists.json"))
-	json.Unmarshal([]byte(respData), &result)
+	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/GetBypassNetworkListsResponse.json"))
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetBypassNetworkListsRequest
@@ -97,8 +98,9 @@ func TestAppSec_GetBypassNetworkLists(t *testing.T) {
 
 	result := GetBypassNetworkListsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/BypassNetworkLists.json"))
-	json.Unmarshal([]byte(respData), &result)
+	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/GetBypassNetworkListsResponse.json"))
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetBypassNetworkListsRequest
@@ -165,13 +167,14 @@ func TestAppSec_GetBypassNetworkLists(t *testing.T) {
 func TestAppSec_UpdateBypassNetworkLists(t *testing.T) {
 	result := UpdateBypassNetworkListsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/BypassNetworkLists.json"))
-	json.Unmarshal([]byte(respData), &result)
+	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/UpdateBypassNetworkListsResponse.json"))
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateBypassNetworkListsRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/BypassNetworkLists.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateBypassNetworkListsRequest

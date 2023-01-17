@@ -19,7 +19,8 @@ func TestAppSec_GetPolicyProtections(t *testing.T) {
 	result := PolicyProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetPolicyProtectionsRequest
@@ -89,12 +90,14 @@ func TestAppSec_UpdatePolicyProtections(t *testing.T) {
 	result := PolicyProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdatePolicyProtectionsRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdatePolicyProtectionsRequest
@@ -172,12 +175,14 @@ func TestAppSec_RemovePolicyProtections(t *testing.T) {
 	result := PolicyProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdatePolicyProtectionsRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdatePolicyProtectionsRequest

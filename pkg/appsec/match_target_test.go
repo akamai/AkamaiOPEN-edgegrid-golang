@@ -18,7 +18,8 @@ func TestAppSec_ListMatchTargets(t *testing.T) {
 	result := GetMatchTargetsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargets/MatchTarget.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetMatchTargetsRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetMatchTarget(t *testing.T) {
 	result := GetMatchTargetResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargets/MatchTargets.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetMatchTargetRequest
@@ -169,12 +171,14 @@ func TestAppSec_CreateMatchTarget(t *testing.T) {
 	result := CreateMatchTargetResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargets/MatchTargets.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := CreateMatchTargetRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestMatchTargets/MatchTargets.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           CreateMatchTargetRequest
@@ -251,12 +255,14 @@ func TestAppSec_UpdateMatchTarget(t *testing.T) {
 	result := UpdateMatchTargetResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargets/MatchTargets.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateMatchTargetRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestMatchTargets/MatchTargets.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateMatchTargetRequest
@@ -335,12 +341,14 @@ func TestAppSec_RemoveMatchTarget(t *testing.T) {
 	result := RemoveMatchTargetResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargets/MatchTargetsEmpty.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := RemoveMatchTargetRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestMatchTargets/MatchTargetsEmpty.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           RemoveMatchTargetRequest

@@ -18,7 +18,8 @@ func TestAppSec_ListConfigurationClone(t *testing.T) {
 	result := GetConfigurationCloneResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationClone/ConfigurationClone.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetConfigurationCloneRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetConfigurationClone(t *testing.T) {
 	result := GetConfigurationCloneResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationClone/ConfigurationClone.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetConfigurationCloneRequest
@@ -167,12 +169,14 @@ func TestAppSec_CreateConfigurationClone(t *testing.T) {
 	result := CreateConfigurationCloneResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestConfigurationClone/ConfigurationClone.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := CreateConfigurationCloneRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestConfigurationClone/ConfigurationClone.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           CreateConfigurationCloneRequest

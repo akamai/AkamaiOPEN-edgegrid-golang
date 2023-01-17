@@ -18,7 +18,8 @@ func TestAppSec_ListApiEndpoints(t *testing.T) {
 	result := GetApiEndpointsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiEndpoints/ApiEndpoints.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetApiEndpointsRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetApiEndpoints(t *testing.T) {
 	result := GetApiEndpointsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestApiEndpoints/ApiEndpoints.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetApiEndpointsRequest

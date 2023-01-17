@@ -18,7 +18,8 @@ func TestApsec_ListNetworkListSubscription(t *testing.T) {
 	result := GetNetworkListSubscriptionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkListSubscription/NetworkListSubscription.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetNetworkListSubscriptionRequest
@@ -92,7 +93,8 @@ func TestAppSec_GetNetworkListSubscription(t *testing.T) {
 	result := GetNetworkListSubscriptionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkListSubscription/NetworkListSubscription.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetNetworkListSubscriptionRequest
@@ -154,12 +156,14 @@ func TestAppSec_UpdateNetworkListSubscription(t *testing.T) {
 	result := UpdateNetworkListSubscriptionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkListSubscription/NetworkListSubscription.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateNetworkListSubscriptionRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestNetworkListSubscription/NetworkListSubscription.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateNetworkListSubscriptionRequest
