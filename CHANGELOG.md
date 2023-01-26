@@ -22,7 +22,7 @@
 
 #### FEATURES/ENHANCEMENTS:
 
-* Replaced obsolete APIs documentation links with new one from [https://techdocs.akamai.com](https://techdocs.akamai.com)
+* Replace obsolete APIs documentation links with new one from [https://techdocs.akamai.com](https://techdocs.akamai.com)
 
 * APPSEC
   * Add `burstWindow` and `condition` fields to RatePolicy
@@ -32,6 +32,8 @@
   * Set `utf-8 charset` in `content-type` header for requests
 
 #### BUG FIXES:
+
+* Fix code errors in documentation examples ([#177](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/pull/177))
 
 * IAM
   * Issue updating user information - removed validation on user update
