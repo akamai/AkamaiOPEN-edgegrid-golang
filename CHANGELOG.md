@@ -1,18 +1,18 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 4.x.x (xxx xx, 2023)
+## 4.0.0 (Jan 31, 2023)
 
 #### BREAKING CHANGES:
 
 * Migrate to go 1.18
 
 * PAPI
+  * Fix response structures for GetAvailableBehaviors and GetAvailableCriteria:
     * [GetAvailableCriteria](https://techdocs.akamai.com/property-mgr/reference/get-available-criteria)
     * [GetAvailableBehaviors](https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors)
 
 * CPS
-  * Update `Accept` header to the latest schema `application/vnd.akamai.cps.enrollment.v11+json` for the following
-    endpoints:
+  * Update `Accept` header to the latest schema `application/vnd.akamai.cps.enrollment.v11+json` for the following endpoints:
     * [ListEnrollments](https://techdocs.akamai.com/cps/reference/get-enrollments)
     * [GetEnrollment](https://techdocs.akamai.com/cps/reference/get-enrollment)
 
@@ -22,11 +22,19 @@
 
 #### FEATURES/ENHANCEMENTS:
 
+* Replaced obsolete APIs documentation links with new one from [https://techdocs.akamai.com](https://techdocs.akamai.com)
+
 * APPSEC
-  * Add burstWindow and condition fields to RatePolicy
+  * Add `burstWindow` and `condition` fields to RatePolicy
 
 * CPS
-  * Add `preferredTrustChain` field to `csr` struct
+  * Add `preferredTrustChain` field to `csr` struct ([#351](https://github.com/akamai/terraform-provider-akamai/issues/351))
+  * Set `utf-8 charset` in `content-type` header for requests
+
+#### BUG FIXES:
+
+* IAM
+  * Issue updating user information - removed validation on user update
 
 ## 3.1.0 (Dec 12, 2022)
 
