@@ -23,6 +23,6 @@ The packages of library can be imported alongside the `v1` library versions with
 ```
 import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/papi-v1"
-	papiv3 "github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/papi"
+	papiv4 "github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/papi"
 )
 ```
