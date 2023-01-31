@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +18,8 @@ func TestAppSec_ListIPGeoProtections(t *testing.T) {
 	result := GetIPGeoProtectionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetIPGeoProtectionsRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetIPGeoProtection(t *testing.T) {
 	result := GetIPGeoProtectionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetIPGeoProtectionRequest
@@ -170,12 +172,14 @@ func TestAppSec_UpdateIPGeoProtection(t *testing.T) {
 	result := UpdateIPGeoProtectionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateIPGeoProtectionRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestIPGeoProtections/IPGeoProtections.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateIPGeoProtectionRequest

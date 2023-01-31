@@ -15,19 +15,21 @@ var (
 	zoneRecordsetsWriteLock sync.Mutex
 )
 
-// RecordSets contains operations available on a recordsets
-// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html
+// RecordSets contains operations available on a recordsets.
 type RecordSets interface {
-	// NewRecordSetResponse returns new response object
+	// NewRecordSetResponse returns new response object.
 	NewRecordSetResponse(context.Context, string) *RecordSetResponse
-	// GetRecordsets retrieves recordsets with Query Args. No formatting of arg values
-	// See: See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getzonerecordsets
+	// GetRecordsets retrieves recordsets with Query Args. No formatting of arg values.
+	//
+	// See: See: https://techdocs.akamai.com/edge-dns/reference/get-zones-zone-recordsets
 	GetRecordsets(context.Context, string, ...RecordsetQueryArgs) (*RecordSetResponse, error)
-	// CreateRecordsets creates multiple recordsets
-	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#postzonerecordsets
+	// CreateRecordsets creates multiple recordsets.
+	//
+	// See: https://techdocs.akamai.com/edge-dns/reference/post-zones-zone-recordsets
 	CreateRecordsets(context.Context, *Recordsets, string, ...bool) error
-	// UpdateRecordsets sreplaces list of recordsets
-	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#putzonerecordsets
+	// UpdateRecordsets replaces list of recordsets.
+	//
+	// See: https://techdocs.akamai.com/edge-dns/reference/put-zones-zone-recordsets
 	UpdateRecordsets(context.Context, *Recordsets, string, ...bool) error
 }
 
@@ -94,7 +96,6 @@ func (p *dns) NewRecordSetResponse(_ context.Context, _ string) *RecordSetRespon
 	return recordset
 }
 
-// Get RecordSets with Query Args. No formatting of arg values!
 func (p *dns) GetRecordsets(ctx context.Context, zone string, queryArgs ...RecordsetQueryArgs) (*RecordSetResponse, error) {
 
 	logger := p.Log(ctx)
@@ -145,7 +146,6 @@ func (p *dns) GetRecordsets(ctx context.Context, zone string, queryArgs ...Recor
 	return &recordsetResp, nil
 }
 
-// Create Recordstes
 func (p *dns) CreateRecordsets(ctx context.Context, recordsets *Recordsets, zone string, recLock ...bool) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which

@@ -13,22 +13,30 @@ import (
 type (
 	// The CustomRule interface supports creating, retrievinfg, modifying and removing custom rules
 	// for a configuration.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#customrule
 	CustomRule interface {
-		//https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcustomrules
+		// GetCustomRules lists custom rules defined in a security configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-configs-custom-rules
 		GetCustomRules(ctx context.Context, params GetCustomRulesRequest) (*GetCustomRulesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getruleid
+		// GetCustomRule returns the details of a custom rule.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-config-custom-rule
 		GetCustomRule(ctx context.Context, params GetCustomRuleRequest) (*GetCustomRuleResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postcustomrules
+		// CreateCustomRule creates a new custom rule.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-config-custom-rules
 		CreateCustomRule(ctx context.Context, params CreateCustomRuleRequest) (*CreateCustomRuleResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putruleid
+		// UpdateCustomRule updates an existing custom rule.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-config-custom-rule
 		UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRequest) (*UpdateCustomRuleResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deleteruleid
+		// RemoveCustomRule deletes a custom rule as long as it isn't activated.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/delete-config-custom-rule
 		RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRequest) (*RemoveCustomRuleResponse, error)
 	}
 

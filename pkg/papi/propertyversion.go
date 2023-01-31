@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -26,7 +26,7 @@ type (
 		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version
 		GetPropertyVersion(context.Context, GetPropertyVersionRequest) (*GetPropertyVersionsResponse, error)
 
-		// CreatePropertyVersion creates a new property version
+		// CreatePropertyVersion creates a new property version and returns location and number for the new version
 		//
 		// See: https://techdocs.akamai.com/property-mgr/reference/post-property-versions
 		CreatePropertyVersion(context.Context, CreatePropertyVersionRequest) (*CreatePropertyVersionResponse, error)
@@ -36,15 +36,15 @@ type (
 		// See: https://techdocs.akamai.com/property-mgr/reference/get-latest-property-version
 		GetLatestVersion(context.Context, GetLatestVersionRequest) (*GetPropertyVersionsResponse, error)
 
-		// GetAvailableBehaviors fetches a list of behaviors applied to property version
+		// GetAvailableBehaviors fetches a list of available behaviors for given property version
 		//
 		// See: https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors
-		GetAvailableBehaviors(context.Context, GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error)
+		GetAvailableBehaviors(context.Context, GetAvailableBehaviorsRequest) (*GetBehaviorsResponse, error)
 
-		// GetAvailableCriteria fetches a list of criteria applied to property version
+		// GetAvailableCriteria fetches a list of available criteria for given property version
 		//
 		// See: https://techdocs.akamai.com/property-mgr/reference/get-available-criteria
-		GetAvailableCriteria(context.Context, GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error)
+		GetAvailableCriteria(context.Context, GetAvailableCriteriaRequest) (*GetCriteriaResponse, error)
 
 		// ListAvailableIncludes lists external resources that can be applied within a property version's rules
 		//
@@ -132,33 +132,25 @@ type (
 		GroupID     string
 	}
 
-	// GetFeaturesRequest contains path and query params required to fetch both available behaviors and available criteria for a property
-	GetFeaturesRequest struct {
+	// GetAvailableItemsRequest contains path and query params required to fetch available behaviors or criteria for a property
+	GetAvailableItemsRequest struct {
 		PropertyID      string
 		PropertyVersion int
 		ContractID      string
 		GroupID         string
 	}
 
-	// AvailableFeature represents details of a single feature (behavior or criteria available for selected property version
-	AvailableFeature struct {
-		Name       string `json:"name"`
-		SchemaLink string `json:"schemaLink"`
-	}
+	// GetAvailableBehaviorsRequest contains path and query params required to fetch available behaviors for a property
+	GetAvailableBehaviorsRequest GetAvailableItemsRequest
 
-	// GetFeaturesCriteriaResponse contains response received when fetching both available behaviors and available criteria for a property
-	GetFeaturesCriteriaResponse struct {
-		ContractID         string                `json:"contractId"`
-		GroupID            string                `json:"groupId"`
-		ProductID          string                `json:"productId"`
-		RuleFormat         string                `json:"ruleFormat"`
-		AvailableBehaviors AvailableFeatureItems `json:"availableBehaviors"`
-	}
+	// GetAvailableCriteriaRequest contains path and query params required to fetch available criteria for a property
+	GetAvailableCriteriaRequest GetAvailableItemsRequest
 
-	// AvailableFeatureItems contains a slice of AvailableFeature items
-	AvailableFeatureItems struct {
-		Items []AvailableFeature `json:"items"`
-	}
+	// GetBehaviorsResponse represents a response object returned by GetAvailableBehaviors
+	GetBehaviorsResponse AvailableBehaviorsResponse
+
+	// GetCriteriaResponse represents a response object returned by GetAvailableCriteria
+	GetCriteriaResponse AvailableCriteriaResponse
 
 	// VersionStatus represents ProductionVersion and StagingVersion of a Version struct
 	VersionStatus string
@@ -253,8 +245,16 @@ func (v GetLatestVersionRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GetFeaturesRequest
-func (v GetFeaturesRequest) Validate() error {
+// Validate validates GetAvailableBehaviorsRequest
+func (v GetAvailableBehaviorsRequest) Validate() error {
+	return validation.Errors{
+		"PropertyID":      validation.Validate(v.PropertyID, validation.Required),
+		"PropertyVersion": validation.Validate(v.PropertyVersion, validation.Required),
+	}.Filter()
+}
+
+// Validate validates GetAvailableCriteriaRequest
+func (v GetAvailableCriteriaRequest) Validate() error {
 	return validation.Errors{
 		"PropertyID":      validation.Validate(v.PropertyID, validation.Required),
 		"PropertyVersion": validation.Validate(v.PropertyVersion, validation.Required),
@@ -410,7 +410,6 @@ func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersion
 	return &versions, nil
 }
 
-// CreatePropertyVersion creates a new property version and returns location and number for the new version
 func (p *papi) CreatePropertyVersion(ctx context.Context, request CreatePropertyVersionRequest) (*CreatePropertyVersionResponse, error) {
 	if err := request.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreatePropertyVersion, ErrStructValidation, err)
@@ -451,8 +450,7 @@ func (p *papi) CreatePropertyVersion(ctx context.Context, request CreateProperty
 	return &version, nil
 }
 
-// GetAvailableBehaviors lists available behaviors for given property version
-func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error) {
+func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetAvailableBehaviorsRequest) (*GetBehaviorsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetAvailableBehaviors, ErrStructValidation, err)
 	}
@@ -460,20 +458,27 @@ func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetFeaturesRequ
 	logger := p.Log(ctx)
 	logger.Debug("GetAvailableBehaviors")
 
-	getURL := fmt.Sprintf(
-		"/papi/v1/properties/%s/versions/%d/available-behaviors?contractId=%s&groupId=%s",
-		params.PropertyID,
-		params.PropertyVersion,
-		params.ContractID,
-		params.GroupID,
-	)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	uri, err := url.Parse(fmt.Sprintf("/papi/v1/properties/%s/versions/%d/available-behaviors", params.PropertyID, params.PropertyVersion))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse uri: %s", ErrGetAvailableBehaviors, err)
+	}
+
+	q := uri.Query()
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAvailableBehaviors, err)
 	}
 
-	var versions GetFeaturesCriteriaResponse
-	resp, err := p.Exec(req, &versions)
+	var behaviors GetBehaviorsResponse
+	resp, err := p.Exec(req, &behaviors)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetAvailableBehaviors, err)
 	}
@@ -482,11 +487,10 @@ func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetFeaturesRequ
 		return nil, fmt.Errorf("%s: %w", ErrGetAvailableBehaviors, p.Error(resp))
 	}
 
-	return &versions, nil
+	return &behaviors, nil
 }
 
-// GetAvailableCriteria lists available criteria for given property version
-func (p *papi) GetAvailableCriteria(ctx context.Context, params GetFeaturesRequest) (*GetFeaturesCriteriaResponse, error) {
+func (p *papi) GetAvailableCriteria(ctx context.Context, params GetAvailableCriteriaRequest) (*GetCriteriaResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetAvailableCriteria, ErrStructValidation, err)
 	}
@@ -494,20 +498,27 @@ func (p *papi) GetAvailableCriteria(ctx context.Context, params GetFeaturesReque
 	logger := p.Log(ctx)
 	logger.Debug("GetAvailableCriteria")
 
-	getURL := fmt.Sprintf(
-		"/papi/v1/properties/%s/versions/%d/available-criteria?contractId=%s&groupId=%s",
-		params.PropertyID,
-		params.PropertyVersion,
-		params.ContractID,
-		params.GroupID,
-	)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	uri, err := url.Parse(fmt.Sprintf("/papi/v1/properties/%s/versions/%d/available-criteria", params.PropertyID, params.PropertyVersion))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse uri: %s", ErrGetAvailableCriteria, err)
+	}
+
+	q := uri.Query()
+	if params.ContractID != "" {
+		q.Add("contractId", params.ContractID)
+	}
+	if params.GroupID != "" {
+		q.Add("groupId", params.GroupID)
+	}
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAvailableCriteria, err)
 	}
 
-	var versions GetFeaturesCriteriaResponse
-	resp, err := p.Exec(req, &versions)
+	var criteria GetCriteriaResponse
+	resp, err := p.Exec(req, &criteria)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetAvailableCriteria, err)
 	}
@@ -516,7 +527,7 @@ func (p *papi) GetAvailableCriteria(ctx context.Context, params GetFeaturesReque
 		return nil, fmt.Errorf("%s: %w", ErrGetAvailableCriteria, p.Error(resp))
 	}
 
-	return &versions, nil
+	return &criteria, nil
 }
 
 func (p *papi) ListAvailableIncludes(ctx context.Context, params ListAvailableIncludesRequest) (*ListAvailableIncludesResponse, error) {

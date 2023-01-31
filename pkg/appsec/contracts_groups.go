@@ -10,10 +10,10 @@ type (
 	// The ContractsGroups interface supports listing the contracts and groups for the current
 	// account. Each object contains the contract, groups associated with the contract, and whether
 	// Kona Site Defender or Web Application Protector is the product for that contract.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#contractgroup
 	ContractsGroups interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getcontractsandgroupswithksdorwaf
+		// GetContractsGroups lists the contracts and groups for your account.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-contracts-groups
 		GetContractsGroups(ctx context.Context, params GetContractsGroupsRequest) (*GetContractsGroupsResponse, error)
 	}
 

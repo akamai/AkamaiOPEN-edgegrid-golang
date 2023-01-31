@@ -11,13 +11,15 @@ import (
 type (
 	// The RuleUpgrade interface supports verifying changes in Kona rule sets, and upgrading to the
 	// latest rules.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#upgrade
 	RuleUpgrade interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getupgradedetails
+		// GetRuleUpgrade only applies to Kona rule sets. The KRS rule sets are maintained by Akamai's security research team.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-rules-upgrade-details-1
 		GetRuleUpgrade(ctx context.Context, params GetRuleUpgradeRequest) (*GetRuleUpgradeResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putrules
+		// UpdateRuleUpgrade upgrades to the most recent version of the KRS rule set.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-rules-1
 		UpdateRuleUpgrade(ctx context.Context, params UpdateRuleUpgradeRequest) (*UpdateRuleUpgradeResponse, error)
 	}
 

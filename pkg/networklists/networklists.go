@@ -1,14 +1,16 @@
 // Package networklists provides access to the Akamai Networklist APIs
+//
+// See: https://techdocs.akamai.com/network-lists/reference/api#networklist
 package networklists
 
 import (
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 )
 
 var (
-	// ErrStructValidation is returned returned when given struct validation failed
+	// ErrStructValidation is returned when given struct validation failed
 	ErrStructValidation = errors.New("struct validation")
 )
 

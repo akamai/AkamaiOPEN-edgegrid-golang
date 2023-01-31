@@ -16,7 +16,7 @@ type (
 	Properties interface {
 		// ListProperties lists all properties for a given edgeworker ID
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/properties#get-properties
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-properties
 		ListProperties(context.Context, ListPropertiesRequest) (*ListPropertiesResponse, error)
 	}
 

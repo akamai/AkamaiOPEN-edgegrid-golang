@@ -9,10 +9,10 @@ import (
 type (
 	// The ApiHostnameCoverage interface supports retrieving hostnames with their current protections,
 	// activation statuses, and other summary information.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#hostnamecoverage
 	ApiHostnameCoverage interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#gethostnamecoverage
+		// GetApiHostnameCoverage gets the list of hostnames in the account with their current protections, activation statuses, and other summary information.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-hostname-coverage
 		GetApiHostnameCoverage(ctx context.Context, params GetApiHostnameCoverageRequest) (*GetApiHostnameCoverageResponse, error)
 	}
 

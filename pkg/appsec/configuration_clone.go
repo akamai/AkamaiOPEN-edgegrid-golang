@@ -11,13 +11,15 @@ import (
 
 type (
 	// The ConfigurationClone interface supports cloning an existing configuration and retrieving a configuration version.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#configurationclone
 	ConfigurationClone interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationversion
+		// GetConfigurationClone returns basic details about a configuration versions
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-version-number
 		GetConfigurationClone(ctx context.Context, params GetConfigurationCloneRequest) (*GetConfigurationCloneResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postsummarylistofconfigurationversions
+		// CreateConfigurationClone creates a new WAP or KSD security configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-config
 		CreateConfigurationClone(ctx context.Context, params CreateConfigurationCloneRequest) (*CreateConfigurationCloneResponse, error)
 	}
 

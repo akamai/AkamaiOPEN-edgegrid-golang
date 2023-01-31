@@ -11,14 +11,20 @@ import (
 
 type (
 	// The TuningRecommendations interface supports retrieving tuning recommendations for a security policy, a specific attack group or a rule
-	//
-	// https://techdocs.akamai.com/application-security/reference/get-recommendations
 	TuningRecommendations interface {
-		// https://techdocs.akamai.com/application-security/reference/get-recommendations
+		// GetTuningRecommendations lists available tuning recommendations for a policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-recommendations
 		GetTuningRecommendations(ctx context.Context, params GetTuningRecommendationsRequest) (*GetTuningRecommendationsResponse, error)
-		// https://techdocs.akamai.com/application-security/reference/get-recommendations-attack-group
+
+		// GetAttackGroupRecommendations returns available tuning recommendations for an attack group.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-attack-group
 		GetAttackGroupRecommendations(ctx context.Context, params GetAttackGroupRecommendationsRequest) (*GetAttackGroupRecommendationsResponse, error)
-		// https://techdocs.akamai.com/application-security/reference/get-recommendations-rule
+
+		// GetRuleRecommendations returns available tuning recommendations for a rule.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-recommendations-rule
 		GetRuleRecommendations(ctx context.Context, params GetRuleRecommendationsRequest) (*GetRuleRecommendationsResponse, error)
 	}
 

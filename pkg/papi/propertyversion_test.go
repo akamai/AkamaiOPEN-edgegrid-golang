@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/tools"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -635,56 +635,121 @@ func TestPapi_GetLatestVersion(t *testing.T) {
 
 func TestPapi_GetAvailableBehaviors(t *testing.T) {
 	tests := map[string]struct {
-		params           GetFeaturesRequest
+		params           GetAvailableBehaviorsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetFeaturesCriteriaResponse
+		expectedResponse *GetBehaviorsResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
-			params: GetFeaturesRequest{
+			params: GetAvailableBehaviorsRequest{
 				PropertyID:      "propertyID",
 				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/papi/v1/properties/propertyID/versions/2/available-behaviors?contractId=contract&groupId=group",
+			expectedPath:   "/papi/v1/properties/propertyID/versions/2/available-behaviors",
 			responseBody: `
 {
     "contractId": "contract",
     "groupId": "group",
     "productId": "productID",
     "ruleFormat": "v2020-09-15",
-    "availableBehaviors": {
+    "behaviors": {
         "items": [
             {
-                "name": "cpCode",
-                "schemaLink": "/papi/v1/schemas/products/prd_Alta/latest#/definitions/catalog/behaviors/cpCode"
+                "name": "allHttpInCacheHierarchy",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallHttpInCacheHierarchy"
+            },
+            {
+                "name": "allowDelete",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallowDelete"
+            },
+            {
+                "name": "allowOptions",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallowOptions"
             }
         ]
     }
 }`,
-			expectedResponse: &GetFeaturesCriteriaResponse{
+			expectedResponse: &GetBehaviorsResponse{
 				ContractID: "contract",
 				GroupID:    "group",
 				ProductID:  "productID",
 				RuleFormat: "v2020-09-15",
-				AvailableBehaviors: AvailableFeatureItems{Items: []AvailableFeature{
+				AvailableBehaviors: AvailableBehaviors{Items: []Behavior{
 					{
-						Name:       "cpCode",
-						SchemaLink: "/papi/v1/schemas/products/prd_Alta/latest#/definitions/catalog/behaviors/cpCode",
+						Name:       "allHttpInCacheHierarchy",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallHttpInCacheHierarchy",
+					},
+					{
+						Name:       "allowDelete",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallowDelete",
+					},
+					{
+						Name:       "allowOptions",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallowOptions",
+					},
+				}},
+			},
+		},
+		"200 OK with query parameters": {
+			params: GetAvailableBehaviorsRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				GroupID:         "groupID",
+				ContractID:      "contractID",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/2/available-behaviors?contractId=contractID&groupId=groupID",
+			responseBody: `
+{
+    "contractId": "contract",
+    "groupId": "group",
+    "productId": "productID",
+    "ruleFormat": "v2020-09-15",
+    "behaviors": {
+        "items": [
+            {
+                "name": "allHttpInCacheHierarchy",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallHttpInCacheHierarchy"
+            },
+            {
+                "name": "allowDelete",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallowDelete"
+            },
+            {
+                "name": "allowOptions",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallowOptions"
+            }
+        ]
+    }
+}`,
+			expectedResponse: &GetBehaviorsResponse{
+				ContractID: "contract",
+				GroupID:    "group",
+				ProductID:  "productID",
+				RuleFormat: "v2020-09-15",
+				AvailableBehaviors: AvailableBehaviors{Items: []Behavior{
+					{
+						Name:       "allHttpInCacheHierarchy",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallHttpInCacheHierarchy",
+					},
+					{
+						Name:       "allowDelete",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallowDelete",
+					},
+					{
+						Name:       "allowOptions",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fbehaviors%2FallowOptions",
 					},
 				}},
 			},
 		},
 		"500 Internal Server Error": {
-			params: GetFeaturesRequest{
+			params: GetAvailableBehaviorsRequest{
 				PropertyID:      "propertyID",
 				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -694,7 +759,7 @@ func TestPapi_GetAvailableBehaviors(t *testing.T) {
   "detail": "Error fetching available behaviors",
   "status": 500
 }`,
-			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-behaviors?contractId=contract&groupId=group",
+			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-behaviors",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -706,11 +771,9 @@ func TestPapi_GetAvailableBehaviors(t *testing.T) {
 			},
 		},
 		"empty property ID": {
-			params: GetFeaturesRequest{
+			params: GetAvailableBehaviorsRequest{
 				PropertyID:      "",
 				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -719,10 +782,8 @@ func TestPapi_GetAvailableBehaviors(t *testing.T) {
 			},
 		},
 		"empty property version": {
-			params: GetFeaturesRequest{
+			params: GetAvailableBehaviorsRequest{
 				PropertyID: "propertyID",
-				ContractID: "contract",
-				GroupID:    "group",
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -755,56 +816,121 @@ func TestPapi_GetAvailableBehaviors(t *testing.T) {
 
 func TestPapi_GetAvailableCriteria(t *testing.T) {
 	tests := map[string]struct {
-		params           GetFeaturesRequest
+		params           GetAvailableCriteriaRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetFeaturesCriteriaResponse
+		expectedResponse *GetCriteriaResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
-			params: GetFeaturesRequest{
+			params: GetAvailableCriteriaRequest{
 				PropertyID:      "propertyID",
 				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/papi/v1/properties/propertyID/versions/2/available-criteria?contractId=contract&groupId=group",
+			expectedPath:   "/papi/v1/properties/propertyID/versions/2/available-criteria",
 			responseBody: `
 {
     "contractId": "contract",
     "groupId": "group",
     "productId": "productID",
     "ruleFormat": "v2020-09-15",
-    "availableBehaviors": {
+    "criteria": {
         "items": [
             {
-                "name": "cpCode",
-                "schemaLink": "/papi/v1/schemas/products/prd_Alta/latest#/definitions/catalog/behaviors/cpCode"
+                "name": "bucket",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2Fbucket"
+            },
+            {
+                "name": "cacheability",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2Fcacheability"
+            },
+            {
+                "name": "chinaCdnRegion",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2FchinaCdnRegion"
             }
         ]
     }
 }`,
-			expectedResponse: &GetFeaturesCriteriaResponse{
+			expectedResponse: &GetCriteriaResponse{
 				ContractID: "contract",
 				GroupID:    "group",
 				ProductID:  "productID",
 				RuleFormat: "v2020-09-15",
-				AvailableBehaviors: AvailableFeatureItems{Items: []AvailableFeature{
+				AvailableCriteria: AvailableCriteria{Items: []Criteria{
 					{
-						Name:       "cpCode",
-						SchemaLink: "/papi/v1/schemas/products/prd_Alta/latest#/definitions/catalog/behaviors/cpCode",
+						Name:       "bucket",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2Fbucket",
+					},
+					{
+						Name:       "cacheability",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2Fcacheability",
+					},
+					{
+						Name:       "chinaCdnRegion",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2FchinaCdnRegion",
+					},
+				}},
+			},
+		},
+		"200 OK with query parameters": {
+			params: GetAvailableCriteriaRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				GroupID:         "groupID",
+				ContractID:      "contractID",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/2/available-criteria?contractId=contractID&groupId=groupID",
+			responseBody: `
+{
+    "contractId": "contract",
+    "groupId": "group",
+    "productId": "productID",
+    "ruleFormat": "v2020-09-15",
+    "criteria": {
+        "items": [
+            {
+                "name": "bucket",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2Fbucket"
+            },
+            {
+                "name": "cacheability",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2Fcacheability"
+            },
+            {
+                "name": "chinaCdnRegion",
+                "schemaLink": "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2FchinaCdnRegion"
+            }
+        ]
+    }
+}`,
+			expectedResponse: &GetCriteriaResponse{
+				ContractID: "contract",
+				GroupID:    "group",
+				ProductID:  "productID",
+				RuleFormat: "v2020-09-15",
+				AvailableCriteria: AvailableCriteria{Items: []Criteria{
+					{
+						Name:       "bucket",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2Fbucket",
+					},
+					{
+						Name:       "cacheability",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2Fcacheability",
+					},
+					{
+						Name:       "chinaCdnRegion",
+						SchemaLink: "/papi/v0/schemas/products/prd_Rich_Media_Accel/latest#%2Fdefinitions%2Fcatalog%2Fcriteria%2FchinaCdnRegion",
 					},
 				}},
 			},
 		},
 		"500 Internal Server Error": {
-			params: GetFeaturesRequest{
+			params: GetAvailableCriteriaRequest{
 				PropertyID:      "propertyID",
 				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -814,7 +940,7 @@ func TestPapi_GetAvailableCriteria(t *testing.T) {
   "detail": "Error fetching available behaviors",
   "status": 500
 }`,
-			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-criteria?contractId=contract&groupId=group",
+			expectedPath: "/papi/v1/properties/propertyID/versions/2/available-criteria",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -826,11 +952,9 @@ func TestPapi_GetAvailableCriteria(t *testing.T) {
 			},
 		},
 		"empty property ID": {
-			params: GetFeaturesRequest{
+			params: GetAvailableCriteriaRequest{
 				PropertyID:      "",
 				PropertyVersion: 2,
-				ContractID:      "contract",
-				GroupID:         "group",
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -839,10 +963,8 @@ func TestPapi_GetAvailableCriteria(t *testing.T) {
 			},
 		},
 		"empty property version": {
-			params: GetFeaturesRequest{
+			params: GetAvailableCriteriaRequest{
 				PropertyID: "propertyID",
-				ContractID: "contract",
-				GroupID:    "group",
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation

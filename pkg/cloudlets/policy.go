@@ -13,31 +13,31 @@ import (
 )
 
 type (
-	// Policies is a cloudlets policies API interface
+	// Policies is a cloudlets policies API interface.
 	Policies interface {
-		// ListPolicies lists policies
+		// ListPolicies lists policies.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicies
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-policies
 		ListPolicies(context.Context, ListPoliciesRequest) ([]Policy, error)
 
-		// GetPolicy gets policy by policyID
+		// GetPolicy gets policy by policyID.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicy
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-policy
 		GetPolicy(context.Context, GetPolicyRequest) (*Policy, error)
 
-		// CreatePolicy creates policy
+		// CreatePolicy creates policy.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#postpolicies
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-policy
 		CreatePolicy(context.Context, CreatePolicyRequest) (*Policy, error)
 
-		// RemovePolicy removes policy
+		// RemovePolicy removes policy.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#deletepolicy
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/delete-policy
 		RemovePolicy(context.Context, RemovePolicyRequest) error
 
-		// UpdatePolicy updates policy
+		// UpdatePolicy updates policy.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#putpolicy
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/put-policy
 		UpdatePolicy(context.Context, UpdatePolicyRequest) (*Policy, error)
 	}
 

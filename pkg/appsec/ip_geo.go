@@ -11,13 +11,15 @@ import (
 type (
 	// The IPGeo interface supports querying which network lists are used in the IP/Geo firewall settings,
 	// as well as updating the method and which network lists are used for IP/Geo firewall blocking.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#ipgeofirewall
 	IPGeo interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getipgeofirewall
+		// GetIPGeo lists which network lists are used in the IP/Geo Firewall settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-ip-geo-firewall
 		GetIPGeo(ctx context.Context, params GetIPGeoRequest) (*GetIPGeoResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putipgeofirewall
+		// UpdateIPGeo updates the method and which network lists to use for IP/Geo firewall blocking.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-ip-geo-firewall
 		UpdateIPGeo(ctx context.Context, params UpdateIPGeoRequest) (*UpdateIPGeoResponse, error)
 	}
 

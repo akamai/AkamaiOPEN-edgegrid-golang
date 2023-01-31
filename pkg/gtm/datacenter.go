@@ -13,33 +13,37 @@ import (
 // Based on 1.4 schema
 //
 
-// Datacenters contains operations available on a Datacenter resource
-// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html
+// Datacenters contains operations available on a Datacenter resource.
 type Datacenters interface {
-	// NewDatacenterResponse instantiates a new DatacenterResponse structure
+	// NewDatacenterResponse instantiates a new DatacenterResponse structure.
 	NewDatacenterResponse(context.Context) *DatacenterResponse
 	// NewDatacenter creates a new Datacenter object.
 	NewDatacenter(context.Context) *Datacenter
-	// ListDatacenters retreieves all Datacenters
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getdatacenters
+	// ListDatacenters retrieves all Datacenters.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-datacenters
 	ListDatacenters(context.Context, string) ([]*Datacenter, error)
 	// GetDatacenter retrieves a Datacenter with the given name. NOTE: Id arg is int!
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getdatacenter
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-datacenter
 	GetDatacenter(context.Context, int, string) (*Datacenter, error)
-	// Create the datacenter identified by the receiver argument in the specified domain.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#postdatacenters
+	// CreateDatacenter creates the datacenter identified by the receiver argument in the specified domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/post-datacenter
 	CreateDatacenter(context.Context, *Datacenter, string) (*DatacenterResponse, error)
-	// Delete the datacenter identified by the receiver argument from the domain specified.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#deletedatacenter
+	// DeleteDatacenter deletes the datacenter identified by the receiver argument from the domain specified.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/delete-datacenter
 	DeleteDatacenter(context.Context, *Datacenter, string) (*ResponseStatus, error)
-	// Update the datacenter identified in the receiver argument in the provided domain.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putdatacenter
+	// UpdateDatacenter updates the datacenter identified in the receiver argument in the provided domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-datacenter
 	UpdateDatacenter(context.Context, *Datacenter, string) (*ResponseStatus, error)
-	// Create Default Datacenter for Maps
+	// CreateMapsDefaultDatacenter creates Default Datacenter for Maps.
 	CreateMapsDefaultDatacenter(context.Context, string) (*Datacenter, error)
-	// Create Default Datacenter for IPv4 Selector
+	// CreateIPv4DefaultDatacenter creates Default Datacenter for IPv4 Selector.
 	CreateIPv4DefaultDatacenter(context.Context, string) (*Datacenter, error)
-	// Create Default Datacenter for IPv6 Selector
+	// CreateIPv6DefaultDatacenter creates Default Datacenter for IPv6 Selector.
 	CreateIPv6DefaultDatacenter(context.Context, string) (*Datacenter, error)
 }
 
@@ -72,7 +76,6 @@ type DatacenterList struct {
 	DatacenterItems []*Datacenter `json:"items"`
 }
 
-// NewDatacenterResponse instantiates a new DatacenterResponse structure
 func (p *gtm) NewDatacenterResponse(ctx context.Context) *DatacenterResponse {
 
 	logger := p.Log(ctx)
@@ -82,7 +85,6 @@ func (p *gtm) NewDatacenterResponse(ctx context.Context) *DatacenterResponse {
 	return dcResp
 }
 
-// NewDatacenter creates a new Datacenter object
 func (p *gtm) NewDatacenter(ctx context.Context) *Datacenter {
 
 	logger := p.Log(ctx)
@@ -92,7 +94,6 @@ func (p *gtm) NewDatacenter(ctx context.Context) *Datacenter {
 	return dc
 }
 
-// ListDatacenters retreieves all Datacenters
 func (p *gtm) ListDatacenters(ctx context.Context, domainName string) ([]*Datacenter, error) {
 
 	logger := p.Log(ctx)
@@ -117,7 +118,6 @@ func (p *gtm) ListDatacenters(ctx context.Context, domainName string) ([]*Datace
 	return dcs.DatacenterItems, nil
 }
 
-// GetDatacenter retrieves a Datacenter with the given name. NOTE: Id arg is int!
 func (p *gtm) GetDatacenter(ctx context.Context, dcID int, domainName string) (*Datacenter, error) {
 
 	logger := p.Log(ctx)
@@ -142,7 +142,6 @@ func (p *gtm) GetDatacenter(ctx context.Context, dcID int, domainName string) (*
 	return &dc, nil
 }
 
-// Create the datacenter identified by the receiver argument in the specified domain.
 func (p *gtm) CreateDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*DatacenterResponse, error) {
 
 	logger := p.Log(ctx)
@@ -176,7 +175,6 @@ var (
 	Ipv6DefaultDC = 5402
 )
 
-// Create Default Datacenter for Maps
 func (p *gtm) CreateMapsDefaultDatacenter(ctx context.Context, domainName string) (*Datacenter, error) {
 
 	logger := p.Log(ctx)
@@ -185,7 +183,6 @@ func (p *gtm) CreateMapsDefaultDatacenter(ctx context.Context, domainName string
 	return createDefaultDC(ctx, p, MapDefaultDC, domainName)
 }
 
-// Create Default Datacenter for IPv4 Selector
 func (p *gtm) CreateIPv4DefaultDatacenter(ctx context.Context, domainName string) (*Datacenter, error) {
 
 	logger := p.Log(ctx)
@@ -194,7 +191,6 @@ func (p *gtm) CreateIPv4DefaultDatacenter(ctx context.Context, domainName string
 	return createDefaultDC(ctx, p, Ipv4DefaultDC, domainName)
 }
 
-// Create Default Datacenter for IPv6 Selector
 func (p *gtm) CreateIPv6DefaultDatacenter(ctx context.Context, domainName string) (*Datacenter, error) {
 
 	logger := p.Log(ctx)
@@ -203,7 +199,7 @@ func (p *gtm) CreateIPv6DefaultDatacenter(ctx context.Context, domainName string
 	return createDefaultDC(ctx, p, Ipv6DefaultDC, domainName)
 }
 
-// Worker function to create Default Datacenter identified id in the specified domain.
+// createDefaultDC is worker function used to create Default Datacenter identified id in the specified domain.
 func createDefaultDC(ctx context.Context, p *gtm, defaultID int, domainName string) (*Datacenter, error) {
 
 	if defaultID != MapDefaultDC && defaultID != Ipv4DefaultDC && defaultID != Ipv6DefaultDC {
@@ -249,7 +245,6 @@ func createDefaultDC(ctx context.Context, p *gtm, defaultID int, domainName stri
 
 }
 
-// Update the datacenter identified in the receiver argument in the provided domain.
 func (p *gtm) UpdateDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -274,7 +269,6 @@ func (p *gtm) UpdateDatacenter(ctx context.Context, dc *Datacenter, domainName s
 	return dcresp.Status, nil
 }
 
-// Delete the datacenter identified by the receiver argument from the domain specified.
 func (p *gtm) DeleteDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)

@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -17,8 +17,9 @@ func TestAppSec_ListWAPBypassNetworkLists(t *testing.T) {
 
 	result := GetWAPBypassNetworkListsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/BypassNetworkLists.json"))
-	json.Unmarshal([]byte(respData), &result)
+	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/GetBypassNetworkListsResponse.json"))
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetWAPBypassNetworkListsRequest
@@ -129,8 +130,9 @@ func TestAppSec_GetWAPBypassNetworkLists(t *testing.T) {
 
 	result := GetWAPBypassNetworkListsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/BypassNetworkLists.json"))
-	json.Unmarshal([]byte(respData), &result)
+	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/GetBypassNetworkListsResponse.json"))
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetWAPBypassNetworkListsRequest
@@ -198,13 +200,15 @@ func TestAppSec_GetWAPBypassNetworkLists(t *testing.T) {
 func TestAppSec_UpdateWAPBypassNetworkLists(t *testing.T) {
 	result := UpdateWAPBypassNetworkListsResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/BypassNetworkLists.json"))
-	json.Unmarshal([]byte(respData), &result)
+	respData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/UpdateBypassNetworkListsResponse.json"))
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateWAPBypassNetworkListsRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestBypassNetworkLists/BypassNetworkLists.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateWAPBypassNetworkListsRequest

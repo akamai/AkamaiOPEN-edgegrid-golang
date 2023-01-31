@@ -1,9 +1,12 @@
+// Package datastream provides access to the Akamai DataStream APIs
+//
+// See: https://techdocs.akamai.com/datastream2/reference/api
 package datastream
 
 import (
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 )
 
 var (

@@ -11,16 +11,20 @@ import (
 type (
 	// The ReputationProfileAction interface supports retrieving and modifying the action associated with
 	// a specified reputation profile, or with all reputation profiles in a security policy.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#reputationprofileactiongroup
 	ReputationProfileAction interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationprofileactions
+		// GetReputationProfileActions returns a list of reputation profiles with their associated actions.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-reputation-profiles-actions
 		GetReputationProfileActions(ctx context.Context, params GetReputationProfileActionsRequest) (*GetReputationProfileActionsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getreputationprofileaction
+		// GetReputationProfileAction returns the action a reputation profile takes when triggered.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-reputation-profile-action
 		GetReputationProfileAction(ctx context.Context, params GetReputationProfileActionRequest) (*GetReputationProfileActionResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putreputationprofileaction
+		// UpdateReputationProfileAction updates what action to take when reputation profile's rule triggers.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-reputation-profile-action
 		UpdateReputationProfileAction(ctx context.Context, params UpdateReputationProfileActionRequest) (*UpdateReputationProfileActionResponse, error)
 	}
 

@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -140,7 +140,7 @@ func TestUpdateDeploymentSchedule(t *testing.T) {
 			expectedPath:        "/cps/v2/enrollments/10/changes/1/deployment-schedule",
 			expectedHeaders: map[string]string{
 				"Accept":       "application/vnd.akamai.cps.change-id.v1+json",
-				"Content-type": "application/vnd.akamai.cps.deployment-schedule.v1+json",
+				"Content-type": "application/vnd.akamai.cps.deployment-schedule.v1+json; charset=utf-8",
 			},
 			expectedResponse: &UpdateDeploymentScheduleResponse{
 				Change: "test_change",

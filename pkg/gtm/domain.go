@@ -15,30 +15,35 @@ import (
 // Based on 1.4 Schema
 //
 
-// Domains contains operations available on a Domain resource
-// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html
+// Domains contains operations available on a Domain resource.
 type Domains interface {
-	// Retrieve map of null fields
+	// NullFieldMap retrieves map of null fields.
 	NullFieldMap(context.Context, *Domain) (*NullFieldMapStruct, error)
 	// NewDomain is a utility function that creates a new Domain object.
 	NewDomain(context.Context, string, string) *Domain
-	// GetStatus retrieves current status for the given domainname.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getcurrentstatus
+	// GetDomainStatus retrieves current status for the given domainname.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-status-current
 	GetDomainStatus(context.Context, string) (*ResponseStatus, error)
 	// ListDomains retrieves all Domains.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getdomains
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-domains
 	ListDomains(context.Context) ([]*DomainItem, error)
-	// GetDomain retrieves a Domain with the given domainname.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getdomain
+	// GetDomain retrieves a Domain with the given domain name.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-domain
 	GetDomain(context.Context, string) (*Domain, error)
-	// CreateDomain creates domain
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#postdomains
+	// CreateDomain creates domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/post-domain
 	CreateDomain(context.Context, *Domain, map[string]string) (*DomainResponse, error)
-	// Delete is a method applied to a domain object resulting in removal.
+	// DeleteDomain is a method applied to a domain object resulting in removal.
+	//
 	// See: ** Not Supported by API **
 	DeleteDomain(context.Context, *Domain) (*ResponseStatus, error)
-	// Update is a method applied to a domain object resulting in an update.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#postdomains
+	// UpdateDomain is a method applied to a domain object resulting in an update.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-domain
 	UpdateDomain(context.Context, *Domain, map[string]string) (*ResponseStatus, error)
 }
 
@@ -114,7 +119,6 @@ func (dom *Domain) Validate() error {
 	return nil
 }
 
-// NewDomain is a utility function that creates a new Domain object.
 func (p *gtm) NewDomain(ctx context.Context, domainName, domainType string) *Domain {
 
 	logger := p.Log(ctx)
@@ -126,7 +130,6 @@ func (p *gtm) NewDomain(ctx context.Context, domainName, domainType string) *Dom
 	return domain
 }
 
-// GetStatus retrieves current status for the given domainname.
 func (p *gtm) GetDomainStatus(ctx context.Context, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -151,7 +154,6 @@ func (p *gtm) GetDomainStatus(ctx context.Context, domainName string) (*Response
 	return &stat, nil
 }
 
-// ListDomains retrieves all Domains.
 func (p *gtm) ListDomains(ctx context.Context) ([]*DomainItem, error) {
 
 	logger := p.Log(ctx)
@@ -176,7 +178,6 @@ func (p *gtm) ListDomains(ctx context.Context) ([]*DomainItem, error) {
 	return domains.DomainItems, nil
 }
 
-// GetDomain retrieves a Domain with the given domainname.
 func (p *gtm) GetDomain(ctx context.Context, domainName string) (*Domain, error) {
 
 	logger := p.Log(ctx)
@@ -233,7 +234,6 @@ func (dom *Domain) save(_ context.Context, p *gtm, queryArgs map[string]string, 
 
 }
 
-// CreateDomain is a method applied to a domain object resulting in creation.
 func (p *gtm) CreateDomain(ctx context.Context, domain *Domain, queryArgs map[string]string) (*DomainResponse, error) {
 
 	logger := p.Log(ctx)
@@ -254,7 +254,6 @@ func (p *gtm) CreateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 
 }
 
-// UpdateDomain is a method applied to a domain object resulting in an update.
 func (p *gtm) UpdateDomain(ctx context.Context, domain *Domain, queryArgs map[string]string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -278,7 +277,6 @@ func (p *gtm) UpdateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 	return stat.Status, err
 }
 
-// DeleteDomain is a method applied to a domain object resulting in removal.
 func (p *gtm) DeleteDomain(ctx context.Context, domain *Domain) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -325,7 +323,6 @@ type NullFieldMapStruct struct {
 // ObjectMap represents ObjectMap datatype
 type ObjectMap map[string]interface{}
 
-// NullFieldMap retrieves map of null fields
 func (p *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapStruct, error) {
 
 	logger := p.Log(ctx)

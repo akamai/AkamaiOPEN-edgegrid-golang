@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +18,8 @@ func TestAppSec_ListRatePolicyActions(t *testing.T) {
 	result := GetRatePolicyActionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicyAction/RatePolicyActions.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetRatePolicyActionsRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetRatePolicyAction(t *testing.T) {
 	result := GetRatePolicyActionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicyAction/RatePolicyActions.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetRatePolicyActionRequest
@@ -170,12 +172,14 @@ func TestAppSec_UpdateRatePolicyAction(t *testing.T) {
 	result := UpdateRatePolicyActionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicyAction/RatePolicyActions.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateRatePolicyActionRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestRatePolicyAction/RatePolicyActions.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateRatePolicyActionRequest

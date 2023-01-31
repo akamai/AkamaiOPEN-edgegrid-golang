@@ -11,22 +11,30 @@ import (
 
 type (
 	// The NetworkList interface supports creating, retrieving, modifying and removing network lists.
-	//
-	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#networklist
 	NetworkList interface {
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getlists
+		// GetNetworkLists lists all network lists available for an authenticated user.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/get-network-lists
 		GetNetworkLists(ctx context.Context, params GetNetworkListsRequest) (*GetNetworkListsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getlist
+		// GetNetworkList retrieves network list with specific network list id.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/get-network-list
 		GetNetworkList(ctx context.Context, params GetNetworkListRequest) (*GetNetworkListResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postlists
+		// CreateNetworkList creates a new network list.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/post-network-lists
 		CreateNetworkList(ctx context.Context, params CreateNetworkListRequest) (*CreateNetworkListResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#putlist
+		// UpdateNetworkList modifies the network list.
+		//
+		//See: https://techdocs.akamai.com/network-lists/reference/put-network-list
 		UpdateNetworkList(ctx context.Context, params UpdateNetworkListRequest) (*UpdateNetworkListResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#deletelist
+		// RemoveNetworkList removes a network list.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/delete-network-list
 		RemoveNetworkList(ctx context.Context, params RemoveNetworkListRequest) (*RemoveNetworkListResponse, error)
 	}
 
@@ -353,12 +361,6 @@ func (p *networklists) GetNetworkLists(ctx context.Context, params GetNetworkLis
 	return &rvalfiltered, nil
 }
 
-// Update will update a NetworkList.
-//
-// API Docs: // network_lists v2
-//
-// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#putnetworklist
-
 func (p *networklists) UpdateNetworkList(ctx context.Context, params UpdateNetworkListRequest) (*UpdateNetworkListResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -390,12 +392,6 @@ func (p *networklists) UpdateNetworkList(ctx context.Context, params UpdateNetwo
 	return &rval, nil
 }
 
-// Create will create a new networklist.
-//
-//
-// API Docs: // network_lists v2
-//
-// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postnetworklist
 func (p *networklists) CreateNetworkList(ctx context.Context, params CreateNetworkListRequest) (*CreateNetworkListResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -426,13 +422,6 @@ func (p *networklists) CreateNetworkList(ctx context.Context, params CreateNetwo
 	return &rval, nil
 
 }
-
-// Delete will delete a NetworkList
-//
-//
-// API Docs: // network_lists v2
-//
-// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#deletenetworklist
 
 func (p *networklists) RemoveNetworkList(ctx context.Context, params RemoveNetworkListRequest) (*RemoveNetworkListResponse, error) {
 	if err := params.Validate(); err != nil {

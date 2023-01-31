@@ -10,23 +10,21 @@ import (
 
 type (
 	// The WAFProtection interface supports retrieving and updating application layer protection for a configuration and policy.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#protections
 	WAFProtection interface {
 		// GetWAFProtections retrieves the current WAF protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		// Deprecated: this method will be removed in a future release. Use GetWAFProtection instead.
 		GetWAFProtections(ctx context.Context, params GetWAFProtectionsRequest) (*GetWAFProtectionsResponse, error)
 
 		// GetWAFProtection retrieves the current WAF protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		GetWAFProtection(ctx context.Context, params GetWAFProtectionRequest) (*GetWAFProtectionResponse, error)
 
 		// UpdateWAFProtection updates the WAF protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		UpdateWAFProtection(ctx context.Context, params UpdateWAFProtectionRequest) (*UpdateWAFProtectionResponse, error)
 	}
 

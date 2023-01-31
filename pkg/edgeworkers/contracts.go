@@ -12,7 +12,7 @@ type (
 	Contracts interface {
 		// ListContracts lists contract IDs that can be used to list resource tiers
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/contracts-1#get-contracts-1
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-contracts-1
 		ListContracts(context.Context) (*ListContractsResponse, error)
 	}
 

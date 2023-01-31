@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +18,8 @@ func TestNetworkList_ListNetworkList(t *testing.T) {
 	result := GetNetworkListsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkLists.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetNetworkListsRequest
@@ -91,11 +92,13 @@ func TestNetworkList_FilterNetworkLists(t *testing.T) {
 	result := GetNetworkListsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkLists.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	expectedResult := GetNetworkListsResponse{}
 	expectedResponseData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkLists_GEO.json"))
-	json.Unmarshal([]byte(expectedResponseData), &expectedResult)
+	err = json.Unmarshal([]byte(expectedResponseData), &expectedResult)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetNetworkListsRequest
@@ -169,7 +172,8 @@ func TestNetworkList_GetNetworkList(t *testing.T) {
 	result := GetNetworkListResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkList.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetNetworkListRequest
@@ -232,12 +236,14 @@ func TestNetworkList_CreateNetworkList(t *testing.T) {
 	result := CreateNetworkListResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkList.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := CreateNetworkListRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkList.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           CreateNetworkListRequest
@@ -309,12 +315,14 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 	result := UpdateNetworkListResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkList.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateNetworkListRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkList.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateNetworkListRequest
@@ -380,18 +388,19 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 	}
 }
 
-//Test delete NetworkList
 func TestNetworkList_DeleteNetworkList(t *testing.T) {
 
 	result := RemoveNetworkListResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkListEmpty.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := RemoveNetworkListRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestNetworkList/NetworkListEmpty.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           RemoveNetworkListRequest

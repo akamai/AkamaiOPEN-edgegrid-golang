@@ -1,3 +1,12 @@
+// Package edgegriderr is used for parsing validation errors to make them more readable.
+// It formats error(s) in a way, that the return value is one formatted error type, consisting of all the errors that occurred
+// in human-readable form. It is important to provide all the validation errors to the function.
+// Usage example:
+//
+//	error := edgegriderr.ParseValidationErrors(validation.Errors{
+//		"Validation1": validation.Validate(...),
+//		"Validation2": validation.Validate(...),
+//	})
 package edgegriderr
 
 import (

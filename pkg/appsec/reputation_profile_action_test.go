@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +18,8 @@ func TestAppSec_ListReputationProfileAction(t *testing.T) {
 	result := GetReputationProfileActionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestReputationProfileAction/ReputationProfileActions.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetReputationProfileActionsRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetReputationProfileAction(t *testing.T) {
 	result := GetReputationProfileActionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestReputationProfileAction/ReputationProfileAction.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetReputationProfileActionRequest
@@ -172,12 +174,14 @@ func TestAppSec_UpdateReputationProfileAction(t *testing.T) {
 	result := UpdateReputationProfileActionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestReputationProfileAction/ReputationProfileAction.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateReputationProfileActionRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestReputationProfileAction/ReputationProfileAction.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateReputationProfileActionRequest

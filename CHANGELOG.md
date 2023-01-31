@@ -1,5 +1,43 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 4.0.0 (Jan 31, 2023)
+
+#### BREAKING CHANGES:
+
+* Migrate to go 1.18
+
+* PAPI
+  * Fix response structures for GetAvailableBehaviors and GetAvailableCriteria:
+    * [GetAvailableCriteria](https://techdocs.akamai.com/property-mgr/reference/get-available-criteria)
+    * [GetAvailableBehaviors](https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors)
+
+* CPS
+  * Update `Accept` header to the latest schema `application/vnd.akamai.cps.enrollment.v11+json` for the following endpoints:
+    * [ListEnrollments](https://techdocs.akamai.com/cps/reference/get-enrollments)
+    * [GetEnrollment](https://techdocs.akamai.com/cps/reference/get-enrollment)
+
+* APPSEC
+  * Fix incorrect return type structure in `UpdateBypassNetworkListsResponse`
+  * Return `RatePolicyCondition` via a pointer in response structs of `RatePolicy` APIs
+
+#### FEATURES/ENHANCEMENTS:
+
+* Replace obsolete APIs documentation links with new one from [https://techdocs.akamai.com](https://techdocs.akamai.com)
+
+* APPSEC
+  * Add `burstWindow` and `condition` fields to RatePolicy
+
+* CPS
+  * Add `preferredTrustChain` field to `csr` struct ([#351](https://github.com/akamai/terraform-provider-akamai/issues/351))
+  * Set `utf-8 charset` in `content-type` header for requests
+
+#### BUG FIXES:
+
+* Fix code errors in documentation examples ([#177](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/pull/177))
+
+* IAM
+  * Issue updating user information - removed validation on user update
+
 ## 3.1.0 (Dec 12, 2022)
 
 #### FEATURES/ENHANCEMENTS:
@@ -49,7 +87,7 @@
   * Deployments - list deployments, get production deployment, get staging deployment
   * DeploymentSchedules - get deployment schedule, update deployment schedule
   * History - get DV history, get certificate history, get change history
-  * PostVerification - get or acknowledge post verification warnings 
+  * PostVerification - get or acknowledge post verification warnings
   * ThirdPartyCSR - get third-party CSR, upload certificate
 
 #### BREAKING CHANGES:
@@ -153,7 +191,7 @@
 * CPS
   * Add cps ListEnrollments
   * Extend CreateEnrollment with AllowDuplicateCN option
-  
+
 ## 2.14.1 (July 26, 2022)
 
 #### BUG FIXES:
@@ -166,7 +204,7 @@
 #### FEATURES/ENHANCEMENTS:
 
 * APPSEC
-  * Added penalty box support for security policy in evaluation mode 
+  * Added penalty box support for security policy in evaluation mode
 
 * HAPI
   * EdgeHostname - update
@@ -216,7 +254,7 @@
 
 * [IMPORTANT] Added Image and Video Manager API support
   * Policy Set - create, read, update, delete
-  * Policy - create, read, update, delete, rollback to previous version, view policy history 
+  * Policy - create, read, update, delete, rollback to previous version, view policy history
 
 * CLOUDLETS
   * Support for RC cloudlet type (Request Control)
@@ -240,7 +278,7 @@
     * Permission groups - read
     * Properties - read
     * Contracts - read
-  * EDGEKV 
+  * EDGEKV
     * Items - create, read, update, delete
     * Namespaces - create, read, update
     * Initialization - create, read
@@ -329,7 +367,7 @@
     * pkg/appsec/eval_rule_condition_exception.go
     * pkg/appsec/rule_action.go
     * pkg/appsec/rule_condition_exception.go
-	
+
 #### BUG FIXES:
 * DNSv2
     * Fixed parsing SVCB, HTTPS rdata.
@@ -340,7 +378,7 @@
   * Change status API - get change status, cancel change
   * DV certificate API - get and acknowledge DV challenges
   * Pre verification warnings - get and acknowledge pre verification warnings
-  
+
 * APPSEC
   * The following have been added, together with their unit tests and test data:
     * pkg/appsec/api_constraints_protection.go
@@ -420,7 +458,7 @@ Add support for the following operations in the Network Lists API v2:
   * Network Layer Control -- IP & GEO setting
 
 ## 2.0.3 (Dec 7, 2020)
-* PAPI - Property hostname validation fix for missing hostnames.  
+* PAPI - Property hostname validation fix for missing hostnames.
 * PAPI - fix minor typo in rules error messages
 
 ## 2.0.2 (Nov 19, 2020)
@@ -440,7 +478,7 @@ Add support for the following operations in the Network Lists API v2:
 * Official release for the EdgeGrid Golang library
 * DNSv2 - Zone create signature to pass blank instead of nil
 * PAPI - Return nil instead of error if no cp code was found
-* GTM - Datacenter API requires blank instead of nil 
+* GTM - Datacenter API requires blank instead of nil
 
 ## 0.9.18 (Jul 13, 2020)
 * [AT-40][Add] Preliminary Logging CorrelationID
@@ -452,7 +490,7 @@ Add support for the following operations in the Network Lists API v2:
 
 ## 0.9.16 (May 29, 2020)
 * Client-v1, Papi-v1 Updates
-* Add lock around http request creation. 
+* Add lock around http request creation.
 * papi - add logging to papi endpoints.
 
 ## 0.9.15 (May 15, 2020)

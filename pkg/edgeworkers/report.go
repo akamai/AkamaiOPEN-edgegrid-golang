@@ -15,17 +15,17 @@ type (
 	Reports interface {
 		// GetSummaryReport gets summary overview for EdgeWorker reports. Report id is  1
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/reportsreportid#get-report
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-report
 		GetSummaryReport(context.Context, GetSummaryReportRequest) (*GetSummaryReportResponse, error)
 
 		// GetReport gets details for an EdgeWorker
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/reportsreportid#get-report
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-report
 		GetReport(context.Context, GetReportRequest) (*GetReportResponse, error)
 
 		// ListReports lists EdgeWorker reports
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/reports
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-reports
 		ListReports(context.Context) (*ListReportsResponse, error)
 	}
 

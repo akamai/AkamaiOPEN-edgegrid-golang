@@ -12,22 +12,22 @@ import (
 type (
 	// The AdvancedSettingsLogging interface supports retrieving, updating or removing settings
 	// related to HTTP header logging.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#headerlog
 	AdvancedSettingsLogging interface {
-		// AdvancedSettingsLogging lists the HTTP header logging settings for a configuration or policy. If
+		// GetAdvancedSettingsLogging lists the HTTP header logging settings for a configuration or policy. If
 		// the request specifies a policy, then the settings for that policy will be returned, otherwise the
 		// settings for the configuration will be returned.
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#gethttpheaderloggingforaconfiguration
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policies-logging
 		GetAdvancedSettingsLogging(ctx context.Context, params GetAdvancedSettingsLoggingRequest) (*GetAdvancedSettingsLoggingResponse, error)
 
 		// UpdateAdvancedSettingsLogging enables, disables, or updates the HTTP header logging settings for a
-		// configuration or policy. If the request specifies a policy, then the settings for that policy will
+		// configuration or policy. If the request specifies a policy, then the settings for that policy will be
 		// updated, otherwise the settings for the configuration will be updated.
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#puthttpheaderloggingforaconfiguration
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-policies-logging
 		UpdateAdvancedSettingsLogging(ctx context.Context, params UpdateAdvancedSettingsLoggingRequest) (*UpdateAdvancedSettingsLoggingResponse, error)
 
-		// RemoveAdvancedSettingsLogging disables HTTP header logging for a confguration or policy. If the request
+		// RemoveAdvancedSettingsLogging disables HTTP header logging for a configuration or policy. If the request
 		// specifies a policy, then header logging will be disabled for that policy, otherwise logging will be
 		// disabled for the configuration.
 		RemoveAdvancedSettingsLogging(ctx context.Context, params RemoveAdvancedSettingsLoggingRequest) (*RemoveAdvancedSettingsLoggingResponse, error)
@@ -146,7 +146,7 @@ func (v RemoveAdvancedSettingsLoggingRequest) Validate() error {
 
 func (p *appsec) GetAdvancedSettingsLogging(ctx context.Context, params GetAdvancedSettingsLoggingRequest) (*GetAdvancedSettingsLoggingResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("GetAdvancedSettingsLoggings")
+	logger.Debug("GetAdvancedSettingsLogging")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

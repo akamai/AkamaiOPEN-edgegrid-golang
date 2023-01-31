@@ -10,13 +10,15 @@ import (
 
 type (
 	// The NetworkListDescription interface supports retrieving and updating a network list's description.
-	//
-	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#networklist
 	NetworkListDescription interface {
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getlist
+		// GetNetworkListDescription retrieves network list with description.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/get-network-list
 		GetNetworkListDescription(ctx context.Context, params GetNetworkListDescriptionRequest) (*GetNetworkListDescriptionResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#putdetails
+		// UpdateNetworkListDescription modifies network list description.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/put-network-list-details
 		UpdateNetworkListDescription(ctx context.Context, params UpdateNetworkListDescriptionRequest) (*UpdateNetworkListDescriptionResponse, error)
 	}
 
@@ -126,12 +128,6 @@ func (p *networklists) GetNetworkListDescription(ctx context.Context, params Get
 	return &rval, nil
 
 }
-
-// Update will update a NetworkListDescription.
-//
-// API Docs: // network_lists v2
-//
-// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#putnetworklistdescription
 
 func (p *networklists) UpdateNetworkListDescription(ctx context.Context, params UpdateNetworkListDescriptionRequest) (*UpdateNetworkListDescriptionResponse, error) {
 	if err := params.Validate(); err != nil {

@@ -11,16 +11,20 @@ import (
 type (
 	// The WAPBypassNetworkLists interface supports listing or modifying which network lists are
 	// used in the bypass network lists settings.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#bypassnetworklist
 	WAPBypassNetworkLists interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getbypassnetworklistsforawapconfigversion
+		// GetWAPBypassNetworkLists lists which network lists are used in the bypass network lists settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-bypass-network-lists
 		GetWAPBypassNetworkLists(ctx context.Context, params GetWAPBypassNetworkListsRequest) (*GetWAPBypassNetworkListsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putbypassnetworklistsforawapconfigversion
+		// UpdateWAPBypassNetworkLists updates which network lists to use in the bypass network lists settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-bypass-network-lists
 		UpdateWAPBypassNetworkLists(ctx context.Context, params UpdateWAPBypassNetworkListsRequest) (*UpdateWAPBypassNetworkListsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putbypassnetworklistsforawapconfigversion
+		// RemoveWAPBypassNetworkLists removes network lists in the bypass network lists settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-bypass-network-lists
 		RemoveWAPBypassNetworkLists(ctx context.Context, params RemoveWAPBypassNetworkListsRequest) (*RemoveWAPBypassNetworkListsResponse, error)
 	}
 
@@ -31,15 +35,15 @@ type (
 		PolicyID string `json:"policyId"`
 	}
 
-	// NetworkListsStruct is used to define a network list.
-	NetworkListsStruct struct {
+	// NetworkList is used to define a network list.
+	NetworkList struct {
 		Name string `json:"name"`
 		ID   string `json:"id"`
 	}
 
 	// GetWAPBypassNetworkListsResponse is returned from a call to GetWAPBypassNetworkLists.
 	GetWAPBypassNetworkListsResponse struct {
-		NetworkLists []NetworkListsStruct `json:"networkLists"`
+		NetworkLists []NetworkList `json:"networkLists"`
 	}
 
 	// UpdateWAPBypassNetworkListsRequest is used to modify which network lists are used in the bypass network lists settings.

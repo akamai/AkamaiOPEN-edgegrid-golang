@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -16,7 +16,8 @@ import (
 func TestApsec_ListActivations(t *testing.T) {
 	result := GetActivationsResponse{}
 	respData := compactJSON(loadFixtureBytes("testdata/TestActivations/Activations.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 	tests := map[string]struct {
 		params           GetActivationsRequest
 		responseStatus   int
@@ -86,7 +87,8 @@ func TestApsec_ListActivations(t *testing.T) {
 func TestAppSec_GetActivations(t *testing.T) {
 	result := GetActivationsResponse{}
 	respData := compactJSON(loadFixtureBytes("testdata/TestActivations/Activations.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 	tests := map[string]struct {
 		params           GetActivationsRequest
 		responseStatus   int

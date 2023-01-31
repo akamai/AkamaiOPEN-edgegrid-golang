@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +18,8 @@ func TestAppSec_ListRule(t *testing.T) {
 	result := GetRulesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRule/Rules.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetRulesRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetRule(t *testing.T) {
 	result := GetRuleResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRule/Rule.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetRuleRequest
@@ -172,7 +174,8 @@ func TestAppSec_UpdateRule(t *testing.T) {
 	result := UpdateRuleResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRule/Rule.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateRuleRequest
@@ -251,7 +254,8 @@ func TestAppSec_UpdateRuleConditionException(t *testing.T) {
 	result := UpdateConditionExceptionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRule/RuleConditionException.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateConditionExceptionRequest
@@ -330,7 +334,8 @@ func TestAppSec_UpdateRuleAdvancedConditionException(t *testing.T) {
 	result := UpdateConditionExceptionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRule/AdvancedException.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateConditionExceptionRequest

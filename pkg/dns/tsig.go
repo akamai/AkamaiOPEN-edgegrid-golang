@@ -17,33 +17,39 @@ var (
 )
 
 type (
-	// TSIGKeys contains operations available on TSIKeyG resource
-	// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html
+	// TSIGKeys contains operations available on TSIKeyG resource.
 	TSIGKeys interface {
-		// NewTsigKey returns bare bones tsig key struct
+		// NewTsigKey returns bare bones tsig key struct.
 		NewTsigKey(context.Context, string) *TSIGKey
 		// NewTsigQueryString returns empty query string struct. No elements required.
 		NewTsigQueryString(context.Context) *TSIGQueryString
-		// ListTsigKeys lists the TSIG keys used by zones that you are allowed to manage
-		// See:
+		// ListTsigKeys lists the TSIG keys used by zones that you are allowed to manage.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-keys
 		ListTsigKeys(context.Context, *TSIGQueryString) (*TSIGReportResponse, error)
-		// GetTsigKeyZones retrieves DNS Zones using tsig key
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#gettsigkeys
+		// GetTsigKeyZones retrieves DNS Zones using tsig key.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/post-keys-used-by
 		GetTsigKeyZones(context.Context, *TSIGKey) (*ZoneNameListResponse, error)
-		// GetTsigKeyAliases retrieves a DNS Zone's aliases
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#posttsigusedby
+		// GetTsigKeyAliases retrieves a DNS Zone's aliases.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-zone-key-used-by
 		GetTsigKeyAliases(context.Context, string) (*ZoneNameListResponse, error)
-		// TsigKeyBulkUpdate updates Bulk Zones tsig key
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#posttsigbulkupdate
+		// TsigKeyBulkUpdate updates Bulk Zones tsig key.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/post-keys-bulk-update
 		TsigKeyBulkUpdate(context.Context, *TSIGKeyBulkPost) error
-		// GetTsigKey retrieves a Tsig key for zone
-		// See:  https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#getzonekey
+		// GetTsigKey retrieves a Tsig key for zone.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-zone-key
 		GetTsigKey(context.Context, string) (*TSIGKeyResponse, error)
-		// DeleteTsigKey deletes tsig key for zone
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#deletezonekey
+		// DeleteTsigKey deletes tsig key for zone.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/delete-zones-zone-key
 		DeleteTsigKey(context.Context, string) error
-		// UpdateTsigKey updates tsig key for zone
-		// See: https://developer.akamai.com/api/cloud_security/edge_dns_zone_management/v2.html#putzonekey
+		// UpdateTsigKey updates tsig key for zone.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/put-zones-zone-key
 		UpdateTsigKey(context.Context, *TSIGKey, string) error
 	}
 
@@ -112,7 +118,6 @@ func (bulk *TSIGKeyBulkPost) Validate() error {
 	}.Filter()
 }
 
-// NewTsigKey returns bare bones tsig key struct
 func (p *dns) NewTsigKey(ctx context.Context, name string) *TSIGKey {
 
 	logger := p.Log(ctx)
@@ -122,7 +127,6 @@ func (p *dns) NewTsigKey(ctx context.Context, name string) *TSIGKey {
 	return key
 }
 
-// NewTsigQueryString returns empty query string struct. No elements required.
 func (p *dns) NewTsigQueryString(ctx context.Context) *TSIGQueryString {
 
 	logger := p.Log(ctx)
@@ -183,7 +187,6 @@ func constructTsigQueryString(tsigquerystring *TSIGQueryString) string {
 	return ""
 }
 
-// List TSIG Keys
 func (p *dns) ListTsigKeys(ctx context.Context, tsigquerystring *TSIGQueryString) (*TSIGReportResponse, error) {
 
 	logger := p.Log(ctx)
@@ -209,7 +212,6 @@ func (p *dns) ListTsigKeys(ctx context.Context, tsigquerystring *TSIGQueryString
 
 }
 
-// GetTsigKeyZones retrieves DNS Zones using tsig key
 func (p *dns) GetTsigKeyZones(ctx context.Context, tsigKey *TSIGKey) (*ZoneNameListResponse, error) {
 
 	logger := p.Log(ctx)
@@ -243,12 +245,7 @@ func (p *dns) GetTsigKeyZones(ctx context.Context, tsigKey *TSIGKey) (*ZoneNameL
 	return &zonesList, nil
 }
 
-// GetTsigKeyAliases retrieves a DNS Zone's aliases
-//func GetZoneKeyAliases(zone string) (*TSIGZoneAliases, error) {
-//
-// There is a discrepency between the technical doc and API operation. API currently returns a zone name list.
 // TODO: Reconcile
-//
 func (p *dns) GetTsigKeyAliases(ctx context.Context, zone string) (*ZoneNameListResponse, error) {
 
 	logger := p.Log(ctx)
@@ -273,7 +270,6 @@ func (p *dns) GetTsigKeyAliases(ctx context.Context, zone string) (*ZoneNameList
 	return &zonesList, nil
 }
 
-//  TsigKeyBulkUpdate bulk tsig key update
 func (p *dns) TsigKeyBulkUpdate(ctx context.Context, tsigBulk *TSIGKeyBulkPost) error {
 
 	logger := p.Log(ctx)
@@ -306,7 +302,6 @@ func (p *dns) TsigKeyBulkUpdate(ctx context.Context, tsigBulk *TSIGKeyBulkPost) 
 	return nil
 }
 
-// GetTsigKey retrieves a DNS Zone's key
 func (p *dns) GetTsigKey(ctx context.Context, zone string) (*TSIGKeyResponse, error) {
 
 	logger := p.Log(ctx)
@@ -331,7 +326,6 @@ func (p *dns) GetTsigKey(ctx context.Context, zone string) (*TSIGKeyResponse, er
 	return &zonekey, nil
 }
 
-// DeleteTsigKey delete tsig key for zone
 func (p *dns) DeleteTsigKey(ctx context.Context, zone string) error {
 
 	logger := p.Log(ctx)
@@ -355,7 +349,6 @@ func (p *dns) DeleteTsigKey(ctx context.Context, zone string) error {
 	return nil
 }
 
-// UpdateTsigKey update tsig key for zone
 func (p *dns) UpdateTsigKey(ctx context.Context, tsigKey *TSIGKey, zone string) error {
 
 	logger := p.Log(ctx)

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -131,7 +131,7 @@ func (c *cps) UploadThirdPartyCertAndTrustChain(ctx context.Context, params Uplo
 		return fmt.Errorf("%w: failed to create request: %s", ErrUploadThirdPartyCertAndTrustChain, err)
 	}
 	req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
-	req.Header.Set("Content-Type", "application/vnd.akamai.cps.certificate-and-trust-chain.v2+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.certificate-and-trust-chain.v2+json; charset=utf-8")
 
 	resp, err := c.Exec(req, nil, params.Certificates)
 	if err != nil {

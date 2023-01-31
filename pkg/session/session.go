@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/edgegrid"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/discard"
 )
@@ -95,7 +95,6 @@ func New(opts ...Option) (Session, error) {
 
 // Must is a helper tthat will result in a panic if an error is returned
 // ex. sess := Must(New())
-//
 func Must(sess Session, err error) Session {
 	if err != nil {
 		panic(err)

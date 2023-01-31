@@ -12,18 +12,22 @@ type (
 	// The EvalProtectHost interface supports retrieving the evaluation hostnames for a configuration and
 	// moving hostnames from evaluating to protected status.
 	// Deprecated: this interface will be removed in a future release. Use the WAPSelectedHostnames interface instead.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#evalhostname
 	EvalProtectHost interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevaluationhostnames
+		// GetEvalProtectHosts lists the evaluation hostnames for a configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-selected-hostnames-eval-hostnames
 		// Deprecated: this method will be removed in a future release. Use the GetWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		GetEvalProtectHosts(ctx context.Context, params GetEvalProtectHostsRequest) (*GetEvalProtectHostsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getevaluationhostnames
+		// GetEvalProtectHost return the evaluation hostname for a configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-selected-hostnames-eval-hostnames
 		// Deprecated: this method will be removed in a future release. Use the GetWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		GetEvalProtectHost(ctx context.Context, params GetEvalProtectHostRequest) (*GetEvalProtectHostResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putmoveevaluationhostnamestoprotection
+		// UpdateEvalProtectHost updates the list of hostnames you want to evaluate for a configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-selected-eval-hostnames
 		// Deprecated: this method will be removed in a future release. Use the UpdateWAPSelectedHostnames method of the WAPSelectedHostnames interface instead.
 		UpdateEvalProtectHost(ctx context.Context, params UpdateEvalProtectHostRequest) (*UpdateEvalProtectHostResponse, error)
 	}

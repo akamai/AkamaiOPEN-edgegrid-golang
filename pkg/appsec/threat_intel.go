@@ -10,13 +10,15 @@ import (
 
 type (
 	// The ThreatIntel interface supports retrieving and modifying the operational settings for adaptive intelligence.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#threatintel
 	ThreatIntel interface {
 		// GetThreatIntel retrieves the current threat intel settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-rules-threat-intel-1
 		GetThreatIntel(ctx context.Context, params GetThreatIntelRequest) (*GetThreatIntelResponse, error)
 
 		// UpdateThreatIntel modifies the current threat intel settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-rules-threat-intel-1
 		UpdateThreatIntel(ctx context.Context, params UpdateThreatIntelRequest) (*UpdateThreatIntelResponse, error)
 	}
 

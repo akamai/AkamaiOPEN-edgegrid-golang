@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -327,11 +327,12 @@ func TestGtm_CreateMapsDefaultDatacenter(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if r.Method == http.MethodGet {
 					w.WriteHeader(http.StatusNotFound)
-					w.Write([]byte(`
+					_, err = w.Write([]byte(`
                                         {
                                             "type": "Datacenter",
                                             "title": "not found"
                                         }`))
+					require.NoError(t, err)
 					return
 				}
 				assert.Equal(t, test.expectedPath, r.URL.String())
@@ -411,11 +412,12 @@ func TestGtm_CreateIPv4DefaultDatacenter(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if r.Method == http.MethodGet {
 					w.WriteHeader(http.StatusNotFound)
-					w.Write([]byte(`
+					_, err = w.Write([]byte(`
                                         {
                                             "type": "Datacenter",
                                             "title": "not found"
                                         }`))
+					require.NoError(t, err)
 					return
 				}
 				assert.Equal(t, test.expectedPath, r.URL.String())
@@ -495,11 +497,12 @@ func TestGtm_CreateIPv6DefaultDatacenter(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if r.Method == http.MethodGet {
 					w.WriteHeader(http.StatusNotFound)
-					w.Write([]byte(`
+					_, err = w.Write([]byte(`
                                         {
                                             "type": "Datacenter",
                                             "title": "not found"
                                         }`))
+					require.NoError(t, err)
 					return
 				}
 				assert.Equal(t, test.expectedPath, r.URL.String())

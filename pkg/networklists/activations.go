@@ -12,18 +12,26 @@ import (
 type (
 	// The Activations interface supports activating and deactivating network lists.
 	//
-	// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#activationrequest
+	// https://techdocs.akamai.com/network-lists/reference/api
 	Activations interface {
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getactivationstatus
+		// GetActivations retrieves list of network list activations.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/get-network-list-status
 		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#getactivationstatus
+		// GetActivation retrieves network list activation.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/get-activation
 		GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postactivate
+		// CreateActivations activates network list.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/post-network-list-activate
 		CreateActivations(ctx context.Context, params CreateActivationsRequest) (*CreateActivationsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/network_lists/v2.html#postactivate
+		// RemoveActivations deactivates network list.
+		//
+		// See: https://techdocs.akamai.com/network-lists/reference/post-network-list-activate
 		RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error)
 	}
 
@@ -258,11 +266,6 @@ func (v GetActivationRequest) Validate() error {
 	}.Filter()
 }
 
-// GetActivations populates  *Activations with it's related Activations
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
 func (p *networklists) GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -295,11 +298,6 @@ func (p *networklists) GetActivations(ctx context.Context, params GetActivations
 	return &rval, nil
 }
 
-// GetActivation populates  *Activation with it's related Activations
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html
 func (p *networklists) GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -331,11 +329,6 @@ func (p *networklists) GetActivation(ctx context.Context, params GetActivationRe
 	return &rval, nil
 }
 
-// Save activates a given Configuration
-//
-// If acknowledgeWarnings is true and warnings are returned on the first attempt,
-// a second attempt is made, acknowledging the warnings.
-//
 func (p *networklists) CreateActivations(ctx context.Context, params CreateActivationsRequest) (*CreateActivationsResponse, error) {
 
 	logger := p.Log(ctx)
@@ -383,12 +376,6 @@ func (p *networklists) CreateActivations(ctx context.Context, params CreateActiv
 
 }
 
-// Delete will delete a Activations
-//
-//
-// API Docs: // appsec v1
-//
-// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deleteactivations
 func (p *networklists) RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error) {
 
 	logger := p.Log(ctx)

@@ -11,22 +11,30 @@ import (
 
 type (
 	// The MatchTarget interface supports creating, retrieving, updating and removing match targets.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#matchtarget
 	MatchTarget interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmatchtargets
+		// GetMatchTargets returns match targets defined in the specified security configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-match-targets
 		GetMatchTargets(ctx context.Context, params GetMatchTargetsRequest) (*GetMatchTargetsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmatchtargetid
+		// GetMatchTarget returns the specified match target.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-match-target
 		GetMatchTarget(ctx context.Context, params GetMatchTargetRequest) (*GetMatchTargetResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getmatchtargetid
+		// CreateMatchTarget creates a new match target in the specified configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-match-targets
 		CreateMatchTarget(ctx context.Context, params CreateMatchTargetRequest) (*CreateMatchTargetResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putmatchtargetid
+		// UpdateMatchTarget updates details about the specified match target.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-match-target
 		UpdateMatchTarget(ctx context.Context, params UpdateMatchTargetRequest) (*UpdateMatchTargetResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deletematchtargetid
+		// RemoveMatchTarget deletes the specified match target.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/delete-match-target
 		RemoveMatchTarget(ctx context.Context, params RemoveMatchTargetRequest) (*RemoveMatchTargetResponse, error)
 	}
 

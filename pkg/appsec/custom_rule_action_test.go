@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +18,8 @@ func TestAppSec_ListCustomRuleActions(t *testing.T) {
 	result := GetCustomRuleActionsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRuleAction/CustomRuleActions.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetCustomRuleActionsRequest
@@ -98,9 +99,16 @@ func TestAppSec_ListCustomRuleActions(t *testing.T) {
 func TestAppSec_GetCustomRuleAction(t *testing.T) {
 
 	result := GetCustomRuleActionResponse{}
+	resultData := compactJSON(loadFixtureBytes("testdata/TestCustomRuleAction/CustomRuleAction.json"))
+	err := json.Unmarshal([]byte(resultData), &result)
+	require.NoError(t, err)
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRuleAction/CustomRuleActions.json"))
-	json.Unmarshal([]byte(respData), &result)
+
+	filteredResult := GetCustomRuleActionResponse{}
+	filteredRespData := compactJSON(loadFixtureBytes("testdata/TestCustomRuleAction/CustomRuleActionResponse.json"))
+	err = json.Unmarshal([]byte(filteredRespData), &filteredResult)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetCustomRuleActionRequest
@@ -115,27 +123,27 @@ func TestAppSec_GetCustomRuleAction(t *testing.T) {
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				RuleID:   12345,
+				RuleID:   60036378,
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/custom-rules",
-			expectedResponse: &result,
+			expectedResponse: &filteredResult,
 		},
 		"500 internal server error": {
 			params: GetCustomRuleActionRequest{
 				ConfigID: 43253,
 				Version:  15,
 				PolicyID: "AAAA_81230",
-				RuleID:   12345,
+				RuleID:   60036378,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching match target"
-}`),
+		{
+		    "type": "internal_error",
+		    "title": "Internal Server Error",
+		    "detail": "Error fetching match target"
+		}`),
 			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/custom-rules",
 			withError: &Error{
 				Type:       "internal_error",
@@ -172,12 +180,14 @@ func TestAppSec_UpdateCustomRuleAction(t *testing.T) {
 	result := UpdateCustomRuleActionResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestCustomRuleAction/CustomRuleActionUpdate.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateCustomRuleActionRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomRuleAction/CustomRuleAction.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateCustomRuleActionRequest

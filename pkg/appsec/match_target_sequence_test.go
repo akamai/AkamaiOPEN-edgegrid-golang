@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +18,8 @@ func TestAppSec_ListMatchTargetSequence(t *testing.T) {
 	result := GetMatchTargetSequenceResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetMatchTargetSequenceRequest
@@ -100,7 +101,8 @@ func TestAppSec_GetMatchTargetSequence(t *testing.T) {
 	result := GetMatchTargetSequenceResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetMatchTargetSequenceRequest
@@ -170,12 +172,14 @@ func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
 	result := UpdateMatchTargetSequenceResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateMatchTargetSequenceRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestMatchTargetSequence/MatchTargetSequence.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateMatchTargetSequenceRequest

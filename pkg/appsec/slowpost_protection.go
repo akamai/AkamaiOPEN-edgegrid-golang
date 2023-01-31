@@ -10,23 +10,21 @@ import (
 
 type (
 	// The SlowPostProtection interface supports retrieving and updating slow post protection for a configuration and policy.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#slowpostprotection
 	SlowPostProtection interface {
 		// GetSlowPostProtections retrieves the current SLOW post protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		// Deprecated: this method will be removed in a future release. Use GetSlowPostProtection instead.
 		GetSlowPostProtections(ctx context.Context, params GetSlowPostProtectionsRequest) (*GetSlowPostProtectionsResponse, error)
 
 		// GetSlowPostProtection retrieves the current SLOW post protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprotections
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		GetSlowPostProtection(ctx context.Context, params GetSlowPostProtectionRequest) (*GetSlowPostProtectionResponse, error)
 
 		// UpdateSlowPostProtection updates the SLOW post protection setting for a configuration and policy.
 		//
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprotections
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		UpdateSlowPostProtection(ctx context.Context, params UpdateSlowPostProtectionRequest) (*UpdateSlowPostProtectionResponse, error)
 	}
 

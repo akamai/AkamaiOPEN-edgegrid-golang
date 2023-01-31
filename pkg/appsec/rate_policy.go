@@ -11,22 +11,30 @@ import (
 
 type (
 	// The RatePolicy interface supports creating, retrieving, updating and removing rate policies.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#ratepolicy
 	RatePolicy interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getratepolicies
+		// GetRatePolicies returns rate policies for a specific security configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-rate-policies
 		GetRatePolicies(ctx context.Context, params GetRatePoliciesRequest) (*GetRatePoliciesResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getratepolicy
+		// GetRatePolicy returns the specified rate policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-rate-policy
 		GetRatePolicy(ctx context.Context, params GetRatePolicyRequest) (*GetRatePolicyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#postratepolicies
+		// CreateRatePolicy creates a new rate policy for a specific configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-rate-policies
 		CreateRatePolicy(ctx context.Context, params CreateRatePolicyRequest) (*CreateRatePolicyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putratepolicy
+		// UpdateRatePolicy updates details for a specific rate policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-rate-policy
 		UpdateRatePolicy(ctx context.Context, params UpdateRatePolicyRequest) (*UpdateRatePolicyResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#deleteratepolicy
+		// RemoveRatePolicy deletes the specified rate policy.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/delete-rate-policy
 		RemoveRatePolicy(ctx context.Context, params RemoveRatePolicyRequest) (*RemoveRatePolicyResponse, error)
 	}
 
@@ -49,6 +57,7 @@ type (
 		Description           string `json:"description"`
 		AverageThreshold      int    `json:"averageThreshold"`
 		BurstThreshold        int    `json:"burstThreshold"`
+		BurstWindow           int    `json:"burstWindow"`
 		ClientIdentifier      string `json:"clientIdentifier"`
 		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
 		RequestType           string `json:"requestType"`
@@ -66,6 +75,7 @@ type (
 		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
 		Hostnames              []string                `json:"hostnames"`
 		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
+		Condition              *RatePolicyCondition    `json:"condition,omitempty"`
 		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
@@ -96,6 +106,7 @@ type (
 		Description           string `json:"description"`
 		AverageThreshold      int    `json:"averageThreshold"`
 		BurstThreshold        int    `json:"burstThreshold"`
+		BurstWindow           int    `json:"burstWindow"`
 		ClientIdentifier      string `json:"clientIdentifier"`
 		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
 		RequestType           string `json:"requestType"`
@@ -113,6 +124,7 @@ type (
 		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
 		Hostnames              []string                `json:"hostnames"`
 		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
+		Condition              *RatePolicyCondition    `json:"condition,omitempty"`
 		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
@@ -142,6 +154,7 @@ type (
 		Description           string `json:"description"`
 		AverageThreshold      int    `json:"averageThreshold"`
 		BurstThreshold        int    `json:"burstThreshold"`
+		BurstWindow           int    `json:"burstWindow"`
 		ClientIdentifier      string `json:"clientIdentifier"`
 		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
 		RequestType           string `json:"requestType"`
@@ -159,6 +172,7 @@ type (
 		Hosts                  *RatePoliciesHosts      `json:"hosts,omitempty"`
 		Hostnames              []string                `json:"hostnames"`
 		AdditionalMatchOptions []RatePolicyMatchOption `json:"additionalMatchOptions,omitempty"`
+		Condition              *RatePolicyCondition    `json:"condition,omitempty"`
 		QueryParameters        []struct {
 			Name          string   `json:"name"`
 			Values        []string `json:"values"`
@@ -189,6 +203,7 @@ type (
 			Description            string                     `json:"description,omitempty"`
 			AverageThreshold       int                        `json:"averageThreshold,omitempty"`
 			BurstThreshold         int                        `json:"burstThreshold,omitempty"`
+			BurstWindow            int                        `json:"burstWindow,omitempty"`
 			ClientIdentifier       string                     `json:"clientIdentifier,omitempty"`
 			UseXForwardForHeaders  bool                       `json:"useXForwardForHeaders"`
 			RequestType            string                     `json:"requestType,omitempty"`
@@ -200,6 +215,7 @@ type (
 			Hosts                  *RatePoliciesHosts         `json:"hosts,omitempty"`
 			Hostnames              []string                   `json:"hostnames,omitempty"`
 			AdditionalMatchOptions []RatePolicyMatchOption    `json:"additionalMatchOptions,omitempty"`
+			Condition              *RatePolicyCondition       `json:"condition,omitempty"`
 			QueryParameters        *RatePolicyQueryParameters `json:"queryParameters,omitempty"`
 			CreateDate             string                     `json:"-"`
 			UpdateDate             string                     `json:"-"`
@@ -228,6 +244,7 @@ type (
 		Description            string                     `json:"description,omitempty"`
 		AverageThreshold       int                        `json:"averageThreshold,omitempty"`
 		BurstThreshold         int                        `json:"burstThreshold,omitempty"`
+		BurstWindow            int                        `json:"burstWindow,omitempty"`
 		ClientIdentifier       string                     `json:"clientIdentifier,omitempty"`
 		UseXForwardForHeaders  bool                       `json:"useXForwardForHeaders"`
 		RequestType            string                     `json:"requestType,omitempty"`
@@ -239,6 +256,7 @@ type (
 		Hosts                  *RatePoliciesHosts         `json:"hosts,omitempty"`
 		Hostnames              []string                   `json:"hostnames,omitempty"`
 		AdditionalMatchOptions []RatePolicyMatchOption    `json:"additionalMatchOptions,omitempty"`
+		Condition              *RatePolicyCondition       `json:"condition,omitempty"`
 		QueryParameters        *RatePolicyQueryParameters `json:"queryParameters,omitempty"`
 		CreateDate             string                     `json:"-"`
 		UpdateDate             string                     `json:"-"`
@@ -293,6 +311,21 @@ type (
 		Values        *[]string        `json:"values,omitempty"`
 		PositiveMatch *json.RawMessage `json:"positiveMatch,omitempty"`
 	}
+
+	// RatePolicyCondition is used as part of a rate policy description.
+	RatePolicyCondition struct {
+		AtomicConditions []struct {
+			Value            *json.RawMessage `json:"value,omitempty"`
+			ClassName        string           `json:"className"`
+			PositiveMatch    bool             `json:"positiveMatch"`
+			Name             []string         `json:"name,omitempty"`
+			NameCase         bool             `json:"nameCase,omitempty"`
+			NameWildcard     bool             `json:"nameWildcard,omitempty"`
+			ValueCase        bool             `json:"valueCase,omitempty"`
+			ValueWildcard    bool             `json:"valueWildcard,omitempty"`
+			SharedIpHandling string           `json:"sharedIpHandling,omitempty"`
+		} `json:"atomicConditions,omitempty"`
+	}
 )
 
 // Validate validates a GetRatePolicyRequest.
@@ -304,7 +337,7 @@ func (v GetRatePolicyRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates a GetRatePolicysRequest.
+// Validate validates a GetRatePoliciesRequest.
 func (v GetRatePoliciesRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),

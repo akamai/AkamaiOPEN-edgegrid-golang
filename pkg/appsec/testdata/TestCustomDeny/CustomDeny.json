@@ -2,7 +2,7 @@
         {
             "description": "Custom Deny Example 2",
             "name": "Custom Deny Example 2",
-            "id": 622919,
+            "id": "622919",
             "parameters": [
                 {
                     "displayName": "Prevent browser caching",

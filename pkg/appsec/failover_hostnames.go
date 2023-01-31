@@ -8,10 +8,10 @@ import (
 
 type (
 	// The FailoverHostnames interface supports retrieving the failover hostnames in a configuration.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#failoverhostname
 	FailoverHostnames interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getfailoverhostnames
+		// GetFailoverHostnames returns a list of the failover hostnames in a configuration.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-failover-hostnames
 		GetFailoverHostnames(ctx context.Context, params GetFailoverHostnamesRequest) (*GetFailoverHostnamesResponse, error)
 	}
 

@@ -12,19 +12,20 @@ import (
 type (
 	// The AttackGroup interface supports retrieving and updating attack groups along with their
 	// associated actions, conditions, and exceptions.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#attackgroup
 	AttackGroup interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getattackgroups
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getattackgroupconditionexception
+		// GetAttackGroups returns a list of attack groups with their associated actions.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-attack-groups-1
 		GetAttackGroups(ctx context.Context, params GetAttackGroupsRequest) (*GetAttackGroupsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getattackgroup
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getattackgroupconditionexception
+		// GetAttackGroup returns the action for the attack group.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-attack-group-1
 		GetAttackGroup(ctx context.Context, params GetAttackGroupRequest) (*GetAttackGroupResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putattackgroup
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putattackgroupconditionexception
+		// UpdateAttackGroup updates what action to take when an attack group's rule triggers.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-attack-group-1
 		UpdateAttackGroup(ctx context.Context, params UpdateAttackGroupRequest) (*UpdateAttackGroupResponse, error)
 	}
 

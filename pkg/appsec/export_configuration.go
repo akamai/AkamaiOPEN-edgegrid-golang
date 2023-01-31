@@ -14,13 +14,16 @@ type (
 	// The ExportConfiguration interface supports exporting comprehensive details about a security
 	// configuration version. This operation returns more data than Get configuration version details,
 	// including rate and security policies, rules, hostnames, and numerous additional settings.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#export
 	ExportConfiguration interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getconfigurationversionexport
+		// GetExportConfigurations returns comprehensive details about a security configurations version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-export-config-version
 		// Deprecated: this method will be removed in a future release. Use GetExportConfiguration instead.
 		GetExportConfigurations(ctx context.Context, params GetExportConfigurationsRequest) (*GetExportConfigurationsResponse, error)
 
+		// GetExportConfiguration returns comprehensive details about a security configuration version.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-export-config-version
 		GetExportConfiguration(ctx context.Context, params GetExportConfigurationRequest) (*GetExportConfigurationResponse, error)
 	}
 

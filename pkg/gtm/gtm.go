@@ -1,11 +1,13 @@
 // Package gtm provides access to the Akamai GTM V1_4 APIs
+//
+// See: https://techdocs.akamai.com/gtm/reference/api
 package gtm
 
 import (
 	"errors"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 )
 
 var (

@@ -14,12 +14,12 @@ type (
 	PermissionGroups interface {
 		// GetPermissionGroup gets details on the capabilities enabled within a specified group
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/groupsgroupid#get-group
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-group
 		GetPermissionGroup(context.Context, GetPermissionGroupRequest) (*PermissionGroup, error)
 
 		// ListPermissionGroups lists groups and the associated permission capabilities
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/groups#get-groups
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-groups
 		ListPermissionGroups(context.Context) (*ListPermissionGroupsResponse, error)
 	}
 

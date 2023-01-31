@@ -7,8 +7,9 @@ import (
 )
 
 type (
-	// S3Connector provides details about the Amazon S3 connector in a stream
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#amazons3
+	// S3Connector provides details about the Amazon S3 connector in a stream.
+	//
+	// See: https://techdocs.akamai.com/datastream2/docs/stream-amazon-s3
 	S3Connector struct {
 		ConnectorType   ConnectorType `json:"connectorType"`
 		AccessKey       string        `json:"accessKey"`
@@ -19,8 +20,9 @@ type (
 		SecretAccessKey string        `json:"secretAccessKey"`
 	}
 
-	// AzureConnector provides details about the Azure Storage connector configuration in a data stream
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#azurestorage
+	// AzureConnector provides details about the Azure Storage connector configuration in a data stream.
+	//
+	// See: https://techdocs.akamai.com/datastream2/docs/stream-azure-storage
 	AzureConnector struct {
 		ConnectorType ConnectorType `json:"connectorType"`
 		AccessKey     string        `json:"accessKey"`
@@ -30,8 +32,9 @@ type (
 		Path          string        `json:"path"`
 	}
 
-	// DatadogConnector provides detailed information about Datadog connector
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#datadog
+	// DatadogConnector provides detailed information about Datadog connector.
+	//
+	// See: https://techdocs.akamai.com/datastream2/docs/stream-datadog
 	DatadogConnector struct {
 		ConnectorType ConnectorType `json:"connectorType"`
 		AuthToken     string        `json:"authToken"`
@@ -43,8 +46,9 @@ type (
 		URL           string        `json:"url"`
 	}
 
-	// SplunkConnector provides detailed information about the Splunk connector
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#splunk
+	// SplunkConnector provides detailed information about the Splunk connector.
+	//
+	// See: https://techdocs.akamai.com/datastream2/docs/stream-splunk
 	SplunkConnector struct {
 		ConnectorType       ConnectorType `json:"connectorType"`
 		CompressLogs        bool          `json:"compressLogs"`
@@ -59,8 +63,9 @@ type (
 		ClientKey           string        `json:"clientKey,omitempty"`
 	}
 
-	// GCSConnector provides detailed information about the Google Cloud Storage connector
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#googlecloudstorage
+	// GCSConnector provides detailed information about the Google Cloud Storage connector.
+	//
+	// See: https://techdocs.akamai.com/datastream2/docs/stream-google-cloud
 	GCSConnector struct {
 		ConnectorType      ConnectorType `json:"connectorType"`
 		Bucket             string        `json:"bucket"`
@@ -71,8 +76,9 @@ type (
 		ServiceAccountName string        `json:"serviceAccountName"`
 	}
 
-	// CustomHTTPSConnector provides detailed information about the custom HTTPS endpoint
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#customhttps
+	// CustomHTTPSConnector provides detailed information about the custom HTTPS endpoint.
+	//
+	// See: https://techdocs.akamai.com/datastream2/docs/stream-custom-https
 	CustomHTTPSConnector struct {
 		ConnectorType      ConnectorType      `json:"connectorType"`
 		AuthenticationType AuthenticationType `json:"authenticationType"`
@@ -90,8 +96,9 @@ type (
 		ClientKey          string             `json:"clientKey,omitempty"`
 	}
 
-	// SumoLogicConnector provides detailed information about the Sumo Logic connector
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#sumologic
+	// SumoLogicConnector provides detailed information about the Sumo Logic connector.
+	//
+	// See: https://techdocs.akamai.com/datastream2/docs/stream-sumo-logic
 	SumoLogicConnector struct {
 		ConnectorType     ConnectorType `json:"connectorType"`
 		CollectorCode     string        `json:"collectorCode"`
@@ -103,8 +110,9 @@ type (
 		CustomHeaderValue string        `json:"customHeaderValue,omitempty"`
 	}
 
-	// OracleCloudStorageConnector provides details about the Oracle Cloud Storage connector
-	// See: https://developer.akamai.com/api/core_features/datastream2_config/v1.html#oraclecloudstorage
+	// OracleCloudStorageConnector provides details about the Oracle Cloud Storage connector.
+	//
+	// See: https://techdocs.akamai.com/datastream2/docs/stream-oracle-cloud
 	OracleCloudStorageConnector struct {
 		ConnectorType   ConnectorType `json:"connectorType"`
 		AccessKey       string        `json:"accessKey"`
@@ -117,7 +125,8 @@ type (
 	}
 
 	// LogglyConnector contains details about Loggly connector.
-	// See: https://techdocs.akamai.com/datastream2/reference/post-stream
+	//
+	// See: https://techdocs.akamai.com/datastream2/docs/stream-loggly
 	LogglyConnector struct {
 		ConnectorType     ConnectorType `json:"connectorType"`
 		ConnectorName     string        `json:"connectorName"`
@@ -130,6 +139,7 @@ type (
 	}
 
 	// NewRelicConnector connector contains details about New Relic connector.
+	//
 	// See: https://techdocs.akamai.com/datastream2/docs/stream-new-relic
 	NewRelicConnector struct {
 		ConnectorType     ConnectorType `json:"connectorType"`
@@ -142,6 +152,7 @@ type (
 	}
 
 	// ElasticsearchConnector contains details about Elasticsearch connector.
+	//
 	// See: https://techdocs.akamai.com/datastream2/docs/stream-elasticsearch
 	ElasticsearchConnector struct {
 		ConnectorType     ConnectorType `json:"connectorType"`

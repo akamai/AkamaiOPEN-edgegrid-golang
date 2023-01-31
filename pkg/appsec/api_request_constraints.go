@@ -12,18 +12,20 @@ type (
 	// The ApiRequestConstraints interface supports retrieving, modifying, or removing the action
 	// taken when any API request constraint is triggered, or when a specific API request constraint
 	// is triggered.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#apirequestconstraintsgroup
 	ApiRequestConstraints interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getapirequestconstraints
+		// GetApiRequestConstraints returns a list of APIs with their constraints and associated actions.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-api-request-constraints
 		GetApiRequestConstraints(ctx context.Context, params GetApiRequestConstraintsRequest) (*GetApiRequestConstraintsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putapirequestconstraints
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putactionsperapi
+		// UpdateApiRequestConstraints updates what action to take when any API request constraint triggers.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-api-request-constraints
 		UpdateApiRequestConstraints(ctx context.Context, params UpdateApiRequestConstraintsRequest) (*UpdateApiRequestConstraintsResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putapirequestconstraints
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putactionsperapi
+		// RemoveApiRequestConstraints removes the API requests constraint.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-api-request-constraints
 		RemoveApiRequestConstraints(ctx context.Context, params RemoveApiRequestConstraintsRequest) (*RemoveApiRequestConstraintsResponse, error)
 	}
 

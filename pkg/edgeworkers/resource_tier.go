@@ -15,12 +15,12 @@ type (
 	ResourceTiers interface {
 		// ListResourceTiers lists all resource tiers for a given contract
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/resource-tiers-1#get-resource-tiers
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-resource-tiers
 		ListResourceTiers(context.Context, ListResourceTiersRequest) (*ListResourceTiersResponse, error)
 
 		// GetResourceTier returns resource tier for a given edgeworker ID
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/edgeworkers#get-id-resource-tier
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-id-resource-tier
 		GetResourceTier(context.Context, GetResourceTierRequest) (*ResourceTier, error)
 	}
 

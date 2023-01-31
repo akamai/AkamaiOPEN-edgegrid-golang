@@ -15,22 +15,22 @@ type (
 	Activations interface {
 		// ListActivations lists all activations for an EdgeWorker
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/activations#get-activations-1
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-activations-1
 		ListActivations(context.Context, ListActivationsRequest) (*ListActivationsResponse, error)
 
 		// GetActivation fetches an EdgeWorker activation by id
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference-link/get-activation-1
+		// See: https://techdocs.akamai.com/edgeworkers/reference/get-activation-1
 		GetActivation(context.Context, GetActivationRequest) (*Activation, error)
 
 		// ActivateVersion activates an EdgeWorker version on a given network
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/activations#post-activations-1
+		// See: https://techdocs.akamai.com/edgeworkers/reference/post-activations-1
 		ActivateVersion(context.Context, ActivateVersionRequest) (*Activation, error)
 
 		// CancelPendingActivation cancels pending activation with a given id
 		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/activations#cancel-activation
+		// See: https://techdocs.akamai.com/edgeworkers/reference/cancel-activation
 		CancelPendingActivation(context.Context, CancelActivationRequest) (*Activation, error)
 	}
 

@@ -11,27 +11,31 @@ import (
 // Based on 1.4 schema
 //
 
-// GeoMaps contains operations available on a GeoMap resource
-// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html
+// GeoMaps contains operations available on a GeoMap resource.
 type GeoMaps interface {
 	// NewGeoMap creates a new GeoMap object.
 	NewGeoMap(context.Context, string) *GeoMap
-	// Instantiate new Assignment struct
+	// NewGeoAssignment instantiates new Assignment struct.
 	NewGeoAssignment(context.Context, *GeoMap, int, string) *GeoAssignment
-	// ListGeoMap retreieves all GeoMaps
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getgeomaps
+	// ListGeoMaps retrieves all GeoMaps.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-geographic-maps
 	ListGeoMaps(context.Context, string) ([]*GeoMap, error)
 	// GetGeoMap retrieves a GeoMap with the given name.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getgeomap
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-geographic-map
 	GetGeoMap(context.Context, string, string) (*GeoMap, error)
-	// Create the datacenter identified by the receiver argument in the specified domain.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putgeomap
+	// CreateGeoMap creates the datacenter identified by the receiver argument in the specified domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-geographic-map
 	CreateGeoMap(context.Context, *GeoMap, string) (*GeoMapResponse, error)
-	// Delete the datacenter identified by the receiver argument from the domain specified.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#deletegeomap
+	// DeleteGeoMap deletes the datacenter identified by the receiver argument from the domain specified.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/delete-geographic-map
 	DeleteGeoMap(context.Context, *GeoMap, string) (*ResponseStatus, error)
-	// Update the datacenter identified in the receiver argument in the provided domain.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putgeomap
+	// UpdateGeoMap updates the datacenter identified in the receiver argument in the provided domain.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-geographic-map
 	UpdateGeoMap(context.Context, *GeoMap, string) (*ResponseStatus, error)
 }
 
@@ -67,7 +71,6 @@ func (geo *GeoMap) Validate() error {
 	return nil
 }
 
-// NewGeoMap creates a new GeoMap object
 func (p *gtm) NewGeoMap(ctx context.Context, name string) *GeoMap {
 
 	logger := p.Log(ctx)
@@ -77,7 +80,6 @@ func (p *gtm) NewGeoMap(ctx context.Context, name string) *GeoMap {
 	return geomap
 }
 
-// ListGeoMap retreieves all GeoMaps
 func (p *gtm) ListGeoMaps(ctx context.Context, domainName string) ([]*GeoMap, error) {
 
 	logger := p.Log(ctx)
@@ -102,7 +104,6 @@ func (p *gtm) ListGeoMaps(ctx context.Context, domainName string) ([]*GeoMap, er
 	return geos.GeoMapItems, nil
 }
 
-// GetGeoMap retrieves a GeoMap with the given name.
 func (p *gtm) GetGeoMap(ctx context.Context, name, domainName string) (*GeoMap, error) {
 
 	logger := p.Log(ctx)
@@ -127,7 +128,6 @@ func (p *gtm) GetGeoMap(ctx context.Context, name, domainName string) (*GeoMap, 
 	return &geo, nil
 }
 
-// Instantiate new Assignment struct
 func (p *gtm) NewGeoAssignment(ctx context.Context, _ *GeoMap, dcID int, nickname string) *GeoAssignment {
 
 	logger := p.Log(ctx)
@@ -140,7 +140,6 @@ func (p *gtm) NewGeoAssignment(ctx context.Context, _ *GeoMap, dcID int, nicknam
 	return geoAssign
 }
 
-// Create GeoMap in provided domain
 func (p *gtm) CreateGeoMap(ctx context.Context, geo *GeoMap, domainName string) (*GeoMapResponse, error) {
 
 	logger := p.Log(ctx)
@@ -150,7 +149,6 @@ func (p *gtm) CreateGeoMap(ctx context.Context, geo *GeoMap, domainName string) 
 	return geo.save(ctx, p, domainName)
 }
 
-// Update GeoMap in given domain
 func (p *gtm) UpdateGeoMap(ctx context.Context, geo *GeoMap, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -191,7 +189,6 @@ func (geo *GeoMap) save(ctx context.Context, p *gtm, domainName string) (*GeoMap
 	return &mapresp, nil
 }
 
-// Delete GeoMap method
 func (p *gtm) DeleteGeoMap(ctx context.Context, geo *GeoMap, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)

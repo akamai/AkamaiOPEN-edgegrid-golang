@@ -115,7 +115,7 @@ func (c *cps) UpdateDeploymentSchedule(ctx context.Context, params UpdateDeploym
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateDeploymentSchedule, err)
 	}
 	req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
-	req.Header.Set("Content-Type", "application/vnd.akamai.cps.deployment-schedule.v1+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.deployment-schedule.v1+json; charset=utf-8")
 
 	var result UpdateDeploymentScheduleResponse
 	resp, err := c.Exec(req, &result, params.DeploymentSchedule)

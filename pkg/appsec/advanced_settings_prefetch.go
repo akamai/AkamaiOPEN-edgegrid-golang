@@ -11,13 +11,15 @@ import (
 type (
 	// The AdvancedSettingsPrefetch interface supports retrieving or modifying the prefetch request settings
 	// for a configuration.
-	//
-	// https://developer.akamai.com/api/cloud_security/application_security/v1.html#prefetchrequest
 	AdvancedSettingsPrefetch interface {
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#getprefetchrequestsforaconfiguration
+		// GetAdvancedSettingsPrefetch gets the Prefetch Request settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/get-advanced-settings-prefetch
 		GetAdvancedSettingsPrefetch(ctx context.Context, params GetAdvancedSettingsPrefetchRequest) (*GetAdvancedSettingsPrefetchResponse, error)
 
-		// https://developer.akamai.com/api/cloud_security/application_security/v1.html#putprefetchrequestsforaconfiguration
+		// UpdateAdvancedSettingsPrefetch updates the Prefetch Request settings.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/put-advanced-settings-prefetch
 		UpdateAdvancedSettingsPrefetch(ctx context.Context, params UpdateAdvancedSettingsPrefetchRequest) (*UpdateAdvancedSettingsPrefetchResponse, error)
 	}
 

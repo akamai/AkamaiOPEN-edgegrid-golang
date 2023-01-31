@@ -77,7 +77,7 @@ func (c *cps) AcknowledgePostVerificationWarnings(ctx context.Context, params Ac
 		return fmt.Errorf("%w: failed to create request: %s", ErrAcknowledgePostVerificationWarnings, err)
 	}
 	req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
-	req.Header.Set("Content-Type", "application/vnd.akamai.cps.acknowledgement.v1+json")
+	req.Header.Set("Content-Type", "application/vnd.akamai.cps.acknowledgement.v1+json; charset=utf-8")
 
 	resp, err := c.Exec(req, nil, params.Acknowledgement)
 	if err != nil {

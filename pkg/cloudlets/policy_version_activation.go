@@ -8,22 +8,22 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// PolicyVersionActivations is a cloudlets PolicyVersionActivations API interface
+	// PolicyVersionActivations is a cloudlets PolicyVersionActivations API interface.
 	PolicyVersionActivations interface {
 		// ListPolicyActivations returns the complete activation history for the selected policy in reverse chronological order.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#getpolicyactivations
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-policy-activations
 		ListPolicyActivations(context.Context, ListPolicyActivationsRequest) ([]PolicyActivation, error)
 
 		// ActivatePolicyVersion activates the selected cloudlet policy version.
 		//
-		// See: https://developer.akamai.com/api/web_performance/cloudlets/v2.html#postpolicyversionactivations
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-policy-version-activations
 		ActivatePolicyVersion(context.Context, ActivatePolicyVersionRequest) error
 	}
 

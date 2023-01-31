@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -18,7 +18,8 @@ func TestAppSec_ListAdvancedSettingsLogging(t *testing.T) {
 	result := GetAdvancedSettingsLoggingResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsLogging/AdvancedSettingsLogging.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetAdvancedSettingsLoggingRequest
@@ -98,7 +99,8 @@ func TestAppSec_GetAdvancedSettingsLogging(t *testing.T) {
 	result := GetAdvancedSettingsLoggingResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsLogging/AdvancedSettingsLogging.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           GetAdvancedSettingsLoggingRequest
@@ -166,12 +168,14 @@ func TestAppSec_UpdateAdvancedSettingsLogging(t *testing.T) {
 	result := UpdateAdvancedSettingsLoggingResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsLogging/AdvancedSettingsLogging.json"))
-	json.Unmarshal([]byte(respData), &result)
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
 
 	req := UpdateAdvancedSettingsLoggingRequest{}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsLogging/AdvancedSettingsLogging.json"))
-	json.Unmarshal([]byte(reqData), &req)
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
 
 	tests := map[string]struct {
 		params           UpdateAdvancedSettingsLoggingRequest

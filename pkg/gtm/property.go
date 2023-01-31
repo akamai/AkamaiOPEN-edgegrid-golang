@@ -11,8 +11,7 @@ import (
 // Based on 1.4 Schema
 //
 
-// Properties contains operations available on a Property resource
-// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html
+// Properties contains operations available on a Property resource.
 type Properties interface {
 	// NewTrafficTarget is a method applied to a property object that instantiates a TrafficTarget object.
 	NewTrafficTarget(context.Context) *TrafficTarget
@@ -23,19 +22,24 @@ type Properties interface {
 	// NewProperty creates a new Property object.
 	NewProperty(context.Context, string) *Property
 	// ListProperties retreieves all Properties for the provided domainName.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getproperties
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-properties
 	ListProperties(context.Context, string) ([]*Property, error)
 	// GetProperty retrieves a Property with the given domain and property names.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#getproperty
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/get-property
 	GetProperty(context.Context, string, string) (*Property, error)
-	// CreateProperty creates property
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putproperty
+	// CreateProperty creates property.
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-property
 	CreateProperty(context.Context, *Property, string) (*PropertyResponse, error)
 	// DeleteProperty is a method applied to a property object resulting in removal.
-	// See: https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#deleteproperty
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/delete-property
 	DeleteProperty(context.Context, *Property, string) (*ResponseStatus, error)
 	// UpdateProperty is a method applied to a property object resulting in an update.
-	// https://developer.akamai.com/api/web_performance/global_traffic_management/v1.html#putproperty
+	//
+	// See: https://techdocs.akamai.com/gtm/reference/put-property
 	UpdateProperty(context.Context, *Property, string) (*ResponseStatus, error)
 }
 
@@ -157,7 +161,6 @@ func (prop *Property) Validate() error {
 	return nil
 }
 
-// NewTrafficTarget is a method applied to a property object that instantiates a TrafficTarget object.
 func (p *gtm) NewTrafficTarget(ctx context.Context) *TrafficTarget {
 
 	logger := p.Log(ctx)
@@ -167,7 +170,6 @@ func (p *gtm) NewTrafficTarget(ctx context.Context) *TrafficTarget {
 
 }
 
-// NewStaticRRSet is a method applied to a property object that instantiates a StaticRRSet object.
 func (p *gtm) NewStaticRRSet(ctx context.Context) *StaticRRSet {
 
 	logger := p.Log(ctx)
@@ -183,8 +185,6 @@ func (lt *LivenessTest) NewHttpHeader() *HttpHeader {
 	return &HttpHeader{}
 
 }
-
-// NewLivenessTest is a method applied to a property object that instantiates a LivenessTest object.
 func (p *gtm) NewLivenessTest(ctx context.Context, name string, objproto string, interval int, timeout float32) *LivenessTest {
 
 	logger := p.Log(ctx)
@@ -194,7 +194,6 @@ func (p *gtm) NewLivenessTest(ctx context.Context, name string, objproto string,
 
 }
 
-// NewProperty creates a new Property object.
 func (p *gtm) NewProperty(ctx context.Context, name string) *Property {
 
 	logger := p.Log(ctx)
@@ -204,7 +203,6 @@ func (p *gtm) NewProperty(ctx context.Context, name string) *Property {
 	return property
 }
 
-// ListProperties retreieves all Properties for the provided domainName.
 func (p *gtm) ListProperties(ctx context.Context, domainName string) ([]*Property, error) {
 
 	logger := p.Log(ctx)
@@ -229,7 +227,6 @@ func (p *gtm) ListProperties(ctx context.Context, domainName string) ([]*Propert
 	return properties.PropertyItems, nil
 }
 
-// GetProperty retrieves a Property with the given name.
 func (p *gtm) GetProperty(ctx context.Context, name, domainName string) (*Property, error) {
 
 	logger := p.Log(ctx)
@@ -254,7 +251,6 @@ func (p *gtm) GetProperty(ctx context.Context, name, domainName string) (*Proper
 	return &property, nil
 }
 
-// Create the property in the receiver argument in the specified domain.
 func (p *gtm) CreateProperty(ctx context.Context, property *Property, domainName string) (*PropertyResponse, error) {
 
 	logger := p.Log(ctx)
@@ -264,7 +260,6 @@ func (p *gtm) CreateProperty(ctx context.Context, property *Property, domainName
 	return property.save(ctx, p, domainName)
 }
 
-// Update the property in the receiver argument in the specified domain.
 func (p *gtm) UpdateProperty(ctx context.Context, property *Property, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)
@@ -306,7 +301,6 @@ func (prop *Property) save(ctx context.Context, p *gtm, domainName string) (*Pro
 	return &presp, nil
 }
 
-// Delete the property identified by the receiver argument from the domain provided.
 func (p *gtm) DeleteProperty(ctx context.Context, property *Property, domainName string) (*ResponseStatus, error) {
 
 	logger := p.Log(ctx)

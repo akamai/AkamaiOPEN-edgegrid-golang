@@ -1,11 +1,13 @@
 // Package dns provides access to the Akamai DNS V2 APIs
+//
+// See: https://techdocs.akamai.com/edge-dns/reference/edge-dns-api
 package dns
 
 import (
 	"errors"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v3/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
 )
 
 var (
