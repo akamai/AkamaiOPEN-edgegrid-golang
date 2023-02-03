@@ -4879,6 +4879,136 @@
                         "period": 60,
                         "rate": 10
                     }
+                },
+                "botManagement": {
+                    "akamaiBotCategoryActions": [
+                        {
+                            "categoryId": "0b116152-1d20-4715-8fa7-dcacb1c697e2",
+                            "primitiveKey": "primitiveValueA",
+                            "arrayKey": [
+                                "arrayValueA1",
+                                "arrayValueA2"
+                            ],
+                            "objectKey": {
+                                "innerKey": "innerValueA"
+                            }
+                        },
+                        {
+                            "categoryId": "da0596ba-2379-4657-9b84-79b460d66070",
+                            "primitiveKey": "primitiveValueB",
+                            "arrayKey": [
+                                "arrayValueB1",
+                                "arrayValueB2"
+                            ],
+                            "objectKey": {
+                                "innerKey": "innerValueB"
+                            }
+                        }
+                    ],
+                    "botDetectionActions": [
+                        {
+                            "detectionId": "179e6bd6-5077-4f22-9a5b-3b09ee731eca",
+                            "primitiveKey": "primitiveValueA",
+                            "arrayKey": [
+                                "arrayValueA1",
+                                "arrayValueA2"
+                            ],
+                            "objectKey": {
+                                "innerKey": "innerValueA"
+                            }
+                        },
+                        {
+                            "detectionId": "c4d20de1-af7a-476f-911d-73aedd97e294",
+                            "primitiveKey": "primitiveValueB",
+                            "arrayKey": [
+                                "arrayValueB1",
+                                "arrayValueB2"
+                            ],
+                            "objectKey": {
+                                "innerKey": "innerValueB"
+                            }
+                        }
+                    ],
+                    "botManagementSettings": {
+                        "primitiveKey": "primitiveValueA",
+                        "arrayKey": [
+                            "arrayValueA1",
+                            "arrayValueA2"
+                        ],
+                        "objectKey": {
+                            "innerKey": "innerValueA"
+                        }
+                    },
+                    "customBotCategoryActions": [
+                        {
+                            "categoryId": "dae597b8-b552-4c95-ab8b-066a3fef2f75",
+                            "primitiveKey": "primitiveValueA",
+                            "arrayKey": [
+                                "arrayValueA1",
+                                "arrayValueA2"
+                            ],
+                            "objectKey": {
+                                "innerKey": "innerValueA"
+                            }
+                        },
+                        {
+                            "categoryId": "c3362371-4b98-40fe-a7b9-cd7fab93eec5",
+                            "primitiveKey": "primitiveValueB",
+                            "arrayKey": [
+                                "arrayValueB1",
+                                "arrayValueB2"
+                            ],
+                            "objectKey": {
+                                "innerKey": "innerValueB"
+                            }
+                        }
+                    ],
+                    "javascriptInjectionRules": {
+                        "primitiveKey": "primitiveValueA",
+                        "arrayKey": [
+                            "arrayValueA1",
+                            "arrayValueA2"
+                        ],
+                        "objectKey": {
+                            "innerKey": "innerValueA"
+                        }
+                    },
+                    "transactionalEndpoints": {
+                        "botProtection": [
+                            {
+                                "operationId": "061429d0-a709-418e-9311-1c3b4ee28792",
+                                "primitiveKey": "primitiveValueA",
+                                "arrayKey": [
+                                    "arrayValueA1",
+                                    "arrayValueA2"
+                                ],
+                                "objectKey": {
+                                    "innerKey": "innerValueA"
+                                }
+                            },
+                            {
+                                "operationId": "c2b20de9-bb2e-4da8-ac99-f5b6e9ae4e10",
+                                "primitiveKey": "primitiveValueB",
+                                "arrayKey": [
+                                    "arrayValueB1",
+                                    "arrayValueB2"
+                                ],
+                                "objectKey": {
+                                    "innerKey": "innerValueB"
+                                }
+                            }
+                        ],
+                        "botProtectionExceptions": {
+                            "primitiveKey": "primitiveValueA",
+                            "arrayKey": [
+                                "arrayValueA1",
+                                "arrayValueA2"
+                            ],
+                            "objectKey": {
+                                "innerKey": "innerValueA"
+                            }
+                        }
+                    }
                 }
             }
         ],
@@ -4910,5 +5040,221 @@
                 ]
             }
         },
-        "customDenyList": []
+        "customDenyList": [],
+        "advancedSettings": {
+            "botAnalyticsCookieSettings": {
+                "primitiveKey": "primitiveValueA",
+                "arrayKey": [
+                    "arrayValueA1",
+                    "arrayValueA2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueA"
+                }
+            },
+            "clientSideSecuritySettings": {
+                "primitiveKey": "primitiveValueA",
+                "arrayKey": [
+                    "arrayValueA1",
+                    "arrayValueA2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueA"
+                }
+            },
+            "transactionalEndpointProtectionSettings": {
+                "primitiveKey": "primitiveValueA",
+                "arrayKey": [
+                    "arrayValueA1",
+                    "arrayValueA2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueA"
+                }
+            }
+        },
+        "customBotCategories": [
+            {
+                "categoryId": "dae597b8-b552-4c95-ab8b-066a3fef2f75",
+                "categoryName": "category a",
+                "metadata": {
+                    "akamaiDefinedBotIds": [
+                        "eceac3f9-871b-4c57-9a24-c25b0237949a",
+                        "c590d2e5-a041-4f05-8fda-71608f42d720"
+                    ],
+                    "someKey": "someValue"
+                },
+                "ruleId": "RULE_ID_B",
+                "primitiveKey": "primitiveValueA",
+                "arrayKey": [
+                    "arrayValueA1",
+                    "arrayValueA2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueA"
+                }
+            },
+            {
+                "categoryId": "c3362371-4b98-40fe-a7b9-cd7fab93eec5",
+                "categoryName": "category b",
+                "metadata": {
+                    "someKey": "someValue"
+                },
+                "ruleId": "RULE_ID_B",
+                "primitiveKey": "primitiveValueB",
+                "arrayKey": [
+                    "arrayValueB1",
+                    "arrayValueB2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueB"
+                }
+            }
+        ],
+        "customBotCategorySequence": [
+            "c3362371-4b98-40fe-a7b9-cd7fab93eec5",
+            "dae597b8-b552-4c95-ab8b-066a3fef2f75"
+        ],
+        "customClients": [
+            {
+                "customClientId": "a7fe489d-0354-43bd-b81c-8cabbe850cdd",
+                "customClientName": "Custom Client A",
+                "primitiveKey": "primitiveValueA",
+                "arrayKey": [
+                    "arrayValueA1",
+                    "arrayValueA2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueA"
+                }
+            },
+            {
+                "customClientId": "60374346-2d1d-444d-91c1-90373e3f804a",
+                "customClientName": "Custom Client B",
+                "primitiveKey": "primitiveValueB",
+                "arrayKey": [
+                    "arrayValueB1",
+                    "arrayValueB2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueB"
+                }
+            }
+        ],
+        "customDefinedBots": [
+            {
+                "botId": "50789280-ba99-4f8f-b4c6-ad9c1c69569a",
+                "botName": "Bot A",
+                "primitiveKey": "primitiveValueA",
+                "arrayKey": [
+                    "arrayValueA1",
+                    "arrayValueA2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueA"
+                }
+            },
+            {
+                "botId": "da1de35e-deda-4273-933d-3131291fa3d4",
+                "botName": "Bot B",
+                "primitiveKey": "primitiveValueB",
+                "arrayKey": [
+                    "arrayValueB1",
+                    "arrayValueB2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueB"
+                }
+            }
+        ],
+        "responseActions": {
+            "challengeActions": [
+                {
+                    "actionId": "action_A",
+                    "actionName": "Challenge Action A",
+                    "primitiveKey": "primitiveValueA",
+                    "arrayKey": [
+                        "arrayValueA1",
+                        "arrayValueA2"
+                    ],
+                    "objectKey": {
+                        "innerKey": "innerValueA"
+                    }
+                },
+                {
+                    "actionId": "action_B",
+                    "actionName": "Challenge Action B",
+                    "primitiveKey": "primitiveValueB",
+                    "arrayKey": [
+                        "arrayValueB1",
+                        "arrayValueB2"
+                    ],
+                    "objectKey": {
+                        "innerKey": "innerValueB"
+                    }
+                }
+            ],
+            "challengeInterceptionRules": {
+                "primitiveKey": "primitiveValueA",
+                "arrayKey": [
+                    "arrayValueA1",
+                    "arrayValueA2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueA"
+                }
+            },
+            "conditionalActions": [
+                {
+                    "actionId": "action_A",
+                    "actionName": "Conditional Action A",
+                    "primitiveKey": "primitiveValueA",
+                    "arrayKey": [
+                        "arrayValueA1",
+                        "arrayValueA2"
+                    ],
+                    "objectKey": {
+                        "innerKey": "innerValueA"
+                    }
+                },
+                {
+                    "actionId": "action_B",
+                    "actionName": "Conditional Action B",
+                    "primitiveKey": "primitiveValueB",
+                    "arrayKey": [
+                        "arrayValueB1",
+                        "arrayValueB2"
+                    ],
+                    "objectKey": {
+                        "innerKey": "innerValueB"
+                    }
+                }
+            ],
+            "serveAlternateActions": [
+                {
+                    "actionId": "action_A",
+                    "actionName": "Serve Alternate Action A",
+                    "primitiveKey": "primitiveValueA",
+                    "arrayKey": [
+                        "arrayValueA1",
+                        "arrayValueA2"
+                    ],
+                    "objectKey": {
+                        "innerKey": "innerValueA"
+                    }
+                },
+                {
+                    "actionId": "action_B",
+                    "actionName": "Serve Alternate Action B",
+                    "primitiveKey": "primitiveValueB",
+                    "arrayKey": [
+                        "arrayValueB1",
+                        "arrayValueB2"
+                    ],
+                    "objectKey": {
+                        "innerKey": "innerValueB"
+                    }
+                }
+            ]
+        }
     }

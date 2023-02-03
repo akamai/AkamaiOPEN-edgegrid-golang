@@ -231,6 +231,7 @@ type (
 			LoggingOverrides     *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
 			PragmaHeader         *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
 			EvasivePathMatch     *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
+			BotManagement        *BotManagement                     `json:"botManagement,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -238,7 +239,13 @@ type (
 		Evaluating      struct {
 			SecurityPolicies []EvaluatingSecurityPolicy `json:"securityPolicies,omitempty"`
 		} `json:"evaluating,omitempty"`
-		MalwarePolicies []MalwarePolicyBody `json:"malwarePolicies,omitempty"`
+		MalwarePolicies           []MalwarePolicyBody      `json:"malwarePolicies,omitempty"`
+		CustomBotCategories       []map[string]interface{} `json:"customBotCategories,omitempty"`
+		CustomDefinedBots         []map[string]interface{} `json:"customDefinedBots,omitempty"`
+		CustomBotCategorySequence []string                 `json:"customBotCategorySequence,omitempty"`
+		CustomClients             []map[string]interface{} `json:"customClients,omitempty"`
+		ResponseActions           *ResponseActions         `json:"responseActions,omitempty"`
+		AdvancedSettings          *AdvancedSettings        `json:"advancedSettings,omitempty"`
 	}
 
 	// GetExportConfigurationsRequest is used to call GetExportConfigurations.
@@ -712,6 +719,38 @@ type (
 		ID         int    `json:"id"`
 		Ipv4Action string `json:"ipv4Action"`
 		Ipv6Action string `json:"ipv6Action"`
+	}
+
+	// AdvancedSettings is returned as part of GetExportConfigurationResponse
+	AdvancedSettings struct {
+		BotAnalyticsCookieSettings              map[string]interface{} `json:"botAnalyticsCookieSettings,omitempty"`
+		ClientSideSecuritySettings              map[string]interface{} `json:"clientSideSecuritySettings,omitempty"`
+		TransactionalEndpointProtectionSettings map[string]interface{} `json:"transactionalEndpointProtectionSettings,omitempty"`
+	}
+
+	// ResponseActions is returned as part of GetExportConfigurationResponse
+	ResponseActions struct {
+		ChallengeActions           []map[string]interface{} `json:"challengeActions,omitempty"`
+		ConditionalActions         []map[string]interface{} `json:"conditionalActions,omitempty"`
+		CustomDenyActions          []map[string]interface{} `json:"customDenyActions,omitempty"`
+		ServeAlternateActions      []map[string]interface{} `json:"serveAlternateActions,omitempty"`
+		ChallengeInterceptionRules map[string]interface{}   `json:"challengeInterceptionRules,omitempty"`
+	}
+
+	// BotManagement is returned as part of GetExportConfigurationResponse
+	BotManagement struct {
+		AkamaiBotCategoryActions []map[string]interface{} `json:"akamaiBotCategoryActions,omitempty"`
+		BotDetectionActions      []map[string]interface{} `json:"botDetectionActions,omitempty"`
+		BotManagementSettings    map[string]interface{}   `json:"botManagementSettings,omitempty"`
+		CustomBotCategoryActions []map[string]interface{} `json:"customBotCategoryActions,omitempty"`
+		JavascriptInjectionRules map[string]interface{}   `json:"javascriptInjectionRules,omitempty"`
+		TransactionalEndpoints   *TransactionalEndpoints  `json:"transactionalEndpoints,omitempty"`
+	}
+
+	// TransactionalEndpoints is returned as port of GetExportConfigurationResponse
+	TransactionalEndpoints struct {
+		BotProtection           []map[string]interface{} `json:"botProtection,omitempty"`
+		BotProtectionExceptions map[string]interface{}   `json:"botProtectionExceptions,omitempty"`
 	}
 )
 

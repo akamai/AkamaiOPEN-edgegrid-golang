@@ -1,5 +1,19 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 4.x.x
+
+### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Added following BotManager fields to GetExportConfigurationResponse
+    * BotManagement
+    * CustomBotCategories
+    * CustomDefinedBots
+    * CustomBotCategorySequence
+    * CustomClients
+    * ResponseActions
+    * AdvancedSettings
+
 ## 4.0.0 (Jan 31, 2023)
 
 #### BREAKING CHANGES:
