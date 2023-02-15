@@ -222,16 +222,17 @@ type (
 			ClientReputation      struct {
 				ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
 			} `json:"clientReputation"`
-			RatePolicyActions    *SecurityPoliciesRatePolicyActions `json:"ratePolicyActions,omitempty"`
-			MalwarePolicyActions []MalwarePolicyActionBody          `json:"malwarePolicyActions,omitempty"`
-			IPGeoFirewall        *IPGeoFirewall                     `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox           *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
-			EvaluationPenaltyBox *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
-			SlowPost             *SlowPostexp                       `json:"slowPost,omitempty"`
-			LoggingOverrides     *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
-			PragmaHeader         *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch     *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
-			BotManagement        *BotManagement                     `json:"botManagement,omitempty"`
+			RatePolicyActions             *SecurityPoliciesRatePolicyActions `json:"ratePolicyActions,omitempty"`
+			MalwarePolicyActions          []MalwarePolicyActionBody          `json:"malwarePolicyActions,omitempty"`
+			IPGeoFirewall                 *IPGeoFirewall                     `json:"ipGeoFirewall,omitempty"`
+			PenaltyBox                    *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
+			EvaluationPenaltyBox          *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
+			SlowPost                      *SlowPostexp                       `json:"slowPost,omitempty"`
+			LoggingOverrides              *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
+			AttackPayloadLoggingOverrides *AttackPayloadLoggingOverrides     `json:"attackPayloadLoggingOverrides,omitempty"`
+			PragmaHeader                  *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
+			EvasivePathMatch              *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
+			BotManagement                 *BotManagement                     `json:"botManagement,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -426,12 +427,13 @@ type (
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox           *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
-			EvaluationPenaltyBox *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
-			SlowPost             *SlowPostexp                       `json:"slowPost,omitempty"`
-			LoggingOverrides     *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
-			PragmaHeader         *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch     *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
+			PenaltyBox                    *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
+			EvaluationPenaltyBox          *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
+			SlowPost                      *SlowPostexp                       `json:"slowPost,omitempty"`
+			LoggingOverrides              *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
+			AttackPayloadLoggingOverrides *AttackPayloadLoggingOverrides     `json:"attackPayloadLoggingOverrides,omitempty"`
+			PragmaHeader                  *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
+			EvasivePathMatch              *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -488,9 +490,10 @@ type (
 
 	// AdvancedOptionsexp is returned as part of GetExportConfigurationResponse.
 	AdvancedOptionsexp struct {
-		Logging          *Loggingexp          `json:"logging"`
-		EvasivePathMatch *EvasivePathMatchexp `json:"evasivePathMatch,omitempty"`
-		Prefetch         struct {
+		Logging              *Loggingexp           `json:"logging"`
+		AttackPayloadLogging *AttackPayloadLogging `json:"attackPayloadLogging"`
+		EvasivePathMatch     *EvasivePathMatchexp  `json:"evasivePathMatch,omitempty"`
+		Prefetch             struct {
 			AllExtensions      bool     `json:"allExtensions"`
 			EnableAppLayer     bool     `json:"enableAppLayer"`
 			EnableRateControls bool     `json:"enableRateControls"`
@@ -636,6 +639,29 @@ type (
 			Type   string   `json:"type"`
 			Values []string `json:"values,omitempty"`
 		} `json:"standardHeaders"`
+	}
+
+	// AttackPayloadLogging is returned as part of GetExportConfigurationResponse.
+	AttackPayloadLogging struct {
+		Enabled     bool `json:"enabled"`
+		RequestBody struct {
+			Type string `json:"type"`
+		} `json:"requestBody"`
+		ResponseBody struct {
+			Type string `json:"type"`
+		} `json:"responseBody"`
+	}
+
+	// AttackPayloadLoggingOverrides is returned as part of GetExportConfigurationResponse.
+	AttackPayloadLoggingOverrides struct {
+		Enabled     bool `json:"enabled"`
+		RequestBody struct {
+			Type string `json:"type"`
+		} `json:"requestBody"`
+		ResponseBody struct {
+			Type string `json:"type"`
+		} `json:"responseBody"`
+		Override bool `json:"override"`
 	}
 
 	// EvasivePathMatchexp contains the EnablePathMatch setting
