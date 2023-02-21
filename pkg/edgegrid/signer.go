@@ -39,6 +39,9 @@ func (c Config) SignRequest(r *http.Request) {
 	if r.URL.Host == "" {
 		r.URL.Host = c.Host
 	}
+	if r.URL.Scheme == "" {
+		r.URL.Scheme = "https"
+	}
 	r.URL.RawQuery = c.addAccountSwitchKey(r)
 	r.Header.Set("Authorization", c.createAuthHeader(r).String())
 }
