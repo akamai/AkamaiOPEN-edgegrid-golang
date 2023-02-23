@@ -95,10 +95,10 @@ type (
 		RequestBody  AttackPayloadLoggingRequestBody  `json:"requestBody"`
 		ResponseBody AttackPayloadLoggingResponseBody `json:"responseBody"`
 	}
-)
 
-// AttackPayloadType is used to create an "enum" of possible types ATTACK_PAYLOAD or NONE
-type AttackPayloadType string
+	// AttackPayloadType is used to create an "enum" of possible types ATTACK_PAYLOAD or NONE
+	AttackPayloadType string
+)
 
 const (
 	// AttackPayload AttackPayloadType
@@ -213,7 +213,7 @@ func (a *appsec) RemoveAdvancedSettingsAttackPayloadLogging(ctx context.Context,
 	return &result, nil
 }
 
-func getURI(configID int, configVersion int, policyID string) string {
+func getURI(configID, configVersion int, policyID string) string {
 	var uri string
 	if policyID != "" {
 		uri = fmt.Sprintf(

@@ -13,6 +13,7 @@
     * CustomClients
     * ResponseActions
     * AdvancedSettings
+  * Added AdvancedSettingsAttackPayloadLogging interface
 
 ## 4.0.0 (Jan 31, 2023)
 
