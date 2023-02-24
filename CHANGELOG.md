@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 4.x.x
+## 4.1.0 (Feb 27, 2023)
 
 ### FEATURES/ENHANCEMENTS:
 
@@ -14,6 +14,10 @@
     * ResponseActions
     * AdvancedSettings
   * Added AdvancedSettingsAttackPayloadLogging interface
+
+#### BUG FIXES:
+
+* Fix V4 of Edgegrid doesn't parse hostname ([#182](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/pull/182))
 
 ## 4.0.0 (Jan 31, 2023)
 
