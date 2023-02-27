@@ -368,6 +368,14 @@ func (m *Mock) UpdateAdvancedSettingsLogging(ctx context.Context, req UpdateAdva
 	return args.Get(0).(*UpdateAdvancedSettingsLoggingResponse), args.Error(1)
 }
 
+func (m *Mock) UpdateAdvancedSettingsAttackPayloadLogging(ctx context.Context, req UpdateAdvancedSettingsAttackPayloadLoggingRequest) (*UpdateAdvancedSettingsAttackPayloadLoggingResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateAdvancedSettingsAttackPayloadLoggingResponse), args.Error(1)
+}
+
 func (m *Mock) UpdateAdvancedSettingsEvasivePathMatch(ctx context.Context, req UpdateAdvancedSettingsEvasivePathMatchRequest) (*UpdateAdvancedSettingsEvasivePathMatchResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
@@ -526,6 +534,14 @@ func (m *Mock) RemoveAdvancedSettingsLogging(ctx context.Context, req RemoveAdva
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*RemoveAdvancedSettingsLoggingResponse), args.Error(1)
+}
+
+func (m *Mock) RemoveAdvancedSettingsAttackPayloadLogging(ctx context.Context, req RemoveAdvancedSettingsAttackPayloadLoggingRequest) (*RemoveAdvancedSettingsAttackPayloadLoggingResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*RemoveAdvancedSettingsAttackPayloadLoggingResponse), args.Error(1)
 }
 
 func (m *Mock) RemoveAdvancedSettingsEvasivePathMatch(ctx context.Context, req RemoveAdvancedSettingsEvasivePathMatchRequest) (*RemoveAdvancedSettingsEvasivePathMatchResponse, error) {
@@ -1235,6 +1251,14 @@ func (m *Mock) GetAdvancedSettingsLogging(ctx context.Context, req GetAdvancedSe
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*GetAdvancedSettingsLoggingResponse), args.Error(1)
+}
+
+func (m *Mock) GetAdvancedSettingsAttackPayloadLogging(ctx context.Context, req GetAdvancedSettingsAttackPayloadLoggingRequest) (*GetAdvancedSettingsAttackPayloadLoggingResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetAdvancedSettingsAttackPayloadLoggingResponse), args.Error(1)
 }
 
 func (m *Mock) GetAdvancedSettingsEvasivePathMatch(ctx context.Context, req GetAdvancedSettingsEvasivePathMatchRequest) (*GetAdvancedSettingsEvasivePathMatchResponse, error) {
