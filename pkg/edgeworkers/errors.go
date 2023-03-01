@@ -33,6 +33,21 @@ type (
 	}
 )
 
+const (
+	errorCodeGroupNotFound             = "EKV_9000"
+	errorCodeVersionIsBeingDeactivated = "EW1031"
+	errorCodeVersionAlreadyDeactivated = "EW1032"
+)
+
+var (
+	// ErrGroupNotFound is returned when edgeKV group does not exist
+	ErrGroupNotFound = errors.New("specified group does not exist")
+	// ErrVersionBeingDeactivated is returned when edgeworkers version is currently being deactivated
+	ErrVersionBeingDeactivated = errors.New("version is being deactivated")
+	// ErrVersionAlreadyDeactivated is returned when edgeworkers version is already deactivated
+	ErrVersionAlreadyDeactivated = errors.New("version is already deactivated")
+)
+
 // Error parses an error from the response
 func (e *edgeworkers) Error(r *http.Response) error {
 	var result Error
@@ -64,6 +79,16 @@ func (e *Error) Error() string {
 
 // Is handles error comparisons
 func (e *Error) Is(target error) bool {
+	if errors.Is(target, ErrGroupNotFound) {
+		return e.Status == http.StatusNotFound && e.ErrorCode == errorCodeGroupNotFound
+	}
+	if errors.Is(target, ErrVersionBeingDeactivated) {
+		return e.ErrorCode == errorCodeVersionIsBeingDeactivated
+	}
+	if errors.Is(target, ErrVersionAlreadyDeactivated) {
+		return e.ErrorCode == errorCodeVersionAlreadyDeactivated
+	}
+
 	var t *Error
 	if !errors.As(target, &t) {
 		return false
