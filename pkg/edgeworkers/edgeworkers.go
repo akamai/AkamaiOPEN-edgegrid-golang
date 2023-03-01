@@ -24,6 +24,7 @@ type (
 		EdgeKVNamespaces
 		EdgeWorkerIDs
 		EdgeWorkerVersions
+		Groups
 		PermissionGroups
 		Properties
 		Reports

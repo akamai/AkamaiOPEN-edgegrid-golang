@@ -381,3 +381,13 @@ func (m *Mock) ValidateBundle(ctx context.Context, req ValidateBundleRequest) (*
 	}
 	return args.Get(0).(*ValidateBundleResponse), args.Error(1)
 }
+
+// Groups
+
+func (m *Mock) ListGroupsWithinNamespace(ctx context.Context, req ListGroupsWithinNamespaceRequest) ([]string, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]string), args.Error(1)
+}

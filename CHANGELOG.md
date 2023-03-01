@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 4.X.X (March XX, 2023)
+
+### FEATURES/ENHANCEMENTS:
+
+* EDGEKV
+  * [ListGroupsWithinNamespace](https://techdocs.akamai.com/edgekv/reference/get-groups)
+
 ## 4.1.0 (Feb 27, 2023)
 
 ### FEATURES/ENHANCEMENTS:
