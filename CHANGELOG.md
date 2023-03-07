@@ -7,6 +7,9 @@
 * EDGEKV
   * [ListGroupsWithinNamespace](https://techdocs.akamai.com/edgekv/reference/get-groups)
 
+* Image and Video Manager
+  * Add possible value `avif` for `forcedFormats` and `allowedFormats`
+
 ## 4.1.0 (Feb 27, 2023)
 
 ### FEATURES/ENHANCEMENTS:
