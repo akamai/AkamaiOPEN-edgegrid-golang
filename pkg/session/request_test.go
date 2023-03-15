@@ -184,7 +184,8 @@ func TestSession_Exec(t *testing.T) {
 			serverURL, err := url.Parse(mockServer.URL)
 			require.NoError(t, err)
 			s, err := New(WithSigner(&edgegrid.Config{
-				Host: serverURL.Host,
+				Host:         serverURL.Host,
+				RequestLimit: 10,
 			}), WithClient(httpClient), WithUserAgent("test user agent"), WithHTTPTracing(true))
 			require.NoError(t, err)
 

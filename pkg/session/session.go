@@ -35,11 +35,12 @@ type (
 
 	// session is the base akamai http client
 	session struct {
-		client    *http.Client
-		signer    edgegrid.Signer
-		log       log.Interface
-		trace     bool
-		userAgent string
+		client       *http.Client
+		signer       edgegrid.Signer
+		log          log.Interface
+		trace        bool
+		userAgent    string
+		requestLimit int
 	}
 
 	contextOptions struct {
@@ -128,6 +129,13 @@ func WithUserAgent(u string) Option {
 func WithSigner(signer edgegrid.Signer) Option {
 	return func(s *session) {
 		s.signer = signer
+	}
+}
+
+// WithRequestLimit sets the maximum number of API calls that the provider will make per second.
+func WithRequestLimit(requestLimit int) Option {
+	return func(s *session) {
+		s.requestLimit = requestLimit
 	}
 }
 

@@ -12,12 +12,14 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"go.uber.org/ratelimit"
 )
 
 type (
 	// Signer is the request signer interface
 	Signer interface {
 		SignRequest(r *http.Request)
+		CheckRequestLimit(requestLimit int)
 	}
 
 	authHeader struct {
@@ -34,6 +36,11 @@ const (
 	authType = "EG1-HMAC-SHA256"
 )
 
+var (
+	// rateLimit represents the maximum number of API requests per second the provider can make
+	requestLimit ratelimit.Limiter
+)
+
 // SignRequest adds a signed authorization header to the http request
 func (c Config) SignRequest(r *http.Request) {
 	if r.URL.Host == "" {
@@ -44,6 +51,16 @@ func (c Config) SignRequest(r *http.Request) {
 	}
 	r.URL.RawQuery = c.addAccountSwitchKey(r)
 	r.Header.Set("Authorization", c.createAuthHeader(r).String())
+}
+
+// CheckRequestLimit waits if necessary to ensure that OpenAPI's request limit is not exceeded
+func (c Config) CheckRequestLimit(limit int) {
+	if limit > 0 {
+		if requestLimit == nil {
+			requestLimit = ratelimit.New(limit)
+		}
+		requestLimit.Take()
+	}
 }
 
 func (c Config) createAuthHeader(r *http.Request) authHeader {
