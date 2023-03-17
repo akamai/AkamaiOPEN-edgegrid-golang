@@ -68,6 +68,7 @@ type (
 		UpdateDate             string                  `json:"updateDate,omitempty"`
 		Note                   string                  `json:"note,omitempty"`
 		NotifyEmails           []string                `json:"notifyEmails"`
+		ComplianceRecord       complianceRecord        `json:"complianceRecord,omitempty"`
 	}
 
 	// CreateActivationRequest is the request parameters for a new activation or deactivation request
@@ -212,6 +213,8 @@ func (v CreateActivationRequest) Validate() error {
 		"Activation.SubmitDate":         validation.Validate(v.Activation.SubmitDate, validation.Empty),
 		"Activation.UpdateDate":         validation.Validate(v.Activation.UpdateDate, validation.Empty),
 		"Activation.Type":               validation.Validate(v.Activation.ActivationType, validation.In(ActivationTypeActivate, ActivationTypeDeactivate)),
+		"Activation.ComplianceRecord": validation.Validate(v.Activation.ComplianceRecord,
+			validation.When(v.Activation.Network == ActivationNetworkProduction, validation.By(unitTestedFieldValidationRule))),
 	}.Filter()
 }
 

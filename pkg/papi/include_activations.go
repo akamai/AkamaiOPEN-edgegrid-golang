@@ -220,8 +220,6 @@ func (i ActivateIncludeRequest) Validate() error {
 		"Network":      validation.Validate(i.Network, validation.Required),
 		"NotifyEmails": validation.Validate(i.NotifyEmails, validation.Required),
 		"ComplianceRecord": validation.Validate(i.ComplianceRecord,
-			validation.Required.When(i.Network == ActivationNetworkProduction).
-				Error("ComplianceRecord is required for production network"),
 			validation.When(i.Network == ActivationNetworkProduction, validation.By(unitTestedFieldValidationRule))),
 	})
 }

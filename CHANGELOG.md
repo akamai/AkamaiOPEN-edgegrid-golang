@@ -10,6 +10,9 @@
 * Image and Video Manager
   * Add possible value `avif` for `forcedFormats` and `allowedFormats`
 
+* PAPI
+  * Add `complianceRecord` field to `Activation` struct for PAPI activation
+
 ## 4.1.0 (Feb 27, 2023)
 
 ### FEATURES/ENHANCEMENTS:

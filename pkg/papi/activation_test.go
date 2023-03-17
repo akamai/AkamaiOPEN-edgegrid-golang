@@ -19,6 +19,7 @@ func TestPapi_CreateActivation(t *testing.T) {
 		expectedPath     string
 		expectedResponse *CreateActivationResponse
 		withError        error
+		assertError      func(*testing.T, error)
 	}{
 		"200 OK": {
 			request: CreateActivationRequest{
@@ -29,6 +30,130 @@ func TestPapi_CreateActivation(t *testing.T) {
 					PropertyVersion: 1,
 					Network:         ActivationNetworkStaging,
 					UseFastFallback: false,
+					NotifyEmails: []string{
+						"you@example.com",
+						"them@example.com",
+					},
+					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
+				},
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+	"activationLink": "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225"
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/activations?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			expectedResponse: &CreateActivationResponse{
+				ActivationID:   "atv_67037",
+				ActivationLink: "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225",
+			},
+		},
+		"200 Activate property with ComplianceRecord None": {
+			request: CreateActivationRequest{
+				PropertyID: "prp_175780",
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Activation: Activation{
+					PropertyVersion: 1,
+					Network:         ActivationNetworkStaging,
+					UseFastFallback: false,
+					ComplianceRecord: &ComplianceRecordNone{
+						CustomerEmail:  "sb@akamai.com",
+						PeerReviewedBy: "sb@akamai.com",
+						UnitTested:     true,
+						TicketID:       "123",
+					},
+					NotifyEmails: []string{
+						"you@example.com",
+						"them@example.com",
+					},
+					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
+				},
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+	"activationLink": "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225"
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/activations?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			expectedResponse: &CreateActivationResponse{
+				ActivationID:   "atv_67037",
+				ActivationLink: "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225",
+			},
+		},
+		"200 Activate property with ComplianceRecord Other": {
+			request: CreateActivationRequest{
+				PropertyID: "prp_175780",
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Activation: Activation{
+					PropertyVersion: 1,
+					Network:         ActivationNetworkStaging,
+					UseFastFallback: false,
+					ComplianceRecord: &ComplianceRecordOther{
+						OtherNoncomplianceReason: "some other reason",
+						TicketID:                 "123",
+					},
+					NotifyEmails: []string{
+						"you@example.com",
+						"them@example.com",
+					},
+					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
+				},
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+	"activationLink": "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225"
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/activations?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			expectedResponse: &CreateActivationResponse{
+				ActivationID:   "atv_67037",
+				ActivationLink: "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225",
+			},
+		},
+		"200 Activate property with ComplianceRecord No_Production_Traffic": {
+			request: CreateActivationRequest{
+				PropertyID: "prp_175780",
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Activation: Activation{
+					PropertyVersion: 1,
+					Network:         ActivationNetworkStaging,
+					UseFastFallback: false,
+					ComplianceRecord: &ComplianceRecordNoProductionTraffic{
+						TicketID: "123",
+					},
+					NotifyEmails: []string{
+						"you@example.com",
+						"them@example.com",
+					},
+					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
+				},
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+	"activationLink": "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225"
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780/activations?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			expectedResponse: &CreateActivationResponse{
+				ActivationID:   "atv_67037",
+				ActivationLink: "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225",
+			},
+		},
+		"200 Activate property with ComplianceRecord Emergency": {
+			request: CreateActivationRequest{
+				PropertyID: "prp_175780",
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Activation: Activation{
+					PropertyVersion: 1,
+					Network:         ActivationNetworkStaging,
+					UseFastFallback: false,
+					ComplianceRecord: &ComplianceRecordEmergency{
+						TicketID: "123",
+					},
 					NotifyEmails: []string{
 						"you@example.com",
 						"them@example.com",
@@ -96,6 +221,78 @@ func TestPapi_CreateActivation(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
+		"validation error - not valid ComplianceRecordNone": {
+			request: CreateActivationRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Activation: Activation{
+					PropertyVersion: 1,
+					Network:         ActivationNetworkStaging,
+					UseFastFallback: false,
+					ComplianceRecord: &ComplianceRecordNone{
+						UnitTested: true,
+						TicketID:   "123",
+					},
+					NotifyEmails: []string{
+						"you@example.com",
+						"them@example.com",
+					},
+					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
+				},
+			},
+			withError: ErrStructValidation,
+			assertError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "CustomerEmail: cannot be blank")
+				assert.Contains(t, err.Error(), "PeerReviewedBy: cannot be blank")
+			},
+		},
+		"validation error - not valid UnitTested field for PRODUCTION activation network and ComplianceRecordNone": {
+			request: CreateActivationRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Activation: Activation{
+					PropertyVersion: 1,
+					Network:         ActivationNetworkProduction,
+					UseFastFallback: false,
+					ComplianceRecord: &ComplianceRecordNone{
+						CustomerEmail:  "sb@akamai.com",
+						PeerReviewedBy: "sb@akamai.com",
+						UnitTested:     false,
+						TicketID:       "123",
+					},
+					NotifyEmails: []string{
+						"you@example.com",
+						"them@example.com",
+					},
+					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
+				},
+			},
+			withError: ErrStructValidation,
+			assertError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "for PRODUCTION activation network and nonComplianceRecord, UnitTested value has to be set to true, otherwise API will not work correctly")
+			},
+		},
+		"validation error - not valid ComplianceRecordOther": {
+			request: CreateActivationRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Activation: Activation{
+					PropertyVersion:  1,
+					Network:          ActivationNetworkProduction,
+					UseFastFallback:  false,
+					ComplianceRecord: &ComplianceRecordOther{},
+					NotifyEmails: []string{
+						"you@example.com",
+						"them@example.com",
+					},
+					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
+				},
+			},
+			withError: ErrStructValidation,
+			assertError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "OtherNoncomplianceReason: cannot be blank")
+			},
+		},
 	}
 
 	for name, test := range tests {
@@ -109,8 +306,13 @@ func TestPapi_CreateActivation(t *testing.T) {
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateActivation(context.Background(), test.request)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			if test.withError != nil || test.assertError != nil {
+				if test.withError != nil {
+					assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				}
+				if test.assertError != nil {
+					test.assertError(t, err)
+				}
 				return
 			}
 			require.NoError(t, err)
