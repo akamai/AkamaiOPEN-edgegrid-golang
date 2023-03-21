@@ -384,6 +384,14 @@ func (m *Mock) UpdateAdvancedSettingsEvasivePathMatch(ctx context.Context, req U
 	return args.Get(0).(*UpdateAdvancedSettingsEvasivePathMatchResponse), args.Error(1)
 }
 
+func (m *Mock) UpdateAdvancedSettingsRequestBody(ctx context.Context, req UpdateAdvancedSettingsRequestBodyRequest) (*UpdateAdvancedSettingsRequestBodyResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateAdvancedSettingsRequestBodyResponse), args.Error(1)
+}
+
 func (m *Mock) UpdateAPIConstraintsProtection(ctx context.Context, req UpdateAPIConstraintsProtectionRequest) (*UpdateAPIConstraintsProtectionResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
@@ -550,6 +558,14 @@ func (m *Mock) RemoveAdvancedSettingsEvasivePathMatch(ctx context.Context, req R
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*RemoveAdvancedSettingsEvasivePathMatchResponse), args.Error(1)
+}
+
+func (m *Mock) RemoveAdvancedSettingsRequestBody(ctx context.Context, req RemoveAdvancedSettingsRequestBodyRequest) (*RemoveAdvancedSettingsRequestBodyResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*RemoveAdvancedSettingsRequestBodyResponse), args.Error(1)
 }
 
 func (m *Mock) RemoveActivations(ctx context.Context, req RemoveActivationsRequest) (*RemoveActivationsResponse, error) {
@@ -1267,6 +1283,14 @@ func (m *Mock) GetAdvancedSettingsEvasivePathMatch(ctx context.Context, req GetA
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*GetAdvancedSettingsEvasivePathMatchResponse), args.Error(1)
+}
+
+func (m *Mock) GetAdvancedSettingsRequestBody(ctx context.Context, req GetAdvancedSettingsRequestBodyRequest) (*GetAdvancedSettingsRequestBodyResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetAdvancedSettingsRequestBodyResponse), args.Error(1)
 }
 
 func (m *Mock) GetActivations(ctx context.Context, req GetActivationsRequest) (*GetActivationsResponse, error) {

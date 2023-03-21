@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	// ErrStructValidation is returned returned when given struct validation failed
+	// ErrStructValidation is returned when given struct validation failed
 	ErrStructValidation = errors.New("struct validation")
 )
 
@@ -21,6 +21,7 @@ type (
 		AdvancedSettingsLogging
 		AdvancedSettingsPragma
 		AdvancedSettingsPrefetch
+		AdvancedSettingsRequestBody
 		ApiConstraintsProtection
 		ApiEndpoints
 		ApiHostnameCoverage
