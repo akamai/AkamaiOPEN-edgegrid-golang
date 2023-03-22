@@ -256,22 +256,6 @@ func (m *Mock) UpdateEvalRule(ctx context.Context, req UpdateEvalRuleRequest) (*
 	return args.Get(0).(*UpdateEvalRuleResponse), args.Error(1)
 }
 
-func (m *Mock) UpdateEvalProtectHost(ctx context.Context, req UpdateEvalProtectHostRequest) (*UpdateEvalProtectHostResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*UpdateEvalProtectHostResponse), args.Error(1)
-}
-
-func (m *Mock) UpdateEvalHost(ctx context.Context, req UpdateEvalHostRequest) (*UpdateEvalHostResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*UpdateEvalHostResponse), args.Error(1)
-}
-
 func (m *Mock) UpdateEvalGroup(ctx context.Context, req UpdateAttackGroupRequest) (*UpdateAttackGroupResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
@@ -318,14 +302,6 @@ func (m *Mock) UpdateConfiguration(ctx context.Context, req UpdateConfigurationR
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*UpdateConfigurationResponse), args.Error(1)
-}
-
-func (m *Mock) UpdateBypassNetworkLists(ctx context.Context, req UpdateBypassNetworkListsRequest) (*UpdateBypassNetworkListsResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*UpdateBypassNetworkListsResponse), args.Error(1)
 }
 
 func (m *Mock) UpdateAttackGroup(ctx context.Context, req UpdateAttackGroupRequest) (*UpdateAttackGroupResponse, error) {
@@ -480,14 +456,6 @@ func (m *Mock) RemoveEval(ctx context.Context, req RemoveEvalRequest) (*RemoveEv
 	return args.Get(0).(*RemoveEvalResponse), args.Error(1)
 }
 
-func (m *Mock) RemoveEvalHost(ctx context.Context, req RemoveEvalHostRequest) (*RemoveEvalHostResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*RemoveEvalHostResponse), args.Error(1)
-}
-
 func (m *Mock) RemoveCustomRule(ctx context.Context, req RemoveCustomRuleRequest) (*RemoveCustomRuleResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
@@ -518,14 +486,6 @@ func (m *Mock) RemoveConfiguration(ctx context.Context, req RemoveConfigurationR
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*RemoveConfigurationResponse), args.Error(1)
-}
-
-func (m *Mock) RemoveBypassNetworkLists(ctx context.Context, req RemoveBypassNetworkListsRequest) (*RemoveBypassNetworkListsResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*RemoveBypassNetworkListsResponse), args.Error(1)
 }
 
 func (m *Mock) RemoveApiRequestConstraints(ctx context.Context, req RemoveApiRequestConstraintsRequest) (*RemoveApiRequestConstraintsResponse, error) {
@@ -1029,38 +989,6 @@ func (m *Mock) GetEvalRule(ctx context.Context, req GetEvalRuleRequest) (*GetEva
 	return args.Get(0).(*GetEvalRuleResponse), args.Error(1)
 }
 
-func (m *Mock) GetEvalProtectHosts(ctx context.Context, req GetEvalProtectHostsRequest) (*GetEvalProtectHostsResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetEvalProtectHostsResponse), args.Error(1)
-}
-
-func (m *Mock) GetEvalProtectHost(ctx context.Context, req GetEvalProtectHostRequest) (*GetEvalProtectHostResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetEvalProtectHostResponse), args.Error(1)
-}
-
-func (m *Mock) GetEvalHosts(ctx context.Context, req GetEvalHostsRequest) (*GetEvalHostsResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetEvalHostsResponse), args.Error(1)
-}
-
-func (m *Mock) GetEvalHost(ctx context.Context, req GetEvalHostRequest) (*GetEvalHostResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetEvalHostResponse), args.Error(1)
-}
-
 func (m *Mock) GetEvalGroups(ctx context.Context, req GetAttackGroupsRequest) (*GetAttackGroupsResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
@@ -1171,14 +1099,6 @@ func (m *Mock) GetConfigurationClone(ctx context.Context, req GetConfigurationCl
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*GetConfigurationCloneResponse), args.Error(1)
-}
-
-func (m *Mock) GetBypassNetworkLists(ctx context.Context, req GetBypassNetworkListsRequest) (*GetBypassNetworkListsResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetBypassNetworkListsResponse), args.Error(1)
 }
 
 func (m *Mock) GetAttackGroups(ctx context.Context, req GetAttackGroupsRequest) (*GetAttackGroupsResponse, error) {

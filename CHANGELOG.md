@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 4.X.X (March XX, 2023)
+## 5.X.X (March XX, 2023)
 
 ### FEATURES/ENHANCEMENTS:
 
@@ -12,6 +12,12 @@
 
 * PAPI
   * Add `complianceRecord` field to `Activation` struct for PAPI activation
+
+#### BREAKING CHANGES:
+
+* APPSEC
+  * Remove deprecated `EvalHost` and `EvalProtectHost` interfaces. (Use the `WAPSelectedHostnames` interface instead.)
+  * Remove deprecated `BypassNetworkList` interface. (Use the `WAPBypassNetworkList` interface instead.)
 
 ## 4.1.0 (Feb 27, 2023)
 

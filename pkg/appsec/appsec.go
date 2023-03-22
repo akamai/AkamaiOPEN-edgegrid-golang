@@ -29,7 +29,6 @@ type (
 		ApiHostnameCoverageOverlapping
 		ApiRequestConstraints
 		AttackGroup
-		BypassNetworkLists
 		Configuration
 		ConfigurationClone
 		ConfigurationVersion
@@ -40,9 +39,7 @@ type (
 		CustomRuleAction
 		Eval
 		EvalGroup
-		EvalHost
 		EvalPenaltyBox
-		EvalProtectHost
 		EvalRule
 		ExportConfiguration
 		FailoverHostnames
