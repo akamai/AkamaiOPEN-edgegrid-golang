@@ -197,8 +197,6 @@ func (c *Config) FromEnv(section string) error {
 		}
 	}
 
-	c.MaxBody = 0
-
 	val := os.Getenv(fmt.Sprintf("%s_%s", prefix, "MAX_BODY"))
 	if i, err := strconv.Atoi(val); err == nil {
 		c.MaxBody = i
