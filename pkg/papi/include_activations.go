@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/tools"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 

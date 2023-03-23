@@ -1,8 +1,11 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 5.X.X (March XX, 2023)
+## 5.0.0 (March 28, 2023)
 
 ### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Add `AdvancedSettingsRequestBody` interface to support configuring request size inspection limit
 
 * EDGEKV
   * [ListGroupsWithinNamespace](https://techdocs.akamai.com/edgekv/reference/get-groups)

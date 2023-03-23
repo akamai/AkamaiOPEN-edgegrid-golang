@@ -1,4 +1,4 @@
-module github.com/akamai/AkamaiOPEN-edgegrid-golang/v4
+module github.com/akamai/AkamaiOPEN-edgegrid-golang/v5
 
 go 1.18
 
@@ -10,6 +10,7 @@ require (
 	github.com/spf13/cast v1.3.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tj/assert v0.0.3
+	go.uber.org/ratelimit v0.2.0
 	gopkg.in/ini.v1 v1.51.1
 )
 
@@ -23,7 +24,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/stretchr/objx v0.1.0 // indirect
-	go.uber.org/ratelimit v0.2.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200605160147-a5ece683394c // indirect
 )
