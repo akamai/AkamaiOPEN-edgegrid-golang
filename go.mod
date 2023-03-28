@@ -1,4 +1,4 @@
-module github.com/akamai/AkamaiOPEN-edgegrid-golang/v4
+module github.com/akamai/AkamaiOPEN-edgegrid-golang/v5
 
 go 1.18
 
@@ -10,10 +10,12 @@ require (
 	github.com/spf13/cast v1.3.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tj/assert v0.0.3
+	go.uber.org/ratelimit v0.2.0
 	gopkg.in/ini.v1 v1.51.1
 )
 
 require (
+	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/kr/text v0.2.0 // indirect

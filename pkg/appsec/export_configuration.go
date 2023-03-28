@@ -232,6 +232,7 @@ type (
 			AttackPayloadLoggingOverrides *AttackPayloadLoggingOverrides     `json:"attackPayloadLoggingOverrides,omitempty"`
 			PragmaHeader                  *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
 			EvasivePathMatch              *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
+			RequestBody                   *RequestBody                       `json:"requestBody,omitempty"`
 			BotManagement                 *BotManagement                     `json:"botManagement,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
@@ -500,6 +501,7 @@ type (
 			Extensions         []string `json:"extensions,omitempty"`
 		} `json:"prefetch"`
 		PragmaHeader *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
+		RequestBody  *RequestBody                       `json:"requestBody,omitempty"`
 	}
 
 	// CustomDenyListexp is returned as part of GetExportConfigurationResponse.
@@ -667,6 +669,11 @@ type (
 	// EvasivePathMatchexp contains the EnablePathMatch setting
 	EvasivePathMatchexp struct {
 		EnablePathMatch bool `json:"enabled"`
+	}
+
+	// RequestBody is returned as part of GetExportConfigurationResponse.
+	RequestBody struct {
+		RequestBodyInspectionLimitInKB string `json:"requestBodyInspectionLimitInKB"`
 	}
 
 	// ConditionsExp is returned as part of GetExportConfigurationResponse.

@@ -4,11 +4,11 @@ package appsec
 import (
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
 )
 
 var (
-	// ErrStructValidation is returned returned when given struct validation failed
+	// ErrStructValidation is returned when given struct validation failed
 	ErrStructValidation = errors.New("struct validation")
 )
 
@@ -21,6 +21,7 @@ type (
 		AdvancedSettingsLogging
 		AdvancedSettingsPragma
 		AdvancedSettingsPrefetch
+		AdvancedSettingsRequestBody
 		ApiConstraintsProtection
 		ApiEndpoints
 		ApiHostnameCoverage
@@ -28,7 +29,6 @@ type (
 		ApiHostnameCoverageOverlapping
 		ApiRequestConstraints
 		AttackGroup
-		BypassNetworkLists
 		Configuration
 		ConfigurationClone
 		ConfigurationVersion
@@ -39,9 +39,7 @@ type (
 		CustomRuleAction
 		Eval
 		EvalGroup
-		EvalHost
 		EvalPenaltyBox
-		EvalProtectHost
 		EvalRule
 		ExportConfiguration
 		FailoverHostnames

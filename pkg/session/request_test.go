@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v4/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/edgegrid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -184,7 +184,8 @@ func TestSession_Exec(t *testing.T) {
 			serverURL, err := url.Parse(mockServer.URL)
 			require.NoError(t, err)
 			s, err := New(WithSigner(&edgegrid.Config{
-				Host: serverURL.Host,
+				Host:         serverURL.Host,
+				RequestLimit: 10,
 			}), WithClient(httpClient), WithUserAgent("test user agent"), WithHTTPTracing(true))
 			require.NoError(t, err)
 

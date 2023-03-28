@@ -1415,6 +1415,8 @@ const (
 	OutputImageAllowedFormatsJpegxr OutputImageAllowedFormats = "jpegxr"
 	// OutputImageAllowedFormatsJpeg2000 const
 	OutputImageAllowedFormatsJpeg2000 OutputImageAllowedFormats = "jpeg2000"
+	// OutputImageAllowedFormatsAvif const
+	OutputImageAllowedFormatsAvif OutputImageAllowedFormats = "avif"
 
 	// OutputImageForcedFormatsGif const
 	OutputImageForcedFormatsGif OutputImageForcedFormats = "gif"
@@ -1428,6 +1430,8 @@ const (
 	OutputImageForcedFormatsJpegxr OutputImageForcedFormats = "jpegxr"
 	// OutputImageForcedFormatsJpeg2000 const
 	OutputImageForcedFormatsJpeg2000 OutputImageForcedFormats = "jpeg2000"
+	// OutputImageForcedFormatsAvif const
+	OutputImageForcedFormatsAvif OutputImageForcedFormats = "avif"
 
 	// OutputImagePerceptualQualityHigh const
 	OutputImagePerceptualQualityHigh OutputImagePerceptualQuality = "high"
@@ -2888,7 +2892,8 @@ func (o OutputImage) Validate() error {
 				OutputImageAllowedFormatsPng,
 				OutputImageAllowedFormatsWebp,
 				OutputImageAllowedFormatsJpegxr,
-				OutputImageAllowedFormatsJpeg2000)),
+				OutputImageAllowedFormatsJpeg2000,
+				OutputImageAllowedFormatsAvif)),
 		),
 		"ForcedFormats": validation.Validate(o.ForcedFormats, validation.Each(
 			validation.In(OutputImageForcedFormatsGif,
@@ -2896,7 +2901,8 @@ func (o OutputImage) Validate() error {
 				OutputImageForcedFormatsPng,
 				OutputImageForcedFormatsWebp,
 				OutputImageForcedFormatsJpegxr,
-				OutputImageForcedFormatsJpeg2000)),
+				OutputImageForcedFormatsJpeg2000,
+				OutputImageForcedFormatsAvif)),
 		),
 		"PerceptualQuality": validation.Validate(o.PerceptualQuality),
 		"PerceptualQualityFloor": validation.Validate(o.PerceptualQualityFloor,

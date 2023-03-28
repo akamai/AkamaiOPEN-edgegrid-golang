@@ -107,5 +107,9 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 // Sign will only sign a request
 func (s *session) Sign(r *http.Request) error {
 	s.signer.SignRequest(r)
+
+	if s.requestLimit != 0 {
+		s.signer.CheckRequestLimit(s.requestLimit)
+	}
 	return nil
 }

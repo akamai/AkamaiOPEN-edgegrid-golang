@@ -48,6 +48,7 @@ type (
 		AccountKey   string   `ini:"account_key"`
 		HeaderToSign []string `ini:"headers_to_sign"`
 		MaxBody      int      `ini:"max_body"`
+		RequestLimit int      `ini:"request_limit"`
 		Debug        bool     `ini:"debug"`
 
 		file    string
@@ -159,7 +160,7 @@ func (c *Config) FromFile(file string, section string) error {
 // FromEnv creates a new config using the Environment (ENV)
 //
 // By default, it uses AKAMAI_HOST, AKAMAI_CLIENT_TOKEN, AKAMAI_CLIENT_SECRET,
-// AKAMAI_ACCESS_TOKEN, and AKAMAI_MAX_BODY variables.
+// AKAMAI_ACCESS_TOKEN and AKAMAI_MAX_BODY variables.
 //
 // You can define multiple configurations by prefixing with the section name specified, e.g.
 // passing "ccu" will cause it to look for AKAMAI_CCU_HOST, etc.

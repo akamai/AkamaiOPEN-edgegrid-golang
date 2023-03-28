@@ -1,5 +1,27 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 5.0.0 (March 28, 2023)
+
+### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Add `AdvancedSettingsRequestBody` interface to support configuring request size inspection limit
+
+* EDGEKV
+  * [ListGroupsWithinNamespace](https://techdocs.akamai.com/edgekv/reference/get-groups)
+
+* Image and Video Manager
+  * Add possible value `avif` for `forcedFormats` and `allowedFormats`
+
+* PAPI
+  * Add `complianceRecord` field to `Activation` struct for PAPI activation
+
+#### BREAKING CHANGES:
+
+* APPSEC
+  * Remove deprecated `EvalHost` and `EvalProtectHost` interfaces. (Use the `WAPSelectedHostnames` interface instead.)
+  * Remove deprecated `BypassNetworkList` interface. (Use the `WAPBypassNetworkList` interface instead.)
+
 ## 4.1.0 (Feb 27, 2023)
 
 ### FEATURES/ENHANCEMENTS:

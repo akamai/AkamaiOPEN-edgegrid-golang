@@ -217,17 +217,6 @@ func TestActivateInclude(t *testing.T) {
 			},
 			withError: ErrStructValidation,
 		},
-		"validation error - missing compliance record for production network": {
-			params: ActivateIncludeRequest{
-				IncludeID:              "inc_12345",
-				Version:                4,
-				Network:                ActivationNetworkProduction,
-				Note:                   "test activation",
-				NotifyEmails:           []string{"jbond@example.com"},
-				AcknowledgeAllWarnings: true,
-			},
-			withError: ErrStructValidation,
-		},
 		"validation error - not valid ComplianceRecordNone": {
 			params: ActivateIncludeRequest{
 				IncludeID:              "inc_12345",
