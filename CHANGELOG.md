@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 6.0.0 (XXX XX, 2023) [DPS-24033]
+
+### BREAKING CHANGES:
+
+* Datastream
+  * Updated the Activate, Deactivate and ActivationHistory APIs to Datastream API v2 version and also changed their response objects
+
 ## 6.0.0 (May 23, 2023)
 
 ### BREAKING CHANGES:

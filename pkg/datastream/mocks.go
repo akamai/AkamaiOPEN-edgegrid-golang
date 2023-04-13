@@ -64,24 +64,24 @@ func (m *Mock) ListStreams(ctx context.Context, r ListStreamsRequest) ([]StreamD
 	return args.Get(0).([]StreamDetails), args.Error(1)
 }
 
-func (m *Mock) ActivateStream(ctx context.Context, r ActivateStreamRequest) (*ActivateStreamResponse, error) {
+func (m *Mock) ActivateStream(ctx context.Context, r ActivateStreamRequest) (*DetailedStreamVersion, error) {
 	args := m.Called(ctx, r)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*ActivateStreamResponse), args.Error(1)
+	return args.Get(0).(*DetailedStreamVersion), args.Error(1)
 }
 
-func (m *Mock) DeactivateStream(ctx context.Context, r DeactivateStreamRequest) (*DeactivateStreamResponse, error) {
+func (m *Mock) DeactivateStream(ctx context.Context, r DeactivateStreamRequest) (*DetailedStreamVersion, error) {
 	args := m.Called(ctx, r)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*DeactivateStreamResponse), args.Error(1)
+	return args.Get(0).(*DetailedStreamVersion), args.Error(1)
 }
 
 func (m *Mock) GetActivationHistory(ctx context.Context, r GetActivationHistoryRequest) ([]ActivationHistoryEntry, error) {
