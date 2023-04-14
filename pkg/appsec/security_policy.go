@@ -133,6 +133,7 @@ type (
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
 		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
 		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
+		ApplyMalwareControls          bool `json:"applyMalwareControls,omitempty"`
 		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
 		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
 		ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
