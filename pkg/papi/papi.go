@@ -21,6 +21,9 @@ var (
 
 	// ErrDefaultCertLimitReached indicates that the limit for DEFAULT certificates has been reached
 	ErrDefaultCertLimitReached = errors.New("the limit for DEFAULT certificates has been reached")
+
+	// ErrMissingComplianceRecord is returned when compliance record is required and is not provided
+	ErrMissingComplianceRecord = errors.New("compliance record must be specified")
 )
 
 type (

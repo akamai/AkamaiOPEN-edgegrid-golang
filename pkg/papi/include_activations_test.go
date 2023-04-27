@@ -814,6 +814,39 @@ func TestGetIncludeActivation(t *testing.T) {
 				},
 			},
 		},
+		"200 but with activation validation error - ErrMissingComplianceRecord expected": {
+			params: GetIncludeActivationRequest{
+				IncludeID:    "inc_12345",
+				ActivationID: "atv_12345",
+			},
+			expectedPath:   "/papi/v1/includes/inc_12345/activations/atv_12345",
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "accountId": "test_account",
+    "contractId": "test_contract",
+    "groupId": "test_group",
+	"validations": {
+        "validationSummary": {
+            "completePercent": 100.0,
+            "hasValidationError": false,
+            "hasValidationWarning": false,
+            "hasSystemError": false,
+            "hasClientError": true,
+            "messageState": "HTTP_CLIENT_ERROR",
+            "errorMessage": "400 : \"{\"type\":\"missing_compliance_record\",\"title\":\"Property Manager Exception\",\"instance\":\"TestInstance\",\"status\":400,\"errors\":[{\"type\":\"missing_compliance_record\",\"title\":\"Property Manager Exception\",\"detail\":\"missing_compliance_record\"}],\"details\":{},\"messageId\":\"missing_compliance_record\",\"params\":[],\"result\":\"ERROR\"}\""
+        },
+        "validationErrorsItemList": {
+            "items": []
+        },
+        "network": "PRODUCTION"
+    },
+    "activations": {
+        "items": []
+    }
+}`,
+			withError: ErrMissingComplianceRecord,
+		},
 		"500 internal server error": {
 			params: GetIncludeActivationRequest{
 				IncludeID:    "inc_12345",
@@ -1185,6 +1218,57 @@ func TestListIncludeActivations(t *testing.T) {
 			}
 			require.NoError(t, err)
 			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestExtractError(t *testing.T) {
+	tests := map[string]struct {
+		errorMessage string
+		wantedError  *ActivationError
+	}{
+		"all data": {
+			errorMessage: "111 : \"{\"type\":\"type1\",\"title\":\"title1\",\"instance\":\"instance1\",\"status\":404,\"errors\":[{\"type\":\"type2\",\"title\":\"title2\",\"detail\":\"detail1\"}],\"details\":{},\"messageId\":\"message1\",\"params\":[],\"result\":\"result1\"}\"",
+			wantedError: &ActivationError{
+				Type:     "type1",
+				Title:    "title1",
+				Instance: "instance1",
+				Status:   404,
+				Errors: []ActivationErrorMessage{
+					{
+						Type:   "type2",
+						Title:  "title2",
+						Detail: "detail1",
+					},
+				},
+				MessageID: "message1",
+				Result:    "result1",
+			},
+		},
+		"minimum data": {
+			errorMessage: "111 : \"{\"type\":\"type1\",\"title\":\"title1\",\"instance\":\"instance1\",\"status\":404,\"errors\":[{\"type\":\"type2\",\"title\":\"title2\",\"detail\":\"detail1\"}],\"messageId\":\"message1\",\"result\":\"result1\"}\"",
+			wantedError: &ActivationError{
+				Type:     "type1",
+				Title:    "title1",
+				Instance: "instance1",
+				Status:   404,
+				Errors: []ActivationErrorMessage{
+					{
+						Type:   "type2",
+						Title:  "title2",
+						Detail: "detail1",
+					},
+				},
+				MessageID: "message1",
+				Result:    "result1",
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			gotErr := extractError(test.errorMessage)
+			assert.EqualError(t, test.wantedError, gotErr.Error())
 		})
 	}
 }

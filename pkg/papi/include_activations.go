@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/tools"
@@ -115,6 +116,7 @@ type (
 		HasSystemError       bool    `json:"hasSystemError"`
 		HasClientError       bool    `json:"hasClientError"`
 		MessageState         string  `json:"messageState"`
+		ErrorMessage         string  `json:"errorMessage"`
 	}
 
 	// ValidationProgress represents include activation validation progress object
@@ -520,6 +522,15 @@ func (p *papi) GetIncludeActivation(ctx context.Context, params GetIncludeActiva
 		return nil, fmt.Errorf("%s: %w", ErrGetIncludeActivation, p.Error(resp))
 	}
 
+	if result.Validations != nil {
+		val := result.Validations.ValidationSummary
+		if val.HasClientError || val.HasValidationError || val.HasSystemError {
+			if err = extractError(val.ErrorMessage); err != nil {
+				return nil, fmt.Errorf("%s: %w", ErrGetIncludeActivation, err)
+			}
+		}
+	}
+
 	if len(result.Activations.Items) == 0 {
 		return nil, fmt.Errorf("%s: %w: ActivationID: %s", ErrGetIncludeActivation, ErrNotFound, params.ActivationID)
 	}
@@ -562,4 +573,19 @@ func (p *papi) ListIncludeActivations(ctx context.Context, params ListIncludeAct
 	}
 
 	return &result, nil
+}
+
+// extractError extracts error from validation object in GetIncludeActivation response if it is present
+func extractError(rawError string) error {
+	startIndex := strings.Index(rawError, "{")
+	endIndex := strings.LastIndex(rawError, "}") + 1
+	formattedError := rawError[startIndex:endIndex]
+
+	var e ActivationError
+
+	if err := json.Unmarshal([]byte(formattedError), &e); err != nil {
+		return err
+	}
+
+	return &e
 }
