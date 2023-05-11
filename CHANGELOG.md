@@ -13,7 +13,7 @@
 
 #### BUG FIXES
 * APPSEC
-  * omit `clientIdentifier` and `additionalMatchOptions` in `GetExportConfigurationResponse` when empty
+  * Omit `clientIdentifier` and `additionalMatchOptions` in `GetExportConfigurationResponse` when empty
 
 ## 5.0.0 (March 28, 2023)
 
