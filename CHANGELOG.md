@@ -11,6 +11,10 @@
   * Fix property variables fields with empty and null values are ignored
   * Remove `ProductID` field from `GetEdgeHostname` response
 
+#### BUG FIXES
+* APPSEC
+  * omit `clientIdentifier` and `additionalMatchOptions` in `GetExportConfigurationResponse` when empty
+
 ## 5.0.0 (March 28, 2023)
 
 ### FEATURES/ENHANCEMENTS:
