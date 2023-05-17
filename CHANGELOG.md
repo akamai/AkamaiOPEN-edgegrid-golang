@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## X.X.X (XX XX, 2023)
+
+#### BREAKING CHANGES:
+
+* PAPI
+  * Fix property variables fields with empty and null values are ignored
+
 ## 5.0.0 (March 28, 2023)
 
 ### FEATURES/ENHANCEMENTS:
