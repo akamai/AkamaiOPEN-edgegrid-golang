@@ -1,11 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## X.X.X (XX XX, 2023)
+## 6.0.0 (May 23, 2023)
 
 #### BREAKING CHANGES:
 
 * PAPI
   * Fix property variables fields with empty and null values are ignored
+  * Remove `ProductID` field from `GetEdgeHostname` response
 
 ## 5.0.0 (March 28, 2023)
 

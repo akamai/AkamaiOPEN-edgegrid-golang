@@ -135,7 +135,6 @@ type (
 		UseDefaultTTL          bool     `json:"useDefaultTtl"`
 		UseDefaultMap          bool     `json:"useDefaultMap"`
 		IPVersionBehavior      string   `json:"ipVersionBehavior"`
-		ProductID              string   `json:"productId"`
 		TTL                    int      `json:"ttl"`
 		Map                    string   `json:"map,omitempty"`
 		SlotNumber             int      `json:"slotNumber,omitempty"`
