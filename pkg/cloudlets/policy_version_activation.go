@@ -24,7 +24,7 @@ type (
 		// ActivatePolicyVersion activates the selected cloudlet policy version.
 		//
 		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-policy-version-activations
-		ActivatePolicyVersion(context.Context, ActivatePolicyVersionRequest) error
+		ActivatePolicyVersion(context.Context, ActivatePolicyVersionRequest) ([]PolicyActivation, error)
 	}
 
 	// ListPolicyActivationsRequest contains the request parameters for ListPolicyActivations
@@ -149,33 +149,34 @@ func (c *cloudlets) ListPolicyActivations(ctx context.Context, params ListPolicy
 	return result, nil
 }
 
-func (c *cloudlets) ActivatePolicyVersion(ctx context.Context, params ActivatePolicyVersionRequest) error {
+func (c *cloudlets) ActivatePolicyVersion(ctx context.Context, params ActivatePolicyVersionRequest) ([]PolicyActivation, error) {
 	c.Log(ctx).Debug("ActivatePolicyVersion")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w:\n%s", ErrActivatePolicyVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrActivatePolicyVersion, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
 		"/cloudlets/api/v2/policies/%d/versions/%d/activations",
 		params.PolicyID, params.Version))
 	if err != nil {
-		return fmt.Errorf("%w: failed to create POST URI: %s", ErrActivatePolicyVersion, err)
+		return nil, fmt.Errorf("%w: failed to create POST URI: %s", ErrActivatePolicyVersion, err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
-		return fmt.Errorf("%w: failed to create POST request: %s", ErrActivatePolicyVersion, err)
+		return nil, fmt.Errorf("%w: failed to create POST request: %s", ErrActivatePolicyVersion, err)
 	}
 
-	response, err := c.Exec(req, nil, params.PolicyVersionActivation)
+	var result []PolicyActivation
+	response, err := c.Exec(req, &result, params.PolicyVersionActivation)
 	if err != nil {
-		return fmt.Errorf("%w: request failed: %s", ErrActivatePolicyVersion, err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrActivatePolicyVersion, err)
 	}
 
 	if response.StatusCode >= http.StatusBadRequest {
-		return fmt.Errorf("%w: %s", ErrActivatePolicyVersion, c.Error(response))
+		return nil, fmt.Errorf("%w: %s", ErrActivatePolicyVersion, c.Error(response))
 	}
 
-	return nil
+	return result, nil
 }

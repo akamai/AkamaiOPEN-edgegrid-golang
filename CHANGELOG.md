@@ -4,6 +4,9 @@
 
 #### BREAKING CHANGES:
 
+* CLOUDLETS
+  * `ActivatePolicyVersion` also returns list of triggerred activations
+
 * PAPI
   * Fix property variables fields with empty and null values are ignored
   * Remove `ProductID` field from `GetEdgeHostname` response

@@ -152,6 +152,7 @@ func TestActivatePolicyVersion(t *testing.T) {
 		responseStatus     int
 		uri                string
 		responseBody       string
+		expectedResponse   []PolicyActivation
 		expectedActivation PolicyVersionActivation
 		withError          func(*testing.T, error)
 	}{
@@ -165,19 +166,53 @@ func TestActivatePolicyVersion(t *testing.T) {
 					AdditionalPropertyNames: []string{"www.rc-cloudlet.com"},
 				},
 			},
-			responseBody: `{
-    "revisionId": 11870,
-    "policyId": 1001,
-    "version": 2,
-    "description": "v2",
-    "createdBy": "jsmith",
-    "createDate": 1427133784903,
-    "lastModifiedBy": "sjones",
-    "lastModifiedDate": 1427133805767,
-    "activations": [],
-    "matchRules": [],
-    "rulesLocked": false
-}`,
+			responseBody: `[
+				{
+					"serviceVersion": null,
+					"apiVersion": "2.0",
+					"network": "staging",
+					"policyInfo": {
+						"policyId": 2962,
+						"name": "RequestControlPolicy",
+						"version": 1,
+						"status": "pending",
+						"statusDetail": "initial",
+						"activationDate": 1427428800000,
+						"activatedBy": "jsmith"
+					},
+					"propertyInfo": {
+						"name": "www.rc-cloudlet.com",
+						"version": 0,
+						"groupId": 40498,
+						"status": "inactive",
+						"activatedBy": null,
+						"activationDate": 0
+					}
+				}
+			]`,
+			expectedResponse: []PolicyActivation{
+				{
+					APIVersion: "2.0",
+					Network:    PolicyActivationNetworkStaging,
+					PropertyInfo: PropertyInfo{
+						Name:           "www.rc-cloudlet.com",
+						Version:        0,
+						GroupID:        40498,
+						Status:         PolicyActivationStatusInactive,
+						ActivatedBy:    "",
+						ActivationDate: 0,
+					},
+					PolicyInfo: PolicyInfo{
+						PolicyID:       2962,
+						Name:           "RequestControlPolicy",
+						Version:        1,
+						Status:         PolicyActivationStatusPending,
+						StatusDetail:   "initial",
+						ActivatedBy:    "jsmith",
+						ActivationDate: 1427428800000,
+					},
+				},
+			},
 		},
 		"any request validation error": {
 			parameters: ActivatePolicyVersionRequest{},
@@ -250,12 +285,13 @@ func TestActivatePolicyVersion(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.ActivatePolicyVersion(context.Background(), test.parameters)
+			result, err := client.ActivatePolicyVersion(context.Background(), test.parameters)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
 		})
 	}
 }
