@@ -1,4 +1,4 @@
-# Akamai OPEN EdgeGrid for GoLang v5
+# Akamai OPEN EdgeGrid for GoLang v6
 
 ![Build Status](https://github.com/akamai/akamaiOPEN-edgegrid-golang/actions/workflows/checks.yml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/akamai/AkamaiOPEN-edgegrid-golang/v6)](https://goreportcard.com/report/github.com/akamai/AkamaiOPEN-edgegrid-golang/v6)
@@ -12,7 +12,7 @@ This module is presently in active development and provides Akamai REST API supp
 
 This module is not backward compatible with the version `v1`.
 
-Originally branch `master` was representing version `v1`. Now it is representing the latest version `v5` and
+Originally branch `master` was representing version `v1`. Now it is representing the latest version `v6` and
 version `v1`
 was moved to dedicated `v1` branch.
 
@@ -22,7 +22,7 @@ The packages of library can be imported alongside the `v1` library versions with
 
 ```
 import (
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/papi-v1"
-	papiv5 "github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/papi"
+	papiv1 "github.com/akamai/AkamaiOPEN-edgegrid-golang/papi-v1"
+	papi "github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/papi"
 )
 ```
