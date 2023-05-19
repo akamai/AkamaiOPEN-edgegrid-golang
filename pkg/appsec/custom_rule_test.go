@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -124,12 +124,12 @@ func TestAppSec_GetCustomRule(t *testing.T) {
 				ID:       60039625,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching match target"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error fetching match target"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/custom-rules/60039625",
 			withError: &Error{
 				Type:       "internal_error",
@@ -203,12 +203,12 @@ func TestAppSec_CreateCustomRule(t *testing.T) {
 				ConfigID: 43253,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating domain"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating domain"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/custom-rules",
 			withError: &Error{
 				Type:       "internal_error",
@@ -286,12 +286,12 @@ func TestAppSec_UpdateCustomRule(t *testing.T) {
 				ID:       60039625,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating zone"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating zone"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/custom-rules/%d",
 			withError: &Error{
 				Type:       "internal_error",
@@ -370,12 +370,12 @@ func TestAppSec_RemoveCustomRule(t *testing.T) {
 				ID:       60039625,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error deleting match target"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error deleting match target"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/custom-rules/%d",
 			withError: &Error{
 				Type:       "internal_error",

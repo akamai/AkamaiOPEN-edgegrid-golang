@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/spf13/cast"
 )
 

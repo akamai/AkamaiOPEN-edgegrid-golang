@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -130,12 +130,12 @@ func TestAppSec_GetReputationAnalysis(t *testing.T) {
 				PolicyID: "AAAA_81230",
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching ReputationAnalysis"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error fetching ReputationAnalysis"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/reputation-analysis",
 			withError: &Error{
 				Type:       "internal_error",
@@ -211,12 +211,12 @@ func TestAppSec_UpdateReputationAnalysis(t *testing.T) {
 				PolicyID: "AAAA_81230",
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating ReputationAnalysis"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating ReputationAnalysis"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/reputation-analysis",
 			withError: &Error{
 				Type:       "internal_error",
@@ -298,12 +298,12 @@ func TestAppSec_RemoveReputationAnalysis(t *testing.T) {
 				PolicyID: "AAAA_81230",
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error deleting ReputationAnalysis"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error deleting ReputationAnalysis"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/reputation-analysis",
 			withError: &Error{
 				Type:       "internal_error",

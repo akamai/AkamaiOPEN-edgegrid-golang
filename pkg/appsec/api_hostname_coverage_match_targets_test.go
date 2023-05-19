@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -130,12 +130,12 @@ func TestAppSec_GetApiHostnameCoverageMatchTargets(t *testing.T) {
 				Hostname: "www.example.com",
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching ApiHostnameCoverageMatchTargets"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error fetching ApiHostnameCoverageMatchTargets"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/hostname-coverage/match-targets?hostname=www.example.com",
 			withError: &Error{
 				Type:       "internal_error",

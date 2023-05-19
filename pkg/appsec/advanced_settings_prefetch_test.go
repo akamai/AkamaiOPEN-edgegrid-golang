@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -126,12 +126,12 @@ func TestAppSec_GetAdvancedSettingsPrefetch(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching AdvancedSettingsPrefetch"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error fetching AdvancedSettingsPrefetch"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/prefetch",
 			withError: &Error{
 				Type:       "internal_error",
@@ -205,12 +205,12 @@ func TestAppSec_UpdateAdvancedSettingsPrefetch(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating AdvancedSettingsPrefetch"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating AdvancedSettingsPrefetch"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/prefetch",
 			withError: &Error{
 				Type:       "internal_error",

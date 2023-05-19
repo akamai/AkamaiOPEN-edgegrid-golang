@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -126,12 +126,12 @@ func TestAppSec_GetSiemSettings(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching match target"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error fetching match target"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/siem",
 			withError: &Error{
 				Type:       "internal_error",
@@ -205,12 +205,12 @@ func TestAppSec_UpdateSiemSettings(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating zone"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating zone"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/siem",
 			withError: &Error{
 				Type:       "internal_error",
