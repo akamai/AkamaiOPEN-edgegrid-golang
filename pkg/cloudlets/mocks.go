@@ -67,9 +67,12 @@ func (m *Mock) ListPolicyActivations(ctx context.Context, req ListPolicyActivati
 	return args.Get(0).([]PolicyActivation), args.Error(1)
 }
 
-func (m *Mock) ActivatePolicyVersion(ctx context.Context, req ActivatePolicyVersionRequest) error {
+func (m *Mock) ActivatePolicyVersion(ctx context.Context, req ActivatePolicyVersionRequest) ([]PolicyActivation, error) {
 	args := m.Called(ctx, req)
-	return args.Error(0)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]PolicyActivation), args.Error(1)
 }
 
 func (m *Mock) ListOrigins(ctx context.Context, req ListOriginsRequest) ([]OriginResponse, error) {

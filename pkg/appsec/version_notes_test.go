@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -126,12 +126,12 @@ func TestAppSec_GetVersionNotes(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching VersionNotes"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error fetching VersionNotes"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/version-notes",
 			withError: &Error{
 				Type:       "internal_error",
@@ -205,12 +205,12 @@ func TestAppSec_UpdateVersionNotes(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating VersionNotes"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating VersionNotes"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/version-notes",
 			withError: &Error{
 				Type:       "internal_error",

@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -128,12 +128,12 @@ func TestAppSec_GetMatchTarget(t *testing.T) {
 				TargetID:      3008967,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching match target"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error fetching match target"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/3008967?includeChildObjectName=true",
 			withError: &Error{
 				Type:       "internal_error",
@@ -209,12 +209,12 @@ func TestAppSec_CreateMatchTarget(t *testing.T) {
 				ConfigVersion: 15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating domain"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating domain"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets",
 			withError: &Error{
 				Type:       "internal_error",
@@ -294,12 +294,12 @@ func TestAppSec_UpdateMatchTarget(t *testing.T) {
 				TargetID:      3008967,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating zone"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating zone"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/3008967",
 			withError: &Error{
 				Type:       "internal_error",
@@ -380,12 +380,12 @@ func TestAppSec_RemoveMatchTarget(t *testing.T) {
 				TargetID:      3008967,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error deleting match target"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error deleting match target"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets/3008967",
 			withError: &Error{
 				Type:       "internal_error",

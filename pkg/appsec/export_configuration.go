@@ -68,11 +68,11 @@ type (
 				PositiveMatch bool     `json:"positiveMatch"`
 				Type          string   `json:"type"`
 				Values        []string `json:"values"`
-			} `json:"additionalMatchOptions"`
+			} `json:"additionalMatchOptions,omitempty"`
 			AllTraffic            bool                         `json:"allTraffic,omitempty"`
 			AverageThreshold      int                          `json:"averageThreshold"`
 			BurstThreshold        int                          `json:"burstThreshold"`
-			ClientIdentifier      string                       `json:"clientIdentifier"`
+			ClientIdentifier      string                       `json:"clientIdentifier,omitempty"`
 			CreateDate            time.Time                    `json:"-"`
 			Description           string                       `json:"description,omitempty"`
 			FileExtensions        *RatePolicyFileExtensions    `json:"fileExtensions,omitempty"`

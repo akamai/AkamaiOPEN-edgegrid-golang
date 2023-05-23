@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/edgegrid"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/discard"
 	"github.com/stretchr/testify/require"
@@ -28,7 +28,7 @@ func TestNew(t *testing.T) {
 				signer:    &edgegrid.Config{},
 				log:       log.Log,
 				trace:     false,
-				userAgent: "Akamai-Open-Edgegrid-golang/2.0.0 golang/" + strings.TrimPrefix(runtime.Version(), "go"),
+				userAgent: "Akamai-Open-Edgegrid-golang/6.0.0 golang/" + strings.TrimPrefix(runtime.Version(), "go"),
 			},
 		},
 		"with options provided": {

@@ -1,6 +1,7 @@
 package papi
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -179,11 +181,11 @@ func TestPapi_GetRuleTree(t *testing.T) {
 					},
 					Variables: []RuleVariable{
 						{
-							Description: "This is a sample Property Manager variable.",
+							Description: tools.StringPtr("This is a sample Property Manager variable."),
 							Hidden:      false,
 							Name:        "VAR_NAME",
 							Sensitive:   false,
-							Value:       "default value",
+							Value:       tools.StringPtr("default value"),
 						},
 					},
 				},
@@ -334,11 +336,11 @@ func TestPapi_GetRuleTree(t *testing.T) {
 					},
 					Variables: []RuleVariable{
 						{
-							Description: "This is a sample Property Manager variable.",
+							Description: tools.StringPtr("This is a sample Property Manager variable."),
 							Hidden:      false,
 							Name:        "VAR_NAME",
 							Sensitive:   false,
-							Value:       "default value",
+							Value:       tools.StringPtr("default value"),
 						},
 					},
 				},
@@ -486,11 +488,11 @@ func TestPapi_GetRuleTree(t *testing.T) {
 					},
 					Variables: []RuleVariable{
 						{
-							Description: "This is a sample Property Manager variable.",
+							Description: tools.StringPtr("This is a sample Property Manager variable."),
 							Hidden:      false,
 							Name:        "VAR_NAME",
 							Sensitive:   false,
-							Value:       "default value",
+							Value:       tools.StringPtr("default value"),
 						},
 					},
 				},
@@ -644,6 +646,7 @@ func TestPapi_GetRuleTree(t *testing.T) {
 func TestPapi_UpdateRuleTree(t *testing.T) {
 	tests := map[string]struct {
 		params           UpdateRulesRequest
+		requestBody      string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -720,11 +723,11 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: "This is a sample Property Manager variable.",
+								Description: tools.StringPtr("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       "default value",
+								Value:       tools.StringPtr("default value"),
 							},
 						},
 					},
@@ -918,11 +921,11 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 					TemplateLink: "/platformtoolkit/service/ruletemplate/30582260/1?accountId=1-1TJZFB&gid=61726&ck=16.3.1.1",
 					Variables: []RuleVariable{
 						{
-							Description: "This is a sample Property Manager variable.",
+							Description: tools.StringPtr("This is a sample Property Manager variable."),
 							Hidden:      false,
 							Name:        "VAR_NAME",
 							Sensitive:   false,
-							Value:       "default value",
+							Value:       tools.StringPtr("default value"),
 						},
 					},
 				},
@@ -935,6 +938,371 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						BehaviorName: "cpCode",
 					},
 				},
+			},
+		},
+		"200 OK - empty and null values for description": {
+			params: UpdateRulesRequest{
+				ContractID:      "ctr_id",
+				GroupID:         "grp_id",
+				PropertyID:      "prp_id",
+				PropertyVersion: 1,
+				Rules: RulesUpdate{
+					Comments: "version comment",
+					Rules: Rules{
+						Name: "default",
+						Children: []Rules{
+							{
+								Name:     "change fwd path",
+								Children: []Rules{},
+								Behaviors: []RuleBehavior{
+									{
+										Name: "baseDirectory",
+										Options: RuleOptionsMap{
+											"value": "/smth/",
+										},
+									},
+								},
+								Criteria: []RuleBehavior{
+									{
+										Name:   "requestHeader",
+										Locked: false,
+										Options: RuleOptionsMap{
+											"headerName":              "Accept-Encoding",
+											"matchCaseSensitiveValue": true,
+											"matchOperator":           "IS_ONE_OF",
+											"matchWildcardName":       false,
+											"matchWildcardValue":      false,
+										},
+									},
+								},
+								CriteriaMustSatisfy: RuleCriteriaMustSatisfyAll,
+							},
+							{
+								Name:     "caching",
+								Children: []Rules{},
+								Behaviors: []RuleBehavior{
+									{
+										Name: "caching",
+										Options: RuleOptionsMap{
+											"behavior":       "MAX_AGE",
+											"mustRevalidate": false,
+											"ttl":            "1m",
+										},
+									},
+								},
+								Criteria:            []RuleBehavior{},
+								CriteriaMustSatisfy: RuleCriteriaMustSatisfyAny,
+							},
+						},
+						Behaviors: []RuleBehavior{
+							{
+								Name: "origin",
+								Options: RuleOptionsMap{
+									"cacheKeyHostname":          "REQUEST_HOST_HEADER",
+									"compress":                  true,
+									"enableTrueClientIp":        true,
+									"forwardHostHeader":         "REQUEST_HOST_HEADER",
+									"hostname":                  "httpbin.smth.online",
+									"httpPort":                  float64(80),
+									"httpsPort":                 float64(443),
+									"originCertificate":         "",
+									"originSni":                 true,
+									"originType":                "CUSTOMER",
+									"ports":                     "",
+									"trueClientIpClientSetting": false,
+									"trueClientIpHeader":        "True-Client-IP",
+									"verificationMode":          "PLATFORM_SETTINGS",
+								},
+							},
+						},
+						Options:  RuleOptions{},
+						Criteria: []RuleBehavior{},
+						Variables: []RuleVariable{
+							{
+								Name:        "TEST_EMPTY_FIELDS",
+								Value:       tools.StringPtr(""),
+								Description: tools.StringPtr(""),
+								Hidden:      true,
+								Sensitive:   false,
+							},
+							{
+								Name:        "TEST_NIL_DESCRIPTION",
+								Description: nil,
+								Value:       tools.StringPtr(""),
+								Hidden:      true,
+								Sensitive:   false,
+							},
+						},
+						Comments: "The behaviors in the Default Rule apply to all requests for the property hostname(s) unless another rule overrides the Default Rule settings.",
+					},
+				},
+			},
+			requestBody:    `{"comments":"version comment","rules":{"behaviors":[{"name":"origin","options":{"cacheKeyHostname":"REQUEST_HOST_HEADER","compress":true,"enableTrueClientIp":true,"forwardHostHeader":"REQUEST_HOST_HEADER","hostname":"httpbin.smth.online","httpPort":80,"httpsPort":443,"originCertificate":"","originSni":true,"originType":"CUSTOMER","ports":"","trueClientIpClientSetting":false,"trueClientIpHeader":"True-Client-IP","verificationMode":"PLATFORM_SETTINGS"}}],"children":[{"behaviors":[{"name":"baseDirectory","options":{"value":"/smth/"}}],"criteria":[{"name":"requestHeader","options":{"headerName":"Accept-Encoding","matchCaseSensitiveValue":true,"matchOperator":"IS_ONE_OF","matchWildcardName":false,"matchWildcardValue":false}}],"name":"change fwd path","options":{},"criteriaMustSatisfy":"all"},{"behaviors":[{"name":"caching","options":{"behavior":"MAX_AGE","mustRevalidate":false,"ttl":"1m"}}],"name":"caching","options":{},"criteriaMustSatisfy":"any"}],"comments":"The behaviors in the Default Rule apply to all requests for the property hostname(s) unless another rule overrides the Default Rule settings.","name":"default","options":{},"variables":[{"description":"","hidden":true,"name":"TEST_EMPTY_FIELDS","sensitive":false,"value":""},{"description":null,"hidden":true,"name":"TEST_NIL_DESCRIPTION","sensitive":false,"value":""}]}}`,
+			responseStatus: http.StatusOK,
+			responseBody: `{
+    "accountId": "act_id",
+    "contractId": "ctr_id",
+    "groupId": "grp_id",
+    "propertyId": "grp_id",
+    "propertyName": "dxe-2407-reproducing",
+    "propertyVersion": 1,
+    "etag": "123ge123",
+    "rules": {
+        "name": "default",
+        "children": [
+            {
+                "name": "change fwd path",
+                "children": [],
+                "behaviors": [
+                    {
+                        "name": "baseDirectory",
+                        "options": {
+                            "value": "/smth/"
+                        }
+                    }
+                ],
+                "criteria": [
+                    {
+                        "name": "requestHeader",
+                        "options": {
+                            "headerName": "Accept-Encoding",
+                            "matchCaseSensitiveValue": true,
+                            "matchOperator": "IS_ONE_OF",
+                            "matchWildcardName": false,
+                            "matchWildcardValue": false
+                        }
+                    }
+                ],
+                "criteriaMustSatisfy": "all"
+            },
+            {
+                "name": "caching",
+                "children": [],
+                "behaviors": [
+                    {
+                        "name": "caching",
+                        "options": {
+                            "behavior": "MAX_AGE",
+                            "mustRevalidate": false,
+                            "ttl": "1m"
+                        }
+                    }
+                ],
+                "criteria": [],
+                "criteriaMustSatisfy": "any"
+            }
+        ],
+        "behaviors": [
+            {
+                "name": "origin",
+                "options": {
+                    "cacheKeyHostname": "REQUEST_HOST_HEADER",
+                    "compress": true,
+                    "enableTrueClientIp": true,
+                    "forwardHostHeader": "REQUEST_HOST_HEADER",
+                    "hostname": "httpbin.smth.online",
+                    "httpPort": 80,
+                    "httpsPort": 443,
+                    "originCertificate": "",
+                    "originSni": true,
+                    "originType": "CUSTOMER",
+                    "ports": "",
+                    "trueClientIpClientSetting": false,
+                    "trueClientIpHeader": "True-Client-IP",
+                    "verificationMode": "PLATFORM_SETTINGS"
+                }
+            }
+        ],
+        "options": {},
+        "variables": [
+            {
+                "name": "TEST_EMPTY_FIELDS",
+                "value": "",
+                "description": "",
+                "hidden": true,
+                "sensitive": false
+            },
+            {
+                "name": "TEST_NIL_FIELDS",
+                "value": "",
+                "description": null,
+                "hidden": true,
+                "sensitive": false
+            }
+        ],
+        "comments": "The behaviors in the Default Rule apply to all requests for the property hostname(s) unless another rule overrides the Default Rule settings."
+    },
+    "errors": [
+        {
+            "type": "https://problems.luna.akamaiapis.net/papi/v0/validation/required_feature_any",
+            "errorLocation": "#/rules",
+            "detail": "Add a Content Provider Code behavior in any rule. See <a href=\"/dl/property-manager/property-manager-help/csh_lookup.html?id=PM_0030\" target=\"_blank\">Content Provider Code</a>."
+        }
+    ],
+    "warnings": [
+        {
+            "type": "https://problems.luna.akamaiapis.net/papi/v0/validation/incompatible_condition",
+            "errorLocation": "#/rules/children/0/behaviors/0"
+        },
+        {
+            "title": "Unstable rule format",
+            "type": "https://problems.luna.akamaiapis.net/papi/v0/unstable_rule_format",
+            "currentRuleFormat": "latest",
+            "suggestedRuleFormat": "v2023-01-05"
+        }
+    ],
+    "ruleFormat": "latest"
+}`,
+			expectedPath: "/papi/v1/properties/prp_id/versions/1/rules?contractId=ctr_id&groupId=grp_id&validateRules=false",
+			expectedResponse: &UpdateRulesResponse{
+				AccountID:       "act_id",
+				ContractID:      "ctr_id",
+				GroupID:         "grp_id",
+				PropertyID:      "grp_id",
+				PropertyVersion: 1,
+				Etag:            "123ge123",
+				RuleFormat:      "latest",
+				Rules: Rules{
+					Name: "default",
+					Children: []Rules{
+						{
+							Name:     "change fwd path",
+							Children: []Rules{},
+							Behaviors: []RuleBehavior{
+								{
+									Name: "baseDirectory",
+									Options: RuleOptionsMap{
+										"value": "/smth/",
+									},
+								},
+							},
+							Criteria: []RuleBehavior{
+								{
+									Name:   "requestHeader",
+									Locked: false,
+									Options: RuleOptionsMap{
+										"headerName":              "Accept-Encoding",
+										"matchCaseSensitiveValue": true,
+										"matchOperator":           "IS_ONE_OF",
+										"matchWildcardName":       false,
+										"matchWildcardValue":      false,
+									},
+								},
+							},
+							CriteriaMustSatisfy: "all",
+						},
+						{
+							Name:     "caching",
+							Children: []Rules{},
+							Behaviors: []RuleBehavior{
+								{
+									Name: "caching",
+									Options: RuleOptionsMap{
+										"behavior":       "MAX_AGE",
+										"mustRevalidate": false,
+										"ttl":            "1m",
+									},
+								},
+							},
+							Criteria:            []RuleBehavior{},
+							CriteriaMustSatisfy: "any",
+						},
+					},
+					Behaviors: []RuleBehavior{
+						{
+							Name: "origin",
+							Options: RuleOptionsMap{
+								"cacheKeyHostname":          "REQUEST_HOST_HEADER",
+								"compress":                  true,
+								"enableTrueClientIp":        true,
+								"forwardHostHeader":         "REQUEST_HOST_HEADER",
+								"hostname":                  "httpbin.smth.online",
+								"httpPort":                  float64(80),
+								"httpsPort":                 float64(443),
+								"originCertificate":         "",
+								"originSni":                 true,
+								"originType":                "CUSTOMER",
+								"ports":                     "",
+								"trueClientIpClientSetting": false,
+								"trueClientIpHeader":        "True-Client-IP",
+								"verificationMode":          "PLATFORM_SETTINGS",
+							},
+						},
+					},
+					Variables: []RuleVariable{
+						{
+							Name:        "TEST_EMPTY_FIELDS",
+							Value:       tools.StringPtr(""),
+							Description: tools.StringPtr(""),
+							Hidden:      true,
+							Sensitive:   false,
+						},
+						{
+							Name:        "TEST_NIL_FIELDS",
+							Description: nil,
+							Value:       tools.StringPtr(""),
+							Hidden:      true,
+							Sensitive:   false,
+						},
+					},
+					Comments: "The behaviors in the Default Rule apply to all requests for the property hostname(s) unless another rule overrides the Default Rule settings.",
+				},
+				Errors: []RuleError{
+					{
+						Type:          "https://problems.luna.akamaiapis.net/papi/v0/validation/required_feature_any",
+						ErrorLocation: "#/rules",
+						Detail:        "Add a Content Provider Code behavior in any rule. See <a href=\"/dl/property-manager/property-manager-help/csh_lookup.html?id=PM_0030\" target=\"_blank\">Content Provider Code</a>.",
+					},
+				},
+				Warnings: []RuleWarnings{
+					{
+						Type:          "https://problems.luna.akamaiapis.net/papi/v0/validation/incompatible_condition",
+						ErrorLocation: "#/rules/children/0/behaviors/0",
+					},
+					{
+						Title:               "Unstable rule format",
+						Type:                "https://problems.luna.akamaiapis.net/papi/v0/unstable_rule_format",
+						CurrentRuleFormat:   "latest",
+						SuggestedRuleFormat: "v2023-01-05",
+					},
+				},
+			},
+		},
+		"validation error - value is null": {
+			params: UpdateRulesRequest{
+				ContractID:      "ctr_id",
+				GroupID:         "grp_id",
+				PropertyID:      "prp_id",
+				PropertyVersion: 1,
+				Rules: RulesUpdate{
+					Comments: "version comment",
+					Rules: Rules{
+						Name: "default",
+						Variables: []RuleVariable{
+							{
+								Name:        "TEST_EMPTY_FIELDS",
+								Value:       tools.StringPtr(""),
+								Description: tools.StringPtr(""),
+								Hidden:      true,
+								Sensitive:   false,
+							},
+							{
+								Name:        "TEST_NIL_FIELDS",
+								Description: nil,
+								Value:       nil,
+								Hidden:      true,
+								Sensitive:   false,
+							},
+						},
+						Comments: "The behaviors in the Default Rule apply to all requests for the property hostname(s) unless another rule overrides the Default Rule settings.",
+					},
+				},
+			},
+			expectedPath: "/papi/v1/properties/prp_id/versions/1/rules?contractId=ctr_id&groupId=grp_id&validateRules=false",
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "updating rule tree: struct validation:\nVariables[1]: {\n\tValue: is required\n}")
 			},
 		},
 		"500 Internal Server Error": {
@@ -1005,11 +1373,11 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: "This is a sample Property Manager variable.",
+								Description: tools.StringPtr("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       "default value",
+								Value:       tools.StringPtr("default value"),
 							},
 						},
 					},
@@ -1102,11 +1470,11 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: "This is a sample Property Manager variable.",
+								Description: tools.StringPtr("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       "default value",
+								Value:       tools.StringPtr("default value"),
 							},
 						},
 					},
@@ -1185,11 +1553,11 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: "This is a sample Property Manager variable.",
+								Description: tools.StringPtr("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       "default value",
+								Value:       tools.StringPtr("default value"),
 							},
 						},
 					},
@@ -1269,11 +1637,11 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: "This is a sample Property Manager variable.",
+								Description: tools.StringPtr("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       "default value",
+								Value:       tools.StringPtr("default value"),
 							},
 						},
 					},
@@ -1353,11 +1721,11 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: "This is a sample Property Manager variable.",
+								Description: tools.StringPtr("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       "default value",
+								Value:       tools.StringPtr("default value"),
 							},
 						},
 					},
@@ -1437,11 +1805,11 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: "This is a sample Property Manager variable.",
+								Description: tools.StringPtr("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       "default value",
+								Value:       tools.StringPtr("default value"),
 							},
 						},
 					},
@@ -1521,11 +1889,11 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: "This is a sample Property Manager variable.",
+								Description: tools.StringPtr("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       "default value",
+								Value:       tools.StringPtr("default value"),
 							},
 						},
 					},
@@ -1605,11 +1973,11 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: "This is a sample Property Manager variable.",
+								Description: tools.StringPtr("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "",
 								Sensitive:   false,
-								Value:       "default value",
+								Value:       tools.StringPtr("default value"),
 							},
 						},
 					},
@@ -1628,6 +1996,13 @@ func TestPapi_UpdateRuleTree(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.requestBody != "" {
+					buf := new(bytes.Buffer)
+					_, err := buf.ReadFrom(r.Body)
+					assert.NoError(t, err)
+					req := buf.String()
+					assert.Equal(t, test.requestBody, req)
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -126,12 +126,12 @@ func TestAppSec_GetConfigurationClone(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching ConfigurationClone"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error fetching ConfigurationClone"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15",
 			withError: &Error{
 				Type:       "internal_error",
@@ -209,12 +209,12 @@ func TestAppSec_CreateConfigurationClone(t *testing.T) {
 			}{ConfigID: 42345,
 				Version: 7}},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating ConfigurationClone"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating ConfigurationClone"
+			}`,
 			expectedPath: "/appsec/v1/configs/",
 			withError: &Error{
 				Type:       "internal_error",

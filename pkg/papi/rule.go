@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -87,11 +87,11 @@ type (
 
 	// RuleVariable represents and entry in variables field from Rule resource
 	RuleVariable struct {
-		Description string `json:"description,omitempty"`
-		Hidden      bool   `json:"hidden"`
-		Name        string `json:"name"`
-		Sensitive   bool   `json:"sensitive"`
-		Value       string `json:"value,omitempty"`
+		Description *string `json:"description"`
+		Hidden      bool    `json:"hidden"`
+		Name        string  `json:"name"`
+		Sensitive   bool    `json:"sensitive"`
+		Value       *string `json:"value"`
 	}
 
 	// UpdateRulesRequest contains path and query params, as well as request body necessary to perform PUT /rules request
@@ -114,25 +114,37 @@ type (
 
 	// UpdateRulesResponse contains data returned by performing PUT /rules request
 	UpdateRulesResponse struct {
-		AccountID       string      `json:"accountId"`
-		ContractID      string      `json:"contractId"`
-		Comments        string      `json:"comments,omitempty"`
-		GroupID         string      `json:"groupId"`
-		PropertyID      string      `json:"propertyId"`
-		PropertyVersion int         `json:"propertyVersion"`
-		Etag            string      `json:"etag"`
-		RuleFormat      string      `json:"ruleFormat"`
-		Rules           Rules       `json:"rules"`
-		Errors          []RuleError `json:"errors"`
+		AccountID       string         `json:"accountId"`
+		ContractID      string         `json:"contractId"`
+		Comments        string         `json:"comments,omitempty"`
+		GroupID         string         `json:"groupId"`
+		PropertyID      string         `json:"propertyId"`
+		PropertyVersion int            `json:"propertyVersion"`
+		Etag            string         `json:"etag"`
+		RuleFormat      string         `json:"ruleFormat"`
+		Rules           Rules          `json:"rules"`
+		Errors          []RuleError    `json:"errors"`
+		Warnings        []RuleWarnings `json:"warnings"`
 	}
 
-	// RuleError represents and entry in error field from PUT /rules response body
+	// RuleError represents an entry in error field from PUT /rules response body
 	RuleError struct {
-		Type         string `json:"type"`
-		Title        string `json:"title"`
-		Detail       string `json:"detail"`
-		Instance     string `json:"instance"`
-		BehaviorName string `json:"behaviorName"`
+		Type          string `json:"type"`
+		Title         string `json:"title"`
+		Detail        string `json:"detail"`
+		Instance      string `json:"instance"`
+		BehaviorName  string `json:"behaviorName"`
+		ErrorLocation string `json:"errorLocation"`
+	}
+
+	// RuleWarnings represents an entry in warning field from PUT /rules response body
+	RuleWarnings struct {
+		Title               string `json:"title"`
+		Type                string `json:"type"`
+		ErrorLocation       string `json:"errorLocation"`
+		Detail              string `json:"detail"`
+		CurrentRuleFormat   string `json:"currentRuleFormat"`
+		SuggestedRuleFormat string `json:"suggestedRuleFormat"`
 	}
 
 	// RuleOptionsMap is a type wrapping map[string]interface{} used for adding rule options
@@ -217,7 +229,8 @@ func (co RuleCustomOverride) Validate() error {
 // Validate validates RuleVariable struct
 func (v RuleVariable) Validate() error {
 	return validation.Errors{
-		"Name": validation.Validate(v.Name, validation.Required),
+		"Name":  validation.Validate(v.Name, validation.Required),
+		"Value": validation.Validate(v.Value, validation.NotNil),
 	}.Filter()
 }
 

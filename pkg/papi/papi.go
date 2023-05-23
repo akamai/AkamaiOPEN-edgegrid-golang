@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/spf13/cast"
 )
 
@@ -21,6 +21,9 @@ var (
 
 	// ErrDefaultCertLimitReached indicates that the limit for DEFAULT certificates has been reached
 	ErrDefaultCertLimitReached = errors.New("the limit for DEFAULT certificates has been reached")
+
+	// ErrMissingComplianceRecord is returned when compliance record is required and is not provided
+	ErrMissingComplianceRecord = errors.New("compliance record must be specified")
 )
 
 type (

@@ -1,5 +1,24 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 6.0.0 (May 23, 2023)
+
+### BREAKING CHANGES:
+
+* APPSEC
+  * Update malware policy `ContentTypes` to include `EncodedContentAttributes`.
+  * Malware policy's `ContentTypes` is reported as part of an individual policy but is no longer included in the bulk report of all policies.
+
+* CLOUDLETS
+  * `ActivatePolicyVersion` also returns list of triggerred activations
+
+* PAPI
+  * Fix property variables fields with empty and null values are ignored
+  * Remove `ProductID` field from `GetEdgeHostname` response
+
+### BUG FIXES:
+* APPSEC
+  * Omit `clientIdentifier` and `additionalMatchOptions` in `GetExportConfigurationResponse` when empty
+
 ## 5.0.0 (March 28, 2023)
 
 ### FEATURES/ENHANCEMENTS:

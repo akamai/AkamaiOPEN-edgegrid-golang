@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -126,12 +126,12 @@ func TestAppSec_GetAdvancedSettingsPrama(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching AdvancedSettingsPragma"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error fetching AdvancedSettingsPragma"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			withError: &Error{
 				Type:       "internal_error",
@@ -205,7 +205,7 @@ func TestAppSec_UpdateAdvancedSettingsPragma(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody:   (`{"type": "internal_error","title": "Internal Server Error","detail": "Error creating AdvancedSettingsPragma"}`),
+			responseBody:   `{"type": "internal_error","title": "Internal Server Error","detail": "Error creating AdvancedSettingsPragma"}`,
 			expectedPath:   "/appsec/v1/configs/43253/versions/15/advanced-settings/pragma-header",
 			withError: &Error{
 				Type:       "internal_error",

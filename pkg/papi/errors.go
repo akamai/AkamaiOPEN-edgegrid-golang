@@ -24,6 +24,24 @@ type (
 		Limit         *int            `json:"limit,omitempty"`
 		Remaining     *int            `json:"remaining,omitempty"`
 	}
+
+	// ActivationError represents errors returned in validation objects in include activation response
+	ActivationError struct {
+		Type      string                   `json:"type"`
+		Title     string                   `json:"title"`
+		Instance  string                   `json:"instance"`
+		Status    int                      `json:"status"`
+		Errors    []ActivationErrorMessage `json:"errors"`
+		MessageID string                   `json:"messageId"`
+		Result    string                   `json:"result"`
+	}
+
+	// ActivationErrorMessage represents detailed information about validation errors
+	ActivationErrorMessage struct {
+		Type   string `json:"type"`
+		Title  string `json:"title"`
+		Detail string `json:"detail"`
+	}
 )
 
 // Error parses an error from the response
@@ -60,6 +78,14 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("API error: \n%s", msg)
 }
 
+func (e *ActivationError) Error() string {
+	msg, err := json.MarshalIndent(e, "", "\t")
+	if err != nil {
+		return fmt.Sprintf("error marshaling API error: %s", err)
+	}
+	return fmt.Sprintf("API error: \n%s", msg)
+}
+
 // Is handles error comparisons
 func (e *Error) Is(target error) bool {
 	if errors.Is(target, ErrSBDNotEnabled) {
@@ -79,6 +105,28 @@ func (e *Error) Is(target error) bool {
 	}
 
 	if e.StatusCode != t.StatusCode {
+		return false
+	}
+
+	return e.Error() == t.Error()
+}
+
+// Is handles error comparisons for ActivationError type
+func (e *ActivationError) Is(target error) bool {
+	if errors.Is(target, ErrMissingComplianceRecord) {
+		return e.MessageID == "missing_compliance_record"
+	}
+
+	var t *ActivationError
+	if !errors.As(target, &t) {
+		return false
+	}
+
+	if e == t {
+		return true
+	}
+
+	if e.Status != t.Status {
 		return false
 	}
 

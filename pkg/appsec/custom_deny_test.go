@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v5/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -128,12 +128,12 @@ func TestAppSec_GetCustomDeny(t *testing.T) {
 				ID:       "622919",
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching CustomDeny"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error fetching CustomDeny"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/custom-deny/622919",
 			withError: &Error{
 				Type:       "internal_error",
@@ -209,12 +209,12 @@ func TestAppSec_CreateCustomDeny(t *testing.T) {
 				Version:  15,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating CustomDeny"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating CustomDeny"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/custom-deny",
 			withError: &Error{
 				Type:       "internal_error",
@@ -294,12 +294,12 @@ func TestAppSec_UpdateCustomDeny(t *testing.T) {
 				ID:       "deny_custom_622918",
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating CustomDeny"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error creating CustomDeny"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/custom-deny/deny_custom_622918",
 			withError: &Error{
 				Type:       "internal_error",
@@ -380,12 +380,12 @@ func TestAppSec_RemoveCustomDeny(t *testing.T) {
 				ID:       "deny_custom_622918",
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: (`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error deleting CustomDeny"
-}`),
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error deleting CustomDeny"
+			}`,
 			expectedPath: "/appsec/v1/configs/43253/versions/15/custom-deny/deny_custom_622918",
 			withError: &Error{
 				Type:       "internal_error",
