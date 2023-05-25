@@ -1,11 +1,14 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## x.x.x (x x, 2023)
+## X.X.X (XX xx, 202x) [CloudWrapper changelog]
 
-### FEATURES/ENHANCEMENTS:
+#### FEATURES/ENHANCEMENTS:
 
-* Added Cloud Wrapper API support
-  * `ListCapacities`
+* [IMPORTANT] Added CloudWrapper API support
+  * Locations
+    * [ListLocations](https://techdocs.akamai.com/cloud-wrapper/reference/get-locations)
+  * Capacities
+    * [ListCapacities](https://techdocs.akamai.com/cloud-wrapper/reference/get-capacity-inventory)
 
 ## 7.1.0 (July 25, 2023)
 

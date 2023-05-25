@@ -16,6 +16,7 @@ type (
 	// CloudWrapper is the api interface for Cloud Wrapper
 	CloudWrapper interface {
 		Capacities
+		Locations
 	}
 
 	cloudwrapper struct {

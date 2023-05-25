@@ -36,20 +36,20 @@ type (
 )
 
 // Error parses an error from the response
-func (e *cloudwrapper) Error(r *http.Response) error {
+func (c *cloudwrapper) Error(r *http.Response) error {
 	var result Error
 	var body []byte
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		e.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
+		c.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		result.Status = r.StatusCode
 		result.Title = "Failed to read error body"
 		result.Detail = err.Error()
 		return &result
 	}
 
-	if err := json.Unmarshal(body, &result); err != nil {
-		e.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
+	if err = json.Unmarshal(body, &result); err != nil {
+		c.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
 		result.Title = string(body)
 		result.Status = r.StatusCode
 	}
