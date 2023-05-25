@@ -12,12 +12,17 @@ type (
 	// Error is a cloudwrapper error implementation
 	// For details on possible error types, refer to: https://techdocs.akamai.com/cloud-wrapper/reference/errors
 	Error struct {
-		Type     string      `json:"type,omitempty"`
-		Title    string      `json:"title,omitempty"`
-		Instance string      `json:"instance"`
-		Status   int         `json:"status"`
-		Detail   string      `json:"detail"`
-		Errors   []ErrorItem `json:"errors"`
+		Type        string      `json:"type,omitempty"`
+		Title       string      `json:"title,omitempty"`
+		Instance    string      `json:"instance"`
+		Status      int         `json:"status"`
+		Detail      string      `json:"detail"`
+		Errors      []ErrorItem `json:"errors"`
+		Method      string      `json:"method"`
+		ServerIP    string      `json:"serverIp"`
+		ClientIP    string      `json:"clientIp"`
+		RequestID   string      `json:"requestId"`
+		RequestTime string      `json:"requestTime"`
 	}
 
 	// ErrorItem is a cloud wrapper error's item

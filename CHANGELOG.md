@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## x.x.x (x x, 2023)
+
+### FEATURES/ENHANCEMENTS:
+
+* Added Cloud Wrapper API support
+  * `ListCapacities`
+
 ## 7.1.0 (July 25, 2023)
 
 ### FEATURES/ENHANCEMENTS:
