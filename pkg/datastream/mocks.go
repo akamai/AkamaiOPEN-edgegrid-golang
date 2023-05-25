@@ -51,7 +51,7 @@ func (m *Mock) DeleteStream(ctx context.Context, r DeleteStreamRequest) error {
 		return args.Error(0)
 	}
 
-	return args.Error(0)
+	return nil
 }
 
 func (m *Mock) ListStreams(ctx context.Context, r ListStreamsRequest) ([]StreamDetails, error) {
@@ -94,22 +94,22 @@ func (m *Mock) GetActivationHistory(ctx context.Context, r GetActivationHistoryR
 	return args.Get(0).([]ActivationHistoryEntry), args.Error(1)
 }
 
-func (m *Mock) GetProperties(ctx context.Context, r GetPropertiesRequest) ([]Property, error) {
+func (m *Mock) GetProperties(ctx context.Context, r GetPropertiesRequest) (*PropertiesDetails, error) {
 	args := m.Called(ctx, r)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).([]Property), args.Error(1)
+	return args.Get(0).(*PropertiesDetails), args.Error(1)
 }
 
-func (m *Mock) GetDatasetFields(ctx context.Context, r GetDatasetFieldsRequest) ([]DataSets, error) {
+func (m *Mock) GetDatasetFields(ctx context.Context, r GetDatasetFieldsRequest) (*DataSets, error) {
 	args := m.Called(ctx, r)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).([]DataSets), args.Error(1)
+	return args.Get(0).(*DataSets), args.Error(1)
 }
