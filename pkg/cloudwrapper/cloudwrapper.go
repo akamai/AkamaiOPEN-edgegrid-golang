@@ -17,6 +17,7 @@ type (
 	CloudWrapper interface {
 		Capacities
 		Locations
+		Properties
 	}
 
 	cloudwrapper struct {

@@ -33,3 +33,23 @@ func (m *Mock) ListLocations(ctx context.Context) (*ListLocationResponse, error)
 
 	return args.Get(0).(*ListLocationResponse), args.Error(1)
 }
+
+func (m *Mock) ListProperties(ctx context.Context, r ListPropertiesRequest) (*ListPropertiesResponse, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListPropertiesResponse), args.Error(1)
+}
+
+func (m *Mock) ListOrigins(ctx context.Context, r ListOriginsRequest) (*ListOriginsResponse, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListOriginsResponse), args.Error(1)
+}

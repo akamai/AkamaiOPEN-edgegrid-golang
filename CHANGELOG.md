@@ -9,6 +9,9 @@
     * [ListLocations](https://techdocs.akamai.com/cloud-wrapper/reference/get-locations)
   * Capacities
     * [ListCapacities](https://techdocs.akamai.com/cloud-wrapper/reference/get-capacity-inventory)
+  * Properties
+    * [ListProperties](https://techdocs.akamai.com/cloud-wrapper/reference/get-properties)
+    * [ListOrigins](https://techdocs.akamai.com/cloud-wrapper/reference/get-origins)
 
 ## 7.1.0 (July 25, 2023)
 
