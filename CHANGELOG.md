@@ -5,10 +5,16 @@
 #### FEATURES/ENHANCEMENTS:
 
 * [IMPORTANT] Added CloudWrapper API support
-  * Locations
-    * [ListLocations](https://techdocs.akamai.com/cloud-wrapper/reference/get-locations)
   * Capacities
     * [ListCapacities](https://techdocs.akamai.com/cloud-wrapper/reference/get-capacity-inventory)
+  * Configurations
+    * [GetConfiguration](https://techdocs.akamai.com/cloud-wrapper/reference/get-configuration)
+    * [ListConfigurations](https://techdocs.akamai.com/cloud-wrapper/reference/get-configurations)
+    * [CreateConfiguration](https://techdocs.akamai.com/cloud-wrapper/reference/post-configuration)
+    * [UpdateConfiguration](https://techdocs.akamai.com/cloud-wrapper/reference/put-configuration)
+    * [ActivateConfiguration](https://techdocs.akamai.com/cloud-wrapper/reference/post-configuration-activations)
+  * Locations
+    * [ListLocations](https://techdocs.akamai.com/cloud-wrapper/reference/get-locations)
   * Properties
     * [ListProperties](https://techdocs.akamai.com/cloud-wrapper/reference/get-properties)
     * [ListOrigins](https://techdocs.akamai.com/cloud-wrapper/reference/get-origins)

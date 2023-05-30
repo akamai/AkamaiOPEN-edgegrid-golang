@@ -14,7 +14,6 @@ type Mock struct {
 
 var _ CloudWrapper = &Mock{}
 
-// ListCapacities implements CloudWrapper
 func (m *Mock) ListCapacities(ctx context.Context, req ListCapacitiesRequest) (*ListCapacitiesResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
@@ -23,7 +22,6 @@ func (m *Mock) ListCapacities(ctx context.Context, req ListCapacitiesRequest) (*
 	return args.Get(0).(*ListCapacitiesResponse), args.Error(1)
 }
 
-// ListLocations implements CloudWrapper
 func (m *Mock) ListLocations(ctx context.Context) (*ListLocationResponse, error) {
 	args := m.Called(ctx)
 
@@ -52,4 +50,49 @@ func (m *Mock) ListOrigins(ctx context.Context, r ListOriginsRequest) (*ListOrig
 	}
 
 	return args.Get(0).(*ListOriginsResponse), args.Error(1)
+}
+
+func (m *Mock) GetConfiguration(ctx context.Context, r GetConfigurationRequest) (*Configuration, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*Configuration), args.Error(1)
+}
+
+func (m *Mock) ListConfigurations(ctx context.Context) (*ListConfigurationsResponse, error) {
+	args := m.Called(ctx)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListConfigurationsResponse), args.Error(1)
+}
+
+func (m *Mock) CreateConfiguration(ctx context.Context, r CreateConfigurationRequest) (*Configuration, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*Configuration), args.Error(1)
+}
+
+func (m *Mock) UpdateConfiguration(ctx context.Context, r UpdateConfigurationRequest) (*Configuration, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*Configuration), args.Error(1)
+}
+
+func (m *Mock) ActivateConfiguration(ctx context.Context, r ActivateConfigurationRequest) error {
+	args := m.Called(ctx, r)
+	return args.Error(0)
 }
