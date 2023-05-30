@@ -15,6 +15,9 @@
     * [ActivateConfiguration](https://techdocs.akamai.com/cloud-wrapper/reference/post-configuration-activations)
   * Locations
     * [ListLocations](https://techdocs.akamai.com/cloud-wrapper/reference/get-locations)
+  * MultiCDN
+    * [ListAuthKeys](https://techdocs.akamai.com/cloud-wrapper/reference/get-auth-keys)
+    * [ListCDNProviders](https://techdocs.akamai.com/cloud-wrapper/reference/get-providers)
   * Properties
     * [ListProperties](https://techdocs.akamai.com/cloud-wrapper/reference/get-properties)
     * [ListOrigins](https://techdocs.akamai.com/cloud-wrapper/reference/get-origins)

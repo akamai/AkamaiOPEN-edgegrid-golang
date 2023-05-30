@@ -24,12 +24,26 @@ func (m *Mock) ListCapacities(ctx context.Context, req ListCapacitiesRequest) (*
 
 func (m *Mock) ListLocations(ctx context.Context) (*ListLocationResponse, error) {
 	args := m.Called(ctx)
-
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-
 	return args.Get(0).(*ListLocationResponse), args.Error(1)
+}
+
+func (m *Mock) ListAuthKeys(ctx context.Context, req ListAuthKeysRequest) (*ListAuthKeysResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*ListAuthKeysResponse), args.Error(1)
+}
+
+func (m *Mock) ListCDNProviders(ctx context.Context) (*ListCDNProvidersResponse, error) {
+	args := m.Called(ctx)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*ListCDNProvidersResponse), args.Error(1)
 }
 
 func (m *Mock) ListProperties(ctx context.Context, r ListPropertiesRequest) (*ListPropertiesResponse, error) {

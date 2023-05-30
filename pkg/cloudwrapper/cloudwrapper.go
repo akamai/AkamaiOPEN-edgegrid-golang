@@ -18,6 +18,7 @@ type (
 		Capacities
 		Configurations
 		Locations
+		MultiCDN
 		Properties
 	}
 
