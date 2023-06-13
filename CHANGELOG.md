@@ -20,6 +20,13 @@
 * APPSEC
   * Add error handling for failed NetworkList client calls.
 
+## N.N.N.N (June NN, 2023)
+
+### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Add `AdvancedSettingsPIILearning` interface to support reading and updating the PII learning setting.
+
 ## 6.0.0 (May 23, 2023)
 
 ### BREAKING CHANGES:

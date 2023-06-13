@@ -507,6 +507,7 @@ type (
 		} `json:"prefetch"`
 		PragmaHeader *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
 		RequestBody  *RequestBody                       `json:"requestBody,omitempty"`
+		PIILearning  bool                               `json:"piiLearning"`
 	}
 
 	// CustomDenyListexp is returned as part of GetExportConfigurationResponse.
