@@ -1,5 +1,16 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## X.X.X (mmmm dd, 2023)
+
+### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Added Bot Management API Support
+    * Challenge Injection Rules - read, update
+
+### Deprecations
+* Challenge Interceptions Rules has been deprecated
+
 ## 7.0.0 (June 20, 2023)
 
 ### BREAKING CHANGES:

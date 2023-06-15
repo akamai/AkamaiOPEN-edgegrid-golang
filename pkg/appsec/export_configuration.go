@@ -774,6 +774,7 @@ type (
 		CustomDenyActions          []map[string]interface{} `json:"customDenyActions,omitempty"`
 		ServeAlternateActions      []map[string]interface{} `json:"serveAlternateActions,omitempty"`
 		ChallengeInterceptionRules map[string]interface{}   `json:"challengeInterceptionRules,omitempty"`
+		ChallengeInjectionRules    map[string]interface{}   `json:"challengeInjectionRules,omitempty"`
 	}
 
 	// BotManagement is returned as part of GetExportConfigurationResponse
