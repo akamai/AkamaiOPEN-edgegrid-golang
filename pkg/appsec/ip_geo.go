@@ -46,21 +46,28 @@ type (
 		BlockedIPNetworkLists *IPGeoNetworkLists `json:"blockedIPNetworkLists,omitempty"`
 	}
 
+	// UkraineGeoControl is used to specify specific action for Ukraine.
+	UkraineGeoControl struct {
+		Action string `json:"action"`
+	}
+
 	// UpdateIPGeoRequest is used to update the method and which network lists are used for IP/Geo firewall blocking.
 	UpdateIPGeoRequest struct {
-		ConfigID    int               `json:"-"`
-		Version     int               `json:"-"`
-		PolicyID    string            `json:"-"`
-		Block       string            `json:"block"`
-		GeoControls *IPGeoGeoControls `json:"geoControls,omitempty"`
-		IPControls  *IPGeoIPControls  `json:"ipControls,omitempty"`
+		ConfigID           int                `json:"-"`
+		Version            int                `json:"-"`
+		PolicyID           string             `json:"-"`
+		Block              string             `json:"block"`
+		GeoControls        *IPGeoGeoControls  `json:"geoControls,omitempty"`
+		IPControls         *IPGeoIPControls   `json:"ipControls,omitempty"`
+		UkraineGeoControls *UkraineGeoControl `json:"ukraineGeoControl,omitempty"`
 	}
 
 	// IPGeoFirewall is used to describe an IP/Geo firewall.
 	IPGeoFirewall struct {
-		Block       string            `json:"block"`
-		GeoControls *IPGeoGeoControls `json:"geoControls,omitempty"`
-		IPControls  *IPGeoIPControls  `json:"ipControls,omitempty"`
+		Block              string             `json:"block"`
+		GeoControls        *IPGeoGeoControls  `json:"geoControls,omitempty"`
+		IPControls         *IPGeoIPControls   `json:"ipControls,omitempty"`
+		UkraineGeoControls *UkraineGeoControl `json:"ukraineGeoControl,omitempty"`
 	}
 
 	// GetIPGeoResponse is returned from a call to GetIPGeo

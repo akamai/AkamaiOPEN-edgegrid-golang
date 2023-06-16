@@ -1,4 +1,10 @@
 # EDGEGRID GOLANG RELEASE NOTES
+## 7.0.0 (June 20, 2023)
+
+### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Update Geo control to include Action for Ukraine.
 
 ## 6.0.0 (XXX X, 2023)
 
