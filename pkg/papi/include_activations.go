@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/tools"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
