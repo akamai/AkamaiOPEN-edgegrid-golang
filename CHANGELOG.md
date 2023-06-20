@@ -22,6 +22,10 @@
     * [ListProperties](https://techdocs.akamai.com/cloud-wrapper/reference/get-properties)
     * [ListOrigins](https://techdocs.akamai.com/cloud-wrapper/reference/get-origins)
 
+* CLIENTLISTS
+  * [IMPORTANT] Added Client Lists API Support
+    * [GetClientLists](https://techdocs.akamai.com/client-lists/reference/get-lists)
+
 ## 7.1.0 (July 25, 2023)
 
 ### FEATURES/ENHANCEMENTS:
