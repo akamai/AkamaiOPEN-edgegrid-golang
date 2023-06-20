@@ -351,6 +351,10 @@ func (p *networklists) CreateActivations(ctx context.Context, params CreateActiv
 		return nil, fmt.Errorf("create activation request failed: %s", err.Error())
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, p.Error(resp)
+	}
+
 	var rvalget CreateActivationsResponse
 
 	uriget := fmt.Sprintf("/network-list/v2/network-lists/%s/environments/%s/status",
@@ -392,9 +396,13 @@ func (p *networklists) RemoveActivations(ctx context.Context, params RemoveActiv
 
 	var rval RemoveActivationsResponse
 
-	_, err = p.Exec(req, &rval, params)
+	resp, err := p.Exec(req, &rval, params)
 	if err != nil {
 		return nil, fmt.Errorf("remove activation request failed: %s", err.Error())
+	}
+
+	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
+		return nil, p.Error(resp)
 	}
 
 	return &rval, nil

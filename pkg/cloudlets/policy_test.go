@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/tools"
 
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"

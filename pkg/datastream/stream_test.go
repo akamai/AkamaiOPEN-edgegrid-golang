@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -23,166 +23,252 @@ func TestDs_GetStream(t *testing.T) {
 		expectedResponse *DetailedStreamVersion
 		withError        func(*testing.T, error)
 	}{
-		"200 OK": {
+		"200 OK Without midgress field": {
 			request: GetStreamRequest{
 				StreamID: 1,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
-    "streamId":1,
-    "streamVersionId":2,
-    "streamName":"ds2-sample-name",
-    "datasets":[
+    "contractId": "P-1324", 
+    "createdBy": "sample_username", 
+    "createdDate": "2022-11-04T00:49:45Z", 
+    "datasetFields": [
         {
-            "datasetGroupName":"group_name_1",
-            "datasetGroupDescription":"group_desc_1",
-            "datasetFields":[
-                {
-                    "datasetFieldId":1000,
-                    "datasetFieldName":"dataset_field_name_1",
-                    "datasetFieldDescription":"dataset_field_desc_1",
-                    "order":0
-                },
-                {
-                    "datasetFieldId":1002,
-                    "datasetFieldName":"dataset_field_name_2",
-                    "datasetFieldDescription":"dataset_field_desc_2",
-                    "order":1
-                }
-            ]
+            "datasetFieldId":1000,
+            "datasetFieldName":"dataset_field_name_1",
+            "datasetFieldJsonKey":"dataset_field_json_key_1"
         },
         {
-            "datasetGroupName":"group_name_2",
-            "datasetFields":[
-                {
-                    "datasetFieldId":1082,
-                    "datasetFieldName":"dataset_field_name_3",
-                    "datasetFieldDescription":"dataset_field_desc_3",
-                    "order":32
-                }
-            ]
-        }
-    ],
-    "connectors":[
-        {
-            "connectorType":"S3",
-            "connectorId":13174,
-            "bucket":"amzdemods2",
-            "path":"/sample_path",
-            "compressLogs":true,
-            "connectorName":"aws_ds2_amz_demo",
-            "region":"us-east-1"
-        }
-    ],
-    "productName":"Adaptive Media Delivery",
-    "productId":"Adaptive_Media_Delivery",
-    "templateName":"EDGE_LOGS",
-    "config":{
-        "delimiter":"SPACE",
-        "uploadFilePrefix":"ak",
-        "uploadFileSuffix":"ds",
-        "frequency":{
-            "timeInSec":30
+            "datasetFieldId":1002,
+            "datasetFieldName":"dataset_field_name_2",
+            "datasetFieldJsonKey":"dataset_field_json_key_2"
         },
-        "useStaticPublicIP":false,
-        "format":"STRUCTURED"
+        {
+            "datasetFieldId":1082,
+            "datasetFieldName":"dataset_field_name_3",
+            "datasetFieldJsonKey":"dataset_field_json_key_3"
+        }
+    ], 
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE", 
+        "format": "STRUCTURED", 
+        "frequency": {
+            "intervalInSeconds": 30
+        }, 
+        "uploadFilePrefix": "ak", 
+        "uploadFileSuffix": "ds"
+    }, 
+    "destination": {
+        "bucket": "sample_bucket", 
+        "compressLogs": true, 
+        "destinationType": "S3", 
+        "displayName": "sample_display_name", 
+        "path": "/sample_path", 
+        "region": "us-east-1"
     },
-    "groupId":171647,
-    "groupName":"Akamai Data Delivery-P-132NZF456",
-    "contractId":"P-132NZF456",
-    "properties":[
+    "groupId": 1234, 
+    "latestVersion": 2, 
+    "modifiedBy": "sample_username2", 
+    "modifiedDate": "2022-11-04T02:14:29Z", 
+    "notificationEmails": [
+        "sample_username@akamai.com"
+    ], 
+    "productId": "Adaptive_Media_Delivery", 
+    "properties": [
         {
-            "propertyId":678154,
-            "propertyName":"amz.demo.com"
+            "propertyId": 12345, 
+            "propertyName": "example.com"
         }
-    ],
-    "streamType":"RAW_LOGS",
-    "activationStatus":"ACTIVATED",
-    "createdBy":"sample_username",
-    "createdDate":"08-07-2021 06:00:27 GMT",
-    "modifiedBy":"sample_username2",
-    "modifiedDate":"08-07-2021 16:00:27 GMT",
-    "emailIds":"sample_username@akamai.com"
+    ], 
+    "streamId": 1, 
+    "streamName": "ds2-sample-name", 
+    "streamStatus": "ACTIVATED", 
+    "streamVersion": 2
 }
 `,
-			expectedPath: "/datastream-config-api/v1/log/streams/1",
+			expectedPath: "/datastream-config-api/v2/log/streams/1",
 			expectedResponse: &DetailedStreamVersion{
-				ActivationStatus: ActivationStatusActivated,
-				Config: Config{
+				StreamStatus: StreamStatusActivated,
+				DeliveryConfiguration: DeliveryConfiguration{
 					Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
 					Format:    FormatTypeStructured,
 					Frequency: Frequency{
-						TimeInSec: TimeInSec30,
+						IntervalInSeconds: IntervalInSeconds30,
 					},
 					UploadFilePrefix: "ak",
 					UploadFileSuffix: "ds",
 				},
-				Connectors: []ConnectorDetails{
-					{
-						ConnectorID:   13174,
-						CompressLogs:  true,
-						ConnectorName: "aws_ds2_amz_demo",
-						ConnectorType: ConnectorTypeS3,
-						Path:          "/sample_path",
-						Bucket:        "amzdemods2",
-						Region:        "us-east-1",
-					},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample_display_name",
+					DestinationType: DestinationTypeS3,
+					Path:            "/sample_path",
+					Bucket:          "sample_bucket",
+					Region:          "us-east-1",
 				},
-				ContractID:  "P-132NZF456",
+				ContractID:  "P-1324",
 				CreatedBy:   "sample_username",
-				CreatedDate: "08-07-2021 06:00:27 GMT",
-				Datasets: []DataSets{
+				CreatedDate: "2022-11-04T00:49:45Z",
+				DatasetFields: []DataSetField{
 					{
-						DatasetGroupName:        "group_name_1",
-						DatasetGroupDescription: "group_desc_1",
-						DatasetFields: []DatasetFields{
-							{
-								DatasetFieldID:          1000,
-								DatasetFieldName:        "dataset_field_name_1",
-								DatasetFieldDescription: "dataset_field_desc_1",
-								Order:                   0,
-							},
-							{
-								DatasetFieldID:          1002,
-								DatasetFieldName:        "dataset_field_name_2",
-								DatasetFieldDescription: "dataset_field_desc_2",
-								Order:                   1,
-							},
-						},
+						DatasetFieldID:      1000,
+						DatasetFieldName:    "dataset_field_name_1",
+						DatasetFieldJsonKey: "dataset_field_json_key_1",
 					},
 					{
-						DatasetGroupName: "group_name_2",
-						DatasetFields: []DatasetFields{
-							{
-								DatasetFieldID:          1082,
-								DatasetFieldName:        "dataset_field_name_3",
-								DatasetFieldDescription: "dataset_field_desc_3",
-								Order:                   32,
-							},
-						},
+						DatasetFieldID:      1002,
+						DatasetFieldName:    "dataset_field_name_2",
+						DatasetFieldJsonKey: "dataset_field_json_key_2",
+					},
+					{
+						DatasetFieldID:      1082,
+						DatasetFieldName:    "dataset_field_name_3",
+						DatasetFieldJsonKey: "dataset_field_json_key_3",
 					},
 				},
-				EmailIDs:     "sample_username@akamai.com",
-				GroupID:      171647,
-				GroupName:    "Akamai Data Delivery-P-132NZF456",
-				ModifiedBy:   "sample_username2",
-				ModifiedDate: "08-07-2021 16:00:27 GMT",
-				ProductID:    "Adaptive_Media_Delivery",
-				ProductName:  "Adaptive Media Delivery",
+				NotificationEmails: []string{"sample_username@akamai.com"},
+				GroupID:            1234,
+				ModifiedBy:         "sample_username2",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				ProductID:          "Adaptive_Media_Delivery",
 				Properties: []Property{
 					{
-						PropertyID:   678154,
-						PropertyName: "amz.demo.com",
+						PropertyID:   12345,
+						PropertyName: "example.com",
 					},
 				},
-				StreamID:        1,
-				StreamName:      "ds2-sample-name",
-				StreamType:      StreamTypeRawLogs,
-				StreamVersionID: 2,
-				TemplateName:    TemplateNameEdgeLogs,
+				StreamID:      1,
+				StreamName:    "ds2-sample-name",
+				StreamVersion: 2,
+				LatestVersion: 2,
 			},
 		},
+
+		"200 OK With midgress field": {
+			request: GetStreamRequest{
+				StreamID: 1,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "contractId": "P-1324", 
+    "createdBy": "sample_username", 
+    "createdDate": "2022-11-04T00:49:45Z", 
+    "collectMidgress": true,
+    "datasetFields": [
+        {
+            "datasetFieldId":1000,
+            "datasetFieldName":"dataset_field_name_1",
+            "datasetFieldJsonKey":"dataset_field_json_key_1"
+        },
+        {
+            "datasetFieldId":1002,
+            "datasetFieldName":"dataset_field_name_2",
+            "datasetFieldJsonKey":"dataset_field_json_key_2"
+        },
+        {
+            "datasetFieldId":1082,
+            "datasetFieldName":"dataset_field_name_3",
+            "datasetFieldJsonKey":"dataset_field_json_key_3"
+        }
+    ], 
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE", 
+        "format": "STRUCTURED", 
+        "frequency": {
+            "intervalInSeconds": 30
+        }, 
+        "uploadFilePrefix": "ak", 
+        "uploadFileSuffix": "ds"
+    }, 
+    "destination": {
+        "bucket": "sample_bucket", 
+        "compressLogs": true, 
+        "destinationType": "S3", 
+        "displayName": "sample_display_name", 
+        "path": "/sample_path", 
+        "region": "us-east-1"
+    },
+    "groupId": 1234, 
+    "latestVersion": 2, 
+    "modifiedBy": "sample_username2", 
+    "modifiedDate": "2022-11-04T02:14:29Z", 
+    "notificationEmails": [
+        "sample_username@akamai.com"
+    ], 
+    "productId": "Adaptive_Media_Delivery", 
+    "properties": [
+        {
+            "propertyId": 1234, 
+            "propertyName": "sample.com"
+        }
+    ], 
+    "streamId": 1, 
+    "streamName": "ds2-sample-name", 
+    "streamStatus": "ACTIVATED", 
+    "streamVersion": 2
+}
+`,
+			expectedPath: "/datastream-config-api/v2/log/streams/1",
+			expectedResponse: &DetailedStreamVersion{
+				CollectMidgress: true,
+				StreamStatus:    StreamStatusActivated,
+				DeliveryConfiguration: DeliveryConfiguration{
+					Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
+					Format:    FormatTypeStructured,
+					Frequency: Frequency{
+						IntervalInSeconds: IntervalInSeconds30,
+					},
+					UploadFilePrefix: "ak",
+					UploadFileSuffix: "ds",
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample_display_name",
+					DestinationType: DestinationTypeS3,
+					Path:            "/sample_path",
+					Bucket:          "sample_bucket",
+					Region:          "us-east-1",
+				},
+				ContractID:  "P-1324",
+				CreatedBy:   "sample_username",
+				CreatedDate: "2022-11-04T00:49:45Z",
+				DatasetFields: []DataSetField{
+					{
+						DatasetFieldID:      1000,
+						DatasetFieldName:    "dataset_field_name_1",
+						DatasetFieldJsonKey: "dataset_field_json_key_1",
+					},
+					{
+						DatasetFieldID:      1002,
+						DatasetFieldName:    "dataset_field_name_2",
+						DatasetFieldJsonKey: "dataset_field_json_key_2",
+					},
+					{
+						DatasetFieldID:      1082,
+						DatasetFieldName:    "dataset_field_name_3",
+						DatasetFieldJsonKey: "dataset_field_json_key_3",
+					},
+				},
+				NotificationEmails: []string{"sample_username@akamai.com"},
+				GroupID:            1234,
+				ModifiedBy:         "sample_username2",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				ProductID:          "Adaptive_Media_Delivery",
+				Properties: []Property{
+					{
+						PropertyID:   1234,
+						PropertyName: "sample.com",
+					},
+				},
+				StreamID:      1,
+				StreamName:    "ds2-sample-name",
+				StreamVersion: 2,
+				LatestVersion: 2,
+			},
+		},
+
 		"validation error": {
 			request: GetStreamRequest{},
 			withError: func(t *testing.T, err error) {
@@ -193,7 +279,7 @@ func TestDs_GetStream(t *testing.T) {
 		"400 bad request": {
 			request:        GetStreamRequest{StreamID: 12},
 			responseStatus: http.StatusBadRequest,
-			expectedPath:   "/datastream-config-api/v1/log/streams/12",
+			expectedPath:   "/datastream-config-api/v2/log/streams/12",
 			responseBody: `
 {
 	"type": "bad-request",
@@ -253,36 +339,44 @@ func TestDs_GetStream(t *testing.T) {
 
 func TestDs_CreateStream(t *testing.T) {
 	createStreamRequest := CreateStreamRequest{
+		Activate: true,
 		StreamConfiguration: StreamConfiguration{
-			ActivateNow: true,
-			Config: Config{
+			DeliveryConfiguration: DeliveryConfiguration{
 				Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 				Format:           FormatTypeStructured,
-				Frequency:        Frequency{TimeInSec: TimeInSec30},
+				Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
 				UploadFilePrefix: "logs",
 				UploadFileSuffix: "ak",
 			},
-			Connectors: []AbstractConnector{
+
+			Destination: AbstractConnector(
 				&S3Connector{
-					Path:            "log/edgelogs/{ %Y/%m/%d }",
-					ConnectorName:   "S3Destination",
-					Bucket:          "datastream.akamai.com",
+					Path:            "sample-path/{%Y/%m/%d}",
+					DisplayName:     "sample-display-name",
+					Bucket:          "datastream.com",
 					Region:          "ap-south-1",
-					AccessKey:       "AKIA6DK7TDQLVGZ3TYP1",
-					SecretAccessKey: "1T2ll1H4dXWx5itGhpc7FlSbvvOvky1098nTtEMg",
+					AccessKey:       "1234ABCD",
+					SecretAccessKey: "1234ABCD",
+				},
+			),
+			ContractID: "2-AB1234",
+			DatasetFields: []DatasetFieldID{
+				{
+					DatasetFieldID: 2020,
 				},
 			},
-			ContractID: "2-FGHIJ",
-			DatasetFieldIDs: []int{
-				1002, 1005, 1006, 1008, 1009, 1011, 1012,
-				1013, 1014, 1015, 1016, 1017, 1101,
+			NotificationEmails: []string{"useremail1@akamai.com", "useremail2@akamai.com"},
+			GroupID:            1234,
+			Properties: []PropertyID{
+				{
+					PropertyID: 1234,
+				},
+				{
+					PropertyID: 1234,
+				},
 			},
-			EmailIDs:     "useremail@akamai.com",
-			GroupID:      tools.IntPtr(21484),
-			PropertyIDs:  []int{123123, 123123},
-			StreamName:   "TestStream",
-			StreamType:   StreamTypeRawLogs,
-			TemplateName: TemplateNameEdgeLogs,
+			StreamName:      "TestStream",
+			CollectMidgress: true,
 		},
 	}
 
@@ -297,92 +391,178 @@ func TestDs_CreateStream(t *testing.T) {
 		responseBody     string
 		expectedPath     string
 		expectedBody     string
-		expectedResponse *StreamUpdate
+		expectedResponse *DetailedStreamVersion
 		withError        error
 	}{
-		"202 Accepted": {
+		"201 Created ActivateNow:true": {
 			request:        createStreamRequest,
-			responseStatus: http.StatusAccepted,
+			responseStatus: http.StatusCreated,
 			responseBody: `
+
 {
-    "streamVersionKey": {
-        "streamId": 7050,
-        "streamVersionId": 1
-    }
-}`,
-			expectedPath: "/datastream-config-api/v1/log/streams",
-			expectedResponse: &StreamUpdate{
-				StreamVersionKey: StreamVersionKey{
-					StreamID:        7050,
-					StreamVersionID: 1,
+    "contractId": "2-AB1234", 
+    "createdBy": "sample_username", 
+    "createdDate": "2022-11-04T00:49:45Z", 
+    "collectMidgress": true,
+    "datasetFields": [
+        {
+            "datasetFieldId":2020,
+            "datasetFieldName":"field_name_1",
+            "datasetFieldJsonKey":"field_json_key_1"
+        }
+    ],
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE", 
+        "format": "STRUCTURED", 
+        "frequency": {
+            "intervalInSeconds": 30
+        }, 
+        "uploadFilePrefix": "logs", 
+        "uploadFileSuffix": "ak"
+    },
+    "destination": {
+        "bucket": "datastream.com", 
+        "compressLogs": true, 
+        "destinationType": "S3", 
+        "displayName": "sample-display-name", 
+        "path": "sample-path/{%Y/%m/%d}", 
+        "region": "ap-south-1"
+    },
+    "groupId": 1234, 
+    "latestVersion": 1, 
+    "modifiedBy": "sample_username2", 
+    "modifiedDate": "2022-11-04T02:14:29Z", 
+    "notificationEmails": [
+        "useremail1@akamai.com", "useremail2@akamai.com"
+    ], 
+    "productId": "Adaptive_Media_Delivery", 
+    "properties": [
+        {
+            "propertyId": 1234, 
+            "propertyName": "abcd"
+        },
+        {
+            "propertyId": 1234, 
+            "propertyName": "abcd"
+        }
+    ], 
+    "streamId": 7050, 
+    "streamName": "TestStream", 
+    "streamStatus": "ACTIVATED", 
+    "streamVersion": 1
+}
+
+
+`,
+			expectedPath: "/datastream-config-api/v2/log/streams?activate=true",
+			expectedResponse: &DetailedStreamVersion{
+				CollectMidgress: true,
+				ContractID:      "2-AB1234",
+				CreatedBy:       "sample_username",
+				CreatedDate:     "2022-11-04T00:49:45Z",
+				DatasetFields: []DataSetField{
+					{
+						DatasetFieldName:    "field_name_1",
+						DatasetFieldID:      2020,
+						DatasetFieldJsonKey: "field_json_key_1",
+					},
+				},
+				DeliveryConfiguration: DeliveryConfiguration{
+					Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
+					Format:    FormatTypeStructured,
+					Frequency: Frequency{
+						IntervalInSeconds: IntervalInSeconds30,
+					},
+					UploadFilePrefix: "logs",
+					UploadFileSuffix: "ak",
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample-display-name",
+					DestinationType: DestinationTypeS3,
+					Path:            "sample-path/{%Y/%m/%d}",
+					Bucket:          "datastream.com",
+					Region:          "ap-south-1",
+				},
+				GroupID:            1234,
+				LatestVersion:      1,
+				StreamID:           7050,
+				StreamVersion:      1,
+				StreamName:         "TestStream",
+				StreamStatus:       StreamStatusActivated,
+				ModifiedBy:         "sample_username2",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				NotificationEmails: []string{"useremail1@akamai.com", "useremail2@akamai.com"},
+				ProductID:          "Adaptive_Media_Delivery",
+				Properties: []Property{
+					{
+						PropertyID:   1234,
+						PropertyName: "abcd",
+					},
+					{
+						PropertyID:   1234,
+						PropertyName: "abcd",
+					},
 				},
 			},
+
 			expectedBody: `
 {
-    "streamName": "TestStream",
-    "activateNow": true,
-    "streamType": "RAW_LOGS",
-    "templateName": "EDGE_LOGS",
-    "groupId": 21484,
-    "contractId": "2-FGHIJ",
-    "emailIds": "useremail@akamai.com",
-    "propertyIds": [
-        123123,
-		123123
-    ],
-    "datasetFieldIds": [
-        1002,
-        1005,
-        1006,
-        1008,
-        1009,
-        1011,
-        1012,
-        1013,
-        1014,
-        1015,
-        1016,
-        1017,
-        1101
-    ],
-    "config": {
-        "uploadFilePrefix": "logs",
-        "uploadFileSuffix": "ak",
-        "delimiter": "SPACE",
-        "format": "STRUCTURED",
-        "frequency": {
-            "timeInSec": 30
-        }
-    },
-    "connectors": [
-        {
-            "path": "log/edgelogs/{ %Y/%m/%d }",
-            "connectorName": "S3Destination",
-            "bucket": "datastream.akamai.com",
-            "region": "ap-south-1",
-            "accessKey": "AKIA6DK7TDQLVGZ3TYP1",
-            "secretAccessKey": "1T2ll1H4dXWx5itGhpc7FlSbvvOvky1098nTtEMg",
-            "connectorType": "S3"
-        }
-    ]
-}`,
+   "streamName":"TestStream",
+   "groupId":1234,
+   "contractId":"2-AB1234",
+   "collectMidgress":true,
+   "notificationEmails":[
+      "useremail1@akamai.com",
+      "useremail2@akamai.com"
+   ],
+   "properties":[
+      {
+         "propertyId":1234
+      },
+      {
+         "propertyId":1234
+      }
+   ],
+   "datasetFields":[
+      {
+         "datasetFieldId":2020
+      }
+   ],
+   "deliveryConfiguration":{
+      "uploadFilePrefix":"logs",
+      "uploadFileSuffix":"ak",
+      "fieldDelimiter":"SPACE",
+      "format":"STRUCTURED",
+      "frequency":{
+         "intervalInSeconds":30
+      }
+   },
+   "destination":{
+         "path":"sample-path/{%Y/%m/%d}",
+         "displayName":"sample-display-name",
+         "bucket":"datastream.com",
+         "region":"ap-south-1",
+         "accessKey":"1234ABCD",
+         "secretAccessKey":"1234ABCD",
+         "destinationType":"S3"
+   }
+}
+`,
 		},
-		"validation error - empty request": {
-			request:   CreateStreamRequest{},
-			withError: ErrStructValidation,
-		},
-		"validation error - empty connectors list": {
+
+		"validation error - empty destination": {
 			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
-				r.StreamConfiguration.Connectors = []AbstractConnector{}
+				r.StreamConfiguration.Destination = AbstractConnector(&S3Connector{})
 			}),
 			withError: ErrStructValidation,
 		},
 		"validation error - delimiter with JSON format": {
 			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
-				r.StreamConfiguration.Config = Config{
+				r.StreamConfiguration.DeliveryConfiguration = DeliveryConfiguration{
 					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 					Format:           FormatTypeJson,
-					Frequency:        Frequency{TimeInSec: TimeInSec30},
+					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
 				}
@@ -391,25 +571,25 @@ func TestDs_CreateStream(t *testing.T) {
 		},
 		"validation error - no delimiter with STRUCTURED format": {
 			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
-				r.StreamConfiguration.Config = Config{
+				r.StreamConfiguration.DeliveryConfiguration = DeliveryConfiguration{
 					Format:           FormatTypeStructured,
-					Frequency:        Frequency{TimeInSec: TimeInSec30},
+					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
 				}
 			}),
 			withError: ErrStructValidation,
 		},
-		"validation error - missing connector configuration fields": {
+		"validation error - missing destination configuration fields": {
 			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
-				r.StreamConfiguration.Connectors = []AbstractConnector{
+				r.StreamConfiguration.Destination = AbstractConnector(
 					&S3Connector{
-						Path:          "log/edgelogs/{ %Y/%m/%d }",
-						ConnectorName: "S3Destination",
-						Bucket:        "datastream.akamai.com",
-						Region:        "ap-south-1",
+						Path:        "log/edgelogs/{ %Y/%m/%d }",
+						DisplayName: "S3Destination",
+						Bucket:      "datastream.akamai.com",
+						Region:      "ap-south-1",
 					},
-				}
+				)
 			}),
 			withError: ErrStructValidation,
 		},
@@ -432,7 +612,7 @@ func TestDs_CreateStream(t *testing.T) {
 	]
 }
 `,
-			expectedPath: "/datastream-config-api/v1/log/streams",
+			expectedPath: "/datastream-config-api/v2/log/streams?activate=true",
 			withError: &Error{
 				Type:       "forbidden",
 				Title:      "Forbidden",
@@ -467,7 +647,7 @@ func TestDs_CreateStream(t *testing.T) {
 	]
 }
 `,
-			expectedPath: "/datastream-config-api/v1/log/streams",
+			expectedPath: "/datastream-config-api/v2/log/streams?activate=true",
 			withError: &Error{
 				Type:       "bad-request",
 				Title:      "Bad Request",
@@ -522,23 +702,48 @@ func TestDs_CreateStream(t *testing.T) {
 func TestDs_UpdateStream(t *testing.T) {
 	updateRequest := UpdateStreamRequest{
 		StreamID: 7050,
+		Activate: true,
 		StreamConfiguration: StreamConfiguration{
-			ActivateNow: true,
-			Config: Config{
+			DeliveryConfiguration: DeliveryConfiguration{
 				Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 				Format:           "STRUCTURED",
-				Frequency:        Frequency{TimeInSec: TimeInSec30},
+				Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
 				UploadFilePrefix: "logs",
 				UploadFileSuffix: "ak",
 			},
-			Connectors:      []AbstractConnector{},
-			ContractID:      "P-132NZF456",
-			DatasetFieldIDs: []int{1, 2, 3},
-			EmailIDs:        "test@aka.mai",
-			PropertyIDs:     []int{123123, 123123},
-			StreamName:      "TestStream",
-			StreamType:      "RAW_LOGS",
-			TemplateName:    "EDGE_LOGS",
+			Destination: AbstractConnector(&S3Connector{
+				DisplayName:     "sample-display-name",
+				DestinationType: DestinationTypeS3,
+				Path:            "sample-path/{%Y/%m/%d}",
+				Bucket:          "datastream.com",
+				Region:          "ap-south-1",
+				AccessKey:       "ABC",
+				SecretAccessKey: "XYZ",
+			}),
+			ContractID: "P-1324",
+			DatasetFields: []DatasetFieldID{
+				{
+					DatasetFieldID: 1,
+				},
+				{
+					DatasetFieldID: 2,
+				},
+				{
+					DatasetFieldID: 3,
+				},
+			},
+			NotificationEmails: []string{"test@aka.mai", "useremail2@akamai.com"},
+
+			Properties: []PropertyID{
+				{
+					PropertyID: 123123,
+				},
+				{
+					PropertyID: 123123,
+				},
+			},
+
+			StreamName: "TestStream",
 		},
 	}
 
@@ -552,38 +757,125 @@ func TestDs_UpdateStream(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *StreamUpdate
+		expectedResponse *DetailedStreamVersion
 		withError        error
 	}{
-		"202 Accepted": {
+		"200 OK activate:true": {
 			request:        updateRequest,
-			responseStatus: http.StatusAccepted,
+			responseStatus: http.StatusOK,
 			responseBody: `
 {
-    "streamVersionKey": {
-        "streamId": 7050,
-        "streamVersionId": 2
-    }
+    "contractId": "2-AB1234", 
+    "createdBy": "sample_username", 
+    "createdDate": "2022-11-04T00:49:45Z", 
+    "collectMidgress": true,
+    "datasetFields": [
+        {
+            "datasetFieldId":2020,
+            "datasetFieldName":"field_name_1",
+            "datasetFieldJsonKey":"field_json_key_1"
+        }
+    ],
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE", 
+        "format": "STRUCTURED", 
+        "frequency": {
+            "intervalInSeconds": 30
+        }, 
+        "uploadFilePrefix": "logs", 
+        "uploadFileSuffix": "ak"
+    },
+    "destination": {
+        "bucket": "datastream.com", 
+        "compressLogs": true, 
+        "destinationType": "S3", 
+        "displayName": "sample-display-name", 
+        "path": "sample-path/{%Y/%m/%d}", 
+        "region": "ap-south-1"
+    },
+    "groupId": 1234, 
+    "latestVersion": 2, 
+    "modifiedBy": "modified_by_user", 
+    "modifiedDate": "2022-11-04T02:14:29Z", 
+    "notificationEmails": [
+        "useremail1@akamai.com", "useremail2@akamai.com"
+    ], 
+    "productId": "Adaptive_Media_Delivery", 
+    "properties": [
+        {
+            "propertyId": 1234, 
+            "propertyName": "sample1.com"
+        },
+        {
+            "propertyId": 1234, 
+            "propertyName": "sample2.com"
+        }
+    ], 
+    "streamId": 7050, 
+    "streamName": "TestStream", 
+    "streamStatus": "ACTIVATED", 
+    "streamVersion": 2
 }
 `,
-			expectedPath: "/datastream-config-api/v1/log/streams/7050",
-			expectedResponse: &StreamUpdate{
-				StreamVersionKey: StreamVersionKey{
-					StreamID:        7050,
-					StreamVersionID: 2,
+			expectedPath: "/datastream-config-api/v2/log/streams/7050?activate=true",
+			expectedResponse: &DetailedStreamVersion{
+				CollectMidgress: true,
+				ContractID:      "2-AB1234",
+				CreatedBy:       "sample_username",
+				CreatedDate:     "2022-11-04T00:49:45Z",
+				DatasetFields: []DataSetField{
+					{
+						DatasetFieldName:    "field_name_1",
+						DatasetFieldID:      2020,
+						DatasetFieldJsonKey: "field_json_key_1",
+					},
+				},
+				DeliveryConfiguration: DeliveryConfiguration{
+					Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
+					Format:    FormatTypeStructured,
+					Frequency: Frequency{
+						IntervalInSeconds: IntervalInSeconds30,
+					},
+					UploadFilePrefix: "logs",
+					UploadFileSuffix: "ak",
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample-display-name",
+					DestinationType: DestinationTypeS3,
+					Path:            "sample-path/{%Y/%m/%d}",
+					Bucket:          "datastream.com",
+					Region:          "ap-south-1",
+				},
+				GroupID:            1234,
+				LatestVersion:      2,
+				StreamID:           7050,
+				StreamVersion:      2,
+				StreamName:         "TestStream",
+				StreamStatus:       StreamStatusActivated,
+				ModifiedBy:         "modified_by_user",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				NotificationEmails: []string{"useremail1@akamai.com", "useremail2@akamai.com"},
+				ProductID:          "Adaptive_Media_Delivery",
+				Properties: []Property{
+					{
+						PropertyID:   1234,
+						PropertyName: "sample1.com",
+					},
+					{
+						PropertyID:   1234,
+						PropertyName: "sample2.com",
+					},
 				},
 			},
 		},
-		"validation error - empty request": {
-			request:   UpdateStreamRequest{},
-			withError: ErrStructValidation,
-		},
+
 		"validation error - delimiter with JSON format": {
 			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
-				r.StreamConfiguration.Config = Config{
+				r.StreamConfiguration.DeliveryConfiguration = DeliveryConfiguration{
 					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 					Format:           FormatTypeJson,
-					Frequency:        Frequency{TimeInSec: TimeInSec30},
+					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
 				}
@@ -592,9 +884,9 @@ func TestDs_UpdateStream(t *testing.T) {
 		},
 		"validation error - no delimiter with STRUCTURED format": {
 			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
-				r.StreamConfiguration.Config = Config{
+				r.StreamConfiguration.DeliveryConfiguration = DeliveryConfiguration{
 					Format:           FormatTypeStructured,
-					Frequency:        Frequency{TimeInSec: TimeInSec60},
+					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
 				}
@@ -603,7 +895,7 @@ func TestDs_UpdateStream(t *testing.T) {
 		},
 		"validation error - groupId modification": {
 			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
-				r.StreamConfiguration.GroupID = tools.IntPtr(1337)
+				r.StreamConfiguration.GroupID = 1337
 			}),
 			withError: ErrStructValidation,
 		},
@@ -632,7 +924,7 @@ func TestDs_UpdateStream(t *testing.T) {
 	]
 }
 `,
-			expectedPath: "/datastream-config-api/v1/log/streams/7050",
+			expectedPath: "/datastream-config-api/v2/log/streams/7050?activate=true",
 			withError: &Error{
 				Type:       "bad-request",
 				Title:      "Bad Request",
@@ -673,27 +965,19 @@ func TestDs_UpdateStream(t *testing.T) {
 
 func TestDs_DeleteStream(t *testing.T) {
 	tests := map[string]struct {
-		request          DeleteStreamRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *DeleteStreamResponse
-		withError        func(*testing.T, error)
+		request        DeleteStreamRequest
+		responseStatus int
+		responseBody   string
+		expectedPath   string
+		withError      func(*testing.T, error)
 	}{
 		"200 OK": {
 			request: DeleteStreamRequest{
 				StreamID: 1,
 			},
-			responseStatus: http.StatusOK,
-			responseBody: `
-{
-    "message": "Success"
-}
-`,
-			expectedPath: "/datastream-config-api/v1/log/streams/1",
-			expectedResponse: &DeleteStreamResponse{
-				Message: "Success",
-			},
+			responseStatus: http.StatusNoContent,
+			responseBody:   ``,
+			expectedPath:   "/datastream-config-api/v2/log/streams/1",
 		},
 		"validation error": {
 			request: DeleteStreamRequest{},
@@ -705,7 +989,7 @@ func TestDs_DeleteStream(t *testing.T) {
 		"400 bad request": {
 			request:        DeleteStreamRequest{StreamID: 12},
 			responseStatus: http.StatusBadRequest,
-			expectedPath:   "/datastream-config-api/v1/log/streams/12",
+			expectedPath:   "/datastream-config-api/v2/log/streams/12",
 			responseBody: `
 {
 	"type": "bad-request",
@@ -752,109 +1036,108 @@ func TestDs_DeleteStream(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.DeleteStream(context.Background(), test.request)
+			err := client.DeleteStream(context.Background(), test.request)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
 		})
 	}
 }
 
-func TestDs_Connectors(t *testing.T) {
+func TestDs_Destinations(t *testing.T) {
 	tests := map[string]struct {
-		connector    AbstractConnector
+		destination  AbstractConnector
 		expectedJSON string
 	}{
 		"S3Connector": {
-			connector: &S3Connector{
+			destination: &S3Connector{
 				Path:            "testPath",
-				ConnectorName:   "testConnectorName",
+				DisplayName:     "testDisplayName",
 				Bucket:          "testBucket",
 				Region:          "testRegion",
 				AccessKey:       "testAccessKey",
 				SecretAccessKey: "testSecretKey",
 			},
 			expectedJSON: `
-[{
+{
 	"path": "testPath",
-	"connectorName": "testConnectorName",
+	"displayName": "testDisplayName",
 	"bucket": "testBucket",
 	"region": "testRegion",
 	"accessKey": "testAccessKey",
 	"secretAccessKey": "testSecretKey",
-	"connectorType": "S3"
-}]
+	"destinationType": "S3"
+}
 `,
 		},
 		"AzureConnector": {
-			connector: &AzureConnector{
+			destination: &AzureConnector{
 				AccountName:   "testAccountName",
 				AccessKey:     "testAccessKey",
-				ConnectorName: "testConnectorName",
+				DisplayName:   "testDisplayName",
 				ContainerName: "testContainerName",
 				Path:          "testPath",
 			},
 			expectedJSON: `
-[{
+{
     "accountName": "testAccountName",
     "accessKey": "testAccessKey",
-    "connectorName": "testConnectorName",
+    "displayName": "testDisplayName",
     "containerName": "testContainerName",
     "path": "testPath",
-    "connectorType": "AZURE"
-}]
+    "destinationType": "AZURE"
+}
 `,
 		},
 		"DatadogConnector": {
-			connector: &DatadogConnector{
-				Service:       "testService",
-				AuthToken:     "testAuthToken",
-				ConnectorName: "testConnectorName",
-				URL:           "testURL",
-				Source:        "testSource",
-				Tags:          "testTags",
-				CompressLogs:  false,
+			destination: &DatadogConnector{
+				Service:      "testService",
+				AuthToken:    "testAuthToken",
+				DisplayName:  "testDisplayName",
+				Endpoint:     "testURL",
+				Source:       "testSource",
+				Tags:         "testTags",
+				CompressLogs: false,
 			},
 			expectedJSON: `
-[{
+{
     "service": "testService",
     "authToken": "testAuthToken",
-    "connectorName": "testConnectorName",
-    "url": "testURL",
+    "displayName": "testDisplayName",
+    "endpoint": "testURL",
     "source": "testSource",
     "tags": "testTags",
-    "connectorType": "DATADOG",
+    "destinationType": "DATADOG",
     "compressLogs": false
-}]
+}
 `,
 		},
 		"SplunkConnector": {
-			connector: &SplunkConnector{
-				ConnectorName:       "testConnectorName",
-				URL:                 "testURL",
+			destination: &SplunkConnector{
+				DisplayName:         "testDisplayName",
+				Endpoint:            "testURL",
 				EventCollectorToken: "testEventCollector",
 				CompressLogs:        true,
 				CustomHeaderName:    "custom-header",
 				CustomHeaderValue:   "custom-header-value",
 			},
 			expectedJSON: `
-[{
-    "connectorName": "testConnectorName",
-    "url": "testURL",
+{
+    "displayName": "testDisplayName",
+    "endpoint": "testURL",
     "eventCollectorToken": "testEventCollector",
-    "connectorType": "SPLUNK",
+    "destinationType": "SPLUNK",
     "compressLogs": true,
 	"customHeaderName": "custom-header",
 	"customHeaderValue": "custom-header-value"
-}]
+}
 `,
 		},
 		"GCSConnector": {
-			connector: &GCSConnector{
-				ConnectorName:      "testConnectorName",
+			destination: &GCSConnector{
+				DisplayName:        "testDisplayName",
 				Bucket:             "testBucket",
 				Path:               "testPath",
 				ProjectID:          "testProjectID",
@@ -862,22 +1145,22 @@ func TestDs_Connectors(t *testing.T) {
 				PrivateKey:         "testPrivateKey",
 			},
 			expectedJSON: `
-[{
-    "connectorType": "GCS",
-    "connectorName": "testConnectorName",
+{
+    "destinationType": "GCS",
+    "displayName": "testDisplayName",
     "bucket": "testBucket",
     "path": "testPath",
     "projectId": "testProjectID",
     "serviceAccountName": "testServiceAccountName",
 	"privateKey": "testPrivateKey"
-}]
+}
 `,
 		},
 		"CustomHTTPSConnector": {
-			connector: &CustomHTTPSConnector{
+			destination: &CustomHTTPSConnector{
 				AuthenticationType: AuthenticationTypeBasic,
-				ConnectorName:      "testConnectorName",
-				URL:                "testURL",
+				DisplayName:        "testDisplayName",
+				Endpoint:           "testURL",
 				UserName:           "testUserName",
 				Password:           "testPassword",
 				CompressLogs:       true,
@@ -886,23 +1169,23 @@ func TestDs_Connectors(t *testing.T) {
 				ContentType:        "application/json",
 			},
 			expectedJSON: `
-[{
+{
     "authenticationType": "BASIC",
-    "connectorName": "testConnectorName",
-    "url": "testURL",
+    "displayName": "testDisplayName",
+    "endpoint": "testURL",
     "userName": "testUserName",
     "password": "testPassword",
-    "connectorType": "HTTPS",
+    "destinationType": "HTTPS",
     "compressLogs": true,
 	"customHeaderName": "custom-header",
 	"customHeaderValue": "custom-header-value",
 	"contentType": "application/json"
-}]
+}
 `,
 		},
 		"SumoLogicConnector": {
-			connector: &SumoLogicConnector{
-				ConnectorName:     "testConnectorName",
+			destination: &SumoLogicConnector{
+				DisplayName:       "testDisplayName",
 				Endpoint:          "testEndpoint",
 				CollectorCode:     "testCollectorCode",
 				CompressLogs:      true,
@@ -911,22 +1194,22 @@ func TestDs_Connectors(t *testing.T) {
 				ContentType:       "application/json",
 			},
 			expectedJSON: `
-[{
-    "connectorType": "SUMO_LOGIC",
-    "connectorName": "testConnectorName",
+{
+    "destinationType": "SUMO_LOGIC",
+    "displayName": "testDisplayName",
     "endpoint": "testEndpoint",
     "collectorCode": "testCollectorCode",
     "compressLogs": true,
 	"customHeaderName": "custom-header",
 	"customHeaderValue": "custom-header-value",
 	"contentType": "application/json"
-}]
+}
 `,
 		},
 		"OracleCloudStorageConnector": {
-			connector: &OracleCloudStorageConnector{
+			destination: &OracleCloudStorageConnector{
 				AccessKey:       "testAccessKey",
-				ConnectorName:   "testConnectorName",
+				DisplayName:     "testDisplayName",
 				Path:            "testPath",
 				Bucket:          "testBucket",
 				Region:          "testRegion",
@@ -934,21 +1217,21 @@ func TestDs_Connectors(t *testing.T) {
 				Namespace:       "testNamespace",
 			},
 			expectedJSON: `
-[{
+{
     "accessKey": "testAccessKey",
-    "connectorName": "testConnectorName",
+    "displayName": "testDisplayName",
     "path": "testPath",
     "bucket": "testBucket",
     "region": "testRegion",
     "secretAccessKey": "testSecretAccessKey",
-    "connectorType": "Oracle_Cloud_Storage",
+    "destinationType": "Oracle_Cloud_Storage",
     "namespace": "testNamespace"
-}]
+}
 `,
 		},
 		"LogglyConnector": {
-			connector: &LogglyConnector{
-				ConnectorName:     "testConnectorName",
+			destination: &LogglyConnector{
+				DisplayName:       "testDisplayName",
 				Endpoint:          "testEndpoint",
 				AuthToken:         "testAuthToken",
 				Tags:              "testTags",
@@ -957,21 +1240,21 @@ func TestDs_Connectors(t *testing.T) {
 				CustomHeaderValue: "testCustomHeaderValue",
 			},
 			expectedJSON: `
-[{
-	"connectorType": "LOGGLY",
-	"connectorName": "testConnectorName",
+{
+	"destinationType": "LOGGLY",
+	"displayName": "testDisplayName",
 	"endpoint": "testEndpoint",
 	"authToken": "testAuthToken",
 	"tags": "testTags",
 	"contentType": "testContentType",
 	"customHeaderName": "testCustomHeaderName",
 	"customHeaderValue": "testCustomHeaderValue"
-}]
+}
     `,
 		},
 		"NewRelicConnector": {
-			connector: &NewRelicConnector{
-				ConnectorName:     "testConnectorName",
+			destination: &NewRelicConnector{
+				DisplayName:       "testDisplayName",
 				Endpoint:          "testEndpoint",
 				AuthToken:         "testAuthToken",
 				ContentType:       "testContentType",
@@ -979,20 +1262,20 @@ func TestDs_Connectors(t *testing.T) {
 				CustomHeaderValue: "testCustomHeaderValue",
 			},
 			expectedJSON: `
-[{
-	"connectorType": "NEWRELIC",
-	"connectorName": "testConnectorName",
+{
+	"destinationType": "NEWRELIC",
+	"displayName": "testDisplayName",
 	"endpoint": "testEndpoint",
 	"authToken": "testAuthToken",
 	"contentType": "testContentType",
 	"customHeaderName": "testCustomHeaderName",
 	"customHeaderValue": "testCustomHeaderValue"
-}]
+}
     `,
 		},
 		"ElasticsearchConnector": {
-			connector: &ElasticsearchConnector{
-				ConnectorName:     "testConnectorName",
+			destination: &ElasticsearchConnector{
+				DisplayName:       "testDisplayName",
 				Endpoint:          "testEndpoint",
 				IndexName:         "testIndexName",
 				UserName:          "testUserName",
@@ -1006,9 +1289,9 @@ func TestDs_Connectors(t *testing.T) {
 				ClientKey:         "testClientKey",
 			},
 			expectedJSON: `
-[{
-	"connectorType": "ELASTICSEARCH",
-	"connectorName": "testConnectorName",
+{
+	"destinationType": "ELASTICSEARCH",
+	"displayName": "testDisplayName",
 	"endpoint": "testEndpoint",
 	"indexName": "testIndexName",
 	"userName": "testUserName",
@@ -1020,47 +1303,63 @@ func TestDs_Connectors(t *testing.T) {
 	"caCert": "testCACert",
 	"clientCert": "testClientCert",
 	"clientKey": "testClientKey"
-}]
-    `,
+}
+`,
 		},
 	}
 
 	request := CreateStreamRequest{
+		Activate: true,
 		StreamConfiguration: StreamConfiguration{
-			ActivateNow: true,
-			Config: Config{
+			DeliveryConfiguration: DeliveryConfiguration{
 				Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 				Format:           FormatTypeStructured,
-				Frequency:        Frequency{TimeInSec: TimeInSec30},
+				Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
 				UploadFilePrefix: "logs",
 				UploadFileSuffix: "ak",
 			},
-			Connectors:      nil,
-			ContractID:      "P-132NZF456",
-			DatasetFieldIDs: []int{1, 2, 3},
-			EmailIDs:        "test@aka.mai",
-			GroupID:         tools.IntPtr(123231),
-			PropertyIDs:     []int{123123, 123123},
-			StreamName:      "TestStream",
-			StreamType:      StreamTypeRawLogs,
-			TemplateName:    TemplateNameEdgeLogs,
+			Destination: nil,
+			ContractID:  "P-1324",
+			DatasetFields: []DatasetFieldID{
+				{
+					DatasetFieldID: 1,
+				},
+				{
+					DatasetFieldID: 2,
+				},
+				{
+					DatasetFieldID: 3,
+				},
+			},
+
+			NotificationEmails: []string{"test@aka.mai"},
+			GroupID:            123231,
+			Properties: []PropertyID{
+				{
+					PropertyID: 123123,
+				},
+				{
+					PropertyID: 123123,
+				},
+			},
+			StreamName: "TestStream",
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			request.StreamConfiguration.Connectors = []AbstractConnector{test.connector}
+			request.StreamConfiguration.Destination = test.destination
 
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				var connectorMap map[string]interface{}
-				err := json.NewDecoder(r.Body).Decode(&connectorMap)
+				var destinationMap map[string]interface{}
+				err := json.NewDecoder(r.Body).Decode(&destinationMap)
 				require.NoError(t, err)
 
 				var expectedMap interface{}
 				err = json.Unmarshal([]byte(test.expectedJSON), &expectedMap)
 				require.NoError(t, err)
 
-				res := reflect.DeepEqual(expectedMap, connectorMap["connectors"])
+				res := reflect.DeepEqual(expectedMap, destinationMap["destination"])
 				assert.True(t, res)
 			}))
 
@@ -1074,7 +1373,7 @@ type mockConnector struct {
 	Called bool
 }
 
-func (c *mockConnector) SetConnectorType() {
+func (c *mockConnector) SetDestinationType() {
 	c.Called = true
 }
 
@@ -1082,35 +1381,52 @@ func (c *mockConnector) Validate() error {
 	return nil
 }
 
-func TestDs_setConnectorTypes(t *testing.T) {
+func TestDs_setDestinationTypes(t *testing.T) {
 	mockConnector := mockConnector{Called: false}
 
 	request := CreateStreamRequest{
+		Activate: true,
 		StreamConfiguration: StreamConfiguration{
-			ActivateNow: true,
-			Config: Config{
+			DeliveryConfiguration: DeliveryConfiguration{
 				Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 				Format:           FormatTypeStructured,
-				Frequency:        Frequency{TimeInSec: TimeInSec30},
+				Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
 				UploadFilePrefix: "logs",
 				UploadFileSuffix: "ak",
 			},
-			Connectors: []AbstractConnector{
+			Destination: AbstractConnector(
 				&mockConnector,
+			),
+			ContractID: "P-1324",
+
+			DatasetFields: []DatasetFieldID{
+				{
+					DatasetFieldID: 1,
+				},
+				{
+					DatasetFieldID: 2,
+				},
+				{
+					DatasetFieldID: 3,
+				},
 			},
-			ContractID:      "P-132NZF456",
-			DatasetFieldIDs: []int{1, 2, 3},
-			EmailIDs:        "test@aka.mai",
-			GroupID:         tools.IntPtr(123231),
-			PropertyIDs:     []int{123123, 123123},
-			StreamName:      "TestStream",
-			StreamType:      StreamTypeRawLogs,
-			TemplateName:    TemplateNameEdgeLogs,
+
+			NotificationEmails: []string{"test@aka.mai"},
+			GroupID:            123231,
+			Properties: []PropertyID{
+				{
+					PropertyID: 123123,
+				},
+				{
+					PropertyID: 123123,
+				},
+			},
+			StreamName: "TestStream",
 		},
 	}
 
 	mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusAccepted)
+		w.WriteHeader(http.StatusCreated)
 		_, err := w.Write([]byte("{}"))
 		require.NoError(t, err)
 	}))
@@ -1135,116 +1451,97 @@ func TestDs_ListStreams(t *testing.T) {
 			responseStatus: http.StatusOK,
 			responseBody: `
 [
-  {
-    "streamId": 1,
-    "streamName": "Stream1",
-    "streamVersionId": 2,
-    "createdBy": "user1",
-    "createdDate": "14-07-2020 07:07:40 GMT",
-    "currentVersionId": 2,
-    "archived": false,
-    "activationStatus": "DEACTIVATED",
-    "groupId": 1234,
-    "groupName": "Default Group",
-    "contractId": "1-ABCDE",
-    "connectors": "S3-S1",
-    "streamTypeName": "Logs - Raw",
-    "properties": [
-      {
-        "propertyId": 13371337,
-        "propertyName": "property_name_1"
-      }
-    ],
-	"errors": [
-      {
-        "type": "ACTIVATION_ERROR",
-        "title": "Activation/Deactivation Error",
-        "detail": "Contact technical support."
-      }
-	]
-  },
-  {
-    "streamId": 2,
-    "streamName": "Stream2",
-    "streamVersionId": 3,
-    "createdBy": "user2",
-    "createdDate": "24-07-2020 07:07:40 GMT",
-    "currentVersionId": 3,
-    "archived": true,
-    "activationStatus": "ACTIVATED",
-    "groupId": 4321,
-    "groupName": "Default Group",
-    "contractId": "2-ABCDE",
-    "connectors": "S3-S2",
-    "streamTypeName": "Logs - Raw",
-    "properties": [
-      {
-        "propertyId": 23372337,
-        "propertyName": "property_name_2"
-      },
-      {
-        "propertyId": 33373337,
-        "propertyName": "property_name_3"
-      }
-    ]
-  }
+   {
+      "contractId":"1-ABC",
+      "createdBy":"abc",
+      "createdDate":"2022-04-21T17:02:58Z",
+      "groupId":123,
+      "latestVersion":15,
+      "modifiedBy":"abc",
+      "modifiedDate":"2022-12-26T17:00:03Z",
+      "productId":"API_Acceleration",
+      "properties":[
+         {
+            "propertyId":123,
+            "propertyName":"example.com"
+         },
+         {
+            "propertyId":123,
+            "propertyName":"abc.media"
+         }
+      ],
+      "streamId":123,
+      "streamName":"test-stream-1",
+      "streamStatus":"ACTIVATED",
+      "streamVersion":15
+   },
+   {
+      "contractId":"1-123",
+      "createdBy":"abc",
+      "createdDate":"2023-01-03T12:44:15Z",
+      "groupId":123,
+      "latestVersion":1,
+      "modifiedBy":"abc",
+      "modifiedDate":"2023-01-03T12:44:15Z",
+      "productId":"Download_Delivery",
+      "properties":[
+         {
+            "propertyId":123,
+            "propertyName":"abc"
+         }
+      ],
+      "streamId":123,
+      "streamName":"test-stream-2",
+      "streamStatus":"INACTIVE",
+      "streamVersion":1
+   }
 ]
 `,
-			expectedPath: "/datastream-config-api/v1/log/streams",
+			expectedPath: "/datastream-config-api/v2/log/streams",
 			expectedResponse: []StreamDetails{
 				{
-					ActivationStatus: ActivationStatusDeactivated,
-					Archived:         false,
-					Connectors:       "S3-S1",
-					ContractID:       "1-ABCDE",
-					CreatedBy:        "user1",
-					CreatedDate:      "14-07-2020 07:07:40 GMT",
-					CurrentVersionID: 2,
-					Errors: []Errors{
-						{
-							Detail: "Contact technical support.",
-							Title:  "Activation/Deactivation Error",
-							Type:   "ACTIVATION_ERROR",
-						},
-					},
-					GroupID:   1234,
-					GroupName: "Default Group",
+					StreamStatus:  StreamStatusActivated,
+					ProductID:     "API_Acceleration",
+					ModifiedBy:    "abc",
+					ModifiedDate:  "2022-12-26T17:00:03Z",
+					ContractID:    "1-ABC",
+					CreatedBy:     "abc",
+					CreatedDate:   "2022-04-21T17:02:58Z",
+					LatestVersion: 15,
+					GroupID:       123,
 					Properties: []Property{
 						{
-							PropertyID:   13371337,
-							PropertyName: "property_name_1",
+							PropertyID:   123,
+							PropertyName: "example.com",
+						},
+						{
+							PropertyID:   123,
+							PropertyName: "abc.media",
 						},
 					},
-					StreamID:        1,
-					StreamName:      "Stream1",
-					StreamTypeName:  "Logs - Raw",
-					StreamVersionID: 2,
+					StreamID:      123,
+					StreamName:    "test-stream-1",
+					StreamVersion: 15,
 				},
 				{
-					ActivationStatus: ActivationStatusActivated,
-					Archived:         true,
-					Connectors:       "S3-S2",
-					ContractID:       "2-ABCDE",
-					CreatedBy:        "user2",
-					CreatedDate:      "24-07-2020 07:07:40 GMT",
-					CurrentVersionID: 3,
-					Errors:           nil,
-					GroupID:          4321,
-					GroupName:        "Default Group",
+					StreamStatus:  StreamStatusInactive,
+					ProductID:     "Download_Delivery",
+					ModifiedBy:    "abc",
+					ModifiedDate:  "2023-01-03T12:44:15Z",
+					ContractID:    "1-123",
+					CreatedBy:     "abc",
+					CreatedDate:   "2023-01-03T12:44:15Z",
+					LatestVersion: 1,
+					GroupID:       123,
 					Properties: []Property{
 						{
-							PropertyID:   23372337,
-							PropertyName: "property_name_2",
-						},
-						{
-							PropertyID:   33373337,
-							PropertyName: "property_name_3",
+							PropertyID:   123,
+							PropertyName: "abc",
 						},
 					},
-					StreamID:        2,
-					StreamName:      "Stream2",
-					StreamTypeName:  "Logs - Raw",
-					StreamVersionID: 3,
+					StreamID:      123,
+					StreamName:    "test-stream-2",
+					StreamVersion: 1,
 				},
 			},
 		},
@@ -1256,66 +1553,55 @@ func TestDs_ListStreams(t *testing.T) {
 			responseBody: `
 [
   {
-    "streamId": 2,
-    "streamName": "Stream2",
-    "streamVersionId": 3,
-    "createdBy": "user2",
-    "createdDate": "24-07-2020 07:07:40 GMT",
-    "currentVersionId": 3,
-    "archived": true,
-    "activationStatus": "ACTIVATED",
-    "groupId": 1234,
-    "groupName": "Default Group",
-    "contractId": "2-ABCDE",
-    "connectors": "S3-S2",
-    "streamTypeName": "Logs - Raw",
-    "properties": [
-      {
-        "propertyId": 23372337,
-        "propertyName": "property_name_2"
-      },
-      {
-        "propertyId": 33373337,
-        "propertyName": "property_name_3"
-      }
-    ]
-  }
+        "contractId": "1-123", 
+        "createdBy": "abc", 
+        "createdDate": "2022-07-25T08:36:32Z", 
+        "groupId": 123, 
+        "latestVersion": 2, 
+        "modifiedBy": "abc", 
+        "modifiedDate": "2022-12-26T20:00:02Z", 
+        "productId": "Object_Delivery", 
+        "properties": [
+            {
+                "propertyId": 123, 
+                "propertyName": "abc.net"
+            }
+        ], 
+        "streamId": 123, 
+        "streamName": "test-stream", 
+        "streamStatus": "ACTIVATED", 
+        "streamVersion": 2
+    }
 ]
 `,
-			expectedPath: "/datastream-config-api/v1/log/streams?groupId=1234",
+			expectedPath: "/datastream-config-api/v2/log/streams?groupId=1234",
 			expectedResponse: []StreamDetails{
 				{
-					ActivationStatus: ActivationStatusActivated,
-					Archived:         true,
-					Connectors:       "S3-S2",
-					ContractID:       "2-ABCDE",
-					CreatedBy:        "user2",
-					CreatedDate:      "24-07-2020 07:07:40 GMT",
-					CurrentVersionID: 3,
-					Errors:           nil,
-					GroupID:          1234,
-					GroupName:        "Default Group",
+					StreamStatus:  StreamStatusActivated,
+					ProductID:     "Object_Delivery",
+					ModifiedBy:    "abc",
+					ModifiedDate:  "2022-12-26T20:00:02Z",
+					ContractID:    "1-123",
+					CreatedBy:     "abc",
+					CreatedDate:   "2022-07-25T08:36:32Z",
+					LatestVersion: 2,
+					GroupID:       123,
 					Properties: []Property{
 						{
-							PropertyID:   23372337,
-							PropertyName: "property_name_2",
-						},
-						{
-							PropertyID:   33373337,
-							PropertyName: "property_name_3",
+							PropertyID:   123,
+							PropertyName: "abc.net",
 						},
 					},
-					StreamID:        2,
-					StreamName:      "Stream2",
-					StreamTypeName:  "Logs - Raw",
-					StreamVersionID: 3,
+					StreamID:      123,
+					StreamName:    "test-stream",
+					StreamVersion: 2,
 				},
 			},
 		},
 		"400 bad request": {
 			request:        ListStreamsRequest{},
 			responseStatus: http.StatusBadRequest,
-			expectedPath:   "/datastream-config-api/v1/log/streams",
+			expectedPath:   "/datastream-config-api/v2/log/streams",
 			responseBody: `
 {
 	"type": "bad-request",

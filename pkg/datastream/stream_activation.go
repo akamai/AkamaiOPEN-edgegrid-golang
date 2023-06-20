@@ -15,36 +15,28 @@ type (
 	Activation interface {
 		// ActivateStream activates stream with given ID.
 		//
-		// See: https://techdocs.akamai.com/datastream2/reference/put-stream-activate
-		ActivateStream(context.Context, ActivateStreamRequest) (*ActivateStreamResponse, error)
+		// See: https://techdocs.akamai.com/datastream2/v2/reference/put-stream-activate
+		ActivateStream(context.Context, ActivateStreamRequest) (*DetailedStreamVersion, error)
 
 		// DeactivateStream deactivates stream with given ID.
 		//
-		// See: https://techdocs.akamai.com/datastream2/reference/put-stream-deactivate
-		DeactivateStream(context.Context, DeactivateStreamRequest) (*DeactivateStreamResponse, error)
+		// See: https://techdocs.akamai.com/datastream2/v2/reference/put-stream-deactivate
+		DeactivateStream(context.Context, DeactivateStreamRequest) (*DetailedStreamVersion, error)
 
 		// GetActivationHistory returns a history of activation status changes for all versions of a stream.
 		//
-		// See: https://techdocs.akamai.com/datastream2/reference/get-stream-activation-history
+		// See: https://techdocs.akamai.com/datastream2/v2/reference/get-stream-activation-history
 		GetActivationHistory(context.Context, GetActivationHistoryRequest) ([]ActivationHistoryEntry, error)
-	}
-
-	// ActivateStreamResponse contains response body returned after successful stream activation
-	ActivateStreamResponse struct {
-		StreamVersionKey StreamVersionKey `json:"streamVersionKey"`
 	}
 
 	// ActivationHistoryEntry contains single ActivationHistory item
 	ActivationHistoryEntry struct {
-		CreatedBy       string `json:"createdBy"`
-		CreatedDate     string `json:"createdDate"`
-		IsActive        bool   `json:"isActive"`
-		StreamID        int64  `json:"streamId"`
-		StreamVersionID int64  `json:"streamVersionId"`
+		ModifiedBy    string       `json:"modifiedBy"`
+		ModifiedDate  string       `json:"modifiedDate"`
+		Status        StreamStatus `json:"status"`
+		StreamID      int64        `json:"streamId"`
+		StreamVersion int64        `json:"streamVersion"`
 	}
-
-	// DeactivateStreamResponse contains response body returned after successful stream activation
-	DeactivateStreamResponse ActivateStreamResponse
 
 	// ActivateStreamRequest contains parameters necessary to send a ActivateStream request
 	ActivateStreamRequest struct {
@@ -88,7 +80,7 @@ var (
 	ErrGetActivationHistory = errors.New("view activation history")
 )
 
-func (d *ds) ActivateStream(ctx context.Context, params ActivateStreamRequest) (*ActivateStreamResponse, error) {
+func (d *ds) ActivateStream(ctx context.Context, params ActivateStreamRequest) (*DetailedStreamVersion, error) {
 	logger := d.Log(ctx)
 	logger.Debug("ActivateStream")
 
@@ -97,31 +89,31 @@ func (d *ds) ActivateStream(ctx context.Context, params ActivateStreamRequest) (
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v1/log/streams/%d/activate",
+		"/datastream-config-api/v2/log/streams/%d/activate",
 		params.StreamID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: parsing URL: %s", ErrActivateStream, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrActivateStream, err)
 	}
 
-	var rval ActivateStreamResponse
+	var rval DetailedStreamVersion
 	resp, err := d.Exec(req, &rval)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateStream, err)
 	}
 
-	if resp.StatusCode != http.StatusAccepted {
+	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrActivateStream, d.Error(resp))
 	}
 
 	return &rval, nil
 }
 
-func (d *ds) DeactivateStream(ctx context.Context, params DeactivateStreamRequest) (*DeactivateStreamResponse, error) {
+func (d *ds) DeactivateStream(ctx context.Context, params DeactivateStreamRequest) (*DetailedStreamVersion, error) {
 	logger := d.Log(ctx)
 	logger.Debug("DeactivateStream")
 
@@ -130,24 +122,24 @@ func (d *ds) DeactivateStream(ctx context.Context, params DeactivateStreamReques
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v1/log/streams/%d/deactivate",
+		"/datastream-config-api/v2/log/streams/%d/deactivate",
 		params.StreamID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: parsing URL: %s", ErrDeactivateStream, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeactivateStream, err)
 	}
 
-	var rval DeactivateStreamResponse
+	var rval DetailedStreamVersion
 	resp, err := d.Exec(req, &rval)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeactivateStream, err)
 	}
 
-	if resp.StatusCode != http.StatusAccepted {
+	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrDeactivateStream, d.Error(resp))
 	}
 
@@ -163,7 +155,7 @@ func (d *ds) GetActivationHistory(ctx context.Context, params GetActivationHisto
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v1/log/streams/%d/activationHistory",
+		"/datastream-config-api/v2/log/streams/%d/activation-history",
 		params.StreamID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: parsing URL: %s", ErrGetActivationHistory, err)

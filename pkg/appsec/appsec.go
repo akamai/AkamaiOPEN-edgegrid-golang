@@ -4,12 +4,18 @@ package appsec
 import (
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
 )
 
 var (
 	// ErrStructValidation is returned when given struct validation failed
 	ErrStructValidation = errors.New("struct validation")
+
+	// ErrRequestCreation is returned when creating an HTTP request failed
+	ErrRequestCreation = errors.New("HTTP request failure")
+
+	// ErrAPICallFailure is returned when an Appsec OpenAPI call failed
+	ErrAPICallFailure = errors.New("API call failure")
 )
 
 type (
@@ -19,6 +25,7 @@ type (
 		AdvancedSettingsAttackPayloadLogging
 		AdvancedSettingsEvasivePathMatch
 		AdvancedSettingsLogging
+		AdvancedSettingsPIILearning
 		AdvancedSettingsPragma
 		AdvancedSettingsPrefetch
 		AdvancedSettingsRequestBody

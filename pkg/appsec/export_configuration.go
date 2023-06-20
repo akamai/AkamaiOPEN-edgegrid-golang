@@ -427,6 +427,11 @@ type (
 						NetworkList []string `json:"networkList,omitempty"`
 					} `json:"blockedIPNetworkLists"`
 				} `json:"ipControls"`
+				UkraineGeoControls struct {
+					UkraineGeoControl struct {
+						Action string `json:"action"`
+					}
+				} `json:"ukraineGeoControl,omitempty"`
 			} `json:"ipGeoFirewall,omitempty"`
 			PenaltyBox                    *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
 			EvaluationPenaltyBox          *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
@@ -502,6 +507,7 @@ type (
 		} `json:"prefetch"`
 		PragmaHeader *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
 		RequestBody  *RequestBody                       `json:"requestBody,omitempty"`
+		PIILearning  bool                               `json:"piiLearning"`
 	}
 
 	// CustomDenyListexp is returned as part of GetExportConfigurationResponse.

@@ -1,5 +1,26 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 7.0.0 (June 20, 2023)
+
+### BREAKING CHANGES:
+
+* DataStream
+  * Updated `connectors` details in DataStream 2 API v2.
+  * Updated `GetProperties` and `GetDatasetFields` methods in DataStream 2 API v2.
+  * Updated `CreateStream`, `GetStream`, `UpdateStream`, `DeleteStream` and `ListStreams` methods in DataStream 2 API v2.  
+  * Updated `Activate`, `Deactivate`, `ActivationHistory` and `Stream` details in DataStream 2 API v2 and also changed their corresponding response objects.
+
+### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Update Geo control to include Action for Ukraine.
+  * Add `AdvancedSettingsPIILearning` interface to support reading and updating the PII learning setting.
+
+### BUG FIXES:
+
+* APPSEC
+  * Add error handling for failed NetworkList client calls.
+
 ## 6.0.0 (May 23, 2023)
 
 ### BREAKING CHANGES:

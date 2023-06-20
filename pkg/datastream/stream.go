@@ -16,64 +16,59 @@ type (
 	Stream interface {
 		// CreateStream creates a stream
 		//
-		// See: https://techdocs.akamai.com/datastream2/reference/post-stream
-		CreateStream(context.Context, CreateStreamRequest) (*StreamUpdate, error)
+		// See: https://techdocs.akamai.com/datastream2/v2/reference/post-stream
+		CreateStream(context.Context, CreateStreamRequest) (*DetailedStreamVersion, error)
 
 		// GetStream gets stream details
 		//
-		// See: https://techdocs.akamai.com/datastream2/reference/get-stream
+		// See: https://techdocs.akamai.com/datastream2/v2/reference/get-stream
 		GetStream(context.Context, GetStreamRequest) (*DetailedStreamVersion, error)
 
 		// UpdateStream updates a stream
 		//
-		// See: https://techdocs.akamai.com/datastream2/reference/put-stream
-		UpdateStream(context.Context, UpdateStreamRequest) (*StreamUpdate, error)
+		// See: https://techdocs.akamai.com/datastream2/v2/reference/put-stream
+		UpdateStream(context.Context, UpdateStreamRequest) (*DetailedStreamVersion, error)
 
 		// DeleteStream deletes a stream
 		//
-		// See: https://techdocs.akamai.com/datastream2/reference/delete-stream
-		DeleteStream(context.Context, DeleteStreamRequest) (*DeleteStreamResponse, error)
+		// See: https://techdocs.akamai.com/datastream2/v2/reference/delete-stream
+		DeleteStream(context.Context, DeleteStreamRequest) error
 
 		// ListStreams retrieves list of streams
 		//
-		// See: https://techdocs.akamai.com/datastream2/reference/get-streams
+		// See: https://techdocs.akamai.com/datastream2/v2/reference/get-streams
 		ListStreams(context.Context, ListStreamsRequest) ([]StreamDetails, error)
 	}
 
 	// DetailedStreamVersion is returned from GetStream
 	DetailedStreamVersion struct {
-		ActivationStatus ActivationStatus   `json:"activationStatus"`
-		Config           Config             `json:"config"`
-		Connectors       []ConnectorDetails `json:"connectors"`
-		ContractID       string             `json:"contractId"`
-		CreatedBy        string             `json:"createdBy"`
-		CreatedDate      string             `json:"createdDate"`
-		Datasets         []DataSets         `json:"datasets"`
-		EmailIDs         string             `json:"emailIds"`
-		Errors           []Errors           `json:"errors"`
-		GroupID          int                `json:"groupId"`
-		GroupName        string             `json:"groupName"`
-		ModifiedBy       string             `json:"modifiedBy"`
-		ModifiedDate     string             `json:"modifiedDate"`
-		ProductID        string             `json:"productId"`
-		ProductName      string             `json:"productName"`
-		Properties       []Property         `json:"properties"`
-		StreamID         int64              `json:"streamId"`
-		StreamName       string             `json:"streamName"`
-		StreamType       StreamType         `json:"streamType"`
-		StreamVersionID  int64              `json:"streamVersionId"`
-		TemplateName     TemplateName       `json:"templateName"`
+		ContractID            string                `json:"contractId"`
+		CreatedBy             string                `json:"createdBy"`
+		CreatedDate           string                `json:"createdDate"`
+		CollectMidgress       bool                  `json:"collectMidgress,omitempty"`
+		DatasetFields         []DataSetField        `json:"datasetFields"`
+		DeliveryConfiguration DeliveryConfiguration `json:"deliveryConfiguration"`
+		Destination           Destination           `json:"destination"`
+		GroupID               int                   `json:"groupId,omitempty"`
+		LatestVersion         int                   `json:"latestVersion"`
+		ModifiedBy            string                `json:"modifiedBy"`
+		ModifiedDate          string                `json:"modifiedDate"`
+		NotificationEmails    []string              `json:"notificationEmails"`
+		ProductID             string                `json:"productId"`
+		Properties            []Property            `json:"properties"`
+		StreamID              int64                 `json:"streamId"`
+		StreamName            string                `json:"streamName"`
+		StreamVersion         int64                 `json:"streamVersion"`
+		StreamStatus          StreamStatus          `json:"streamStatus"`
 	}
 
-	// ConnectorDetails provides detailed information about the connector’s configuration in the stream
-	ConnectorDetails struct {
+	// Destination provides detailed information about the destination’s configuration in the stream
+	Destination struct {
 		AuthenticationType AuthenticationType `json:"authenticationType"`
-		ConnectorID        int                `json:"connectorId"`
 		CompressLogs       bool               `json:"compressLogs"`
-		ConnectorName      string             `json:"connectorName"`
-		ConnectorType      ConnectorType      `json:"connectorType"`
+		DestinationType    DestinationType    `json:"destinationType"`
+		DisplayName        string             `json:"displayName"`
 		Path               string             `json:"path"`
-		URL                string             `json:"url"`
 		Endpoint           string             `json:"endpoint"`
 		IndexName          string             `json:"indexName"`
 		ServiceAccountName string             `json:"serviceAccountName"`
@@ -95,23 +90,21 @@ type (
 
 	// StreamConfiguration is used in CreateStream as a request body
 	StreamConfiguration struct {
-		ActivateNow     bool                `json:"activateNow"`
-		Config          Config              `json:"config"`
-		Connectors      []AbstractConnector `json:"connectors,omitempty"`
-		ContractID      string              `json:"contractId"`
-		DatasetFieldIDs []int               `json:"datasetFieldIds"`
-		EmailIDs        string              `json:"emailIds,omitempty"`
-		GroupID         *int                `json:"groupId"`
-		PropertyIDs     []int               `json:"propertyIds"`
-		StreamName      string              `json:"streamName"`
-		StreamType      StreamType          `json:"streamType"`
-		TemplateName    TemplateName        `json:"templateName"`
+		ContractID            string                `json:"contractId"`
+		CollectMidgress       bool                  `json:"collectMidgress,omitempty"`
+		DatasetFields         []DatasetFieldID      `json:"datasetFields"`
+		Destination           AbstractConnector     `json:"destination"`
+		DeliveryConfiguration DeliveryConfiguration `json:"deliveryConfiguration"`
+		GroupID               int                   `json:"groupId,omitempty"`
+		NotificationEmails    []string              `json:"notificationEmails,omitempty"`
+		Properties            []PropertyID          `json:"properties"`
+		StreamName            string                `json:"streamName"`
 	}
 
-	// Config of the configuration of log lines, names of the files sent to a destination, and delivery frequency for these files
-	Config struct {
-		Delimiter        *DelimiterType `json:"delimiter,omitempty"`
-		Format           FormatType     `json:"format,omitempty"`
+	// DeliveryConfiguration of the configuration of log lines, names of the files sent to a destination, and delivery frequency for these files
+	DeliveryConfiguration struct {
+		Delimiter        *DelimiterType `json:"fieldDelimiter,omitempty"`
+		Format           FormatType     `json:"format"`
 		Frequency        Frequency      `json:"frequency"`
 		UploadFilePrefix string         `json:"uploadFilePrefix,omitempty"`
 		UploadFileSuffix string         `json:"uploadFileSuffix,omitempty"`
@@ -119,47 +112,45 @@ type (
 
 	// The Frequency of collecting logs from each uploader and sending these logs to a destination.
 	Frequency struct {
-		TimeInSec TimeInSec `json:"timeInSec"`
+		IntervalInSeconds IntervalInSeconds `json:"intervalInSeconds"`
 	}
 
 	// DataSets is a list of fields selected from the associated template that the stream monitors in logs
 	DataSets struct {
-		DatasetFields           []DatasetFields `json:"datasetFields"`
-		DatasetGroupDescription string          `json:"datasetGroupDescription"`
-		DatasetGroupName        string          `json:"datasetGroupName"`
+		DataSetFields []DataSetField `json:"datasetFields"`
 	}
 
-	// DatasetFields is list of data set fields selected from the associated template that the stream monitors in logs
-	DatasetFields struct {
+	// DataSetField is a data set field selected from the associated template that the stream monitors in logs
+	DataSetField struct {
 		DatasetFieldID          int    `json:"datasetFieldId"`
 		DatasetFieldDescription string `json:"datasetFieldDescription"`
 		DatasetFieldJsonKey     string `json:"datasetFieldJsonKey"`
 		DatasetFieldName        string `json:"datasetFieldName"`
-		Order                   int    `json:"order"`
+		DatasetFieldGroup       string `json:"datasetFieldGroup"`
 	}
 
-	// Errors associated to the stream
-	Errors struct {
-		Detail string `json:"detail"`
-		Title  string `json:"title"`
-		Type   string `json:"type"`
+	// DatasetFieldID is a dataset field value used in create stream request
+	DatasetFieldID struct {
+		DatasetFieldID int `json:"datasetFieldId"`
 	}
 
-	// Property identifies the properties monitored in the stream.
+	// Property identifies brief info about the properties monitored in the stream.
 	Property struct {
-		Hostnames    []string `json:"hostnames"`
-		ProductID    string   `json:"productId"`
-		ProductName  string   `json:"productName"`
-		PropertyID   int      `json:"propertyId"`
-		PropertyName string   `json:"propertyName"`
+		PropertyID   int    `json:"propertyId"`
+		PropertyName string `json:"propertyName"`
 	}
 
-	// ActivationStatus is used to create an enum of possible ActivationStatus values
-	ActivationStatus string
+	// PropertyID identifies property details required in the create stream request.
+	PropertyID struct {
+		PropertyID int `json:"propertyId"`
+	}
+
+	// StreamStatus is used to create an enum of possible StreamStatus values
+	StreamStatus string
 
 	// AbstractConnector is an interface for all Connector types
 	AbstractConnector interface {
-		SetConnectorType()
+		SetDestinationType()
 		Validate() error
 	}
 
@@ -169,18 +160,13 @@ type (
 	// FormatType enum
 	FormatType string
 
-	// TemplateName enum
-	TemplateName string
-
-	// StreamType enum
-	StreamType string
-
-	// TimeInSec enum
-	TimeInSec int
+	// IntervalInSeconds enum
+	IntervalInSeconds int
 
 	// CreateStreamRequest is passed to CreateStream
 	CreateStreamRequest struct {
 		StreamConfiguration StreamConfiguration
+		Activate            bool
 	}
 
 	// GetStreamRequest is passed to GetStream
@@ -193,27 +179,18 @@ type (
 	UpdateStreamRequest struct {
 		StreamID            int64
 		StreamConfiguration StreamConfiguration
+		Activate            bool
 	}
 
 	// StreamUpdate contains information about stream ID and version
 	StreamUpdate struct {
-		StreamVersionKey StreamVersionKey `json:"streamVersionKey"`
-	}
-
-	// StreamVersionKey contains information about stream ID and version
-	StreamVersionKey struct {
-		StreamID        int64 `json:"streamId"`
-		StreamVersionID int64 `json:"streamVersionId"`
+		StreamID      int64 `json:"streamId"`
+		StreamVersion int64 `json:"streamVersion"`
 	}
 
 	// DeleteStreamRequest is passed to DeleteStream
 	DeleteStreamRequest struct {
 		StreamID int64
-	}
-
-	// DeleteStreamResponse is returned from DeleteStream
-	DeleteStreamResponse struct {
-		Message string `json:"message"`
 	}
 
 	// ListStreamsRequest is passed to ListStreams
@@ -223,41 +200,33 @@ type (
 
 	// StreamDetails contains information about stream
 	StreamDetails struct {
-		ActivationStatus ActivationStatus `json:"activationStatus"`
-		Archived         bool             `json:"archived"`
-		Connectors       string           `json:"connectors"`
-		ContractID       string           `json:"contractId"`
-		CreatedBy        string           `json:"createdBy"`
-		CreatedDate      string           `json:"createdDate"`
-		CurrentVersionID int64            `json:"currentVersionId"`
-		Errors           []Errors         `json:"errors"`
-		GroupID          int              `json:"groupId"`
-		GroupName        string           `json:"groupName"`
-		Properties       []Property       `json:"properties"`
-		StreamID         int64            `json:"streamId"`
-		StreamName       string           `json:"streamName"`
-		StreamTypeName   string           `json:"streamTypeName"`
-		StreamVersionID  int64            `json:"streamVersionId"`
+		ContractID    string       `json:"contractId"`
+		CreatedBy     string       `json:"createdBy"`
+		CreatedDate   string       `json:"createdDate"`
+		GroupID       int          `json:"groupId"`
+		LatestVersion int64        `json:"latestVersion"`
+		ModifiedBy    string       `json:"modifiedBy"`
+		ModifiedDate  string       `json:"modifiedDate"`
+		Properties    []Property   `json:"properties"`
+		ProductID     string       `json:"productId"`
+		StreamID      int64        `json:"streamId"`
+		StreamName    string       `json:"streamName"`
+		StreamStatus  StreamStatus `json:"streamStatus"`
+		StreamVersion int64        `json:"streamVersion"`
 	}
 )
 
 const (
-	// ActivationStatusActivated const
-	ActivationStatusActivated ActivationStatus = "ACTIVATED"
-	// ActivationStatusDeactivated const
-	ActivationStatusDeactivated ActivationStatus = "DEACTIVATED"
-	// ActivationStatusActivating const
-	ActivationStatusActivating ActivationStatus = "ACTIVATING"
-	// ActivationStatusDeactivating const state
-	ActivationStatusDeactivating ActivationStatus = "DEACTIVATING"
-	// ActivationStatusInactive const
-	ActivationStatusInactive ActivationStatus = "INACTIVE"
-
-	// StreamTypeRawLogs const
-	StreamTypeRawLogs StreamType = "RAW_LOGS"
-
-	// TemplateNameEdgeLogs const
-	TemplateNameEdgeLogs TemplateName = "EDGE_LOGS"
+	// StreamStatusActivated const
+	StreamStatusActivated StreamStatus = "ACTIVATED"
+	// StreamStatusDeactivated const
+	StreamStatusDeactivated StreamStatus = "DEACTIVATED"
+	// StreamStatusActivating const
+	StreamStatusActivating StreamStatus = "ACTIVATING"
+	// StreamStatusDeactivating const state
+	StreamStatusDeactivating StreamStatus = "DEACTIVATING"
+	// StreamStatusInactive const
+	StreamStatusInactive StreamStatus = "INACTIVE"
 
 	// DelimiterTypeSpace const
 	DelimiterTypeSpace DelimiterType = "SPACE"
@@ -267,28 +236,26 @@ const (
 	// FormatTypeJson const
 	FormatTypeJson FormatType = "JSON"
 
-	// TimeInSec30 const
-	TimeInSec30 TimeInSec = 30
-	// TimeInSec60 const
-	TimeInSec60 TimeInSec = 60
+	// IntervalInSeconds30 const
+	IntervalInSeconds30 IntervalInSeconds = 30
+	// IntervalInSeconds60 const
+	IntervalInSeconds60 IntervalInSeconds = 60
 )
 
 // Validate validates CreateStreamRequest
 func (r CreateStreamRequest) Validate() error {
 	return validation.Errors{
-		"StreamConfiguration.Config":                     validation.Validate(r.StreamConfiguration.Config, validation.Required),
-		"StreamConfiguration.Config.Delimiter":           validation.Validate(r.StreamConfiguration.Config.Delimiter, validation.When(r.StreamConfiguration.Config.Format == FormatTypeStructured, validation.Required, validation.In(DelimiterTypeSpace)), validation.When(r.StreamConfiguration.Config.Format == FormatTypeJson, validation.Nil)),
-		"StreamConfiguration.Config.Format":              validation.Validate(r.StreamConfiguration.Config.Format, validation.Required, validation.In(FormatTypeStructured, FormatTypeJson), validation.When(r.StreamConfiguration.Config.Delimiter != nil, validation.Required, validation.In(FormatTypeStructured))),
-		"StreamConfiguration.Config.Frequency":           validation.Validate(r.StreamConfiguration.Config.Frequency, validation.Required),
-		"StreamConfiguration.Config.Frequency.TimeInSec": validation.Validate(r.StreamConfiguration.Config.Frequency.TimeInSec, validation.Required, validation.In(TimeInSec30, TimeInSec60)),
-		"StreamConfiguration.Connectors":                 validation.Validate(r.StreamConfiguration.Connectors, validation.Required, validation.Length(1, 1)),
-		"StreamConfiguration.ContractId":                 validation.Validate(r.StreamConfiguration.ContractID, validation.Required),
-		"StreamConfiguration.DatasetFields":              validation.Validate(r.StreamConfiguration.DatasetFieldIDs, validation.Required),
-		"StreamConfiguration.GroupID":                    validation.Validate(r.StreamConfiguration.GroupID, validation.Required),
-		"StreamConfiguration.PropertyIDs":                validation.Validate(r.StreamConfiguration.PropertyIDs, validation.Required),
-		"StreamConfiguration.StreamName":                 validation.Validate(r.StreamConfiguration.StreamName, validation.Required),
-		"StreamConfiguration.StreamType":                 validation.Validate(r.StreamConfiguration.StreamType, validation.Required, validation.In(StreamTypeRawLogs)),
-		"StreamConfiguration.TemplateName":               validation.Validate(r.StreamConfiguration.TemplateName, validation.Required, validation.In(TemplateNameEdgeLogs)),
+		"StreamConfiguration.DeliveryConfiguration":                             validation.Validate(r.StreamConfiguration.DeliveryConfiguration, validation.Required),
+		"StreamConfiguration.DeliveryConfiguration.Delimiter":                   validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Delimiter, validation.When(r.StreamConfiguration.DeliveryConfiguration.Format == FormatTypeStructured, validation.Required, validation.In(DelimiterTypeSpace)), validation.When(r.StreamConfiguration.DeliveryConfiguration.Format == FormatTypeJson, validation.Nil)),
+		"StreamConfiguration.DeliveryConfiguration.Format":                      validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Format, validation.Required, validation.In(FormatTypeStructured, FormatTypeJson), validation.When(r.StreamConfiguration.DeliveryConfiguration.Delimiter != nil, validation.Required, validation.In(FormatTypeStructured))),
+		"StreamConfiguration.DeliveryConfiguration.Frequency":                   validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency, validation.Required),
+		"StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds": validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds, validation.Required, validation.In(IntervalInSeconds30, IntervalInSeconds60)),
+		"StreamConfiguration.Destination":                                       validation.Validate(r.StreamConfiguration.Destination, validation.Required),
+		"StreamConfiguration.ContractId":                                        validation.Validate(r.StreamConfiguration.ContractID, validation.Required),
+		"StreamConfiguration.DatasetFields":                                     validation.Validate(r.StreamConfiguration.DatasetFields, validation.Required),
+		"StreamConfiguration.GroupID":                                           validation.Validate(r.StreamConfiguration.GroupID, validation.Required, validation.Min(1)),
+		"StreamConfiguration.Properties":                                        validation.Validate(r.StreamConfiguration.Properties, validation.Required),
+		"StreamConfiguration.StreamName":                                        validation.Validate(r.StreamConfiguration.StreamName, validation.Required),
 	}.Filter()
 }
 
@@ -302,19 +269,17 @@ func (r GetStreamRequest) Validate() error {
 // Validate validates UpdateStreamRequest
 func (r UpdateStreamRequest) Validate() error {
 	return validation.Errors{
-		"StreamConfiguration.Config":                     validation.Validate(r.StreamConfiguration.Config, validation.Required),
-		"StreamConfiguration.Config.Delimiter":           validation.Validate(r.StreamConfiguration.Config.Delimiter, validation.When(r.StreamConfiguration.Config.Format == FormatTypeStructured, validation.Required, validation.In(DelimiterTypeSpace)), validation.When(r.StreamConfiguration.Config.Format == FormatTypeJson, validation.Nil)),
-		"StreamConfiguration.Config.Format":              validation.Validate(r.StreamConfiguration.Config.Format, validation.In(FormatTypeStructured, FormatTypeJson)),
-		"StreamConfiguration.Config.Frequency":           validation.Validate(r.StreamConfiguration.Config.Frequency, validation.Required),
-		"StreamConfiguration.Config.Frequency.TimeInSec": validation.Validate(r.StreamConfiguration.Config.Frequency.TimeInSec, validation.Required, validation.In(TimeInSec30, TimeInSec60)),
-		"StreamConfiguration.Connectors":                 validation.Validate(r.StreamConfiguration.Connectors, validation.When(r.StreamConfiguration.Connectors != nil, validation.Length(1, 1))),
-		"StreamConfiguration.ContractId":                 validation.Validate(r.StreamConfiguration.ContractID, validation.Required),
-		"StreamConfiguration.DatasetFields":              validation.Validate(r.StreamConfiguration.DatasetFieldIDs, validation.Required),
-		"StreamConfiguration.GroupID":                    validation.Validate(r.StreamConfiguration.GroupID, validation.Nil),
-		"StreamConfiguration.PropertyIDs":                validation.Validate(r.StreamConfiguration.PropertyIDs, validation.Required),
-		"StreamConfiguration.StreamName":                 validation.Validate(r.StreamConfiguration.StreamName, validation.Required),
-		"StreamConfiguration.StreamType":                 validation.Validate(r.StreamConfiguration.StreamType, validation.Required, validation.In(StreamTypeRawLogs)),
-		"StreamConfiguration.TemplateName":               validation.Validate(r.StreamConfiguration.TemplateName, validation.Required, validation.In(TemplateNameEdgeLogs)),
+		"StreamConfiguration.DeliveryConfiguration":                             validation.Validate(r.StreamConfiguration.DeliveryConfiguration, validation.Required),
+		"StreamConfiguration.DeliveryConfiguration.Delimiter":                   validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Delimiter, validation.When(r.StreamConfiguration.DeliveryConfiguration.Format == FormatTypeStructured, validation.Required, validation.In(DelimiterTypeSpace)), validation.When(r.StreamConfiguration.DeliveryConfiguration.Format == FormatTypeJson, validation.Nil)),
+		"StreamConfiguration.DeliveryConfiguration.Format":                      validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Format, validation.In(FormatTypeStructured, FormatTypeJson)),
+		"StreamConfiguration.DeliveryConfiguration.Frequency":                   validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency, validation.Required),
+		"StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds": validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds, validation.Required, validation.In(IntervalInSeconds30, IntervalInSeconds60)),
+		"StreamConfiguration.Destination":                                       validation.Validate(r.StreamConfiguration.Destination, validation.Required),
+		"StreamConfiguration.ContractId":                                        validation.Validate(r.StreamConfiguration.ContractID, validation.Required),
+		"StreamConfiguration.DatasetFields":                                     validation.Validate(r.StreamConfiguration.DatasetFields, validation.Required),
+		"StreamConfiguration.GroupID":                                           validation.Validate(r.StreamConfiguration.GroupID, validation.In(0)),
+		"StreamConfiguration.Properties":                                        validation.Validate(r.StreamConfiguration.Properties, validation.Required),
+		"StreamConfiguration.StreamName":                                        validation.Validate(r.StreamConfiguration.StreamName, validation.Required),
 	}.Filter()
 }
 
@@ -338,29 +303,36 @@ var (
 	ErrListStreams = errors.New("listing streams")
 )
 
-func (d *ds) CreateStream(ctx context.Context, params CreateStreamRequest) (*StreamUpdate, error) {
+func (d *ds) CreateStream(ctx context.Context, params CreateStreamRequest) (*DetailedStreamVersion, error) {
 	logger := d.Log(ctx)
 	logger.Debug("CreateStream")
 
-	setConnectorTypes(&params.StreamConfiguration)
+	setDestinationType(&params.StreamConfiguration)
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateStream, ErrStructValidation, err)
 	}
 
-	uri := "/datastream-config-api/v1/log/streams"
+	uri, err := url.Parse("/datastream-config-api/v2/log/streams")
+	if err != nil {
+		return nil, fmt.Errorf("%w: parsing URL: %s", ErrCreateStream, err)
+	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	q := uri.Query()
+	q.Add("activate", fmt.Sprintf("%t", params.Activate))
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateStream, err)
 	}
 
-	var rval StreamUpdate
+	var rval DetailedStreamVersion
 	resp, err := d.Exec(req, &rval, params.StreamConfiguration)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateStream, err)
 	}
 
-	if resp.StatusCode != http.StatusAccepted {
+	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateStream, d.Error(resp))
 	}
 
@@ -376,7 +348,7 @@ func (d *ds) GetStream(ctx context.Context, params GetStreamRequest) (*DetailedS
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v1/log/streams/%d",
+		"/datastream-config-api/v2/log/streams/%d",
 		params.StreamID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetStream, err)
@@ -406,80 +378,81 @@ func (d *ds) GetStream(ctx context.Context, params GetStreamRequest) (*DetailedS
 	return &rval, nil
 }
 
-func (d *ds) UpdateStream(ctx context.Context, params UpdateStreamRequest) (*StreamUpdate, error) {
+func (d *ds) UpdateStream(ctx context.Context, params UpdateStreamRequest) (*DetailedStreamVersion, error) {
 	logger := d.Log(ctx)
 	logger.Debug("UpdateStream")
 
-	setConnectorTypes(&params.StreamConfiguration)
+	setDestinationType(&params.StreamConfiguration)
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateStream, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v1/log/streams/%d",
-		params.StreamID),
-	)
+	uri, err := url.Parse(fmt.Sprintf("/datastream-config-api/v2/log/streams/%d", params.StreamID))
+
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateStream, err)
 	}
+
+	q := uri.Query()
+	q.Add("activate", fmt.Sprintf("%t", params.Activate))
+	uri.RawQuery = q.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateStream, err)
 	}
 
-	var rval StreamUpdate
+	var rval DetailedStreamVersion
 	resp, err := d.Exec(req, &rval, params.StreamConfiguration)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateStream, err)
 	}
 
-	if resp.StatusCode != http.StatusAccepted {
+	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateStream, d.Error(resp))
 	}
 
 	return &rval, nil
 }
 
-func (d *ds) DeleteStream(ctx context.Context, params DeleteStreamRequest) (*DeleteStreamResponse, error) {
+func (d *ds) DeleteStream(ctx context.Context, params DeleteStreamRequest) error {
 	logger := d.Log(ctx)
 	logger.Debug("DeleteStream")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrDeleteStream, ErrStructValidation, err)
+		return fmt.Errorf("%s: %w: %s", ErrDeleteStream, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v1/log/streams/%d",
+		"/datastream-config-api/v2/log/streams/%d",
 		params.StreamID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrDeleteStream, err)
+		return fmt.Errorf("%w: failed to parse url: %s", ErrDeleteStream, err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeleteStream, err)
+		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteStream, err)
 	}
 
-	var rval DeleteStreamResponse
-	resp, err := d.Exec(req, &rval)
+	resp, err := d.Exec(req, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrDeleteStream, err)
+		return fmt.Errorf("%w: request failed: %s", ErrDeleteStream, err)
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrDeleteStream, d.Error(resp))
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("%s: %w", ErrDeleteStream, d.Error(resp))
 	}
 
-	return &rval, nil
+	return nil
 }
 
 func (d *ds) ListStreams(ctx context.Context, params ListStreamsRequest) ([]StreamDetails, error) {
 	logger := d.Log(ctx)
 	logger.Debug("ListStreams")
 
-	uri, err := url.Parse("/datastream-config-api/v1/log/streams")
+	uri, err := url.Parse("/datastream-config-api/v2/log/streams")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListStreams, err)
 	}
@@ -508,8 +481,6 @@ func (d *ds) ListStreams(ctx context.Context, params ListStreamsRequest) ([]Stre
 	return result, nil
 }
 
-func setConnectorTypes(configuration *StreamConfiguration) {
-	for _, connector := range configuration.Connectors {
-		connector.SetConnectorType()
-	}
+func setDestinationType(configuration *StreamConfiguration) {
+	configuration.Destination.SetDestinationType()
 }

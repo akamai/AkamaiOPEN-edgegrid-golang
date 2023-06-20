@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v6/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/edgegrid"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/discard"
 )
@@ -63,7 +63,7 @@ var (
 
 const (
 	// Version is the client version
-	Version = "6.0.0"
+	Version = "7.0.0"
 )
 
 // New returns a new session
