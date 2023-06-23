@@ -3,6 +3,7 @@ package clientlists
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -153,6 +154,64 @@ func TestClientList_GetClientLists(t *testing.T) {
 						UpdateDate:                 "2023-06-05T06:56:19.004+00:00",
 						UpdatedBy:                  "ccare2",
 						Version:                    343,
+					},
+				},
+			},
+		},
+		"200 OK - Lists filtered by name and type": {
+			params: GetClientListsRequest{
+				Name: "list name",
+				Type: []ClientListType{IP, GEO},
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json"},
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"content": [
+					{
+						"createDate": "2023-06-06T15:58:39.225+00:00",
+						"createdBy": "ccare2",
+						"deprecated": false,
+						"filePrefix": "CL",
+						"itemsCount": 1,
+						"listId": "91596_AUDITLOGSTESTLIST",
+						"listType": "CL",
+						"name": "AUDIT LOGS - TEST LIST",
+						"productionActivationStatus": "INACTIVE",
+						"readOnly": false,
+						"shared": false,
+						"stagingActivationStatus": "INACTIVE",
+						"tags": ["green"],
+						"type": "IP",
+						"updateDate": "2023-06-06T15:58:39.225+00:00",
+						"updatedBy": "ccare2",
+						"version": 1
+					}
+				]
+			}
+			`,
+			expectedPath: fmt.Sprintf(uri+"?name=%s&type=%s&type=%s", "list+name", "IP", "GEO"),
+			expectedResponse: &GetClientListsResponse{
+				Content: []ListContent{
+					{
+						CreateDate:                 "2023-06-06T15:58:39.225+00:00",
+						CreatedBy:                  "ccare2",
+						Deprecated:                 false,
+						ItemsCount:                 1,
+						ListID:                     "91596_AUDITLOGSTESTLIST",
+						ListType:                   "CL",
+						Name:                       "AUDIT LOGS - TEST LIST",
+						ProductionActivationStatus: "INACTIVE",
+						ReadOnly:                   false,
+						Shared:                     false,
+						StagingActivationStatus:    "INACTIVE",
+						Tags:                       []string{"green"},
+						Type:                       "IP",
+						UpdateDate:                 "2023-06-06T15:58:39.225+00:00",
+						UpdatedBy:                  "ccare2",
+						Version:                    1,
 					},
 				},
 			},

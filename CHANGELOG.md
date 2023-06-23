@@ -25,6 +25,7 @@
 * CLIENTLISTS
   * [IMPORTANT] Added Client Lists API Support
     * [GetClientLists](https://techdocs.akamai.com/client-lists/reference/get-lists)
+      * Support filter by name or type
 
 ## 7.1.0 (July 25, 2023)
 
