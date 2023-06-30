@@ -507,7 +507,7 @@ type (
 		} `json:"prefetch"`
 		PragmaHeader *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
 		RequestBody  *RequestBody                       `json:"requestBody,omitempty"`
-		PIILearning  bool                               `json:"piiLearning"`
+		PIILearning  *PIILearningexp                    `json:"piiLearning,omitempty"`
 	}
 
 	// CustomDenyListexp is returned as part of GetExportConfigurationResponse.
@@ -675,6 +675,11 @@ type (
 	// EvasivePathMatchexp contains the EnablePathMatch setting
 	EvasivePathMatchexp struct {
 		EnablePathMatch bool `json:"enabled"`
+	}
+
+	// PIILearningexp contains the PIILearning setting
+	PIILearningexp struct {
+		EnablePIILearning bool `json:"enabled"`
 	}
 
 	// RequestBody is returned as part of GetExportConfigurationResponse.
