@@ -71,11 +71,11 @@ type (
 		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
 		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
 		ApplyBotmanControls           bool `json:"applyBotmanControls"`
+		ApplyMalwareControls          bool `json:"applyMalwareControls"`
 		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
 		ApplyRateControls             bool `json:"applyRateControls"`
 		ApplyReputationControls       bool `json:"applyReputationControls"`
 		ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		ApplyMalwareControls          bool `json:"applyMalwareControls"`
 	}
 )
 

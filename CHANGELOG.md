@@ -7,9 +7,20 @@
 * APPSEC
   * Added Bot Management API Support
     * Challenge Injection Rules - read, update
+    * Add `CreateSecurityPolicyWithDefaultProtections` method to the `SecurityPolicy` interface to support creating a security policy with all available protections enabled.
 
 ### Deprecations
 * Challenge Interceptions Rules has been deprecated
+* Deprecate the following interfaces used to maintain individual policy protections:
+  * `ApiConstraintsProtection`
+  * `IPGeoProtection`
+  * `MalwareProtection`
+  * `NetworkLayerProtection`
+  * `RateProtection`
+  * `ReputationProtection`
+  * `SlowPostProtection`
+  * `WAFProtection`
+* Deprecate the `CreateSecurityPolicy` method of the `SecurityPolicy` interface.
 
 ## 7.0.0 (June 20, 2023)
 

@@ -11,7 +11,7 @@ import (
 type (
 	// The SelectedHostname interface supports retrieving and modifying the list of hostnames protected under
 	// a configuration.
-	// Deprecated: this interface will be removed in a future release.  Use the WAPSelectedHostnames interface instead.
+	// Deprecated: this interface will be removed in a future release. Use the WAPSelectedHostnames interface instead.
 	SelectedHostname interface {
 		// GetSelectedHostnames lists the hostnames that the configuration version selects as candidates of protected hostnames,
 		// which you can use in match targets.

@@ -10,13 +10,16 @@ import (
 
 type (
 	// The ApiConstraintsProtection interface supports retrieving and updating API request constraints protection for a configuration and policy.
+	// Deprecated: this interface will be removed in a future release. Use the SecurityPolicy interface instead.
 	ApiConstraintsProtection interface {
 		// GetAPIConstraintsProtection retrieves the current API constraints protection setting for a configuration and policy.
+		// Deprecated: this method will be removed in a future release. Use the GetPolicyProtections method of the PolicyProtections interface instead.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		GetAPIConstraintsProtection(ctx context.Context, params GetAPIConstraintsProtectionRequest) (*GetAPIConstraintsProtectionResponse, error)
 
 		// UpdateAPIConstraintsProtection updates the API constraints protection setting for a configuration and policy.
+		// Deprecated: this method will be removed in a future release. Use the CreateSecurityPolicyWithDefaultProtections method of the SecurityPolicy interface instead.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		UpdateAPIConstraintsProtection(ctx context.Context, params UpdateAPIConstraintsProtectionRequest) (*UpdateAPIConstraintsProtectionResponse, error)

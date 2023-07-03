@@ -10,19 +10,22 @@ import (
 
 type (
 	// The RateProtection interface supports retrieving and updating rate protection for a configuration and policy.
+	// Deprecated: this interface will be removed in a future release. Use the SecurityPolicy interface instead.
 	RateProtection interface {
 		// GetRateProtections retrieves the current rate protection setting for a configuration and policy.
+		// Deprecated: this method will be removed in a future release. Use the GetPolicyProtections method of the PolicyProtections interface instead.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
-		// Deprecated: this method will be removed in a future release. Use GetRateProtection instead.
 		GetRateProtections(ctx context.Context, params GetRateProtectionsRequest) (*GetRateProtectionsResponse, error)
 
 		// GetRateProtection retrieves the current rate protection setting for a configuration and policy.
+		// Deprecated: this method will be removed in a future release. Use the GetPolicyProtections method of the PolicyProtections interface instead.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		GetRateProtection(ctx context.Context, params GetRateProtectionRequest) (*GetRateProtectionResponse, error)
 
 		// UpdateRateProtection updates the rate protection setting for a configuration and policy.
+		// Deprecated: this method will be removed in a future release. Use the CreateSecurityPolicyWithDefaultProtections method of the SecurityPolicy interface instead.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		UpdateRateProtection(ctx context.Context, params UpdateRateProtectionRequest) (*UpdateRateProtectionResponse, error)
