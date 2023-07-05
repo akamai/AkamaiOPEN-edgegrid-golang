@@ -55,7 +55,7 @@ func TestListCapacity(t *testing.T) {
 						LocationID:   1,
 						LocationName: "US East",
 						ContractID:   "A-BCDEFG",
-						Type:         Media,
+						Type:         CapacityTypeMedia,
 						ApprovedCapacity: Capacity{
 							Value: 2000,
 							Unit:  "GB",
@@ -107,7 +107,7 @@ func TestListCapacity(t *testing.T) {
 						LocationID:   1,
 						LocationName: "US East",
 						ContractID:   "A-BCDEFG",
-						Type:         WebEnhancedTLS,
+						Type:         CapacityTypeWebEnhancedTLS,
 						ApprovedCapacity: Capacity{
 							Value: 10,
 							Unit:  UnitTB,

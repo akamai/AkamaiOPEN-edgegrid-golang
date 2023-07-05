@@ -60,12 +60,12 @@ const (
 )
 
 const (
-	// Media type
-	Media CapacityType = "MEDIA"
-	// WebStandardTLS type
-	WebStandardTLS CapacityType = "WEB_STANDARD_TLS"
-	// WebEnhancedTLS type
-	WebEnhancedTLS CapacityType = "WEB_ENHANCED_TLS"
+	// CapacityTypeMedia type
+	CapacityTypeMedia CapacityType = "MEDIA"
+	// CapacityTypeWebStandardTLS type
+	CapacityTypeWebStandardTLS CapacityType = "WEB_STANDARD_TLS"
+	// CapacityTypeWebEnhancedTLS type
+	CapacityTypeWebEnhancedTLS CapacityType = "WEB_ENHANCED_TLS"
 )
 
 var (

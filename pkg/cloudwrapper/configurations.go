@@ -31,6 +31,10 @@ type (
 		//
 		// See: https://techdocs.akamai.com/cloud-wrapper/reference/put-configuration
 		UpdateConfiguration(context.Context, UpdateConfigurationRequest) (*Configuration, error)
+		// DeleteConfiguration deletes configuration
+		//
+		// See: https://techdocs.akamai.com/cloud-wrapper/reference/delete-configuration
+		DeleteConfiguration(context.Context, DeleteConfigurationRequest) error
 		// ActivateConfiguration activates a Cloud Wrapper configuration
 		//
 		// See: https://techdocs.akamai.com/cloud-wrapper/reference/post-configuration-activations
@@ -50,15 +54,15 @@ type (
 
 	// CreateConfigurationBody holds request body parameters for CreateConfiguration
 	CreateConfigurationBody struct {
-		CapacityAlertsThreshold *int                    `json:"capacityAlertsThreshold,omitempty"`
-		Comments                string                  `json:"comments"`
-		ContractID              string                  `json:"contractId"`
-		Locations               []ConfigurationLocation `json:"locations"`
-		MultiCDNSettings        *MultiCDNSettings       `json:"multiCdnSettings,omitempty"`
-		ConfigName              string                  `json:"configName"`
-		NotificationEmails      []string                `json:"notificationEmails,omitempty"`
-		PropertyIDs             []string                `json:"propertyIds"`
-		RetainIdleObjects       bool                    `json:"retainIdleObjects,omitempty"`
+		CapacityAlertsThreshold *int                `json:"capacityAlertsThreshold,omitempty"`
+		Comments                string              `json:"comments"`
+		ContractID              string              `json:"contractId"`
+		Locations               []ConfigLocationReq `json:"locations"`
+		MultiCDNSettings        *MultiCDNSettings   `json:"multiCdnSettings,omitempty"`
+		ConfigName              string              `json:"configName"`
+		NotificationEmails      []string            `json:"notificationEmails,omitempty"`
+		PropertyIDs             []string            `json:"propertyIds"`
+		RetainIdleObjects       bool                `json:"retainIdleObjects,omitempty"`
 	}
 
 	// UpdateConfigurationRequest holds parameters for UpdateConfiguration
@@ -70,13 +74,18 @@ type (
 
 	// UpdateConfigurationBody holds request body parameters for UpdateConfiguration
 	UpdateConfigurationBody struct {
-		CapacityAlertsThreshold *int                    `json:"capacityAlertsThreshold,omitempty"`
-		Comments                string                  `json:"comments"`
-		Locations               []ConfigurationLocation `json:"locations"`
-		MultiCDNSettings        *MultiCDNSettings       `json:"multiCdnSettings,omitempty"`
-		NotificationEmails      []string                `json:"notificationEmails,omitempty"`
-		PropertyIDs             []string                `json:"propertyIds"`
-		RetainIdleObjects       bool                    `json:"retainIdleObjects,omitempty"`
+		CapacityAlertsThreshold *int                `json:"capacityAlertsThreshold,omitempty"`
+		Comments                string              `json:"comments"`
+		Locations               []ConfigLocationReq `json:"locations"`
+		MultiCDNSettings        *MultiCDNSettings   `json:"multiCdnSettings,omitempty"`
+		NotificationEmails      []string            `json:"notificationEmails,omitempty"`
+		PropertyIDs             []string            `json:"propertyIds"`
+		RetainIdleObjects       bool                `json:"retainIdleObjects,omitempty"`
+	}
+
+	// DeleteConfigurationRequest holds parameters for DeleteConfiguration
+	DeleteConfigurationRequest struct {
+		ConfigID int64
 	}
 
 	// ActivateConfigurationRequest holds parameters for ActivateConfiguration
@@ -86,21 +95,21 @@ type (
 
 	// Configuration represents CloudWrapper configuration
 	Configuration struct {
-		CapacityAlertsThreshold *int                    `json:"capacityAlertsThreshold"`
-		Comments                string                  `json:"comments"`
-		ContractID              string                  `json:"contractId"`
-		ConfigID                int64                   `json:"configId"`
-		Locations               []ConfigurationLocation `json:"locations"`
-		MultiCDNSettings        *MultiCDNSettings       `json:"multiCdnSettings"`
-		Status                  string                  `json:"status"`
-		ConfigName              string                  `json:"configName"`
-		LastUpdatedBy           string                  `json:"lastUpdatedBy"`
-		LastUpdatedDate         string                  `json:"lastUpdatedDate"`
-		LastActivatedBy         *string                 `json:"lastActivatedBy"`
-		LastActivatedDate       *string                 `json:"lastActivatedDate"`
-		NotificationEmails      []string                `json:"notificationEmails"`
-		PropertyIDs             []string                `json:"propertyIds"`
-		RetainIdleObjects       bool                    `json:"retainIdleObjects"`
+		CapacityAlertsThreshold *int                 `json:"capacityAlertsThreshold"`
+		Comments                string               `json:"comments"`
+		ContractID              string               `json:"contractId"`
+		ConfigID                int64                `json:"configId"`
+		Locations               []ConfigLocationResp `json:"locations"`
+		MultiCDNSettings        *MultiCDNSettings    `json:"multiCdnSettings"`
+		Status                  string               `json:"status"`
+		ConfigName              string               `json:"configName"`
+		LastUpdatedBy           string               `json:"lastUpdatedBy"`
+		LastUpdatedDate         string               `json:"lastUpdatedDate"`
+		LastActivatedBy         *string              `json:"lastActivatedBy"`
+		LastActivatedDate       *string              `json:"lastActivatedDate"`
+		NotificationEmails      []string             `json:"notificationEmails"`
+		PropertyIDs             []string             `json:"propertyIds"`
+		RetainIdleObjects       bool                 `json:"retainIdleObjects"`
 	}
 
 	// ListConfigurationsResponse contains response from ListConfigurations
@@ -108,11 +117,19 @@ type (
 		Configurations []Configuration `json:"configurations"`
 	}
 
-	// ConfigurationLocation represents location to be configured for the configuration
-	ConfigurationLocation struct {
+	// ConfigLocationReq represents location to be configured for the configuration
+	ConfigLocationReq struct {
 		Comments      string   `json:"comments"`
 		TrafficTypeID int      `json:"trafficTypeId"`
 		Capacity      Capacity `json:"capacity"`
+	}
+
+	// ConfigLocationResp represents location to be configured for the configuration
+	ConfigLocationResp struct {
+		Comments      string   `json:"comments"`
+		TrafficTypeID int      `json:"trafficTypeId"`
+		Capacity      Capacity `json:"capacity"`
+		MapName       string   `json:"mapName"`
 	}
 
 	// MultiCDNSettings represents details about Multi CDN Settings
@@ -237,6 +254,13 @@ func (b UpdateConfigurationBody) Validate() error {
 	}.Filter()
 }
 
+// Validate validates DeleteConfigurationRequest
+func (r DeleteConfigurationRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"ConfigID": validation.Validate(r.ConfigID, validation.Required),
+	})
+}
+
 // Validate validates ActivateConfigurationRequest
 func (r ActivateConfigurationRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
@@ -245,7 +269,7 @@ func (r ActivateConfigurationRequest) Validate() error {
 }
 
 // Validate validates ConfigurationLocation
-func (c ConfigurationLocation) Validate() error {
+func (c ConfigLocationReq) Validate() error {
 	return validation.Errors{
 		"Comments":      validation.Validate(c.Comments, validation.Required),
 		"Capacity":      validation.Validate(c.Capacity, validation.Required),
@@ -350,6 +374,8 @@ var (
 	ErrCreateConfiguration = errors.New("create configuration")
 	// ErrUpdateConfiguration is returned when UpdateConfiguration fails
 	ErrUpdateConfiguration = errors.New("update configuration")
+	// ErrDeleteConfiguration is returned when DeleteConfiguration fails
+	ErrDeleteConfiguration = errors.New("delete configuration")
 	// ErrActivateConfiguration is returned when ActivateConfiguration fails
 	ErrActivateConfiguration = errors.New("activate configuration")
 )
@@ -385,7 +411,7 @@ func (c *cloudwrapper) ListConfigurations(ctx context.Context) (*ListConfigurati
 	logger := c.Log(ctx)
 	logger.Debug("ListConfigurations")
 
-	uri := fmt.Sprintf("/cloud-wrapper/v1/configurations")
+	uri := "/cloud-wrapper/v1/configurations"
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListConfigurations, err)
@@ -472,6 +498,33 @@ func (c *cloudwrapper) UpdateConfiguration(ctx context.Context, params UpdateCon
 	}
 
 	return &result, nil
+}
+
+func (c *cloudwrapper) DeleteConfiguration(ctx context.Context, params DeleteConfigurationRequest) error {
+	logger := c.Log(ctx)
+	logger.Debug("DeleteConfiguration")
+
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w: %s", ErrDeleteConfiguration, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf("/cloud-wrapper/v1/configurations/%d", params.ConfigID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteConfiguration, err)
+	}
+
+	resp, err := c.Exec(req, nil)
+	if err != nil {
+		return fmt.Errorf("%w: request failed: %s", ErrDeleteConfiguration, err)
+	}
+
+	if resp.StatusCode != http.StatusAccepted {
+		return fmt.Errorf("%s: %w", ErrDeleteConfiguration, c.Error(resp))
+	}
+
+	return nil
 }
 
 func (c *cloudwrapper) ActivateConfiguration(ctx context.Context, params ActivateConfigurationRequest) error {

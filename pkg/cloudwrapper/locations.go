@@ -31,9 +31,9 @@ type (
 
 	// TrafficTypeItem represents a TrafficType object for the location
 	TrafficTypeItem struct {
-		FailoverMapName string `json:"failoverMapName"`
-		TrafficTypeID   int    `json:"trafficTypeId"`
-		TrafficType     string `json:"TrafficType"`
+		TrafficTypeID int    `json:"trafficTypeId"`
+		TrafficType   string `json:"trafficType"`
+		MapName       string `json:"mapName"`
 	}
 )
 

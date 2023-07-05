@@ -106,6 +106,11 @@ func (m *Mock) UpdateConfiguration(ctx context.Context, r UpdateConfigurationReq
 	return args.Get(0).(*Configuration), args.Error(1)
 }
 
+func (m *Mock) DeleteConfiguration(ctx context.Context, r DeleteConfigurationRequest) error {
+	args := m.Called(ctx, r)
+	return args.Error(0)
+}
+
 func (m *Mock) ActivateConfiguration(ctx context.Context, r ActivateConfigurationRequest) error {
 	args := m.Called(ctx, r)
 	return args.Error(0)

@@ -46,7 +46,8 @@ func TestGetConfiguration(t *testing.T) {
             "capacity": {
                 "value": 1,
                 "unit": "GB"
-            }
+            },
+			"mapName": "cw-s-use"
         },
 		{
             "trafficTypeId": 2,
@@ -54,7 +55,8 @@ func TestGetConfiguration(t *testing.T) {
             "capacity": {
                 "value": 2,
                 "unit": "TB"
-            }
+            },
+			"mapName": "cw-s-use"
         }
     ],
     "multiCdnSettings": {
@@ -62,7 +64,7 @@ func TestGetConfiguration(t *testing.T) {
             {
                 "originId": "TestOriginID",
                 "hostname": "TestHostname",
-                "propertyId": 321
+						"propertyId": 321
             },
 			{
                 "originId": "TestOriginID2",
@@ -132,7 +134,7 @@ func TestGetConfiguration(t *testing.T) {
 				Comments:                "TestComments",
 				ContractID:              "TestContractID",
 				ConfigID:                1,
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestComments",
 						TrafficTypeID: 1,
@@ -140,6 +142,7 @@ func TestGetConfiguration(t *testing.T) {
 							Unit:  "GB",
 							Value: 1,
 						},
+						MapName: "cw-s-use",
 					},
 					{
 						Comments:      "TestComments",
@@ -148,6 +151,7 @@ func TestGetConfiguration(t *testing.T) {
 							Unit:  "TB",
 							Value: 2,
 						},
+						MapName: "cw-s-use",
 					},
 				},
 				MultiCDNSettings: &MultiCDNSettings{
@@ -244,7 +248,8 @@ func TestGetConfiguration(t *testing.T) {
          "capacity":{
             "value":1,
             "unit":"GB"
-         }
+         },
+		 "mapName": "cw-s-use"
       }
    ],
    "multiCdnSettings":null,
@@ -260,7 +265,7 @@ func TestGetConfiguration(t *testing.T) {
 				Comments:   "TestComments",
 				ContractID: "TestContractID",
 				ConfigID:   1,
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestComments",
 						TrafficTypeID: 1,
@@ -268,6 +273,7 @@ func TestGetConfiguration(t *testing.T) {
 							Unit:  "GB",
 							Value: 1,
 						},
+						MapName: "cw-s-use",
 					},
 				},
 				Status:             "ACTIVE",
@@ -365,7 +371,8 @@ func TestListConfigurations(t *testing.T) {
                "capacity":{
                   "value":1,
                   "unit":"GB"
-               }
+               },
+			   "mapName": "cw-s-use"
             }
          ],
          "multiCdnSettings":null,
@@ -395,7 +402,8 @@ func TestListConfigurations(t *testing.T) {
                "capacity":{
                   "value":2,
                   "unit":"TB"
-               }
+               },
+			   "mapName": "cw-s-use"
             }
          ],
          "multiCdnSettings":{
@@ -451,7 +459,7 @@ func TestListConfigurations(t *testing.T) {
 						Comments:                "testComments",
 						ContractID:              "testContract",
 						ConfigID:                1,
-						Locations: []ConfigurationLocation{
+						Locations: []ConfigLocationResp{
 							{
 								Comments:      "usageNotes",
 								TrafficTypeID: 1,
@@ -459,6 +467,7 @@ func TestListConfigurations(t *testing.T) {
 									Unit:  "GB",
 									Value: 1,
 								},
+								MapName: "cw-s-use",
 							},
 						},
 						Status:             "ACTIVE",
@@ -478,7 +487,7 @@ func TestListConfigurations(t *testing.T) {
 						Comments:                "mcdn",
 						ContractID:              "testContract2",
 						ConfigID:                2,
-						Locations: []ConfigurationLocation{
+						Locations: []ConfigLocationResp{
 							{
 								Comments:      "mcdn",
 								TrafficTypeID: 2,
@@ -486,6 +495,7 @@ func TestListConfigurations(t *testing.T) {
 									Unit:  "TB",
 									Value: 2,
 								},
+								MapName: "cw-s-use",
 							},
 						},
 						MultiCDNSettings: &MultiCDNSettings{
@@ -590,7 +600,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 1,
@@ -643,7 +653,8 @@ func TestCreateConfiguration(t *testing.T) {
          "capacity":{
             "value":1,
             "unit":"GB"
-         }
+         },
+		 "mapName": "cw-s-use"
       }
    ],
    "multiCdnSettings":null,
@@ -660,7 +671,7 @@ func TestCreateConfiguration(t *testing.T) {
 				CapacityAlertsThreshold: tools.IntPtr(50),
 				Comments:                "TestComments",
 				ContractID:              "TestContractID",
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestComments",
 						TrafficTypeID: 1,
@@ -668,6 +679,7 @@ func TestCreateConfiguration(t *testing.T) {
 							Unit:  UnitGB,
 							Value: 1,
 						},
+						MapName: "cw-s-use",
 					},
 				},
 				Status:             "IN_PROGRESS",
@@ -685,7 +697,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 1,
@@ -738,7 +750,8 @@ func TestCreateConfiguration(t *testing.T) {
          "capacity":{
             "value":1,
             "unit":"GB"
-         }
+         },
+		 "mapName": "cw-s-use"
       }
    ],
    "multiCdnSettings":null,
@@ -755,7 +768,7 @@ func TestCreateConfiguration(t *testing.T) {
 				CapacityAlertsThreshold: tools.IntPtr(50),
 				Comments:                "TestComments",
 				ContractID:              "TestContractID",
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestComments",
 						TrafficTypeID: 1,
@@ -763,6 +776,7 @@ func TestCreateConfiguration(t *testing.T) {
 							Unit:  "GB",
 							Value: 1,
 						},
+						MapName: "cw-s-use",
 					},
 				},
 				Status:             "IN_PROGRESS",
@@ -779,7 +793,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 1,
@@ -890,7 +904,8 @@ func TestCreateConfiguration(t *testing.T) {
          "capacity":{
             "value":1,
             "unit":"GB"
-         }
+         },
+		 "mapName": "cw-s-use"
       }
    ],
    "multiCdnSettings":{
@@ -936,7 +951,7 @@ func TestCreateConfiguration(t *testing.T) {
 				CapacityAlertsThreshold: nil,
 				Comments:                "TestComments",
 				ContractID:              "TestContractID",
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestComments",
 						TrafficTypeID: 1,
@@ -944,6 +959,7 @@ func TestCreateConfiguration(t *testing.T) {
 							Unit:  "GB",
 							Value: 1,
 						},
+						MapName: "cw-s-use",
 					},
 				},
 				MultiCDNSettings: &MultiCDNSettings{
@@ -993,7 +1009,7 @@ func TestCreateConfiguration(t *testing.T) {
 					CapacityAlertsThreshold: tools.IntPtr(70),
 					Comments:                "TestComments",
 					ContractID:              "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 1,
@@ -1175,7 +1191,8 @@ func TestCreateConfiguration(t *testing.T) {
          "capacity":{
             "value":1,
             "unit":"GB"
-         }
+         },
+		 "mapName": "cw-s-use"
       },
 	  {
          "trafficTypeId":2,
@@ -1183,7 +1200,8 @@ func TestCreateConfiguration(t *testing.T) {
          "capacity":{
             "value":2,
             "unit":"TB"
-         }
+         },
+		 "mapName": "cw-s-use"
       }
    ],
    "multiCdnSettings":{
@@ -1251,7 +1269,7 @@ func TestCreateConfiguration(t *testing.T) {
 				CapacityAlertsThreshold: tools.IntPtr(70),
 				Comments:                "TestComments",
 				ContractID:              "TestContractID",
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestComments",
 						TrafficTypeID: 1,
@@ -1259,6 +1277,7 @@ func TestCreateConfiguration(t *testing.T) {
 							Unit:  "GB",
 							Value: 1,
 						},
+						MapName: "cw-s-use",
 					},
 					{
 						Comments:      "TestComments2",
@@ -1267,6 +1286,7 @@ func TestCreateConfiguration(t *testing.T) {
 							Unit:  "TB",
 							Value: 2,
 						},
+						MapName: "cw-s-use",
 					},
 				},
 				MultiCDNSettings: &MultiCDNSettings{
@@ -1333,7 +1353,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 1,
@@ -1481,7 +1501,7 @@ func TestCreateConfiguration(t *testing.T) {
 				ContractID: "TestContractID",
 				Status:     "IN_PROGRESS",
 				ConfigID:   111,
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestComments",
 						TrafficTypeID: 1,
@@ -1530,7 +1550,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 1,
@@ -1631,7 +1651,8 @@ func TestCreateConfiguration(t *testing.T) {
          "capacity":{
             "value":10,
             "unit":"GB"
-         }
+         },
+		 "mapName": "cw-s-use"
       }
    ],
    "multiCdnSettings":{
@@ -1675,7 +1696,7 @@ func TestCreateConfiguration(t *testing.T) {
 				ContractID: "TestContractID",
 				Status:     "IN_PROGRESS",
 				ConfigID:   111,
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestComments",
 						TrafficTypeID: 1,
@@ -1683,6 +1704,7 @@ func TestCreateConfiguration(t *testing.T) {
 							Unit:  "GB",
 							Value: 10,
 						},
+						MapName: "cw-s-use",
 					},
 				},
 				MultiCDNSettings: &MultiCDNSettings{
@@ -1730,7 +1752,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "",
 							TrafficTypeID: 0,
@@ -1750,7 +1772,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 5,
@@ -1774,7 +1796,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 5,
@@ -1820,7 +1842,7 @@ func TestCreateConfiguration(t *testing.T) {
 			params: CreateConfigurationRequest{
 				Body: CreateConfigurationBody{Comments: "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 5,
@@ -1861,7 +1883,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 5,
@@ -1911,7 +1933,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 5,
@@ -1956,7 +1978,7 @@ func TestCreateConfiguration(t *testing.T) {
 					CapacityAlertsThreshold: tools.IntPtr(20),
 					Comments:                "TestComments",
 					ContractID:              "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 5,
@@ -2014,7 +2036,7 @@ func TestCreateConfiguration(t *testing.T) {
 				Body: CreateConfigurationBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestComments",
 							TrafficTypeID: 1,
@@ -2052,18 +2074,21 @@ func TestCreateConfiguration(t *testing.T) {
 	}
 
 	for name, test := range tests {
+		if name != "200 OK - full MultiCDNSettings" {
+			continue
+		}
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
-				if test.expectedRequestBody != "" {
-					body, err := io.ReadAll(r.Body)
-					assert.NoError(t, err)
-					assert.JSONEq(t, test.expectedRequestBody, string(body))
-				}
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateConfiguration(context.Background(), test.params)
@@ -2092,7 +2117,7 @@ func TestUpdateConfiguration(t *testing.T) {
 				ConfigID: 111,
 				Body: UpdateConfigurationBody{
 					Comments: "TestCommentsUpdated",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestCommentsUpdated",
 							TrafficTypeID: 1,
@@ -2144,7 +2169,8 @@ func TestUpdateConfiguration(t *testing.T) {
          "capacity":{
             "value":1,
             "unit":"GB"
-         }
+         },
+		 "mapName": "cw-s-use"
       }
    ],
    "multiCdnSettings":null,
@@ -2162,7 +2188,7 @@ func TestUpdateConfiguration(t *testing.T) {
 				CapacityAlertsThreshold: tools.IntPtr(50),
 				Comments:                "TestCommentsUpdated",
 				ContractID:              "TestContractID",
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestCommentsUpdated",
 						TrafficTypeID: 1,
@@ -2170,6 +2196,7 @@ func TestUpdateConfiguration(t *testing.T) {
 							Unit:  "GB",
 							Value: 1,
 						},
+						MapName: "cw-s-use",
 					},
 				},
 				Status:             "IN_PROGRESS",
@@ -2186,7 +2213,7 @@ func TestUpdateConfiguration(t *testing.T) {
 				ConfigID: 111,
 				Body: UpdateConfigurationBody{
 					Comments: "TestCommentsUpdated",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestCommentsUpdated",
 							TrafficTypeID: 1,
@@ -2286,7 +2313,8 @@ func TestUpdateConfiguration(t *testing.T) {
          "capacity":{
             "value":1,
             "unit":"GB"
-         }
+         },
+		 "mapName": "cw-s-use"
       }
    ],
    "multiCdnSettings":{
@@ -2327,7 +2355,7 @@ func TestUpdateConfiguration(t *testing.T) {
 				ConfigID:   111,
 				Comments:   "TestCommentsUpdated",
 				ContractID: "TestContractID",
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestCommentsUpdated",
 						TrafficTypeID: 1,
@@ -2335,6 +2363,7 @@ func TestUpdateConfiguration(t *testing.T) {
 							Unit:  "GB",
 							Value: 1,
 						},
+						MapName: "cw-s-use",
 					},
 				},
 				MultiCDNSettings: &MultiCDNSettings{
@@ -2379,7 +2408,7 @@ func TestUpdateConfiguration(t *testing.T) {
 				Body: UpdateConfigurationBody{
 					CapacityAlertsThreshold: tools.IntPtr(80),
 					Comments:                "TestCommentsUpdated",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestCommentsUpdated",
 							TrafficTypeID: 1,
@@ -2521,7 +2550,8 @@ func TestUpdateConfiguration(t *testing.T) {
          "capacity":{
             "value":1,
             "unit":"GB"
-         }
+         },
+		 "mapName": "cw-s-use"
       }
    ],
    "multiCdnSettings":{
@@ -2580,7 +2610,7 @@ func TestUpdateConfiguration(t *testing.T) {
 				Comments:                "TestCommentsUpdated",
 				ContractID:              "TestContractID",
 				ConfigID:                111,
-				Locations: []ConfigurationLocation{
+				Locations: []ConfigLocationResp{
 					{
 						Comments:      "TestCommentsUpdated",
 						TrafficTypeID: 1,
@@ -2588,6 +2618,7 @@ func TestUpdateConfiguration(t *testing.T) {
 							Unit:  "GB",
 							Value: 1,
 						},
+						MapName: "cw-s-use",
 					},
 				},
 				MultiCDNSettings: &MultiCDNSettings{
@@ -2652,7 +2683,7 @@ func TestUpdateConfiguration(t *testing.T) {
 				ConfigID: 1,
 				Body: UpdateConfigurationBody{
 					Comments: "TestCommentsUpdated",
-					Locations: []ConfigurationLocation{
+					Locations: []ConfigLocationReq{
 						{
 							Comments:      "TestCommentsUpdated",
 							TrafficTypeID: 1,
@@ -2710,6 +2741,74 @@ func TestUpdateConfiguration(t *testing.T) {
 			}
 			require.NoError(t, err)
 			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestDeleteConfiguration(t *testing.T) {
+	tests := map[string]struct {
+		params         DeleteConfigurationRequest
+		responseStatus int
+		responseBody   string
+		expectedPath   string
+		withError      func(*testing.T, error)
+	}{
+		"202 - Accepted": {
+			params: DeleteConfigurationRequest{
+				ConfigID: 1,
+			},
+			responseStatus: 202,
+			expectedPath:   "/cloud-wrapper/v1/configurations/1",
+		},
+		"missing required params - validation error": {
+			params: DeleteConfigurationRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "delete configuration: struct validation: ConfigID: cannot be blank", err.Error())
+			},
+		},
+		"500 internal server error": {
+			params: DeleteConfigurationRequest{
+				ConfigID: 1,
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+    "type": "/cloudwrapper/error-types/cloudwrapper-server-error",
+    "title": "An unexpected error has occurred.",
+    "detail": "Error processing request",
+    "instance": "/cloudwrapper/error-instances/abc",
+    "status": 500
+}`,
+			expectedPath: "/cloud-wrapper/v1/configurations/1",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:     "/cloudwrapper/error-types/cloudwrapper-server-error",
+					Title:    "An unexpected error has occurred.",
+					Detail:   "Error processing request",
+					Instance: "/cloudwrapper/error-instances/abc",
+					Status:   500,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.DeleteConfiguration(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }

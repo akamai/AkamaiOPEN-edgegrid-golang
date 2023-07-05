@@ -30,12 +30,12 @@ func TestCloudwrapper_ListLocations(t *testing.T) {
                 {
                     "trafficTypeId": 1,
                     "trafficType": "TEST_TT1",
-                    "failoverMapName": "test_FMN"
+                    "mapName": "cw-essl-use"
                 },
                 {
                     "trafficTypeId": 2,
                     "trafficType": "TEST_TT2",
-                    "failoverMapName": "test_FMN1"
+                    "mapName": "cw-s-use-live"
                 }
             ],
             "multiCdnLocationId": "0123"
@@ -47,12 +47,12 @@ func TestCloudwrapper_ListLocations(t *testing.T) {
                 {
                     "trafficTypeId": 3,
                     "trafficType": "TEST_TT1",
-                    "failoverMapName": "test_FMN"
+                    "mapName": "cw-essl-use"
                 },
                 {
                     "trafficTypeId": 4,
                     "trafficType": "TEST_TT2",
-                    "failoverMapName": "test_FMN1"
+                    "mapName": "cw-s-use-live"
                 }
             ],
             "multiCdnLocationId": "4567"
@@ -65,14 +65,14 @@ func TestCloudwrapper_ListLocations(t *testing.T) {
 						LocationName: "US East",
 						TrafficTypes: []TrafficTypeItem{
 							{
-								TrafficTypeID:   1,
-								TrafficType:     "TEST_TT1",
-								FailoverMapName: "test_FMN",
+								TrafficTypeID: 1,
+								TrafficType:   "TEST_TT1",
+								MapName:       "cw-essl-use",
 							},
 							{
-								TrafficTypeID:   2,
-								TrafficType:     "TEST_TT2",
-								FailoverMapName: "test_FMN1",
+								TrafficTypeID: 2,
+								TrafficType:   "TEST_TT2",
+								MapName:       "cw-s-use-live",
 							},
 						},
 						MultiCDNLocationID: "0123",
@@ -82,14 +82,14 @@ func TestCloudwrapper_ListLocations(t *testing.T) {
 						LocationName: "US West",
 						TrafficTypes: []TrafficTypeItem{
 							{
-								TrafficTypeID:   3,
-								TrafficType:     "TEST_TT1",
-								FailoverMapName: "test_FMN",
+								TrafficTypeID: 3,
+								TrafficType:   "TEST_TT1",
+								MapName:       "cw-essl-use",
 							},
 							{
-								TrafficTypeID:   4,
-								TrafficType:     "TEST_TT2",
-								FailoverMapName: "test_FMN1",
+								TrafficTypeID: 4,
+								TrafficType:   "TEST_TT2",
+								MapName:       "cw-s-use-live",
 							},
 						},
 						MultiCDNLocationID: "4567",

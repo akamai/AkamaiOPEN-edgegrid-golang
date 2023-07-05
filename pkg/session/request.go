@@ -91,10 +91,10 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 		resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices &&
 		resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusResetContent {
 		data, err := ioutil.ReadAll(resp.Body)
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 		if err != nil {
 			return nil, err
 		}
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 
 		if err := json.Unmarshal(data, out); err != nil {
 			return nil, fmt.Errorf("%w: %s", ErrUnmarshaling, err)
