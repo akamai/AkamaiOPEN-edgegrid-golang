@@ -35,6 +35,18 @@ type (
 	}
 )
 
+const (
+	configurationNotFoundType = "/cloud-wrapper/error-types/not-found"
+	deletionNotAllowedType    = "/cloud-wrapper/error-types/forbidden"
+)
+
+var (
+	// ErrConfigurationNotFound is returned when configuration was not found
+	ErrConfigurationNotFound = errors.New("configuration not found")
+	// ErrDeletionNotAllowed is returned when user has insufficient permissions to delete configuration
+	ErrDeletionNotAllowed = errors.New("deletion not allowed")
+)
+
 // Error parses an error from the response
 func (c *cloudwrapper) Error(r *http.Response) error {
 	var result Error
@@ -66,6 +78,12 @@ func (e *Error) Error() string {
 
 // Is handles error comparisons
 func (e *Error) Is(target error) bool {
+	if errors.Is(target, ErrConfigurationNotFound) {
+		return e.Status == http.StatusNotFound && e.Type == configurationNotFoundType
+	}
+	if errors.Is(target, ErrDeletionNotAllowed) {
+		return e.Status == http.StatusForbidden && e.Type == deletionNotAllowedType
+	}
 
 	var t *Error
 	if !errors.As(target, &t) {
