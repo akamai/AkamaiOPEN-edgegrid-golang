@@ -26,6 +26,11 @@
   * [IMPORTANT] Added Client Lists API Support
     * [GetClientLists](https://techdocs.akamai.com/client-lists/reference/get-lists)
       * Support filter by name or type
+    * [GetClientList](https://techdocs.akamai.com/client-lists/reference/get-list)
+    * [UpdateClientList](https://techdocs.akamai.com/client-lists/reference/put-update-list)
+    * [UpdateClientListItems](https://techdocs.akamai.com/client-lists/reference/post-update-items)
+    * [CreateClientList](https://techdocs.akamai.com/client-lists/reference/post-create-list)
+    * [DeleteClientList](https://techdocs.akamai.com/client-lists/reference/delete-list)
 
 ## 7.1.0 (July 25, 2023)
 
