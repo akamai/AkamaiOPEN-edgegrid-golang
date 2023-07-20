@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## X.X.X (mmmm dd, 2023)
+## 7.1.0 (July 25, 2023)
 
 ### FEATURES/ENHANCEMENTS:
 
@@ -8,8 +8,10 @@
   * Added Bot Management API Support
     * Challenge Injection Rules - read, update
     * Add `CreateSecurityPolicyWithDefaultProtections` method to the `SecurityPolicy` interface to support creating a security policy with all available protections enabled.
+  * Update marshaling of PII learning setting
 
 ### Deprecations
+
 * Challenge Interceptions Rules has been deprecated
 * Deprecate the following interfaces used to maintain individual policy protections:
   * `ApiConstraintsProtection`
