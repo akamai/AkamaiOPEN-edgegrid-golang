@@ -183,6 +183,20 @@ func (p *Mock) UpdateChallengeInterceptionRules(ctx context.Context, params Upda
 	}
 	return args.Get(0).(map[string]interface{}), nil
 }
+func (p *Mock) GetChallengeInjectionRules(ctx context.Context, params GetChallengeInjectionRulesRequest) (map[string]interface{}, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]interface{}), nil
+}
+func (p *Mock) UpdateChallengeInjectionRules(ctx context.Context, params UpdateChallengeInjectionRulesRequest) (map[string]interface{}, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]interface{}), nil
+}
 func (p *Mock) GetClientSideSecurity(ctx context.Context, params GetClientSideSecurityRequest) (map[string]interface{}, error) {
 	args := p.Called(ctx, params)
 	if args.Error(1) != nil {

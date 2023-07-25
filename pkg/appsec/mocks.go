@@ -1261,6 +1261,14 @@ func (m *Mock) CreateSecurityPolicy(ctx context.Context, req CreateSecurityPolic
 	return args.Get(0).(*CreateSecurityPolicyResponse), args.Error(1)
 }
 
+func (m *Mock) CreateSecurityPolicyWithDefaultProtections(ctx context.Context, req CreateSecurityPolicyWithDefaultProtectionsRequest) (*CreateSecurityPolicyResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*CreateSecurityPolicyResponse), args.Error(1)
+}
+
 func (m *Mock) CreateReputationProfile(ctx context.Context, req CreateReputationProfileRequest) (*CreateReputationProfileResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {

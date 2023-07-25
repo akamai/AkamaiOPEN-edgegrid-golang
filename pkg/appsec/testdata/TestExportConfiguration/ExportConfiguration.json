@@ -5213,6 +5213,16 @@
                     "innerKey": "innerValueA"
                 }
             },
+            "challengeInjectionRules": {
+                "primitiveKey": "primitiveValueA",
+                "arrayKey": [
+                    "arrayValueA1",
+                    "arrayValueA2"
+                ],
+                "objectKey": {
+                    "innerKey": "innerValueA"
+                }
+            },
             "conditionalActions": [
                 {
                     "actionId": "action_A",

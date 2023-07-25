@@ -10,27 +10,31 @@ import (
 
 type (
 	// The ReputationProtection interface supports retrieving and updating reputation protection for a configuration and policy.
+	// Deprecated: this interface will be removed in a future release. Use the SecurityPolicy interface instead.
 	ReputationProtection interface {
 		// GetReputationProtections retrieves the current reputation protection setting for a configuration and policy.
+		// Deprecated: this method will be removed in a future release. Use the GetPolicyProtections method of the PolicyProtections interface instead.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		// Deprecated: this method will be removed in a future release. Use GetReputationProtection instead.
 		GetReputationProtections(ctx context.Context, params GetReputationProtectionsRequest) (*GetReputationProtectionsResponse, error)
 
 		// GetReputationProtection retrieves the current reputation protection setting for a configuration and policy.
+		// Deprecated: this method will be removed in a future release. Use the GetPolicyProtections method of the PolicyProtections interface instead.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/get-policy-protections
 		GetReputationProtection(ctx context.Context, params GetReputationProtectionRequest) (*GetReputationProtectionResponse, error)
 
 		// UpdateReputationProtection updates the reputation protection setting for a configuration and policy.
+		// Deprecated: this method will be removed in a future release. Use the CreateSecurityPolicyWithDefaultProtections method of the SecurityPolicy interface instead.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		UpdateReputationProtection(ctx context.Context, params UpdateReputationProtectionRequest) (*UpdateReputationProtectionResponse, error)
 
 		// RemoveReputationProtection removes reputation protection for a configuration and policy.
+		// Deprecated: this method will be removed in a future release. Use the CreateSecurityPolicyWithDefaultProtections method of the SecurityPolicy interface instead.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
-		// Deprecated: this method will be removed in a future release. Use UpdateReputationProtection instead.
 		RemoveReputationProtection(ctx context.Context, params RemoveReputationProtectionRequest) (*RemoveReputationProtectionResponse, error)
 	}
 

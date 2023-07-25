@@ -507,7 +507,7 @@ type (
 		} `json:"prefetch"`
 		PragmaHeader *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
 		RequestBody  *RequestBody                       `json:"requestBody,omitempty"`
-		PIILearning  bool                               `json:"piiLearning"`
+		PIILearning  *PIILearningexp                    `json:"piiLearning,omitempty"`
 	}
 
 	// CustomDenyListexp is returned as part of GetExportConfigurationResponse.
@@ -677,6 +677,11 @@ type (
 		EnablePathMatch bool `json:"enabled"`
 	}
 
+	// PIILearningexp contains the PIILearning setting
+	PIILearningexp struct {
+		EnablePIILearning bool `json:"enabled"`
+	}
+
 	// RequestBody is returned as part of GetExportConfigurationResponse.
 	RequestBody struct {
 		RequestBodyInspectionLimitInKB string `json:"requestBodyInspectionLimitInKB"`
@@ -774,6 +779,7 @@ type (
 		CustomDenyActions          []map[string]interface{} `json:"customDenyActions,omitempty"`
 		ServeAlternateActions      []map[string]interface{} `json:"serveAlternateActions,omitempty"`
 		ChallengeInterceptionRules map[string]interface{}   `json:"challengeInterceptionRules,omitempty"`
+		ChallengeInjectionRules    map[string]interface{}   `json:"challengeInjectionRules,omitempty"`
 	}
 
 	// BotManagement is returned as part of GetExportConfigurationResponse

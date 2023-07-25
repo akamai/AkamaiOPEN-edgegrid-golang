@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -23,9 +24,15 @@ type (
 
 		// CreateSecurityPolicy creates a new copy of an existing security policy or creates a new security policy from scratch
 		// when you don't specify a policy to clone in the request.
+		// Deprecated: this method will be removed in a future release. Use the CreateSecurityPolicyWithDefaultProtections method instead.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/post-policy
 		CreateSecurityPolicy(ctx context.Context, params CreateSecurityPolicyRequest) (*CreateSecurityPolicyResponse, error)
+
+		// CreateSecurityPolicyWithDefaultProtections creates a new security policy with a specified set of security protections.
+		//
+		// See: https://techdocs.akamai.com/application-security/reference/post-policy, https://techdocs.akamai.com/application-security/reference/put-policy-protections
+		CreateSecurityPolicyWithDefaultProtections(ctx context.Context, params CreateSecurityPolicyWithDefaultProtectionsRequest) (*CreateSecurityPolicyResponse, error)
 
 		// UpdateSecurityPolicy updates the name of a specific security policy.
 		//
@@ -74,7 +81,7 @@ type (
 		Version                int               `json:"version,omitempty"`
 	}
 
-	// CreateSecurityPolicyRequest is used to create a ecurity policy.
+	// CreateSecurityPolicyRequest is used to create a security policy.
 	CreateSecurityPolicyRequest struct {
 		ConfigID        int    `json:"-"`
 		Version         int    `json:"-"`
@@ -82,6 +89,13 @@ type (
 		PolicyName      string `json:"policyName"`
 		PolicyPrefix    string `json:"policyPrefix"`
 		DefaultSettings bool   `json:"defaultSettings"`
+	}
+
+	// CreateSecurityPolicyWithDefaultProtectionsRequest is used to create a security policy with a specified set of protections.
+	CreateSecurityPolicyWithDefaultProtectionsRequest struct {
+		ConfigVersion
+		PolicyName   string `json:"policyName"`
+		PolicyPrefix string `json:"policyPrefix"`
 	}
 
 	// CreateSecurityPolicyResponse is returned from a call to CreateSecurityPolicy.
@@ -130,8 +144,8 @@ type (
 
 	// SecurityControls is returned as part of GetSecurityPoliciesResponse and similar responses.
 	SecurityControls struct {
-		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
 		ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
+		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
 		ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
 		ApplyMalwareControls          bool `json:"applyMalwareControls,omitempty"`
 		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
@@ -143,44 +157,56 @@ type (
 
 // Validate validates a GetSecurityPolicyRequest.
 func (v GetSecurityPolicyRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
-	}.Filter()
+	})
 }
 
 // Validate validates a GetSecurityPolicysRequest.
 func (v GetSecurityPoliciesRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
-	}.Filter()
+	})
 }
 
 // Validate validates a CreateSecurityPolicyRequest.
 func (v CreateSecurityPolicyRequest) Validate() error {
-	return validation.Errors{
-		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
-		"Version":  validation.Validate(v.Version, validation.Required),
-	}.Filter()
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"ConfigID":     validation.Validate(v.ConfigID, validation.Required),
+		"Version":      validation.Validate(v.Version, validation.Required),
+		"PolicyName":   validation.Validate(v.PolicyName, validation.Required),
+		"PolicyPrefix": validation.Validate(v.PolicyPrefix, validation.Required),
+	})
+}
+
+// Validate validates a CreateSecurityPolicyWithDefaultProtectionsRequest.
+func (v CreateSecurityPolicyWithDefaultProtectionsRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"ConfigID":     validation.Validate(v.ConfigID, validation.Required),
+		"Version":      validation.Validate(v.Version, validation.Required),
+		"PolicyName":   validation.Validate(v.PolicyName, validation.Required),
+		"PolicyPrefix": validation.Validate(v.PolicyPrefix, validation.Required),
+	})
 }
 
 // Validate validates an UpdateSecurityPolicyRequest.
 func (v UpdateSecurityPolicyRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
 		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-	}.Filter()
+	})
 }
 
 // Validate validates a RemoveSecurityPolicyRequest.
 func (v RemoveSecurityPolicyRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
 		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-	}.Filter()
+	})
 }
 
 func (p *appsec) GetSecurityPolicies(ctx context.Context, params GetSecurityPoliciesRequest) (*GetSecurityPoliciesResponse, error) {
@@ -294,6 +320,36 @@ func (p *appsec) CreateSecurityPolicy(ctx context.Context, params CreateSecurity
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create CreateSecurityPolicy request: %w", err)
+	}
+
+	var result CreateSecurityPolicyResponse
+	resp, err := p.Exec(req, &result, params)
+	if err != nil {
+		return nil, fmt.Errorf("create security policy request failed: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, p.Error(resp)
+	}
+
+	return &result, nil
+}
+
+func (p *appsec) CreateSecurityPolicyWithDefaultProtections(ctx context.Context, params CreateSecurityPolicyWithDefaultProtectionsRequest) (*CreateSecurityPolicyResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("CreateSecurityPolicyWithDefaultProtections")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	uri := fmt.Sprintf(
+		"/appsec/v1/configs/%d/versions/%d/security-policies/protections",
+		params.ConfigID,
+		params.Version)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create CreateSecurityPolicyWithDefaultProtections request: %w", err)
 	}
 
 	var result CreateSecurityPolicyResponse

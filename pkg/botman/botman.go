@@ -26,6 +26,7 @@ type (
 		BotEndpointCoverageReport
 		BotManagementSetting
 		ChallengeAction
+		ChallengeInjectionRules
 		ChallengeInterceptionRules
 		ClientSideSecurity
 		ConditionalAction

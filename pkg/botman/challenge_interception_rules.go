@@ -12,20 +12,25 @@ import (
 type (
 	// The ChallengeInterceptionRules interface supports retrieving and updating the challenge interception rules for a
 	// configuration
+	// Deprecated: this interface will be removed in a future release. Use ChallengeInjectionRules instead.
 	ChallengeInterceptionRules interface {
 		// GetChallengeInterceptionRules https://techdocs.akamai.com/bot-manager/reference/get-challenge-interception-rules
+		// Deprecated: this method will be removed in a future release. Use GetChallengeInjectionRules instead.
 		GetChallengeInterceptionRules(ctx context.Context, params GetChallengeInterceptionRulesRequest) (map[string]interface{}, error)
 		// UpdateChallengeInterceptionRules https://techdocs.akamai.com/bot-manager/reference/put-challenge-interception-rules
+		// Deprecated: this method will be removed in a future release. Use UpdateChallengeInjectionRules instead.
 		UpdateChallengeInterceptionRules(ctx context.Context, params UpdateChallengeInterceptionRulesRequest) (map[string]interface{}, error)
 	}
 
 	// GetChallengeInterceptionRulesRequest is used to retrieve challenge interception rules
+	// Deprecated: this struct will be removed in a future release. Use GetChallengeInjectionRulesRequest instead.
 	GetChallengeInterceptionRulesRequest struct {
 		ConfigID int64
 		Version  int64
 	}
 
 	// UpdateChallengeInterceptionRulesRequest is used to modify challenge interception rules
+	// Deprecated: this struct will be removed in a future release. Use UpdateChallengeInjectionRulesRequest instead.
 	UpdateChallengeInterceptionRulesRequest struct {
 		ConfigID    int64
 		Version     int64
