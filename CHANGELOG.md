@@ -31,6 +31,10 @@
     * [UpdateClientListItems](https://techdocs.akamai.com/client-lists/reference/post-update-items)
     * [CreateClientList](https://techdocs.akamai.com/client-lists/reference/post-create-list)
     * [DeleteClientList](https://techdocs.akamai.com/client-lists/reference/delete-list)
+    * [GetActivation](https://techdocs.akamai.com/client-lists/reference/get-retrieve-activation-status)
+    * [GetActivationStatus](https://techdocs.akamai.com/client-lists/reference/get-activation-status)
+    * [CreateActivation](https://techdocs.akamai.com/client-lists/reference/post-activate-list)
+
 
 ## 7.1.0 (July 25, 2023)
 
@@ -63,7 +67,7 @@
 * DataStream
   * Updated `connectors` details in DataStream 2 API v2.
   * Updated `GetProperties` and `GetDatasetFields` methods in DataStream 2 API v2.
-  * Updated `CreateStream`, `GetStream`, `UpdateStream`, `DeleteStream` and `ListStreams` methods in DataStream 2 API v2.  
+  * Updated `CreateStream`, `GetStream`, `UpdateStream`, `DeleteStream` and `ListStreams` methods in DataStream 2 API v2.
   * Updated `Activate`, `Deactivate`, `ActivationHistory` and `Stream` details in DataStream 2 API v2 and also changed their corresponding response objects.
 
 ### FEATURES/ENHANCEMENTS:

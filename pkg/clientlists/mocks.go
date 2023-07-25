@@ -70,3 +70,33 @@ func (p *Mock) DeleteClientList(ctx context.Context, params DeleteClientListRequ
 	args := p.Called(ctx, params)
 	return args.Error(0)
 }
+
+func (p *Mock) GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error) {
+	args := p.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetActivationResponse), args.Error(1)
+}
+
+func (p *Mock) GetActivationStatus(ctx context.Context, params GetActivationStatusRequest) (*GetActivationStatusResponse, error) {
+	args := p.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetActivationStatusResponse), args.Error(1)
+}
+
+func (p *Mock) CreateActivation(ctx context.Context, params CreateActivationRequest) (*CreateActivationResponse, error) {
+	args := p.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*CreateActivationResponse), args.Error(1)
+}

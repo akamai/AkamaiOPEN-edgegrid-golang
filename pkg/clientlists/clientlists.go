@@ -17,6 +17,7 @@ var (
 type (
 	// ClientLists is the clientlists api interface
 	ClientLists interface {
+		Activation
 		Lists
 	}
 
