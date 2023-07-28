@@ -101,7 +101,7 @@ type (
 		ConfigID                int64                `json:"configId"`
 		Locations               []ConfigLocationResp `json:"locations"`
 		MultiCDNSettings        *MultiCDNSettings    `json:"multiCdnSettings"`
-		Status                  string               `json:"status"`
+		Status                  StatusType           `json:"status"`
 		ConfigName              string               `json:"configName"`
 		LastUpdatedBy           string               `json:"lastUpdatedBy"`
 		LastUpdatedDate         string               `json:"lastUpdatedDate"`
@@ -189,6 +189,9 @@ type (
 
 	// RequestType is a type of request
 	RequestType string
+
+	// StatusType is a type of status
+	StatusType string
 )
 
 const (
@@ -206,6 +209,17 @@ const (
 	RequestTypeEdgeOnly RequestType = "EDGE_ONLY"
 	// RequestTypeEdgeAndMidgress represents RequestType value of 'EDGE_AND_MIDGRESS'
 	RequestTypeEdgeAndMidgress RequestType = "EDGE_AND_MIDGRESS"
+
+	// StatusActive represents Status value of 'ACTIVE'
+	StatusActive StatusType = "ACTIVE"
+	// StatusSaved represents Status value of 'SAVED'
+	StatusSaved StatusType = "SAVED"
+	// StatusInProgress represents Status value of 'IN_PROGRESS'
+	StatusInProgress StatusType = "IN_PROGRESS"
+	// StatusDeleteInProgress represents Status value of 'DELETE_IN_PROGRESS'
+	StatusDeleteInProgress StatusType = "DELETE_IN_PROGRESS"
+	// StatusFailed represents Status value of 'FAILED'
+	StatusFailed StatusType = "FAILED"
 )
 
 // Validate validates GetConfigurationRequest
