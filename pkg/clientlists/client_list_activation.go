@@ -44,21 +44,15 @@ type (
 
 	// GetActivationResponse contains activation details
 	GetActivationResponse struct {
-		ActivationID      int64             `json:"activationId"`
-		CreateDate        string            `json:"createDate"`
-		CreatedBy         string            `json:"createdBy"`
-		Environment       ActivationNetwork `json:"environment"`
-		Fast              bool              `json:"fast"`
-		InitialActivation bool              `json:"initialActivation"`
-		Status            ActivationStatus  `json:"status"`
-		ClientList        ListInfo          `json:"clientList"`
+		ActivationID      int64            `json:"activationId"`
+		CreateDate        string           `json:"createDate"`
+		CreatedBy         string           `json:"createdBy"`
+		Fast              bool             `json:"fast"`
+		InitialActivation bool             `json:"initialActivation"`
+		ActivationStatus  ActivationStatus `json:"activationStatus"`
+		ListID            string           `json:"listId"`
+		Version           int64            `json:"version"`
 		ActivationParams
-	}
-
-	// ListInfo contains Client List details
-	ListInfo struct {
-		ListID  string `json:"listId"`
-		Version int64  `json:"version"`
 	}
 
 	// CreateActivationRequest contains activation request parameters for CreateActivation method

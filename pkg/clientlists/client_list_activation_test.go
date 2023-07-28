@@ -43,7 +43,7 @@ func TestCreateActivation(t *testing.T) {
 				"activationStatus": "PENDING_ACTIVATION",
 				"listId": "1234_NORTHAMERICAGEOALLOWLIST",
 				"network": "PRODUCTION",
-				"notificationRecipients": [],
+				"notificationRecipients": ["aa@dd.com"],
 				"version": 1,
 				"activationId": 12,
 				"createDate": "2023-04-05T18:46:56.365Z",
@@ -62,7 +62,7 @@ func TestCreateActivation(t *testing.T) {
 				Comments:               "Activation of GEO allowlist list",
 				ListID:                 "1234_NORTHAMERICAGEOALLOWLIST",
 				Network:                Production,
-				NotificationRecipients: []string{},
+				NotificationRecipients: []string{"aa@dd.com"},
 				SiebelTicketID:         "12_AB",
 				Version:                1,
 			},
@@ -144,31 +144,38 @@ func TestGetActivation(t *testing.T) {
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `{
+				"action": "ACTIVATE",
 				"activationId": 12,
-				"clientList": {
-					"listId": "1234_NORTHAMERICAGEOALLOWLIST",
-					"version": 1
-				},
+				"activationStatus": "PENDING_ACTIVATION",
+				"comments": "latest activation",
 				"createDate": "2023-04-05T18:46:56.365Z",
 				"createdBy": "jdoe",
-				"environment": "PRODUCTION",
 				"fast": true,
-				"initialActivation": false,
-				"status": "PENDING_ACTIVATION"
+				"listId": "1234_NORTHAMERICAGEOALLOWLIST",
+				"network": "PRODUCTION",
+				"notificationRecipients": [
+						"qw@ff.com"
+				],
+				"siebelTicketId": "q",
+				"version": 1
 		}`,
 			expectedPath: uri,
 			expectedResponse: &GetActivationResponse{
-				ActivationID: 12,
-				ClientList: ListInfo{
-					Version: 1,
-					ListID:  "1234_NORTHAMERICAGEOALLOWLIST",
-				},
+				ActivationID:      12,
+				ListID:            "1234_NORTHAMERICAGEOALLOWLIST",
+				Version:           1,
 				CreateDate:        "2023-04-05T18:46:56.365Z",
 				CreatedBy:         "jdoe",
-				Environment:       Production,
 				Fast:              true,
 				InitialActivation: false,
-				Status:            "PENDING_ACTIVATION",
+				ActivationStatus:  "PENDING_ACTIVATION",
+				ActivationParams: ActivationParams{
+					Action:                 Activate,
+					NotificationRecipients: []string{"qw@ff.com"},
+					Comments:               "latest activation",
+					Network:                Production,
+					SiebelTicketID:         "q",
+				},
 			},
 		},
 		"500 internal server error": {
