@@ -548,3 +548,19 @@ func (p *Mock) GetBotDetectionList(ctx context.Context, params GetBotDetectionLi
 	}
 	return args.Get(0).(*GetBotDetectionListResponse), nil
 }
+
+func (p *Mock) GetCustomClientSequence(ctx context.Context, params GetCustomClientSequenceRequest) (*CustomClientSequenceResponse, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*CustomClientSequenceResponse), nil
+}
+
+func (p *Mock) UpdateCustomClientSequence(ctx context.Context, params UpdateCustomClientSequenceRequest) (*CustomClientSequenceResponse, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*CustomClientSequenceResponse), nil
+}

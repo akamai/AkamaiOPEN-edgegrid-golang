@@ -246,6 +246,7 @@ type (
 		CustomDefinedBots         []map[string]interface{} `json:"customDefinedBots,omitempty"`
 		CustomBotCategorySequence []string                 `json:"customBotCategorySequence,omitempty"`
 		CustomClients             []map[string]interface{} `json:"customClients,omitempty"`
+		CustomClientSequence      []string                 `json:"customClientSequence,omitempty"`
 		ResponseActions           *ResponseActions         `json:"responseActions,omitempty"`
 		AdvancedSettings          *AdvancedSettings        `json:"advancedSettings,omitempty"`
 	}

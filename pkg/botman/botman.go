@@ -34,6 +34,7 @@ type (
 		CustomBotCategoryAction
 		CustomBotCategorySequence
 		CustomClient
+		CustomClientSequence
 		CustomDefinedBot
 		CustomDenyAction
 		JavascriptInjection

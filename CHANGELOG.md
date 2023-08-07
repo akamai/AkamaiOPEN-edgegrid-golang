@@ -4,6 +4,10 @@
 
 #### FEATURES/ENHANCEMENTS:
 
+* APPSEC
+  * Added Bot Management API Support
+    * Custom Client Sequence - read and update
+
 * [IMPORTANT] Added CloudWrapper API support
   * Capacities
     * [ListCapacities](https://techdocs.akamai.com/cloud-wrapper/reference/get-capacity-inventory)
@@ -34,7 +38,6 @@
     * [GetActivation](https://techdocs.akamai.com/client-lists/reference/get-retrieve-activation-status)
     * [GetActivationStatus](https://techdocs.akamai.com/client-lists/reference/get-activation-status)
     * [CreateActivation](https://techdocs.akamai.com/client-lists/reference/post-activate-list)
-
 
 ## 7.1.0 (July 25, 2023)
 
