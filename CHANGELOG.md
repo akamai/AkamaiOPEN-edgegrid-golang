@@ -1,12 +1,8 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## X.X.X (XX xx, 202x) [CloudWrapper changelog]
+## 7.2.0 (August 22, 2023)
 
 #### FEATURES/ENHANCEMENTS:
-
-* APPSEC
-  * Added Bot Management API Support
-    * Custom Client Sequence - read and update
 
 * [IMPORTANT] Added CloudWrapper API support
   * Capacities
@@ -26,8 +22,8 @@
     * [ListProperties](https://techdocs.akamai.com/cloud-wrapper/reference/get-properties)
     * [ListOrigins](https://techdocs.akamai.com/cloud-wrapper/reference/get-origins)
 
-* CLIENTLISTS
-  * [IMPORTANT] Added Client Lists API Support
+* [IMPORTANT] Added Client Lists API Support
+  * ClientLists
     * [GetClientLists](https://techdocs.akamai.com/client-lists/reference/get-lists)
       * Support filter by name or type
     * [GetClientList](https://techdocs.akamai.com/client-lists/reference/get-list)
@@ -35,9 +31,14 @@
     * [UpdateClientListItems](https://techdocs.akamai.com/client-lists/reference/post-update-items)
     * [CreateClientList](https://techdocs.akamai.com/client-lists/reference/post-create-list)
     * [DeleteClientList](https://techdocs.akamai.com/client-lists/reference/delete-list)
+  * Activations
     * [GetActivation](https://techdocs.akamai.com/client-lists/reference/get-retrieve-activation-status)
     * [GetActivationStatus](https://techdocs.akamai.com/client-lists/reference/get-activation-status)
     * [CreateActivation](https://techdocs.akamai.com/client-lists/reference/post-activate-list)
+
+* APPSEC
+  * Added Bot Management API Support
+    * Custom Client Sequence - read and update
 
 ## 7.1.0 (July 25, 2023)
 
