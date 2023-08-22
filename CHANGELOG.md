@@ -1,5 +1,45 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 7.2.0 (August 22, 2023)
+
+#### FEATURES/ENHANCEMENTS:
+
+* [IMPORTANT] Added CloudWrapper API support
+  * Capacities
+    * [ListCapacities](https://techdocs.akamai.com/cloud-wrapper/reference/get-capacity-inventory)
+  * Configurations
+    * [GetConfiguration](https://techdocs.akamai.com/cloud-wrapper/reference/get-configuration)
+    * [ListConfigurations](https://techdocs.akamai.com/cloud-wrapper/reference/get-configurations)
+    * [CreateConfiguration](https://techdocs.akamai.com/cloud-wrapper/reference/post-configuration)
+    * [UpdateConfiguration](https://techdocs.akamai.com/cloud-wrapper/reference/put-configuration)
+    * [ActivateConfiguration](https://techdocs.akamai.com/cloud-wrapper/reference/post-configuration-activations)
+  * Locations
+    * [ListLocations](https://techdocs.akamai.com/cloud-wrapper/reference/get-locations)
+  * MultiCDN
+    * [ListAuthKeys](https://techdocs.akamai.com/cloud-wrapper/reference/get-auth-keys)
+    * [ListCDNProviders](https://techdocs.akamai.com/cloud-wrapper/reference/get-providers)
+  * Properties
+    * [ListProperties](https://techdocs.akamai.com/cloud-wrapper/reference/get-properties)
+    * [ListOrigins](https://techdocs.akamai.com/cloud-wrapper/reference/get-origins)
+
+* [IMPORTANT] Added Client Lists API Support
+  * ClientLists
+    * [GetClientLists](https://techdocs.akamai.com/client-lists/reference/get-lists)
+      * Support filter by name or type
+    * [GetClientList](https://techdocs.akamai.com/client-lists/reference/get-list)
+    * [UpdateClientList](https://techdocs.akamai.com/client-lists/reference/put-update-list)
+    * [UpdateClientListItems](https://techdocs.akamai.com/client-lists/reference/post-update-items)
+    * [CreateClientList](https://techdocs.akamai.com/client-lists/reference/post-create-list)
+    * [DeleteClientList](https://techdocs.akamai.com/client-lists/reference/delete-list)
+  * Activations
+    * [GetActivation](https://techdocs.akamai.com/client-lists/reference/get-retrieve-activation-status)
+    * [GetActivationStatus](https://techdocs.akamai.com/client-lists/reference/get-activation-status)
+    * [CreateActivation](https://techdocs.akamai.com/client-lists/reference/post-activate-list)
+
+* APPSEC
+  * Added Bot Management API Support
+    * Custom Client Sequence - read and update
+
 ## 7.1.0 (July 25, 2023)
 
 ### FEATURES/ENHANCEMENTS:
@@ -31,7 +71,7 @@
 * DataStream
   * Updated `connectors` details in DataStream 2 API v2.
   * Updated `GetProperties` and `GetDatasetFields` methods in DataStream 2 API v2.
-  * Updated `CreateStream`, `GetStream`, `UpdateStream`, `DeleteStream` and `ListStreams` methods in DataStream 2 API v2.  
+  * Updated `CreateStream`, `GetStream`, `UpdateStream`, `DeleteStream` and `ListStreams` methods in DataStream 2 API v2.
   * Updated `Activate`, `Deactivate`, `ActivationHistory` and `Stream` details in DataStream 2 API v2 and also changed their corresponding response objects.
 
 ### FEATURES/ENHANCEMENTS:

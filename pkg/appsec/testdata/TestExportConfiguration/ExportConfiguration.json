@@ -5150,6 +5150,10 @@
                 }
             }
         ],
+        "customClientSequence": [
+            "a7fe489d-0354-43bd-b81c-8cabbe850cdd",
+            "60374346-2d1d-444d-91c1-90373e3f804a"
+        ],
         "customDefinedBots": [
             {
                 "botId": "50789280-ba99-4f8f-b4c6-ad9c1c69569a",
