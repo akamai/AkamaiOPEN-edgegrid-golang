@@ -295,7 +295,7 @@ func (c ConfigLocationReq) Validate() error {
 func (c Capacity) Validate() error {
 	return validation.Errors{
 		"Unit":  validation.Validate(c.Unit, validation.Required, validation.In(UnitGB, UnitTB).Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s'", c.Unit, UnitGB, UnitTB))),
-		"Value": validation.Validate(c.Value, validation.Required, validation.Min(1), validation.Max(10000000000)),
+		"Value": validation.Validate(c.Value, validation.Required, validation.Min(1), validation.Max(int64(10000000000))),
 	}.Filter()
 }
 
