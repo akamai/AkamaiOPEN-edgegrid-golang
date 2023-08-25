@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 7.2.1 (August 25, 2023)
+
+#### BUG FIXES:
+
+* CloudWrapper
+  * Fixed build for 32-bit systems
+
 ## 7.2.0 (August 22, 2023)
 
 #### FEATURES/ENHANCEMENTS:
