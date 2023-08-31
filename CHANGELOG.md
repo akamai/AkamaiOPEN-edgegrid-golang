@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 7.3.0 (September XX, 2023)
+
+#### FEATURES/ENHANCEMENTS:
+
+* ClientLists
+  * Updated `GetClientListResponse` and `UpdateClientListResponse` to include `GroupID`
+
 ## 7.2.1 (August 25, 2023)
 
 #### BUG FIXES:
