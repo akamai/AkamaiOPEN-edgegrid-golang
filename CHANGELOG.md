@@ -12,6 +12,9 @@
 * ClientLists
   * Updated `GetClientListResponse` and `UpdateClientListResponse` to include `GroupID`
 
+* HAPI
+  * Added `GetChangeRequest`
+
 ## 7.2.1 (August 25, 2023)
 
 #### BUG FIXES:
