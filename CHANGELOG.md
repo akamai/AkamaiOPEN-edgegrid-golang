@@ -1,19 +1,19 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 7.4.0 (??, 2023)
-
-* GTM
-  * Add custom error `ErrNotFound` that can be used to check if GTM api retuned 404 not found
-
-## 7.3.0 (September XX, 2023)
+## 7.3.0 (September 19, 2023)
 
 #### FEATURES/ENHANCEMENTS:
 
 * ClientLists
   * Updated `GetClientListResponse` and `UpdateClientListResponse` to include `GroupID`
 
+* GTM
+  * Added custom error `ErrNotFound` that can be used to check if GTM api retuned 404 not found
+
 * HAPI
   * Added `GetChangeRequest`
+
+* Updated `yaml.v3` dependency
 
 ## 7.2.1 (August 25, 2023)
 
