@@ -43,3 +43,13 @@ func (m *Mock) UpdateEdgeHostname(ctx context.Context, request UpdateEdgeHostnam
 
 	return args.Get(0).(*UpdateEdgeHostnameResponse), nil
 }
+
+func (m *Mock) GetChangeRequest(ctx context.Context, req GetChangeRequest) (*ChangeRequest, error) {
+	args := m.Called(ctx, req)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ChangeRequest), nil
+}

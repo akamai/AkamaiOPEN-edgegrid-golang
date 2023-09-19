@@ -365,6 +365,9 @@ func TestGetClientList(t *testing.T) {
 				"updateDate": "2023-06-06T15:58:39.225+00:00",
 				"updatedBy": "ccare2",
 				"version": 1,
+				"groupId": 12,
+				"groupName": "123_ABC",
+				"contractId" :"12_CO",
 				"items": [
 					{
 						"createDate": "2022-07-12T20:14:29.189+00:00",
@@ -420,6 +423,9 @@ func TestGetClientList(t *testing.T) {
 					UpdatedBy:                  "ccare2",
 					Version:                    1,
 				},
+				GroupID:    12,
+				GroupName:  "123_ABC",
+				ContractID: "12_CO",
 				Items: []ListItemContent{
 					{
 						CreateDate:       "2022-07-12T20:14:29.189+00:00",
@@ -515,6 +521,7 @@ func TestUpdateClientList(t *testing.T) {
 	result := UpdateClientListResponse{
 		ContractID: "M-2CF0QRI",
 		GroupName:  "Kona QA16-M-2CF0QRI",
+		GroupID:    12,
 		ListContent: ListContent{
 			CreateDate:                 "2023-04-03T15:50:34.074+00:00",
 			CreatedBy:                  "ccare2",
@@ -558,6 +565,7 @@ func TestUpdateClientList(t *testing.T) {
 				"deprecated": false,
 				"filePrefix": "CL",
 				"groupName": "Kona QA16-M-2CF0QRI",
+				"groupId": 12,
 				"itemsCount": 51,
 				"listId": "12_12",
 				"listType": "CL",
@@ -839,6 +847,7 @@ func TestCreateClientLists(t *testing.T) {
 		},
 		ContractID: "M-2CF0QRI",
 		GroupName:  "Group A",
+		GroupID:    12,
 		Items: []ListItemContent{
 			{
 				Value:          "1.1.1.1",
@@ -873,6 +882,7 @@ func TestCreateClientLists(t *testing.T) {
 				],
 				"contractId": "M-2CF0QRI",
 				"groupName": "Group A",
+				"groupId": 12,
 				"items": [
 					{
 						"value": "1.1.1.1",

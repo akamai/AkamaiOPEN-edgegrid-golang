@@ -129,6 +129,7 @@ type (
 	GetClientListResponse struct {
 		ListContent
 		ContractID string            `json:"contractId"`
+		GroupID    int64             `json:"groupId"`
 		GroupName  string            `json:"groupName"`
 		Items      []ListItemContent `json:"items"`
 	}
@@ -165,6 +166,7 @@ type (
 		ListContent
 		ContractID string `json:"contractId"`
 		GroupName  string `json:"groupName"`
+		GroupID    int64  `json:"groupId"`
 	}
 
 	// UpdateClientListItemsRequest contains request params for UpdateClientListItems method

@@ -11,6 +11,8 @@ import (
 var (
 	// ErrBadRequest is returned when a required parameter is missing
 	ErrBadRequest = errors.New("missing argument")
+	// ErrNotFound used when status code is 404 Not Found
+	ErrNotFound = errors.New("404 Not Found")
 )
 
 type (
@@ -62,6 +64,11 @@ func (e *Error) Error() string {
 
 // Is handles error comparisons
 func (e *Error) Is(target error) bool {
+
+	if errors.Is(target, ErrNotFound) && e.StatusCode == http.StatusNotFound {
+		return true
+	}
+
 	var t *Error
 	if !errors.As(target, &t) {
 		return false

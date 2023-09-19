@@ -17,6 +17,7 @@ var (
 type (
 	// HAPI is the hapi api interface
 	HAPI interface {
+		ChangeRequests
 		EdgeHostnames
 	}
 
