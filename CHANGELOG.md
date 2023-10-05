@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 7.4.0 (October xx, 2023)
+
+#### FEATURES/ENHANCEMENTS:
+
+* IAM
+  * Phone number is no longer required for IAM user for `CreateUser` and `UpdateUserInfo` methods
+
 ## 7.3.0 (September 19, 2023)
 
 #### FEATURES/ENHANCEMENTS:

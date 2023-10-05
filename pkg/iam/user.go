@@ -259,7 +259,6 @@ func (r CreateUserRequest) Validate() error {
 		"email":         validation.Validate(r.Email, validation.Required, is.EmailFormat),
 		"firstName":     validation.Validate(r.FirstName, validation.Required),
 		"lastName":      validation.Validate(r.LastName, validation.Required),
-		"phone":         validation.Validate(r.Phone, validation.Required),
 		"authGrants":    validation.Validate(r.AuthGrants, validation.Required),
 		"notifications": validation.Validate(r.Notifications, validation.Required),
 	}.Filter()
@@ -279,7 +278,6 @@ func (r UpdateUserInfoRequest) Validate() error {
 		"firstName":         validation.Validate(r.User.FirstName, validation.Required),
 		"lastName":          validation.Validate(r.User.LastName, validation.Required),
 		"country":           validation.Validate(r.User.Country, validation.Required),
-		"phone":             validation.Validate(r.User.Phone, validation.Required),
 		"timeZone":          validation.Validate(r.User.TimeZone, validation.Required),
 		"preferredLanguage": validation.Validate(r.User.PreferredLanguage, validation.Required),
 		"sessionTimeOut":    validation.Validate(r.User.SessionTimeOut, validation.Required),
