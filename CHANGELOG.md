@@ -4,6 +4,9 @@
 
 #### FEATURES/ENHANCEMENTS:
 
+* Cloudlets
+  * Add MatchesAlways field to ER cloudlet
+
 * IAM
   * Phone number is no longer required for IAM user for `CreateUser` and `UpdateUserInfo` methods
 

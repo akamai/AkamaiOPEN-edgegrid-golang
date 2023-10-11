@@ -101,6 +101,7 @@ type (
 		End                      int64             `json:"end,omitempty"`
 		ID                       int64             `json:"id,omitempty"`
 		Matches                  []MatchCriteriaER `json:"matches,omitempty"`
+		MatchesAlways            bool              `json:"matchesAlways,omitempty"`
 		UseRelativeURL           string            `json:"useRelativeUrl,omitempty"`
 		StatusCode               int               `json:"statusCode"`
 		RedirectURL              string            `json:"redirectURL"`
@@ -422,6 +423,7 @@ func (m MatchRulePR) Validate() error {
 		"ForwardSettings.OriginID": validation.Validate(m.ForwardSettings.OriginID, validation.Required, validation.Length(0, 8192)),
 		"ForwardSettings.Percent":  validation.Validate(m.ForwardSettings.Percent, validation.Required, validation.Min(1), validation.Max(100)),
 		"Matches":                  validation.Validate(m.Matches),
+		"Matches/MatchesAlways":    validation.Validate(len(m.Matches), validation.When(m.MatchesAlways, validation.Empty.Error("only one of [ \"Matches\", \"MatchesAlways\" ] can be specified"))),
 	}.Filter()
 }
 
@@ -439,7 +441,8 @@ func (m MatchRuleER) Validate() error {
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'none', 'copy_scheme_hostname', 'relative_url' or '' (empty)", (&m).UseRelativeURL))),
 		"StatusCode": validation.Validate(m.StatusCode, validation.Required, validation.In(301, 302, 303, 307, 308).Error(
 			fmt.Sprintf("value '%d' is invalid. Must be one of: 301, 302, 303, 307 or 308", (&m).StatusCode))),
-		"Matches": validation.Validate(m.Matches),
+		"Matches":               validation.Validate(m.Matches),
+		"Matches/MatchesAlways": validation.Validate(len(m.Matches), validation.When(m.MatchesAlways, validation.Empty.Error("only one of [ \"Matches\", \"MatchesAlways\" ] can be specified"))),
 	}.Filter()
 }
 
@@ -464,10 +467,11 @@ func (m MatchRuleRC) Validate() error {
 	return validation.Errors{
 		"Type": validation.Validate(m.Type, validation.Required, validation.In(MatchRuleTypeRC).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be: 'igMatchRule'", (&m).Type))),
-		"Name":    validation.Validate(m.Name, validation.Length(0, 8192)),
-		"Start":   validation.Validate(m.Start, validation.Min(0)),
-		"End":     validation.Validate(m.End, validation.Min(0)),
-		"Matches": validation.Validate(m.Matches, validation.When(m.MatchesAlways, validation.Empty.Error("must be blank when 'matchesAlways' is set"))),
+		"Name":                  validation.Validate(m.Name, validation.Length(0, 8192)),
+		"Start":                 validation.Validate(m.Start, validation.Min(0)),
+		"End":                   validation.Validate(m.End, validation.Min(0)),
+		"Matches":               validation.Validate(m.Matches),
+		"Matches/MatchesAlways": validation.Validate(len(m.Matches), validation.When(m.MatchesAlways, validation.Empty.Error("only one of [ \"Matches\", \"MatchesAlways\" ] can be specified"))),
 		"AllowDeny": validation.Validate(m.AllowDeny, validation.Required, validation.In(Allow, Deny, DenyBranded).Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s' or '%s'", (&m).AllowDeny, Allow, Deny, DenyBranded),
 		)),
@@ -800,7 +804,7 @@ func (m *MatchCriteriaALB) UnmarshalJSON(b []byte) error {
 
 // UnmarshalJSON helps to un-marshall field ObjectMatchValue of MatchCriteriaAP as proper instance of *ObjectMatchValueObject or *ObjectMatchValueSimple
 func (m *MatchCriteriaAP) UnmarshalJSON(b []byte) error {
-	// matchCriteriaER is an alias for MatchCriteriaER for un-marshalling purposes
+	// matchCriteriaAP is an alias for MatchCriteriaAP for un-marshalling purposes
 	type matchCriteriaAP MatchCriteriaAP
 
 	// populate common attributes using default json unmarshaler using aliased type
