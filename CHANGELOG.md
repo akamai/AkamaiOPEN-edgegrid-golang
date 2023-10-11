@@ -10,6 +10,10 @@
 * IAM
   * Phone number is no longer required for IAM user for `CreateUser` and `UpdateUserInfo` methods
 
+* APPSEC
+  * Update `GetExportConfigurationResponse` struct to export rate policy `burstWindow` and `condition` fields
+
+
 ## 7.3.0 (September 19, 2023)
 
 #### FEATURES/ENHANCEMENTS:
@@ -18,7 +22,7 @@
   * Updated `GetClientListResponse` and `UpdateClientListResponse` to include `GroupID`
 
 * GTM
-  * Added custom error `ErrNotFound` that can be used to check if GTM api retuned 404 not found
+  * Added custom error `ErrNotFound` that can be used to check if GTM api returned 404 not found
 
 * HAPI
   * Added `GetChangeRequest`
