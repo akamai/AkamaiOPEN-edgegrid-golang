@@ -1,5 +1,12 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## X.X.X (November xx, 2023)
+
+#### FEATURES/ENHANCEMENTS:
+
+* BOTMAN
+  * Added API support for Custom Code - read and update
+
 ## 7.4.0 (October 24, 2023)
 
 #### FEATURES/ENHANCEMENTS:
