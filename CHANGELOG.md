@@ -1,19 +1,18 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 7.4.0 (October xx, 2023)
+## 7.4.0 (October 24, 2023)
 
 #### FEATURES/ENHANCEMENTS:
 
+* APPSEC
+  * Updated `GetExportConfigurationResponse` struct to export rate policy `burstWindow` and `condition` fields
+
 * Cloudlets
-  * Add MatchesAlways field to ER cloudlet
+  * Added MatchesAlways field to ER cloudlet
 
 * IAM
   * Phone number is no longer required for IAM user for `CreateUser` and `UpdateUserInfo` methods
-
-* APPSEC
-  * Update `GetExportConfigurationResponse` struct to export rate policy `burstWindow` and `condition` fields
-
-
+  
 ## 7.3.0 (September 19, 2023)
 
 #### FEATURES/ENHANCEMENTS:
