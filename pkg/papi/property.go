@@ -241,6 +241,10 @@ func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest)
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateProperty, err)
 	}
 
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateProperty, ErrNotFound, err)
+	}
+
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateProperty, p.Error(resp))
 	}
@@ -249,6 +253,7 @@ func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateProperty, ErrInvalidResponseLink, err)
 	}
+
 	rval.PropertyID = id
 
 	return &rval, nil

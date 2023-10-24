@@ -1193,6 +1193,22 @@ MatchRules[4]: {
 					RedirectURL: "abc.com",
 					StatusCode:  301,
 				},
+				MatchRuleER{
+					Type:          "erMatchRule",
+					RedirectURL:   "abc.com",
+					MatchesAlways: true,
+					StatusCode:    301,
+				},
+				MatchRuleER{
+					Type:        "erMatchRule",
+					RedirectURL: "abc.com",
+					Matches: []MatchCriteriaER{
+						{
+							MatchValue: "asd",
+						},
+					},
+					StatusCode: 301,
+				},
 			},
 		},
 		"invalid match rules ER": {
@@ -1206,6 +1222,18 @@ MatchRules[4]: {
 					UseRelativeURL: "test",
 					StatusCode:     404,
 				},
+				MatchRuleER{
+					Type:           "erMatchRule",
+					RedirectURL:    "abc.com",
+					UseRelativeURL: "none",
+					StatusCode:     301,
+					MatchesAlways:  true,
+					Matches: []MatchCriteriaER{
+						{
+							MatchValue: "asd",
+						},
+					},
+				},
 			},
 			withError: `
 MatchRules[0]: {
@@ -1216,6 +1244,9 @@ MatchRules[0]: {
 MatchRules[1]: {
 	StatusCode: value '404' is invalid. Must be one of: 301, 302, 303, 307 or 308
 	UseRelativeURL: value 'test' is invalid. Must be one of: 'none', 'copy_scheme_hostname', 'relative_url' or '' (empty)
+}
+MatchRules[2]: {
+	Matches/MatchesAlways: only one of [ "Matches", "MatchesAlways" ] can be specified
 }`,
 		},
 		"valid match rules FR": {
@@ -1304,7 +1335,7 @@ MatchRules[1]: {
 	AllowDeny: value 'allowBranded' is invalid. Must be one of: 'allow', 'deny' or 'denybranded'
 }
 MatchRules[2]: {
-	Matches: must be blank when 'matchesAlways' is set
+	Matches/MatchesAlways: only one of [ "Matches", "MatchesAlways" ] can be specified
 }`,
 		},
 		"valid match rules VP": {

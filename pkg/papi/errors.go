@@ -94,6 +94,9 @@ func (e *Error) Is(target error) bool {
 	if errors.Is(target, ErrDefaultCertLimitReached) {
 		return e.isErrDefaultCertLimitReached()
 	}
+	if errors.Is(target, ErrNotFound) {
+		return e.isErrNotFound()
+	}
 
 	var t *Error
 	if !errors.As(target, &t) {
@@ -139,4 +142,8 @@ func (e *Error) isErrSBDNotEnabled() bool {
 
 func (e *Error) isErrDefaultCertLimitReached() bool {
 	return e.StatusCode == http.StatusTooManyRequests && e.LimitKey == "DEFAULT_CERTS_PER_CONTRACT" && e.Remaining != nil && *e.Remaining == 0
+}
+
+func (e *Error) isErrNotFound() bool {
+	return e.StatusCode == http.StatusNotFound
 }

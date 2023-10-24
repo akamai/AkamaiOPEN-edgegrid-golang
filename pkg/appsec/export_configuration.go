@@ -72,7 +72,9 @@ type (
 			AllTraffic            bool                         `json:"allTraffic,omitempty"`
 			AverageThreshold      int                          `json:"averageThreshold"`
 			BurstThreshold        int                          `json:"burstThreshold"`
+			BurstWindow           *int                         `json:"burstWindow,omitempty"`
 			ClientIdentifier      string                       `json:"clientIdentifier,omitempty"`
+			Condition             *RatePolicyCondition         `json:"condition,omitempty"`
 			CreateDate            time.Time                    `json:"-"`
 			Description           string                       `json:"description,omitempty"`
 			FileExtensions        *RatePolicyFileExtensions    `json:"fileExtensions,omitempty"`
