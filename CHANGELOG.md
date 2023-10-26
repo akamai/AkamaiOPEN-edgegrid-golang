@@ -25,6 +25,19 @@
     * [ClonePolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy-clone)
   * Policy Properties
     * [ListActivePolicyProperties](https://techdocs.akamai.com/cloudlets/reference/get-policy-properties)
+  * Policy Versions
+    * [ListPolicyVersions](https://techdocs.akamai.com/cloudlets/v3/reference/get-policy-versions)
+    * [GetPolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/get-policy-version)
+    * [CreatePolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/post-policy-version)
+    * [DeletePolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/delete-policy-version)
+    * [UpdatePolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/put-policy-version)
+  * Supported cloudlet types
+    * API Prioritization (AP)
+    * Application Segmentation (AS)
+    * Edge Redirector (ER)
+    * Forward Rewrite (FR)
+    * Phased Release (PR aka CD)
+    * Request Control (RC aka IG)
 
 
 
