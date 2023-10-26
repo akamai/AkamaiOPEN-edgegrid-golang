@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## X.X.X (X X, X)
+## 7.x.x (xxx xx, 2023)
 
 #### FEATURES/ENHANCEMENTS:
 
@@ -15,6 +15,16 @@
 
 
 
+* Added Cloudlets V3 API support
+  * Policies
+    * [ListSharedPolicies](https://techdocs.akamai.com/cloudlets/reference/get-policies)
+    * [CreateSharedPolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy)
+    * [DeleteSharedPolicy](https://techdocs.akamai.com/cloudlets/reference/delete-policy)
+    * [GetSharedPolicy](https://techdocs.akamai.com/cloudlets/reference/get-policy)
+    * [UpdateSharedPolicy](https://techdocs.akamai.com/cloudlets/reference/put-policy)
+    * [ClonePolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy-clone)
+  * Policy Properties
+    * [ListActivePolicyProperties](https://techdocs.akamai.com/cloudlets/reference/get-policy-properties)
 
 
 

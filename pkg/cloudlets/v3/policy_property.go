@@ -13,16 +13,8 @@ import (
 )
 
 type (
-	// PolicyProperties interface is a cloudlets V3 API interface for policy associated properties.
-	PolicyProperties interface {
-		// GetPolicyProperties returns all active properties that are assigned to the policy.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/reference/get-policy-properties
-		GetPolicyProperties(context.Context, GetPolicyPropertiesRequest) (*PolicyProperty, error)
-	}
-
-	// GetPolicyPropertiesRequest contains request parameters for GetPolicyPropertiesRequest
-	GetPolicyPropertiesRequest struct {
+	// ListActivePolicyPropertiesRequest contains request parameters for ListActivePolicyProperties
+	ListActivePolicyPropertiesRequest struct {
 		PolicyID int64
 		Page     int
 		Size     int
@@ -64,12 +56,12 @@ type (
 )
 
 var (
-	// ErrGetPolicyProperties is returned when GetPolicyProperties fails
-	ErrGetPolicyProperties = errors.New("get policy properties")
+	// ErrListActivePolicyProperties is returned when ListActivePolicyProperties fails
+	ErrListActivePolicyProperties = errors.New("list active policy properties")
 )
 
 // Validate validates GetPolicyPropertiesRequest
-func (r GetPolicyPropertiesRequest) Validate() error {
+func (r ListActivePolicyPropertiesRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PolicyID": validation.Validate(r.PolicyID, validation.Required),
 		"Page":     validation.Validate(r.Page, validation.Min(0)),
@@ -77,37 +69,41 @@ func (r GetPolicyPropertiesRequest) Validate() error {
 	})
 }
 
-func (c *cloudlets) GetPolicyProperties(ctx context.Context, params GetPolicyPropertiesRequest) (*PolicyProperty, error) {
+func (c *cloudlets) ListActivePolicyProperties(ctx context.Context, params ListActivePolicyPropertiesRequest) (*PolicyProperty, error) {
 	logger := c.Log(ctx)
-	logger.Debug("GetPolicyProperties")
+	logger.Debug("ListActivePolicyProperties")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetPolicyProperties, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w: %s", ErrListActivePolicyProperties, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/cloudlets/v3/policies/%d/properties", params.PolicyID))
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPolicyProperties, err)
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListActivePolicyProperties, err)
 	}
 
 	q := uri.Query()
-	q.Add("page", strconv.Itoa(params.Page))
-	q.Add("size", strconv.Itoa(params.Size))
+	if params.Page != 0 {
+		q.Add("page", strconv.Itoa(params.Page))
+	}
+	if params.Size != 0 {
+		q.Add("size", strconv.Itoa(params.Size))
+	}
 	uri.RawQuery = q.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicyProperties, err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListActivePolicyProperties, err)
 	}
 
 	var result PolicyProperty
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicyProperties, err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListActivePolicyProperties, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrGetPolicyProperties, c.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrListActivePolicyProperties, c.Error(resp))
 	}
 
 	return &result, nil

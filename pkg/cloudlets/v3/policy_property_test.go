@@ -12,20 +12,18 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetPolicyProperties(t *testing.T) {
+func ListActivePolicyProperties(t *testing.T) {
 	tests := map[string]struct {
-		params           GetPolicyPropertiesRequest
+		params           ListActivePolicyPropertiesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
 		expectedResponse *PolicyProperty
 		withError        func(*testing.T, error)
 	}{
-		"200 OK": {
-			params: GetPolicyPropertiesRequest{
+		"200 OK - no query params": {
+			params: ListActivePolicyPropertiesRequest{
 				PolicyID: 5,
-				Page:     0,
-				Size:     1000,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -66,7 +64,7 @@ func TestGetPolicyProperties(t *testing.T) {
     }
   ]
 }`,
-			expectedPath: "/cloudlets/v3/policies/5/properties?page=0&size=1000",
+			expectedPath: "/cloudlets/v3/policies/5/properties",
 			expectedResponse: &PolicyProperty{
 				Page: Page{
 					Number:        0,
@@ -105,8 +103,92 @@ func TestGetPolicyProperties(t *testing.T) {
 				},
 			},
 		},
+		"200 OK - with query params": {
+			params: ListActivePolicyPropertiesRequest{
+				PolicyID: 5,
+				Page:     50,
+				Size:     1000,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+				{
+  "page": {
+    "number": 50,
+    "size": 1000,
+    "totalElements": 2,
+    "totalPages": 1
+  },
+  "content": [
+    {
+      "groupId": 5,
+      "id": 1234,
+      "name": "property",
+      "network": "PRODUCTION",
+      "version": 1,
+      "links": [
+			{
+				"href": "href",
+				"rel": "rel"
+			}
+	  ]
+    },
+    {
+      "groupId": 5,
+      "id": 1233,
+      "name": "property",
+      "network": "STAGING",
+      "version": 1,
+      "links": []
+    }
+  ],
+  "links": [
+    {
+      "href": "/cloudlets/v3/policies/101/properties?page=50&size=1000",
+      "rel": "self"
+    }
+  ]
+}`,
+			expectedPath: "/cloudlets/v3/policies/5/properties?page=50&size=1000",
+			expectedResponse: &PolicyProperty{
+				Page: Page{
+					Number:        50,
+					Size:          1000,
+					TotalElements: 2,
+					TotalPages:    1,
+				},
+				Content: []Content{
+					{
+						GroupID: 5,
+						ID:      1234,
+						Name:    "property",
+						Network: "PRODUCTION",
+						Version: 1,
+						Links: []Link{
+							{
+								Href: "href",
+								Rel:  "rel",
+							},
+						},
+					},
+					{
+						GroupID: 5,
+						ID:      1233,
+						Name:    "property",
+						Network: "STAGING",
+						Version: 1,
+						Links:   []Link{},
+					},
+				},
+				Links: []Link{
+					{
+						Href: "/cloudlets/v3/policies/101/properties?page=50&size=1000",
+						Rel:  "self",
+					},
+				},
+			},
+		},
 		"200 OK - empty": {
-			params: GetPolicyPropertiesRequest{
+			params: ListActivePolicyPropertiesRequest{
 				PolicyID: 5,
 				Page:     0,
 				Size:     1000,
@@ -123,7 +205,7 @@ func TestGetPolicyProperties(t *testing.T) {
   "content": [],
   "links": []
 }`,
-			expectedPath: "/cloudlets/v3/policies/5/properties?page=0&size=1000",
+			expectedPath: "/cloudlets/v3/policies/5/properties?size=1000",
 			expectedResponse: &PolicyProperty{
 				Page: Page{
 					Number:        0,
@@ -136,13 +218,13 @@ func TestGetPolicyProperties(t *testing.T) {
 			},
 		},
 		"validation errors - missing required params": {
-			params: GetPolicyPropertiesRequest{},
+			params: ListActivePolicyPropertiesRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "get policy properties: struct validation: PolicyID: cannot be blank", err.Error())
 			},
 		},
 		"validation errors - size lower than 10, negative page number": {
-			params: GetPolicyPropertiesRequest{
+			params: ListActivePolicyPropertiesRequest{
 				PolicyID: 1,
 				Page:     -2,
 				Size:     5,
@@ -152,7 +234,7 @@ func TestGetPolicyProperties(t *testing.T) {
 			},
 		},
 		"500 Internal Server Error": {
-			params: GetPolicyPropertiesRequest{
+			params: ListActivePolicyPropertiesRequest{
 				PolicyID: 1,
 				Page:     0,
 				Size:     1000,
@@ -169,7 +251,7 @@ func TestGetPolicyProperties(t *testing.T) {
 	"serverIp": "2.2.2.2",
 	"method": "GET"
 }`,
-			expectedPath: "/cloudlets/v3/policies/1/properties?page=0&size=1000",
+			expectedPath: "/cloudlets/v3/policies/1/properties?size=1000",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:        "internal_error",
@@ -185,7 +267,7 @@ func TestGetPolicyProperties(t *testing.T) {
 			},
 		},
 		"404 Not found": {
-			params: GetPolicyPropertiesRequest{
+			params: ListActivePolicyPropertiesRequest{
 				PolicyID: 1,
 				Page:     0,
 				Size:     1000,
@@ -204,7 +286,7 @@ func TestGetPolicyProperties(t *testing.T) {
         }
     ]
 }`,
-			expectedPath: "/cloudlets/v3/policies/1/properties?page=0&size=1000",
+			expectedPath: "/cloudlets/v3/policies/1/properties?size=1000",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:     "/cloudlets/v3/error-types/not-found",
@@ -233,7 +315,7 @@ func TestGetPolicyProperties(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetPolicyProperties(context.Background(), test.params)
+			result, err := client.ListActivePolicyProperties(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
