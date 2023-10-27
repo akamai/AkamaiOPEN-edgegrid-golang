@@ -96,29 +96,14 @@ type (
 	// CurrentActivations contains information about the active policy version that's currently in use and the status of the most recent activation
 	// or deactivation operation on the policy's versions for the production and staging networks
 	CurrentActivations struct {
-		Production Activation `json:"production"`
-		Staging    Activation `json:"staging"`
+		Production ActivationInfo `json:"production"`
+		Staging    ActivationInfo `json:"staging"`
 	}
 
-	// Activation contains information about effective and latest activations
-	Activation struct {
-		Effective ActivationInfo `json:"effective"`
-		Latest    ActivationInfo `json:"latest"`
-	}
-
-	// ActivationInfo contains information about activation
+	// ActivationInfo contains information about effective and latest activations
 	ActivationInfo struct {
-		CreatedBy            string `json:"createdBy"`
-		CreatedDate          string `json:"createdDate"`
-		FinishDate           string `json:"finishDate"`
-		ID                   int64  `json:"id"`
-		Links                []Link `json:"links"`
-		Network              string `json:"network"`
-		Operation            string `json:"operation"`
-		PolicyID             int64  `json:"policyId"`
-		PolicyVersion        int64  `json:"policyVersion"`
-		PolicyVersionDeleted bool   `json:"policyVersionDeleted"`
-		Status               string `json:"status"`
+		Effective PolicyActivation `json:"effective"`
+		Latest    PolicyActivation `json:"latest"`
 	}
 )
 
