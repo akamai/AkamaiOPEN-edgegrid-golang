@@ -517,6 +517,68 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 				},
 			},
 		},
+		"valid MatchRuleVWR": {
+			responseBody: `
+	[
+		{
+			"type": "vwrMatchRule",
+			"end": 0,
+			"allowDeny": "allow",
+			"id": 0,
+			"matchURL": null,
+			"matches": [
+				{
+					"caseSensitive": false,
+					"matchOperator": "equals",
+					"matchType": "protocol",
+					"matchValue": "https",
+					"negate": false
+				},
+				{
+					"caseSensitive": false,
+					"matchOperator": "equals",
+					"matchType": "method",
+					"negate": false,
+					"objectMatchValue": {
+						"type": "simple",
+						"value": [
+							"GET"
+						]
+					}
+				}
+			],
+      		"action": "FIFO",
+			"name": "Rule3",
+			"start": 0
+		}
+	]`,
+			expectedObject: MatchRules{
+				&MatchRuleVWR{
+					Name:   "Rule3",
+					Type:   "vwrMatchRule",
+					Action: FIFO,
+					Matches: []MatchCriteriaVWR{
+						{
+							CaseSensitive: false,
+							MatchOperator: "equals",
+							MatchType:     "protocol",
+							MatchValue:    "https",
+							Negate:        false,
+						},
+						{
+							CaseSensitive: false,
+							MatchOperator: "equals",
+							MatchType:     "method",
+							Negate:        false,
+							ObjectMatchValue: &ObjectMatchValueSimple{
+								Type:  "simple",
+								Value: []string{"GET"},
+							},
+						},
+					},
+				},
+			},
+		},
 
 		"invalid objectMatchValue type for RC - range": {
 			withError: errors.New("unmarshalling MatchRules: unmarshalling MatchCriteriaRC: objectMatchValue has unexpected type: 'range'"),

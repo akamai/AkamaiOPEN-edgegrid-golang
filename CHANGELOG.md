@@ -40,6 +40,7 @@
     * Forward Rewrite (FR)
     * Phased Release (PR aka CD)
     * Request Control (RC aka IG)
+    * Virtual Waiting Room (VWR)
 
 
 
