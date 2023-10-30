@@ -16,6 +16,8 @@
 
 
 * Added Cloudlets V3 API support
+  * Cloudlet Info
+    * [ListCloudlets](https://techdocs.akamai.com/cloudlets/reference/get-cloudlets)
   * Policies
     * [ListSharedPolicies](https://techdocs.akamai.com/cloudlets/reference/get-policies)
     * [CreateSharedPolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy)

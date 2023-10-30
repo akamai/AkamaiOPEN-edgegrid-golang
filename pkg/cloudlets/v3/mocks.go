@@ -103,3 +103,11 @@ func (m *Mock) UpdatePolicyVersion(ctx context.Context, req UpdatePolicyVersionR
 	}
 	return args.Get(0).(*PolicyVersion), args.Error(1)
 }
+
+func (m *Mock) ListCloudlets(ctx context.Context) ([]ListCloudletsItem, error) {
+	args := m.Called(ctx)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]ListCloudletsItem), args.Error(1)
+}

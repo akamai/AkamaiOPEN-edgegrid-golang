@@ -16,6 +16,10 @@ var (
 type (
 	// Cloudlets is the api interface for cloudlets
 	Cloudlets interface {
+		// ListCloudlets returns details of Cloudlets that you can create a shared policy for, including a Cloudlet name and Cloudlet type
+		//
+		// See: https://techdocs.akamai.com/cloudlets/reference/get-cloudlets
+		ListCloudlets(context.Context) ([]ListCloudletsItem, error)
 		// ListSharedPolicies returns shared policies that are available within your group
 		//
 		// See: https://techdocs.akamai.com/cloudlets/reference/get-policies
