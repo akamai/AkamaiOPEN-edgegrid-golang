@@ -22,6 +22,38 @@ func (m *Mock) ListActivePolicyProperties(ctx context.Context, req ListActivePol
 	return args.Get(0).(*PolicyProperty), args.Error(1)
 }
 
+func (m *Mock) ListPolicyActivations(ctx context.Context, req ListPolicyActivationsRequest) (*PolicyActivations, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*PolicyActivations), args.Error(1)
+}
+
+func (m *Mock) ActivatePolicy(ctx context.Context, req ActivatePolicyRequest) (*PolicyActivation, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*PolicyActivation), args.Error(1)
+}
+
+func (m *Mock) DeactivatePolicy(ctx context.Context, req DeactivatePolicyRequest) (*PolicyActivation, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*PolicyActivation), args.Error(1)
+}
+
+func (m *Mock) GetPolicyActivation(ctx context.Context, req GetPolicyActivationRequest) (*PolicyActivation, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*PolicyActivation), args.Error(1)
+}
+
 func (m *Mock) ListSharedPolicies(ctx context.Context, req ListSharedPoliciesRequest) (*ListSharedPoliciesResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {

@@ -27,7 +27,7 @@ func mockAPIClient(t *testing.T, mockServer *httptest.Server) Cloudlets {
 		},
 	}
 	s, err := session.New(session.WithClient(httpClient), session.WithSigner(&edgegrid.Config{Host: serverURL.Host}))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	return Client(s)
 }
 

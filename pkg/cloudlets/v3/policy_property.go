@@ -20,17 +20,14 @@ type (
 		Size     int
 	}
 
-	// Network represents network on which policy version or property can be activated on
-	Network string
-
-	// PolicyProperty contains the response data from GetPolicyProperties operation
+	// PolicyProperty contains the response data from GetPolicyProperties operation.
 	PolicyProperty struct {
 		Page    Page      `json:"page"`
 		Content []Content `json:"content"`
 		Links   []Link    `json:"links"`
 	}
 
-	// Content represents associated active properties information
+	// Content represents associated active properties information.
 	Content struct {
 		GroupID int64   `json:"groupId"`
 		ID      int64   `json:"id"`
@@ -40,13 +37,13 @@ type (
 		Links   []Link  `json:"links"`
 	}
 
-	// Link represents hypermedia link to help navigate through the result set
+	// Link represents hypermedia link to help navigate through the result set.
 	Link struct {
 		Href string `json:"href"`
 		Rel  string `json:"rel"`
 	}
 
-	// Page contains informational data about pagination
+	// Page contains informational data about pagination.
 	Page struct {
 		Number        int `json:"number"`
 		Size          int `json:"size"`
@@ -56,11 +53,11 @@ type (
 )
 
 var (
-	// ErrListActivePolicyProperties is returned when ListActivePolicyProperties fails
+	// ErrListActivePolicyProperties is returned when ListActivePolicyProperties fails.
 	ErrListActivePolicyProperties = errors.New("list active policy properties")
 )
 
-// Validate validates GetPolicyPropertiesRequest
+// Validate validates ListActivePolicyPropertiesRequest.
 func (r ListActivePolicyPropertiesRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PolicyID": validation.Validate(r.PolicyID, validation.Required),

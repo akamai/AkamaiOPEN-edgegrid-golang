@@ -8,23 +8,21 @@ import (
 	"net/http"
 )
 
-type (
-	// Error is a cloudlets error interface
-	Error struct {
-		Type        string          `json:"type,omitempty"`
-		Title       string          `json:"title,omitempty"`
-		Instance    string          `json:"instance,omitempty"`
-		Status      int             `json:"status,omitempty"`
-		Errors      json.RawMessage `json:"errors,omitempty"`
-		RequestID   string          `json:"requestId,omitempty"`
-		RequestTime string          `json:"requestTime,omitempty"`
-		ClientIP    string          `json:"clientIp,omitempty"`
-		ServerIP    string          `json:"serverIp,omitempty"`
-		Method      string          `json:"method,omitempty"`
-	}
-)
+// Error is a cloudlets error interface.
+type Error struct {
+	Type        string          `json:"type,omitempty"`
+	Title       string          `json:"title,omitempty"`
+	Instance    string          `json:"instance,omitempty"`
+	Status      int             `json:"status,omitempty"`
+	Errors      json.RawMessage `json:"errors,omitempty"`
+	RequestID   string          `json:"requestId,omitempty"`
+	RequestTime string          `json:"requestTime,omitempty"`
+	ClientIP    string          `json:"clientIp,omitempty"`
+	ServerIP    string          `json:"serverIp,omitempty"`
+	Method      string          `json:"method,omitempty"`
+}
 
-// Error parses an error from the response
+// Error parses an error from the response.
 func (c *cloudlets) Error(r *http.Response) error {
 	var e Error
 
@@ -56,7 +54,7 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("API error: \n%s", msg)
 }
 
-// Is handles error comparisons
+// Is handles error comparisons.
 func (e *Error) Is(target error) bool {
 	var t *Error
 	if !errors.As(target, &t) {

@@ -33,6 +33,10 @@
     * [CreatePolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/post-policy-version)
     * [DeletePolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/delete-policy-version)
     * [UpdatePolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/put-policy-version)
+  * Policy Activations
+    * [ListPolicyActivations](https://techdocs.akamai.com/cloudlets/reference/get-policy-activations)
+    * [GetPolicyActivation](https://techdocs.akamai.com/cloudlets/reference/get-policy-activation)
+    * [ActivatePolicy and DeactivatePolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy-activations)
   * Supported cloudlet types
     * API Prioritization (AP)
     * Application Segmentation (AS)

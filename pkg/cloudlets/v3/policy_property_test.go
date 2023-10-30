@@ -3,7 +3,6 @@ package v3
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,6 +12,8 @@ import (
 )
 
 func ListActivePolicyProperties(t *testing.T) {
+	t.Parallel()
+
 	tests := map[string]struct {
 		params           ListActivePolicyPropertiesRequest
 		responseStatus   int
@@ -263,7 +264,7 @@ func ListActivePolicyProperties(t *testing.T) {
 					ServerIP:    "2.2.2.2",
 					Method:      "GET",
 				}
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.ErrorIs(t, err, want)
 			},
 		},
 		"404 Not found": {
@@ -300,13 +301,16 @@ func ListActivePolicyProperties(t *testing.T) {
 		"title": "Not found"
 	}
 ]`)}
-				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.ErrorIs(t, err, want)
 			},
 		},
 	}
 
 	for name, test := range tests {
+		name, test := name, test
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
