@@ -368,7 +368,7 @@ func (c *cloudlets) ClonePolicy(ctx context.Context, params ClonePolicyRequest) 
 		return nil, fmt.Errorf("%s: %w: %s", ErrClonePolicy, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d", params.PolicyID)
+	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/clone", params.PolicyID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {

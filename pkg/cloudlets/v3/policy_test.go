@@ -1394,7 +1394,7 @@ func TestClonePolicy(t *testing.T) {
     "policyType": "SHARED"
 }
 `,
-			expectedPath: "/cloudlets/v3/policies/1",
+			expectedPath: "/cloudlets/v3/policies/1/clone",
 			expectedRequestBody: `
 {
   "newName": "NewName"
@@ -1528,7 +1528,7 @@ func TestClonePolicy(t *testing.T) {
     "policyType": "SHARED"
 }
 `,
-			expectedPath: "/cloudlets/v3/policies/1",
+			expectedPath: "/cloudlets/v3/policies/1/clone",
 			expectedRequestBody: `
 {
    "additionalVersions": [1, 2],
