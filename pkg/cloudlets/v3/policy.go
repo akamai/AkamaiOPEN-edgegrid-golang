@@ -102,8 +102,8 @@ type (
 
 	// ActivationInfo contains information about effective and latest activations
 	ActivationInfo struct {
-		Effective PolicyActivation `json:"effective"`
-		Latest    PolicyActivation `json:"latest"`
+		Effective *PolicyActivation `json:"effective"`
+		Latest    *PolicyActivation `json:"latest"`
 	}
 )
 

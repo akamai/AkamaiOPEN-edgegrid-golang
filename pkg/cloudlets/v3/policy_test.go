@@ -196,7 +196,7 @@ func TestListSharedPolicies(t *testing.T) {
 						CreatedDate:  "Date1",
 						CurrentActivations: CurrentActivations{
 							Production: ActivationInfo{
-								Effective: PolicyActivation{
+								Effective: &PolicyActivation{
 									CreatedBy:   "User1",
 									CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 									FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -214,7 +214,7 @@ func TestListSharedPolicies(t *testing.T) {
 									PolicyVersionDeleted: false,
 									Status:               ActivationStatusSuccess,
 								},
-								Latest: PolicyActivation{
+								Latest: &PolicyActivation{
 									CreatedBy:   "User1",
 									CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 									FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -234,7 +234,7 @@ func TestListSharedPolicies(t *testing.T) {
 								},
 							},
 							Staging: ActivationInfo{
-								Effective: PolicyActivation{
+								Effective: &PolicyActivation{
 									CreatedBy:   "User3",
 									CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 									FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -252,7 +252,7 @@ func TestListSharedPolicies(t *testing.T) {
 									PolicyVersionDeleted: false,
 									Status:               ActivationStatusSuccess,
 								},
-								Latest: PolicyActivation{
+								Latest: &PolicyActivation{
 									CreatedBy:   "User3",
 									CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 									FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -895,7 +895,7 @@ func TestGetSharedPolicy(t *testing.T) {
 				CreatedDate:  "Date1",
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
-						Effective: PolicyActivation{
+						Effective: &PolicyActivation{
 							CreatedBy:   "User1",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -913,7 +913,7 @@ func TestGetSharedPolicy(t *testing.T) {
 							PolicyVersionDeleted: false,
 							Status:               ActivationStatusSuccess,
 						},
-						Latest: PolicyActivation{
+						Latest: &PolicyActivation{
 							CreatedBy:   "User1",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -933,7 +933,7 @@ func TestGetSharedPolicy(t *testing.T) {
 						},
 					},
 					Staging: ActivationInfo{
-						Effective: PolicyActivation{
+						Effective: &PolicyActivation{
 							CreatedBy:   "User3",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -951,7 +951,140 @@ func TestGetSharedPolicy(t *testing.T) {
 							PolicyVersionDeleted: false,
 							Status:               ActivationStatusSuccess,
 						},
-						Latest: PolicyActivation{
+						Latest: &PolicyActivation{
+							CreatedBy:   "User3",
+							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							ID:          987,
+							Links: []Link{
+								{
+									Href: "Link4",
+									Rel:  "self",
+								},
+							},
+							Network:              StagingNetwork,
+							Operation:            OperationActivation,
+							PolicyID:             9876,
+							PolicyVersion:        1,
+							PolicyVersionDeleted: false,
+							Status:               ActivationStatusSuccess,
+						},
+					},
+				},
+				Description: tools.StringPtr("Description"),
+				GroupID:     1,
+				ID:          11,
+				Links: []Link{
+					{
+						Href: "Link1",
+						Rel:  "self",
+					},
+				},
+				ModifiedBy:   "User1",
+				ModifiedDate: "Date1",
+				Name:         "TestName",
+				PolicyType:   PolicyTypeShared,
+			},
+		},
+		"200 OK - one network is active": {
+			params: GetSharedPolicyRequest{
+				PolicyID: 1,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "cloudletType": "FR",
+    "createdBy": "User1",
+    "createdDate": "Date1",
+    "currentActivations": {
+		"production": {
+			"effective": null,
+			"latest": null
+		},
+		"staging": {
+			"effective": {
+				"createdBy": "User3",
+				"createdDate": "2023-10-23T11:21:19.896Z",
+				"finishDate": "2023-10-23T11:22:57.589Z",
+				"id": 789,
+				"links": [
+					{
+						"href": "Link3",
+						"rel": "self"
+					}
+				],
+				"network": "STAGING",
+				"operation": "ACTIVATION",
+				"policyId": 6789,
+				"policyVersion": 1,
+				"policyVersionDeleted": false,
+				"status": "SUCCESS"
+			},
+			"latest": {
+				"createdBy": "User3",
+				"createdDate": "2023-10-23T11:21:19.896Z",
+				"finishDate": "2023-10-23T11:22:57.589Z",
+				"id": 987,
+				"links": [
+					{
+						"href": "Link4",
+						"rel": "self"
+					}
+				],
+				"network": "STAGING",
+				"operation": "ACTIVATION",
+				"policyId": 9876,
+				"policyVersion": 1,
+				"policyVersionDeleted": false,
+				"status": "SUCCESS"
+			}
+		}
+	},
+    "description": "Description",
+    "groupId": 1,
+    "id": 11,
+    "links": [
+        {
+            "href": "Link1",
+            "rel": "self"
+        }
+    ],
+    "modifiedBy": "User1",
+    "modifiedDate": "Date1",
+    "name": "TestName",
+    "policyType": "SHARED"
+}
+`,
+			expectedPath: "/cloudlets/v3/policies/1",
+			expectedResponse: &Policy{
+				CloudletType: CloudletTypeFR,
+				CreatedBy:    "User1",
+				CreatedDate:  "Date1",
+				CurrentActivations: CurrentActivations{
+					Production: ActivationInfo{
+						Effective: nil,
+						Latest:    nil,
+					},
+					Staging: ActivationInfo{
+						Effective: &PolicyActivation{
+							CreatedBy:   "User3",
+							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							ID:          789,
+							Links: []Link{
+								{
+									Href: "Link3",
+									Rel:  "self",
+								},
+							},
+							Network:              StagingNetwork,
+							Operation:            OperationActivation,
+							PolicyID:             6789,
+							PolicyVersion:        1,
+							PolicyVersionDeleted: false,
+							Status:               ActivationStatusSuccess,
+						},
+						Latest: &PolicyActivation{
 							CreatedBy:   "User3",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -1209,7 +1342,7 @@ func TestUpdateSharedPolicy(t *testing.T) {
 				CreatedDate:  "Date1",
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
-						Effective: PolicyActivation{
+						Effective: &PolicyActivation{
 							CreatedBy:   "User1",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -1227,7 +1360,7 @@ func TestUpdateSharedPolicy(t *testing.T) {
 							PolicyVersionDeleted: false,
 							Status:               ActivationStatusSuccess,
 						},
-						Latest: PolicyActivation{
+						Latest: &PolicyActivation{
 							CreatedBy:   "User1",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -1247,7 +1380,7 @@ func TestUpdateSharedPolicy(t *testing.T) {
 						},
 					},
 					Staging: ActivationInfo{
-						Effective: PolicyActivation{
+						Effective: &PolicyActivation{
 							CreatedBy:   "User3",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -1265,7 +1398,7 @@ func TestUpdateSharedPolicy(t *testing.T) {
 							PolicyVersionDeleted: false,
 							Status:               ActivationStatusSuccess,
 						},
-						Latest: PolicyActivation{
+						Latest: &PolicyActivation{
 							CreatedBy:   "User3",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -1542,7 +1675,7 @@ func TestClonePolicy(t *testing.T) {
 				CreatedDate:  "Date1",
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
-						Effective: PolicyActivation{
+						Effective: &PolicyActivation{
 							CreatedBy:   "User1",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -1560,7 +1693,7 @@ func TestClonePolicy(t *testing.T) {
 							PolicyVersionDeleted: false,
 							Status:               ActivationStatusSuccess,
 						},
-						Latest: PolicyActivation{
+						Latest: &PolicyActivation{
 							CreatedBy:   "User1",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -1580,7 +1713,7 @@ func TestClonePolicy(t *testing.T) {
 						},
 					},
 					Staging: ActivationInfo{
-						Effective: PolicyActivation{
+						Effective: &PolicyActivation{
 							CreatedBy:   "User3",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
@@ -1598,7 +1731,7 @@ func TestClonePolicy(t *testing.T) {
 							PolicyVersionDeleted: false,
 							Status:               ActivationStatusSuccess,
 						},
-						Latest: PolicyActivation{
+						Latest: &PolicyActivation{
 							CreatedBy:   "User3",
 							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
