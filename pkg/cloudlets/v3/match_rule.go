@@ -125,19 +125,6 @@ type (
 		Disabled      bool              `json:"disabled,omitempty"`
 	}
 
-	// MatchRuleVWR represents a Virtual Waiting Room (VWR) match rule resource for create or update resource
-	MatchRuleVWR struct {
-		Name          string             `json:"name,omitempty"`
-		Type          MatchRuleType      `json:"type,omitempty"`
-		Start         int64              `json:"start,omitempty"`
-		End           int64              `json:"end,omitempty"`
-		ID            int64              `json:"id,omitempty"`
-		Matches       []MatchCriteriaVWR `json:"matches,omitempty"`
-		MatchesAlways bool               `json:"matchesAlways,omitempty"`
-		Disabled      bool               `json:"disabled,omitempty"`
-		Action        Action             `json:"action"`
-	}
-
 	// MatchCriteria represents a match criteria resource for match rule for cloudlet
 	MatchCriteria struct {
 		MatchType        string        `json:"matchType,omitempty"`
@@ -172,10 +159,6 @@ type (
 	// MatchCriteriaRC represents a match criteria resource for match rule for cloudlet Request Control (RC aka IG)
 	// ObjectMatchValue can contain ObjectMatchValueObject or ObjectMatchValueSimple
 	MatchCriteriaRC MatchCriteria
-
-	// MatchCriteriaVWR represents a match criteria resource for match rule for cloudlet Virtual Waiting Room (VWR)
-	// ObjectMatchValue can contain ObjectMatchValueObject or ObjectMatchValueSimple
-	MatchCriteriaVWR MatchCriteria
 
 	// ObjectMatchValueObject represents an object match value resource for match criteria of type object
 	ObjectMatchValueObject struct {
@@ -214,8 +197,6 @@ type (
 	MatchOperator string
 	// AllowDeny enum type
 	AllowDeny string
-	// Action enum type
-	Action string
 	// CheckIPs enum type
 	CheckIPs string
 	// ObjectMatchValueRangeType enum type
@@ -239,8 +220,8 @@ const (
 	MatchRuleTypeFR MatchRuleType = "frMatchRule"
 	// MatchRuleTypeRC represents rule type for Request Control (RC aka IG) cloudlets
 	MatchRuleTypeRC MatchRuleType = "igMatchRule"
-	// MatchRuleTypeVWR represents rule type for Virtual Waiting Room (VWR) cloudlets
-	MatchRuleTypeVWR MatchRuleType = "vwrMatchRule"
+	// MatchRuleTypeVP represents rule type for Visitor Prioritization (VP) cloudlets
+	MatchRuleTypeVP MatchRuleType = "vpMatchRule"
 )
 
 const (
@@ -264,11 +245,6 @@ const (
 	Deny AllowDeny = "deny"
 	// DenyBranded represents denybranded option
 	DenyBranded AllowDeny = "denybranded"
-)
-
-const (
-	// FIFO represents action option First In First Out
-	FIFO Action = "FIFO"
 )
 
 const (
@@ -302,8 +278,8 @@ var (
 	ErrUnmarshallMatchCriteriaFR = errors.New("unmarshalling MatchCriteriaFR")
 	// ErrUnmarshallMatchCriteriaRC is returned when unmarshalling of MatchCriteriaRC fails
 	ErrUnmarshallMatchCriteriaRC = errors.New("unmarshalling MatchCriteriaRC")
-	// ErrUnmarshallMatchCriteriaVWR is returned when unmarshalling of MatchCriteriaVWR fails
-	ErrUnmarshallMatchCriteriaVWR = errors.New("unmarshalling MatchCriteriaVWR")
+	// ErrUnmarshallMatchCriteriaVP is returned when unmarshalling of MatchCriteriaVP fails
+	ErrUnmarshallMatchCriteriaVP = errors.New("unmarshalling MatchCriteriaVP")
 	// ErrUnmarshallMatchRules is returned when unmarshalling of MatchRules fails
 	ErrUnmarshallMatchRules = errors.New("unmarshalling MatchRules")
 )
@@ -311,13 +287,12 @@ var (
 // matchRuleHandlers contains mapping between name of the type for MatchRule and its implementation
 // It makes the UnmarshalJSON more compact and easier to support more cloudlet types
 var matchRuleHandlers = map[string]func() MatchRule{
-	"apMatchRule":  func() MatchRule { return &MatchRuleAP{} },
-	"asMatchRule":  func() MatchRule { return &MatchRuleAS{} },
-	"cdMatchRule":  func() MatchRule { return &MatchRulePR{} },
-	"erMatchRule":  func() MatchRule { return &MatchRuleER{} },
-	"frMatchRule":  func() MatchRule { return &MatchRuleFR{} },
-	"igMatchRule":  func() MatchRule { return &MatchRuleRC{} },
-	"vwrMatchRule": func() MatchRule { return &MatchRuleVWR{} },
+	"apMatchRule": func() MatchRule { return &MatchRuleAP{} },
+	"asMatchRule": func() MatchRule { return &MatchRuleAS{} },
+	"cdMatchRule": func() MatchRule { return &MatchRulePR{} },
+	"erMatchRule": func() MatchRule { return &MatchRuleER{} },
+	"frMatchRule": func() MatchRule { return &MatchRuleFR{} },
+	"igMatchRule": func() MatchRule { return &MatchRuleRC{} },
 }
 
 // objectOrRangeOrSimpleMatchValueHandlers contains mapping between name of the type for ObjectMatchValue and its implementation
@@ -443,22 +418,6 @@ func (m MatchRuleRC) Validate() error {
 	}.Filter()
 }
 
-// Validate validates MatchRuleVWR
-func (m MatchRuleVWR) Validate() error {
-	return validation.Errors{
-		"Type": validation.Validate(m.Type, validation.Required, validation.In(MatchRuleTypeVWR).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be: 'vwrMatchRule'", (&m).Type))),
-		"Name":                  validation.Validate(m.Name, validation.Length(0, 8192)),
-		"Start":                 validation.Validate(m.Start, validation.Min(0)),
-		"End":                   validation.Validate(m.End, validation.Min(0)),
-		"Matches":               validation.Validate(m.Matches),
-		"Matches/MatchesAlways": validation.Validate(len(m.Matches), validation.When(m.MatchesAlways, validation.Empty.Error("only one of [ \"Matches\", \"MatchesAlways\" ] can be specified"))),
-		"Action": validation.Validate(m.Action, validation.Required, validation.In(FIFO).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be: '%s'", (&m).Action, FIFO),
-		)),
-	}.Filter()
-}
-
 // Validate validates MatchCriteriaAP
 func (m MatchCriteriaAP) Validate() error {
 	return validation.Errors{
@@ -569,24 +528,6 @@ func (m MatchCriteriaRC) Validate() error {
 	}.Filter()
 }
 
-// Validate validates MatchCriteriaVWR
-func (m MatchCriteriaVWR) Validate() error {
-	return validation.Errors{
-		"MatchType": validation.Validate(m.MatchType, validation.Required, validation.In("header", "hostname", "path", "extension", "query", "cookie",
-			"deviceCharacteristics", "clientip", "continent", "countrycode", "regioncode", "protocol", "method", "proxy").Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'header', 'hostname', 'path', 'extension', 'query', 'cookie', 'deviceCharacteristics', "+
-				"'clientip', 'continent', 'countrycode', 'regioncode', 'protocol', 'method', 'proxy'", (&m).MatchType))),
-		"MatchValue": validation.Validate(m.MatchValue, validation.Length(1, 8192), validation.Required.When(m.ObjectMatchValue == nil).Error("cannot be blank when ObjectMatchValue is blank"),
-			validation.Empty.When(m.ObjectMatchValue != nil).Error("must be blank when ObjectMatchValue is set")),
-		"MatchOperator": validation.Validate(m.MatchOperator, validation.In(MatchOperatorContains, MatchOperatorExists, MatchOperatorEquals).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'contains', 'exists', 'equals' or '' (empty)", (&m).MatchOperator))),
-		"CheckIPs": validation.Validate(m.CheckIPs, validation.In(CheckIPsConnectingIP, CheckIPsXFFHeaders, CheckIPsConnectingIPXFFHeaders).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
-		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == "").Error("cannot be blank when MatchValue is blank"),
-			validation.Empty.When(m.MatchValue != "").Error("must be blank when MatchValue is set"), validation.By(objectMatchValueSimpleOrObjectValidation)),
-	}.Filter()
-}
-
 func objectMatchValueSimpleOrObjectValidation(value interface{}) error {
 	if value == nil {
 		return nil
@@ -675,10 +616,6 @@ func (m MatchRuleFR) cloudletType() string {
 
 func (m MatchRuleRC) cloudletType() string {
 	return "igMatchRule"
-}
-
-func (m MatchRuleVWR) cloudletType() string {
-	return "vwrMatchRule"
 }
 
 // UnmarshalJSON helps to un-marshall items of MatchRules array as proper instances of or *MatchRuleER
@@ -901,38 +838,6 @@ func (m *MatchCriteriaRC) UnmarshalJSON(b []byte) error {
 	convertedObjectMatchValue, err := convertObjectMatchValue(m.ObjectMatchValue, createObjectMatchValue())
 	if err != nil {
 		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaRC, err)
-	}
-	m.ObjectMatchValue = convertedObjectMatchValue
-
-	return nil
-}
-
-// UnmarshalJSON helps to un-marshall field ObjectMatchValue of MatchCriteriaVWR as proper instance of *ObjectMatchValueObject or *ObjectMatchValueSimple
-func (m *MatchCriteriaVWR) UnmarshalJSON(b []byte) error {
-	// matchCriteriaVWR is an alias for MatchCriteriaVWR for un-marshalling purposes
-	type matchCriteriaVWR MatchCriteriaVWR
-
-	// populate common attributes using default json unmarshaler using aliased type
-	err := json.Unmarshal(b, (*matchCriteriaVWR)(m))
-	if err != nil {
-		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaVWR, err)
-	}
-	if m.ObjectMatchValue == nil {
-		return nil
-	}
-
-	objectMatchValueTypeName, err := getObjectMatchValueType(m.ObjectMatchValue)
-	if err != nil {
-		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaVWR, err)
-	}
-
-	createObjectMatchValue, ok := simpleObjectMatchValueHandlers[objectMatchValueTypeName]
-	if !ok {
-		return fmt.Errorf("%w: objectMatchValue has unexpected type: '%s'", ErrUnmarshallMatchCriteriaVWR, objectMatchValueTypeName)
-	}
-	convertedObjectMatchValue, err := convertObjectMatchValue(m.ObjectMatchValue, createObjectMatchValue())
-	if err != nil {
-		return fmt.Errorf("%w: %s", ErrUnmarshallMatchCriteriaVWR, err)
 	}
 	m.ObjectMatchValue = convertedObjectMatchValue
 

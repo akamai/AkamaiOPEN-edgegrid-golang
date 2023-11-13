@@ -76,23 +76,16 @@ type (
 		PolicyID int64
 	}
 
-	// Configuration represents additional configuration options for VWR cloudlet
-	Configuration struct {
-		OriginNewVisitorLimit int `json:"originNewVisitorLimit"`
-	}
-
 	// CreatePolicyVersion describes the body of the create policy request
 	CreatePolicyVersion struct {
-		Description   *string        `json:"description,omitempty"`
-		MatchRules    MatchRules     `json:"matchRules"`
-		Configuration *Configuration `json:"configuration,omitempty"`
+		Description *string    `json:"description,omitempty"`
+		MatchRules  MatchRules `json:"matchRules"`
 	}
 
 	// UpdatePolicyVersion describes the body of the update policy version request
 	UpdatePolicyVersion struct {
-		Description   *string        `json:"description,omitempty"`
-		MatchRules    MatchRules     `json:"matchRules"`
-		Configuration *Configuration `json:"configuration,omitempty"`
+		Description *string    `json:"description,omitempty"`
+		MatchRules  MatchRules `json:"matchRules"`
 	}
 
 	// DeletePolicyVersionRequest describes the parameters of the delete policy version request
@@ -119,19 +112,11 @@ func (c ListPolicyVersionsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(errs)
 }
 
-// Validate validates VWR Configuration
-func (c Configuration) Validate() error {
-	return validation.Errors{
-		"OriginNewVisitorLimit": validation.Validate(c.OriginNewVisitorLimit, validation.Required, validation.Min(10)),
-	}.Filter()
-}
-
 // Validate validates CreatePolicyVersionRequest
 func (c CreatePolicyVersionRequest) Validate() error {
 	errs := validation.Errors{
-		"Description":   validation.Validate(c.Description, validation.Length(0, 255)),
-		"MatchRules":    validation.Validate(c.MatchRules, validation.Length(0, 5000)),
-		"Configuration": validation.Validate(c.Configuration, validation.Required.When(containsVWR(c.MatchRules)).Error("configuration is required for VWR cloudlet")),
+		"Description": validation.Validate(c.Description, validation.Length(0, 255)),
+		"MatchRules":  validation.Validate(c.MatchRules, validation.Length(0, 5000)),
 	}
 	return edgegriderr.ParseValidationErrors(errs)
 }
@@ -139,9 +124,8 @@ func (c CreatePolicyVersionRequest) Validate() error {
 // Validate validates UpdatePolicyVersionRequest
 func (o UpdatePolicyVersionRequest) Validate() error {
 	errs := validation.Errors{
-		"Description":   validation.Validate(o.Description, validation.Length(0, 255)),
-		"MatchRules":    validation.Validate(o.MatchRules, validation.Length(0, 5000)),
-		"Configuration": validation.Validate(o.Configuration, validation.Required.When(containsVWR(o.MatchRules))),
+		"Description": validation.Validate(o.Description, validation.Length(0, 255)),
+		"MatchRules":  validation.Validate(o.MatchRules, validation.Length(0, 5000)),
 	}
 	return edgegriderr.ParseValidationErrors(errs)
 }
@@ -301,13 +285,4 @@ func (c *cloudlets) UpdatePolicyVersion(ctx context.Context, params UpdatePolicy
 	}
 
 	return &result, nil
-}
-
-func containsVWR(rules MatchRules) bool {
-	for _, rule := range rules {
-		if rule.cloudletType() == "vwrMatchRule" {
-			return true
-		}
-	}
-	return false
 }
