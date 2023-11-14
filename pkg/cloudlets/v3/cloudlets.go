@@ -53,7 +53,7 @@ type (
 		// ListActivePolicyProperties returns all active properties that are assigned to the policy
 		//
 		// See: https://techdocs.akamai.com/cloudlets/reference/get-policy-properties
-		ListActivePolicyProperties(context.Context, ListActivePolicyPropertiesRequest) (*PolicyProperty, error)
+		ListActivePolicyProperties(context.Context, ListActivePolicyPropertiesRequest) (*ListActivePolicyPropertiesResponse, error)
 
 		// ListPolicyVersions lists policy versions by policyID.
 		//

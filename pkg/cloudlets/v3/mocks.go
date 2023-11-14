@@ -14,12 +14,12 @@ type Mock struct {
 
 var _ Cloudlets = &Mock{}
 
-func (m *Mock) ListActivePolicyProperties(ctx context.Context, req ListActivePolicyPropertiesRequest) (*PolicyProperty, error) {
+func (m *Mock) ListActivePolicyProperties(ctx context.Context, req ListActivePolicyPropertiesRequest) (*ListActivePolicyPropertiesResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*PolicyProperty), args.Error(1)
+	return args.Get(0).(*ListActivePolicyPropertiesResponse), args.Error(1)
 }
 
 func (m *Mock) ListPolicyActivations(ctx context.Context, req ListPolicyActivationsRequest) (*PolicyActivations, error) {

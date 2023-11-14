@@ -19,7 +19,7 @@ func ListActivePolicyProperties(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *PolicyProperty
+		expectedResponse *ListActivePolicyPropertiesResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK - no query params": {
@@ -66,14 +66,14 @@ func ListActivePolicyProperties(t *testing.T) {
   ]
 }`,
 			expectedPath: "/cloudlets/v3/policies/5/properties",
-			expectedResponse: &PolicyProperty{
+			expectedResponse: &ListActivePolicyPropertiesResponse{
 				Page: Page{
 					Number:        0,
 					Size:          1000,
 					TotalElements: 2,
 					TotalPages:    1,
 				},
-				Content: []Content{
+				PolicyProperties: []ListPolicyPropertiesItem{
 					{
 						GroupID: 5,
 						ID:      1234,
@@ -150,14 +150,14 @@ func ListActivePolicyProperties(t *testing.T) {
   ]
 }`,
 			expectedPath: "/cloudlets/v3/policies/5/properties?page=50&size=1000",
-			expectedResponse: &PolicyProperty{
+			expectedResponse: &ListActivePolicyPropertiesResponse{
 				Page: Page{
 					Number:        50,
 					Size:          1000,
 					TotalElements: 2,
 					TotalPages:    1,
 				},
-				Content: []Content{
+				PolicyProperties: []ListPolicyPropertiesItem{
 					{
 						GroupID: 5,
 						ID:      1234,
@@ -207,15 +207,15 @@ func ListActivePolicyProperties(t *testing.T) {
   "links": []
 }`,
 			expectedPath: "/cloudlets/v3/policies/5/properties?size=1000",
-			expectedResponse: &PolicyProperty{
+			expectedResponse: &ListActivePolicyPropertiesResponse{
 				Page: Page{
 					Number:        0,
 					Size:          1000,
 					TotalElements: 2,
 					TotalPages:    1,
 				},
-				Content: []Content{},
-				Links:   []Link{},
+				PolicyProperties: []ListPolicyPropertiesItem{},
+				Links:            []Link{},
 			},
 		},
 		"validation errors - missing required params": {

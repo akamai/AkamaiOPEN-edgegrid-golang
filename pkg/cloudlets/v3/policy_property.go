@@ -20,15 +20,15 @@ type (
 		Size     int
 	}
 
-	// PolicyProperty contains the response data from GetPolicyProperties operation.
-	PolicyProperty struct {
-		Page    Page      `json:"page"`
-		Content []Content `json:"content"`
-		Links   []Link    `json:"links"`
+	// ListActivePolicyPropertiesResponse contains the response data from ListActivePolicyProperties operation.
+	ListActivePolicyPropertiesResponse struct {
+		Page             Page                       `json:"page"`
+		PolicyProperties []ListPolicyPropertiesItem `json:"content"`
+		Links            []Link                     `json:"links"`
 	}
 
-	// Content represents associated active properties information.
-	Content struct {
+	// ListPolicyPropertiesItem represents associated active properties information.
+	ListPolicyPropertiesItem struct {
 		GroupID int64   `json:"groupId"`
 		ID      int64   `json:"id"`
 		Name    string  `json:"name"`
@@ -66,7 +66,7 @@ func (r ListActivePolicyPropertiesRequest) Validate() error {
 	})
 }
 
-func (c *cloudlets) ListActivePolicyProperties(ctx context.Context, params ListActivePolicyPropertiesRequest) (*PolicyProperty, error) {
+func (c *cloudlets) ListActivePolicyProperties(ctx context.Context, params ListActivePolicyPropertiesRequest) (*ListActivePolicyPropertiesResponse, error) {
 	logger := c.Log(ctx)
 	logger.Debug("ListActivePolicyProperties")
 
@@ -93,7 +93,7 @@ func (c *cloudlets) ListActivePolicyProperties(ctx context.Context, params ListA
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListActivePolicyProperties, err)
 	}
 
-	var result PolicyProperty
+	var result ListActivePolicyPropertiesResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListActivePolicyProperties, err)
