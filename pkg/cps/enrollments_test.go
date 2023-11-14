@@ -3,10 +3,12 @@ package cps
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -26,6 +28,10 @@ func TestListEnrollments(t *testing.T) {
 			responseStatus: http.StatusOK,
 			responseBody: ` 
 {"enrollments":[ {
+  "id": 1,
+  "productionSlots": [11],
+  "stagingSlots": [22],
+  "assignedSlots": [33],
   "location" : "/cps-api/enrollments/1",
   "ra" : "third-party",
   "validationType" : "third-party",
@@ -110,6 +116,10 @@ func TestListEnrollments(t *testing.T) {
   "maxAllowedSanNames" : 100,
   "maxAllowedWildcardSanNames" : 100
 }, {
+  "id": 2,
+  "productionSlots": [22],
+  "stagingSlots": [33],
+  "assignedSlots": [44],
   "location" : "/cps-api/enrollments/2",
   "ra" : "lets-encrypt",
   "validationType" : "dv",
@@ -193,6 +203,10 @@ func TestListEnrollments(t *testing.T) {
   "maxAllowedWildcardSanNames" : 25
 },
 {
+  "id": 3,
+  "productionSlots": [33],
+  "stagingSlots": [44],
+  "assignedSlots": [55],
   "location" : "/cps-api/enrollments/3",
   "ra" : "third-party",
   "validationType" : "third-party",
@@ -283,6 +297,10 @@ func TestListEnrollments(t *testing.T) {
 			},
 			expectedResponse: &ListEnrollmentsResponse{Enrollments: []Enrollment{
 				{
+					ID:              1,
+					ProductionSlots: []int{11},
+					StagingSlots:    []int{22},
+					AssignedSlots:   []int{33},
 					AdminContact: &Contact{
 						AddressLineOne:   "EGL",
 						City:             "BLR",
@@ -359,6 +377,10 @@ func TestListEnrollments(t *testing.T) {
 					ValidationType: "third-party",
 				},
 				{
+					ID:              2,
+					ProductionSlots: []int{22},
+					StagingSlots:    []int{33},
+					AssignedSlots:   []int{44},
 					AdminContact: &Contact{
 						Email:     "rd3@nomail-akamai.com",
 						FirstName: "R3",
@@ -420,6 +442,10 @@ func TestListEnrollments(t *testing.T) {
 					SignatureAlgorithm: "SHA-256",
 				},
 				{
+					ID:              3,
+					ProductionSlots: []int{33},
+					StagingSlots:    []int{44},
+					AssignedSlots:   []int{55},
 					AdminContact: &Contact{
 						Email:     "devqa@tester.com",
 						FirstName: "DevQA",
@@ -546,7 +572,7 @@ func TestGetEnrollment(t *testing.T) {
 		responseBody     string
 		expectedPath     string
 		expectedHeaders  map[string]string
-		expectedResponse *Enrollment
+		expectedResponse *GetEnrollmentResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
@@ -554,6 +580,10 @@ func TestGetEnrollment(t *testing.T) {
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
+	"id": 1,
+    "productionSlots": [11],
+    "stagingSlots": [22],
+    "assignedSlots": [33],
     "location": "/cps-api/enrollments/1",
     "ra": "third-party",
     "validationType": "third-party",
@@ -656,7 +686,11 @@ func TestGetEnrollment(t *testing.T) {
 			expectedHeaders: map[string]string{
 				"Accept": "application/vnd.akamai.cps.enrollment.v11+json",
 			},
-			expectedResponse: &Enrollment{
+			expectedResponse: &GetEnrollmentResponse{
+				ID:              1,
+				ProductionSlots: []int{11},
+				StagingSlots:    []int{22},
+				AssignedSlots:   []int{33},
 				AdminContact: &Contact{
 					AddressLineOne:   "150 Broadway",
 					City:             "Cambridge",
@@ -852,7 +886,11 @@ func TestGetEnrollment(t *testing.T) {
 			expectedHeaders: map[string]string{
 				"Accept": "application/vnd.akamai.cps.enrollment.v11+json",
 			},
-			expectedResponse: &Enrollment{
+			expectedResponse: &GetEnrollmentResponse{
+				ID:              1,
+				ProductionSlots: []int{},
+				StagingSlots:    []int{},
+				AssignedSlots:   []int{12345},
 				AdminContact: &Contact{
 					AddressLineOne:   "150 Broadway",
 					City:             "Cambridge",
@@ -992,16 +1030,17 @@ func TestGetEnrollment(t *testing.T) {
 
 func TestCreateEnrollment(t *testing.T) {
 	tests := map[string]struct {
-		request          CreateEnrollmentRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateEnrollmentResponse
-		withError        error
+		request             CreateEnrollmentRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateEnrollmentResponse
+		expectedRequestBody string
+		withError           error
 	}{
 		"202 accepted": {
 			request: CreateEnrollmentRequest{
-				Enrollment: Enrollment{
+				EnrollmentRequestBody: EnrollmentRequestBody{
 					AdminContact: &Contact{
 						Email: "r1d1@akamai.com",
 					},
@@ -1033,10 +1072,35 @@ func TestCreateEnrollment(t *testing.T) {
 				Changes:    []string{"/cps-api/enrollments/1/changes/10002"},
 				ID:         1,
 			},
+			expectedRequestBody: `
+{
+    "adminContact": {       
+       "email": "r1d1@akamai.com" 
+	},     
+    "certificateType": "third-party",    
+    "changeManagement": false,    
+    "csr": {        
+		"cn": "www.example.com"    
+	},
+    "networkConfiguration": {
+		"quicEnabled": false,
+		"sniOnly": false
+	},   
+	"enableMultiStackedCertificates": false,
+    "org": {        
+		"name": "Akamai"
+	},    
+    "ra": "third-party",    
+    "techContact": {        
+		"email": "r2d2@akamai.com"    
+	},
+    "validationType": "third-party"
+}
+`,
 		},
 		"202 accepted allow duplicate cn": {
 			request: CreateEnrollmentRequest{
-				Enrollment: Enrollment{
+				EnrollmentRequestBody: EnrollmentRequestBody{
 					AdminContact: &Contact{
 						Email: "r1d1@akamai.com",
 					},
@@ -1046,6 +1110,7 @@ func TestCreateEnrollment(t *testing.T) {
 					},
 					NetworkConfiguration: &NetworkConfiguration{},
 					Org:                  &Org{Name: "Akamai"},
+					OrgID:                tools.IntPtr(10),
 					RA:                   "third-party",
 					TechContact: &Contact{
 						Email: "r2d2@akamai.com",
@@ -1069,10 +1134,36 @@ func TestCreateEnrollment(t *testing.T) {
 				Changes:    []string{"/cps-api/enrollments/1/changes/10002"},
 				ID:         1,
 			},
+			expectedRequestBody: `
+{
+    "adminContact": {       
+       "email": "r1d1@akamai.com" 
+	},     
+    "certificateType": "third-party",    
+    "changeManagement": false,    
+    "csr": {        
+		"cn": "www.example.com"    
+	},
+    "networkConfiguration": {
+		"quicEnabled": false,
+		"sniOnly": false
+	},   
+	"enableMultiStackedCertificates": false,
+    "org": {        
+		"name": "Akamai"
+	},    
+	"orgId": 10,
+    "ra": "third-party",    
+    "techContact": {        
+		"email": "r2d2@akamai.com"    
+	},
+    "validationType": "third-party"
+}
+`,
 		},
 		"202 accepted dv enrollment": {
 			request: CreateEnrollmentRequest{
-				Enrollment: Enrollment{
+				EnrollmentRequestBody: EnrollmentRequestBody{
 					AdminContact: &Contact{
 						Email: "r1d1@akamai.com",
 					},
@@ -1105,10 +1196,36 @@ func TestCreateEnrollment(t *testing.T) {
 				Changes:    []string{"/cps-api/enrollments/1/changes/10002"},
 				ID:         1,
 			},
+			expectedRequestBody: `
+{
+    "adminContact": {       
+       "email": "r1d1@akamai.com" 
+	},     
+    "certificateType": "san",    
+    "changeManagement": false,    
+    "csr": {        
+		"cn": "www.example.com",
+		"preferredTrustChain": "intermediate-a"
+	},
+    "networkConfiguration": {
+		"quicEnabled": false,
+		"sniOnly": false
+	},   
+	"enableMultiStackedCertificates": false,
+    "org": {        
+		"name": "Akamai"
+	},
+    "ra": "lets-encrypt",    
+    "techContact": {        
+		"email": "r2d2@akamai.com"    
+	},
+    "validationType": "dv"
+}
+`,
 		},
 		"500 internal server error": {
 			request: CreateEnrollmentRequest{
-				Enrollment: Enrollment{
+				EnrollmentRequestBody: EnrollmentRequestBody{
 					AdminContact: &Contact{
 						Email: "r1d1@akamai.com",
 					},
@@ -1150,7 +1267,7 @@ func TestCreateEnrollment(t *testing.T) {
 		},
 		"validation error preferredTrustChain set for non dv enrollment": {
 			request: CreateEnrollmentRequest{
-				Enrollment: Enrollment{
+				EnrollmentRequestBody: EnrollmentRequestBody{
 					AdminContact: &Contact{
 						Email: "r1d1@akamai.com",
 					},
@@ -1175,7 +1292,7 @@ func TestCreateEnrollment(t *testing.T) {
 		},
 		"invalid location": {
 			request: CreateEnrollmentRequest{
-				Enrollment: Enrollment{
+				EnrollmentRequestBody: EnrollmentRequestBody{
 					AdminContact: &Contact{
 						Email: "r1d1@akamai.com",
 					},
@@ -1211,6 +1328,11 @@ func TestCreateEnrollment(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				assert.Equal(t, "application/vnd.akamai.cps.enrollment-status.v1+json", r.Header.Get("Accept"))
 				assert.Equal(t, "application/vnd.akamai.cps.enrollment.v11+json; charset=utf-8", r.Header.Get("Content-Type"))
 				w.WriteHeader(test.responseStatus)
@@ -1231,17 +1353,18 @@ func TestCreateEnrollment(t *testing.T) {
 
 func TestUpdateEnrollment(t *testing.T) {
 	tests := map[string]struct {
-		request          UpdateEnrollmentRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateEnrollmentResponse
-		withError        error
+		request             UpdateEnrollmentRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateEnrollmentResponse
+		expectedRequestBody string
+		withError           error
 	}{
 		"202 accepted": {
 			request: UpdateEnrollmentRequest{
 				EnrollmentID: 1,
-				Enrollment: Enrollment{
+				EnrollmentRequestBody: EnrollmentRequestBody{
 					AdminContact: &Contact{
 						Email: "r1d1@akamai.com",
 					},
@@ -1251,6 +1374,7 @@ func TestUpdateEnrollment(t *testing.T) {
 					},
 					NetworkConfiguration: &NetworkConfiguration{},
 					Org:                  &Org{Name: "Akamai"},
+					OrgID:                tools.IntPtr(20),
 					RA:                   "third-party",
 					TechContact: &Contact{
 						Email: "r2d2@akamai.com",
@@ -1276,11 +1400,37 @@ func TestUpdateEnrollment(t *testing.T) {
 				Changes:    []string{"/cps-api/enrollments/1/changes/10002"},
 				ID:         1,
 			},
+			expectedRequestBody: `
+{
+    "adminContact": {       
+       "email": "r1d1@akamai.com" 
+	},     
+    "certificateType": "third-party",    
+    "changeManagement": false,    
+    "csr": {        
+		"cn": "www.example.com"
+	},
+    "networkConfiguration": {
+		"quicEnabled": false,
+		"sniOnly": false
+	},   
+	"enableMultiStackedCertificates": false,
+    "org": {        
+		"name": "Akamai"
+	},
+	"orgId": 20,
+    "ra": "third-party",    
+    "techContact": {        
+		"email": "r2d2@akamai.com"    
+	},
+    "validationType": "third-party"
+}
+`,
 		},
 		"500 internal server error": {
 			request: UpdateEnrollmentRequest{
 				EnrollmentID: 1,
-				Enrollment: Enrollment{
+				EnrollmentRequestBody: EnrollmentRequestBody{
 					AdminContact: &Contact{
 						Email: "r1d1@akamai.com",
 					},
@@ -1321,7 +1471,7 @@ func TestUpdateEnrollment(t *testing.T) {
 		},
 		"validation error preferredTrustChain set for non dv enrollment": {
 			request: UpdateEnrollmentRequest{
-				Enrollment: Enrollment{
+				EnrollmentRequestBody: EnrollmentRequestBody{
 					AdminContact: &Contact{
 						Email: "r1d1@akamai.com",
 					},
@@ -1346,7 +1496,7 @@ func TestUpdateEnrollment(t *testing.T) {
 		"invalid location URL": {
 			request: UpdateEnrollmentRequest{
 				EnrollmentID: 1,
-				Enrollment: Enrollment{
+				EnrollmentRequestBody: EnrollmentRequestBody{
 					AdminContact: &Contact{
 						Email: "r1d1@akamai.com",
 					},
@@ -1385,6 +1535,11 @@ func TestUpdateEnrollment(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				assert.Equal(t, "application/vnd.akamai.cps.enrollment-status.v1+json", r.Header.Get("Accept"))
 				assert.Equal(t, "application/vnd.akamai.cps.enrollment.v11+json; charset=utf-8", r.Header.Get("Content-Type"))
 				w.WriteHeader(test.responseStatus)

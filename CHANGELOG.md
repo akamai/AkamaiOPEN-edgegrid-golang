@@ -4,6 +4,8 @@
 
 #### BREAKING CHANGES:
 
+* CPS
+  * Split request and response structures for create and update enrollment operations
 
 
 
@@ -32,6 +34,8 @@
 
 #### FEATURES/ENHANCEMENTS:
 
+* CPS
+  * Add `ID`, `OrgID`, `ProductionSlots`, `StagingSlots` and `AssignedSlots` to the response structures of `GetEnrollment` and `ListEnrollment` operations
 
 * Added default value `application/json` for `Accept` header for all requests sent to API
 

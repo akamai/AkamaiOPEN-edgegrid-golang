@@ -22,7 +22,7 @@ type (
 		// GetEnrollment fetches enrollment object with given ID
 		//
 		// See: https://techdocs.akamai.com/cps/reference/get-enrollment
-		GetEnrollment(context.Context, GetEnrollmentRequest) (*Enrollment, error)
+		GetEnrollment(context.Context, GetEnrollmentRequest) (*GetEnrollmentResponse, error)
 
 		// CreateEnrollment creates a new enrollment
 		//
@@ -45,8 +45,15 @@ type (
 		Enrollments []Enrollment `json:"enrollments"`
 	}
 
-	// Enrollment represents a CPS enrollment object. It is used both as a request body for enrollment creation and response body while fetching enrollment by ID
+	// GetEnrollmentResponse contains response body from GetEnrollment operation
+	GetEnrollmentResponse Enrollment
+
+	// Enrollment represents a CPS enrollment object. It is used as a response body while fetching enrollment by ID and listing multiple enrollments
 	Enrollment struct {
+		ID                             int                   `json:"id"`
+		ProductionSlots                []int                 `json:"productionSlots"`
+		StagingSlots                   []int                 `json:"stagingSlots"`
+		AssignedSlots                  []int                 `json:"assignedSlots"`
 		AdminContact                   *Contact              `json:"adminContact"`
 		AutoRenewalStartTime           string                `json:"autoRenewalStartTime,omitempty"`
 		CertificateChainType           string                `json:"certificateChainType,omitempty"`
@@ -59,6 +66,7 @@ type (
 		MaxAllowedWildcardSanNames     int                   `json:"maxAllowedWildcardSanNames,omitempty"`
 		NetworkConfiguration           *NetworkConfiguration `json:"networkConfiguration"`
 		Org                            *Org                  `json:"org"`
+		OrgID                          *int                  `json:"orgId"`
 		PendingChanges                 []PendingChange       `json:"pendingChanges,omitempty"`
 		RA                             string                `json:"ra"`
 		SignatureAlgorithm             string                `json:"signatureAlgorithm,omitempty"`
@@ -167,11 +175,30 @@ type (
 
 	// CreateEnrollmentRequest contains request body and path parameters used to create an enrollment
 	CreateEnrollmentRequest struct {
-		Enrollment
+		EnrollmentRequestBody
 		ContractID       string
 		DeployNotAfter   string
 		DeployNotBefore  string
 		AllowDuplicateCN bool
+	}
+
+	// EnrollmentRequestBody represents request body parameters specific to the enrollment
+	EnrollmentRequestBody struct {
+		AdminContact                   *Contact              `json:"adminContact"`
+		AutoRenewalStartTime           string                `json:"autoRenewalStartTime,omitempty"`
+		CertificateChainType           string                `json:"certificateChainType,omitempty"`
+		CertificateType                string                `json:"certificateType"`
+		ChangeManagement               bool                  `json:"changeManagement"`
+		CSR                            *CSR                  `json:"csr"`
+		EnableMultiStackedCertificates bool                  `json:"enableMultiStackedCertificates"`
+		NetworkConfiguration           *NetworkConfiguration `json:"networkConfiguration"`
+		Org                            *Org                  `json:"org"`
+		OrgID                          *int                  `json:"orgId,omitempty"`
+		RA                             string                `json:"ra"`
+		SignatureAlgorithm             string                `json:"signatureAlgorithm,omitempty"`
+		TechContact                    *Contact              `json:"techContact"`
+		ThirdParty                     *ThirdParty           `json:"thirdParty,omitempty"`
+		ValidationType                 string                `json:"validationType"`
 	}
 
 	// CreateEnrollmentResponse contains response body returned after successful enrollment creation
@@ -183,7 +210,7 @@ type (
 
 	// UpdateEnrollmentRequest contains request body and path parameters used to update an enrollment
 	UpdateEnrollmentRequest struct {
-		Enrollment
+		EnrollmentRequestBody
 		EnrollmentID              int
 		AllowCancelPendingChanges *bool
 		AllowStagingBypass        *bool
@@ -227,8 +254,8 @@ const (
 	OCSPStaplingNotSet OCSPStapling = "not-set"
 )
 
-// Validate performs validation on Enrollment
-func (e Enrollment) Validate() error {
+// Validate performs validation on EnrollmentRequestBody
+func (e EnrollmentRequestBody) Validate() error {
 	errs := validation.Errors{
 		"adminContact":         validation.Validate(e.AdminContact, validation.Required),
 		"certificateType":      validation.Validate(e.CertificateType, validation.Required),
@@ -249,7 +276,7 @@ func (e Enrollment) Validate() error {
 	return errs.Filter()
 }
 
-// Validate performs validation on Enrollment
+// Validate performs validation on CSR
 func (c CSR) Validate() error {
 	return validation.Errors{
 		"cn": validation.Validate(c.CN, validation.Required),
@@ -263,7 +290,7 @@ func (n NetworkConfiguration) Validate() error {
 	}.Filter()
 }
 
-// Validate performs validation on ListEnrollmentRequest
+// Validate performs validation on ListEnrollmentsRequest
 func (e ListEnrollmentsRequest) Validate() error {
 	return validation.Errors{
 		"contractId": validation.Validate(e.ContractID, validation.Required),
@@ -280,7 +307,7 @@ func (e GetEnrollmentRequest) Validate() error {
 // Validate performs validation on CreateEnrollmentRequest
 func (e CreateEnrollmentRequest) Validate() error {
 	return validation.Errors{
-		"enrollment": validation.Validate(e.Enrollment, validation.Required),
+		"enrollment": validation.Validate(e.EnrollmentRequestBody, validation.Required),
 		"contractId": validation.Validate(e.ContractID, validation.Required),
 	}.Filter()
 }
@@ -288,7 +315,7 @@ func (e CreateEnrollmentRequest) Validate() error {
 // Validate performs validation on UpdateEnrollmentRequest
 func (e UpdateEnrollmentRequest) Validate() error {
 	return validation.Errors{
-		"enrollment":   validation.Validate(e.Enrollment, validation.Required),
+		"enrollment":   validation.Validate(e.EnrollmentRequestBody, validation.Required),
 		"enrollmentId": validation.Validate(e.EnrollmentID, validation.Required),
 	}.Filter()
 }
@@ -343,7 +370,7 @@ func (c *cps) ListEnrollments(ctx context.Context, params ListEnrollmentsRequest
 	return &result, nil
 }
 
-func (c *cps) GetEnrollment(ctx context.Context, params GetEnrollmentRequest) (*Enrollment, error) {
+func (c *cps) GetEnrollment(ctx context.Context, params GetEnrollmentRequest) (*GetEnrollmentResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetEnrollment, ErrStructValidation, err)
 	}
@@ -359,7 +386,7 @@ func (c *cps) GetEnrollment(ctx context.Context, params GetEnrollmentRequest) (*
 	}
 	req.Header.Set("Accept", "application/vnd.akamai.cps.enrollment.v11+json")
 
-	var result Enrollment
+	var result GetEnrollmentResponse
 
 	resp, err := c.Exec(req, &result)
 	if err != nil {
@@ -405,7 +432,7 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 
 	var result CreateEnrollmentResponse
 
-	resp, err := c.Exec(req, &result, params.Enrollment)
+	resp, err := c.Exec(req, &result, params.EnrollmentRequestBody)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEnrollment, err)
 	}
@@ -464,7 +491,7 @@ func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentReque
 
 	var result UpdateEnrollmentResponse
 
-	resp, err := c.Exec(req, &result, params.Enrollment)
+	resp, err := c.Exec(req, &result, params.EnrollmentRequestBody)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEnrollment, err)
 	}
