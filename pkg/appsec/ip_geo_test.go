@@ -2,7 +2,6 @@ package appsec
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -15,13 +14,6 @@ import (
 
 // Test IPGeo
 func TestAppSec_GetIPGeo(t *testing.T) {
-
-	result := GetIPGeoResponse{}
-
-	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeo/IPGeo.json"))
-	err := json.Unmarshal([]byte(respData), &result)
-	require.NoError(t, err)
-
 	tests := map[string]struct {
 		params           GetIPGeoRequest
 		responseStatus   int
@@ -36,10 +28,64 @@ func TestAppSec_GetIPGeo(t *testing.T) {
 				Version:  15,
 				PolicyID: "AAAA_81230",
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/ip-geo-firewall",
-			expectedResponse: &result,
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"block": "blockSpecificIPGeo",
+				"asnControls": {
+					"blockedIPNetworkLists": {
+						"networkList": [
+							"12345_ASNTEST"
+						]
+					}
+				},
+				"geoControls": {
+					"blockedIPNetworkLists": {
+						"networkList": [
+							"72138_TEST1"
+						]
+					}
+				},
+				"ipControls": {
+					"allowedIPNetworkLists": {
+						"networkList": [
+							"56921_TEST"
+						]
+					},
+					"blockedIPNetworkLists": {
+						"networkList": [
+							"53712_TESTLIST123"
+						]
+					}
+				},
+				"ukraineGeoControl": {
+					"action": "alert"
+				}
+			}`,
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/ip-geo-firewall",
+			expectedResponse: &GetIPGeoResponse{
+				Block: "blockSpecificIPGeo",
+				GeoControls: &IPGeoGeoControls{
+					BlockedIPNetworkLists: &IPGeoNetworkLists{
+						NetworkList: []string{"72138_TEST1"},
+					},
+				},
+				IPControls: &IPGeoIPControls{
+					AllowedIPNetworkLists: &IPGeoNetworkLists{
+						NetworkList: []string{"56921_TEST"},
+					},
+					BlockedIPNetworkLists: &IPGeoNetworkLists{
+						NetworkList: []string{"53712_TESTLIST123"},
+					},
+				},
+				ASNControls: &IPGeoASNControls{
+					BlockedIPNetworkLists: &IPGeoNetworkLists{
+						NetworkList: []string{"12345_ASNTEST"},
+					},
+				},
+				UkraineGeoControls: &UkraineGeoControl{
+					Action: "alert",
+				},
+			},
 		},
 		"500 internal server error": {
 			params: GetIPGeoRequest{
@@ -87,18 +133,6 @@ func TestAppSec_GetIPGeo(t *testing.T) {
 
 // Test Update IPGeo.
 func TestAppSec_UpdateIPGeo(t *testing.T) {
-	result := UpdateIPGeoResponse{}
-
-	respData := compactJSON(loadFixtureBytes("testdata/TestIPGeo/IPGeo.json"))
-	err := json.Unmarshal([]byte(respData), &result)
-	require.NoError(t, err)
-
-	req := UpdateIPGeoRequest{}
-
-	reqData := compactJSON(loadFixtureBytes("testdata/TestIPGeo/IPGeo.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
-
 	tests := map[string]struct {
 		params           UpdateIPGeoRequest
 		responseStatus   int
@@ -117,10 +151,64 @@ func TestAppSec_UpdateIPGeo(t *testing.T) {
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     respData,
-			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/ip-geo-firewall",
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+				"block": "blockSpecificIPGeo",
+				"asnControls": {
+					"blockedIPNetworkLists": {
+						"networkList": [
+							"12345_ASNTEST"
+						]
+					}
+				},
+				"geoControls": {
+					"blockedIPNetworkLists": {
+						"networkList": [
+							"72138_TEST1"
+						]
+					}
+				},
+				"ipControls": {
+					"allowedIPNetworkLists": {
+						"networkList": [
+							"56921_TEST"
+						]
+					},
+					"blockedIPNetworkLists": {
+						"networkList": [
+							"53712_TESTLIST123"
+						]
+					}
+				},
+				"ukraineGeoControl": {
+					"action": "alert"
+				}
+			}`,
+			expectedResponse: &UpdateIPGeoResponse{
+				Block: "blockSpecificIPGeo",
+				GeoControls: &IPGeoGeoControls{
+					BlockedIPNetworkLists: &IPGeoNetworkLists{
+						NetworkList: []string{"72138_TEST1"},
+					},
+				},
+				IPControls: &IPGeoIPControls{
+					AllowedIPNetworkLists: &IPGeoNetworkLists{
+						NetworkList: []string{"56921_TEST"},
+					},
+					BlockedIPNetworkLists: &IPGeoNetworkLists{
+						NetworkList: []string{"53712_TESTLIST123"},
+					},
+				},
+				ASNControls: &IPGeoASNControls{
+					BlockedIPNetworkLists: &IPGeoNetworkLists{
+						NetworkList: []string{"12345_ASNTEST"},
+					},
+				},
+				UkraineGeoControls: &UkraineGeoControl{
+					Action: "alert",
+				},
+			},
+			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/ip-geo-firewall",
 		},
 		"500 internal server error": {
 			params: UpdateIPGeoRequest{

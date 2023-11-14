@@ -4,6 +4,9 @@
 
 #### FEATURES/ENHANCEMENTS:
 
+* APPSEC
+  * Added `ASNControls` field to `UpdateIPGeoRequest` and `IPGeoFirewall` structs to support firewall blocking by ASN client lists
+
 * BOTMAN
   * Added API support for Custom Code - read and update
 
@@ -19,7 +22,7 @@
 
 * IAM
   * Phone number is no longer required for IAM user for `CreateUser` and `UpdateUserInfo` methods
-  
+
 ## 7.3.0 (September 19, 2023)
 
 #### FEATURES/ENHANCEMENTS:
