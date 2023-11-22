@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## X.X.X (November xx, 2023)
+## 7.5.0 (November 28, 2023)
 
 #### FEATURES/ENHANCEMENTS:
 
