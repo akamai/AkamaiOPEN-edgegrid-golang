@@ -14,14 +14,14 @@ import (
 )
 
 type (
-	// ListSharedPoliciesRequest contains request parameters for ListSharedPolicies
-	ListSharedPoliciesRequest struct {
+	// ListPoliciesRequest contains request parameters for ListPolicies
+	ListPoliciesRequest struct {
 		Page int
 		Size int
 	}
 
-	// CreateSharedPolicyRequest contains request parameters for CreateSharedPolicy
-	CreateSharedPolicyRequest struct {
+	// CreatePolicyRequest contains request parameters for CreatePolicy
+	CreatePolicyRequest struct {
 		CloudletType CloudletType `json:"cloudletType"`
 		Description  *string      `json:"description,omitempty"`
 		GroupID      int64        `json:"groupId"`
@@ -29,20 +29,20 @@ type (
 		PolicyType   PolicyType   `json:"policyType,omitempty"`
 	}
 
-	// DeleteSharedPolicyRequest contains request parameters for DeleteSharedPolicy
-	DeleteSharedPolicyRequest struct {
+	// DeletePolicyRequest contains request parameters for DeletePolicy
+	DeletePolicyRequest struct {
 		PolicyID int64
 	}
 
-	// GetSharedPolicyRequest contains request parameters for GetSharedPolicy
-	GetSharedPolicyRequest struct {
+	// GetPolicyRequest contains request parameters for GetPolicy
+	GetPolicyRequest struct {
 		PolicyID int64
 	}
 
-	// UpdateSharedPolicyRequest contains request parameters for UpdateSharedPolicy
-	UpdateSharedPolicyRequest struct {
+	// UpdatePolicyRequest contains request parameters for UpdatePolicy
+	UpdatePolicyRequest struct {
 		PolicyID   int64
-		BodyParams UpdateSharedPolicyBodyParams
+		BodyParams UpdatePolicyBodyParams
 	}
 
 	// ClonePolicyRequest contains request parameters for ClonePolicy
@@ -58,8 +58,8 @@ type (
 		NewName            string  `json:"newName"`
 	}
 
-	// UpdateSharedPolicyBodyParams contains request body parameters used in UpdateSharedPolicy operation
-	UpdateSharedPolicyBodyParams struct {
+	// UpdatePolicyBodyParams contains request body parameters used in UpdatePolicy operation
+	UpdatePolicyBodyParams struct {
 		GroupID     int64   `json:"groupId"`
 		Description *string `json:"description,omitempty"`
 	}
@@ -70,8 +70,8 @@ type (
 	// CloudletType represents the type of the cloudlet
 	CloudletType string
 
-	// ListSharedPoliciesResponse contains the response data from ListSharedPolicies operation
-	ListSharedPoliciesResponse struct {
+	// ListPoliciesResponse contains the response data from ListPolicies operation
+	ListPoliciesResponse struct {
 		Content []Policy `json:"content"`
 		Links   []Link   `json:"links"`
 		Page    Page     `json:"page"`
@@ -127,30 +127,30 @@ const (
 )
 
 var (
-	// ErrListSharedPolicies is returned when ListSharedPolicies fails
-	ErrListSharedPolicies = errors.New("list shared policies")
-	// ErrCreateSharedPolicy is returned when CreateSharedPolicy fails
-	ErrCreateSharedPolicy = errors.New("create shared policy")
-	// ErrDeleteSharedPolicy is returned when DeleteSharedPolicy fails
-	ErrDeleteSharedPolicy = errors.New("delete shared policy")
-	// ErrGetSharedPolicy is returned when GetSharedPolicy fails
-	ErrGetSharedPolicy = errors.New("get shared policy")
-	// ErrUpdateSharedPolicy is returned when UpdateSharedPolicy fails
-	ErrUpdateSharedPolicy = errors.New("update shared policy")
+	// ErrListPolicies is returned when ListPolicies fails
+	ErrListPolicies = errors.New("list shared policies")
+	// ErrCreatePolicy is returned when CreatePolicy fails
+	ErrCreatePolicy = errors.New("create shared policy")
+	// ErrDeletePolicy is returned when DeletePolicy fails
+	ErrDeletePolicy = errors.New("delete shared policy")
+	// ErrGetPolicy is returned when GetPolicy fails
+	ErrGetPolicy = errors.New("get shared policy")
+	// ErrUpdatePolicy is returned when UpdatePolicy fails
+	ErrUpdatePolicy = errors.New("update shared policy")
 	// ErrClonePolicy is returned when ClonePolicy fails
 	ErrClonePolicy = errors.New("clone policy")
 )
 
-// Validate validates ListSharedPoliciesRequest
-func (r ListSharedPoliciesRequest) Validate() error {
+// Validate validates ListPoliciesRequest
+func (r ListPoliciesRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"Page": validation.Validate(r.Page, validation.Min(0)),
 		"Size": validation.Validate(r.Size, validation.Min(10)),
 	})
 }
 
-// Validate validates CreateSharedPolicyRequest
-func (r CreateSharedPolicyRequest) Validate() error {
+// Validate validates CreatePolicyRequest
+func (r CreatePolicyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"CloudletType": validation.Validate(r.CloudletType, validation.Required, validation.In(CloudletTypeAP, CloudletTypeAS, CloudletTypeCD, CloudletTypeER, CloudletTypeFR, CloudletTypeIG, CloudletTypeVWR).
 			Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s', '%s', '%s', '%s', '%s', '%s'", r.CloudletType, CloudletTypeAP, CloudletTypeAS, CloudletTypeCD, CloudletTypeER, CloudletTypeFR, CloudletTypeIG, CloudletTypeVWR))),
@@ -162,30 +162,30 @@ func (r CreateSharedPolicyRequest) Validate() error {
 	})
 }
 
-// Validate validates DeleteSharedPolicyRequest
-func (r DeleteSharedPolicyRequest) Validate() error {
+// Validate validates DeletePolicyRequest
+func (r DeletePolicyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PolicyID": validation.Validate(r.PolicyID, validation.Required),
 	})
 }
 
-// Validate validates GetSharedPolicyRequest
-func (r GetSharedPolicyRequest) Validate() error {
+// Validate validates GetPolicyRequest
+func (r GetPolicyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PolicyID": validation.Validate(r.PolicyID, validation.Required),
 	})
 }
 
-// Validate validates UpdateSharedPolicyRequest
-func (r UpdateSharedPolicyRequest) Validate() error {
+// Validate validates UpdatePolicyRequest
+func (r UpdatePolicyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PolicyID":   validation.Validate(r.PolicyID, validation.Required),
 		"BodyParams": validation.Validate(r.BodyParams, validation.Required),
 	})
 }
 
-// Validate validates UpdateSharedPolicyBodyParams
-func (b UpdateSharedPolicyBodyParams) Validate() error {
+// Validate validates UpdatePolicyBodyParams
+func (b UpdatePolicyBodyParams) Validate() error {
 	return validation.Errors{
 		"GroupID":     validation.Validate(b.GroupID, validation.Required),
 		"Description": validation.Validate(b.Description, validation.Length(0, 255)),
@@ -208,17 +208,17 @@ func (b ClonePolicyBodyParams) Validate() error {
 	}.Filter()
 }
 
-func (c *cloudlets) ListSharedPolicies(ctx context.Context, params ListSharedPoliciesRequest) (*ListSharedPoliciesResponse, error) {
+func (c *cloudlets) ListPolicies(ctx context.Context, params ListPoliciesRequest) (*ListPoliciesResponse, error) {
 	logger := c.Log(ctx)
-	logger.Debug("ListSharedPolicies")
+	logger.Debug("ListPolicies")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListSharedPolicies, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w: %s", ErrListPolicies, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse("/cloudlets/v3/policies")
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListSharedPolicies, err)
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPolicies, err)
 	}
 
 	q := uri.Query()
@@ -233,128 +233,128 @@ func (c *cloudlets) ListSharedPolicies(ctx context.Context, params ListSharedPol
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListSharedPolicies, err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPolicies, err)
 	}
 
-	var result ListSharedPoliciesResponse
+	var result ListPoliciesResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListSharedPolicies, err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListPolicies, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListSharedPolicies, c.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrListPolicies, c.Error(resp))
 	}
 
 	return &result, nil
 }
 
-func (c *cloudlets) CreateSharedPolicy(ctx context.Context, params CreateSharedPolicyRequest) (*Policy, error) {
+func (c *cloudlets) CreatePolicy(ctx context.Context, params CreatePolicyRequest) (*Policy, error) {
 	logger := c.Log(ctx)
-	logger.Debug("CreateSharedPolicy")
+	logger.Debug("CreatePolicy")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateSharedPolicy, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreatePolicy, ErrStructValidation, err)
 	}
 
 	uri := "/cloudlets/v3/policies"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateSharedPolicy, err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreatePolicy, err)
 	}
 
 	var result Policy
 	resp, err := c.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateSharedPolicy, err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrCreatePolicy, err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("%s: %w", ErrCreateSharedPolicy, c.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrCreatePolicy, c.Error(resp))
 	}
 
 	return &result, nil
 }
 
-func (c *cloudlets) DeleteSharedPolicy(ctx context.Context, params DeleteSharedPolicyRequest) error {
+func (c *cloudlets) DeletePolicy(ctx context.Context, params DeletePolicyRequest) error {
 	logger := c.Log(ctx)
-	logger.Debug("DeleteSharedPolicy")
+	logger.Debug("DeletePolicy")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w: %s", ErrDeleteSharedPolicy, ErrStructValidation, err)
+		return fmt.Errorf("%s: %w: %s", ErrDeletePolicy, ErrStructValidation, err)
 	}
 
 	uri := fmt.Sprintf("/cloudlets/v3/policies/%d", params.PolicyID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteSharedPolicy, err)
+		return fmt.Errorf("%w: failed to create request: %s", ErrDeletePolicy, err)
 	}
 
 	resp, err := c.Exec(req, nil)
 	if err != nil {
-		return fmt.Errorf("%w: request failed: %s", ErrDeleteSharedPolicy, err)
+		return fmt.Errorf("%w: request failed: %s", ErrDeletePolicy, err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("%s: %w", ErrDeleteSharedPolicy, c.Error(resp))
+		return fmt.Errorf("%s: %w", ErrDeletePolicy, c.Error(resp))
 	}
 
 	return nil
 }
 
-func (c *cloudlets) GetSharedPolicy(ctx context.Context, params GetSharedPolicyRequest) (*Policy, error) {
+func (c *cloudlets) GetPolicy(ctx context.Context, params GetPolicyRequest) (*Policy, error) {
 	logger := c.Log(ctx)
-	logger.Debug("GetSharedPolicy")
+	logger.Debug("GetPolicy")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetSharedPolicy, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetPolicy, ErrStructValidation, err)
 	}
 
 	uri := fmt.Sprintf("/cloudlets/v3/policies/%d", params.PolicyID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetSharedPolicy, err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicy, err)
 	}
 
 	var result Policy
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetSharedPolicy, err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicy, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrGetSharedPolicy, c.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrGetPolicy, c.Error(resp))
 	}
 
 	return &result, nil
 }
 
-func (c *cloudlets) UpdateSharedPolicy(ctx context.Context, params UpdateSharedPolicyRequest) (*Policy, error) {
+func (c *cloudlets) UpdatePolicy(ctx context.Context, params UpdatePolicyRequest) (*Policy, error) {
 	logger := c.Log(ctx)
-	logger.Debug("UpdateSharedPolicy")
+	logger.Debug("UpdatePolicy")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateSharedPolicy, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w: %s", ErrUpdatePolicy, ErrStructValidation, err)
 	}
 
 	uri := fmt.Sprintf("/cloudlets/v3/policies/%d", params.PolicyID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateSharedPolicy, err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdatePolicy, err)
 	}
 
 	var result Policy
 	resp, err := c.Exec(req, &result, params.BodyParams)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateSharedPolicy, err)
+		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePolicy, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrUpdateSharedPolicy, c.Error(resp))
+		return nil, fmt.Errorf("%s: %w", ErrUpdatePolicy, c.Error(resp))
 	}
 
 	return &result, nil

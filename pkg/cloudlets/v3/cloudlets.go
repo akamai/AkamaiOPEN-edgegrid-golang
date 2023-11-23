@@ -20,30 +20,31 @@ type (
 		//
 		// See: https://techdocs.akamai.com/cloudlets/reference/get-cloudlets
 		ListCloudlets(context.Context) ([]ListCloudletsItem, error)
-		// ListSharedPolicies returns shared policies that are available within your group
+
+		// ListPolicies returns shared policies that are available within your group
 		//
 		// See: https://techdocs.akamai.com/cloudlets/reference/get-policies
-		ListSharedPolicies(context.Context, ListSharedPoliciesRequest) (*ListSharedPoliciesResponse, error)
+		ListPolicies(context.Context, ListPoliciesRequest) (*ListPoliciesResponse, error)
 
-		// CreateSharedPolicy creates a shared policy for a specific Cloudlet type
+		// CreatePolicy creates a shared policy for a specific Cloudlet type
 		//
 		// See: https://techdocs.akamai.com/cloudlets/reference/post-policy
-		CreateSharedPolicy(context.Context, CreateSharedPolicyRequest) (*Policy, error)
+		CreatePolicy(context.Context, CreatePolicyRequest) (*Policy, error)
 
-		// DeleteSharedPolicy deletes an existing Cloudlets policy
+		// DeletePolicy deletes an existing Cloudlets policy
 		//
 		// See: https://techdocs.akamai.com/cloudlets/reference/delete-policy
-		DeleteSharedPolicy(context.Context, DeleteSharedPolicyRequest) error
+		DeletePolicy(context.Context, DeletePolicyRequest) error
 
-		// GetSharedPolicy returns information about a shared policy, including its activation status on the staging and production networks
+		// GetPolicy returns information about a shared policy, including its activation status on the staging and production networks
 		//
 		// See: https://techdocs.akamai.com/cloudlets/reference/get-policy
-		GetSharedPolicy(context.Context, GetSharedPolicyRequest) (*Policy, error)
+		GetPolicy(context.Context, GetPolicyRequest) (*Policy, error)
 
-		// UpdateSharedPolicy updates an existing policy
+		// UpdatePolicy updates an existing policy
 		//
 		// See: https://techdocs.akamai.com/cloudlets/reference/put-policy
-		UpdateSharedPolicy(context.Context, UpdateSharedPolicyRequest) (*Policy, error)
+		UpdatePolicy(context.Context, UpdatePolicyRequest) (*Policy, error)
 
 		// ClonePolicy clones the staging, production, and last modified versions of a non-shared (API v2) or shared policy into a new shared policy
 		//

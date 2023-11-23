@@ -14,17 +14,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestListSharedPolicies(t *testing.T) {
+func TestListPolicies(t *testing.T) {
 	tests := map[string]struct {
-		params           ListSharedPoliciesRequest
+		params           ListPoliciesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ListSharedPoliciesResponse
+		expectedResponse *ListPoliciesResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK - two policies, one minimal and one with activation data": {
-			params:         ListSharedPoliciesRequest{},
+			params:         ListPoliciesRequest{},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -169,7 +169,7 @@ func TestListSharedPolicies(t *testing.T) {
 }
 `,
 			expectedPath: "/cloudlets/v3/policies",
-			expectedResponse: &ListSharedPoliciesResponse{
+			expectedResponse: &ListPoliciesResponse{
 				Content: []Policy{
 					{
 						CloudletType:       CloudletTypeCD,
@@ -302,7 +302,7 @@ func TestListSharedPolicies(t *testing.T) {
 			},
 		},
 		"200 OK - with query params": {
-			params: ListSharedPoliciesRequest{
+			params: ListPoliciesRequest{
 				Page: 2,
 				Size: 12,
 			},
@@ -354,7 +354,7 @@ func TestListSharedPolicies(t *testing.T) {
 }
 `,
 			expectedPath: "/cloudlets/v3/policies?page=2&size=12",
-			expectedResponse: &ListSharedPoliciesResponse{
+			expectedResponse: &ListPoliciesResponse{
 				Content: []Policy{
 					{
 						CloudletType:       CloudletTypeCD,
@@ -391,7 +391,7 @@ func TestListSharedPolicies(t *testing.T) {
 			},
 		},
 		"200 OK - empty content": {
-			params:         ListSharedPoliciesRequest{},
+			params:         ListPoliciesRequest{},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -411,7 +411,7 @@ func TestListSharedPolicies(t *testing.T) {
 }
 `,
 			expectedPath: "/cloudlets/v3/policies",
-			expectedResponse: &ListSharedPoliciesResponse{
+			expectedResponse: &ListPoliciesResponse{
 				Content: []Policy{},
 				Links: []Link{
 					{
@@ -428,7 +428,7 @@ func TestListSharedPolicies(t *testing.T) {
 			},
 		},
 		"validation errors - size lower than 10, negative page number": {
-			params: ListSharedPoliciesRequest{
+			params: ListPoliciesRequest{
 				Page: -2,
 				Size: 5,
 			},
@@ -437,7 +437,7 @@ func TestListSharedPolicies(t *testing.T) {
 			},
 		},
 		"500 Internal Server Error": {
-			params:         ListSharedPoliciesRequest{},
+			params:         ListPoliciesRequest{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 		{
@@ -477,7 +477,7 @@ func TestListSharedPolicies(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListSharedPolicies(context.Background(), test.params)
+			result, err := client.ListPolicies(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
@@ -488,9 +488,9 @@ func TestListSharedPolicies(t *testing.T) {
 	}
 }
 
-func TestCreateSharedPolicy(t *testing.T) {
+func TestCreatePolicy(t *testing.T) {
 	tests := map[string]struct {
-		params              CreateSharedPolicyRequest
+		params              CreatePolicyRequest
 		responseStatus      int
 		responseBody        string
 		expectedPath        string
@@ -499,7 +499,7 @@ func TestCreateSharedPolicy(t *testing.T) {
 		withError           func(*testing.T, error)
 	}{
 		"200 OK - minimal data": {
-			params: CreateSharedPolicyRequest{
+			params: CreatePolicyRequest{
 				CloudletType: CloudletTypeFR,
 				GroupID:      1,
 				Name:         "TestName",
@@ -563,7 +563,7 @@ func TestCreateSharedPolicy(t *testing.T) {
 			},
 		},
 		"200 OK - all data": {
-			params: CreateSharedPolicyRequest{
+			params: CreatePolicyRequest{
 				CloudletType: CloudletTypeFR,
 				Description:  tools.StringPtr("Description"),
 				GroupID:      1,
@@ -632,7 +632,7 @@ func TestCreateSharedPolicy(t *testing.T) {
 			},
 		},
 		"validation errors": {
-			params: CreateSharedPolicyRequest{
+			params: CreatePolicyRequest{
 				CloudletType: "Wrong Cloudlet Type",
 				Description:  tools.StringPtr(strings.Repeat("Too long description", 20)),
 				GroupID:      1,
@@ -644,7 +644,7 @@ func TestCreateSharedPolicy(t *testing.T) {
 			},
 		},
 		"validation errors - missing required params": {
-			params: CreateSharedPolicyRequest{},
+			params: CreatePolicyRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "create shared policy: struct validation: CloudletType: cannot be blank\nGroupID: cannot be blank\nName: cannot be blank", err.Error())
 			},
@@ -666,7 +666,7 @@ func TestCreateSharedPolicy(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateSharedPolicy(context.Background(), test.params)
+			result, err := client.CreatePolicy(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
@@ -677,23 +677,23 @@ func TestCreateSharedPolicy(t *testing.T) {
 	}
 }
 
-func TestDeleteSharedPolicy(t *testing.T) {
+func TestDeletePolicy(t *testing.T) {
 	tests := map[string]struct {
-		params         DeleteSharedPolicyRequest
+		params         DeletePolicyRequest
 		responseStatus int
 		responseBody   string
 		expectedPath   string
 		withError      func(*testing.T, error)
 	}{
 		"204": {
-			params: DeleteSharedPolicyRequest{
+			params: DeletePolicyRequest{
 				PolicyID: 1,
 			},
 			responseStatus: http.StatusNoContent,
 			expectedPath:   "/cloudlets/v3/policies/1",
 		},
 		"validation errors - missing required param": {
-			params: DeleteSharedPolicyRequest{},
+			params: DeletePolicyRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "delete shared policy: struct validation: PolicyID: cannot be blank", err.Error())
 			},
@@ -710,7 +710,7 @@ func TestDeleteSharedPolicy(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeleteSharedPolicy(context.Background(), test.params)
+			err := client.DeletePolicy(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
@@ -720,9 +720,9 @@ func TestDeleteSharedPolicy(t *testing.T) {
 	}
 }
 
-func TestGetSharedPolicy(t *testing.T) {
+func TestGetPolicy(t *testing.T) {
 	tests := map[string]struct {
-		params           GetSharedPolicyRequest
+		params           GetPolicyRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -730,7 +730,7 @@ func TestGetSharedPolicy(t *testing.T) {
 		withError        func(*testing.T, error)
 	}{
 		"200 OK - minimal data": {
-			params: GetSharedPolicyRequest{
+			params: GetPolicyRequest{
 				PolicyID: 1,
 			},
 			responseStatus: http.StatusOK,
@@ -786,7 +786,7 @@ func TestGetSharedPolicy(t *testing.T) {
 			},
 		},
 		"200 OK - with activation information": {
-			params: GetSharedPolicyRequest{
+			params: GetPolicyRequest{
 				PolicyID: 1,
 			},
 			responseStatus: http.StatusOK,
@@ -987,7 +987,7 @@ func TestGetSharedPolicy(t *testing.T) {
 			},
 		},
 		"200 OK - one network is active": {
-			params: GetSharedPolicyRequest{
+			params: GetPolicyRequest{
 				PolicyID: 1,
 			},
 			responseStatus: http.StatusOK,
@@ -1120,7 +1120,7 @@ func TestGetSharedPolicy(t *testing.T) {
 			},
 		},
 		"validation errors - missing required params": {
-			params: GetSharedPolicyRequest{},
+			params: GetPolicyRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "get shared policy: struct validation: PolicyID: cannot be blank", err.Error())
 			},
@@ -1137,7 +1137,7 @@ func TestGetSharedPolicy(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetSharedPolicy(context.Background(), test.params)
+			result, err := client.GetPolicy(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
@@ -1148,9 +1148,9 @@ func TestGetSharedPolicy(t *testing.T) {
 	}
 }
 
-func TestUpdateSharedPolicy(t *testing.T) {
+func TestUpdatePolicy(t *testing.T) {
 	tests := map[string]struct {
-		params              UpdateSharedPolicyRequest
+		params              UpdatePolicyRequest
 		responseStatus      int
 		responseBody        string
 		expectedPath        string
@@ -1159,9 +1159,9 @@ func TestUpdateSharedPolicy(t *testing.T) {
 		withError           func(*testing.T, error)
 	}{
 		"200 OK - minimal data": {
-			params: UpdateSharedPolicyRequest{
+			params: UpdatePolicyRequest{
 				PolicyID: 1,
-				BodyParams: UpdateSharedPolicyBodyParams{
+				BodyParams: UpdatePolicyBodyParams{
 					GroupID: 11,
 				},
 			},
@@ -1223,9 +1223,9 @@ func TestUpdateSharedPolicy(t *testing.T) {
 			},
 		},
 		"200 OK - with description and activations": {
-			params: UpdateSharedPolicyRequest{
+			params: UpdatePolicyRequest{
 				PolicyID: 1,
-				BodyParams: UpdateSharedPolicyBodyParams{
+				BodyParams: UpdatePolicyBodyParams{
 					GroupID:     11,
 					Description: tools.StringPtr("Description"),
 				},
@@ -1434,15 +1434,15 @@ func TestUpdateSharedPolicy(t *testing.T) {
 			},
 		},
 		"validation errors - missing required params": {
-			params: UpdateSharedPolicyRequest{},
+			params: UpdatePolicyRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "update shared policy: struct validation: GroupID: cannot be blank\nPolicyID: cannot be blank", err.Error())
 			},
 		},
 		"validation errors - description too long": {
-			params: UpdateSharedPolicyRequest{
+			params: UpdatePolicyRequest{
 				PolicyID: 1,
-				BodyParams: UpdateSharedPolicyBodyParams{
+				BodyParams: UpdatePolicyBodyParams{
 					GroupID:     11,
 					Description: tools.StringPtr(strings.Repeat("TestDescription", 30)),
 				},
@@ -1468,7 +1468,7 @@ func TestUpdateSharedPolicy(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateSharedPolicy(context.Background(), test.params)
+			result, err := client.UpdatePolicy(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return

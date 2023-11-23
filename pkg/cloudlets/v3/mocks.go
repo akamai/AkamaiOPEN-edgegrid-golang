@@ -54,15 +54,15 @@ func (m *Mock) GetPolicyActivation(ctx context.Context, req GetPolicyActivationR
 	return args.Get(0).(*PolicyActivation), args.Error(1)
 }
 
-func (m *Mock) ListSharedPolicies(ctx context.Context, req ListSharedPoliciesRequest) (*ListSharedPoliciesResponse, error) {
+func (m *Mock) ListPolicies(ctx context.Context, req ListPoliciesRequest) (*ListPoliciesResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*ListSharedPoliciesResponse), args.Error(1)
+	return args.Get(0).(*ListPoliciesResponse), args.Error(1)
 }
 
-func (m *Mock) CreateSharedPolicy(ctx context.Context, req CreateSharedPolicyRequest) (*Policy, error) {
+func (m *Mock) CreatePolicy(ctx context.Context, req CreatePolicyRequest) (*Policy, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -70,12 +70,12 @@ func (m *Mock) CreateSharedPolicy(ctx context.Context, req CreateSharedPolicyReq
 	return args.Get(0).(*Policy), args.Error(1)
 }
 
-func (m *Mock) DeleteSharedPolicy(ctx context.Context, req DeleteSharedPolicyRequest) error {
+func (m *Mock) DeletePolicy(ctx context.Context, req DeletePolicyRequest) error {
 	args := m.Called(ctx, req)
 	return args.Error(0)
 }
 
-func (m *Mock) GetSharedPolicy(ctx context.Context, req GetSharedPolicyRequest) (*Policy, error) {
+func (m *Mock) GetPolicy(ctx context.Context, req GetPolicyRequest) (*Policy, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -83,7 +83,7 @@ func (m *Mock) GetSharedPolicy(ctx context.Context, req GetSharedPolicyRequest) 
 	return args.Get(0).(*Policy), args.Error(1)
 }
 
-func (m *Mock) UpdateSharedPolicy(ctx context.Context, req UpdateSharedPolicyRequest) (*Policy, error) {
+func (m *Mock) UpdatePolicy(ctx context.Context, req UpdatePolicyRequest) (*Policy, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
