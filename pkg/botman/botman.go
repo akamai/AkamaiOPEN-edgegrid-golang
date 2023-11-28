@@ -37,6 +37,7 @@ type (
 		CustomClientSequence
 		CustomDefinedBot
 		CustomDenyAction
+		CustomCode
 		JavascriptInjection
 		RecategorizedAkamaiDefinedBot
 		ResponseAction

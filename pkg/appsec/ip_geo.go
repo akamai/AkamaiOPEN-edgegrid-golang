@@ -40,7 +40,12 @@ type (
 		BlockedIPNetworkLists *IPGeoNetworkLists `json:"blockedIPNetworkLists,omitempty"`
 	}
 
-	// IPGeoIPControls is used to specify IP or GEO network lists to be blocked or allowed.
+	// IPGeoASNControls is used to specify ASN network lists to be blocked.
+	IPGeoASNControls struct {
+		BlockedIPNetworkLists *IPGeoNetworkLists `json:"blockedIPNetworkLists,omitempty"`
+	}
+
+	// IPGeoIPControls is used to specify IP, GEO or ASN network lists to be blocked or allowed.
 	IPGeoIPControls struct {
 		AllowedIPNetworkLists *IPGeoNetworkLists `json:"allowedIPNetworkLists,omitempty"`
 		BlockedIPNetworkLists *IPGeoNetworkLists `json:"blockedIPNetworkLists,omitempty"`
@@ -59,6 +64,7 @@ type (
 		Block              string             `json:"block"`
 		GeoControls        *IPGeoGeoControls  `json:"geoControls,omitempty"`
 		IPControls         *IPGeoIPControls   `json:"ipControls,omitempty"`
+		ASNControls        *IPGeoASNControls  `json:"asnControls,omitempty"`
 		UkraineGeoControls *UkraineGeoControl `json:"ukraineGeoControl,omitempty"`
 	}
 
@@ -67,6 +73,7 @@ type (
 		Block              string             `json:"block"`
 		GeoControls        *IPGeoGeoControls  `json:"geoControls,omitempty"`
 		IPControls         *IPGeoIPControls   `json:"ipControls,omitempty"`
+		ASNControls        *IPGeoASNControls  `json:"asnControls,omitempty"`
 		UkraineGeoControls *UkraineGeoControl `json:"ukraineGeoControl,omitempty"`
 	}
 
