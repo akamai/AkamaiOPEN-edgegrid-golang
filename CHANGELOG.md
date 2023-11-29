@@ -1,5 +1,70 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## X.X.X (X X, X)
+
+#### FEATURES/ENHANCEMENTS:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### BUG FIXES:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### BREAKING CHANGES:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 7.5.0 (November 28, 2023)
 
 #### FEATURES/ENHANCEMENTS:
