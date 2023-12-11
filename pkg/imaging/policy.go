@@ -134,6 +134,8 @@ type (
 		PostBreakpointTransformations PostBreakpointTransformations `json:"postBreakpointTransformations,omitempty"`
 		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version
 		RolloutDuration *int `json:"rolloutDuration,omitempty"`
+		// ServeStaleDuration The amount of time in seconds that the policy will serve stale images. During the serve stale period realtime images will attempt to use the offline image from the previous policy version first if possible.
+		ServeStaleDuration *int `json:"serveStaleDuration,omitempty"`
 		// Transformations Set of image transformations to apply to the source image. If unspecified, no operations are performed
 		Transformations Transformations `json:"transformations,omitempty"`
 		// Variables Declares variables for use within the policy. Any variable declared here can be invoked throughout transformations as a [Variable](#variable) object, so that you don't have to specify values separately You can also pass in these variable names and values dynamically as query parameters in the image's request URL
@@ -211,6 +213,10 @@ func (p *PolicyInputImage) Validate() error {
 		"RolloutDuration": validation.Validate(p.RolloutDuration,
 			validation.Min(3600),
 			validation.Max(604800),
+		),
+		"ServeStaleDuration": validation.Validate(p.ServeStaleDuration,
+			validation.Min(0),
+			validation.Max(2592000),
 		),
 		"Transformations": validation.Validate(p.Transformations),
 		"Variables":       validation.Validate(p.Variables, validation.Each()),

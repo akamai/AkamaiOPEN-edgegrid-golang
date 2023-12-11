@@ -21,7 +21,10 @@
 
 
 
-
+* IVM
+  * Extended `OutputImage` for support of `AllowPristineOnDownsize` and `PreferModernFormats`
+  * Extended `PolicyInputImage` for support of `ServeStaleDuration`
+  * Extended `RolloutInfo` for support of `ServeStaleEndTime`
 
 #### BUG FIXES:
 
