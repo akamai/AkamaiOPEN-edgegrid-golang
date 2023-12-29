@@ -325,6 +325,10 @@ func (c *cloudlets) GetPolicy(ctx context.Context, params GetPolicyRequest) (*Po
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicy, err)
 	}
 
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetPolicy, ErrPolicyNotFound, c.Error(resp))
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPolicy, c.Error(resp))
 	}

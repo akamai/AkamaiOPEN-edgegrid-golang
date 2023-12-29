@@ -22,6 +22,9 @@ type Error struct {
 	Method      string          `json:"method,omitempty"`
 }
 
+// ErrPolicyNotFound is returned when policy was not found
+var ErrPolicyNotFound = errors.New("policy not found")
+
 // Error parses an error from the response.
 func (c *cloudlets) Error(r *http.Response) error {
 	var e Error
