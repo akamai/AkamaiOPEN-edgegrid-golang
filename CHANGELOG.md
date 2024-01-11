@@ -20,6 +20,8 @@
 
 
 
+* Edgeworkers
+  * Added `note` field to `Activation` and `ActivateVersion` structs for EdgeWorkers Activation
 
 * IVM
   * Extended `OutputImage` for support of `AllowPristineOnDownsize` and `PreferModernFormats`
