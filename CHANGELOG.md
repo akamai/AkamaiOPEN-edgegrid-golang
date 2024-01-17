@@ -4,8 +4,8 @@
 
 #### FEATURES/ENHANCEMENTS:
 
-
-
+* GTM
+  * Added new fields to `DomainItem` struct
 
 
 
