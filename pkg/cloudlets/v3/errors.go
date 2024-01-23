@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/errs"
 )
 
 // Error is a cloudlets error interface.
@@ -15,6 +17,7 @@ type Error struct {
 	Instance    string          `json:"instance,omitempty"`
 	Status      int             `json:"status,omitempty"`
 	Errors      json.RawMessage `json:"errors,omitempty"`
+	Detail      string          `json:"detail"`
 	RequestID   string          `json:"requestId,omitempty"`
 	RequestTime string          `json:"requestTime,omitempty"`
 	ClientIP    string          `json:"clientIp,omitempty"`
@@ -41,7 +44,8 @@ func (c *cloudlets) Error(r *http.Response) error {
 
 	if err := json.Unmarshal(body, &e); err != nil {
 		c.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		e.Title = string(body)
+		e.Title = "Failed to unmarshal error body. Cloudlets API failed. Check details for more information."
+		e.Detail = errs.UnescapeContent(string(body))
 	}
 
 	e.Status = r.StatusCode

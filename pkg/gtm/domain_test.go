@@ -126,6 +126,42 @@ func TestGtm_ListDomains(t *testing.T) {
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
+		"Service Unavailable plain text response": {
+			headers:        http.Header{},
+			responseStatus: http.StatusServiceUnavailable,
+			responseBody:   `Your request did not succeed as this operation has reached  the limit for your account. Please try after 2024-01-16T15:20:55.945Z`,
+			expectedPath:   "/config-gtm/v1/domains",
+			withError: &Error{
+				Type:       "",
+				Title:      "Failed to unmarshal error body. GTM API failed. Check details for more information.",
+				Detail:     "Your request did not succeed as this operation has reached  the limit for your account. Please try after 2024-01-16T15:20:55.945Z",
+				StatusCode: http.StatusServiceUnavailable,
+			},
+		},
+		"Service Unavailable html response": {
+			headers:        http.Header{},
+			responseStatus: http.StatusServiceUnavailable,
+			responseBody:   `<HTML><HEAD>...</HEAD><BODY>...</BODY></HTML>`,
+			expectedPath:   "/config-gtm/v1/domains",
+			withError: &Error{
+				Type:       "",
+				Title:      "Failed to unmarshal error body. GTM API failed. Check details for more information.",
+				Detail:     "<HTML><HEAD>...</HEAD><BODY>...</BODY></HTML>",
+				StatusCode: http.StatusServiceUnavailable,
+			},
+		},
+		"Service Unavailable xml response": {
+			headers:        http.Header{},
+			responseStatus: http.StatusServiceUnavailable,
+			responseBody:   `<?xml version="1.0" encoding="UTF-8"?><root><item><id>1</id><name>Item 1</name></item><item><id>2</id><name>Item 2</name></item></root>`,
+			expectedPath:   "/config-gtm/v1/domains",
+			withError: &Error{
+				Type:       "",
+				Title:      "Failed to unmarshal error body. GTM API failed. Check details for more information.",
+				Detail:     "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><item><id>1</id><name>Item 1</name></item><item><id>2</id><name>Item 2</name></item></root>",
+				StatusCode: http.StatusServiceUnavailable,
+			},
+		},
 	}
 
 	for name, test := range tests {

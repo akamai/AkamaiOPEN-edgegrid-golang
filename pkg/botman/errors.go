@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/errs"
 )
 
 type (
@@ -35,8 +37,8 @@ func (b *botman) Error(r *http.Response) error {
 
 	if err := json.Unmarshal(body, &e); err != nil {
 		b.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		e.Title = "Failed to unmarshal error body"
-		e.Detail = err.Error()
+		e.Title = "Failed to unmarshal error body. Bot Manager API failed. Check details for more information."
+		e.Detail = errs.UnescapeContent(string(body))
 	}
 
 	e.StatusCode = r.StatusCode

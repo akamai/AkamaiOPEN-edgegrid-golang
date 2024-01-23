@@ -4,6 +4,10 @@
 
 #### FEATURES/ENHANCEMENTS:
 
+* General
+  * Enhanced error handling when Error is not in standard format.
+
+
 * GTM
   * Added new fields to `DomainItem` struct
 

@@ -40,7 +40,8 @@ func (c *cps) Error(r *http.Response) error {
 
 	if err := json.Unmarshal(body, &e); err != nil {
 		c.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		e.Title = string(body)
+		e.Title = "Failed to unmarshal error body. CPS API failed. Check details for more information."
+		e.Detail = string(body)
 	}
 
 	e.StatusCode = r.StatusCode

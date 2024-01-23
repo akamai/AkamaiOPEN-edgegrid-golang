@@ -11,6 +11,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/tj/assert v0.0.3
 	go.uber.org/ratelimit v0.2.0
+	golang.org/x/net v0.20.0
 	gopkg.in/ini.v1 v1.51.1
 )
 
@@ -24,6 +25,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
+	golang.org/x/mod v0.14.0 // indirect
+    golang.org/x/tools v0.17.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
