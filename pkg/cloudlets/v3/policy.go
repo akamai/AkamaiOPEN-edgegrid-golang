@@ -122,8 +122,6 @@ const (
 	CloudletTypeFR = CloudletType("FR")
 	// CloudletTypeIG represents cloudlet of type IG
 	CloudletTypeIG = CloudletType("IG")
-	// CloudletTypeVWR represents cloudlet of type VWR
-	CloudletTypeVWR = CloudletType("VWR")
 )
 
 var (
@@ -152,8 +150,8 @@ func (r ListPoliciesRequest) Validate() error {
 // Validate validates CreatePolicyRequest
 func (r CreatePolicyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"CloudletType": validation.Validate(r.CloudletType, validation.Required, validation.In(CloudletTypeAP, CloudletTypeAS, CloudletTypeCD, CloudletTypeER, CloudletTypeFR, CloudletTypeIG, CloudletTypeVWR).
-			Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s', '%s', '%s', '%s', '%s', '%s'", r.CloudletType, CloudletTypeAP, CloudletTypeAS, CloudletTypeCD, CloudletTypeER, CloudletTypeFR, CloudletTypeIG, CloudletTypeVWR))),
+		"CloudletType": validation.Validate(r.CloudletType, validation.Required, validation.In(CloudletTypeAP, CloudletTypeAS, CloudletTypeCD, CloudletTypeER, CloudletTypeFR, CloudletTypeIG).
+			Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s', '%s', '%s', '%s', '%s'", r.CloudletType, CloudletTypeAP, CloudletTypeAS, CloudletTypeCD, CloudletTypeER, CloudletTypeFR, CloudletTypeIG))),
 		"Name": validation.Validate(r.Name, validation.Required, validation.Length(0, 64), validation.Match(regexp.MustCompile("^[a-z_A-Z0-9]+$")).
 			Error(fmt.Sprintf("value '%s' is invalid. Must be of format: ^[a-z_A-Z0-9]+$", r.Name))),
 		"GroupID":     validation.Validate(r.GroupID, validation.Required),

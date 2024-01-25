@@ -640,7 +640,7 @@ func TestCreatePolicy(t *testing.T) {
 				PolicyType:   "Wrong Policy Type",
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create shared policy: struct validation: CloudletType: value 'Wrong Cloudlet Type' is invalid. Must be one of: 'AP', 'AS', 'CD', 'ER', 'FR', 'IG', 'VWR'\nDescription: the length must be no more than 255\nName: value 'TestName not match' is invalid. Must be of format: ^[a-z_A-Z0-9]+$\nPolicyType: value 'Wrong Policy Type' is invalid. Must be 'SHARED'", err.Error())
+				assert.Equal(t, "create shared policy: struct validation: CloudletType: value 'Wrong Cloudlet Type' is invalid. Must be one of: 'AP', 'AS', 'CD', 'ER', 'FR', 'IG'\nDescription: the length must be no more than 255\nName: value 'TestName not match' is invalid. Must be of format: ^[a-z_A-Z0-9]+$\nPolicyType: value 'Wrong Policy Type' is invalid. Must be 'SHARED'", err.Error())
 			},
 		},
 		"validation errors - missing required params": {

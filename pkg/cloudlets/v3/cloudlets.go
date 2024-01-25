@@ -81,6 +81,7 @@ type (
 		// See: https://techdocs.akamai.com/cloudlets/v3/reference/put-policy-version
 
 		UpdatePolicyVersion(context.Context, UpdatePolicyVersionRequest) (*PolicyVersion, error)
+
 		// ListPolicyActivations returns the complete activation history for the selected policy in a reverse chronological order.
 		//
 		// See: https://techdocs.akamai.com/cloudlets/reference/get-policy-activations

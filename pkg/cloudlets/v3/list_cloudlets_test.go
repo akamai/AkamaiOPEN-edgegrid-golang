@@ -46,10 +46,6 @@ func TestListCloudlets(t *testing.T) {
   {
     "cloudletName": "REQUEST_CONTROL",
     "cloudletType": "IG"
-  },
-  {
-    "cloudletName": "VIRTUAL_WAITING_ROOM",
-    "cloudletType": "VWR"
   }
 ]`,
 			expectedPath: "/cloudlets/v3/cloudlet-info",
@@ -77,10 +73,6 @@ func TestListCloudlets(t *testing.T) {
 				{
 					CloudletName: "REQUEST_CONTROL",
 					CloudletType: "IG",
-				},
-				{
-					CloudletName: "VIRTUAL_WAITING_ROOM",
-					CloudletType: "VWR",
 				},
 			},
 		},
