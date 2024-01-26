@@ -123,15 +123,16 @@ func (c CreatePolicyVersionRequest) Validate() error {
 }
 
 // Validate validates UpdatePolicyVersionRequest
-func (o UpdatePolicyVersionRequest) Validate() error {
+func (c UpdatePolicyVersionRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"PolicyID":      validation.Validate(o.PolicyID, validation.Required),
-		"PolicyVersion": validation.Validate(o.PolicyVersion, validation.Required),
-		"Description":   validation.Validate(o.Description, validation.Length(0, 255)),
-		"MatchRules":    validation.Validate(o.MatchRules, validation.Length(0, 5000)),
+		"PolicyID":      validation.Validate(c.PolicyID, validation.Required),
+		"PolicyVersion": validation.Validate(c.PolicyVersion, validation.Required),
+		"Description":   validation.Validate(c.Description, validation.Length(0, 255)),
+		"MatchRules":    validation.Validate(c.MatchRules, validation.Length(0, 5000)),
 	})
 }
 
+// Validate validates DeletePolicyVersionRequest
 func (c DeletePolicyVersionRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PolicyID":      validation.Validate(c.PolicyID, validation.Required),
