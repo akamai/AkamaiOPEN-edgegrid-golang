@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/edgegriderr"
 
@@ -22,29 +23,29 @@ type (
 
 	// ListPolicyVersionsItem is a content struct of ListPolicyVersion response
 	ListPolicyVersionsItem struct {
-		CreatedBy    string  `json:"createdBy"`
-		CreatedDate  string  `json:"createdDate"`
-		Description  *string `json:"description"`
-		ID           int64   `json:"id"`
-		Immutable    bool    `json:"immutable"`
-		Links        []Link  `json:"links"`
-		ModifiedBy   string  `json:"modifiedBy"`
-		ModifiedDate string  `json:"modifiedDate"`
-		PolicyID     int64   `json:"policyId"`
-		Version      int64   `json:"version"`
+		CreatedBy    string     `json:"createdBy"`
+		CreatedDate  time.Time  `json:"createdDate"`
+		Description  *string    `json:"description"`
+		ID           int64      `json:"id"`
+		Immutable    bool       `json:"immutable"`
+		Links        []Link     `json:"links"`
+		ModifiedBy   string     `json:"modifiedBy"`
+		ModifiedDate *time.Time `json:"modifiedDate,omitempty"`
+		PolicyID     int64      `json:"policyId"`
+		Version      int64      `json:"version"`
 	}
 
 	// PolicyVersion is response returned by GetPolicyVersion, CreatePolicyVersion or UpdatePolicyVersion
 	PolicyVersion struct {
 		CreatedBy          string              `json:"createdBy"`
-		CreatedDate        string              `json:"createdDate"`
+		CreatedDate        time.Time           `json:"createdDate"`
 		Description        *string             `json:"description"`
 		ID                 int64               `json:"id"`
 		Immutable          bool                `json:"immutable"`
 		MatchRules         MatchRules          `json:"matchRules"`
 		MatchRulesWarnings []MatchRulesWarning `json:"matchRulesWarnings"`
 		ModifiedBy         string              `json:"modifiedBy"`
-		ModifiedDate       string              `json:"modifiedDate"`
+		ModifiedDate       *time.Time          `json:"modifiedDate,omitempty"`
 		PolicyID           int64               `json:"policyId"`
 		Version            int64               `json:"version"`
 	}

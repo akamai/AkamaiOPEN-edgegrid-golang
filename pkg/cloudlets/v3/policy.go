@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -52,6 +53,7 @@ type (
 	}
 
 	// ClonePolicyBodyParams contains request body parameters used in ClonePolicy operation
+	// GroupID is required only when cloning v2
 	ClonePolicyBodyParams struct {
 		AdditionalVersions []int64 `json:"additionalVersions,omitempty"`
 		GroupID            int64   `json:"groupId,omitempty"`
@@ -81,14 +83,14 @@ type (
 	Policy struct {
 		CloudletType       CloudletType       `json:"cloudletType"`
 		CreatedBy          string             `json:"createdBy"`
-		CreatedDate        string             `json:"createdDate"`
+		CreatedDate        time.Time          `json:"createdDate"`
 		CurrentActivations CurrentActivations `json:"currentActivations"`
 		Description        *string            `json:"description"`
 		GroupID            int64              `json:"groupId"`
 		ID                 int64              `json:"id"`
 		Links              []Link             `json:"links"`
 		ModifiedBy         string             `json:"modifiedBy"`
-		ModifiedDate       string             `json:"modifiedDate"`
+		ModifiedDate       *time.Time         `json:"modifiedDate,omitempty"`
 		Name               string             `json:"name"`
 		PolicyType         PolicyType         `json:"policyType"`
 	}

@@ -32,7 +32,7 @@ func TestListPolicies(t *testing.T) {
         {
             "cloudletType": "CD",
             "createdBy": "User1",
-            "createdDate": "Date1",
+            "createdDate": "2023-10-23T11:21:19.896Z",
             "currentActivations": {
                 "production": {
                     "effective": null,
@@ -53,14 +53,14 @@ func TestListPolicies(t *testing.T) {
                 }
             ],
             "modifiedBy": "User2",
-            "modifiedDate": "Date2",
+            "modifiedDate": "2023-10-23T11:21:19.896Z",
             "name": "Name1",
             "policyType": "SHARED"
         },
         {
             "cloudletType": "CD",
             "createdBy": "User1",
-            "createdDate": "Date1",
+            "createdDate": "2023-10-23T11:21:19.896Z",
             "currentActivations": {
                 "production": {
                     "effective": {
@@ -149,7 +149,7 @@ func TestListPolicies(t *testing.T) {
                 }
             ],
             "modifiedBy": "User1",
-            "modifiedDate": "Date1",
+            "modifiedDate": "2023-10-23T11:21:19.896Z",
             "name": "TestName",
             "policyType": "SHARED"
         }
@@ -174,7 +174,7 @@ func TestListPolicies(t *testing.T) {
 					{
 						CloudletType:       CloudletTypeCD,
 						CreatedBy:          "User1",
-						CreatedDate:        "Date1",
+						CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 						CurrentActivations: CurrentActivations{},
 						Description:        nil,
 						GroupID:            1,
@@ -186,14 +186,14 @@ func TestListPolicies(t *testing.T) {
 							},
 						},
 						ModifiedBy:   "User2",
-						ModifiedDate: "Date2",
+						ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 						Name:         "Name1",
 						PolicyType:   PolicyTypeShared,
 					},
 					{
 						CloudletType: CloudletTypeCD,
 						CreatedBy:    "User1",
-						CreatedDate:  "Date1",
+						CreatedDate:  *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 						CurrentActivations: CurrentActivations{
 							Production: ActivationInfo{
 								Effective: &PolicyActivation{
@@ -282,7 +282,7 @@ func TestListPolicies(t *testing.T) {
 							},
 						},
 						ModifiedBy:   "User1",
-						ModifiedDate: "Date1",
+						ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 						Name:         "TestName",
 						PolicyType:   PolicyTypeShared,
 					},
@@ -313,7 +313,7 @@ func TestListPolicies(t *testing.T) {
         {
             "cloudletType": "CD",
             "createdBy": "User1",
-            "createdDate": "Date1",
+            "createdDate": "2023-10-23T11:21:19.896Z",
             "currentActivations": {
                 "production": {
                     "effective": null,
@@ -334,7 +334,7 @@ func TestListPolicies(t *testing.T) {
                 }
             ],
             "modifiedBy": "User2",
-            "modifiedDate": "Date2",
+            "modifiedDate": "2023-10-23T11:21:19.896Z",
             "name": "Name1",
             "policyType": "SHARED"
         }
@@ -359,7 +359,7 @@ func TestListPolicies(t *testing.T) {
 					{
 						CloudletType:       CloudletTypeCD,
 						CreatedBy:          "User1",
-						CreatedDate:        "Date1",
+						CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 						CurrentActivations: CurrentActivations{},
 						Description:        nil,
 						GroupID:            1,
@@ -371,7 +371,7 @@ func TestListPolicies(t *testing.T) {
 							},
 						},
 						ModifiedBy:   "User2",
-						ModifiedDate: "Date2",
+						ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 						Name:         "Name1",
 						PolicyType:   PolicyTypeShared,
 					},
@@ -509,7 +509,7 @@ func TestCreatePolicy(t *testing.T) {
 {
     "cloudletType": "FR",
     "createdBy": "User1",
-    "createdDate": "Date1",
+    "createdDate": "2023-10-23T11:21:19.896Z",
     "currentActivations": {
         "production": {
             "effective": null,
@@ -530,7 +530,7 @@ func TestCreatePolicy(t *testing.T) {
         }
     ],
     "modifiedBy": "User1",
-    "modifiedDate": "Date1",
+    "modifiedDate": "2023-10-23T11:21:19.896Z",
     "name": "TestName",
     "policyType": "SHARED"
 }
@@ -545,7 +545,7 @@ func TestCreatePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType:       CloudletTypeFR,
 				CreatedBy:          "User1",
-				CreatedDate:        "Date1",
+				CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
 				Description:        nil,
 				GroupID:            1,
@@ -557,7 +557,7 @@ func TestCreatePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: "Date1",
+				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -575,7 +575,7 @@ func TestCreatePolicy(t *testing.T) {
 {
     "cloudletType": "FR",
     "createdBy": "User1",
-    "createdDate": "Date1",
+    "createdDate": "2023-10-23T11:21:19.896Z",
     "currentActivations": {
         "production": {
             "effective": null,
@@ -596,7 +596,7 @@ func TestCreatePolicy(t *testing.T) {
         }
     ],
     "modifiedBy": "User1",
-    "modifiedDate": "Date1",
+    "modifiedDate": "2023-10-23T11:21:19.896Z",
     "name": "TestName",
     "policyType": "SHARED"
 }
@@ -614,7 +614,7 @@ func TestCreatePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType:       CloudletTypeFR,
 				CreatedBy:          "User1",
-				CreatedDate:        "Date1",
+				CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
 				Description:        tools.StringPtr("Description"),
 				GroupID:            1,
@@ -626,7 +626,7 @@ func TestCreatePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: "Date1",
+				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -735,40 +735,43 @@ func TestGetPolicy(t *testing.T) {
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
-{
-    "cloudletType": "FR",
-    "createdBy": "User1",
-    "createdDate": "Date1",
-    "currentActivations": {
-        "production": {
-            "effective": null,
-            "latest": null
-        },
-        "staging": {
-            "effective": null,
-            "latest": null
-        }
-    },
-    "description": null,
-    "groupId": 1,
-    "id": 11,
-    "links": [
-        {
-            "href": "Link1",
-            "rel": "self"
-        }
-    ],
-    "modifiedBy": "User1",
-    "modifiedDate": "Date1",
-    "name": "TestName",
-    "policyType": "SHARED"
-}
+
+	{
+	    "cloudletType": "FR",
+	    "createdBy": "User1",
+	    "createdDate": "2023-10-23T11:21:19.896Z",
+	    "currentActivations": {
+	        "production": {
+	            "effective": null,
+	            "latest": null
+	        },
+	        "staging": {
+	            "effective": null,
+	            "latest": null
+	        }
+	    },
+	    "description": null,
+	    "groupId": 1,
+	    "id": 11,
+	    "links": [
+	        {
+	            "href": "Link1",
+	            "rel": "self"
+	        }
+	    ],
+	    "modifiedBy": "User1",
+	    "modifiedDate": "2023-10-23T11:21:19.896Z",
+	    "name": "TestName",
+	    "policyType": "SHARED"
+	}
+
 `,
+
 			expectedPath: "/cloudlets/v3/policies/1",
 			expectedResponse: &Policy{
 				CloudletType:       CloudletTypeFR,
 				CreatedBy:          "User1",
-				CreatedDate:        "Date1",
+				CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
 				Description:        nil,
 				GroupID:            1,
@@ -780,7 +783,7 @@ func TestGetPolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: "Date1",
+				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -791,108 +794,111 @@ func TestGetPolicy(t *testing.T) {
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
-{
-    "cloudletType": "FR",
-    "createdBy": "User1",
-    "createdDate": "Date1",
-    "currentActivations": {
-		"production": {
-			"effective": {
-				"createdBy": "User1",
-				"createdDate": "2023-10-23T11:21:19.896Z",
-				"finishDate": "2023-10-23T11:22:57.589Z",
-				"id": 123,
-				"links": [
-					{
-						"href": "Link1",
-						"rel": "self"
-					}
-				],
-				"network": "PRODUCTION",
-				"operation": "ACTIVATION",
-				"policyId": 1234,
-				"policyVersion": 1,
-				"policyVersionDeleted": false,
-				"status": "SUCCESS"
+
+	{
+	    "cloudletType": "FR",
+	    "createdBy": "User1",
+	    "createdDate": "2023-10-23T11:21:19.896Z",
+	    "currentActivations": {
+			"production": {
+				"effective": {
+					"createdBy": "User1",
+					"createdDate": "2023-10-23T11:21:19.896Z",
+					"finishDate": "2023-10-23T11:22:57.589Z",
+					"id": 123,
+					"links": [
+						{
+							"href": "Link1",
+							"rel": "self"
+						}
+					],
+					"network": "PRODUCTION",
+					"operation": "ACTIVATION",
+					"policyId": 1234,
+					"policyVersion": 1,
+					"policyVersionDeleted": false,
+					"status": "SUCCESS"
+				},
+				"latest": {
+					"createdBy": "User1",
+					"createdDate": "2023-10-23T11:21:19.896Z",
+					"finishDate": "2023-10-23T11:22:57.589Z",
+					"id": 321,
+					"links": [
+						{
+							"href": "Link2",
+							"rel": "self"
+						}
+					],
+					"network": "PRODUCTION",
+					"operation": "ACTIVATION",
+					"policyId": 4321,
+					"policyVersion": 1,
+					"policyVersionDeleted": false,
+					"status": "SUCCESS"
+				}
 			},
-			"latest": {
-				"createdBy": "User1",
-				"createdDate": "2023-10-23T11:21:19.896Z",
-				"finishDate": "2023-10-23T11:22:57.589Z",
-				"id": 321,
-				"links": [
-					{
-						"href": "Link2",
-						"rel": "self"
-					}
-				],
-				"network": "PRODUCTION",
-				"operation": "ACTIVATION",
-				"policyId": 4321,
-				"policyVersion": 1,
-				"policyVersionDeleted": false,
-				"status": "SUCCESS"
+			"staging": {
+				"effective": {
+					"createdBy": "User3",
+					"createdDate": "2023-10-23T11:21:19.896Z",
+					"finishDate": "2023-10-23T11:22:57.589Z",
+					"id": 789,
+					"links": [
+						{
+							"href": "Link3",
+							"rel": "self"
+						}
+					],
+					"network": "STAGING",
+					"operation": "ACTIVATION",
+					"policyId": 6789,
+					"policyVersion": 1,
+					"policyVersionDeleted": false,
+					"status": "SUCCESS"
+				},
+				"latest": {
+					"createdBy": "User3",
+					"createdDate": "2023-10-23T11:21:19.896Z",
+					"finishDate": "2023-10-23T11:22:57.589Z",
+					"id": 987,
+					"links": [
+						{
+							"href": "Link4",
+							"rel": "self"
+						}
+					],
+					"network": "STAGING",
+					"operation": "ACTIVATION",
+					"policyId": 9876,
+					"policyVersion": 1,
+					"policyVersionDeleted": false,
+					"status": "SUCCESS"
+				}
 			}
 		},
-		"staging": {
-			"effective": {
-				"createdBy": "User3",
-				"createdDate": "2023-10-23T11:21:19.896Z",
-				"finishDate": "2023-10-23T11:22:57.589Z",
-				"id": 789,
-				"links": [
-					{
-						"href": "Link3",
-						"rel": "self"
-					}
-				],
-				"network": "STAGING",
-				"operation": "ACTIVATION",
-				"policyId": 6789,
-				"policyVersion": 1,
-				"policyVersionDeleted": false,
-				"status": "SUCCESS"
-			},
-			"latest": {
-				"createdBy": "User3",
-				"createdDate": "2023-10-23T11:21:19.896Z",
-				"finishDate": "2023-10-23T11:22:57.589Z",
-				"id": 987,
-				"links": [
-					{
-						"href": "Link4",
-						"rel": "self"
-					}
-				],
-				"network": "STAGING",
-				"operation": "ACTIVATION",
-				"policyId": 9876,
-				"policyVersion": 1,
-				"policyVersionDeleted": false,
-				"status": "SUCCESS"
-			}
-		}
-	},
-    "description": "Description",
-    "groupId": 1,
-    "id": 11,
-    "links": [
-        {
-            "href": "Link1",
-            "rel": "self"
-        }
-    ],
-    "modifiedBy": "User1",
-    "modifiedDate": "Date1",
-    "name": "TestName",
-    "policyType": "SHARED"
-}
+	    "description": "Description",
+	    "groupId": 1,
+	    "id": 11,
+	    "links": [
+	        {
+	            "href": "Link1",
+	            "rel": "self"
+	        }
+	    ],
+	    "modifiedBy": "User1",
+	    "modifiedDate": "2023-10-23T11:21:19.896Z",
+	    "name": "TestName",
+	    "policyType": "SHARED"
+	}
+
 `,
+
 			expectedPath: "/cloudlets/v3/policies/1",
 			expectedResponse: &Policy{
 				CloudletType: CloudletTypeFR,
 				CreatedBy:    "User1",
-				CreatedDate:  "Date1",
+				CreatedDate:  *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
 						Effective: &PolicyActivation{
@@ -981,7 +987,7 @@ func TestGetPolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: "Date1",
+				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -992,74 +998,77 @@ func TestGetPolicy(t *testing.T) {
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
-{
-    "cloudletType": "FR",
-    "createdBy": "User1",
-    "createdDate": "Date1",
-    "currentActivations": {
-		"production": {
-			"effective": null,
-			"latest": null
-		},
-		"staging": {
-			"effective": {
-				"createdBy": "User3",
-				"createdDate": "2023-10-23T11:21:19.896Z",
-				"finishDate": "2023-10-23T11:22:57.589Z",
-				"id": 789,
-				"links": [
-					{
-						"href": "Link3",
-						"rel": "self"
-					}
-				],
-				"network": "STAGING",
-				"operation": "ACTIVATION",
-				"policyId": 6789,
-				"policyVersion": 1,
-				"policyVersionDeleted": false,
-				"status": "SUCCESS"
+
+	{
+	    "cloudletType": "FR",
+	    "createdBy": "User1",
+	    "createdDate": "2023-10-23T11:21:19.896Z",
+	    "currentActivations": {
+			"production": {
+				"effective": null,
+				"latest": null
 			},
-			"latest": {
-				"createdBy": "User3",
-				"createdDate": "2023-10-23T11:21:19.896Z",
-				"finishDate": "2023-10-23T11:22:57.589Z",
-				"id": 987,
-				"links": [
-					{
-						"href": "Link4",
-						"rel": "self"
-					}
-				],
-				"network": "STAGING",
-				"operation": "ACTIVATION",
-				"policyId": 9876,
-				"policyVersion": 1,
-				"policyVersionDeleted": false,
-				"status": "SUCCESS"
+			"staging": {
+				"effective": {
+					"createdBy": "User3",
+					"createdDate": "2023-10-23T11:21:19.896Z",
+					"finishDate": "2023-10-23T11:22:57.589Z",
+					"id": 789,
+					"links": [
+						{
+							"href": "Link3",
+							"rel": "self"
+						}
+					],
+					"network": "STAGING",
+					"operation": "ACTIVATION",
+					"policyId": 6789,
+					"policyVersion": 1,
+					"policyVersionDeleted": false,
+					"status": "SUCCESS"
+				},
+				"latest": {
+					"createdBy": "User3",
+					"createdDate": "2023-10-23T11:21:19.896Z",
+					"finishDate": "2023-10-23T11:22:57.589Z",
+					"id": 987,
+					"links": [
+						{
+							"href": "Link4",
+							"rel": "self"
+						}
+					],
+					"network": "STAGING",
+					"operation": "ACTIVATION",
+					"policyId": 9876,
+					"policyVersion": 1,
+					"policyVersionDeleted": false,
+					"status": "SUCCESS"
+				}
 			}
-		}
-	},
-    "description": "Description",
-    "groupId": 1,
-    "id": 11,
-    "links": [
-        {
-            "href": "Link1",
-            "rel": "self"
-        }
-    ],
-    "modifiedBy": "User1",
-    "modifiedDate": "Date1",
-    "name": "TestName",
-    "policyType": "SHARED"
-}
+		},
+	    "description": "Description",
+	    "groupId": 1,
+	    "id": 11,
+	    "links": [
+	        {
+	            "href": "Link1",
+	            "rel": "self"
+	        }
+	    ],
+	    "modifiedBy": "User1",
+	    "modifiedDate": "2023-10-23T11:21:19.896Z",
+	    "name": "TestName",
+	    "policyType": "SHARED"
+	}
+
 `,
+
 			expectedPath: "/cloudlets/v3/policies/1",
 			expectedResponse: &Policy{
 				CloudletType: CloudletTypeFR,
 				CreatedBy:    "User1",
-				CreatedDate:  "Date1",
+				CreatedDate:  *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
 						Effective: nil,
@@ -1114,7 +1123,7 @@ func TestGetPolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: "Date1",
+				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -1170,7 +1179,7 @@ func TestUpdatePolicy(t *testing.T) {
 {
     "cloudletType": "FR",
     "createdBy": "User1",
-    "createdDate": "Date1",
+    "createdDate": "2023-10-23T11:21:19.896Z",
     "currentActivations": {
         "production": {
             "effective": null,
@@ -1191,7 +1200,7 @@ func TestUpdatePolicy(t *testing.T) {
         }
     ],
     "modifiedBy": "User1",
-    "modifiedDate": "Date1",
+    "modifiedDate": "2023-10-23T11:21:19.896Z",
     "name": "TestName",
     "policyType": "SHARED"
 }
@@ -1205,7 +1214,7 @@ func TestUpdatePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType:       CloudletTypeFR,
 				CreatedBy:          "User1",
-				CreatedDate:        "Date1",
+				CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
 				Description:        nil,
 				GroupID:            1,
@@ -1217,7 +1226,7 @@ func TestUpdatePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: "Date1",
+				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -1235,7 +1244,7 @@ func TestUpdatePolicy(t *testing.T) {
 {
     "cloudletType": "FR",
     "createdBy": "User1",
-    "createdDate": "Date1",
+    "createdDate": "2023-10-23T11:21:19.896Z",
     "currentActivations": {
 		"production": {
 			"effective": {
@@ -1324,7 +1333,7 @@ func TestUpdatePolicy(t *testing.T) {
         }
     ],
     "modifiedBy": "User1",
-    "modifiedDate": "Date1",
+    "modifiedDate": "2023-10-23T11:21:19.896Z",
     "name": "TestName",
     "policyType": "SHARED"
 }
@@ -1339,7 +1348,7 @@ func TestUpdatePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType: CloudletTypeFR,
 				CreatedBy:    "User1",
-				CreatedDate:  "Date1",
+				CreatedDate:  *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
 						Effective: &PolicyActivation{
@@ -1428,7 +1437,7 @@ func TestUpdatePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: "Date1",
+				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -1458,14 +1467,14 @@ func TestUpdatePolicy(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
-				if test.expectedRequestBody != "" {
-					body, err := io.ReadAll(r.Body)
-					assert.NoError(t, err)
-					assert.JSONEq(t, test.expectedRequestBody, string(body))
-				}
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdatePolicy(context.Background(), test.params)
@@ -1501,7 +1510,7 @@ func TestClonePolicy(t *testing.T) {
 {
     "cloudletType": "FR",
     "createdBy": "User1",
-    "createdDate": "Date1",
+    "createdDate": "2023-10-23T11:21:19.896Z",
     "currentActivations": {
         "production": {
             "effective": null,
@@ -1522,7 +1531,7 @@ func TestClonePolicy(t *testing.T) {
         }
     ],
     "modifiedBy": "User1",
-    "modifiedDate": "Date1",
+    "modifiedDate": "2023-10-23T11:21:19.896Z",
     "name": "NewName",
     "policyType": "SHARED"
 }
@@ -1536,7 +1545,7 @@ func TestClonePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType:       "FR",
 				CreatedBy:          "User1",
-				CreatedDate:        "Date1",
+				CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
 				Description:        nil,
 				GroupID:            1,
@@ -1548,7 +1557,7 @@ func TestClonePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: "Date1",
+				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				Name:         "NewName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -1567,7 +1576,7 @@ func TestClonePolicy(t *testing.T) {
 {
     "cloudletType": "FR",
     "createdBy": "User1",
-    "createdDate": "Date1",
+    "createdDate": "2023-10-23T11:21:19.896Z",
     "currentActivations": {
 		"production": {
 			"effective": {
@@ -1656,7 +1665,7 @@ func TestClonePolicy(t *testing.T) {
         }
     ],
     "modifiedBy": "User1",
-    "modifiedDate": "Date1",
+    "modifiedDate": "2023-10-23T11:21:19.896Z",
     "name": "NewName",
     "policyType": "SHARED"
 }
@@ -1672,7 +1681,7 @@ func TestClonePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType: "FR",
 				CreatedBy:    "User1",
-				CreatedDate:  "Date1",
+				CreatedDate:  *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
 						Effective: &PolicyActivation{
@@ -1761,7 +1770,7 @@ func TestClonePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: "Date1",
+				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				Name:         "NewName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -1791,14 +1800,15 @@ func TestClonePolicy(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
-				if test.expectedRequestBody != "" {
-					body, err := io.ReadAll(r.Body)
-					assert.NoError(t, err)
-					assert.JSONEq(t, test.expectedRequestBody, string(body))
-				}
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ClonePolicy(context.Background(), test.params)
