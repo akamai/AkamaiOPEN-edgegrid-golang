@@ -30,20 +30,20 @@ type GetPolicyActivationRequest struct {
 type ActivatePolicyRequest struct {
 	PolicyID      int64
 	Network       Network
-	PolicyVersion int
+	PolicyVersion int64
 }
 
 // DeactivatePolicyRequest contains request parameters for DeactivatePolicy.
 type DeactivatePolicyRequest struct {
 	PolicyID      int64
 	Network       Network
-	PolicyVersion int
+	PolicyVersion int64
 }
 
 type policyActivationRequest struct {
 	Operation     PolicyActivationOperation `json:"operation"`
 	Network       Network                   `json:"network"`
-	PolicyVersion int                       `json:"policyVersion"`
+	PolicyVersion int64                     `json:"policyVersion"`
 }
 
 // PolicyActivation represents a single policy activation.

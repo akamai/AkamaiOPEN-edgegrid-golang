@@ -23,16 +23,16 @@ type (
 
 	// ListPolicyVersionsItem is a content struct of ListPolicyVersion response
 	ListPolicyVersionsItem struct {
-		CreatedBy    string     `json:"createdBy"`
-		CreatedDate  time.Time  `json:"createdDate"`
-		Description  *string    `json:"description"`
-		ID           int64      `json:"id"`
-		Immutable    bool       `json:"immutable"`
-		Links        []Link     `json:"links"`
-		ModifiedBy   string     `json:"modifiedBy"`
-		ModifiedDate *time.Time `json:"modifiedDate,omitempty"`
-		PolicyID     int64      `json:"policyId"`
-		Version      int64      `json:"version"`
+		CreatedBy     string     `json:"createdBy"`
+		CreatedDate   time.Time  `json:"createdDate"`
+		Description   *string    `json:"description"`
+		ID            int64      `json:"id"`
+		Immutable     bool       `json:"immutable"`
+		Links         []Link     `json:"links"`
+		ModifiedBy    string     `json:"modifiedBy"`
+		ModifiedDate  *time.Time `json:"modifiedDate,omitempty"`
+		PolicyID      int64      `json:"policyId"`
+		PolicyVersion int64      `json:"version"`
 	}
 
 	// PolicyVersion is response returned by GetPolicyVersion, CreatePolicyVersion or UpdatePolicyVersion
@@ -47,7 +47,7 @@ type (
 		ModifiedBy         string              `json:"modifiedBy"`
 		ModifiedDate       *time.Time          `json:"modifiedDate,omitempty"`
 		PolicyID           int64               `json:"policyId"`
-		Version            int64               `json:"version"`
+		PolicyVersion      int64               `json:"version"`
 	}
 
 	// MatchRulesWarning describes the warnings struct
@@ -67,8 +67,8 @@ type (
 
 	// GetPolicyVersionRequest describes the parameters needed to get policy version
 	GetPolicyVersionRequest struct {
-		PolicyID int64
-		Version  int64
+		PolicyID      int64
+		PolicyVersion int64
 	}
 
 	// CreatePolicyVersionRequest describes the body of the create policy request
@@ -91,15 +91,15 @@ type (
 
 	// DeletePolicyVersionRequest describes the parameters of the delete policy version request
 	DeletePolicyVersionRequest struct {
-		PolicyID int64
-		Version  int64
+		PolicyID      int64
+		PolicyVersion int64
 	}
 
 	// UpdatePolicyVersionRequest describes the parameters of the update policy version request
 	UpdatePolicyVersionRequest struct {
 		UpdatePolicyVersion
-		PolicyID int64
-		Version  int64
+		PolicyID      int64
+		PolicyVersion int64
 	}
 )
 
@@ -125,17 +125,17 @@ func (c CreatePolicyVersionRequest) Validate() error {
 // Validate validates UpdatePolicyVersionRequest
 func (o UpdatePolicyVersionRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"PolicyID":    validation.Validate(o.PolicyID, validation.Required),
-		"Version":     validation.Validate(o.Version, validation.Required),
-		"Description": validation.Validate(o.Description, validation.Length(0, 255)),
-		"MatchRules":  validation.Validate(o.MatchRules, validation.Length(0, 5000)),
+		"PolicyID":      validation.Validate(o.PolicyID, validation.Required),
+		"PolicyVersion": validation.Validate(o.PolicyVersion, validation.Required),
+		"Description":   validation.Validate(o.Description, validation.Length(0, 255)),
+		"MatchRules":    validation.Validate(o.MatchRules, validation.Length(0, 5000)),
 	})
 }
 
 func (c DeletePolicyVersionRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"PolicyID": validation.Validate(c.PolicyID, validation.Required),
-		"Version":  validation.Validate(c.Version, validation.Required),
+		"PolicyID":      validation.Validate(c.PolicyID, validation.Required),
+		"PolicyVersion": validation.Validate(c.PolicyVersion, validation.Required),
 	})
 }
 
@@ -194,7 +194,7 @@ func (c *cloudlets) GetPolicyVersion(ctx context.Context, params GetPolicyVersio
 	logger := c.Log(ctx)
 	logger.Debug("GetPolicyVersion")
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.Version)
+	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.PolicyVersion)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -252,7 +252,7 @@ func (c *cloudlets) DeletePolicyVersion(ctx context.Context, params DeletePolicy
 		return fmt.Errorf("%s: %w:\n%s", ErrDeletePolicyVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.Version)
+	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.PolicyVersion)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
@@ -279,7 +279,7 @@ func (c *cloudlets) UpdatePolicyVersion(ctx context.Context, params UpdatePolicy
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdatePolicyVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.Version)
+	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.PolicyVersion)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
 	if err != nil {

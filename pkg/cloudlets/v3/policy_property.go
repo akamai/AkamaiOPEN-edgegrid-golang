@@ -29,11 +29,11 @@ type (
 
 	// ListPolicyPropertiesItem represents associated active properties information.
 	ListPolicyPropertiesItem struct {
-		GroupID int64   `json:"groupId"`
-		ID      int64   `json:"id"`
-		Name    string  `json:"name"`
-		Network Network `json:"network"`
-		Version int64   `json:"version"`
+		GroupID       int64   `json:"groupId"`
+		ID            int64   `json:"id"`
+		Name          string  `json:"name"`
+		Network       Network `json:"network"`
+		PolicyVersion int64   `json:"version"`
 	}
 
 	// Link represents hypermedia link to help navigate through the result set.

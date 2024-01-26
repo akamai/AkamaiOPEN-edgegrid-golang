@@ -86,40 +86,40 @@ func TestListPolicyVersions(t *testing.T) {
 			expectedResponse: &ListPolicyVersions{
 				PolicyVersions: []ListPolicyVersionsItem{
 					{
-						CreatedBy:    "jsmith",
-						CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-						Description:  nil,
-						ID:           6551184,
-						Immutable:    false,
-						Links:        []Link{},
-						ModifiedBy:   "jsmith",
-						ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-						PolicyID:     670790,
-						Version:      3,
+						CreatedBy:     "jsmith",
+						CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+						Description:   nil,
+						ID:            6551184,
+						Immutable:     false,
+						Links:         []Link{},
+						ModifiedBy:    "jsmith",
+						ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+						PolicyID:      670790,
+						PolicyVersion: 3,
 					},
 					{
-						CreatedBy:    "jsmith",
-						CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:46.225Z"),
-						Description:  nil,
-						ID:           6551183,
-						Immutable:    false,
-						Links:        []Link{},
-						ModifiedBy:   "jsmith",
-						ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:46.225Z"),
-						PolicyID:     670790,
-						Version:      2,
+						CreatedBy:     "jsmith",
+						CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:46.225Z"),
+						Description:   nil,
+						ID:            6551183,
+						Immutable:     false,
+						Links:         []Link{},
+						ModifiedBy:    "jsmith",
+						ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:46.225Z"),
+						PolicyID:      670790,
+						PolicyVersion: 2,
 					},
 					{
-						CreatedBy:    "jsmith",
-						CreatedDate:  *newTimeFromString(t, "2023-10-19T08:44:34.398Z"),
-						Description:  nil,
-						ID:           6551182,
-						Immutable:    false,
-						Links:        []Link{},
-						ModifiedBy:   "jsmith",
-						ModifiedDate: newTimeFromString(t, "2023-10-19T08:44:34.398Z"),
-						PolicyID:     670790,
-						Version:      1,
+						CreatedBy:     "jsmith",
+						CreatedDate:   *newTimeFromString(t, "2023-10-19T08:44:34.398Z"),
+						Description:   nil,
+						ID:            6551182,
+						Immutable:     false,
+						Links:         []Link{},
+						ModifiedBy:    "jsmith",
+						ModifiedDate:  newTimeFromString(t, "2023-10-19T08:44:34.398Z"),
+						PolicyID:      670790,
+						PolicyVersion: 1,
 					},
 				},
 				Links: []Link{
@@ -258,8 +258,8 @@ func TestGetPolicyVersion(t *testing.T) {
 	}{
 		"200 OK": {
 			request: GetPolicyVersionRequest{
-				PolicyID: 670798,
-				Version:  2,
+				PolicyID:      670798,
+				PolicyVersion: 2,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -287,13 +287,13 @@ func TestGetPolicyVersion(t *testing.T) {
 				ModifiedBy:         "jsmith",
 				ModifiedDate:       newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
 				PolicyID:           670798,
-				Version:            2,
+				PolicyVersion:      2,
 			},
 		},
 		"200 OK, ER with disabled rule": {
 			request: GetPolicyVersionRequest{
-				PolicyID: 276858,
-				Version:  1,
+				PolicyID:      276858,
+				PolicyVersion: 1,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `{
@@ -326,12 +326,12 @@ func TestGetPolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions/1",
 			expectedResponse: &PolicyVersion{
-				CreatedDate: *newTimeFromString(t, "2023-10-19T10:45:30.619Z"),
-				CreatedBy:   "jsmith",
-				Description: nil,
-				PolicyID:    276858,
-				Version:     1,
-				ID:          6551242,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T10:45:30.619Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				PolicyID:      276858,
+				PolicyVersion: 1,
+				ID:            6551242,
 				MatchRules: MatchRules{
 					&MatchRuleER{
 						Type:                   "erMatchRule",
@@ -354,8 +354,8 @@ func TestGetPolicyVersion(t *testing.T) {
 		},
 		"200 OK, AS rule with disabled=false": {
 			request: GetPolicyVersionRequest{
-				PolicyID: 355557,
-				Version:  2,
+				PolicyID:      355557,
+				PolicyVersion: 2,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `{
@@ -429,16 +429,16 @@ func TestGetPolicyVersion(t *testing.T) {
 						Start: 0,
 					},
 				},
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T10:45:30.619Z"),
-				PolicyID:     355557,
-				Version:      2,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T10:45:30.619Z"),
+				PolicyID:      355557,
+				PolicyVersion: 2,
 			},
 		},
 		"200 OK, PR rule": {
 			request: GetPolicyVersionRequest{
-				PolicyID: 276858,
-				Version:  6,
+				PolicyID:      276858,
+				PolicyVersion: 6,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `{
@@ -511,14 +511,14 @@ func TestGetPolicyVersion(t *testing.T) {
 						Start: 0,
 					},
 				},
-				PolicyID: 325401,
-				Version:  3,
+				PolicyID:      325401,
+				PolicyVersion: 3,
 			},
 		},
 		"200 OK, ER rule with disabled=false": {
 			request: GetPolicyVersionRequest{
-				PolicyID: 276858,
-				Version:  6,
+				PolicyID:      276858,
+				PolicyVersion: 6,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `{
@@ -547,13 +547,13 @@ func TestGetPolicyVersion(t *testing.T) {
 		}`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions/6",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRuleER{
 						Type:                     "erMatchRule",
@@ -574,8 +574,8 @@ func TestGetPolicyVersion(t *testing.T) {
 		},
 		"200 OK, FR with disabled rule": {
 			request: GetPolicyVersionRequest{
-				PolicyID: 276858,
-				Version:  6,
+				PolicyID:      276858,
+				PolicyVersion: 6,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `{
@@ -603,13 +603,13 @@ func TestGetPolicyVersion(t *testing.T) {
 		}`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions/6",
 			expectedResponse: &PolicyVersion{
-				CreatedBy:    "jsmith",
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				Description:  nil,
-				PolicyID:     276858,
-				Version:      6,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				Description:   nil,
+				PolicyID:      276858,
+				PolicyVersion: 6,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				MatchRules: MatchRules{
 					&MatchRuleFR{
 						Name:     "rule 1",
@@ -706,14 +706,14 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  tools.StringPtr("Description for the policy"),
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				MatchRules:   nil,
-				PolicyID:     276858,
-				Version:      2,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   tools.StringPtr("Description for the policy"),
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				MatchRules:    nil,
+				PolicyID:      276858,
+				PolicyVersion: 2,
 			},
 		},
 		"201 created, complex AS": {
@@ -905,8 +905,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 						Start: 0,
 					},
 				},
-				PolicyID: 355557,
-				Version:  2,
+				PolicyID:      355557,
+				PolicyVersion: 2,
 			},
 		},
 		"201 created, complex PR": {
@@ -1050,13 +1050,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRulePR{
 						Type:     "cdMatchRule",
@@ -1185,13 +1185,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRulePR{
 						Type:     "cdMatchRule",
@@ -1304,13 +1304,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRulePR{
 						Type:     "cdMatchRule",
@@ -1584,13 +1584,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRuleER{
 						Type:                     "erMatchRule",
@@ -1727,13 +1727,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRuleER{
 						Type:                     "erMatchRule",
@@ -1846,13 +1846,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRuleER{
 						Type:                     "erMatchRule",
@@ -1977,13 +1977,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRuleER{
 						Type:                   "erMatchRule",
@@ -2201,13 +2201,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRuleFR{
 						Type:     "frMatchRule",
@@ -2390,8 +2390,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 						ID:    0,
 					},
 				},
-				PolicyID: 139743,
-				Version:  798,
+				PolicyID:      139743,
+				PolicyVersion: 798,
 			},
 		},
 		"201 created, complex FR with objectMatchValue - simple": {
@@ -2498,8 +2498,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 						ID:    0,
 					},
 				},
-				PolicyID: 139743,
-				Version:  798,
+				PolicyID:      139743,
+				PolicyVersion: 798,
 			},
 		},
 		"201 created, complex AP with objectMatchValue - simple": {
@@ -2568,13 +2568,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRuleAP{
 						Type:               "apMatchRule",
@@ -2673,13 +2673,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: nil,
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  nil,
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRuleAP{
 						Type:               "apMatchRule",
@@ -2822,13 +2822,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  nil,
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				PolicyID:     276858,
-				Version:      6,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   nil,
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				PolicyID:      276858,
+				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRuleRC{
 						Type:          "igMatchRule",
@@ -3053,8 +3053,8 @@ func TestDeletePolicyVersion(t *testing.T) {
 	}{
 		"204 no content": {
 			request: DeletePolicyVersionRequest{
-				PolicyID: 276858,
-				Version:  5,
+				PolicyID:      276858,
+				PolicyVersion: 5,
 			},
 			responseStatus: http.StatusNoContent,
 			responseBody:   "",
@@ -3068,8 +3068,8 @@ func TestDeletePolicyVersion(t *testing.T) {
 
 		"500 internal server error": {
 			request: DeletePolicyVersionRequest{
-				PolicyID: 1,
-				Version:  2,
+				PolicyID:      1,
+				PolicyVersion: 2,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -3125,8 +3125,8 @@ func TestUpdatePolicyVersion(t *testing.T) {
 				UpdatePolicyVersion: UpdatePolicyVersion{
 					Description: tools.StringPtr("Updated description"),
 				},
-				PolicyID: 276858,
-				Version:  5,
+				PolicyID:      276858,
+				PolicyVersion: 5,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -3142,14 +3142,14 @@ func TestUpdatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions/5",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				CreatedBy:    "jsmith",
-				Description:  tools.StringPtr("Updated description"),
-				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
-				MatchRules:   nil,
-				PolicyID:     276858,
-				Version:      5,
+				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedBy:     "jsmith",
+				Description:   tools.StringPtr("Updated description"),
+				ModifiedBy:    "jsmith",
+				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				MatchRules:    nil,
+				PolicyID:      276858,
+				PolicyVersion: 5,
 			},
 		},
 		"201 updated simple ER with warnings": {
@@ -3167,8 +3167,8 @@ func TestUpdatePolicyVersion(t *testing.T) {
 						},
 					},
 				},
-				PolicyID: 276858,
-				Version:  5,
+				PolicyID:      276858,
+				PolicyVersion: 5,
 			},
 			requestBody: `
 {
@@ -3236,8 +3236,8 @@ func TestUpdatePolicyVersion(t *testing.T) {
 						RedirectURL:   "/path",
 					},
 				},
-				PolicyID: 670831,
-				Version:  3,
+				PolicyID:      670831,
+				PolicyVersion: 3,
 				MatchRulesWarnings: []MatchRulesWarning{
 					{
 						Detail:      "No match match conditions.",
@@ -3250,8 +3250,8 @@ func TestUpdatePolicyVersion(t *testing.T) {
 		},
 		"500 internal server error": {
 			request: UpdatePolicyVersionRequest{
-				PolicyID: 276858,
-				Version:  3,
+				PolicyID:      276858,
+				PolicyVersion: 3,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
