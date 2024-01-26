@@ -3061,6 +3061,11 @@ func TestDeletePolicyVersion(t *testing.T) {
 			expectedPath:   "/cloudlets/v3/policies/276858/versions/5",
 		},
 
+		"missing required fields": {
+			request:   DeletePolicyVersionRequest{},
+			withError: ErrStructValidation,
+		},
+
 		"500 internal server error": {
 			request: DeletePolicyVersionRequest{
 				PolicyID: 1,

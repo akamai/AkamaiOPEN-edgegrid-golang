@@ -115,20 +115,28 @@ func (c ListPolicyVersionsRequest) Validate() error {
 
 // Validate validates CreatePolicyVersionRequest
 func (c CreatePolicyVersionRequest) Validate() error {
-	errs := validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"PolicyID":    validation.Validate(c.PolicyID, validation.Required),
 		"Description": validation.Validate(c.Description, validation.Length(0, 255)),
 		"MatchRules":  validation.Validate(c.MatchRules, validation.Length(0, 5000)),
-	}
-	return edgegriderr.ParseValidationErrors(errs)
+	})
 }
 
 // Validate validates UpdatePolicyVersionRequest
 func (o UpdatePolicyVersionRequest) Validate() error {
-	errs := validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"PolicyID":    validation.Validate(o.PolicyID, validation.Required),
+		"Version":     validation.Validate(o.Version, validation.Required),
 		"Description": validation.Validate(o.Description, validation.Length(0, 255)),
 		"MatchRules":  validation.Validate(o.MatchRules, validation.Length(0, 5000)),
-	}
-	return edgegriderr.ParseValidationErrors(errs)
+	})
+}
+
+func (c DeletePolicyVersionRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"PolicyID": validation.Validate(c.PolicyID, validation.Required),
+		"Version":  validation.Validate(c.Version, validation.Required),
+	})
 }
 
 var (
@@ -239,6 +247,10 @@ func (c *cloudlets) CreatePolicyVersion(ctx context.Context, params CreatePolicy
 func (c *cloudlets) DeletePolicyVersion(ctx context.Context, params DeletePolicyVersionRequest) error {
 	logger := c.Log(ctx)
 	logger.Debug("DeletePolicyVersion")
+
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w:\n%s", ErrDeletePolicyVersion, ErrStructValidation, err)
+	}
 
 	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.Version)
 
