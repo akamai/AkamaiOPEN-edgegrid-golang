@@ -34,7 +34,6 @@ type (
 		Name    string  `json:"name"`
 		Network Network `json:"network"`
 		Version int64   `json:"version"`
-		Links   []Link  `json:"links"`
 	}
 
 	// Link represents hypermedia link to help navigate through the result set.

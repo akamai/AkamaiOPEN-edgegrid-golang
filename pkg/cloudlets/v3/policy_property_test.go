@@ -41,21 +41,14 @@ func ListActivePolicyProperties(t *testing.T) {
       "id": 1234,
       "name": "property",
       "network": "PRODUCTION",
-      "version": 1,
-      "links": [
-			{
-				"href": "href",
-				"rel": "rel"
-			}
-	  ]
+      "version": 1
     },
     {
       "groupId": 5,
       "id": 1233,
       "name": "property",
       "network": "STAGING",
-      "version": 1,
-      "links": []
+      "version": 1
     }
   ],
   "links": [
@@ -80,12 +73,6 @@ func ListActivePolicyProperties(t *testing.T) {
 						Name:    "property",
 						Network: "PRODUCTION",
 						Version: 1,
-						Links: []Link{
-							{
-								Href: "href",
-								Rel:  "rel",
-							},
-						},
 					},
 					{
 						GroupID: 5,
@@ -93,7 +80,6 @@ func ListActivePolicyProperties(t *testing.T) {
 						Name:    "property",
 						Network: "STAGING",
 						Version: 1,
-						Links:   []Link{},
 					},
 				},
 				Links: []Link{
@@ -125,21 +111,14 @@ func ListActivePolicyProperties(t *testing.T) {
       "id": 1234,
       "name": "property",
       "network": "PRODUCTION",
-      "version": 1,
-      "links": [
-			{
-				"href": "href",
-				"rel": "rel"
-			}
-	  ]
+      "version": 1
     },
     {
       "groupId": 5,
       "id": 1233,
       "name": "property",
       "network": "STAGING",
-      "version": 1,
-      "links": []
+      "version": 1
     }
   ],
   "links": [
@@ -164,12 +143,6 @@ func ListActivePolicyProperties(t *testing.T) {
 						Name:    "property",
 						Network: "PRODUCTION",
 						Version: 1,
-						Links: []Link{
-							{
-								Href: "href",
-								Rel:  "rel",
-							},
-						},
 					},
 					{
 						GroupID: 5,
@@ -177,7 +150,6 @@ func ListActivePolicyProperties(t *testing.T) {
 						Name:    "property",
 						Network: "STAGING",
 						Version: 1,
-						Links:   []Link{},
 					},
 				},
 				Links: []Link{
