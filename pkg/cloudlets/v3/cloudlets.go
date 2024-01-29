@@ -58,27 +58,27 @@ type (
 
 		// ListPolicyVersions lists policy versions by policyID.
 		//
-		// See: https://techdocs.akamai.com/cloudlets/v3/reference/get-policy-versions
+		// See: https://techdocs.akamai.com/cloudlets/reference/get-policy-versions
 		ListPolicyVersions(context.Context, ListPolicyVersionsRequest) (*ListPolicyVersions, error)
 
 		// GetPolicyVersion gets policy version by policyID and version.
 		//
-		// See: https://techdocs.akamai.com/cloudlets/v3/reference/get-policy-version
+		// See: https://techdocs.akamai.com/cloudlets/reference/get-policy-version
 		GetPolicyVersion(context.Context, GetPolicyVersionRequest) (*PolicyVersion, error)
 
 		// CreatePolicyVersion creates policy version.
 		//
-		// See: https://techdocs.akamai.com/cloudlets/v3/reference/post-policy-version
+		// See: https://techdocs.akamai.com/cloudlets/reference/post-policy-version
 		CreatePolicyVersion(context.Context, CreatePolicyVersionRequest) (*PolicyVersion, error)
 
 		// DeletePolicyVersion deletes policy version.
 		//
-		// See: https://techdocs.akamai.com/cloudlets/v3/reference/delete-policy-version
+		// See: https://techdocs.akamai.com/cloudlets/reference/delete-policy-version
 		DeletePolicyVersion(context.Context, DeletePolicyVersionRequest) error
 
 		// UpdatePolicyVersion updates policy version.
 		//
-		// See: https://techdocs.akamai.com/cloudlets/v3/reference/put-policy-version
+		// See: https://techdocs.akamai.com/cloudlets/reference/put-policy-version
 		UpdatePolicyVersion(context.Context, UpdatePolicyVersionRequest) (*PolicyVersion, error)
 
 		// ListPolicyActivations returns the complete activation history for the selected policy in a reverse chronological order.

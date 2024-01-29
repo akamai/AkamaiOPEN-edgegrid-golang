@@ -23,20 +23,20 @@
   * Cloudlet Info
     * [ListCloudlets](https://techdocs.akamai.com/cloudlets/reference/get-cloudlets)
   * Policies
-    * [ListSharedPolicies](https://techdocs.akamai.com/cloudlets/reference/get-policies)
-    * [CreateSharedPolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy)
-    * [DeleteSharedPolicy](https://techdocs.akamai.com/cloudlets/reference/delete-policy)
-    * [GetSharedPolicy](https://techdocs.akamai.com/cloudlets/reference/get-policy)
-    * [UpdateSharedPolicy](https://techdocs.akamai.com/cloudlets/reference/put-policy)
+    * [ListPolicies](https://techdocs.akamai.com/cloudlets/reference/get-policies)
+    * [CreatePolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy)
+    * [DeletePolicy](https://techdocs.akamai.com/cloudlets/reference/delete-policy)
+    * [GetPolicy](https://techdocs.akamai.com/cloudlets/reference/get-policy)
+    * [UpdatePolicy](https://techdocs.akamai.com/cloudlets/reference/put-policy)
     * [ClonePolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy-clone)
   * Policy Properties
     * [ListActivePolicyProperties](https://techdocs.akamai.com/cloudlets/reference/get-policy-properties)
   * Policy Versions
-    * [ListPolicyVersions](https://techdocs.akamai.com/cloudlets/v3/reference/get-policy-versions)
-    * [GetPolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/get-policy-version)
-    * [CreatePolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/post-policy-version)
-    * [DeletePolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/delete-policy-version)
-    * [UpdatePolicyVersion](https://techdocs.akamai.com/cloudlets/v3/reference/put-policy-version)
+    * [ListPolicyVersions](https://techdocs.akamai.com/cloudlets/reference/get-policy-versions)
+    * [GetPolicyVersion](https://techdocs.akamai.com/cloudlets/reference/get-policy-version)
+    * [CreatePolicyVersion](https://techdocs.akamai.com/cloudlets/reference/post-policy-version)
+    * [DeletePolicyVersion](https://techdocs.akamai.com/cloudlets/reference/delete-policy-version)
+    * [UpdatePolicyVersion](https://techdocs.akamai.com/cloudlets/reference/put-policy-version)
   * Policy Activations
     * [ListPolicyActivations](https://techdocs.akamai.com/cloudlets/reference/get-policy-activations)
     * [GetPolicyActivation](https://techdocs.akamai.com/cloudlets/reference/get-policy-activation)
