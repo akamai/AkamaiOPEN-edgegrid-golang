@@ -7,6 +7,9 @@
 * GTM
   * Added new fields to `DomainItem` struct
 
+* DNS
+  * Added `ListGroups` method
+
 
 
 

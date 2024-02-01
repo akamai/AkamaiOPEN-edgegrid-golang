@@ -18,11 +18,12 @@ var (
 type (
 	// DNS is the dns api interface
 	DNS interface {
-		Zones
-		TSIGKeys
 		Authorities
-		Records
+		Data
 		RecordSets
+		Records
+		TSIGKeys
+		Zones
 	}
 
 	dns struct {
