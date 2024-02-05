@@ -1,23 +1,11 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 7.x.x (xxx xx, 2023)
+## 7.6.0 (February 8, 2024)
 
 #### FEATURES/ENHANCEMENTS:
 
 * General
   * Enhanced error handling when Error is not in standard format.
-
-
-* GTM
-  * Added new fields to `DomainItem` struct
-
-* DNS
-  * Added `ListGroups` method
-
-
-
-
-
 
 * Added Cloudlets V3 API support
   * Cloudlet Info
@@ -49,16 +37,15 @@
     * Phased Release (PR aka CD)
     * Request Control (RC aka IG)
 
-
-
-
-
-
-
+* DNS
+  * Added `ListGroups` method
+    * [ListGroups](https://techdocs.akamai.com/edge-dns/reference/get-data-groups)
 
 * Edgeworkers
   * Added `note` field to `Activation` and `ActivateVersion` structs for EdgeWorkers Activation
 
+* GTM
+  * Added new fields to `DomainItem` struct
 
 * IVM
   * Extended `OutputImage` for support of `AllowPristineOnDownsize` and `PreferModernFormats`
@@ -69,45 +56,6 @@
 
 * APPSEC
   * Added `updateLatestNetworkStatus` query parameter in GetActivations request to resolve drift on manual changes to infrastructure
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### BREAKING CHANGES:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 7.5.0 (November 28, 2023)
 
