@@ -1,0 +1,18 @@
+{
+    "dispatchCount"   : 1,
+    "activationId" : 32415,
+    "action" :   "deny",          
+    "status" :   "ACTIVATED",
+    "network" : "STAGING",
+    "estimate" :   "test",
+    "createdBy" :  "test_user",        
+    "createDate" : "2022-05-05T14:19:17Z",
+    "activationConfigs" : [
+        {
+            "configId" :   43253,           
+            "ConfigName" :  "activationConfig",           
+            "ConfigVersion":   1,      
+            "PreviousConfigVersion": 1
+        }
+    ]
+}

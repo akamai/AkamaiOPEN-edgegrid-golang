@@ -26,6 +26,7 @@
 * Edgeworkers
   * Added `note` field to `Activation` and `ActivateVersion` structs for EdgeWorkers Activation
 
+
 * IVM
   * Extended `OutputImage` for support of `AllowPristineOnDownsize` and `PreferModernFormats`
   * Extended `PolicyInputImage` for support of `ServeStaleDuration`
@@ -33,6 +34,8 @@
 
 #### BUG FIXES:
 
+* APPSEC
+  * Added `updateLatestNetworkStatus` query parameter in GetActivations request to resolve drift on manual changes to infrastructure
 
 
 
