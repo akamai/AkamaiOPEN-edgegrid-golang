@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -168,11 +170,16 @@ func (p *appsec) GetActivations(ctx context.Context, params GetActivationsReques
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	uri := fmt.Sprintf(
-		"/appsec/v1/activations/%d",
-		params.ActivationID)
+	uri, err := url.Parse(fmt.Sprintf("/appsec/v1/activations/%d", params.ActivationID))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse url: %s", err)
+	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	q := uri.Query()
+	q.Add("updateLatestNetworkStatus", strconv.FormatBool(true))
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetActivations request: %w", err)
 	}

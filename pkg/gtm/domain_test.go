@@ -25,17 +25,6 @@ func TestGtm_NewDomain(t *testing.T) {
 }
 
 func TestGtm_ListDomains(t *testing.T) {
-	var result DomainsList
-
-	respData, err := loadTestData("TestGtm_ListDomains.resp.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
-		t.Fatal(err)
-	}
-
 	tests := map[string]struct {
 		responseStatus   int
 		responseBody     string
@@ -48,27 +37,129 @@ func TestGtm_ListDomains(t *testing.T) {
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains",
-			expectedResponse: result.DomainItems,
+			responseStatus: http.StatusOK,
+			responseBody: `{
+			"items":[{
+				"acgId": "1-2345",
+				"lastModified": "2014-03-03T16:02:45.000+0000",
+				"name": "example.akadns.net",
+				"status": "2014-02-20 22:56 GMT: Current configuration has been propagated to all GTM name servers",
+				"lastModifiedBy": "test-user",
+				"changeId": "abf5b76f-f9de-4404-bb2c-9d15e7b9ff5d",
+				"activationState": "COMPLETE",
+            	"modificationComments": "terraform test gtm domain",
+            	"signAndServe": false,
+            	"signAndServeAlgorithm": null,
+            	"deleteRequestId": null,
+				"links": [{
+					"href": "/config-gtm/v1/domains/example.akadns.net",
+					"rel": "self"
+				}]
+			},
+			{
+				"acgId": "1-2345",
+				"lastModified": "2013-11-09T12:04:45.000+0000",
+				"name": "demo.akadns.net",
+				"status": "2014-02-20 22:56 GMT: Current configuration has been propagated to all GTM name servers",
+ 				"lastModifiedBy": "test-user",
+				"changeId": "abf5b76f-f9de-4404-bb2c-9d15e7b9ff5d",
+            	"activationState": "COMPLETE",
+            	"modificationComments": "terraform test gtm domain",
+           		"signAndServe": false,
+            	"signAndServeAlgorithm": null,
+            	"deleteRequestId": null,
+				"links": [{
+					"href": "/config-gtm/v1/domains/example.akadns.net",
+					"rel": "self"
+				}]
+			}]}`,
+			expectedPath: "/config-gtm/v1/domains",
+			expectedResponse: []*DomainItem{{
+				AcgId:                 "1-2345",
+				LastModified:          "2014-03-03T16:02:45.000+0000",
+				Name:                  "example.akadns.net",
+				Status:                "2014-02-20 22:56 GMT: Current configuration has been propagated to all GTM name servers",
+				LastModifiedBy:        "test-user",
+				ChangeID:              "abf5b76f-f9de-4404-bb2c-9d15e7b9ff5d",
+				ActivationState:       "COMPLETE",
+				ModificationComments:  "terraform test gtm domain",
+				SignAndServe:          false,
+				SignAndServeAlgorithm: "",
+				DeleteRequestID:       "",
+				Links: []*Link{{
+					Rel:  "self",
+					Href: "/config-gtm/v1/domains/example.akadns.net",
+				}},
+			},
+				{
+					AcgId:                 "1-2345",
+					LastModified:          "2013-11-09T12:04:45.000+0000",
+					Name:                  "demo.akadns.net",
+					Status:                "2014-02-20 22:56 GMT: Current configuration has been propagated to all GTM name servers",
+					LastModifiedBy:        "test-user",
+					ChangeID:              "abf5b76f-f9de-4404-bb2c-9d15e7b9ff5d",
+					ActivationState:       "COMPLETE",
+					ModificationComments:  "terraform test gtm domain",
+					SignAndServe:          false,
+					SignAndServeAlgorithm: "",
+					DeleteRequestID:       "",
+					Links: []*Link{{
+						Rel:  "self",
+						Href: "/config-gtm/v1/domains/example.akadns.net",
+					}},
+				}},
 		},
 		"500 internal server error": {
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching domains",
-    "status": 500
-}`,
+			responseBody: `{
+    			"type": "internal_error",
+    			"title": "Internal Server Error",
+    			"detail": "Error fetching domains",
+   				 "status": 500
+			}`,
 			expectedPath: "/config-gtm/v1/domains",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
 				Detail:     "Error fetching domains",
 				StatusCode: http.StatusInternalServerError,
+			},
+		},
+		"Service Unavailable plain text response": {
+			headers:        http.Header{},
+			responseStatus: http.StatusServiceUnavailable,
+			responseBody:   `Your request did not succeed as this operation has reached  the limit for your account. Please try after 2024-01-16T15:20:55.945Z`,
+			expectedPath:   "/config-gtm/v1/domains",
+			withError: &Error{
+				Type:       "",
+				Title:      "Failed to unmarshal error body. GTM API failed. Check details for more information.",
+				Detail:     "Your request did not succeed as this operation has reached  the limit for your account. Please try after 2024-01-16T15:20:55.945Z",
+				StatusCode: http.StatusServiceUnavailable,
+			},
+		},
+		"Service Unavailable html response": {
+			headers:        http.Header{},
+			responseStatus: http.StatusServiceUnavailable,
+			responseBody:   `<HTML><HEAD>...</HEAD><BODY>...</BODY></HTML>`,
+			expectedPath:   "/config-gtm/v1/domains",
+			withError: &Error{
+				Type:       "",
+				Title:      "Failed to unmarshal error body. GTM API failed. Check details for more information.",
+				Detail:     "<HTML><HEAD>...</HEAD><BODY>...</BODY></HTML>",
+				StatusCode: http.StatusServiceUnavailable,
+			},
+		},
+		"Service Unavailable xml response": {
+			headers:        http.Header{},
+			responseStatus: http.StatusServiceUnavailable,
+			responseBody:   `<?xml version="1.0" encoding="UTF-8"?><root><item><id>1</id><name>Item 1</name></item><item><id>2</id><name>Item 2</name></item></root>`,
+			expectedPath:   "/config-gtm/v1/domains",
+			withError: &Error{
+				Type:       "",
+				Title:      "Failed to unmarshal error body. GTM API failed. Check details for more information.",
+				Detail:     "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root><item><id>1</id><name>Item 1</name></item><item><id>2</id><name>Item 2</name></item></root>",
+				StatusCode: http.StatusServiceUnavailable,
 			},
 		},
 	}

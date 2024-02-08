@@ -38,7 +38,8 @@ func TestListActivations(t *testing.T) {
             "network": "PRODUCTION",
             "createdBy": "jdoe",
             "createdTime": "2018-07-09T09:03:28Z",
-            "lastModifiedTime": "2018-07-09T09:04:42Z"
+            "lastModifiedTime": "2018-07-09T09:04:42Z",
+			"note": "activation note3"
         },
         {
             "edgeWorkerId": 42,
@@ -49,7 +50,8 @@ func TestListActivations(t *testing.T) {
             "network": "STAGING",
             "createdBy": "jsmith",
             "createdTime": "2018-07-09T08:13:54Z",
-            "lastModifiedTime": "2018-07-09T08:35:02Z"
+            "lastModifiedTime": "2018-07-09T08:35:02Z",
+            "note": "activation note1"
         }
     ]
 }`,
@@ -66,6 +68,7 @@ func TestListActivations(t *testing.T) {
 						Network:          "PRODUCTION",
 						Status:           "PENDING",
 						Version:          "2",
+						Note:             "activation note3",
 					},
 					{
 						AccountID:        "B-M-1KQK3WU",
@@ -77,6 +80,7 @@ func TestListActivations(t *testing.T) {
 						Network:          "STAGING",
 						Status:           "IN_PROGRESS",
 						Version:          "1",
+						Note:             "activation note1",
 					},
 				},
 			},
@@ -99,7 +103,8 @@ func TestListActivations(t *testing.T) {
             "network": "STAGING",
             "createdBy": "jsmith",
             "createdTime": "2018-07-09T08:13:54Z",
-            "lastModifiedTime": "2018-07-09T08:35:02Z"
+            "lastModifiedTime": "2018-07-09T08:35:02Z",
+			"note": "activation note1"
         }
     ]
 }`,
@@ -116,6 +121,7 @@ func TestListActivations(t *testing.T) {
 						Network:          "STAGING",
 						Status:           "IN_PROGRESS",
 						Version:          "1",
+						Note:             "activation note1",
 					},
 				},
 			},
@@ -196,7 +202,8 @@ func TestGetActivation(t *testing.T) {
 	"network": "STAGING",
 	"createdBy": "jsmith",
 	"createdTime": "2018-07-09T08:13:54Z",
-	"lastModifiedTime": "2018-07-09T08:35:02Z"
+	"lastModifiedTime": "2018-07-09T08:35:02Z",
+	"note": "activation note1"
 }`,
 			expectedPath: "/edgeworkers/v1/ids/42/activations/1",
 			expectedResponse: &Activation{
@@ -209,6 +216,7 @@ func TestGetActivation(t *testing.T) {
 				Network:          "STAGING",
 				Status:           "IN_PROGRESS",
 				Version:          "1",
+				Note:             "activation note1",
 			},
 		},
 		"500 internal server error": {
@@ -293,7 +301,8 @@ func TestActivateVersion(t *testing.T) {
 	"network": "STAGING",
 	"createdBy": "jsmith",
 	"createdTime": "2018-07-09T08:13:54Z",
-	"lastModifiedTime": "2018-07-09T08:35:02Z"
+	"lastModifiedTime": "2018-07-09T08:35:02Z",
+	"note": "activation note1"
 }`,
 			expectedPath: "/edgeworkers/v1/ids/42/activations",
 			expectedResponse: &Activation{
@@ -306,6 +315,7 @@ func TestActivateVersion(t *testing.T) {
 				Network:          "STAGING",
 				Status:           "PRESUBMIT",
 				Version:          "1",
+				Note:             "activation note1",
 			},
 		},
 		"500 internal server error": {
@@ -467,7 +477,8 @@ func TestCancelActivation(t *testing.T) {
 	"network": "STAGING",
 	"createdBy": "jsmith",
 	"createdTime": "2018-07-09T08:13:54Z",
-	"lastModifiedTime": "2018-07-09T08:35:02Z"
+	"lastModifiedTime": "2018-07-09T08:35:02Z",
+	"note": "activation note1"
 }`,
 			expectedPath: "/edgeworkers/v1/ids/42/activations/1",
 			expectedResponse: &Activation{
@@ -480,6 +491,7 @@ func TestCancelActivation(t *testing.T) {
 				Network:          "STAGING",
 				Status:           "CANCELED",
 				Version:          "1",
+				Note:             "activation note1",
 			},
 		},
 		"500 internal server error": {

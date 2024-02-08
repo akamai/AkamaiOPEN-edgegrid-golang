@@ -1,5 +1,62 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 7.6.0 (February 8, 2024)
+
+#### FEATURES/ENHANCEMENTS:
+
+* General
+  * Enhanced error handling when Error is not in standard format.
+
+* Added Cloudlets V3 API support
+  * Cloudlet Info
+    * [ListCloudlets](https://techdocs.akamai.com/cloudlets/reference/get-cloudlets)
+  * Policies
+    * [ListPolicies](https://techdocs.akamai.com/cloudlets/reference/get-policies)
+    * [CreatePolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy)
+    * [DeletePolicy](https://techdocs.akamai.com/cloudlets/reference/delete-policy)
+    * [GetPolicy](https://techdocs.akamai.com/cloudlets/reference/get-policy)
+    * [UpdatePolicy](https://techdocs.akamai.com/cloudlets/reference/put-policy)
+    * [ClonePolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy-clone)
+  * Policy Properties
+    * [ListActivePolicyProperties](https://techdocs.akamai.com/cloudlets/reference/get-policy-properties)
+  * Policy Versions
+    * [ListPolicyVersions](https://techdocs.akamai.com/cloudlets/reference/get-policy-versions)
+    * [GetPolicyVersion](https://techdocs.akamai.com/cloudlets/reference/get-policy-version)
+    * [CreatePolicyVersion](https://techdocs.akamai.com/cloudlets/reference/post-policy-version)
+    * [DeletePolicyVersion](https://techdocs.akamai.com/cloudlets/reference/delete-policy-version)
+    * [UpdatePolicyVersion](https://techdocs.akamai.com/cloudlets/reference/put-policy-version)
+  * Policy Activations
+    * [ListPolicyActivations](https://techdocs.akamai.com/cloudlets/reference/get-policy-activations)
+    * [GetPolicyActivation](https://techdocs.akamai.com/cloudlets/reference/get-policy-activation)
+    * [ActivatePolicy and DeactivatePolicy](https://techdocs.akamai.com/cloudlets/reference/post-policy-activations)
+  * Supported cloudlet types
+    * API Prioritization (AP)
+    * Application Segmentation (AS)
+    * Edge Redirector (ER)
+    * Forward Rewrite (FR)
+    * Phased Release (PR aka CD)
+    * Request Control (RC aka IG)
+
+* DNS
+  * Added `ListGroups` method
+    * [ListGroups](https://techdocs.akamai.com/edge-dns/reference/get-data-groups)
+
+* Edgeworkers
+  * Added `note` field to `Activation` and `ActivateVersion` structs for EdgeWorkers Activation
+
+* GTM
+  * Added new fields to `DomainItem` struct
+
+* IVM
+  * Extended `OutputImage` for support of `AllowPristineOnDownsize` and `PreferModernFormats`
+  * Extended `PolicyInputImage` for support of `ServeStaleDuration`
+  * Extended `RolloutInfo` for support of `ServeStaleEndTime`
+
+#### BUG FIXES:
+
+* APPSEC
+  * Added `updateLatestNetworkStatus` query parameter in GetActivations request to resolve drift on manual changes to infrastructure
+
 ## 7.5.0 (November 28, 2023)
 
 #### FEATURES/ENHANCEMENTS:

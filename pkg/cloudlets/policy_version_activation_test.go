@@ -112,7 +112,7 @@ func TestListPolicyActivations(t *testing.T) {
 			},
 			responseStatus: http.StatusNotFound,
 			uri:            "/cloudlets/api/v2/policies/1234/activations?network=staging&propertyName=www.rc-cloudlet.com",
-			withError:      &Error{StatusCode: 404},
+			withError:      &Error{StatusCode: 404, Title: "Failed to unmarshal error body. Cloudlets API failed. Check details for more information."},
 		},
 		"500 server error": {
 			parameters: ListPolicyActivationsRequest{
@@ -122,7 +122,7 @@ func TestListPolicyActivations(t *testing.T) {
 			},
 			responseStatus: http.StatusInternalServerError,
 			uri:            "/cloudlets/api/v2/policies/1234/activations?network=staging&propertyName=www.rc-cloudlet.com",
-			withError:      &Error{StatusCode: 500},
+			withError:      &Error{StatusCode: 500, Title: "Failed to unmarshal error body. Cloudlets API failed. Check details for more information."},
 		},
 	}
 	for name, test := range tests {

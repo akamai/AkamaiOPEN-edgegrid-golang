@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/errs"
 )
 
 type (
@@ -62,7 +64,8 @@ func (c *cloudwrapper) Error(r *http.Response) error {
 
 	if err = json.Unmarshal(body, &result); err != nil {
 		c.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		result.Title = string(body)
+		result.Title = "Failed to unmarshal error body. Cloud Wrapper API failed. Check details for more information."
+		result.Detail = errs.UnescapeContent(string(body))
 		result.Status = r.StatusCode
 	}
 	return &result

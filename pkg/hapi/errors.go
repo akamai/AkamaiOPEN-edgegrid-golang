@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/errs"
 )
 
 type (
@@ -50,8 +52,8 @@ func (h *hapi) Error(r *http.Response) error {
 
 	if err := json.Unmarshal(body, &e); err != nil {
 		h.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		e.Title = fmt.Sprintf("Failed to unmarshal error body")
-		e.Detail = err.Error()
+		e.Title = fmt.Sprintf("Failed to unmarshal error body. HAPI API failed. Check details for more information.")
+		e.Detail = errs.UnescapeContent(string(body))
 	}
 
 	e.Status = r.StatusCode

@@ -1,7 +1,7 @@
 package cloudlets
 
 type (
-	// Warning represents warning information regarding the policy version and loadbalancer version request
+	// Warning represents warning information about the policy version request.
 	Warning struct {
 		Detail      string `json:"detail,omitempty"`
 		JSONPointer string `json:"jsonPointer,omitempty"`

@@ -50,6 +50,7 @@ type (
 	ActivateVersion struct {
 		Network ActivationNetwork `json:"network"`
 		Version string            `json:"version"`
+		Note    string            `json:"note"`
 	}
 
 	// ActivationNetwork represents available activation network types
@@ -83,6 +84,7 @@ type (
 		Network          string `json:"network"`
 		Status           string `json:"status"`
 		Version          string `json:"version"`
+		Note             string `json:"note"`
 	}
 )
 

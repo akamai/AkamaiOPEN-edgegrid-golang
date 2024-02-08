@@ -708,6 +708,8 @@ type (
 	OutputImage struct {
 		// AdaptiveQuality Override the quality of image to serve when Image & Video Manager detects a slow connection. Specifying lower values lets users with slow connections browse your site with reduced load times without impacting the quality of images for users with faster connections.
 		AdaptiveQuality *int `json:"adaptiveQuality,omitempty"`
+		// AllowPristineOnDownsize Whether a pristine image wider than the requested breakpoint is allowed as a derivative image if it has the fewest bytes. This will not have an affect if transformations are present.
+		AllowPristineOnDownsize *bool `json:"allowPristineOnDownsize,omitempty"`
 		// AllowedFormats The graphics file formats allowed for browser specific results.
 		AllowedFormats []OutputImageAllowedFormats `json:"allowedFormats,omitempty"`
 		// ForcedFormats The forced extra formats for the `imFormat` query parameter, which requests a specific browser type. By default, Image and Video Manager detects the browser and returns the appropriate image.
@@ -716,6 +718,8 @@ type (
 		PerceptualQuality *OutputImagePerceptualQualityVariableInline `json:"perceptualQuality,omitempty"`
 		// PerceptualQualityFloor Only applies with perceptualQuality set. Sets a minimum image quality to respect when using perceptual quality. Perceptual quality will not reduce the quality below this value even if it determines the compressed image to be acceptably visually similar.
 		PerceptualQualityFloor *int `json:"perceptualQualityFloor,omitempty"`
+		// PreferModernFormats Whether derivative image formats should be selected with a preference for modern formats (such as WebP and Avif) instead the format that results in the fewest bytes.
+		PreferModernFormats *bool `json:"preferModernFormats,omitempty"`
 		// Quality Mutually exclusive with perceptualQuality, used by default if neither is specified. The chosen quality of the output images. Using a quality value from 1-100 resembles JPEG quality across output formats.
 		Quality *IntegerVariableInline `json:"quality,omitempty"`
 	}
@@ -896,6 +900,8 @@ type (
 		EndTime int `json:"endTime"`
 		// RolloutDuration The amount of time in seconds that the policy takes to rollout. During the rollout an increasing proportion of images/videos will begin to use the new policy instead of the cached images/videos from the previous version. Policies on the staging network deploy as quickly as possible without rollout. For staging policies this value will always be 1.
 		RolloutDuration int `json:"rolloutDuration"`
+		// ServeStaleEndTime The estimated time that serving stale for this policy will end. Value is a unix timestamp.
+		ServeStaleEndTime *int `json:"serveStaleEndTime,omitempty"`
 		// StartTime The estimated time that rollout for this policy will begin. Value is a unix timestamp.
 		StartTime int `json:"startTime"`
 	}
@@ -2886,6 +2892,7 @@ func (o OutputImage) Validate() error {
 			validation.Min(1),
 			validation.Max(100),
 		),
+		"AllowPristineOnDownsize": validation.Validate(o.AllowPristineOnDownsize),
 		"AllowedFormats": validation.Validate(o.AllowedFormats, validation.Each(
 			validation.In(OutputImageAllowedFormatsGif,
 				OutputImageAllowedFormatsJpeg,
@@ -2909,7 +2916,8 @@ func (o OutputImage) Validate() error {
 			validation.Min(1),
 			validation.Max(100),
 		),
-		"Quality": validation.Validate(o.Quality),
+		"PreferModernFormats": validation.Validate(o.PreferModernFormats),
+		"Quality":             validation.Validate(o.Quality),
 	}.Filter()
 }
 
@@ -3110,6 +3118,7 @@ func (r RolloutInfo) Validate() error {
 			validation.Min(3600),
 			validation.Max(604800),
 		),
+		"ServeStaleEndTime": validation.Validate(r.ServeStaleEndTime),
 		"StartTime": validation.Validate(r.StartTime,
 			validation.Required,
 		),
@@ -4388,7 +4397,7 @@ func (r *RegionOfInterestCrop) UnmarshalJSON(in []byte) error {
 }
 
 /*-----------------------------------------------*/
-////////// Transformation unmarshallers ///////////
+////////// Transformation unmarshalers ///////////
 /*-----------------------------------------------*/
 
 var (

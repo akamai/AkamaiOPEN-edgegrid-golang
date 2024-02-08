@@ -8,9 +8,10 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cast v1.3.1
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.8.4
 	github.com/tj/assert v0.0.3
 	go.uber.org/ratelimit v0.2.0
+	golang.org/x/net v0.20.0
 	gopkg.in/ini.v1 v1.51.1
 )
 
@@ -23,7 +24,9 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	github.com/stretchr/objx v0.1.0 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
+	golang.org/x/mod v0.14.0 // indirect
+    golang.org/x/tools v0.17.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
-	gopkg.in/yaml.v3 v3.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

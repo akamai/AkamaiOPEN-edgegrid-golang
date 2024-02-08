@@ -99,11 +99,18 @@ type DomainsList struct {
 
 // DomainItem is a DomainsList item
 type DomainItem struct {
-	AcgId        string  `json:"acgId"`
-	LastModified string  `json:"lastModified"`
-	Links        []*Link `json:"links"`
-	Name         string  `json:"name"`
-	Status       string  `json:"status"`
+	AcgId                 string  `json:"acgId"`
+	LastModified          string  `json:"lastModified"`
+	Links                 []*Link `json:"links"`
+	Name                  string  `json:"name"`
+	Status                string  `json:"status"`
+	LastModifiedBy        string  `json:"lastModifiedBy"`
+	ChangeID              string  `json:"changeId"`
+	ActivationState       string  `json:"activationState"`
+	ModificationComments  string  `json:"modificationComments"`
+	SignAndServe          bool    `json:"signAndServe"`
+	SignAndServeAlgorithm string  `json:"signAndServeAlgorithm"`
+	DeleteRequestID       string  `json:"deleteRequestId"`
 }
 
 // Validate validates Domain

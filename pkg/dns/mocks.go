@@ -480,3 +480,13 @@ func (d *Mock) GetBulkZoneDeleteResult(ctx context.Context, param string) (*Bulk
 
 	return args.Get(0).(*BulkDeleteResultResponse), args.Error(1)
 }
+
+func (d *Mock) ListGroups(ctx context.Context, request ListGroupRequest) (*ListGroupResponse, error) {
+	args := d.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListGroupResponse), args.Error(1)
+}
