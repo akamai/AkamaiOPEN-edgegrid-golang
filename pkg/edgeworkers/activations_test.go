@@ -3,6 +3,7 @@ package edgeworkers
 import (
 	"context"
 	"errors"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
@@ -275,12 +276,13 @@ func TestGetActivation(t *testing.T) {
 
 func TestActivateVersion(t *testing.T) {
 	tests := map[string]struct {
-		params           ActivateVersionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *Activation
-		withError        error
+		params              ActivateVersionRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *Activation
+		withError           error
 	}{
 		"200 OK": {
 			params: ActivateVersionRequest{
@@ -288,9 +290,11 @@ func TestActivateVersion(t *testing.T) {
 				ActivateVersion: ActivateVersion{
 					Network: "STAGING",
 					Version: "1",
+					Note:    "activation note1",
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"network":"STAGING","version":"1","note":"activation note1"}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
 	"edgeWorkerId": 42,
@@ -316,6 +320,41 @@ func TestActivateVersion(t *testing.T) {
 				Status:           "PRESUBMIT",
 				Version:          "1",
 				Note:             "activation note1",
+			},
+		},
+		"200 without note": {
+			params: ActivateVersionRequest{
+				EdgeWorkerID: 42,
+				ActivateVersion: ActivateVersion{
+					Network: "STAGING",
+					Version: "1",
+				},
+			},
+			expectedRequestBody: `{"network":"STAGING","version":"1"}`,
+			responseStatus:      http.StatusCreated,
+			responseBody: `
+{
+	"edgeWorkerId": 42,
+	"version": "1",
+	"activationId": 1,
+	"accountId": "B-M-1KQK3WU",
+	"status": "PRESUBMIT",
+	"network": "STAGING",
+	"createdBy": "jsmith",
+	"createdTime": "2018-07-09T08:13:54Z",
+	"lastModifiedTime": "2018-07-09T08:35:02Z"
+}`,
+			expectedPath: "/edgeworkers/v1/ids/42/activations",
+			expectedResponse: &Activation{
+				AccountID:        "B-M-1KQK3WU",
+				ActivationID:     1,
+				CreatedBy:        "jsmith",
+				CreatedTime:      "2018-07-09T08:13:54Z",
+				EdgeWorkerID:     42,
+				LastModifiedTime: "2018-07-09T08:35:02Z",
+				Network:          "STAGING",
+				Status:           "PRESUBMIT",
+				Version:          "1",
 			},
 		},
 		"500 internal server error": {
@@ -374,6 +413,12 @@ func TestActivateVersion(t *testing.T) {
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
+
+				if len(test.expectedRequestBody) > 0 {
+					body, err := ioutil.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.Equal(t, test.expectedRequestBody, string(body))
+				}
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivateVersion(context.Background(), test.params)
