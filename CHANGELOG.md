@@ -1,57 +1,11 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## 8.0.0 (X X, X)
-
-#### BREAKING CHANGES:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### FEATURES/ENHANCEMENTS:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## 7.6.1 (February 14, 2024)
 
 #### BUG FIXES:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* Edgeworkers
+  * Fixed case when not providing optional `note` field in `ActivateVersion` would cause activation to fail 
 
 ## 7.6.0 (February 8, 2024)
 
