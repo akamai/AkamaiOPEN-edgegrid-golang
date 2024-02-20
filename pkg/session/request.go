@@ -42,6 +42,10 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 		r.Header.Set("Content-Type", "application/json")
 	}
 
+	if r.Header.Get("Accept") == "" {
+		r.Header.Set("Accept", "application/json")
+	}
+
 	if r.URL.Scheme == "" {
 		r.URL.Scheme = "https"
 	}

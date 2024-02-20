@@ -33,7 +33,7 @@
 #### FEATURES/ENHANCEMENTS:
 
 
-
+* Added default value `application/json` for `Accept` header for all requests sent to API
 
 
 
