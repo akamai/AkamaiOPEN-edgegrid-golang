@@ -90,6 +90,8 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 	if out != nil &&
 		resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices &&
 		resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusResetContent {
+		originBody := resp.Body
+		defer originBody.Close()
 		data, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
