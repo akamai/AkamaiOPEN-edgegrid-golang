@@ -5,27 +5,7 @@ import (
 	"net/http"
 )
 
-//
-// Common data types and methods
-// Based on 1.3 schemas
-//
-
-// Append url args to req
-func appendReqArgs(req *http.Request, queryArgs map[string]string) {
-
-	// Look for optional args
-	if len(queryArgs) > 0 {
-		q := req.URL.Query()
-		for argName, argVal := range queryArgs {
-			q.Add(argName, argVal)
-		}
-		req.URL.RawQuery = q.Encode()
-	}
-
-}
-
 // default schema version
-// TODO: retrieve from environment or elsewhere in Service Init
 var schemaVersion = "1.4"
 
 // internal method to set version. passed in as string
@@ -42,25 +22,18 @@ func setVersionHeader(req *http.Request, version string) {
 }
 
 // NewDefaultDatacenter instantiates new Default Datacenter Struct
-func (p *gtm) NewDefaultDatacenter(dcid int) *DatacenterBase {
-	return &DatacenterBase{DatacenterId: dcid}
+func (g *gtm) NewDefaultDatacenter(dcID int) *DatacenterBase {
+	return &DatacenterBase{DatacenterID: dcID}
 }
 
 // ResponseStatus is returned on Create, Update or Delete operations for all entity types
 type ResponseStatus struct {
-	ChangeId              string  `json:"changeId,omitempty"`
+	ChangeID              string  `json:"changeId,omitempty"`
 	Links                 *[]Link `json:"links,omitempty"`
 	Message               string  `json:"message,omitempty"`
 	PassingValidation     bool    `json:"passingValidation,omitempty"`
 	PropagationStatus     string  `json:"propagationStatus,omitempty"`
 	PropagationStatusDate string  `json:"propagationStatusDate,omitempty"`
-}
-
-// NewResponseStatus returns a new ResponseStatus struct
-func NewResponseStatus() *ResponseStatus {
-
-	return &ResponseStatus{}
-
 }
 
 // ResponseBody is a generic response struct
@@ -93,9 +66,9 @@ type ResourceResponse struct {
 	Status   *ResponseStatus `json:"status"`
 }
 
-// CidrMapResponse contains a response after creating or updating CidrMap
-type CidrMapResponse struct {
-	Resource *CidrMap        `json:"resource"`
+// CIDRMapResponse contains a response after creating or updating CIDRMap
+type CIDRMapResponse struct {
+	Resource *CIDRMap        `json:"resource"`
 	Status   *ResponseStatus `json:"status"`
 }
 
@@ -105,9 +78,9 @@ type GeoMapResponse struct {
 	Status   *ResponseStatus `json:"status"`
 }
 
-// AsMapResponse contains a response after creating or updating AsMap
-type AsMapResponse struct {
-	Resource *AsMap          `json:"resource"`
+// ASMapResponse contains a response after creating or updating ASMap
+type ASMapResponse struct {
+	Resource *ASMap          `json:"resource"`
 	Status   *ResponseStatus `json:"status"`
 }
 
@@ -132,10 +105,5 @@ func NewLoadObject() *LoadObject {
 // DatacenterBase is a placeholder for default Datacenter
 type DatacenterBase struct {
 	Nickname     string `json:"nickname,omitempty"`
-	DatacenterId int    `json:"datacenterId"`
-}
-
-// NewDatacenterBase returns a new DatacenterBase structure
-func NewDatacenterBase() *DatacenterBase {
-	return &DatacenterBase{}
+	DatacenterID int    `json:"datacenterId"`
 }

@@ -120,7 +120,7 @@ type (
 		Comment               string   `json:"comment,omitempty"`
 		SignAndServe          bool     `json:"signAndServe"`
 		SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
-		TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
+		TSIGKey               *TSIGKey `json:"tsigKey,omitempty"`
 		Target                string   `json:"target,omitempty"`
 		EndCustomerID         string   `json:"endCustomerId,omitempty"`
 		ContractID            string   `json:"contractId,omitempty"`
@@ -134,7 +134,7 @@ type (
 		Comment               string   `json:"comment,omitempty"`
 		SignAndServe          bool     `json:"signAndServe"`
 		SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
-		TsigKey               *TSIGKey `json:"tsigKey,omitempty"`
+		TSIGKey               *TSIGKey `json:"tsigKey,omitempty"`
 		Target                string   `json:"target,omitempty"`
 		EndCustomerID         string   `json:"endCustomerId,omitempty"`
 		ContractID            string   `json:"contractId,omitempty"`
@@ -143,7 +143,7 @@ type (
 		LastActivationDate    string   `json:"lastActivationDate,omitempty"`
 		LastModifiedBy        string   `json:"lastModifiedBy,omitempty"`
 		LastModifiedDate      string   `json:"lastModifiedDate,omitempty"`
-		VersionId             string   `json:"versionId,omitempty"`
+		VersionID             string   `json:"versionId,omitempty"`
 	}
 
 	// ZoneListQueryArgs contains parameters for List Zones query
@@ -164,7 +164,7 @@ type (
 		PageSize      int      `json:"pageSize"`
 		ShowAll       bool     `json:"showAll"`
 		TotalElements int      `json:"totalElements"`
-	} //`json:"metadata"`
+	}
 
 	// ZoneListResponse contains response for List Zones request
 	ZoneListResponse struct {
@@ -205,27 +205,24 @@ var zoneStructMap = map[string]string{
 	"Comment":               "comment",
 	"SignAndServe":          "signAndServe",
 	"SignAndServeAlgorithm": "signAndServeAlgorithm",
-	"TsigKey":               "tsigKey",
+	"TSIGKey":               "tsigKey",
 	"Target":                "target",
 	"EndCustomerID":         "endCustomerId",
 	"ContractId":            "contractId"}
 
 // Util to convert struct to http request body, eg. io.reader
-func convertStructToReqBody(srcstruct interface{}) (io.Reader, error) {
-
-	reqbody, err := json.Marshal(srcstruct)
+func convertStructToReqBody(srcStruct interface{}) (io.Reader, error) {
+	reqBody, err := json.Marshal(srcStruct)
 	if err != nil {
 		return nil, err
 	}
-	return bytes.NewBuffer(reqbody), nil
+	return bytes.NewBuffer(reqBody), nil
 }
 
-func (p *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*ZoneListResponse, error) {
-
-	logger := p.Log(ctx)
+func (d *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*ZoneListResponse, error) {
+	logger := d.Log(ctx)
 	logger.Debug("ListZones")
 
-	// construct GET url
 	getURL := fmt.Sprintf("/config-dns/v2/zones")
 	if len(queryArgs) > 1 {
 		return nil, fmt.Errorf("ListZones QueryArgs invalid")
@@ -260,28 +257,27 @@ func (p *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*Z
 		req.URL.RawQuery = q.Encode()
 	}
 
-	var zonelist ZoneListResponse
-	resp, err := p.Exec(req, &zonelist)
+	var result ZoneListResponse
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("listzones request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, d.Error(resp)
 	}
 
-	return &zonelist, nil
+	return &result, nil
 }
 
-func (p *dns) NewZone(ctx context.Context, params ZoneCreate) *ZoneCreate {
-
-	logger := p.Log(ctx)
+func (d *dns) NewZone(ctx context.Context, params ZoneCreate) *ZoneCreate {
+	logger := d.Log(ctx)
 	logger.Debug("NewZone")
 
 	zone := &ZoneCreate{Zone: params.Zone,
 		Type:                  params.Type,
 		Masters:               params.Masters,
-		TsigKey:               params.TsigKey,
+		TSIGKey:               params.TSIGKey,
 		Target:                params.Target,
 		EndCustomerID:         params.EndCustomerID,
 		ContractID:            params.ContractID,
@@ -293,85 +289,78 @@ func (p *dns) NewZone(ctx context.Context, params ZoneCreate) *ZoneCreate {
 	return zone
 }
 
-func (p *dns) NewZoneResponse(ctx context.Context, zonename string) *ZoneResponse {
-
-	logger := p.Log(ctx)
+func (d *dns) NewZoneResponse(ctx context.Context, zoneName string) *ZoneResponse {
+	logger := d.Log(ctx)
 	logger.Debug("NewZoneResponse")
 
-	zone := &ZoneResponse{Zone: zonename}
+	zone := &ZoneResponse{Zone: zoneName}
 	return zone
 }
 
-func (p *dns) NewChangeListResponse(ctx context.Context, zone string) *ChangeListResponse {
-
-	logger := p.Log(ctx)
+func (d *dns) NewChangeListResponse(ctx context.Context, zone string) *ChangeListResponse {
+	logger := d.Log(ctx)
 	logger.Debug("NewChangeListResponse")
 
 	changelist := &ChangeListResponse{Zone: zone}
 	return changelist
 }
 
-func (p *dns) NewZoneQueryString(ctx context.Context, contract string, group string) *ZoneQueryString {
-
-	logger := p.Log(ctx)
+func (d *dns) NewZoneQueryString(ctx context.Context, contract, group string) *ZoneQueryString {
+	logger := d.Log(ctx)
 	logger.Debug("NewZoneQueryString")
 
-	zonequerystring := &ZoneQueryString{Contract: contract, Group: group}
-	return zonequerystring
+	zoneQueryString := &ZoneQueryString{Contract: contract, Group: group}
+	return zoneQueryString
 }
 
-func (p *dns) GetZone(ctx context.Context, zonename string) (*ZoneResponse, error) {
-
-	logger := p.Log(ctx)
+func (d *dns) GetZone(ctx context.Context, zoneName string) (*ZoneResponse, error) {
+	logger := d.Log(ctx)
 	logger.Debug("GetZone")
 
-	var zone ZoneResponse
-
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s", zonename)
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s", zoneName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetZone request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &zone)
+	var result ZoneResponse
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetZone request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, d.Error(resp)
 	}
 
-	return &zone, nil
+	return &result, nil
 }
 
-func (p *dns) GetChangeList(ctx context.Context, zone string) (*ChangeListResponse, error) {
-
-	logger := p.Log(ctx)
+func (d *dns) GetChangeList(ctx context.Context, zone string) (*ChangeListResponse, error) {
+	logger := d.Log(ctx)
 	logger.Debug("GetChangeList")
 
-	var changelist ChangeListResponse
 	getURL := fmt.Sprintf("/config-dns/v2/changelists/%s", zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetChangeList request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &changelist)
+	var result ChangeListResponse
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetChangeList request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, d.Error(resp)
 	}
 
-	return &changelist, nil
+	return &result, nil
 }
 
-func (p *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error) {
-
-	logger := p.Log(ctx)
+func (d *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error) {
+	logger := d.Log(ctx)
 	logger.Debug("GetMasterZoneFile")
 
 	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone)
@@ -381,31 +370,30 @@ func (p *dns) GetMasterZoneFile(ctx context.Context, zone string) (string, error
 	}
 	req.Header.Add("Accept", "text/dns")
 
-	resp, err := p.Exec(req, nil)
+	resp, err := d.Exec(req, nil)
 	if err != nil {
 		return "", fmt.Errorf("GetMasterZoneFile request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return "", p.Error(resp)
+		return "", d.Error(resp)
 	}
 
-	masterfile, err := ioutil.ReadAll(resp.Body)
+	masterFile, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("GetMasterZoneFile request failed: %w", err)
 	}
 
-	return string(masterfile), nil
+	return string(masterFile), nil
 }
 
-func (p *dns) PostMasterZoneFile(ctx context.Context, zone string, filedata string) error {
-
-	logger := p.Log(ctx)
+func (d *dns) PostMasterZoneFile(ctx context.Context, zone string, fileData string) error {
+	logger := d.Log(ctx)
 	logger.Debug("PostMasterZoneFile")
 
-	mtresp := ""
+	mtResp := ""
 	pmzfURL := fmt.Sprintf("/config-dns/v2/zones/%s/zone-file", zone)
-	buf := bytes.NewReader([]byte(filedata))
+	buf := bytes.NewReader([]byte(fileData))
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, pmzfURL, buf)
 	if err != nil {
 		return fmt.Errorf("failed to create PostMasterZoneFile request: %w", err)
@@ -413,60 +401,60 @@ func (p *dns) PostMasterZoneFile(ctx context.Context, zone string, filedata stri
 
 	req.Header.Set("Content-Type", "text/dns")
 
-	resp, err := p.Exec(req, &mtresp)
+	resp, err := d.Exec(req, &mtResp)
 	if err != nil {
 		return fmt.Errorf("Create PostMasterZoneFile failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return p.Error(resp)
+		return d.Error(resp)
 	}
 
 	return nil
 }
 
-func (p *dns) CreateZone(ctx context.Context, zone *ZoneCreate, zonequerystring ZoneQueryString, clearConn ...bool) error {
+func (d *dns) CreateZone(ctx context.Context, zone *ZoneCreate, zoneQueryString ZoneQueryString, clearConn ...bool) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
-	// is required to be incremented for every subsequent update to a zone
+	// is required to be incremented for every subsequent update to a zone,
 	// so we have to save just one request at a time to ensure this is always
 	// incremented properly
 
 	zoneWriteLock.Lock()
 	defer zoneWriteLock.Unlock()
 
-	logger := p.Log(ctx)
+	logger := d.Log(ctx)
 	logger.Debug("Zone Create")
 
-	if err := p.ValidateZone(ctx, zone); err != nil {
+	if err := d.ValidateZone(ctx, zone); err != nil {
 		return err
 	}
 
 	zoneMap := filterZoneCreate(zone)
 
-	var zoneresponse ZoneResponse
-	zoneURL := "/config-dns/v2/zones/?contractId=" + zonequerystring.Contract
-	if len(zonequerystring.Group) > 0 {
-		zoneURL += "&gid=" + zonequerystring.Group
+	var zoneResponse ZoneResponse
+	zoneURL := "/config-dns/v2/zones/?contractId=" + zoneQueryString.Contract
+	if len(zoneQueryString.Group) > 0 {
+		zoneURL += "&gid=" + zoneQueryString.Group
 	}
 
-	reqbody, err := convertStructToReqBody(zoneMap)
+	reqBody, err := convertStructToReqBody(zoneMap)
 	if err != nil {
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, zoneURL, reqbody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, zoneURL, reqBody)
 	if err != nil {
 		return fmt.Errorf("failed to create Zone Create request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &zoneresponse)
+	resp, err := d.Exec(req, &zoneResponse)
 	if err != nil {
 		return fmt.Errorf("Create Zone request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return p.Error(resp)
+		return d.Error(resp)
 	}
 
 	if strings.ToUpper(zone.Type) == "PRIMARY" {
@@ -475,7 +463,7 @@ func (p *dns) CreateZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 			// should only be one entry
 			if clear {
 				logger.Info("Clearing Idle Connections")
-				p.Client().CloseIdleConnections()
+				d.Client().CloseIdleConnections()
 			}
 		}
 	}
@@ -483,7 +471,7 @@ func (p *dns) CreateZone(ctx context.Context, zone *ZoneCreate, zonequerystring 
 	return nil
 }
 
-func (p *dns) SaveChangelist(ctx context.Context, zone *ZoneCreate) error {
+func (d *dns) SaveChangelist(ctx context.Context, zone *ZoneCreate) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
@@ -493,33 +481,33 @@ func (p *dns) SaveChangelist(ctx context.Context, zone *ZoneCreate) error {
 	zoneWriteLock.Lock()
 	defer zoneWriteLock.Unlock()
 
-	logger := p.Log(ctx)
+	logger := d.Log(ctx)
 	logger.Debug("SaveChangeList")
 
-	reqbody, err := convertStructToReqBody("")
+	reqBody, err := convertStructToReqBody("")
 	if err != nil {
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
 	postURL := fmt.Sprintf("/config-dns/v2/changelists/?zone=%s", zone.Zone)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, reqbody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, reqBody)
 	if err != nil {
 		return fmt.Errorf("failed to create SaveChangeList request: %w", err)
 	}
 
-	resp, err := p.Exec(req, nil)
+	resp, err := d.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("SaveChangeList request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return p.Error(resp)
+		return d.Error(resp)
 	}
 
 	return nil
 }
 
-func (p *dns) SubmitChangelist(ctx context.Context, zone *ZoneCreate) error {
+func (d *dns) SubmitChangelist(ctx context.Context, zone *ZoneCreate) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
@@ -529,33 +517,33 @@ func (p *dns) SubmitChangelist(ctx context.Context, zone *ZoneCreate) error {
 	zoneWriteLock.Lock()
 	defer zoneWriteLock.Unlock()
 
-	logger := p.Log(ctx)
+	logger := d.Log(ctx)
 	logger.Debug("SubmitChangeList")
 
-	reqbody, err := convertStructToReqBody("")
+	reqBody, err := convertStructToReqBody("")
 	if err != nil {
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
 	postURL := fmt.Sprintf("/config-dns/v2/changelists/%s/submit", zone.Zone)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, reqbody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, reqBody)
 	if err != nil {
 		return fmt.Errorf("failed to create SubmitChangeList request: %w", err)
 	}
 
-	resp, err := p.Exec(req, nil)
+	resp, err := d.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("SubmitChangeList request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return p.Error(resp)
+		return d.Error(resp)
 	}
 
 	return nil
 }
 
-func (p *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryString) error {
+func (d *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryString) error {
 	// This lock will restrict the concurrency of API calls
 	// to 1 save request at a time. This is needed for the Soa.Serial value which
 	// is required to be incremented for every subsequent update to a zone
@@ -565,47 +553,47 @@ func (p *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryStrin
 	zoneWriteLock.Lock()
 	defer zoneWriteLock.Unlock()
 
-	logger := p.Log(ctx)
+	logger := d.Log(ctx)
 	logger.Debug("Zone Update")
 
-	if err := p.ValidateZone(ctx, zone); err != nil {
+	if err := d.ValidateZone(ctx, zone); err != nil {
 		return err
 	}
 
 	zoneMap := filterZoneCreate(zone)
-	reqbody, err := convertStructToReqBody(zoneMap)
+	reqBody, err := convertStructToReqBody(zoneMap)
 	if err != nil {
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
 	putURL := fmt.Sprintf("/config-dns/v2/zones/%s", zone.Zone)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, reqbody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, reqBody)
 	if err != nil {
 		return fmt.Errorf("failed to create Get Update request: %w", err)
 	}
 
-	var zoneresp ZoneResponse
-	resp, err := p.Exec(req, &zoneresp)
+	var result ZoneResponse
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return fmt.Errorf("Zone Update request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return p.Error(resp)
+		return d.Error(resp)
 	}
 
 	return nil
 
 }
 
-func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryString) error {
+func (d *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryString) error {
 	// remove all the records except for SOA
 	// which is required and save the zone
 
 	zoneWriteLock.Lock()
 	defer zoneWriteLock.Unlock()
 
-	logger := p.Log(ctx)
+	logger := d.Log(ctx)
 	logger.Debug("Zone Delete")
 
 	if zone.Zone == "" {
@@ -618,7 +606,7 @@ func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryStrin
 		return fmt.Errorf("failed to create Zone Delete request: %w", err)
 	}
 
-	resp, err := p.Exec(req, nil)
+	resp, err := d.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("Zone Delete request failed: %w", err)
 	}
@@ -628,15 +616,13 @@ func (p *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryStrin
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return p.Error(resp)
+		return d.Error(resp)
 	}
 
 	return nil
-
 }
 
 func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
-
 	zoneType := strings.ToUpper(zone.Type)
 	filteredZone := make(map[string]interface{})
 	zoneElems := reflect.ValueOf(zone).Elem()
@@ -674,22 +660,21 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 }
 
 // ValidateZone validates ZoneCreate Object
-func (p *dns) ValidateZone(ctx context.Context, zone *ZoneCreate) error {
-
-	logger := p.Log(ctx)
+func (d *dns) ValidateZone(ctx context.Context, zone *ZoneCreate) error {
+	logger := d.Log(ctx)
 	logger.Debug("ValidateZone")
 
 	if len(zone.Zone) == 0 {
 		return fmt.Errorf("Zone name is required")
 	}
-	ztype := strings.ToUpper(zone.Type)
-	if ztype != "PRIMARY" && ztype != "SECONDARY" && ztype != "ALIAS" {
+	zType := strings.ToUpper(zone.Type)
+	if zType != "PRIMARY" && zType != "SECONDARY" && zType != "ALIAS" {
 		return fmt.Errorf("Invalid zone type")
 	}
-	if ztype != "SECONDARY" && zone.TsigKey != nil {
-		return fmt.Errorf("TsigKey is invalid for %s zone type", ztype)
+	if zType != "SECONDARY" && zone.TSIGKey != nil {
+		return fmt.Errorf("TsigKey is invalid for %s zone type", zType)
 	}
-	if ztype == "ALIAS" {
+	if zType == "ALIAS" {
 		if len(zone.Target) == 0 {
 			return fmt.Errorf("Target is required for Alias zone type")
 		}
@@ -706,59 +691,57 @@ func (p *dns) ValidateZone(ctx context.Context, zone *ZoneCreate) error {
 	}
 	// Primary or Secondary
 	if len(zone.Target) > 0 {
-		return fmt.Errorf("Target is invalid for %s zone type", ztype)
+		return fmt.Errorf("Target is invalid for %s zone type", zType)
 	}
-	if zone.Masters != nil && len(zone.Masters) > 0 && ztype == "PRIMARY" {
+	if zone.Masters != nil && len(zone.Masters) > 0 && zType == "PRIMARY" {
 		return fmt.Errorf("Masters is invalid for Primary zone type")
 	}
 
 	return nil
 }
 
-func (p *dns) GetZoneNames(ctx context.Context, zone string) (*ZoneNamesResponse, error) {
-
-	logger := p.Log(ctx)
+func (d *dns) GetZoneNames(ctx context.Context, zone string) (*ZoneNamesResponse, error) {
+	logger := d.Log(ctx)
 	logger.Debug("GetZoneNames")
 
-	var znresponse ZoneNamesResponse
 	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names", zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetZoneNames request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &znresponse)
+	var result ZoneNamesResponse
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetZoneNames request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, d.Error(resp)
 	}
 
-	return &znresponse, nil
+	return &result, nil
 }
 
-func (p *dns) GetZoneNameTypes(ctx context.Context, zname string, zone string) (*ZoneNameTypesResponse, error) {
-
-	logger := p.Log(ctx)
+func (d *dns) GetZoneNameTypes(ctx context.Context, zName, zone string) (*ZoneNameTypesResponse, error) {
+	logger := d.Log(ctx)
 	logger.Debug(" GetZoneNameTypes")
 
-	var zntypes ZoneNameTypesResponse
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types", zone, zname)
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types", zone, zName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetZoneNameTypes request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &zntypes)
+	var result ZoneNameTypesResponse
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetZoneNameTypes request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, d.Error(resp)
 	}
 
-	return &zntypes, nil
+	return &result, nil
 }

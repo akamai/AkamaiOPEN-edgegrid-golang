@@ -6,156 +6,145 @@ import (
 	"net/http"
 )
 
-//
-// Handle Operations on gtm asmaps
-// Based on 1.4 schema
-//
-
 // ASMaps contains operations available on a ASmap resource.
-type ASMaps interface {
-	// NewAsMap creates a new AsMap object.
-	NewAsMap(context.Context, string) *AsMap
-	// NewASAssignment instantiates new Assignment struct.
-	NewASAssignment(context.Context, *AsMap, int, string) *AsAssignment
-	// ListAsMaps retrieves all AsMaps.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/get-as-maps
-	ListAsMaps(context.Context, string) ([]*AsMap, error)
-	// GetAsMap retrieves a AsMap with the given name.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/get-as-map
-	GetAsMap(context.Context, string, string) (*AsMap, error)
-	// CreateAsMap creates the datacenter identified by the receiver argument in the specified domain.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/put-as-map
-	CreateAsMap(context.Context, *AsMap, string) (*AsMapResponse, error)
-	// DeleteAsMap deletes the datacenter identified by the receiver argument from the domain specified.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/delete-as-map
-	DeleteAsMap(context.Context, *AsMap, string) (*ResponseStatus, error)
-	// UpdateAsMap updates the datacenter identified in the receiver argument in the provided domain.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/put-as-map
-	UpdateAsMap(context.Context, *AsMap, string) (*ResponseStatus, error)
-}
-
-// AsAssignment represents a GTM asmap assignment structure
-type AsAssignment struct {
-	DatacenterBase
-	AsNumbers []int64 `json:"asNumbers"`
-}
-
-// AsMap  represents a GTM AsMap
-type AsMap struct {
-	DefaultDatacenter *DatacenterBase `json:"defaultDatacenter"`
-	Assignments       []*AsAssignment `json:"assignments,omitempty"`
-	Name              string          `json:"name"`
-	Links             []*Link         `json:"links,omitempty"`
-}
-
-// AsMapList represents the returned GTM AsMap List body
-type AsMapList struct {
-	AsMapItems []*AsMap `json:"items"`
-}
-
-// Validate validates AsMap
-func (asm *AsMap) Validate() error {
-
-	if len(asm.Name) < 1 {
-		return fmt.Errorf("AsMap is missing Name")
+type (
+	ASMaps interface {
+		// NewASMap creates a new AsMap object.
+		NewASMap(context.Context, string) *ASMap
+		// NewASAssignment instantiates new Assignment struct.
+		NewASAssignment(context.Context, *ASMap, int, string) *ASAssignment
+		// ListASMaps retrieves all AsMaps.
+		//
+		// See: https://techdocs.akamai.com/gtm/reference/get-as-maps
+		ListASMaps(context.Context, string) ([]*ASMap, error)
+		// GetASMap retrieves a AsMap with the given name.
+		//
+		// See: https://techdocs.akamai.com/gtm/reference/get-as-map
+		GetASMap(context.Context, string, string) (*ASMap, error)
+		// CreateASMap creates the datacenter identified by the receiver argument in the specified domain.
+		//
+		// See: https://techdocs.akamai.com/gtm/reference/put-as-map
+		CreateASMap(context.Context, *ASMap, string) (*ASMapResponse, error)
+		// DeleteASMap deletes the datacenter identified by the receiver argument from the domain specified.
+		//
+		// See: https://techdocs.akamai.com/gtm/reference/delete-as-map
+		DeleteASMap(context.Context, *ASMap, string) (*ResponseStatus, error)
+		// UpdateASMap updates the datacenter identified in the receiver argument in the provided domain.
+		//
+		// See: https://techdocs.akamai.com/gtm/reference/put-as-map
+		UpdateASMap(context.Context, *ASMap, string) (*ResponseStatus, error)
 	}
-	if asm.DefaultDatacenter == nil {
-		return fmt.Errorf("AsMap is missing DefaultDatacenter")
+	// ASAssignment represents a GTM as map assignment structure
+	ASAssignment struct {
+		DatacenterBase
+		ASNumbers []int64 `json:"asNumbers"`
+	}
+
+	// ASMap  represents a GTM ASMap
+	ASMap struct {
+		DefaultDatacenter *DatacenterBase `json:"defaultDatacenter"`
+		Assignments       []*ASAssignment `json:"assignments,omitempty"`
+		Name              string          `json:"name"`
+		Links             []*Link         `json:"links,omitempty"`
+	}
+
+	// ASMapList represents the returned GTM ASMap List body
+	ASMapList struct {
+		ASMapItems []*ASMap `json:"items"`
+	}
+)
+
+// Validate validates ASMap
+func (a *ASMap) Validate() error {
+	if len(a.Name) < 1 {
+		return fmt.Errorf("ASMap is missing Name")
+	}
+	if a.DefaultDatacenter == nil {
+		return fmt.Errorf("ASMap is missing DefaultDatacenter")
 	}
 
 	return nil
 }
 
-func (p *gtm) NewAsMap(ctx context.Context, name string) *AsMap {
+func (g *gtm) NewASMap(ctx context.Context, name string) *ASMap {
+	logger := g.Log(ctx)
+	logger.Debug("NewASMap")
 
-	logger := p.Log(ctx)
-	logger.Debug("NewAsMap")
-
-	asmap := &AsMap{Name: name}
-	return asmap
+	asMap := &ASMap{Name: name}
+	return asMap
 }
 
-func (p *gtm) ListAsMaps(ctx context.Context, domainName string) ([]*AsMap, error) {
+func (g *gtm) ListASMaps(ctx context.Context, domainName string) ([]*ASMap, error) {
+	logger := g.Log(ctx)
+	logger.Debug("ListASMaps")
 
-	logger := p.Log(ctx)
-	logger.Debug("ListAsMaps")
-
-	var aslist AsMapList
 	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/as-maps", domainName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create ListAsMaps request: %w", err)
+		return nil, fmt.Errorf("failed to create ListASMaps request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &aslist)
+
+	var result ASMapList
+	resp, err := g.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("ListAsMaps request failed: %w", err)
+		return nil, fmt.Errorf("ListASMaps request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return aslist.AsMapItems, nil
+	return result.ASMapItems, nil
 }
 
-func (p *gtm) GetAsMap(ctx context.Context, name, domainName string) (*AsMap, error) {
+func (g *gtm) GetASMap(ctx context.Context, asMapName, domainName string) (*ASMap, error) {
+	logger := g.Log(ctx)
+	logger.Debug("GetASMap")
 
-	logger := p.Log(ctx)
-	logger.Debug("GetAsMap")
-
-	var as AsMap
-	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/as-maps/%s", domainName, name)
+	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/as-maps/%s", domainName, asMapName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create GetAsMap request: %w", err)
+		return nil, fmt.Errorf("failed to create GetASMap request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &as)
+
+	var result ASMap
+	resp, err := g.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetAsMap request failed: %w", err)
+		return nil, fmt.Errorf("GetASMap request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &as, nil
+	return &result, nil
 }
 
-func (p *gtm) NewASAssignment(ctx context.Context, _ *AsMap, dcID int, nickname string) *AsAssignment {
+func (g *gtm) NewASAssignment(ctx context.Context, _ *ASMap, dcID int, nickname string) *ASAssignment {
+	logger := g.Log(ctx)
+	logger.Debug("NewASAssignment")
 
-	logger := p.Log(ctx)
-	logger.Debug("NewAssignment")
-
-	asAssign := &AsAssignment{}
-	asAssign.DatacenterId = dcID
+	asAssign := &ASAssignment{}
+	asAssign.DatacenterID = dcID
 	asAssign.Nickname = nickname
 
 	return asAssign
 }
 
-func (p *gtm) CreateAsMap(ctx context.Context, as *AsMap, domainName string) (*AsMapResponse, error) {
+func (g *gtm) CreateASMap(ctx context.Context, asMap *ASMap, domainName string) (*ASMapResponse, error) {
+	logger := g.Log(ctx)
+	logger.Debug("CreateASMap")
 
-	logger := p.Log(ctx)
-	logger.Debug("CreateAsMap")
-
-	// Use common code. Any specific validation needed?
-	return as.save(ctx, p, domainName)
+	return asMap.save(ctx, g, domainName)
 }
 
-func (p *gtm) UpdateAsMap(ctx context.Context, as *AsMap, domainName string) (*ResponseStatus, error) {
+func (g *gtm) UpdateASMap(ctx context.Context, asMap *ASMap, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
+	logger.Debug("UpdateASMap")
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateAsMap")
-
-	// common code
-	stat, err := as.save(ctx, p, domainName)
+	stat, err := asMap.save(ctx, g, domainName)
 	if err != nil {
 		return nil, err
 	}
@@ -163,57 +152,55 @@ func (p *gtm) UpdateAsMap(ctx context.Context, as *AsMap, domainName string) (*R
 }
 
 // save AsMap in given domain. Common path for Create and Update.
-func (asm *AsMap) save(ctx context.Context, p *gtm, domainName string) (*AsMapResponse, error) {
-
-	if err := asm.Validate(); err != nil {
-		return nil, fmt.Errorf("AsMap validation failed. %w", err)
+func (a *ASMap) save(ctx context.Context, g *gtm, domainName string) (*ASMapResponse, error) {
+	if err := a.Validate(); err != nil {
+		return nil, fmt.Errorf("ASMap validation failed. %w", err)
 	}
 
-	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/as-maps/%s", domainName, asm.Name)
+	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/as-maps/%s", domainName, a.Name)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create AsMap request: %w", err)
+		return nil, fmt.Errorf("failed to create ASMap request: %w", err)
 	}
-
-	var mapresp AsMapResponse
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &mapresp, asm)
+
+	var result ASMapResponse
+	resp, err := g.Exec(req, &result, a)
 	if err != nil {
-		return nil, fmt.Errorf("AsMap request failed: %w", err)
+		return nil, fmt.Errorf("ASMap request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &mapresp, nil
+	return &result, nil
 }
 
-func (p *gtm) DeleteAsMap(ctx context.Context, as *AsMap, domainName string) (*ResponseStatus, error) {
+func (g *gtm) DeleteASMap(ctx context.Context, asMap *ASMap, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
+	logger.Debug("DeleteASMap")
 
-	logger := p.Log(ctx)
-	logger.Debug("DeleteAsMap")
-
-	if err := as.Validate(); err != nil {
-		return nil, fmt.Errorf("Resource validation failed. %w", err)
+	if err := asMap.Validate(); err != nil {
+		return nil, fmt.Errorf("resource validation failed: %w", err)
 	}
 
-	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/as-maps/%s", domainName, as.Name)
+	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/as-maps/%s", domainName, asMap.Name)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, delURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Delete request: %w", err)
 	}
-
-	var mapresp ResponseBody
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &mapresp)
+
+	var result ResponseBody
+	resp, err := g.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("AsMap request failed: %w", err)
+		return nil, fmt.Errorf("ASMap request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return mapresp.Status, nil
+	return result.Status, nil
 }

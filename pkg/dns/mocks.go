@@ -157,7 +157,7 @@ func (d *Mock) GetZoneNameTypes(ctx context.Context, param1 string, param2 strin
 	return args.Get(0).(*ZoneNameTypesResponse), args.Error(1)
 }
 
-func (d *Mock) NewTsigKey(ctx context.Context, param string) *TSIGKey {
+func (d *Mock) NewTSIGKey(ctx context.Context, param string) *TSIGKey {
 	args := d.Called(ctx, param)
 	if args.Get(0) == nil {
 		return nil
@@ -165,7 +165,7 @@ func (d *Mock) NewTsigKey(ctx context.Context, param string) *TSIGKey {
 	return args.Get(0).(*TSIGKey)
 }
 
-func (d *Mock) NewTsigQueryString(ctx context.Context) *TSIGQueryString {
+func (d *Mock) NewTSIGQueryString(ctx context.Context) *TSIGQueryString {
 	args := d.Called(ctx)
 	if args.Get(0) == nil {
 		return nil
@@ -173,7 +173,7 @@ func (d *Mock) NewTsigQueryString(ctx context.Context) *TSIGQueryString {
 	return args.Get(0).(*TSIGQueryString)
 }
 
-func (d *Mock) ListTsigKeys(ctx context.Context, param *TSIGQueryString) (*TSIGReportResponse, error) {
+func (d *Mock) ListTSIGKeys(ctx context.Context, param *TSIGQueryString) (*TSIGReportResponse, error) {
 	args := d.Called(ctx, param)
 
 	if args.Get(0) == nil {
@@ -183,7 +183,7 @@ func (d *Mock) ListTsigKeys(ctx context.Context, param *TSIGQueryString) (*TSIGR
 	return args.Get(0).(*TSIGReportResponse), args.Error(1)
 }
 
-func (d *Mock) GetTsigKeyZones(ctx context.Context, param *TSIGKey) (*ZoneNameListResponse, error) {
+func (d *Mock) GetTSIGKeyZones(ctx context.Context, param *TSIGKey) (*ZoneNameListResponse, error) {
 	args := d.Called(ctx, param)
 
 	if args.Get(0) == nil {
@@ -193,7 +193,7 @@ func (d *Mock) GetTsigKeyZones(ctx context.Context, param *TSIGKey) (*ZoneNameLi
 	return args.Get(0).(*ZoneNameListResponse), args.Error(1)
 }
 
-func (d *Mock) GetTsigKeyAliases(ctx context.Context, param string) (*ZoneNameListResponse, error) {
+func (d *Mock) GetTSIGKeyAliases(ctx context.Context, param string) (*ZoneNameListResponse, error) {
 	args := d.Called(ctx, param)
 
 	if args.Get(0) == nil {
@@ -203,13 +203,13 @@ func (d *Mock) GetTsigKeyAliases(ctx context.Context, param string) (*ZoneNameLi
 	return args.Get(0).(*ZoneNameListResponse), args.Error(1)
 }
 
-func (d *Mock) TsigKeyBulkUpdate(ctx context.Context, param1 *TSIGKeyBulkPost) error {
+func (d *Mock) TSIGKeyBulkUpdate(ctx context.Context, param1 *TSIGKeyBulkPost) error {
 	args := d.Called(ctx, param1)
 
 	return args.Error(0)
 }
 
-func (d *Mock) GetTsigKey(ctx context.Context, param string) (*TSIGKeyResponse, error) {
+func (d *Mock) GetTSIGKey(ctx context.Context, param string) (*TSIGKeyResponse, error) {
 	args := d.Called(ctx, param)
 
 	if args.Get(0) == nil {
@@ -219,13 +219,13 @@ func (d *Mock) GetTsigKey(ctx context.Context, param string) (*TSIGKeyResponse, 
 	return args.Get(0).(*TSIGKeyResponse), args.Error(1)
 }
 
-func (d *Mock) DeleteTsigKey(ctx context.Context, param1 string) error {
+func (d *Mock) DeleteTSIGKey(ctx context.Context, param1 string) error {
 	args := d.Called(ctx, param1)
 
 	return args.Error(0)
 }
 
-func (d *Mock) UpdateTsigKey(ctx context.Context, param1 *TSIGKey, param2 string) error {
+func (d *Mock) UpdateTSIGKey(ctx context.Context, param1 *TSIGKey, param2 string) error {
 	args := d.Called(ctx, param1, param2)
 
 	return args.Error(0)
@@ -377,7 +377,7 @@ func (d *Mock) NewRecordSetResponse(ctx context.Context, param string) *RecordSe
 	return args.Get(0).(*RecordSetResponse)
 }
 
-func (d *Mock) GetRecordsets(ctx context.Context, param string, param2 ...RecordsetQueryArgs) (*RecordSetResponse, error) {
+func (d *Mock) GetRecordSets(ctx context.Context, param string, param2 ...RecordSetQueryArgs) (*RecordSetResponse, error) {
 	var args mock.Arguments
 
 	if len(param2) > 0 {
@@ -393,7 +393,7 @@ func (d *Mock) GetRecordsets(ctx context.Context, param string, param2 ...Record
 	return args.Get(0).(*RecordSetResponse), args.Error(1)
 }
 
-func (d *Mock) CreateRecordsets(ctx context.Context, param *Recordsets, param2 string, param3 ...bool) error {
+func (d *Mock) CreateRecordSets(ctx context.Context, param *RecordSets, param2 string, param3 ...bool) error {
 	var args mock.Arguments
 
 	if len(param3) > 0 {
@@ -405,7 +405,7 @@ func (d *Mock) CreateRecordsets(ctx context.Context, param *Recordsets, param2 s
 	return args.Error(0)
 }
 
-func (d *Mock) UpdateRecordsets(ctx context.Context, param *Recordsets, param2 string, param3 ...bool) error {
+func (d *Mock) UpdateRecordSets(ctx context.Context, param *RecordSets, param2 string, param3 ...bool) error {
 	var args mock.Arguments
 
 	if len(param3) > 0 {

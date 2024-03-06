@@ -24,7 +24,7 @@ type (
 
 	// ListGroupRequest is a request struct
 	ListGroupRequest struct {
-		GroupId string
+		GroupID string
 	}
 
 	// Group contain the information of the particular group
@@ -41,8 +41,8 @@ var (
 	ErrListGroups = errors.New("list groups")
 )
 
-func (p *dns) ListGroups(ctx context.Context, params ListGroupRequest) (*ListGroupResponse, error) {
-	logger := p.Log(ctx)
+func (d *dns) ListGroups(ctx context.Context, params ListGroupRequest) (*ListGroupResponse, error) {
+	logger := d.Log(ctx)
 	logger.Debug("ListGroups")
 
 	uri, err := url.Parse("/config-dns/v2/data/groups/")
@@ -51,8 +51,8 @@ func (p *dns) ListGroups(ctx context.Context, params ListGroupRequest) (*ListGro
 	}
 
 	q := uri.Query()
-	if params.GroupId != "" {
-		q.Add("gid", params.GroupId)
+	if params.GroupID != "" {
+		q.Add("gid", params.GroupID)
 	}
 	uri.RawQuery = q.Encode()
 
@@ -61,15 +61,15 @@ func (p *dns) ListGroups(ctx context.Context, params ListGroupRequest) (*ListGro
 		return nil, fmt.Errorf("failed to list listZoneGroups request: %w", err)
 	}
 
-	var groups ListGroupResponse
-	resp, err := p.Exec(req, &groups)
+	var result ListGroupResponse
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("ListZoneGroups request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, d.Error(resp)
 	}
 
-	return &groups, nil
+	return &result, nil
 }

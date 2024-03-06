@@ -14,26 +14,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGtm_NewResourceInstance(t *testing.T) {
+func TestGTM_NewResourceInstance(t *testing.T) {
 	client := Client(session.Must(session.New()))
-
 	inst := client.NewResourceInstance(context.Background(), nil, 0)
-
 	assert.NotNil(t, inst)
 }
 
-func TestGtm_NewResource(t *testing.T) {
+func TestGTM_NewResource(t *testing.T) {
 	client := Client(session.Must(session.New()))
-
 	res := client.NewResource(context.Background(), "foo")
-
 	assert.NotNil(t, res)
 }
 
-func TestGtm_ListResources(t *testing.T) {
+func TestGTM_ListResources(t *testing.T) {
 	var result ResourceList
 
-	respData, err := loadTestData("TestGtm_ListResources.resp.json")
+	respData, err := loadTestData("TestGTM_ListResources.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -106,12 +102,10 @@ func TestGtm_ListResources(t *testing.T) {
 	}
 }
 
-// Test GetResource
-// GetResource(context.Context, string) (*Resource, error)
-func TestGtm_GetResource(t *testing.T) {
+func TestGTM_GetResource(t *testing.T) {
 	var result Resource
 
-	respData, err := loadTestData("TestGtm_GetResource.resp.json")
+	respData, err := loadTestData("TestGTM_GetResource.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -178,13 +172,11 @@ func TestGtm_GetResource(t *testing.T) {
 	}
 }
 
-// Test Create domain.
-// CreateResource(context.Context, *Resource, map[string]string) (*ResourceResponse, error)
-func TestGtm_CreateResource(t *testing.T) {
+func TestGTM_CreateResource(t *testing.T) {
 	var result ResourceResponse
 	var req Resource
 
-	respData, err := loadTestData("TestGtm_CreateResource.resp.json")
+	respData, err := loadTestData("TestGTM_CreateResource.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -193,7 +185,7 @@ func TestGtm_CreateResource(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateResource.req.json")
+	reqData, err := loadTestData("TestGTM_CreateResource.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -268,13 +260,11 @@ func TestGtm_CreateResource(t *testing.T) {
 	}
 }
 
-// Test Update domain.
-// UpdateResource(context.Context, *Resource, map[string]string) (*ResourceResponse, error)
-func TestGtm_UpdateResource(t *testing.T) {
+func TestGTM_UpdateResource(t *testing.T) {
 	var result ResourceResponse
 	var req Resource
 
-	respData, err := loadTestData("TestGtm_CreateResource.resp.json")
+	respData, err := loadTestData("TestGTM_CreateResource.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -283,7 +273,7 @@ func TestGtm_UpdateResource(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateResource.req.json")
+	reqData, err := loadTestData("TestGTM_CreateResource.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -358,11 +348,11 @@ func TestGtm_UpdateResource(t *testing.T) {
 	}
 }
 
-func TestGtm_DeleteResource(t *testing.T) {
+func TestGTM_DeleteResource(t *testing.T) {
 	var result ResourceResponse
 	var req Resource
 
-	respData, err := loadTestData("TestGtm_CreateResource.resp.json")
+	respData, err := loadTestData("TestGTM_CreateResource.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -371,7 +361,7 @@ func TestGtm_DeleteResource(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateResource.req.json")
+	reqData, err := loadTestData("TestGTM_CreateResource.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}

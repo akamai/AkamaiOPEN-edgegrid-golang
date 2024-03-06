@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDns_ListGroups(t *testing.T) {
+func TestDNS_ListGroups(t *testing.T) {
 	tests := map[string]struct {
 		request          ListGroupRequest
 		responseStatus   int
@@ -22,7 +22,7 @@ func TestDns_ListGroups(t *testing.T) {
 	}{
 		"200 OK, when optional query parameter provided": {
 			request: ListGroupRequest{
-				GroupId: "9012",
+				GroupID: "9012",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `

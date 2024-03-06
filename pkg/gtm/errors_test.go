@@ -13,7 +13,7 @@ import (
 	"github.com/tj/assert"
 )
 
-func TestJsonErrorUnmarshalling(t *testing.T) {
+func TestJSONErrorUnmarshalling(t *testing.T) {
 	req, err := http.NewRequestWithContext(
 		context.TODO(),
 		http.MethodHead,

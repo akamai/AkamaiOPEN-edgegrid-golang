@@ -16,7 +16,8 @@
 
 
 
-
+* GTM
+  * Rename various structs, variables, requests and responses names
 
 
 

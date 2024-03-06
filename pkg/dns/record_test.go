@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDns_CreateRecord(t *testing.T) {
+func TestDNS_CreateRecord(t *testing.T) {
 	tests := map[string]struct {
 		body           RecordBody
 		responseStatus int
@@ -86,7 +86,7 @@ func TestDns_CreateRecord(t *testing.T) {
 	}
 }
 
-func TestDns_UpdateRecord(t *testing.T) {
+func TestDNS_UpdateRecord(t *testing.T) {
 	tests := map[string]struct {
 		body           RecordBody
 		responseStatus int
@@ -160,7 +160,7 @@ func TestDns_UpdateRecord(t *testing.T) {
 	}
 }
 
-func TestDns_DeleteRecord(t *testing.T) {
+func TestDNS_DeleteRecord(t *testing.T) {
 	tests := map[string]struct {
 		body           RecordBody
 		responseStatus int
@@ -225,7 +225,7 @@ func TestDns_DeleteRecord(t *testing.T) {
 	}
 }
 
-func TestDns_RecordToMap(t *testing.T) {
+func TestDNS_RecordToMap(t *testing.T) {
 	client := Client(session.Must(session.New()))
 
 	data := client.RecordToMap(context.Background(), &RecordBody{
@@ -252,14 +252,14 @@ func TestDns_RecordToMap(t *testing.T) {
 	assert.Nil(t, data)
 }
 
-func TestDns_NewRecordBody(t *testing.T) {
+func TestDNS_NewRecordBody(t *testing.T) {
 	client := Client(session.Must(session.New()))
 
 	toCopy := RecordBody{
 		Name: "www.example.com",
 	}
 
-	newbody := client.NewRecordBody(context.Background(), toCopy)
+	newBody := client.NewRecordBody(context.Background(), toCopy)
 
-	assert.Equal(t, toCopy, *newbody)
+	assert.Equal(t, toCopy, *newBody)
 }

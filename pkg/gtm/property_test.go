@@ -14,23 +14,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGtm_NewTrafficTarget(t *testing.T) {
+func TestGTM_NewTrafficTarget(t *testing.T) {
 	client := Client(session.Must(session.New()))
-
 	tgt := client.NewTrafficTarget(context.Background())
-
 	assert.NotNil(t, tgt)
 }
 
-func TestGtm_NewStaticRRSet(t *testing.T) {
+func TestGTM_NewStaticRRSet(t *testing.T) {
 	client := Client(session.Must(session.New()))
-
 	set := client.NewStaticRRSet(context.Background())
-
 	assert.NotNil(t, set)
 }
 
-func TestGtm_NewLivenessTest(t *testing.T) {
+func TestGTM_NewLivenessTest(t *testing.T) {
 	client := Client(session.Must(session.New()))
 
 	test := client.NewLivenessTest(context.Background(), "foo", "bar", 1, 1000)
@@ -42,7 +38,7 @@ func TestGtm_NewLivenessTest(t *testing.T) {
 	assert.Equal(t, float32(1000), test.TestTimeout)
 }
 
-func TestGtm_NewProperty(t *testing.T) {
+func TestGTM_NewProperty(t *testing.T) {
 	client := Client(session.Must(session.New()))
 
 	prop := client.NewProperty(context.Background(), "foo")
@@ -51,10 +47,10 @@ func TestGtm_NewProperty(t *testing.T) {
 	assert.Equal(t, prop.Name, "foo")
 }
 
-func TestGtm_ListProperties(t *testing.T) {
+func TestGTM_ListProperties(t *testing.T) {
 	var result PropertyList
 
-	respData, err := loadTestData("TestGtm_ListProperties.resp.json")
+	respData, err := loadTestData("TestGTM_ListProperties.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,12 +123,10 @@ func TestGtm_ListProperties(t *testing.T) {
 	}
 }
 
-// Test GetProperty
-// GetProperty(context.Context, string) (*Property, error)
-func TestGtm_GetProperty(t *testing.T) {
+func TestGTM_GetProperty(t *testing.T) {
 	var result Property
 
-	respData, err := loadTestData("TestGtm_GetProperty.resp.json")
+	respData, err := loadTestData("TestGTM_GetProperty.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -199,13 +193,11 @@ func TestGtm_GetProperty(t *testing.T) {
 	}
 }
 
-// Test Create domain.
-// CreateProperty(context.Context, *Property, map[string]string) (*PropertyResponse, error)
-func TestGtm_CreateProperty(t *testing.T) {
+func TestGTM_CreateProperty(t *testing.T) {
 	var result PropertyResponse
 	var req Property
 
-	respData, err := loadTestData("TestGtm_CreateProperty.resp.json")
+	respData, err := loadTestData("TestGTM_CreateProperty.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -214,7 +206,7 @@ func TestGtm_CreateProperty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateProperty.req.json")
+	reqData, err := loadTestData("TestGTM_CreateProperty.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -289,13 +281,11 @@ func TestGtm_CreateProperty(t *testing.T) {
 	}
 }
 
-// Test Update domain.
-// UpdateProperty(context.Context, *Property, map[string]string) (*PropertyResponse, error)
-func TestGtm_UpdateProperty(t *testing.T) {
+func TestGTM_UpdateProperty(t *testing.T) {
 	var result PropertyResponse
 	var req Property
 
-	respData, err := loadTestData("TestGtm_CreateProperty.resp.json")
+	respData, err := loadTestData("TestGTM_CreateProperty.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -304,7 +294,7 @@ func TestGtm_UpdateProperty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateProperty.req.json")
+	reqData, err := loadTestData("TestGTM_CreateProperty.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -379,11 +369,11 @@ func TestGtm_UpdateProperty(t *testing.T) {
 	}
 }
 
-func TestGtm_DeleteProperty(t *testing.T) {
+func TestGTM_DeleteProperty(t *testing.T) {
 	var result PropertyResponse
 	var req Property
 
-	respData, err := loadTestData("TestGtm_CreateProperty.resp.json")
+	respData, err := loadTestData("TestGTM_CreateProperty.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -392,7 +382,7 @@ func TestGtm_DeleteProperty(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateProperty.req.json")
+	reqData, err := loadTestData("TestGTM_CreateProperty.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}

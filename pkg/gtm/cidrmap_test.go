@@ -14,18 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGtm_NewCidrMap(t *testing.T) {
+func TestGTM_NewCIDRMap(t *testing.T) {
 	client := Client(session.Must(session.New()))
-
-	cmap := client.NewCidrMap(context.Background(), "foo")
-
-	assert.Equal(t, "foo", cmap.Name)
+	cidrMap := client.NewCIDRMap(context.Background(), "foo")
+	assert.Equal(t, "foo", cidrMap.Name)
 }
 
-func TestGtm_ListCidrMaps(t *testing.T) {
-	var result CidrMapList
+func TestGTM_ListCIDRMaps(t *testing.T) {
+	var result CIDRMapList
 
-	respData, err := loadTestData("TestGtm_ListCidrMap.resp.json")
+	respData, err := loadTestData("TestGTM_ListCIDRMap.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,7 +37,7 @@ func TestGtm_ListCidrMaps(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse []*CidrMap
+		expectedResponse []*CIDRMap
 		withError        error
 		headers          http.Header
 	}{
@@ -51,7 +49,7 @@ func TestGtm_ListCidrMaps(t *testing.T) {
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps",
-			expectedResponse: result.CidrMapItems,
+			expectedResponse: result.CIDRMapItems,
 		},
 		"500 internal server error": {
 			domainName:     "example.akadns.net",
@@ -84,7 +82,7 @@ func TestGtm_ListCidrMaps(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListCidrMaps(
+			result, err := client.ListCIDRMaps(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.domainName)
@@ -98,10 +96,10 @@ func TestGtm_ListCidrMaps(t *testing.T) {
 	}
 }
 
-func TestGtm_GetCidrMap(t *testing.T) {
-	var result CidrMap
+func TestGTM_GetCIDRMap(t *testing.T) {
+	var result CIDRMap
 
-	respData, err := loadTestData("TestGtm_GetCidrMap.resp.json")
+	respData, err := loadTestData("TestGTM_GetCIDRMap.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -116,7 +114,7 @@ func TestGtm_GetCidrMap(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *CidrMap
+		expectedResponse *CIDRMap
 		withError        error
 		headers          http.Header
 	}{
@@ -163,7 +161,7 @@ func TestGtm_GetCidrMap(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetCidrMap(
+			result, err := client.GetCIDRMap(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.name, test.domainName)
@@ -177,20 +175,20 @@ func TestGtm_GetCidrMap(t *testing.T) {
 	}
 }
 
-func TestGtm_NewCidrAssignment(t *testing.T) {
+func TestGTM_NewCIDRAssignment(t *testing.T) {
 	client := Client(session.Must(session.New()))
 
-	asn := client.NewCidrAssignment(context.Background(), nil, 100, "foo")
+	asn := client.NewCIDRAssignment(context.Background(), nil, 100, "foo")
 
-	assert.Equal(t, 100, asn.DatacenterId)
+	assert.Equal(t, 100, asn.DatacenterID)
 	assert.Equal(t, "foo", asn.Nickname)
 }
 
-func TestGtm_CreateCidrMap(t *testing.T) {
-	var result CidrMapResponse
-	var req CidrMap
+func TestGTM_CreateCIDRMap(t *testing.T) {
+	var result CIDRMapResponse
+	var req CIDRMap
 
-	respData, err := loadTestData("TestGtm_CreateCidrMap.resp.json")
+	respData, err := loadTestData("TestGTM_CreateCIDRMap.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -199,7 +197,7 @@ func TestGtm_CreateCidrMap(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateCidrMap.req.json")
+	reqData, err := loadTestData("TestGTM_CreateCIDRMap.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -209,12 +207,12 @@ func TestGtm_CreateCidrMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		cmap             *CidrMap
+		cmap             *CIDRMap
 		domainName       string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *CidrMapResponse
+		expectedResponse *CIDRMapResponse
 		withError        error
 		headers          http.Header
 	}{
@@ -260,7 +258,7 @@ func TestGtm_CreateCidrMap(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateCidrMap(
+			result, err := client.CreateCIDRMap(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
@@ -274,11 +272,11 @@ func TestGtm_CreateCidrMap(t *testing.T) {
 	}
 }
 
-func TestGtm_UpdateCidrMap(t *testing.T) {
-	var result CidrMapResponse
-	var req CidrMap
+func TestGTM_UpdateCIDRMap(t *testing.T) {
+	var result CIDRMapResponse
+	var req CIDRMap
 
-	respData, err := loadTestData("TestGtm_CreateCidrMap.resp.json")
+	respData, err := loadTestData("TestGTM_CreateCIDRMap.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -287,7 +285,7 @@ func TestGtm_UpdateCidrMap(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateCidrMap.req.json")
+	reqData, err := loadTestData("TestGTM_CreateCIDRMap.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -297,7 +295,7 @@ func TestGtm_UpdateCidrMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		cmap             *CidrMap
+		cmap             *CIDRMap
 		domainName       string
 		responseStatus   int
 		responseBody     string
@@ -348,7 +346,7 @@ func TestGtm_UpdateCidrMap(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateCidrMap(
+			result, err := client.UpdateCIDRMap(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
@@ -362,11 +360,11 @@ func TestGtm_UpdateCidrMap(t *testing.T) {
 	}
 }
 
-func TestGtm_DeleteCidrMap(t *testing.T) {
-	var result CidrMapResponse
-	var req CidrMap
+func TestGTM_DeleteCIDRMap(t *testing.T) {
+	var result CIDRMapResponse
+	var req CIDRMap
 
-	respData, err := loadTestData("TestGtm_CreateCidrMap.resp.json")
+	respData, err := loadTestData("TestGTM_CreateCIDRMap.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -375,7 +373,7 @@ func TestGtm_DeleteCidrMap(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateCidrMap.req.json")
+	reqData, err := loadTestData("TestGTM_CreateCIDRMap.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -385,7 +383,7 @@ func TestGtm_DeleteCidrMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		cmap             *CidrMap
+		cmap             *CIDRMap
 		domainName       string
 		responseStatus   int
 		responseBody     string
@@ -436,7 +434,7 @@ func TestGtm_DeleteCidrMap(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.DeleteCidrMap(
+			result, err := client.DeleteCIDRMap(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)

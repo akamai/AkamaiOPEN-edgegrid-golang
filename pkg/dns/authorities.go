@@ -33,18 +33,16 @@ type (
 	}
 )
 
-func (p *dns) NewAuthorityResponse(ctx context.Context, _ string) *AuthorityResponse {
-
-	logger := p.Log(ctx)
+func (d *dns) NewAuthorityResponse(ctx context.Context, _ string) *AuthorityResponse {
+	logger := d.Log(ctx)
 	logger.Debug("NewAuthorityResponse")
 
 	authorities := &AuthorityResponse{}
 	return authorities
 }
 
-func (p *dns) GetAuthorities(ctx context.Context, contractID string) (*AuthorityResponse, error) {
-
-	logger := p.Log(ctx)
+func (d *dns) GetAuthorities(ctx context.Context, contractID string) (*AuthorityResponse, error) {
+	logger := d.Log(ctx)
 	logger.Debug("GetAuthorities")
 
 	if contractID == "" {
@@ -58,45 +56,38 @@ func (p *dns) GetAuthorities(ctx context.Context, contractID string) (*Authority
 		return nil, fmt.Errorf("failed to create getauthorities request: %w", err)
 	}
 
-	var authNames AuthorityResponse
-	resp, err := p.Exec(req, &authNames)
+	var result AuthorityResponse
+	resp, err := d.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("getauthorities request failed: %w", err)
+		return nil, fmt.Errorf("GetAuthorities request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, d.Error(resp)
 	}
 
-	return &authNames, nil
+	return &result, nil
 }
 
-func (p *dns) GetNameServerRecordList(ctx context.Context, contractID string) ([]string, error) {
-
-	logger := p.Log(ctx)
+func (d *dns) GetNameServerRecordList(ctx context.Context, contractID string) ([]string, error) {
+	logger := d.Log(ctx)
 	logger.Debug("GetNameServerRecordList")
 
 	if contractID == "" {
-		return nil, fmt.Errorf("%w: GetAuthorities reqs valid contractId", ErrBadRequest)
+		return nil, fmt.Errorf("%w: GetAuthorities requires valid contractId", ErrBadRequest)
 	}
 
-	NSrecords, err := p.GetAuthorities(ctx, contractID)
-
+	NSrecords, err := d.GetAuthorities(ctx, contractID)
 	if err != nil {
 		return nil, err
 	}
 
-	var arrLength int
-	for _, c := range NSrecords.Contracts {
-		arrLength = len(c.Authorities)
-	}
-
-	ns := make([]string, 0, arrLength)
-
+	var result []string
 	for _, r := range NSrecords.Contracts {
 		for _, n := range r.Authorities {
-			ns = append(ns, n)
+			result = append(result, n)
 		}
 	}
-	return ns, nil
+
+	return result, nil
 }

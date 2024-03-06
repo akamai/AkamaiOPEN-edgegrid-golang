@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDns_GetAuthorities(t *testing.T) {
+func TestDNS_GetAuthorities(t *testing.T) {
 	tests := map[string]struct {
 		contractID       string
 		responseStatus   int
@@ -105,7 +105,7 @@ func TestDns_GetAuthorities(t *testing.T) {
 	}
 }
 
-func TestDns_GetNameServerRecordList(t *testing.T) {
+func TestDNS_GetNameServerRecordList(t *testing.T) {
 	tests := map[string]struct {
 		contractID       string
 		responseStatus   int
@@ -164,10 +164,8 @@ func TestDns_GetNameServerRecordList(t *testing.T) {
 	}
 }
 
-func TestDns_NewAuthorityResponse(t *testing.T) {
+func TestDNS_NewAuthorityResponse(t *testing.T) {
 	client := Client(session.Must(session.New()))
-
 	resp := client.NewAuthorityResponse(context.Background(), "empty")
-
 	assert.NotNil(t, resp)
 }

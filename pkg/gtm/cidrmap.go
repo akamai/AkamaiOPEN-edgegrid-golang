@@ -6,196 +6,183 @@ import (
 	"net/http"
 )
 
-//
-// Handle Operations on gtm cidrmaps
-// Based on 1.4 schema
-//
-
-// CidrMaps contains operations available on a Cidrmap resource.
-type CidrMaps interface {
-	// NewCidrMap creates a new CidrMap object.
-	NewCidrMap(context.Context, string) *CidrMap
-	// NewCidrAssignment instantiates new Assignment struct.
-	NewCidrAssignment(context.Context, *CidrMap, int, string) *CidrAssignment
-	// ListCidrMaps retreieves all CidrMaps.
+// CIDRMaps contains operations available on a CIDR map resource.
+type CIDRMaps interface {
+	// NewCIDRMap creates a new CIDRMap object.
+	NewCIDRMap(context.Context, string) *CIDRMap
+	// NewCIDRAssignment instantiates new Assignment struct.
+	NewCIDRAssignment(context.Context, *CIDRMap, int, string) *CIDRAssignment
+	// ListCIDRMaps retrieves all CIDRMaps.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-cidr-maps
-	ListCidrMaps(context.Context, string) ([]*CidrMap, error)
-	// GetCidrMap retrieves a CidrMap with the given name.
+	ListCIDRMaps(context.Context, string) ([]*CIDRMap, error)
+	// GetCIDRMap retrieves a CIDRMap with the given name.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-cidr-map
-	GetCidrMap(context.Context, string, string) (*CidrMap, error)
-	// CreateCidrMap creates the datacenter identified by the receiver argument in the specified domain.
+	GetCIDRMap(context.Context, string, string) (*CIDRMap, error)
+	// CreateCIDRMap creates the datacenter identified by the receiver argument in the specified domain.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/put-cidr-map
-	CreateCidrMap(context.Context, *CidrMap, string) (*CidrMapResponse, error)
-	// DeleteCidrMap deletes the datacenter identified by the receiver argument from the domain specified.
+	CreateCIDRMap(context.Context, *CIDRMap, string) (*CIDRMapResponse, error)
+	// DeleteCIDRMap deletes the datacenter identified by the receiver argument from the domain specified.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/delete-cidr-maps
-	DeleteCidrMap(context.Context, *CidrMap, string) (*ResponseStatus, error)
-	// UpdateCidrMap updates the datacenter identified in the receiver argument in the provided domain.
+	DeleteCIDRMap(context.Context, *CIDRMap, string) (*ResponseStatus, error)
+	// UpdateCIDRMap updates the datacenter identified in the receiver argument in the provided domain.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/put-cidr-map
-	UpdateCidrMap(context.Context, *CidrMap, string) (*ResponseStatus, error)
+	UpdateCIDRMap(context.Context, *CIDRMap, string) (*ResponseStatus, error)
 }
 
-// CidrAssignment represents a GTM cidr assignment element
-type CidrAssignment struct {
+// CIDRAssignment represents a GTM CIDR assignment element
+type CIDRAssignment struct {
 	DatacenterBase
 	Blocks []string `json:"blocks"`
 }
 
-// CidrMap  represents a GTM cidrMap element
-type CidrMap struct {
+// CIDRMap represents a GTM CIDRMap element
+type CIDRMap struct {
 	DefaultDatacenter *DatacenterBase   `json:"defaultDatacenter"`
-	Assignments       []*CidrAssignment `json:"assignments,omitempty"`
+	Assignments       []*CIDRAssignment `json:"assignments,omitempty"`
 	Name              string            `json:"name"`
 	Links             []*Link           `json:"links,omitempty"`
 }
 
-// CidrMapList represents a GTM returned cidrmap list body
-type CidrMapList struct {
-	CidrMapItems []*CidrMap `json:"items"`
+// CIDRMapList represents a GTM returned CIDRMap list body
+type CIDRMapList struct {
+	CIDRMapItems []*CIDRMap `json:"items"`
 }
 
-// Validate validates CidrMap
-func (cidr *CidrMap) Validate() error {
-	if len(cidr.Name) < 1 {
-		return fmt.Errorf("CidrMap is missing Name")
+// Validate validates CIDRMap
+func (c *CIDRMap) Validate() error {
+	if len(c.Name) < 1 {
+		return fmt.Errorf("CIDRMap is missing Name")
 	}
-	if cidr.DefaultDatacenter == nil {
-		return fmt.Errorf("CidrMap is missing DefaultDatacenter")
+	if c.DefaultDatacenter == nil {
+		return fmt.Errorf("CIDRMap is missing DefaultDatacenter")
 	}
 
 	return nil
 }
 
-func (p *gtm) NewCidrMap(ctx context.Context, name string) *CidrMap {
+func (g *gtm) NewCIDRMap(ctx context.Context, name string) *CIDRMap {
+	logger := g.Log(ctx)
+	logger.Debug("NewCIDRMap")
 
-	logger := p.Log(ctx)
-	logger.Debug("NewCidrMap")
-
-	cidrmap := &CidrMap{Name: name}
-	return cidrmap
+	cidrMap := &CIDRMap{Name: name}
+	return cidrMap
 }
 
-func (p *gtm) ListCidrMaps(ctx context.Context, domainName string) ([]*CidrMap, error) {
+func (g *gtm) ListCIDRMaps(ctx context.Context, domainName string) ([]*CIDRMap, error) {
+	logger := g.Log(ctx)
+	logger.Debug("ListCIDRMaps")
 
-	logger := p.Log(ctx)
-	logger.Debug("ListCidrMaps")
-
-	var cidrs CidrMapList
 	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/cidr-maps", domainName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create ListCidrMaps request: %w", err)
+		return nil, fmt.Errorf("failed to create ListCIDRMaps request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &cidrs)
+
+	var result CIDRMapList
+	resp, err := g.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("ListCidrMaps request failed: %w", err)
+		return nil, fmt.Errorf("ListCIDRMaps request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return cidrs.CidrMapItems, nil
+	return result.CIDRMapItems, nil
 }
 
-func (p *gtm) GetCidrMap(ctx context.Context, name, domainName string) (*CidrMap, error) {
+func (g *gtm) GetCIDRMap(ctx context.Context, mapName, domainName string) (*CIDRMap, error) {
+	logger := g.Log(ctx)
+	logger.Debug("GetCIDRMap")
 
-	logger := p.Log(ctx)
-	logger.Debug("GetCidrMap")
-
-	var cidr CidrMap
-	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/cidr-maps/%s", domainName, name)
+	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/cidr-maps/%s", domainName, mapName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create GetCidrMap request: %w", err)
+		return nil, fmt.Errorf("failed to create GetCIDRMap request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &cidr)
+
+	var result CIDRMap
+	resp, err := g.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetCidrMap request failed: %w", err)
+		return nil, fmt.Errorf("GetCIDRMap request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &cidr, nil
+	return &result, nil
 }
 
-func (p *gtm) NewCidrAssignment(ctx context.Context, _ *CidrMap, dcid int, nickname string) *CidrAssignment {
+func (g *gtm) NewCIDRAssignment(ctx context.Context, _ *CIDRMap, dcID int, nickname string) *CIDRAssignment {
+	logger := g.Log(ctx)
+	logger.Debug("NewCIDRAssignment")
 
-	logger := p.Log(ctx)
-	logger.Debug("NewCidrAssignment")
-
-	cidrAssign := &CidrAssignment{}
-	cidrAssign.DatacenterId = dcid
+	cidrAssign := &CIDRAssignment{}
+	cidrAssign.DatacenterID = dcID
 	cidrAssign.Nickname = nickname
 
 	return cidrAssign
 }
 
-func (p *gtm) CreateCidrMap(ctx context.Context, cidr *CidrMap, domainName string) (*CidrMapResponse, error) {
+func (g *gtm) CreateCIDRMap(ctx context.Context, cidr *CIDRMap, domainName string) (*CIDRMapResponse, error) {
+	logger := g.Log(ctx)
+	logger.Debug("CreateCIDRMap")
 
-	logger := p.Log(ctx)
-	logger.Debug("CreateCidrMap")
-
-	// Use common code. Any specific validation needed?
-	return cidr.save(ctx, p, domainName)
+	return cidr.save(ctx, g, domainName)
 }
 
-func (p *gtm) UpdateCidrMap(ctx context.Context, cidr *CidrMap, domainName string) (*ResponseStatus, error) {
+func (g *gtm) UpdateCIDRMap(ctx context.Context, cidr *CIDRMap, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
+	logger.Debug("UpdateCIDRMap")
 
-	logger := p.Log(ctx)
-	logger.Debug("UpdateCidrMap")
-
-	// common code
-	stat, err := cidr.save(ctx, p, domainName)
+	stat, err := cidr.save(ctx, g, domainName)
 	if err != nil {
 		return nil, err
 	}
 	return stat.Status, err
 }
 
-// Save CidrMap in given domain. Common path for Create and Update.
-func (cidr *CidrMap) save(ctx context.Context, p *gtm, domainName string) (*CidrMapResponse, error) {
+// Save CIDRMap in given domain. Common path for Create and Update.
+func (c *CIDRMap) save(ctx context.Context, g *gtm, domainName string) (*CIDRMapResponse, error) {
 
-	if err := cidr.Validate(); err != nil {
-		return nil, fmt.Errorf("CidrMap validation failed. %w", err)
+	if err := c.Validate(); err != nil {
+		return nil, fmt.Errorf("CIDRMap validation failed. %w", err)
 	}
 
-	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/cidr-maps/%s", domainName, cidr.Name)
+	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/cidr-maps/%s", domainName, c.Name)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create AsMap request: %w", err)
+		return nil, fmt.Errorf("failed to create CIDRMap request: %w", err)
 	}
-
-	var mapresp CidrMapResponse
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &mapresp, cidr)
+
+	var result CIDRMapResponse
+	resp, err := g.Exec(req, &result, c)
 	if err != nil {
-		return nil, fmt.Errorf("CidrMap request failed: %w", err)
+		return nil, fmt.Errorf("CIDRMap request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &mapresp, nil
+	return &result, nil
 }
 
-func (p *gtm) DeleteCidrMap(ctx context.Context, cidr *CidrMap, domainName string) (*ResponseStatus, error) {
-
-	logger := p.Log(ctx)
-	logger.Debug("DeleteCidrMap")
+func (g *gtm) DeleteCIDRMap(ctx context.Context, cidr *CIDRMap, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
+	logger.Debug("DeleteCIDRMap")
 
 	if err := cidr.Validate(); err != nil {
-		logger.Errorf("CidrMap validation failed. %w", err)
-		return nil, fmt.Errorf("CidrMap validation failed. %w", err)
+		return nil, fmt.Errorf("CIDRMap validation failed. %w", err)
 	}
 
 	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/cidr-maps/%s", domainName, cidr.Name)
@@ -203,17 +190,17 @@ func (p *gtm) DeleteCidrMap(ctx context.Context, cidr *CidrMap, domainName strin
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Delete request: %w", err)
 	}
-
-	var mapresp ResponseBody
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &mapresp)
+
+	var result ResponseBody
+	resp, err := g.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("CidrMap request failed: %w", err)
+		return nil, fmt.Errorf("CIDRMap request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return mapresp.Status, nil
+	return result.Status, nil
 }
