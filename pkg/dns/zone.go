@@ -66,10 +66,6 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/put-zone
 		UpdateZone(context.Context, *ZoneCreate, ZoneQueryString) error
-		// DeleteZone deletes zone.
-		//
-		// See: N/A
-		DeleteZone(context.Context, *ZoneCreate, ZoneQueryString) error
 		// ValidateZone validates zone metadata based on type.
 		ValidateZone(context.Context, *ZoneCreate) error
 		// GetZoneNames retrieves a list of a zone's record names.
@@ -579,43 +575,6 @@ func (d *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryStrin
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return d.Error(resp)
-	}
-
-	return nil
-
-}
-
-func (d *dns) DeleteZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryString) error {
-	// remove all the records except for SOA
-	// which is required and save the zone
-
-	zoneWriteLock.Lock()
-	defer zoneWriteLock.Unlock()
-
-	logger := d.Log(ctx)
-	logger.Debug("Zone Delete")
-
-	if zone.Zone == "" {
-		return fmt.Errorf("Zone name missing")
-	}
-
-	deleteURL := fmt.Sprintf("/config-dns/v2/zones/%s", zone.Zone)
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, deleteURL, nil)
-	if err != nil {
-		return fmt.Errorf("failed to create Zone Delete request: %w", err)
-	}
-
-	resp, err := d.Exec(req, nil)
-	if err != nil {
-		return fmt.Errorf("Zone Delete request failed: %w", err)
-	}
-
-	if resp.StatusCode == http.StatusNotFound {
-		return nil
-	}
-
-	if resp.StatusCode != http.StatusNoContent {
 		return d.Error(resp)
 	}
 

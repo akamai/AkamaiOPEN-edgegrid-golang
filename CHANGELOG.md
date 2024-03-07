@@ -80,6 +80,8 @@
 
 
 
+* PAPI
+  * Updated documentation link for `GetProperties` method
 
 
 
@@ -88,7 +90,8 @@
 
 
 
-
+* DNS
+  * Removed not working `DeleteZone` method
 
 
 

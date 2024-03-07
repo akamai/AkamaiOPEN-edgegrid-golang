@@ -16,7 +16,7 @@ type (
 	Properties interface {
 		// GetProperties lists properties available for the current contract and group
 		//
-		// https://techdocs.akamai.com/property-mgr/reference/get-products
+		// https://techdocs.akamai.com/property-mgr/reference/get-properties
 		GetProperties(ctx context.Context, r GetPropertiesRequest) (*GetPropertiesResponse, error)
 
 		// CreateProperty creates a new property from scratch or bases one on another property's rule tree and optionally its set of assigned hostnames

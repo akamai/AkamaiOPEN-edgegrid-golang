@@ -839,69 +839,6 @@ func TestDNS_UpdateZone(t *testing.T) {
 	}
 }
 
-func TestDNS_DeleteZone(t *testing.T) {
-	tests := map[string]struct {
-		zone           ZoneCreate
-		query          ZoneQueryString
-		responseStatus int
-		responseBody   string
-		expectedPath   string
-		withError      error
-	}{
-		"204 No Content": {
-			zone: ZoneCreate{
-				Zone:       "example.com",
-				ContractID: "1-2ABCDE",
-				Type:       "primary",
-			},
-			responseStatus: http.StatusNoContent,
-			expectedPath:   "/config-dns/v2/zones?contractId=1-2ABCDE",
-		},
-		"500 internal server error": {
-			zone: ZoneCreate{
-				Zone:       "example.com",
-				ContractID: "1-2ABCDE",
-				Type:       "secondary",
-			},
-			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-{
-	"type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating zone",
-    "status": 500
-}`,
-			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error creating zone",
-				StatusCode: http.StatusInternalServerError,
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				if len(test.responseBody) > 0 {
-					_, err := w.Write([]byte(test.responseBody))
-					assert.NoError(t, err)
-				}
-			}))
-			client := mockAPIClient(t, mockServer)
-			err := client.DeleteZone(context.Background(), &test.zone, test.query)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-		})
-	}
-}
-
 func TestDNS_GetZoneNames(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
