@@ -224,18 +224,20 @@ type (
 			ClientReputation      struct {
 				ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
 			} `json:"clientReputation"`
-			RatePolicyActions             *SecurityPoliciesRatePolicyActions `json:"ratePolicyActions,omitempty"`
-			MalwarePolicyActions          []MalwarePolicyActionBody          `json:"malwarePolicyActions,omitempty"`
-			IPGeoFirewall                 *IPGeoFirewall                     `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox                    *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
-			EvaluationPenaltyBox          *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
-			SlowPost                      *SlowPostexp                       `json:"slowPost,omitempty"`
-			LoggingOverrides              *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
-			AttackPayloadLoggingOverrides *AttackPayloadLoggingOverrides     `json:"attackPayloadLoggingOverrides,omitempty"`
-			PragmaHeader                  *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch              *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
-			RequestBody                   *RequestBody                       `json:"requestBody,omitempty"`
-			BotManagement                 *BotManagement                     `json:"botManagement,omitempty"`
+			RatePolicyActions              *SecurityPoliciesRatePolicyActions    `json:"ratePolicyActions,omitempty"`
+			MalwarePolicyActions           []MalwarePolicyActionBody             `json:"malwarePolicyActions,omitempty"`
+			IPGeoFirewall                  *IPGeoFirewall                        `json:"ipGeoFirewall,omitempty"`
+			PenaltyBox                     *SecurityPoliciesPenaltyBox           `json:"penaltyBox,omitempty"`
+			EvaluationPenaltyBox           *SecurityPoliciesPenaltyBox           `json:"evaluationPenaltyBox,omitempty"`
+			PenaltyBoxConditions           *SecurityPoliciesPenaltyBoxConditions `json:"penaltyBoxConditions,omitempty"`
+			EvaluationPenaltyBoxConditions *SecurityPoliciesPenaltyBoxConditions `json:"evaluationPenaltyBoxConditions,omitempty"`
+			SlowPost                       *SlowPostexp                          `json:"slowPost,omitempty"`
+			LoggingOverrides               *LoggingOverridesexp                  `json:"loggingOverrides,omitempty"`
+			AttackPayloadLoggingOverrides  *AttackPayloadLoggingOverrides        `json:"attackPayloadLoggingOverrides,omitempty"`
+			PragmaHeader                   *GetAdvancedSettingsPragmaResponse    `json:"pragmaHeader,omitempty"`
+			EvasivePathMatch               *EvasivePathMatchexp                  `json:"evasivePathMatch,omitempty"`
+			RequestBody                    *RequestBody                          `json:"requestBody,omitempty"`
+			BotManagement                  *BotManagement                        `json:"botManagement,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -436,13 +438,15 @@ type (
 					}
 				} `json:"ukraineGeoControl,omitempty"`
 			} `json:"ipGeoFirewall,omitempty"`
-			PenaltyBox                    *SecurityPoliciesPenaltyBox        `json:"penaltyBox,omitempty"`
-			EvaluationPenaltyBox          *SecurityPoliciesPenaltyBox        `json:"evaluationPenaltyBox,omitempty"`
-			SlowPost                      *SlowPostexp                       `json:"slowPost,omitempty"`
-			LoggingOverrides              *LoggingOverridesexp               `json:"loggingOverrides,omitempty"`
-			AttackPayloadLoggingOverrides *AttackPayloadLoggingOverrides     `json:"attackPayloadLoggingOverrides,omitempty"`
-			PragmaHeader                  *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch              *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
+			PenaltyBox                     *SecurityPoliciesPenaltyBox           `json:"penaltyBox,omitempty"`
+			EvaluationPenaltyBox           *SecurityPoliciesPenaltyBox           `json:"evaluationPenaltyBox,omitempty"`
+			PenaltyBoxConditions           *SecurityPoliciesPenaltyBoxConditions `json:"penaltyBoxConditions,omitempty"`
+			EvaluationPenaltyBoxConditions *SecurityPoliciesPenaltyBoxConditions `json:"evaluationPenaltyBoxConditions,omitempty"`
+			SlowPost                       *SlowPostexp                          `json:"slowPost,omitempty"`
+			LoggingOverrides               *LoggingOverridesexp                  `json:"loggingOverrides,omitempty"`
+			AttackPayloadLoggingOverrides  *AttackPayloadLoggingOverrides        `json:"attackPayloadLoggingOverrides,omitempty"`
+			PragmaHeader                   *GetAdvancedSettingsPragmaResponse    `json:"pragmaHeader,omitempty"`
+			EvasivePathMatch               *EvasivePathMatchexp                  `json:"evasivePathMatch,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -720,6 +724,12 @@ type (
 	SecurityPoliciesPenaltyBox struct {
 		Action               string `json:"action,omitempty"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection,omitempty"`
+	}
+
+	// SecurityPoliciesPenaltyBoxConditions is returned as part of GetExportConfigurationResponse.
+	SecurityPoliciesPenaltyBoxConditions struct {
+		ConditionOperator string          `json:"conditionOperator,omitempty"`
+		Conditions        *RuleConditions `json:"conditions,omitempty"`
 	}
 
 	// WebApplicationFirewallEvaluation is returned as part of GetExportConfigurationResponse.

@@ -1691,6 +1691,30 @@
 			"ipGeoFirewall": {
 				"block": "blockSpecificIPGeo"
 			},
+			"penaltyBoxConditions": {
+				"conditionOperator": "AND",
+				"conditions": [
+					{
+						"type": "filenameMatch",
+						"filenames": [
+							"appptest45"
+						],
+						"positiveMatch": true
+					}
+				]
+			},
+			"evaluationPenaltyBoxConditions": {
+				"conditionOperator": "AND",
+				"conditions": [
+					{
+						"type": "filenameMatch",
+						"filenames": [
+							"appptest46"
+						],
+						"positiveMatch": true
+					}
+				]
+			},
 			"slowPost": {
 				"action": "alert",
 				"slowRateThreshold": {

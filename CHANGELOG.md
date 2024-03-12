@@ -141,7 +141,9 @@
 
 * Added default value `application/json` for `Accept` header for all requests sent to API
 
-
+* Appsec
+  * Added `PenaltyBoxConditions` API - read and update
+  * Added `EvalPenaltyBoxConditions` API - read and update
 
 
 

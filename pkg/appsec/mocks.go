@@ -208,6 +208,14 @@ func (m *Mock) UpdatePenaltyBox(ctx context.Context, req UpdatePenaltyBoxRequest
 	return args.Get(0).(*UpdatePenaltyBoxResponse), args.Error(1)
 }
 
+func (m *Mock) UpdatePenaltyBoxConditions(ctx context.Context, req UpdatePenaltyBoxConditionsRequest) (*UpdatePenaltyBoxConditionsResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdatePenaltyBoxConditionsResponse), args.Error(1)
+}
+
 func (m *Mock) UpdateNetworkLayerProtection(ctx context.Context, req UpdateNetworkLayerProtectionRequest) (*UpdateNetworkLayerProtectionResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
@@ -865,6 +873,14 @@ func (m *Mock) GetPenaltyBox(ctx context.Context, req GetPenaltyBoxRequest) (*Ge
 	return args.Get(0).(*GetPenaltyBoxResponse), args.Error(1)
 }
 
+func (m *Mock) GetPenaltyBoxConditions(ctx context.Context, req GetPenaltyBoxConditionsRequest) (*GetPenaltyBoxConditionsResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetPenaltyBoxConditionsResponse), args.Error(1)
+}
+
 func (m *Mock) GetEvalPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest) (*GetPenaltyBoxResponse, error) {
 	args := m.Called(ctx, params)
 
@@ -875,6 +891,16 @@ func (m *Mock) GetEvalPenaltyBox(ctx context.Context, params GetPenaltyBoxReques
 	return args.Get(0).(*GetPenaltyBoxResponse), args.Error(1)
 }
 
+func (m *Mock) GetEvalPenaltyBoxConditions(ctx context.Context, params GetPenaltyBoxConditionsRequest) (*GetPenaltyBoxConditionsResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetPenaltyBoxConditionsResponse), args.Error(1)
+}
+
 func (m *Mock) UpdateEvalPenaltyBox(ctx context.Context, params UpdatePenaltyBoxRequest) (*UpdatePenaltyBoxResponse, error) {
 	args := m.Called(ctx, params)
 
@@ -883,6 +909,16 @@ func (m *Mock) UpdateEvalPenaltyBox(ctx context.Context, params UpdatePenaltyBox
 	}
 
 	return args.Get(0).(*UpdatePenaltyBoxResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateEvalPenaltyBoxConditions(ctx context.Context, params UpdatePenaltyBoxConditionsRequest) (*UpdatePenaltyBoxConditionsResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*UpdatePenaltyBoxConditionsResponse), args.Error(1)
 }
 
 func (m *Mock) GetNetworkLayerProtections(ctx context.Context, req GetNetworkLayerProtectionsRequest) (*GetNetworkLayerProtectionsResponse, error) {

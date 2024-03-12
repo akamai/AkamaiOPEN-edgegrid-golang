@@ -47,6 +47,7 @@ type (
 		Eval
 		EvalGroup
 		EvalPenaltyBox
+		EvalPenaltyBoxConditions
 		EvalRule
 		ExportConfiguration
 		FailoverHostnames
@@ -60,6 +61,7 @@ type (
 		MatchTargetSequence
 		NetworkLayerProtection
 		PenaltyBox
+		PenaltyBoxConditions
 		PolicyProtections
 		RatePolicy
 		RatePolicyAction
