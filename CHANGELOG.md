@@ -1,5 +1,43 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## X.X.X (X X, X) Cloud Access
+
+
+
+
+
+
+* Added Cloud Access Manager API support
+
+
+
+
+
+  * Access Keys
+    * [GetAccessKeyStatus] (https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-create-request)
+  
+
+
+
+
+
+
+  
+  * Access Keys Version
+    * [GetAccessKeyVersionStatus] (https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-create-request)
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## X.X.X (X X, X)
 
 #### FEATURES/ENHANCEMENTS:
@@ -44,7 +82,6 @@
 
 * General
   * Added `To` utility function in the `ptr` package that helps with creating value pointers
-
 
 
 

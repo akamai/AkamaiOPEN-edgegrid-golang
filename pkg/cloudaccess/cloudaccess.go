@@ -2,6 +2,7 @@
 package cloudaccess
 
 import (
+	"context"
 	"errors"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
@@ -13,8 +14,17 @@ var (
 )
 
 type (
-	// CloudAccess is the api interface
+	// CloudAccess is the API interface for Cloud Access Manager
 	CloudAccess interface {
+		// GetAccessKeyStatus gets the current status and other details for a request to create a new access key
+		//
+		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-create-request
+		GetAccessKeyStatus(context.Context, GetAccessKeyStatusRequest) (*GetAccessKeyStatusResponse, error)
+
+		// GetAccessKeyVersionStatus gets the current status and other details for a request to create a new access key version
+		//
+		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-create-request
+		GetAccessKeyVersionStatus(context.Context, GetAccessKeyVersionStatusRequest) (*GetAccessKeyVersionStatusResponse, error)
 	}
 
 	cloudaccess struct {
