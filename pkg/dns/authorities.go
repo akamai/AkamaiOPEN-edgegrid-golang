@@ -17,8 +17,6 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-data-authorities
 		GetNameServerRecordList(context.Context, string) ([]string, error)
-		// NewAuthorityResponse instantiate authority response.
-		NewAuthorityResponse(context.Context, string) *AuthorityResponse
 	}
 
 	// Contract contains contractID and a list of currently assigned Akamai authoritative nameservers
@@ -32,14 +30,6 @@ type (
 		Contracts []Contract `json:"contracts"`
 	}
 )
-
-func (d *dns) NewAuthorityResponse(ctx context.Context, _ string) *AuthorityResponse {
-	logger := d.Log(ctx)
-	logger.Debug("NewAuthorityResponse")
-
-	authorities := &AuthorityResponse{}
-	return authorities
-}
 
 func (d *dns) GetAuthorities(ctx context.Context, contractID string) (*AuthorityResponse, error) {
 	logger := d.Log(ctx)

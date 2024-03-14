@@ -10,10 +10,6 @@ import (
 
 // Datacenters contains operations available on a Datacenter resource.
 type Datacenters interface {
-	// NewDatacenterResponse instantiates a new DatacenterResponse structure.
-	NewDatacenterResponse(context.Context) *DatacenterResponse
-	// NewDatacenter creates a new Datacenter object.
-	NewDatacenter(context.Context) *Datacenter
 	// ListDatacenters retrieves all Datacenters.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-datacenters
@@ -69,22 +65,6 @@ type Datacenter struct {
 // DatacenterList contains a list of Datacenters
 type DatacenterList struct {
 	DatacenterItems []*Datacenter `json:"items"`
-}
-
-func (g *gtm) NewDatacenterResponse(ctx context.Context) *DatacenterResponse {
-	logger := g.Log(ctx)
-	logger.Debug("NewDatacenterResponse")
-
-	dcResp := &DatacenterResponse{}
-	return dcResp
-}
-
-func (g *gtm) NewDatacenter(ctx context.Context) *Datacenter {
-	logger := g.Log(ctx)
-	logger.Debug("NewDatacenter")
-
-	dc := &Datacenter{}
-	return dc
 }
 
 func (g *gtm) ListDatacenters(ctx context.Context, domainName string) ([]*Datacenter, error) {

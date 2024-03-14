@@ -17,8 +17,6 @@ var (
 
 // Recordsets contains operations available on a record sets.
 type Recordsets interface {
-	// NewRecordSetResponse returns new response object.
-	NewRecordSetResponse(context.Context, string) *RecordSetResponse
 	// GetRecordSets retrieves record sets with Query Args. No formatting of arg values.
 	//
 	// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-zone-recordsets
@@ -88,11 +86,6 @@ func (rs *RecordSets) Validate() error {
 		}
 	}
 	return nil
-}
-
-func (d *dns) NewRecordSetResponse(_ context.Context, _ string) *RecordSetResponse {
-	recordset := &RecordSetResponse{}
-	return recordset
 }
 
 func (d *dns) GetRecordSets(ctx context.Context, zone string, queryArgs ...RecordSetQueryArgs) (*RecordSetResponse, error) {

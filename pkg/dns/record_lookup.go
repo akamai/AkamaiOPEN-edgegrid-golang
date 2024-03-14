@@ -11,9 +11,7 @@ import (
 	"strings"
 )
 
-func (d *dns) FullIPv6(ctx context.Context, ip net.IP) string {
-	logger := d.Log(ctx)
-	logger.Debug("FullIPv6")
+func fullIPv6(ip net.IP) string {
 
 	dst := make([]byte, hex.EncodedLen(len(ip)))
 	_ = hex.Encode(dst, ip)
@@ -37,10 +35,7 @@ func padValue(str string) string {
 	return fmt.Sprintf("%.2f", float)
 }
 
-func (d *dns) PadCoordinates(ctx context.Context, str string) string {
-	logger := d.Log(ctx)
-	logger.Debug("PadCoordinates")
-
+func padCoordinates(str string) string {
 	s := strings.Split(str, " ")
 	if len(s) < 12 {
 		return ""
@@ -114,10 +109,10 @@ func (d *dns) GetRdata(ctx context.Context, zone, name, recordType string) ([]st
 
 				if recordType == "AAAA" {
 					addr := net.ParseIP(str)
-					result := d.FullIPv6(ctx, addr)
+					result := fullIPv6(addr)
 					str = result
 				} else if recordType == "LOC" {
-					str = d.PadCoordinates(ctx, str)
+					str = padCoordinates(str)
 				}
 				rData = append(rData, str)
 			}
@@ -135,10 +130,10 @@ func (d *dns) ProcessRdata(ctx context.Context, rData []string, rType string) []
 		str := i
 		if rType == "AAAA" {
 			addr := net.ParseIP(str)
-			result := d.FullIPv6(ctx, addr)
+			result := fullIPv6(addr)
 			str = result
 		} else if rType == "LOC" {
-			str = d.PadCoordinates(ctx, str)
+			str = padCoordinates(str)
 		}
 		newRData = append(newRData, str)
 	}
@@ -221,10 +216,10 @@ func (d *dns) ParseRData(ctx context.Context, rType string, rData []string) map[
 		resolveTXTType(rData, newRData, fieldMap)
 
 	case "AAAA":
-		resolveAAAAType(ctx, d, rData, newRData, fieldMap)
+		resolveAAAAType(rData, newRData, fieldMap)
 
 	case "LOC":
-		resolveLOCType(ctx, d, rData, newRData, fieldMap)
+		resolveLOCType(rData, newRData, fieldMap)
 
 	case "CERT":
 		resolveCERTType(rData, fieldMap)
@@ -449,21 +444,21 @@ func resolveTXTType(rData, newRData []string, fieldMap map[string]interface{}) {
 	fieldMap["target"] = newRData
 }
 
-func resolveAAAAType(ctx context.Context, d *dns, rData, newRData []string, fieldMap map[string]interface{}) {
+func resolveAAAAType(rData, newRData []string, fieldMap map[string]interface{}) {
 	for _, i := range rData {
 		str := i
 		addr := net.ParseIP(str)
-		result := d.FullIPv6(ctx, addr)
+		result := fullIPv6(addr)
 		str = result
 		newRData = append(newRData, str)
 	}
 	fieldMap["target"] = newRData
 }
 
-func resolveLOCType(ctx context.Context, d *dns, rData, newRData []string, fieldMap map[string]interface{}) {
+func resolveLOCType(rData, newRData []string, fieldMap map[string]interface{}) {
 	for _, i := range rData {
 		str := i
-		str = d.PadCoordinates(ctx, str)
+		str = padCoordinates(str)
 		newRData = append(newRData, str)
 	}
 	fieldMap["target"] = newRData

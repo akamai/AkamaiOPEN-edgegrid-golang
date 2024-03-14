@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -223,43 +222,4 @@ func TestDNS_DeleteRecord(t *testing.T) {
 
 		})
 	}
-}
-
-func TestDNS_RecordToMap(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	data := client.RecordToMap(context.Background(), &RecordBody{
-		Name:       "www.example.com",
-		RecordType: "A",
-		TTL:        300,
-		Target:     []string{"10.0.0.2", "10.0.0.3"},
-	})
-
-	assert.Equal(t, map[string]interface{}{
-		"active":     false,
-		"name":       "www.example.com",
-		"recordtype": "A",
-		"target":     []string{"10.0.0.2", "10.0.0.3"},
-		"ttl":        300,
-	}, data)
-
-	data = client.RecordToMap(context.Background(), &RecordBody{
-		RecordType: "A",
-		TTL:        300,
-		Target:     []string{"10.0.0.2", "10.0.0.3"},
-	})
-
-	assert.Nil(t, data)
-}
-
-func TestDNS_NewRecordBody(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	toCopy := RecordBody{
-		Name: "www.example.com",
-	}
-
-	newBody := client.NewRecordBody(context.Background(), toCopy)
-
-	assert.Equal(t, toCopy, *newBody)
 }

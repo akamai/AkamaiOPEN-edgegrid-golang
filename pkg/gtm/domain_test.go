@@ -15,15 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGTM_NewDomain(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	dom := client.NewDomain(context.Background(), "example.com", "primary")
-
-	assert.Equal(t, "example.com", dom.Name)
-	assert.Equal(t, "primary", dom.Type)
-}
-
 func TestGTM_ListDomains(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus   int

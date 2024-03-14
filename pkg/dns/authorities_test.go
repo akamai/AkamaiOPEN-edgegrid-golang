@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -162,10 +161,4 @@ func TestDNS_GetNameServerRecordList(t *testing.T) {
 			assert.Equal(t, test.expectedResponse, result)
 		})
 	}
-}
-
-func TestDNS_NewAuthorityResponse(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	resp := client.NewAuthorityResponse(context.Background(), "empty")
-	assert.NotNil(t, resp)
 }

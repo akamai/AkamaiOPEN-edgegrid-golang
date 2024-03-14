@@ -14,10 +14,6 @@ import (
 type (
 	// TSIGKeys contains operations available on TSIKeyG resource.
 	TSIGKeys interface {
-		// NewTSIGKey returns bare bones TSIG key struct.
-		NewTSIGKey(context.Context, string) *TSIGKey
-		// NewTSIGQueryString returns empty query string struct. No elements required.
-		NewTSIGQueryString(context.Context) *TSIGQueryString
 		// ListTSIGKeys lists the TSIG keys used by zones that you are allowed to manage.
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-keys
@@ -110,22 +106,6 @@ func (bulk *TSIGKeyBulkPost) Validate() error {
 		"Key":   validation.Validate(bulk.Key, validation.Required),
 		"Zones": validation.Validate(bulk.Zones, validation.Required),
 	}.Filter()
-}
-
-func (d *dns) NewTSIGKey(ctx context.Context, name string) *TSIGKey {
-	logger := d.Log(ctx)
-	logger.Debug("NewTSIGKey")
-
-	key := &TSIGKey{Name: name}
-	return key
-}
-
-func (d *dns) NewTSIGQueryString(ctx context.Context) *TSIGQueryString {
-	logger := d.Log(ctx)
-	logger.Debug("NewTSIGQueryString")
-
-	tsigQueryString := &TSIGQueryString{}
-	return tsigQueryString
 }
 
 func constructTSIGQueryString(tsigQueryString *TSIGQueryString) string {

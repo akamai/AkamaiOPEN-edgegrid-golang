@@ -14,12 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGTM_NewGeoMap(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	GeoMap := client.NewGeoMap(context.Background(), "foo")
-	assert.Equal(t, "foo", GeoMap.Name)
-}
-
 func TestGTM_ListGeoMap(t *testing.T) {
 	var result GeoMapList
 
@@ -173,15 +167,6 @@ func TestGTM_GetGeoMap(t *testing.T) {
 			assert.Equal(t, test.expectedResponse, result)
 		})
 	}
-}
-
-func TestGTM_NewGeoAssignment(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	asn := client.NewGeoAssignment(context.Background(), nil, 100, "foo")
-
-	assert.Equal(t, 100, asn.DatacenterID)
-	assert.Equal(t, "foo", asn.Nickname)
 }
 
 func TestGTM_CreateGeoMap(t *testing.T) {

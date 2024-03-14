@@ -21,11 +21,6 @@ func setVersionHeader(req *http.Request, version string) {
 
 }
 
-// NewDefaultDatacenter instantiates new Default Datacenter Struct
-func (g *gtm) NewDefaultDatacenter(dcID int) *DatacenterBase {
-	return &DatacenterBase{DatacenterID: dcID}
-}
-
 // ResponseStatus is returned on Create, Update or Delete operations for all entity types
 type ResponseStatus struct {
 	ChangeID              string  `json:"changeId,omitempty"`
@@ -95,11 +90,6 @@ type LoadObject struct {
 	LoadObject     string   `json:"loadObject,omitempty"`
 	LoadObjectPort int      `json:"loadObjectPort,omitempty"`
 	LoadServers    []string `json:"loadServers,omitempty"`
-}
-
-// NewLoadObject returns a new LoadObject structure
-func NewLoadObject() *LoadObject {
-	return &LoadObject{}
 }
 
 // DatacenterBase is a placeholder for default Datacenter

@@ -14,18 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGTM_NewDatacenterResponse(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	dcr := client.NewDatacenterResponse(context.Background())
-	assert.NotNil(t, dcr)
-}
-
-func TestGTM_NewDatacenter(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	dc := client.NewDatacenter(context.Background())
-	assert.NotNil(t, dc)
-}
-
 func TestGTM_ListDatacenters(t *testing.T) {
 	var result DatacenterList
 

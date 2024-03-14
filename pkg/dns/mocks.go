@@ -4,7 +4,6 @@ package dns
 
 import (
 	"context"
-	"net"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -29,46 +28,6 @@ func (d *Mock) ListZones(ctx context.Context, query ...ZoneListQueryArgs) (*Zone
 	}
 
 	return args.Get(0).(*ZoneListResponse), args.Error(1)
-}
-
-func (d *Mock) NewZone(ctx context.Context, params ZoneCreate) *ZoneCreate {
-	args := d.Called(ctx, params)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*ZoneCreate)
-}
-
-func (d *Mock) NewZoneResponse(ctx context.Context, param string) *ZoneResponse {
-	args := d.Called(ctx, param)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*ZoneResponse)
-}
-
-func (d *Mock) NewChangeListResponse(ctx context.Context, param string) *ChangeListResponse {
-	args := d.Called(ctx, param)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*ChangeListResponse)
-}
-
-func (d *Mock) NewZoneQueryString(ctx context.Context, param1 string, _ string) *ZoneQueryString {
-	args := d.Called(ctx, param1, param1)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*ZoneQueryString)
 }
 
 func (d *Mock) GetZone(ctx context.Context, name string) (*ZoneResponse, error) {
@@ -133,12 +92,6 @@ func (d *Mock) DeleteZone(ctx context.Context, param1 *ZoneCreate, param2 ZoneQu
 	return args.Error(0)
 }
 
-func (d *Mock) ValidateZone(ctx context.Context, param1 *ZoneCreate) error {
-	args := d.Called(ctx, param1)
-
-	return args.Error(0)
-}
-
 func (d *Mock) GetZoneNames(ctx context.Context, param string) (*ZoneNamesResponse, error) {
 	args := d.Called(ctx, param)
 
@@ -155,22 +108,6 @@ func (d *Mock) GetZoneNameTypes(ctx context.Context, param1 string, param2 strin
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*ZoneNameTypesResponse), args.Error(1)
-}
-
-func (d *Mock) NewTSIGKey(ctx context.Context, param string) *TSIGKey {
-	args := d.Called(ctx, param)
-	if args.Get(0) == nil {
-		return nil
-	}
-	return args.Get(0).(*TSIGKey)
-}
-
-func (d *Mock) NewTSIGQueryString(ctx context.Context) *TSIGQueryString {
-	args := d.Called(ctx)
-	if args.Get(0) == nil {
-		return nil
-	}
-	return args.Get(0).(*TSIGQueryString)
 }
 
 func (d *Mock) ListTSIGKeys(ctx context.Context, param *TSIGQueryString) (*TSIGReportResponse, error) {
@@ -249,30 +186,6 @@ func (d *Mock) GetNameServerRecordList(ctx context.Context, param string) ([]str
 	}
 
 	return args.Get(0).([]string), args.Error(1)
-}
-
-func (d *Mock) NewAuthorityResponse(ctx context.Context, param string) *AuthorityResponse {
-	args := d.Called(ctx, param)
-	if args.Get(0) == nil {
-		return nil
-	}
-	return args.Get(0).(*AuthorityResponse)
-}
-
-func (d *Mock) RecordToMap(ctx context.Context, param *RecordBody) map[string]interface{} {
-	args := d.Called(ctx, param)
-	if args.Get(0) == nil {
-		return nil
-	}
-	return args.Get(0).(map[string]interface{})
-}
-
-func (d *Mock) NewRecordBody(ctx context.Context, param RecordBody) *RecordBody {
-	args := d.Called(ctx, param)
-	if args.Get(0) == nil {
-		return nil
-	}
-	return args.Get(0).(*RecordBody)
 }
 
 func (d *Mock) GetRecordList(ctx context.Context, param string, param2 string, param3 string) (*RecordSetResponse, error) {
@@ -355,26 +268,6 @@ func (d *Mock) UpdateRecord(ctx context.Context, param *RecordBody, param2 strin
 	}
 
 	return args.Error(0)
-}
-
-func (d *Mock) FullIPv6(ctx context.Context, param1 net.IP) string {
-	args := d.Called(ctx, param1)
-
-	return args.String(0)
-}
-
-func (d *Mock) PadCoordinates(ctx context.Context, param1 string) string {
-	args := d.Called(ctx, param1)
-
-	return args.String(0)
-}
-
-func (d *Mock) NewRecordSetResponse(ctx context.Context, param string) *RecordSetResponse {
-	args := d.Called(ctx, param)
-	if args.Get(0) == nil {
-		return nil
-	}
-	return args.Get(0).(*RecordSetResponse)
 }
 
 func (d *Mock) GetRecordSets(ctx context.Context, param string, param2 ...RecordSetQueryArgs) (*RecordSetResponse, error) {

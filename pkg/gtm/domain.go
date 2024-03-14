@@ -14,8 +14,6 @@ import (
 type Domains interface {
 	// NullFieldMap retrieves map of null fields.
 	NullFieldMap(context.Context, *Domain) (*NullFieldMapStruct, error)
-	// NewDomain is a utility function that creates a new Domain object.
-	NewDomain(context.Context, string, string) *Domain
 	// GetDomainStatus retrieves current status for the given domain name.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-status-current
@@ -120,16 +118,6 @@ func (d *Domain) Validate() error {
 	}
 
 	return nil
-}
-
-func (g *gtm) NewDomain(ctx context.Context, domainName, domainType string) *Domain {
-	logger := g.Log(ctx)
-	logger.Debug("NewDomain")
-
-	domain := &Domain{}
-	domain.Name = domainName
-	domain.Type = domainType
-	return domain
 }
 
 func (g *gtm) GetDomainStatus(ctx context.Context, domainName string) (*ResponseStatus, error) {

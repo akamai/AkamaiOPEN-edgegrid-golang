@@ -14,12 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGTM_NewCIDRMap(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	cidrMap := client.NewCIDRMap(context.Background(), "foo")
-	assert.Equal(t, "foo", cidrMap.Name)
-}
-
 func TestGTM_ListCIDRMaps(t *testing.T) {
 	var result CIDRMapList
 
@@ -173,15 +167,6 @@ func TestGTM_GetCIDRMap(t *testing.T) {
 			assert.Equal(t, test.expectedResponse, result)
 		})
 	}
-}
-
-func TestGTM_NewCIDRAssignment(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	asn := client.NewCIDRAssignment(context.Background(), nil, 100, "foo")
-
-	assert.Equal(t, 100, asn.DatacenterID)
-	assert.Equal(t, "foo", asn.Nickname)
 }
 
 func TestGTM_CreateCIDRMap(t *testing.T) {

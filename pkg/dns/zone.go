@@ -26,14 +26,6 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones
 		ListZones(context.Context, ...ZoneListQueryArgs) (*ZoneListResponse, error)
-		// NewZone returns a new ZoneCreate object.
-		NewZone(context.Context, ZoneCreate) *ZoneCreate
-		// NewZoneResponse returns a new ZoneResponse object.
-		NewZoneResponse(context.Context, string) *ZoneResponse
-		// NewChangeListResponse returns a new ChangeListResponse object.
-		NewChangeListResponse(context.Context, string) *ChangeListResponse
-		// NewZoneQueryString returns a new ZoneQueryString object.
-		NewZoneQueryString(context.Context, string, string) *ZoneQueryString
 		// GetZone retrieves Zone metadata.
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-zone
@@ -66,8 +58,6 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/put-zone
 		UpdateZone(context.Context, *ZoneCreate, ZoneQueryString) error
-		// ValidateZone validates zone metadata based on type.
-		ValidateZone(context.Context, *ZoneCreate) error
 		// GetZoneNames retrieves a list of a zone's record names.
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-zone-names
@@ -266,49 +256,6 @@ func (d *dns) ListZones(ctx context.Context, queryArgs ...ZoneListQueryArgs) (*Z
 	return &result, nil
 }
 
-func (d *dns) NewZone(ctx context.Context, params ZoneCreate) *ZoneCreate {
-	logger := d.Log(ctx)
-	logger.Debug("NewZone")
-
-	zone := &ZoneCreate{Zone: params.Zone,
-		Type:                  params.Type,
-		Masters:               params.Masters,
-		TSIGKey:               params.TSIGKey,
-		Target:                params.Target,
-		EndCustomerID:         params.EndCustomerID,
-		ContractID:            params.ContractID,
-		Comment:               params.Comment,
-		SignAndServe:          params.SignAndServe,
-		SignAndServeAlgorithm: params.SignAndServeAlgorithm}
-
-	logger.Debugf("Created zone: %v", zone)
-	return zone
-}
-
-func (d *dns) NewZoneResponse(ctx context.Context, zoneName string) *ZoneResponse {
-	logger := d.Log(ctx)
-	logger.Debug("NewZoneResponse")
-
-	zone := &ZoneResponse{Zone: zoneName}
-	return zone
-}
-
-func (d *dns) NewChangeListResponse(ctx context.Context, zone string) *ChangeListResponse {
-	logger := d.Log(ctx)
-	logger.Debug("NewChangeListResponse")
-
-	changelist := &ChangeListResponse{Zone: zone}
-	return changelist
-}
-
-func (d *dns) NewZoneQueryString(ctx context.Context, contract, group string) *ZoneQueryString {
-	logger := d.Log(ctx)
-	logger.Debug("NewZoneQueryString")
-
-	zoneQueryString := &ZoneQueryString{Contract: contract, Group: group}
-	return zoneQueryString
-}
-
 func (d *dns) GetZone(ctx context.Context, zoneName string) (*ZoneResponse, error) {
 	logger := d.Log(ctx)
 	logger.Debug("GetZone")
@@ -422,7 +369,7 @@ func (d *dns) CreateZone(ctx context.Context, zone *ZoneCreate, zoneQueryString 
 	logger := d.Log(ctx)
 	logger.Debug("Zone Create")
 
-	if err := d.ValidateZone(ctx, zone); err != nil {
+	if err := ValidateZone(zone); err != nil {
 		return err
 	}
 
@@ -552,7 +499,7 @@ func (d *dns) UpdateZone(ctx context.Context, zone *ZoneCreate, _ ZoneQueryStrin
 	logger := d.Log(ctx)
 	logger.Debug("Zone Update")
 
-	if err := d.ValidateZone(ctx, zone); err != nil {
+	if err := ValidateZone(zone); err != nil {
 		return err
 	}
 
@@ -619,10 +566,7 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 }
 
 // ValidateZone validates ZoneCreate Object
-func (d *dns) ValidateZone(ctx context.Context, zone *ZoneCreate) error {
-	logger := d.Log(ctx)
-	logger.Debug("ValidateZone")
-
+func ValidateZone(zone *ZoneCreate) error {
 	if len(zone.Zone) == 0 {
 		return fmt.Errorf("Zone name is required")
 	}

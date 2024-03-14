@@ -7,16 +7,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func Test_NewTSIGQueryString(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	str := client.NewTSIGQueryString(context.Background())
-	assert.NotNil(t, str)
-}
 
 func TestDNS_ListTSIGKeys(t *testing.T) {
 	tests := map[string]struct {

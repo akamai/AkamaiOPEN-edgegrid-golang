@@ -8,10 +8,6 @@ import (
 
 // GeoMaps contains operations available on a GeoMap resource.
 type GeoMaps interface {
-	// NewGeoMap creates a new GeoMap object.
-	NewGeoMap(context.Context, string) *GeoMap
-	// NewGeoAssignment instantiates new Assignment struct.
-	NewGeoAssignment(context.Context, *GeoMap, int, string) *GeoAssignment
 	// ListGeoMaps retrieves all GeoMaps.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-geographic-maps
@@ -65,14 +61,6 @@ func (m *GeoMap) Validate() error {
 	return nil
 }
 
-func (g *gtm) NewGeoMap(ctx context.Context, name string) *GeoMap {
-	logger := g.Log(ctx)
-	logger.Debug("NewGeoMap")
-
-	geoMap := &GeoMap{Name: name}
-	return geoMap
-}
-
 func (g *gtm) ListGeoMaps(ctx context.Context, domainName string) ([]*GeoMap, error) {
 	logger := g.Log(ctx)
 	logger.Debug("ListGeoMaps")
@@ -119,17 +107,6 @@ func (g *gtm) GetGeoMap(ctx context.Context, mapName, domainName string) (*GeoMa
 	}
 
 	return &result, nil
-}
-
-func (g *gtm) NewGeoAssignment(ctx context.Context, _ *GeoMap, dcID int, nickname string) *GeoAssignment {
-	logger := g.Log(ctx)
-	logger.Debug("NewGeoAssignment")
-
-	geoAssign := &GeoAssignment{}
-	geoAssign.DatacenterID = dcID
-	geoAssign.Nickname = nickname
-
-	return geoAssign
 }
 
 func (g *gtm) CreateGeoMap(ctx context.Context, geo *GeoMap, domainName string) (*GeoMapResponse, error) {

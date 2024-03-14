@@ -5,16 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"net"
 	"sync"
 )
 
 // Records contains operations available on a Record resource.
 type Records interface {
-	// RecordToMap returns a map containing record content.
-	RecordToMap(context.Context, *RecordBody) map[string]interface{}
-	// NewRecordBody returns bare bones TSIG key struct.
-	NewRecordBody(context.Context, RecordBody) *RecordBody
 	// GetRecordList retrieves recordset list based on type.
 	//
 	// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-zone-recordsets
@@ -41,10 +36,6 @@ type Records interface {
 	//
 	// See: https://techdocs.akamai.com/edge-dns/reference/put-zones-zone-names-name-types-type
 	UpdateRecord(context.Context, *RecordBody, string, ...bool) error
-	// FullIPv6 is utility method to convert IP to string.
-	FullIPv6(context.Context, net.IP) string
-	// PadCoordinates is utility method to convert IP to normalize coordinates.
-	PadCoordinates(context.Context, string) string
 }
 
 // RecordBody contains request body for dns record
@@ -76,32 +67,6 @@ func (rec *RecordBody) Validate() error {
 	}
 
 	return nil
-}
-
-func (d *dns) RecordToMap(ctx context.Context, record *RecordBody) map[string]interface{} {
-	logger := d.Log(ctx)
-	logger.Debug("RecordToMap")
-
-	if err := record.Validate(); err != nil {
-		logger.Errorf("Record to map failed. %w", err)
-		return nil
-	}
-
-	return map[string]interface{}{
-		"name":       record.Name,
-		"ttl":        record.TTL,
-		"recordtype": record.RecordType,
-		"active":     record.Active,
-		"target":     record.Target,
-	}
-}
-
-func (d *dns) NewRecordBody(ctx context.Context, params RecordBody) *RecordBody {
-	logger := d.Log(ctx)
-	logger.Debug("NewRecordBody")
-
-	recordBody := &RecordBody{Name: params.Name}
-	return recordBody
 }
 
 // Eval option lock arg passed into writable endpoints. Default is true, e.g. lock

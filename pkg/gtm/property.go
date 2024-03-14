@@ -11,14 +11,6 @@ import (
 
 // Properties contains operations available on a Property resource.
 type Properties interface {
-	// NewTrafficTarget is a method applied to a property object that instantiates a TrafficTarget object.
-	NewTrafficTarget(context.Context) *TrafficTarget
-	// NewStaticRRSet is a method applied to a property object that instantiates a StaticRRSet object.
-	NewStaticRRSet(context.Context) *StaticRRSet
-	// NewLivenessTest is a method applied to a property object that instantiates a LivenessTest object.
-	NewLivenessTest(context.Context, string, string, int, float32) *LivenessTest
-	// NewProperty creates a new Property object.
-	NewProperty(context.Context, string) *Property
 	// ListProperties retrieves all Properties for the provided domainName.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-properties
@@ -179,39 +171,6 @@ func validateRankedFailoverTrafficTargets(value interface{}) error {
 	}
 
 	return nil
-}
-
-func (g *gtm) NewTrafficTarget(ctx context.Context) *TrafficTarget {
-	logger := g.Log(ctx)
-	logger.Debug("NewTrafficTarget")
-
-	return &TrafficTarget{}
-}
-
-func (g *gtm) NewStaticRRSet(ctx context.Context) *StaticRRSet {
-	logger := g.Log(ctx)
-	logger.Debug("NewStaticRRSet")
-
-	return &StaticRRSet{}
-}
-
-// NewHTTPHeader is a method applied to a livenessTest object that instantiates an HTTPHeader  object.
-func (lt *LivenessTest) NewHTTPHeader() *HTTPHeader {
-	return &HTTPHeader{}
-}
-func (g *gtm) NewLivenessTest(ctx context.Context, name string, protocol string, interval int, timeout float32) *LivenessTest {
-	logger := g.Log(ctx)
-	logger.Debug("NewLivenessTest")
-
-	return &LivenessTest{Name: name, TestInterval: interval, TestObjectProtocol: protocol, TestTimeout: timeout}
-}
-
-func (g *gtm) NewProperty(ctx context.Context, name string) *Property {
-	logger := g.Log(ctx)
-	logger.Debug("NewProperty")
-
-	property := &Property{Name: name}
-	return property
 }
 
 func (g *gtm) ListProperties(ctx context.Context, domainName string) ([]*Property, error) {

@@ -14,19 +14,120 @@
 
 
 
+* DNS
+  * Renamed following structs:
+    * `RecordsetQueryArgs` into `RecordSetQueryArgs`
+    * `Recordsets` into `RecordSets`
+    * `Recordset` into `RecordSet`
+    * `MetadataH` into `Metadata`
+  * Renamed following fields:
+    * `GroupId` into `GroupID` in `ListGroupRequest`
+    * `Recordsets` into `RecordSets` in `RecordSetResponse`
+    * `ContractIds` into `ContractIDs` in `TSIGQueryString`
+    * `Gid` into `GID` in `TSIGQueryString` and `TSIGReportMeta`
+    * `TsigKey` into `TSIGKey` in `ZoneCreate` and `ZoneResponse`
+    * `VersionId` into `VersionID` in `ZoneResponse`
+    * `RequestId` into `RequestID` in `BulkZonesResponse`, `BulkStatusResponse`, `BulkCreateResultResponse` and `BulkDeleteResultResponse` 
+  * Renamed `RecordSets` interface into `Recordsets`
+  * Renamed following methods:
+    * `ListTsigKeys` into `ListTSIGKeys`
+    * `GetTsigKeyZones` into `GetTSIGKeyZones`
+    * `GetTsigKeyAliases` into `GetTSIGKeyAliases`
+    * `TsigKeyBulkUpdate` into `TSIGKeyBulkUpdate`
+    * `GetTsigKey` into `GetTSIGKey`
+    * `DeleteTsigKey` into `DeleteTSIGKey`
+    * `UpdateTsigKey` into `UpdateTSIGKey`
+    * `GetRecordsets` into `GetRecordSets`
+    * `CreateRecordsets` into `CreateRecordSets`
+    * `UpdateRecordsets` into `UpdateRecordSets`
+
+* GTM
+  * Renamed following structs:
+    * `AsAssignment` into `ASAssignment`
+    * `AsMap` into `ASMap`
+    * `AsMapList` into `ASMapList`
+    * `CidrAssignment` into `CIDRAssignment`
+    * `CidrMap` into `CIDRMap`
+    * `CidrMapList` into `CIDRMapList`
+    * `CidrMapResponse` into `CIDRMapResponse`
+    * `AsMapResponse` into `ASMapResponse`
+    * `HttpHeader` into `HTTPHeader`
+  * Renamed following fields:
+    * `AsNumbers` into `ASNumbers` in `ASAssignment`
+    * `AsMapItems` into `ASMapItems` in `ASMapList`
+    * `CidrMapItems` into `CIDRMapItems` in `CIDRMapList`
+    * `ChangeId` into `ChangeID` in `ResponseStatus`
+    * `DatacenterId` into `DatacenterID` in `DatacenterBase`, `Datacenter`, `TrafficTarget` and `ResourceInstance`
+    * `AsMaps` into `ASMaps` in `Domain`
+    * `DefaultSslClientPrivateKey` into `DefaultSSLClientPrivateKey` in `Domain`
+    * `CnameCoalescingEnabled` into `CNameCoalescingEnabled` in `Domain`
+    * `CidrMaps` into `CIDRMaps` in `Domain`
+    * `DefaultSslClientCertificate` into `DefaultSSLClientCertificate` in `Domain`
+    * `AcgId` into `AcgID` in `DomainItem`
+    * `HttpError3xx` into `HTTPError3xx` in `LivenessTest`
+    * `HttpError4xx` into `HTTPError4xx` in `LivenessTest`
+    * `HttpError5xx` into `HTTPError5xx` in `LivenessTest`
+    * `SslClientPrivateKey` into `SSLClientPrivateKey` in `LivenessTest`
+    * `SslClientCertificate` into `SSLClientCertificate` in `LivenessTest`
+    * `HttpHeaders` into `HTTPHeaders` in `LivenessTest`
+    * `Ipv6` into `IPv6` in `Property`
+    * `BackupIp` into `BackupIP` in `Property`
+  * Renamed `CidrMaps` interface into `CIDRMaps`
+  * Renamed following methods:
+    * `ListAsMaps` into `ListASMaps`
+    * `GetAsMap` into `GetASMap`
+    * `CreateAsMap` into `CreateASMap`
+    * `DeleteAsMap` into `DeleteASMap`
+    * `UpdateAsMap` into `UpdateASMap`
+    * `ListCidrMaps` into `ListCIDRMaps`
+    * `GetCidrMap` into `GetCIDRMap`
+    * `CreateCidrMap` into `CreateCIDRMap`
+    * `DeleteCidrMap` into `DeleteCIDRMap`
+    * `UpdateCidrMap` into `UpdateCIDRMap`
+
+
+
+
 
 
 * GTM
-  * Rename various structs, variables, requests and responses names
-
-
-
-
-
-
-
-
-
+  * Deleted following methods:
+    * `NewASAssignment`
+    * `NewAsMap`
+    * `NewCidrAssignment`
+    * `NewCidrMap`
+    * `NewDatacenter`
+    * `NewDatacenterBase`
+    * `NewDatacenterResponse`
+    * `NewDefaultDatacenter`
+    * `NewDomain`
+    * `NewGeoAssignment`
+    * `NewHttpHeader`
+    * `NewGeoMap`
+    * `NewLivenessTest`
+    * `NewLoadObject`
+    * `NewProperty`
+    * `NewResource`
+    * `NewResourceInstance`
+    * `NewResponseStatus`
+    * `NewStaticRRSet`
+    * `NewTrafficTarget`
+* DNS
+  * Deleted following methods:
+    * `NewAuthorityResponse`
+    * `NewChangeListResponse`
+    * `NewRecordBody`
+    * `NewRecordSetResponse`
+    * `NewTsigKey`
+    * `NewTsigQueryString`
+    * `NewZone`
+    * `NewZoneQueryString`
+    * `NewZoneResponse`
+    * `RecordToMap`
+  * Unexport following methods:
+    * `FullIPv6`
+    * `PadCoordinates`
+    * `ValidateZone`
 
 
 

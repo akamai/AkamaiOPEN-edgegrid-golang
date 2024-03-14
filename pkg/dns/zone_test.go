@@ -141,44 +141,6 @@ func TestDNS_ListZones(t *testing.T) {
 	}
 }
 
-func TestDNS_NewZone(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	inp := ZoneCreate{
-		Type:   "A",
-		Target: "10.0.0.1",
-	}
-
-	out := client.NewZone(context.Background(), inp)
-
-	assert.Equal(t, &inp, out)
-}
-
-func TestDNS_NewZoneResponse(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	out := client.NewZoneResponse(context.Background(), "example.com")
-
-	assert.Equal(t, out.Zone, "example.com")
-}
-
-func TestDNS_NewChangeListResponse(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	out := client.NewChangeListResponse(context.Background(), "example.com")
-
-	assert.Equal(t, out.Zone, "example.com")
-}
-
-func TestDNS_NewZoneQueryString(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	out := client.NewZoneQueryString(context.Background(), "foo", "bar")
-
-	assert.Equal(t, out.Contract, "foo")
-	assert.Equal(t, out.Group, "bar")
-}
-
 func TestDNS_GetZone(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
@@ -977,8 +939,6 @@ func TestDNS_GetZoneNameTypes(t *testing.T) {
 }
 
 func Test_ValidateZoneErrors(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
 	tests := map[string]ZoneCreate{
 		"empty zone": {},
 		"bad type": {
@@ -1030,7 +990,7 @@ func Test_ValidateZoneErrors(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			err := client.ValidateZone(context.Background(), &test)
+			err := ValidateZone(&test)
 			assert.NotNil(t, err)
 		})
 	}

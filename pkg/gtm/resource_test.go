@@ -14,18 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGTM_NewResourceInstance(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	inst := client.NewResourceInstance(context.Background(), nil, 0)
-	assert.NotNil(t, inst)
-}
-
-func TestGTM_NewResource(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	res := client.NewResource(context.Background(), "foo")
-	assert.NotNil(t, res)
-}
-
 func TestGTM_ListResources(t *testing.T) {
 	var result ResourceList
 

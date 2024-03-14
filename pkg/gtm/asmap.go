@@ -9,10 +9,6 @@ import (
 // ASMaps contains operations available on a ASmap resource.
 type (
 	ASMaps interface {
-		// NewASMap creates a new AsMap object.
-		NewASMap(context.Context, string) *ASMap
-		// NewASAssignment instantiates new Assignment struct.
-		NewASAssignment(context.Context, *ASMap, int, string) *ASAssignment
 		// ListASMaps retrieves all AsMaps.
 		//
 		// See: https://techdocs.akamai.com/gtm/reference/get-as-maps
@@ -66,14 +62,6 @@ func (a *ASMap) Validate() error {
 	return nil
 }
 
-func (g *gtm) NewASMap(ctx context.Context, name string) *ASMap {
-	logger := g.Log(ctx)
-	logger.Debug("NewASMap")
-
-	asMap := &ASMap{Name: name}
-	return asMap
-}
-
 func (g *gtm) ListASMaps(ctx context.Context, domainName string) ([]*ASMap, error) {
 	logger := g.Log(ctx)
 	logger.Debug("ListASMaps")
@@ -120,17 +108,6 @@ func (g *gtm) GetASMap(ctx context.Context, asMapName, domainName string) (*ASMa
 	}
 
 	return &result, nil
-}
-
-func (g *gtm) NewASAssignment(ctx context.Context, _ *ASMap, dcID int, nickname string) *ASAssignment {
-	logger := g.Log(ctx)
-	logger.Debug("NewASAssignment")
-
-	asAssign := &ASAssignment{}
-	asAssign.DatacenterID = dcID
-	asAssign.Nickname = nickname
-
-	return asAssign
 }
 
 func (g *gtm) CreateASMap(ctx context.Context, asMap *ASMap, domainName string) (*ASMapResponse, error) {

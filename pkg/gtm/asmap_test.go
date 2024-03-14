@@ -14,12 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGTM_NewASMap(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	asMap := client.NewASMap(context.Background(), "foo")
-	assert.Equal(t, "foo", asMap.Name)
-}
-
 func TestGTM_ListASMap(t *testing.T) {
 	var result ASMapList
 
@@ -173,15 +167,6 @@ func TestGTM_GetASMap(t *testing.T) {
 			assert.Equal(t, test.expectedResponse, result)
 		})
 	}
-}
-
-func TestGTM_NewASAssignment(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	asn := client.NewASAssignment(context.Background(), nil, 100, "foo")
-
-	assert.Equal(t, 100, asn.DatacenterID)
-	assert.Equal(t, "foo", asn.Nickname)
 }
 
 func TestGTM_CreateASMap(t *testing.T) {

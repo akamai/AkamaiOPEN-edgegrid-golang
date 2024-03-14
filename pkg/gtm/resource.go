@@ -8,10 +8,6 @@ import (
 
 // Resources contains operations available on a Resource resource.
 type Resources interface {
-	// NewResourceInstance instantiates a new ResourceInstance.
-	NewResourceInstance(context.Context, *Resource, int) *ResourceInstance
-	// NewResource creates a new Resource object.
-	NewResource(context.Context, string) *Resource
 	// ListResources retrieves all Resources
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-resources
@@ -74,21 +70,6 @@ func (r *Resource) Validate() error {
 	}
 
 	return nil
-}
-
-func (g *gtm) NewResourceInstance(ctx context.Context, _ *Resource, dcID int) *ResourceInstance {
-	logger := g.Log(ctx)
-	logger.Debug("NewResourceInstance")
-
-	return &ResourceInstance{DatacenterID: dcID}
-}
-
-func (g *gtm) NewResource(ctx context.Context, name string) *Resource {
-	logger := g.Log(ctx)
-	logger.Debug("NewResource")
-
-	resource := &Resource{Name: name}
-	return resource
 }
 
 func (g *gtm) ListResources(ctx context.Context, domainName string) ([]*Resource, error) {

@@ -8,10 +8,6 @@ import (
 
 // CIDRMaps contains operations available on a CIDR map resource.
 type CIDRMaps interface {
-	// NewCIDRMap creates a new CIDRMap object.
-	NewCIDRMap(context.Context, string) *CIDRMap
-	// NewCIDRAssignment instantiates new Assignment struct.
-	NewCIDRAssignment(context.Context, *CIDRMap, int, string) *CIDRAssignment
 	// ListCIDRMaps retrieves all CIDRMaps.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-cidr-maps
@@ -65,14 +61,6 @@ func (c *CIDRMap) Validate() error {
 	return nil
 }
 
-func (g *gtm) NewCIDRMap(ctx context.Context, name string) *CIDRMap {
-	logger := g.Log(ctx)
-	logger.Debug("NewCIDRMap")
-
-	cidrMap := &CIDRMap{Name: name}
-	return cidrMap
-}
-
 func (g *gtm) ListCIDRMaps(ctx context.Context, domainName string) ([]*CIDRMap, error) {
 	logger := g.Log(ctx)
 	logger.Debug("ListCIDRMaps")
@@ -119,17 +107,6 @@ func (g *gtm) GetCIDRMap(ctx context.Context, mapName, domainName string) (*CIDR
 	}
 
 	return &result, nil
-}
-
-func (g *gtm) NewCIDRAssignment(ctx context.Context, _ *CIDRMap, dcID int, nickname string) *CIDRAssignment {
-	logger := g.Log(ctx)
-	logger.Debug("NewCIDRAssignment")
-
-	cidrAssign := &CIDRAssignment{}
-	cidrAssign.DatacenterID = dcID
-	cidrAssign.Nickname = nickname
-
-	return cidrAssign
 }
 
 func (g *gtm) CreateCIDRMap(ctx context.Context, cidr *CIDRMap, domainName string) (*CIDRMapResponse, error) {
