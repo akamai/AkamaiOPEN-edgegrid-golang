@@ -1,18 +1,13 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## X.X.X (X X, X)
+## 8.0.0 (March 19, 2024)
 
 #### BREAKING CHANGES:
 
-* CPS
-  * Split request and response structures for create and update enrollment operations
-
 * Migrated to go 1.21
 
-
-
-
-
+* CPS
+  * Split request and response structures for create and update enrollment operations
 
 * DNS
   * Renamed following structs:
@@ -40,6 +35,21 @@
     * `GetRecordsets` into `GetRecordSets`
     * `CreateRecordsets` into `CreateRecordSets`
     * `UpdateRecordsets` into `UpdateRecordSets`
+  * Deleted following methods:
+    * `NewAuthorityResponse`
+    * `NewChangeListResponse`
+    * `NewRecordBody`
+    * `NewRecordSetResponse`
+    * `NewTsigKey`
+    * `NewTsigQueryString`
+    * `NewZone`
+    * `NewZoneQueryString`
+    * `NewZoneResponse`
+    * `RecordToMap`
+  * Unexported following methods:
+    * `FullIPv6`
+    * `PadCoordinates`
+    * `ValidateZone`
 
 * GTM
   * Renamed following structs:
@@ -84,13 +94,6 @@
     * `CreateCidrMap` into `CreateCIDRMap`
     * `DeleteCidrMap` into `DeleteCIDRMap`
     * `UpdateCidrMap` into `UpdateCIDRMap`
-
-
-
-
-
-
-* GTM
   * Deleted following methods:
     * `NewASAssignment`
     * `NewAsMap`
@@ -112,32 +115,8 @@
     * `NewResponseStatus`
     * `NewStaticRRSet`
     * `NewTrafficTarget`
-* DNS
-  * Deleted following methods:
-    * `NewAuthorityResponse`
-    * `NewChangeListResponse`
-    * `NewRecordBody`
-    * `NewRecordSetResponse`
-    * `NewTsigKey`
-    * `NewTsigQueryString`
-    * `NewZone`
-    * `NewZoneQueryString`
-    * `NewZoneResponse`
-    * `RecordToMap`
-  * Unexport following methods:
-    * `FullIPv6`
-    * `PadCoordinates`
-    * `ValidateZone`
-
-
-
-
-
 
 #### FEATURES/ENHANCEMENTS:
-
-* CPS
-  * Add `ID`, `OrgID`, `ProductionSlots`, `StagingSlots` and `AssignedSlots` to the response structures of `GetEnrollment` and `ListEnrollment` operations
 
 * Added default value `application/json` for `Accept` header for all requests sent to API
 
@@ -145,26 +124,8 @@
   * Added `PenaltyBoxConditions` API - read and update
   * Added `EvalPenaltyBoxConditions` API - read and update
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* CPS
+  * Added `ID`, `OrgID`, `ProductionSlots`, `StagingSlots` and `AssignedSlots` to the response structures of `GetEnrollment` and `ListEnrollment` operations
 
 * GTM
   * Added new fields:
@@ -174,42 +135,13 @@
   * Enhanced error details by addition of `Errors` field in `Error` structure
   * Added support for the creation of `ranked-failover` properties
 
-
-
-
-
-
 #### BUG FIXES:
-
-
-
-
-
-
-
-* PAPI
-  * Updated documentation link for `GetProperties` method
-
-
-
-
-
-
-
 
 * DNS
   * Removed not working `DeleteZone` method
-
-
-
-
-
-
-
-
-
-
-
+* 
+* PAPI
+  * Updated documentation link for `GetProperties` method
 
 ## 7.6.1 (February 14, 2024)
 
