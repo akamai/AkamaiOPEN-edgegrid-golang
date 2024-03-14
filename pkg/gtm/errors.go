@@ -18,13 +18,14 @@ var (
 type (
 	// Error is a gtm error interface
 	Error struct {
-		Type          string `json:"type"`
-		Title         string `json:"title"`
-		Detail        string `json:"detail"`
-		Instance      string `json:"instance,omitempty"`
-		BehaviorName  string `json:"behaviorName,omitempty"`
-		ErrorLocation string `json:"errorLocation,omitempty"`
-		StatusCode    int    `json:"-"`
+		Type          string  `json:"type"`
+		Title         string  `json:"title"`
+		Detail        string  `json:"detail"`
+		Instance      string  `json:"instance,omitempty"`
+		BehaviorName  string  `json:"behaviorName,omitempty"`
+		ErrorLocation string  `json:"errorLocation,omitempty"`
+		StatusCode    int     `json:"-"`
+		Errors        []Error `json:"errors"`
 	}
 )
 

@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/edgegriderr"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 // Properties contains operations available on a Property resource.
@@ -46,6 +49,7 @@ type TrafficTarget struct {
 	Servers      []string `json:"servers,omitempty"`
 	Name         string   `json:"name,omitempty"`
 	HandoutCName string   `json:"handoutCName,omitempty"`
+	Precedence   *int     `json:"precedence,omitempty"`
 }
 
 // HTTPHeader struct contains HTTP headers to send if the testObjectProtocol is http or https
@@ -67,12 +71,15 @@ type LivenessTest struct {
 	HTTPError3xx                  bool          `json:"httpError3xx"`
 	HTTPError4xx                  bool          `json:"httpError4xx"`
 	HTTPError5xx                  bool          `json:"httpError5xx"`
+	HTTPMethod                    *string       `json:"httpMethod"`
+	HTTPRequestBody               *string       `json:"httpRequestBody"`
 	Disabled                      bool          `json:"disabled"`
 	TestObjectProtocol            string        `json:"testObjectProtocol,omitempty"`
 	TestObjectPassword            string        `json:"testObjectPassword,omitempty"`
 	TestObjectPort                int           `json:"testObjectPort,omitempty"`
 	SSLClientPrivateKey           string        `json:"sslClientPrivateKey,omitempty"`
 	SSLClientCertificate          string        `json:"sslClientCertificate,omitempty"`
+	Pre2023SecurityPosture        bool          `json:"pre2023SecurityPosture"`
 	DisableNonstandardPortWarning bool          `json:"disableNonstandardPortWarning"`
 	HTTPHeaders                   []*HTTPHeader `json:"httpHeaders,omitempty"`
 	TestObjectUsername            string        `json:"testObjectUsername,omitempty"`
@@ -81,6 +88,7 @@ type LivenessTest struct {
 	AnswersRequired               bool          `json:"answersRequired"`
 	ResourceType                  string        `json:"resourceType,omitempty"`
 	RecursionRequested            bool          `json:"recursionRequested"`
+	AlternateCACertificates       []string      `json:"alternateCACertificates"`
 }
 
 // StaticRRSet contains static recordset
@@ -135,22 +143,40 @@ type PropertyList struct {
 
 // Validate validates Property
 func (p *Property) Validate() error {
-	if len(p.Name) < 1 {
-		return fmt.Errorf("property is missing Name")
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Name":                  validation.Validate(p.Name, validation.Required),
+		"Type":                  validation.Validate(p.Type, validation.Required),
+		"ScoreAggregationTypes": validation.Validate(p.ScoreAggregationType, validation.Required),
+		"HandoutMode":           validation.Validate(p.HandoutMode, validation.Required),
+		"TrafficTargets":        validation.Validate(p.TrafficTargets, validation.When(p.Type == "ranked-failover", validation.By(validateRankedFailoverTrafficTargets))),
+	})
+}
+
+// validateRankedFailoverTrafficTargets validates traffic targets when property type is 'ranked-failover'
+func validateRankedFailoverTrafficTargets(value interface{}) error {
+	tt := value.([]*TrafficTarget)
+	if len(tt) == 0 {
+		return fmt.Errorf("no traffic targets are enabled")
 	}
-	if len(p.Type) < 1 {
-		return fmt.Errorf("property is missing Type")
+	precedenceCounter := map[int]int{}
+	minPrecedence := 256
+	for _, t := range tt {
+		if t.Precedence == nil {
+			precedenceCounter[0]++
+			minPrecedence = 0
+		} else {
+			if *t.Precedence > 255 || *t.Precedence < 0 {
+				return fmt.Errorf("'Precedence' value has to be between 0 and 255")
+			}
+			precedenceCounter[*t.Precedence]++
+			if *t.Precedence < minPrecedence {
+				minPrecedence = *t.Precedence
+			}
+		}
 	}
-	if len(p.ScoreAggregationType) < 1 {
-		return fmt.Errorf("property is missing ScoreAggregationType")
+	if precedenceCounter[minPrecedence] > 1 {
+		return fmt.Errorf("property cannot have multiple primary traffic targets (targets with lowest precedence)")
 	}
-	if len(p.HandoutMode) < 1 {
-		return fmt.Errorf("property is missing HandoutMode")
-	}
-	// is zero a valid value? need to check and uncomment
-	//if prop.HandoutLimit == 0 {
-	//        return fmt.Errorf("Property is missing  handoutLimit"
-	//}
 
 	return nil
 }

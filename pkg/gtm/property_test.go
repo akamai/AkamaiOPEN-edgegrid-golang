@@ -10,42 +10,10 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func TestGTM_NewTrafficTarget(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	tgt := client.NewTrafficTarget(context.Background())
-	assert.NotNil(t, tgt)
-}
-
-func TestGTM_NewStaticRRSet(t *testing.T) {
-	client := Client(session.Must(session.New()))
-	set := client.NewStaticRRSet(context.Background())
-	assert.NotNil(t, set)
-}
-
-func TestGTM_NewLivenessTest(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	test := client.NewLivenessTest(context.Background(), "foo", "bar", 1, 1000)
-
-	assert.NotNil(t, test)
-	assert.Equal(t, "foo", test.Name)
-	assert.Equal(t, "bar", test.TestObjectProtocol)
-	assert.Equal(t, 1, test.TestInterval)
-	assert.Equal(t, float32(1000), test.TestTimeout)
-}
-
-func TestGTM_NewProperty(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	prop := client.NewProperty(context.Background(), "foo")
-
-	assert.NotNil(t, prop)
-	assert.Equal(t, prop.Name, "foo")
-}
 
 func TestGTM_ListProperties(t *testing.T) {
 	var result PropertyList
@@ -194,64 +162,506 @@ func TestGTM_GetProperty(t *testing.T) {
 }
 
 func TestGTM_CreateProperty(t *testing.T) {
-	var result PropertyResponse
-	var req Property
-
-	respData, err := loadTestData("TestGTM_CreateProperty.resp.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
-		t.Fatal(err)
-	}
-
-	reqData, err := loadTestData("TestGTM_CreateProperty.req.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
-		t.Fatal(err)
-	}
-
 	tests := map[string]struct {
 		domain           string
-		prop             *Property
+		property         *Property
 		responseStatus   int
-		responseBody     []byte
+		responseBody     string
 		expectedPath     string
 		expectedResponse *PropertyResponse
-		withError        error
+		withError        bool
+		assertError      func(*testing.T, error)
 		headers          http.Header
 	}{
 		"201 Created": {
-			prop:   &req,
+			property: &Property{
+				BalanceByDownloadScore: false,
+				HandoutMode:            "normal",
+				IPv6:                   false,
+				Name:                   "origin",
+				ScoreAggregationType:   "mean",
+				StaticTTL:              600,
+				Type:                   "weighted-round-robin",
+				UseComputedTargets:     false,
+				LivenessTests: []*LivenessTest{
+					{
+						DisableNonstandardPortWarning: false,
+						HTTPError3xx:                  true,
+						HTTPError4xx:                  true,
+						HTTPError5xx:                  true,
+						Name:                          "health-check",
+						TestInterval:                  60,
+						TestObject:                    "/status",
+						TestObjectPort:                80,
+						TestObjectProtocol:            "HTTP",
+						TestTimeout:                   25.0,
+					},
+				},
+				TrafficTargets: []*TrafficTarget{
+					{
+						DatacenterID: 3134,
+						Enabled:      true,
+						Weight:       50.0,
+						Servers:      []string{"1.2.3.5"},
+					},
+					{
+						DatacenterID: 3133,
+						Enabled:      true,
+						Weight:       50.0,
+						Servers:      []string{"1.2.3.4"},
+						Precedence:   nil,
+					},
+				},
+			},
 			domain: "example.akadns.net",
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     respData,
-			expectedResponse: &result,
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+    "resource": {
+        "backupCName": null,
+        "backupIp": null,
+        "balanceByDownloadScore": false,
+        "cname": null,
+        "comments": null,
+        "dynamicTTL": 300,
+        "failbackDelay": 0,
+        "failoverDelay": 0,
+        "handoutMode": "normal",
+        "healthMax": null,
+        "healthMultiplier": null,
+        "healthThreshold": null,
+        "ipv6": false,
+        "lastModified": null,
+        "loadImbalancePercentage": null,
+        "mapName": null,
+        "maxUnreachablePenalty": null,
+        "name": "origin",
+        "scoreAggregationType": "mean",
+        "staticTTL": 600,
+        "stickinessBonusConstant": 0,
+        "stickinessBonusPercentage": 0,
+        "type": "weighted-round-robin",
+        "unreachableThreshold": null,
+        "useComputedTargets": false,
+        "mxRecords": [],
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/properties/origin",
+                "rel": "self"
+            }
+        ],
+        "livenessTests": [
+            {
+                "disableNonstandardPortWarning": false,
+                "hostHeader": "foo.example.com",
+                "httpError3xx": true,
+                "httpError4xx": true,
+                "httpError5xx": true,
+                "name": "health-check",
+                "requestString": null,
+                "responseString": null,
+                "sslClientCertificate": null,
+                "sslClientPrivateKey": null,
+                "testInterval": 60,
+                "testObject": "/status",
+                "testObjectPassword": null,
+                "testObjectPort": 80,
+                "testObjectProtocol": "HTTP",
+                "testObjectUsername": null,
+                "testTimeout": 25.0
+            }
+        ],
+        "trafficTargets": [
+            {
+                "datacenterId": 3134,
+                "enabled": true,
+                "handoutCName": null,
+                "name": null,
+                "weight": 50.0,
+                "servers": [
+                    "1.2.3.5"
+                ],
+                "precedence": null
+            },
+            {
+                "datacenterId": 3133,
+                "enabled": true,
+                "handoutCName": null,
+                "name": null,
+                "weight": 50.0,
+                "servers": [
+                    "1.2.3.4"
+                ],
+                "precedence": null
+            }
+        ]
+    },
+    "status": {
+        "changeId": "eee0c3b4-0e45-4f4b-822c-7dbc60764d18",
+        "message": "Change Pending",
+        "passingValidation": true,
+        "propagationStatus": "PENDING",
+        "propagationStatusDate": "2014-04-15T11:30:27.000+0000",
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
+                "rel": "self"
+            }
+        ]
+    }
+}
+`,
+			expectedResponse: &PropertyResponse{
+				Resource: &Property{
+					BalanceByDownloadScore: false,
+					HandoutMode:            "normal",
+					IPv6:                   false,
+					Name:                   "origin",
+					ScoreAggregationType:   "mean",
+					StaticTTL:              600,
+					DynamicTTL:             300,
+					Type:                   "weighted-round-robin",
+					UseComputedTargets:     false,
+					LivenessTests: []*LivenessTest{
+						{
+							DisableNonstandardPortWarning: false,
+							HTTPError3xx:                  true,
+							HTTPError4xx:                  true,
+							HTTPError5xx:                  true,
+							Name:                          "health-check",
+							TestInterval:                  60,
+							TestObject:                    "/status",
+							TestObjectPort:                80,
+							TestObjectProtocol:            "HTTP",
+							TestTimeout:                   25.0,
+						},
+					},
+					TrafficTargets: []*TrafficTarget{
+						{
+							DatacenterID: 3134,
+							Enabled:      true,
+							Weight:       50.0,
+							Servers:      []string{"1.2.3.5"},
+						},
+						{
+							DatacenterID: 3133,
+							Enabled:      true,
+							Weight:       50.0,
+							Servers:      []string{"1.2.3.4"},
+						},
+					},
+					Links: []*Link{
+						{
+							Href: "/config-gtm/v1/domains/example.akadns.net/properties/origin",
+							Rel:  "self",
+						},
+					},
+				},
+				Status: &ResponseStatus{
+					ChangeID:              "eee0c3b4-0e45-4f4b-822c-7dbc60764d18",
+					Message:               "Change Pending",
+					PassingValidation:     true,
+					PropagationStatus:     "PENDING",
+					PropagationStatusDate: "2014-04-15T11:30:27.000+0000",
+					Links: &[]Link{
+						{
+							Href: "/config-gtm/v1/domains/example.akadns.net/status/current",
+							Rel:  "self",
+						},
+					},
+				},
+			},
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
+		},
+		"201 Created - ranked-failover": {
+			property: &Property{
+				BalanceByDownloadScore: false,
+				HandoutMode:            "normal",
+				IPv6:                   false,
+				Name:                   "origin",
+				ScoreAggregationType:   "mean",
+				StaticTTL:              600,
+				Type:                   "ranked-failover",
+				UseComputedTargets:     false,
+				LivenessTests: []*LivenessTest{
+					{
+						DisableNonstandardPortWarning: false,
+						HTTPError3xx:                  true,
+						HTTPError4xx:                  true,
+						HTTPError5xx:                  true,
+						HTTPMethod:                    tools.StringPtr("GET"),
+						HTTPRequestBody:               tools.StringPtr("TestBody"),
+						Name:                          "health-check",
+						TestInterval:                  60,
+						TestObject:                    "/status",
+						TestObjectPort:                80,
+						TestObjectProtocol:            "HTTP",
+						TestTimeout:                   25.0,
+						Pre2023SecurityPosture:        true,
+						AlternateCACertificates:       []string{"test1"},
+					},
+				},
+				TrafficTargets: []*TrafficTarget{
+					{
+						DatacenterID: 3134,
+						Enabled:      true,
+						Weight:       50.0,
+						Servers:      []string{"1.2.3.5"},
+						Precedence:   tools.IntPtr(255),
+					},
+					{
+						DatacenterID: 3133,
+						Enabled:      true,
+						Weight:       50.0,
+						Servers:      []string{"1.2.3.4"},
+						Precedence:   nil,
+					},
+				},
+			},
+			domain: "example.akadns.net",
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+    "resource": {
+        "backupCName": null,
+        "backupIp": null,
+        "balanceByDownloadScore": false,
+        "cname": null,
+        "comments": null,
+        "dynamicTTL": 300,
+        "failbackDelay": 0,
+        "failoverDelay": 0,
+        "handoutMode": "normal",
+        "healthMax": null,
+        "healthMultiplier": null,
+        "healthThreshold": null,
+        "ipv6": false,
+        "lastModified": null,
+        "loadImbalancePercentage": null,
+        "mapName": null,
+        "maxUnreachablePenalty": null,
+        "name": "origin",
+        "scoreAggregationType": "mean",
+        "staticTTL": 600,
+        "stickinessBonusConstant": 0,
+        "stickinessBonusPercentage": 0,
+        "type": "weighted-round-robin",
+        "unreachableThreshold": null,
+        "useComputedTargets": false,
+        "mxRecords": [],
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/properties/origin",
+                "rel": "self"
+            }
+        ],
+        "livenessTests": [
+            {
+                "disableNonstandardPortWarning": false,
+                "hostHeader": "foo.example.com",
+                "httpError3xx": true,
+                "httpError4xx": true,
+                "httpError5xx": true,
+				"httpMethod": "GET",
+				"httpRequestBody": "TestBody",
+				"pre2023SecurityPosture": true,
+				"alternateCACertificates": ["test1"],
+                "name": "health-check",
+                "requestString": null,
+                "responseString": null,
+                "sslClientCertificate": null,
+                "sslClientPrivateKey": null,
+                "testInterval": 60,
+                "testObject": "/status",
+                "testObjectPassword": null,
+                "testObjectPort": 80,
+                "testObjectProtocol": "HTTP",
+                "testObjectUsername": null,
+                "testTimeout": 25.0
+            }
+        ],
+        "trafficTargets": [
+            {
+                "datacenterId": 3134,
+                "enabled": true,
+                "handoutCName": null,
+                "name": null,
+                "weight": 50.0,
+                "servers": [
+                    "1.2.3.5"
+                ],
+                "precedence": 255
+            },
+            {
+                "datacenterId": 3133,
+                "enabled": true,
+                "handoutCName": null,
+                "name": null,
+                "weight": 50.0,
+                "servers": [
+                    "1.2.3.4"
+                ],
+                "precedence": null
+            }
+        ]
+    },
+    "status": {
+        "changeId": "eee0c3b4-0e45-4f4b-822c-7dbc60764d18",
+        "message": "Change Pending",
+        "passingValidation": true,
+        "propagationStatus": "PENDING",
+        "propagationStatusDate": "2014-04-15T11:30:27.000+0000",
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
+                "rel": "self"
+            }
+        ]
+    }
+}
+`,
+			expectedResponse: &PropertyResponse{
+				Resource: &Property{
+					BalanceByDownloadScore: false,
+					HandoutMode:            "normal",
+					IPv6:                   false,
+					Name:                   "origin",
+					ScoreAggregationType:   "mean",
+					StaticTTL:              600,
+					DynamicTTL:             300,
+					Type:                   "weighted-round-robin",
+					UseComputedTargets:     false,
+					LivenessTests: []*LivenessTest{
+						{
+							DisableNonstandardPortWarning: false,
+							HTTPError3xx:                  true,
+							HTTPError4xx:                  true,
+							HTTPError5xx:                  true,
+							HTTPMethod:                    tools.StringPtr("GET"),
+							HTTPRequestBody:               tools.StringPtr("TestBody"),
+							Pre2023SecurityPosture:        true,
+							AlternateCACertificates:       []string{"test1"},
+							Name:                          "health-check",
+							TestInterval:                  60,
+							TestObject:                    "/status",
+							TestObjectPort:                80,
+							TestObjectProtocol:            "HTTP",
+							TestTimeout:                   25.0,
+						},
+					},
+					TrafficTargets: []*TrafficTarget{
+						{
+							DatacenterID: 3134,
+							Enabled:      true,
+							Weight:       50.0,
+							Servers:      []string{"1.2.3.5"},
+							Precedence:   tools.IntPtr(255),
+						},
+						{
+							DatacenterID: 3133,
+							Enabled:      true,
+							Weight:       50.0,
+							Servers:      []string{"1.2.3.4"},
+							Precedence:   nil,
+						},
+					},
+					Links: []*Link{
+						{
+							Href: "/config-gtm/v1/domains/example.akadns.net/properties/origin",
+							Rel:  "self",
+						},
+					},
+				},
+				Status: &ResponseStatus{
+					ChangeID:              "eee0c3b4-0e45-4f4b-822c-7dbc60764d18",
+					Message:               "Change Pending",
+					PassingValidation:     true,
+					PropagationStatus:     "PENDING",
+					PropagationStatusDate: "2014-04-15T11:30:27.000+0000",
+					Links: &[]Link{
+						{
+							Href: "/config-gtm/v1/domains/example.akadns.net/status/current",
+							Rel:  "self",
+						},
+					},
+				},
+			},
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
+		},
+		"validation error - missing precedence for ranked-failover property type": {
+			property: &Property{
+				Type:                 "ranked-failover",
+				Name:                 "property",
+				HandoutMode:          "normal",
+				ScoreAggregationType: "mean",
+				TrafficTargets: []*TrafficTarget{
+					{
+						DatacenterID: 1,
+						Enabled:      false,
+						Precedence:   nil,
+					},
+					{
+						DatacenterID: 2,
+						Enabled:      false,
+						Precedence:   nil,
+					},
+				},
+			},
+			withError: true,
+			assertError: func(t *testing.T, err error) {
+				assert.ErrorContains(t, err, "TrafficTargets: property cannot have multiple primary traffic targets (targets with lowest precedence)")
+			},
+		},
+		"validation error - precedence value over the limit": {
+			property: &Property{
+				Type:                 "ranked-failover",
+				Name:                 "property",
+				HandoutMode:          "normal",
+				ScoreAggregationType: "mean",
+				TrafficTargets: []*TrafficTarget{
+					{
+						DatacenterID: 1,
+						Enabled:      false,
+						Precedence:   tools.IntPtr(256),
+					},
+				},
+			},
+			withError: true,
+			assertError: func(t *testing.T, err error) {
+				assert.ErrorContains(t, err, "property validation failed. TrafficTargets: 'Precedence' value has to be between 0 and 255")
+			},
 		},
 		"500 internal server error": {
-			prop:           &req,
+			property: &Property{
+				Name:                 "testName",
+				HandoutMode:          "normal",
+				ScoreAggregationType: "mean",
+				Type:                 "failover",
+			},
 			domain:         "example.akadns.net",
 			responseStatus: http.StatusInternalServerError,
-			responseBody: []byte(`
-{
-    "type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating domain"
-}`),
+			responseBody: `
+		{
+		   "type": "internal_error",
+		   "title": "Internal Server Error",
+		   "detail": "Error creating domain"
+		}`,
 			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error creating domain",
-				StatusCode: http.StatusInternalServerError,
+			withError:    true,
+			assertError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error creating domain",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.ErrorIs(t, err, want)
 			},
 		},
 	}
@@ -262,7 +672,7 @@ func TestGTM_CreateProperty(t *testing.T) {
 				assert.Equal(t, http.MethodPut, r.Method)
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
-					_, err := w.Write(test.responseBody)
+					_, err := w.Write([]byte(test.responseBody))
 					assert.NoError(t, err)
 				}
 			}))
@@ -270,9 +680,9 @@ func TestGTM_CreateProperty(t *testing.T) {
 			result, err := client.CreateProperty(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.prop, test.domain)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+					session.WithContextHeaders(test.headers)), test.property, test.domain)
+			if test.withError {
+				test.assertError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -282,64 +692,235 @@ func TestGTM_CreateProperty(t *testing.T) {
 }
 
 func TestGTM_UpdateProperty(t *testing.T) {
-	var result PropertyResponse
-	var req Property
-
-	respData, err := loadTestData("TestGTM_CreateProperty.resp.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := json.NewDecoder(bytes.NewBuffer(respData)).Decode(&result); err != nil {
-		t.Fatal(err)
-	}
-
-	reqData, err := loadTestData("TestGTM_CreateProperty.req.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := json.NewDecoder(bytes.NewBuffer(reqData)).Decode(&req); err != nil {
-		t.Fatal(err)
-	}
-
 	tests := map[string]struct {
-		prop             *Property
+		property         *Property
 		domain           string
 		responseStatus   int
-		responseBody     []byte
+		responseBody     string
 		expectedPath     string
 		expectedResponse *ResponseStatus
-		withError        error
+		withError        bool
+		assertError      func(*testing.T, error)
 		headers          http.Header
 	}{
 		"200 Success": {
-			prop:   &req,
+			property: &Property{
+				BalanceByDownloadScore: false,
+				HandoutMode:            "normal",
+				IPv6:                   false,
+				Name:                   "origin",
+				ScoreAggregationType:   "mean",
+				StaticTTL:              600,
+				Type:                   "weighted-round-robin",
+				UseComputedTargets:     false,
+				LivenessTests: []*LivenessTest{
+					{
+						DisableNonstandardPortWarning: false,
+						HTTPError3xx:                  true,
+						HTTPError4xx:                  true,
+						HTTPError5xx:                  true,
+						Name:                          "health-check",
+						TestInterval:                  60,
+						TestObject:                    "/status",
+						TestObjectPort:                80,
+						TestObjectProtocol:            "HTTP",
+						TestTimeout:                   25.0,
+					},
+				},
+				TrafficTargets: []*TrafficTarget{
+					{
+						DatacenterID: 3134,
+						Enabled:      true,
+						Weight:       50.0,
+						Servers:      []string{"1.2.3.5"},
+						Precedence:   tools.IntPtr(255),
+					},
+					{
+						DatacenterID: 3133,
+						Enabled:      true,
+						Weight:       50.0,
+						Servers:      []string{"1.2.3.4"},
+						Precedence:   nil,
+					},
+				},
+			},
 			domain: "example.akadns.net",
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     respData,
-			expectedResponse: result.Status,
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+    "resource": {
+        "backupCName": null,
+        "backupIp": null,
+        "balanceByDownloadScore": false,
+        "cname": null,
+        "comments": null,
+        "dynamicTTL": 300,
+        "failbackDelay": 0,
+        "failoverDelay": 0,
+        "handoutMode": "normal",
+        "healthMax": null,
+        "healthMultiplier": null,
+        "healthThreshold": null,
+        "ipv6": false,
+        "lastModified": null,
+        "loadImbalancePercentage": null,
+        "mapName": null,
+        "maxUnreachablePenalty": null,
+        "name": "origin",
+        "scoreAggregationType": "mean",
+        "staticTTL": 600,
+        "stickinessBonusConstant": 0,
+        "stickinessBonusPercentage": 0,
+        "type": "weighted-round-robin",
+        "unreachableThreshold": null,
+        "useComputedTargets": false,
+        "mxRecords": [],
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/properties/origin",
+                "rel": "self"
+            }
+        ],
+        "livenessTests": [
+            {
+                "disableNonstandardPortWarning": false,
+                "hostHeader": "foo.example.com",
+                "httpError3xx": true,
+                "httpError4xx": true,
+                "httpError5xx": true,
+                "name": "health-check",
+                "requestString": null,
+                "responseString": null,
+                "sslClientCertificate": null,
+                "sslClientPrivateKey": null,
+                "testInterval": 60,
+                "testObject": "/status",
+                "testObjectPassword": null,
+                "testObjectPort": 80,
+                "testObjectProtocol": "HTTP",
+                "testObjectUsername": null,
+                "testTimeout": 25.0
+            }
+        ],
+        "trafficTargets": [
+            {
+                "datacenterId": 3134,
+                "enabled": true,
+                "handoutCName": null,
+                "name": null,
+                "weight": 50.0,
+                "servers": [
+                    "1.2.3.5"
+                ],
+                "precedence": 255
+            },
+            {
+                "datacenterId": 3133,
+                "enabled": true,
+                "handoutCName": null,
+                "name": null,
+                "weight": 50.0,
+                "servers": [
+                    "1.2.3.4"
+                ],
+                "precedence": null
+            }
+        ]
+    },
+    "status": {
+        "changeId": "eee0c3b4-0e45-4f4b-822c-7dbc60764d18",
+        "message": "Change Pending",
+        "passingValidation": true,
+        "propagationStatus": "PENDING",
+        "propagationStatusDate": "2014-04-15T11:30:27.000+0000",
+        "links": [
+            {
+                "href": "/config-gtm/v1/domains/example.akadns.net/status/current",
+                "rel": "self"
+            }
+        ]
+    }
+}
+`,
+			expectedResponse: &ResponseStatus{
+				ChangeID:              "eee0c3b4-0e45-4f4b-822c-7dbc60764d18",
+				Message:               "Change Pending",
+				PassingValidation:     true,
+				PropagationStatus:     "PENDING",
+				PropagationStatusDate: "2014-04-15T11:30:27.000+0000",
+				Links: &[]Link{
+					{
+						Href: "/config-gtm/v1/domains/example.akadns.net/status/current",
+						Rel:  "self",
+					},
+				},
+			},
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
+		},
+		"validation error - missing precedence for ranked-failover property type": {
+			property: &Property{
+				Type:                 "ranked-failover",
+				Name:                 "property",
+				HandoutMode:          "normal",
+				ScoreAggregationType: "mean",
+				TrafficTargets: []*TrafficTarget{
+					{
+						DatacenterID: 1,
+						Enabled:      false,
+						Precedence:   nil,
+					},
+					{
+						DatacenterID: 2,
+						Enabled:      false,
+						Precedence:   nil,
+					},
+				},
+			},
+			withError: true,
+			assertError: func(t *testing.T, err error) {
+				assert.ErrorContains(t, err, "TrafficTargets: property cannot have multiple primary traffic targets (targets with lowest precedence)")
+			},
+		},
+		"validation error - no traffic targets": {
+			property: &Property{
+				Type:                 "ranked-failover",
+				Name:                 "property",
+				HandoutMode:          "normal",
+				ScoreAggregationType: "mean",
+			},
+			withError: true,
+			assertError: func(t *testing.T, err error) {
+				assert.ErrorContains(t, err, "property validation failed. TrafficTargets: no traffic targets are enabled")
+			},
 		},
 		"500 internal server error": {
-			prop:           &req,
+			property: &Property{
+				Name:                 "testName",
+				HandoutMode:          "normal",
+				ScoreAggregationType: "mean",
+				Type:                 "failover",
+			},
 			domain:         "example.akadns.net",
 			responseStatus: http.StatusInternalServerError,
-			responseBody: []byte(`
+			responseBody: `
 {
     "type": "internal_error",
     "title": "Internal Server Error",
     "detail": "Error creating zone"
-}`),
+}`,
 			expectedPath: "/config-gtm/v1/domains/example.akadns.net?contractId=1-2ABCDE",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error creating zone",
-				StatusCode: http.StatusInternalServerError,
+			withError:    true,
+			assertError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error creating zone",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.ErrorIs(t, err, want)
 			},
 		},
 	}
@@ -350,7 +931,7 @@ func TestGTM_UpdateProperty(t *testing.T) {
 				assert.Equal(t, http.MethodPut, r.Method)
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
-					_, err := w.Write(test.responseBody)
+					_, err := w.Write([]byte(test.responseBody))
 					assert.NoError(t, err)
 				}
 			}))
@@ -358,9 +939,9 @@ func TestGTM_UpdateProperty(t *testing.T) {
 			result, err := client.UpdateProperty(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.prop, test.domain)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+					session.WithContextHeaders(test.headers)), test.property, test.domain)
+			if test.withError {
+				test.assertError(t, err)
 				return
 			}
 			require.NoError(t, err)

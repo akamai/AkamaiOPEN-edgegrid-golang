@@ -85,6 +85,8 @@ type Domain struct {
 	PingPacketSize               int             `json:"pingPacketSize,omitempty"`
 	DefaultSSLClientCertificate  string          `json:"defaultSslClientCertificate,omitempty"`
 	EndUserMappingEnabled        bool            `json:"endUserMappingEnabled"`
+	SignAndServe                 bool            `json:"signAndServe"`
+	SignAndServeAlgorithm        *string         `json:"signAndServeAlgorithm"`
 }
 
 // DomainsList contains a list of domain items

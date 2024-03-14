@@ -43,7 +43,8 @@
             "weight": 50.0,
             "servers": [
                 "1.2.3.5"
-            ]
+            ],
+            "precedence": 255
         },
         {
             "datacenterId": 3133,

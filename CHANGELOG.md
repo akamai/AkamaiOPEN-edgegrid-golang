@@ -63,9 +63,13 @@
 
 
 
-
-
-
+* GTM
+  * Added new fields:
+    * `SignAndServe` and `SignAndServeAlgorithm` for the `Domain`
+    * `HTTPMethod`, `HTTPRequestBody`, `Pre2023SecurityPosture` and `AlternateCACertificates` for the `LivenessTest` in `Property`
+    * `Precedence` for the `TrafficTarget` in `Property`
+  * Enhanced error details by addition of `Errors` field in `Error` structure
+  * Added support for the creation of `ranked-failover` properties
 
 
 
