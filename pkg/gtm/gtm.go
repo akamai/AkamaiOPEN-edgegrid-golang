@@ -6,7 +6,7 @@ package gtm
 import (
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 )
 
 type (

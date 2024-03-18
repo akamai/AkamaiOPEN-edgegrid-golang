@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -99,7 +99,7 @@ func TestListDeployments(t *testing.T) {
 }`,
 			expectedPath: "/cps/v2/enrollments/10/deployments",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.deployments.v7+json",
+				"Accept": "application/vnd.akamai.cps.deployments.v8+json",
 			},
 			expectedResponse: &ListDeploymentsResponse{
 				Production: &Deployment{
@@ -186,7 +186,7 @@ func TestListDeployments(t *testing.T) {
 }`,
 			expectedPath: "/cps/v2/enrollments/500/deployments",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.deployments.v7+json",
+				"Accept": "application/vnd.akamai.cps.deployments.v8+json",
 			},
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -274,7 +274,7 @@ func TestGetProductionDeployment(t *testing.T) {
 }`,
 			expectedPath: "/cps/v2/enrollments/10/deployments/production",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.deployment.v7+json",
+				"Accept": "application/vnd.akamai.cps.deployment.v8+json",
 			},
 			expectedResponse: &GetProductionDeploymentResponse{
 				OCSPStapled: tools.BoolPtr(false),
@@ -324,7 +324,7 @@ func TestGetProductionDeployment(t *testing.T) {
 }`,
 			expectedPath: "/cps/v2/enrollments/500/deployments/production",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.deployment.v7+json",
+				"Accept": "application/vnd.akamai.cps.deployment.v8+json",
 			},
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -418,7 +418,7 @@ func TestGetStagingDeployment(t *testing.T) {
 }`,
 			expectedPath: "/cps/v2/enrollments/10/deployments/staging",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.deployment.v7+json",
+				"Accept": "application/vnd.akamai.cps.deployment.v8+json",
 			},
 			expectedResponse: &GetStagingDeploymentResponse{
 
@@ -469,7 +469,7 @@ func TestGetStagingDeployment(t *testing.T) {
 }`,
 			expectedPath: "/cps/v2/enrollments/500/deployments/staging",
 			expectedHeaders: map[string]string{
-				"Accept": "application/vnd.akamai.cps.deployment.v7+json",
+				"Accept": "application/vnd.akamai.cps.deployment.v8+json",
 			},
 			withError: func(t *testing.T, err error) {
 				want := &Error{

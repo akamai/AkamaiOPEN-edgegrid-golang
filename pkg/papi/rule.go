@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 

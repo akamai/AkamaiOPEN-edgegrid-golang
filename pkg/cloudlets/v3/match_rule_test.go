@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 )
 
 func TestUnmarshalJSONMatchRules(t *testing.T) {

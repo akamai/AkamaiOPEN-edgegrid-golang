@@ -131,7 +131,7 @@ func (c *cps) GetChangeDeploymentInfo(ctx context.Context, params GetChangeReque
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetChangeDeploymentInfo, err)
 	}
-	req.Header.Set("Accept", "application/vnd.akamai.cps.deployment.v7+json")
+	req.Header.Set("Accept", "application/vnd.akamai.cps.deployment.v8+json")
 
 	var result ChangeDeploymentInfoResponse
 	resp, err := c.Exec(req, &result)
