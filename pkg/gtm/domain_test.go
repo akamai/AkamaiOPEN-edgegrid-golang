@@ -10,21 +10,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestGtm_NewDomain(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	dom := client.NewDomain(context.Background(), "example.com", "primary")
-
-	assert.Equal(t, "example.com", dom.Name)
-	assert.Equal(t, "primary", dom.Type)
-}
-
-func TestGtm_ListDomains(t *testing.T) {
+func TestGTM_ListDomains(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus   int
 		responseBody     string
@@ -75,7 +66,7 @@ func TestGtm_ListDomains(t *testing.T) {
 			}]}`,
 			expectedPath: "/config-gtm/v1/domains",
 			expectedResponse: []*DomainItem{{
-				AcgId:                 "1-2345",
+				AcgID:                 "1-2345",
 				LastModified:          "2014-03-03T16:02:45.000+0000",
 				Name:                  "example.akadns.net",
 				Status:                "2014-02-20 22:56 GMT: Current configuration has been propagated to all GTM name servers",
@@ -92,7 +83,7 @@ func TestGtm_ListDomains(t *testing.T) {
 				}},
 			},
 				{
-					AcgId:                 "1-2345",
+					AcgID:                 "1-2345",
 					LastModified:          "2013-11-09T12:04:45.000+0000",
 					Name:                  "demo.akadns.net",
 					Status:                "2014-02-20 22:56 GMT: Current configuration has been propagated to all GTM name servers",
@@ -188,17 +179,17 @@ func TestGtm_ListDomains(t *testing.T) {
 	}
 }
 
-func TestGtm_NullFieldMap(t *testing.T) {
+func TestGTM_NullFieldMap(t *testing.T) {
 	var result NullFieldMapStruct
 
 	gob.Register(map[string]NullPerObjectAttributeStruct{})
 
-	respData, err := loadTestData("TestGtm_NullFieldMap.resp.json")
+	respData, err := loadTestData("TestGTM_NullFieldMap.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	resultData, err := loadTestData("TestGtm_NullFieldMap.result.gob")
+	resultData, err := loadTestData("TestGTM_NullFieldMap.result.gob")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -269,12 +260,10 @@ func TestGtm_NullFieldMap(t *testing.T) {
 	}
 }
 
-// Test GetDomain
-// GetDomain(context.Context, string) (*Domain, error)
-func TestGtm_GetDomain(t *testing.T) {
+func TestGTM_GetDomain(t *testing.T) {
 	var result Domain
 
-	respData, err := loadTestData("TestGtm_GetDomain.resp.json")
+	respData, err := loadTestData("TestGTM_GetDomain.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -338,12 +327,10 @@ func TestGtm_GetDomain(t *testing.T) {
 	}
 }
 
-// Test Create domain.
-// CreateDomain(context.Context, *Domain, map[string]string) (*DomainResponse, error)
-func TestGtm_CreateDomain(t *testing.T) {
+func TestGTM_CreateDomain(t *testing.T) {
 	var result DomainResponse
 
-	respData, err := loadTestData("TestGtm_GetDomain.resp.json")
+	respData, err := loadTestData("TestGTM_GetDomain.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -424,12 +411,10 @@ func TestGtm_CreateDomain(t *testing.T) {
 	}
 }
 
-// Test Update domain.
-// UpdateDomain(context.Context, *Domain, map[string]string) (*DomainResponse, error)
-func TestGtm_UpdateDomain(t *testing.T) {
+func TestGTM_UpdateDomain(t *testing.T) {
 	var result DomainResponse
 
-	respData, err := loadTestData("TestGtm_UpdateDomain.resp.json")
+	respData, err := loadTestData("TestGTM_UpdateDomain.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -510,41 +495,3 @@ func TestGtm_UpdateDomain(t *testing.T) {
 		})
 	}
 }
-
-/* Future. Presently no domain Delete endpoint.
-func TestGtm_DeleteDomain(t *testing.T) {
-
-        defer gock.Off()
-
-        mock := gock.New("https://akaa-baseurl-xxxxxxxxxxx-xxxxxxxxxxxxx.luna.akamaiapis.net/config-gtm/v1/domains/"+gtmTestDomain)
-        mock.
-                Delete("/config-gtm/v1/domains/"+gtmTestDomain).
-                HeaderPresent("Authorization").
-                Reply(200).
-                SetHeader("Content-Type", "application/vnd.config-gtm.v1.4+json;charset=UTF-8").
-                BodyString(`{
-                        "resource" : null,
-                        "status" : {
-                               "changeId": "40e36abd-bfb2-4635-9fca-62175cf17007",
-                               "links": [
-                                     {
-                                          "href": "https://akab-ymtebc45gco3ypzj-apz4yxpek55y7fyv.luna.akamaiapis.net/config-gtm/v1/domains/gtmdomtest.akadns.net/status/current",
-                                          "rel": "self"
-                                     }
-                               ],
-                               "message": "Change Pending",
-                               "passingValidation": true,
-                               "propagationStatus": "PENDING",
-                               "propagationStatusDate": "2019-04-25T14:54:00.000+00:00"
-                          },
-                }`)
-
-        Init(config)
-
-        getDomain := instantiateDomain()
-
-        _, err := getDomain.Delete()
-        assert.NoError(t, err)
-
-}
-*/

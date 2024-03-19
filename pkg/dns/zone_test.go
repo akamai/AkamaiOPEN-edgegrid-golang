@@ -7,12 +7,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestDns_ListZones(t *testing.T) {
+func TestDNS_ListZones(t *testing.T) {
 
 	tests := map[string]struct {
 		args             []ZoneListQueryArgs
@@ -80,7 +80,7 @@ func TestDns_ListZones(t *testing.T) {
 						Type:               "primary",
 						AliasCount:         1,
 						SignAndServe:       false,
-						VersionId:          "ae02357c-693d-4ac4-b33d-8352d9b7c786",
+						VersionID:          "ae02357c-693d-4ac4-b33d-8352d9b7c786",
 						LastModifiedDate:   "2017-01-03T12:00:00Z",
 						LastModifiedBy:     "user28",
 						LastActivationDate: "2017-01-03T12:00:00Z",
@@ -121,7 +121,6 @@ func TestDns_ListZones(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
@@ -142,45 +141,7 @@ func TestDns_ListZones(t *testing.T) {
 	}
 }
 
-func TestDns_NewZone(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	inp := ZoneCreate{
-		Type:   "A",
-		Target: "10.0.0.1",
-	}
-
-	out := client.NewZone(context.Background(), inp)
-
-	assert.Equal(t, &inp, out)
-}
-
-func TestDns_NewZoneResponse(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	out := client.NewZoneResponse(context.Background(), "example.com")
-
-	assert.Equal(t, out.Zone, "example.com")
-}
-
-func TestDns_NewChangeListResponse(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	out := client.NewChangeListResponse(context.Background(), "example.com")
-
-	assert.Equal(t, out.Zone, "example.com")
-}
-
-func TestDns_NewZoneQueryString(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	out := client.NewZoneQueryString(context.Background(), "foo", "bar")
-
-	assert.Equal(t, out.Contract, "foo")
-	assert.Equal(t, out.Group, "bar")
-}
-
-func TestDns_GetZone(t *testing.T) {
+func TestDNS_GetZone(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		responseStatus   int
@@ -214,7 +175,7 @@ func TestDns_GetZone(t *testing.T) {
 				AliasCount:            1,
 				SignAndServe:          true,
 				SignAndServeAlgorithm: "RSA_SHA256",
-				VersionId:             "ae02357c-693d-4ac4-b33d-8352d9b7c786",
+				VersionID:             "ae02357c-693d-4ac4-b33d-8352d9b7c786",
 				LastModifiedDate:      "2017-01-03T12:00:00Z",
 				LastModifiedBy:        "user28",
 				LastActivationDate:    "2017-01-03T12:00:00Z",
@@ -262,7 +223,7 @@ func TestDns_GetZone(t *testing.T) {
 	}
 }
 
-func TestDns_GetZoneMasterFile(t *testing.T) {
+func TestDNS_GetZoneMasterFile(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		responseStatus   int
@@ -331,7 +292,7 @@ www.example.com.        300 IN  A   10.0.0.2"`,
 	}
 }
 
-func TestDns_UpdateZoneMasterFile(t *testing.T) {
+func TestDNS_UpdateZoneMasterFile(t *testing.T) {
 	tests := map[string]struct {
 		zone           string
 		masterfile     string
@@ -401,7 +362,7 @@ www.example.com.        300 IN  A   10.0.0.2"`,
 	}
 }
 
-func TestDns_GetChangeList(t *testing.T) {
+func TestDNS_GetChangeList(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		responseStatus   int
@@ -471,7 +432,7 @@ func TestDns_GetChangeList(t *testing.T) {
 	}
 }
 
-func TestDns_GetMasterZoneFile(t *testing.T) {
+func TestDNS_GetMasterZoneFile(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		responseStatus   int
@@ -544,7 +505,7 @@ func TestDns_GetMasterZoneFile(t *testing.T) {
 	}
 }
 
-func TestDns_CreateZone(t *testing.T) {
+func TestDNS_CreateZone(t *testing.T) {
 	tests := map[string]struct {
 		zone           ZoneCreate
 		query          ZoneQueryString
@@ -630,7 +591,7 @@ func TestDns_CreateZone(t *testing.T) {
 	}
 }
 
-func TestDns_SaveChangelist(t *testing.T) {
+func TestDNS_SaveChangelist(t *testing.T) {
 	tests := map[string]struct {
 		zone           ZoneCreate
 		responseStatus int
@@ -692,7 +653,7 @@ func TestDns_SaveChangelist(t *testing.T) {
 	}
 }
 
-func TestDns_SubmitChangelist(t *testing.T) {
+func TestDNS_SubmitChangelist(t *testing.T) {
 	tests := map[string]struct {
 		zone           ZoneCreate
 		responseStatus int
@@ -754,7 +715,7 @@ func TestDns_SubmitChangelist(t *testing.T) {
 	}
 }
 
-func TestDns_UpdateZone(t *testing.T) {
+func TestDNS_UpdateZone(t *testing.T) {
 	tests := map[string]struct {
 		zone           ZoneCreate
 		query          ZoneQueryString
@@ -840,70 +801,7 @@ func TestDns_UpdateZone(t *testing.T) {
 	}
 }
 
-func TestDns_DeleteZone(t *testing.T) {
-	tests := map[string]struct {
-		zone           ZoneCreate
-		query          ZoneQueryString
-		responseStatus int
-		responseBody   string
-		expectedPath   string
-		withError      error
-	}{
-		"204 No Content": {
-			zone: ZoneCreate{
-				Zone:       "example.com",
-				ContractID: "1-2ABCDE",
-				Type:       "primary",
-			},
-			responseStatus: http.StatusNoContent,
-			expectedPath:   "/config-dns/v2/zones?contractId=1-2ABCDE",
-		},
-		"500 internal server error": {
-			zone: ZoneCreate{
-				Zone:       "example.com",
-				ContractID: "1-2ABCDE",
-				Type:       "secondary",
-			},
-			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-{
-	"type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error creating zone",
-    "status": 500
-}`,
-			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error creating zone",
-				StatusCode: http.StatusInternalServerError,
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				if len(test.responseBody) > 0 {
-					_, err := w.Write([]byte(test.responseBody))
-					assert.NoError(t, err)
-				}
-			}))
-			client := mockAPIClient(t, mockServer)
-			err := client.DeleteZone(context.Background(), &test.zone, test.query)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-		})
-	}
-}
-
-func TestDns_GetZoneNames(t *testing.T) {
+func TestDNS_GetZoneNames(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		responseStatus   int
@@ -971,7 +869,7 @@ func TestDns_GetZoneNames(t *testing.T) {
 	}
 }
 
-func TestDns_GetZoneNameTypes(t *testing.T) {
+func TestDNS_GetZoneNameTypes(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		zname            string
@@ -1041,8 +939,6 @@ func TestDns_GetZoneNameTypes(t *testing.T) {
 }
 
 func Test_ValidateZoneErrors(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
 	tests := map[string]ZoneCreate{
 		"empty zone": {},
 		"bad type": {
@@ -1052,7 +948,7 @@ func Test_ValidateZoneErrors(t *testing.T) {
 		"secondary tsig": {
 			Zone: "example.com",
 			Type: "PRIMARY",
-			TsigKey: &TSIGKey{
+			TSIGKey: &TSIGKey{
 				Name: "example.com",
 			},
 		},
@@ -1094,7 +990,7 @@ func Test_ValidateZoneErrors(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			err := client.ValidateZone(context.Background(), &test)
+			err := ValidateZone(&test)
 			assert.NotNil(t, err)
 		})
 	}

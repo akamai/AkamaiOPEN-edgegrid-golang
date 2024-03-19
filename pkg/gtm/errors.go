@@ -7,12 +7,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/errs"
 )
 
 var (
-	// ErrBadRequest is returned when a required parameter is missing
-	ErrBadRequest = errors.New("missing argument")
 	// ErrNotFound used when status code is 404 Not Found
 	ErrNotFound = errors.New("404 Not Found")
 )
@@ -20,25 +18,26 @@ var (
 type (
 	// Error is a gtm error interface
 	Error struct {
-		Type          string `json:"type"`
-		Title         string `json:"title"`
-		Detail        string `json:"detail"`
-		Instance      string `json:"instance,omitempty"`
-		BehaviorName  string `json:"behaviorName,omitempty"`
-		ErrorLocation string `json:"errorLocation,omitempty"`
-		StatusCode    int    `json:"-"`
+		Type          string  `json:"type"`
+		Title         string  `json:"title"`
+		Detail        string  `json:"detail"`
+		Instance      string  `json:"instance,omitempty"`
+		BehaviorName  string  `json:"behaviorName,omitempty"`
+		ErrorLocation string  `json:"errorLocation,omitempty"`
+		StatusCode    int     `json:"-"`
+		Errors        []Error `json:"errors"`
 	}
 )
 
 // Error parses an error from the response
-func (p *gtm) Error(r *http.Response) error {
+func (g *gtm) Error(r *http.Response) error {
 	var e Error
 
 	var body []byte
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		p.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
+		g.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.StatusCode = r.StatusCode
 		e.Title = fmt.Sprintf("Failed to read error body")
 		e.Detail = err.Error()
@@ -46,7 +45,7 @@ func (p *gtm) Error(r *http.Response) error {
 	}
 
 	if err := json.Unmarshal(body, &e); err != nil {
-		p.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
+		g.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
 		e.Title = fmt.Sprintf("Failed to unmarshal error body. GTM API failed. Check details for more information.")
 		e.Detail = errs.UnescapeContent(string(body))
 	}

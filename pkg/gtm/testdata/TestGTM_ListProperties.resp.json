@@ -44,7 +44,8 @@
                     "weight": 0.0,
                     "servers": [
                         "1.2.3.5"
-                    ]
+                    ],
+                    "precedence": 255
                 },
                 {
                     "datacenterId": 3133,
@@ -52,7 +53,8 @@
                     "weight": 1.0,
                     "servers": [
                         "1.2.3.4"
-                    ]
+                    ],
+                    "precedence": null
                 }
             ]
         },
@@ -86,7 +88,8 @@
                     "weight": 1.0,
                     "servers": [
                         "2001:4878::5043:4078"
-                    ]
+                    ],
+                    "precedence": 255
                 },
                 {
                     "datacenterId": 3133,
@@ -95,7 +98,8 @@
                     "servers": [
                         "2001:4878::5043:4072",
                         "2001:4878::5043:4071"
-                    ]
+                    ],
+                    "precedence": null
                 }
             ]
         }

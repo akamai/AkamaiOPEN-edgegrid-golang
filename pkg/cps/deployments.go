@@ -119,7 +119,7 @@ func (c *cps) ListDeployments(ctx context.Context, params ListDeploymentsRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListDeployments, err)
 	}
-	req.Header.Set("Accept", "application/vnd.akamai.cps.deployments.v7+json")
+	req.Header.Set("Accept", "application/vnd.akamai.cps.deployments.v8+json")
 
 	var result ListDeploymentsResponse
 	resp, err := c.Exec(req, &result)
@@ -148,7 +148,7 @@ func (c *cps) GetProductionDeployment(ctx context.Context, params GetDeploymentR
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProductionDeployment, err)
 	}
-	req.Header.Set("Accept", "application/vnd.akamai.cps.deployment.v7+json")
+	req.Header.Set("Accept", "application/vnd.akamai.cps.deployment.v8+json")
 
 	var result GetProductionDeploymentResponse
 	resp, err := c.Exec(req, &result)
@@ -177,7 +177,7 @@ func (c *cps) GetStagingDeployment(ctx context.Context, params GetDeploymentRequ
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetStagingDeployment, err)
 	}
-	req.Header.Set("Accept", "application/vnd.akamai.cps.deployment.v7+json")
+	req.Header.Set("Accept", "application/vnd.akamai.cps.deployment.v8+json")
 
 	var result GetStagingDeploymentResponse
 	resp, err := c.Exec(req, &result)

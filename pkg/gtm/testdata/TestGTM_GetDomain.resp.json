@@ -13,6 +13,8 @@
     "roundRobinPrefix": null,
     "servermonitorLivenessCount": null,
     "servermonitorLoadCount": null,
+    "signAndServe": true,
+    "signAndServeAlgorithm": "RSA-SHA1",
     "type": "full",
     "emailNotificationList": [],
     "status": {

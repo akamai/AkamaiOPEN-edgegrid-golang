@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegrid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -31,6 +31,7 @@ func TestSession_Exec(t *testing.T) {
 		responseBody        string
 		responseStatus      int
 		expectedContentType string
+		expectedAccept      string
 		expectedUserAgent   string
 		expectedMethod      string
 		expectedPath        string
@@ -69,12 +70,13 @@ func TestSession_Exec(t *testing.T) {
 				B: 1,
 			},
 		},
-		"GET request, custom content type and user agent": {
+		"GET request, custom content type, accept and user agent": {
 			request: func() *http.Request {
 				req, err := http.NewRequest(http.MethodGet, "/test/path", nil)
 				require.NoError(t, err)
 				req.Header.Set("Content-Type", "text/plain")
 				req.Header.Set("User-Agent", "other user agent")
+				req.Header.Set("Accept", "text/html")
 				return req
 			}(),
 			out:                 testStruct{},
@@ -83,18 +85,20 @@ func TestSession_Exec(t *testing.T) {
 			expectedMethod:      http.MethodGet,
 			expectedPath:        "/test/path",
 			expectedContentType: "text/plain",
+			expectedAccept:      "text/html",
 			expectedUserAgent:   "other user agent",
 			expected: testStruct{
 				A: "text",
 				B: 1,
 			},
 		},
-		"POST request, custom content type and user agent": {
+		"POST request, custom content type, accept and user agent": {
 			request: func() *http.Request {
 				req, err := http.NewRequest(http.MethodPost, "/test/path", nil)
 				require.NoError(t, err)
 				req.Header.Set("Content-Type", "text/plain")
 				req.Header.Set("User-Agent", "other user agent")
+				req.Header.Set("Accept", "text/html")
 				return req
 			}(),
 			in: []interface{}{&testStruct{
@@ -108,6 +112,7 @@ func TestSession_Exec(t *testing.T) {
 			expectedPath:        "/test/path",
 			expectedContentType: "text/plain",
 			expectedUserAgent:   "other user agent",
+			expectedAccept:      "text/html",
 			expected: testStruct{
 				A: "text",
 				B: 1,
@@ -166,6 +171,11 @@ func TestSession_Exec(t *testing.T) {
 					assert.Equal(t, "test user agent", r.Header.Get("User-Agent"))
 				} else {
 					assert.Equal(t, test.expectedUserAgent, r.Header.Get("User-Agent"))
+				}
+				if test.expectedAccept == "" {
+					assert.Equal(t, "application/json", r.Header.Get("Accept"))
+				} else {
+					assert.Equal(t, test.expectedAccept, r.Header.Get("Accept"))
 				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))

@@ -209,7 +209,7 @@ func (e *edgeworkers) GetEdgeWorkerVersionContent(ctx context.Context, params Ge
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeWorkerVersionContent, err)
 	}
 
-	req.Header.Add("Content-Type", "application/gzip")
+	req.Header.Add("Accept", "application/gzip")
 	resp, err := e.Exec(req, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeWorkerVersionContent, err)

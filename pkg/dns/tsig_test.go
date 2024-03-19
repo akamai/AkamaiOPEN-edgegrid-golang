@@ -7,20 +7,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func Test_NewTsigQueryString(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	str := client.NewTsigQueryString(context.Background())
-
-	assert.NotNil(t, str)
-}
-
-func TestDns_ListTsigKeys(t *testing.T) {
+func TestDNS_ListTSIGKeys(t *testing.T) {
 	tests := map[string]struct {
 		query            TSIGQueryString
 		responseStatus   int
@@ -31,7 +22,7 @@ func TestDns_ListTsigKeys(t *testing.T) {
 	}{
 		"200 OK": {
 			query: TSIGQueryString{
-				ContractIds: []string{"1-1ABCD"},
+				ContractIDs: []string{"1-1ABCD"},
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -67,7 +58,7 @@ func TestDns_ListTsigKeys(t *testing.T) {
 		},
 		"500 internal server error": {
 			query: TSIGQueryString{
-				ContractIds: []string{"1-1ABCD"},
+				ContractIDs: []string{"1-1ABCD"},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -97,7 +88,7 @@ func TestDns_ListTsigKeys(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListTsigKeys(context.Background(), &test.query)
+			result, err := client.ListTSIGKeys(context.Background(), &test.query)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -108,7 +99,7 @@ func TestDns_ListTsigKeys(t *testing.T) {
 	}
 }
 
-func TestDns_GetTsigKeyZones(t *testing.T) {
+func TestDNS_GetTSIGKeyZones(t *testing.T) {
 	tests := map[string]struct {
 		key              TSIGKey
 		responseStatus   int
@@ -170,7 +161,7 @@ func TestDns_GetTsigKeyZones(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetTsigKeyZones(context.Background(), &test.key)
+			result, err := client.GetTSIGKeyZones(context.Background(), &test.key)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -181,7 +172,7 @@ func TestDns_GetTsigKeyZones(t *testing.T) {
 	}
 }
 
-func TestDns_GetTsigKeyAliases(t *testing.T) {
+func TestDNS_GetTSIGKeyAliases(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		responseStatus   int
@@ -237,7 +228,7 @@ func TestDns_GetTsigKeyAliases(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetTsigKeyAliases(context.Background(), test.zone)
+			result, err := client.GetTSIGKeyAliases(context.Background(), test.zone)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -248,7 +239,7 @@ func TestDns_GetTsigKeyAliases(t *testing.T) {
 	}
 }
 
-func TestDns_TsigKeyBulkUpdate(t *testing.T) {
+func TestDNS_TSIGKeyBulkUpdate(t *testing.T) {
 	tests := map[string]struct {
 		bulk             TSIGKeyBulkPost
 		responseStatus   int
@@ -311,7 +302,7 @@ func TestDns_TsigKeyBulkUpdate(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.TsigKeyBulkUpdate(context.Background(), &test.bulk)
+			err := client.TSIGKeyBulkUpdate(context.Background(), &test.bulk)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -321,7 +312,7 @@ func TestDns_TsigKeyBulkUpdate(t *testing.T) {
 	}
 }
 
-func TestDns_GetTsigKey(t *testing.T) {
+func TestDNS_GetTSIGKey(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		responseStatus   int
@@ -380,7 +371,7 @@ func TestDns_GetTsigKey(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetTsigKey(context.Background(), test.zone)
+			result, err := client.GetTSIGKey(context.Background(), test.zone)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -391,7 +382,7 @@ func TestDns_GetTsigKey(t *testing.T) {
 	}
 }
 
-func TestDns_DeleteTsigKey(t *testing.T) {
+func TestDNS_DeleteTSIGKey(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		responseStatus   int
@@ -437,7 +428,7 @@ func TestDns_DeleteTsigKey(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeleteTsigKey(context.Background(), test.zone)
+			err := client.DeleteTSIGKey(context.Background(), test.zone)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -447,7 +438,7 @@ func TestDns_DeleteTsigKey(t *testing.T) {
 	}
 }
 
-func TestDns_UpdateTsigKey(t *testing.T) {
+func TestDNS_UpdateTSIGKey(t *testing.T) {
 	tests := map[string]struct {
 		key              TSIGKey
 		zone             string
@@ -504,7 +495,7 @@ func TestDns_UpdateTsigKey(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.UpdateTsigKey(context.Background(), &test.key, test.zone)
+			err := client.UpdateTSIGKey(context.Background(), &test.key, test.zone)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

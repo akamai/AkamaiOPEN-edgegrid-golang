@@ -4,7 +4,7 @@ package edgeworkers
 import (
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 )
 
 var (

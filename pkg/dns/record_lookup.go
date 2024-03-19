@@ -11,10 +11,7 @@ import (
 	"strings"
 )
 
-func (p *dns) FullIPv6(ctx context.Context, ip net.IP) string {
-
-	logger := p.Log(ctx)
-	logger.Debug("FullIPv6")
+func fullIPv6(ip net.IP) string {
 
 	dst := make([]byte, hex.EncodedLen(len(ip)))
 	_ = hex.Encode(dst, ip)
@@ -28,21 +25,17 @@ func (p *dns) FullIPv6(ctx context.Context, ip net.IP) string {
 		string(dst[28:])
 }
 
-func padvalue(str string) string {
-	vstr := strings.Replace(str, "m", "", -1)
-	vfloat, err := strconv.ParseFloat(vstr, 32)
+func padValue(str string) string {
+	newStr := strings.Replace(str, "m", "", -1)
+	float, err := strconv.ParseFloat(newStr, 32)
 	if err != nil {
 		return "FAIL"
 	}
 
-	return fmt.Sprintf("%.2f", vfloat)
+	return fmt.Sprintf("%.2f", float)
 }
 
-func (p *dns) PadCoordinates(ctx context.Context, str string) string {
-
-	logger := p.Log(ctx)
-	logger.Debug("PadCoordinates")
-
+func padCoordinates(str string) string {
 	s := strings.Split(str, " ")
 	if len(s) < 12 {
 		return ""
@@ -50,233 +43,219 @@ func (p *dns) PadCoordinates(ctx context.Context, str string) string {
 
 	latd, latm, lats, latDir, longd, longm, longs, longDir, altitude, size, horizPrecision, vertPrecision := s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11]
 
-	return latd + " " + latm + " " + lats + " " + latDir + " " + longd + " " + longm + " " + longs + " " + longDir + " " + padvalue(altitude) + "m " + padvalue(size) + "m " + padvalue(horizPrecision) + "m " + padvalue(vertPrecision) + "m"
-
+	return latd + " " + latm + " " + lats + " " + latDir + " " + longd + " " + longm + " " + longs + " " + longDir + " " + padValue(altitude) + "m " + padValue(size) + "m " + padValue(horizPrecision) + "m " + padValue(vertPrecision) + "m"
 }
 
-func (p *dns) GetRecord(ctx context.Context, zone string, name string, recordType string) (*RecordBody, error) {
-
-	logger := p.Log(ctx)
+func (d *dns) GetRecord(ctx context.Context, zone, name, recordType string) (*RecordBody, error) {
+	logger := d.Log(ctx)
 	logger.Debug("GetRecord")
 
-	var rec RecordBody
 	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types/%s", zone, name, recordType)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetRecord request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &rec)
+	var result RecordBody
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRecord request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, d.Error(resp)
 	}
 
-	return &rec, nil
+	return &result, nil
 }
 
-func (p *dns) GetRecordList(ctx context.Context, zone string, _ string, recordType string) (*RecordSetResponse, error) {
-
-	logger := p.Log(ctx)
+func (d *dns) GetRecordList(ctx context.Context, zone, _, recordType string) (*RecordSetResponse, error) {
+	logger := d.Log(ctx)
 	logger.Debug("GetRecordList")
 
-	var records RecordSetResponse
 	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets?types=%s&showAll=true", zone, recordType)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetRecordList request: %w", err)
 	}
 
-	resp, err := p.Exec(req, &records)
+	var result RecordSetResponse
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRecordList request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, d.Error(resp)
 	}
 
-	return &records, nil
+	return &result, nil
 }
 
-func (p *dns) GetRdata(ctx context.Context, zone string, name string, recordType string) ([]string, error) {
+func (d *dns) GetRdata(ctx context.Context, zone, name, recordType string) ([]string, error) {
+	logger := d.Log(ctx)
+	logger.Debug("GetrData")
 
-	logger := p.Log(ctx)
-	logger.Debug("GetRdata")
-
-	records, err := p.GetRecordList(ctx, zone, name, recordType)
+	records, err := d.GetRecordList(ctx, zone, name, recordType)
 	if err != nil {
 		return nil, err
 	}
 
-	var arrLength int
-	for _, c := range records.Recordsets {
-		if c.Name == name {
-			arrLength = len(c.Rdata)
-		}
-	}
-
-	rdata := make([]string, 0, arrLength)
-
-	for _, r := range records.Recordsets {
+	var rData []string
+	for _, r := range records.RecordSets {
 		if r.Name == name {
 			for _, i := range r.Rdata {
 				str := i
 
 				if recordType == "AAAA" {
 					addr := net.ParseIP(str)
-					result := p.FullIPv6(ctx, addr)
+					result := fullIPv6(addr)
 					str = result
 				} else if recordType == "LOC" {
-					str = p.PadCoordinates(ctx, str)
+					str = padCoordinates(str)
 				}
-				rdata = append(rdata, str)
+				rData = append(rData, str)
 			}
 		}
 	}
-	return rdata, nil
+	return rData, nil
 }
 
-func (p *dns) ProcessRdata(ctx context.Context, rdata []string, rtype string) []string {
+func (d *dns) ProcessRdata(ctx context.Context, rData []string, rType string) []string {
+	logger := d.Log(ctx)
+	logger.Debug("ProcessrData")
 
-	logger := p.Log(ctx)
-	logger.Debug("ProcessRdata")
-
-	newrdata := make([]string, 0, len(rdata))
-	for _, i := range rdata {
+	var newRData []string
+	for _, i := range rData {
 		str := i
-		if rtype == "AAAA" {
+		if rType == "AAAA" {
 			addr := net.ParseIP(str)
-			result := p.FullIPv6(ctx, addr)
+			result := fullIPv6(addr)
 			str = result
-		} else if rtype == "LOC" {
-			str = p.PadCoordinates(ctx, str)
+		} else if rType == "LOC" {
+			str = padCoordinates(str)
 		}
-		newrdata = append(newrdata, str)
+		newRData = append(newRData, str)
 	}
-	return newrdata
 
+	return newRData
 }
 
-func (p *dns) ParseRData(ctx context.Context, rtype string, rdata []string) map[string]interface{} {
-
-	logger := p.Log(ctx)
-	logger.Debug("ParseRData")
+func (d *dns) ParseRData(ctx context.Context, rType string, rData []string) map[string]interface{} {
+	logger := d.Log(ctx)
+	logger.Debug("ParserData")
 
 	fieldMap := make(map[string]interface{}, 0)
-	if len(rdata) == 0 {
+	if len(rData) == 0 {
 		return fieldMap
 	}
-	newrdata := make([]string, 0, len(rdata))
-	fieldMap["target"] = newrdata
+	newRData := make([]string, 0, len(rData))
+	fieldMap["target"] = newRData
 
-	switch rtype {
+	switch rType {
 	case "AFSDB":
-		resolveAFSDBType(rdata, newrdata, fieldMap)
+		resolveAFSDBType(rData, newRData, fieldMap)
 
 	case "DNSKEY":
-		resolveDNSKEYType(rdata, fieldMap)
+		resolveDNSKEYType(rData, fieldMap)
 
 	case "DS":
-		resolveDSType(rdata, fieldMap)
+		resolveDSType(rData, fieldMap)
 
 	case "HINFO":
-		resolveHINFOType(rdata, fieldMap)
+		resolveHINFOType(rData, fieldMap)
 	/*
 		// too many variations to calculate pri and increment
 		case "MX":
-			sort.Strings(rdata)
-			parts := strings.Split(rdata[0], " ")
+			sort.Strings(rData)
+			parts := strings.Split(rData[0], " ")
 			fieldMap["priority"], _ = strconv.Atoi(parts[0])
-			if len(rdata) > 1 {
-				parts = strings.Split(rdata[1], " ")
+			if len(rData) > 1 {
+				parts = strings.Split(rData[1], " ")
 				tpri, _ := strconv.Atoi(parts[0])
 				fieldMap["priority_increment"] = tpri - fieldMap["priority"].(int)
 			}
-			for _, rcontent := range rdata {
-				parts := strings.Split(rcontent, " ")
-				newrdata = append(newrdata, parts[1])
+			for _, rContent := range rData {
+				parts := strings.Split(rContent, " ")
+				newrData = append(newrData, parts[1])
 			}
-			fieldMap["target"] = newrdata
+			fieldMap["target"] = newrData
 	*/
 
 	case "NAPTR":
-		resolveNAPTRType(rdata, fieldMap)
+		resolveNAPTRType(rData, fieldMap)
 
 	case "NSEC3":
-		resolveNSEC3Type(rdata, fieldMap)
+		resolveNSEC3Type(rData, fieldMap)
 
 	case "NSEC3PARAM":
-		resolveNSEC3PARAMType(rdata, fieldMap)
+		resolveNSEC3PARAMType(rData, fieldMap)
 
 	case "RP":
-		resolveRPType(rdata, fieldMap)
+		resolveRPType(rData, fieldMap)
 
 	case "RRSIG":
-		resolveRRSIGType(rdata, fieldMap)
+		resolveRRSIGType(rData, fieldMap)
 
 	case "SRV":
-		resolveSRVType(rdata, newrdata, fieldMap)
+		resolveSRVType(rData, newRData, fieldMap)
 
 	case "SSHFP":
-		resolveSSHFPType(rdata, fieldMap)
+		resolveSSHFPType(rData, fieldMap)
 
 	case "SOA":
-		resolveSOAType(rdata, fieldMap)
+		resolveSOAType(rData, fieldMap)
 
 	case "AKAMAITLC":
-		resolveAKAMAITLCType(rdata, fieldMap)
+		resolveAKAMAITLCType(rData, fieldMap)
 
 	case "SPF":
-		resolveSPFType(rdata, newrdata, fieldMap)
+		resolveSPFType(rData, newRData, fieldMap)
 
 	case "TXT":
-		resolveTXTType(rdata, newrdata, fieldMap)
+		resolveTXTType(rData, newRData, fieldMap)
 
 	case "AAAA":
-		resolveAAAAType(ctx, p, rdata, newrdata, fieldMap)
+		resolveAAAAType(rData, newRData, fieldMap)
 
 	case "LOC":
-		resolveLOCType(ctx, p, rdata, newrdata, fieldMap)
+		resolveLOCType(rData, newRData, fieldMap)
 
 	case "CERT":
-		resolveCERTType(rdata, fieldMap)
+		resolveCERTType(rData, fieldMap)
 
 	case "TLSA":
-		resolveTLSAType(rdata, fieldMap)
+		resolveTLSAType(rData, fieldMap)
 
 	case "SVCB":
-		resolveSVCBType(rdata, fieldMap)
+		resolveSVCBType(rData, fieldMap)
 
 	case "HTTPS":
-		resolveHTTPSType(rdata, fieldMap)
+		resolveHTTPSType(rData, fieldMap)
 
 	default:
-		for _, rcontent := range rdata {
-			newrdata = append(newrdata, rcontent)
+		for _, rContent := range rData {
+			newRData = append(newRData, rContent)
 		}
-		fieldMap["target"] = newrdata
+		fieldMap["target"] = newRData
 	}
 
 	return fieldMap
 }
 
-func resolveAFSDBType(rdata, newrdata []string, fieldMap map[string]interface{}) {
-	parts := strings.Split(rdata[0], " ")
+func resolveAFSDBType(rData, newRData []string, fieldMap map[string]interface{}) {
+	parts := strings.Split(rData[0], " ")
 	fieldMap["subtype"], _ = strconv.Atoi(parts[0])
-	for _, rcontent := range rdata {
-		parts = strings.Split(rcontent, " ")
-		newrdata = append(newrdata, parts[1])
+	for _, rContent := range rData {
+		parts = strings.Split(rContent, " ")
+		newRData = append(newRData, parts[1])
 	}
-	fieldMap["target"] = newrdata
+	fieldMap["target"] = newRData
 }
 
-func resolveDNSKEYType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveDNSKEYType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["flags"], _ = strconv.Atoi(parts[0])
 		fieldMap["protocol"], _ = strconv.Atoi(parts[1])
 		fieldMap["algorithm"], _ = strconv.Atoi(parts[2])
@@ -293,9 +272,9 @@ func resolveDNSKEYType(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveSVCBType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.SplitN(rcontent, " ", 3)
+func resolveSVCBType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.SplitN(rContent, " ", 3)
 		// has to be at least two fields.
 		if len(parts) < 2 {
 			break
@@ -309,9 +288,9 @@ func resolveSVCBType(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveDSType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveDSType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["keytag"], _ = strconv.Atoi(parts[0])
 		fieldMap["digest_type"], _ = strconv.Atoi(parts[2])
 		fieldMap["algorithm"], _ = strconv.Atoi(parts[1])
@@ -328,18 +307,18 @@ func resolveDSType(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveHINFOType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveHINFOType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["hardware"] = parts[0]
 		fieldMap["software"] = parts[1]
 		break
 	}
 }
 
-func resolveNAPTRType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveNAPTRType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["order"], _ = strconv.Atoi(parts[0])
 		fieldMap["preference"], _ = strconv.Atoi(parts[1])
 		fieldMap["flagsnaptr"] = parts[2]
@@ -350,9 +329,9 @@ func resolveNAPTRType(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveNSEC3Type(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveNSEC3Type(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["flags"], _ = strconv.Atoi(parts[1])
 		fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
 		fieldMap["iterations"], _ = strconv.Atoi(parts[2])
@@ -363,9 +342,9 @@ func resolveNSEC3Type(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveNSEC3PARAMType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveNSEC3PARAMType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["flags"], _ = strconv.Atoi(parts[1])
 		fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
 		fieldMap["iterations"], _ = strconv.Atoi(parts[2])
@@ -374,18 +353,18 @@ func resolveNSEC3PARAMType(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveRPType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveRPType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["mailbox"] = parts[0]
 		fieldMap["txt"] = parts[1]
 		break
 	}
 }
 
-func resolveRRSIGType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveRRSIGType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["type_covered"] = parts[0]
 		fieldMap["algorithm"], _ = strconv.Atoi(parts[1])
 		fieldMap["labels"], _ = strconv.Atoi(parts[2])
@@ -407,23 +386,23 @@ func resolveRRSIGType(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveSRVType(rdata, newrdata []string, fieldMap map[string]interface{}) {
+func resolveSRVType(rData, newRData []string, fieldMap map[string]interface{}) {
 	// pull out some fields
-	parts := strings.Split(rdata[0], " ")
+	parts := strings.Split(rData[0], " ")
 	fieldMap["priority"], _ = strconv.Atoi(parts[0])
 	fieldMap["weight"], _ = strconv.Atoi(parts[1])
 	fieldMap["port"], _ = strconv.Atoi(parts[2])
 	// populate target
-	for _, rcontent := range rdata {
-		parts = strings.Split(rcontent, " ")
-		newrdata = append(newrdata, parts[3])
+	for _, rContent := range rData {
+		parts = strings.Split(rContent, " ")
+		newRData = append(newRData, parts[3])
 	}
-	fieldMap["target"] = newrdata
+	fieldMap["target"] = newRData
 }
 
-func resolveSSHFPType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveSSHFPType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["algorithm"], _ = strconv.Atoi(parts[0])
 		fieldMap["fingerprint_type"], _ = strconv.Atoi(parts[1])
 		fieldMap["fingerprint"] = parts[2]
@@ -431,9 +410,9 @@ func resolveSSHFPType(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveSOAType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveSOAType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["name_server"] = parts[0]
 		fieldMap["email_address"] = parts[1]
 		fieldMap["serial"], _ = strconv.Atoi(parts[2])
@@ -445,49 +424,49 @@ func resolveSOAType(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveAKAMAITLCType(rdata []string, fieldMap map[string]interface{}) {
-	parts := strings.Split(rdata[0], " ")
+func resolveAKAMAITLCType(rData []string, fieldMap map[string]interface{}) {
+	parts := strings.Split(rData[0], " ")
 	fieldMap["answer_type"] = parts[0]
 	fieldMap["dns_name"] = parts[1]
 }
 
-func resolveSPFType(rdata, newrdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		newrdata = append(newrdata, rcontent)
+func resolveSPFType(rData, newRData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		newRData = append(newRData, rContent)
 	}
-	fieldMap["target"] = newrdata
+	fieldMap["target"] = newRData
 }
 
-func resolveTXTType(rdata, newrdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		newrdata = append(newrdata, rcontent)
+func resolveTXTType(rData, newRData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		newRData = append(newRData, rContent)
 	}
-	fieldMap["target"] = newrdata
+	fieldMap["target"] = newRData
 }
 
-func resolveAAAAType(ctx context.Context, p *dns, rdata, newrdata []string, fieldMap map[string]interface{}) {
-	for _, i := range rdata {
+func resolveAAAAType(rData, newRData []string, fieldMap map[string]interface{}) {
+	for _, i := range rData {
 		str := i
 		addr := net.ParseIP(str)
-		result := p.FullIPv6(ctx, addr)
+		result := fullIPv6(addr)
 		str = result
-		newrdata = append(newrdata, str)
+		newRData = append(newRData, str)
 	}
-	fieldMap["target"] = newrdata
+	fieldMap["target"] = newRData
 }
 
-func resolveLOCType(ctx context.Context, p *dns, rdata, newrdata []string, fieldMap map[string]interface{}) {
-	for _, i := range rdata {
+func resolveLOCType(rData, newRData []string, fieldMap map[string]interface{}) {
+	for _, i := range rData {
 		str := i
-		str = p.PadCoordinates(ctx, str)
-		newrdata = append(newrdata, str)
+		str = padCoordinates(str)
+		newRData = append(newRData, str)
 	}
-	fieldMap["target"] = newrdata
+	fieldMap["target"] = newRData
 }
 
-func resolveCERTType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveCERTType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		val, err := strconv.Atoi(parts[0])
 		if err == nil {
 			fieldMap["type_value"] = val
@@ -501,9 +480,9 @@ func resolveCERTType(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveTLSAType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.Split(rcontent, " ")
+func resolveTLSAType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.Split(rContent, " ")
 		fieldMap["usage"], _ = strconv.Atoi(parts[0])
 		fieldMap["selector"], _ = strconv.Atoi(parts[1])
 		fieldMap["match_type"], _ = strconv.Atoi(parts[2])
@@ -512,9 +491,9 @@ func resolveTLSAType(rdata []string, fieldMap map[string]interface{}) {
 	}
 }
 
-func resolveHTTPSType(rdata []string, fieldMap map[string]interface{}) {
-	for _, rcontent := range rdata {
-		parts := strings.SplitN(rcontent, " ", 3)
+func resolveHTTPSType(rData []string, fieldMap map[string]interface{}) {
+	for _, rContent := range rData {
+		parts := strings.SplitN(rContent, " ", 3)
 		// has to be at least two fields.
 		if len(parts) < 2 {
 			break

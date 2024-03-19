@@ -24,14 +24,14 @@ func (m *Mock) ListEnrollments(ctx context.Context, r ListEnrollmentsRequest) (*
 	return args.Get(0).(*ListEnrollmentsResponse), args.Error(1)
 }
 
-func (m *Mock) GetEnrollment(ctx context.Context, r GetEnrollmentRequest) (*Enrollment, error) {
+func (m *Mock) GetEnrollment(ctx context.Context, r GetEnrollmentRequest) (*GetEnrollmentResponse, error) {
 	args := m.Called(ctx, r)
 
 	if args.Error(1) != nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*Enrollment), args.Error(1)
+	return args.Get(0).(*GetEnrollmentResponse), args.Error(1)
 }
 
 func (m *Mock) CreateEnrollment(ctx context.Context, r CreateEnrollmentRequest) (*CreateEnrollmentResponse, error) {

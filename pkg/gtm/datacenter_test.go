@@ -9,31 +9,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestGtm_NewDatacenterResponse(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	dcr := client.NewDatacenterResponse(context.Background())
-
-	assert.NotNil(t, dcr)
-}
-
-func TestGtm_NewDatacenter(t *testing.T) {
-	client := Client(session.Must(session.New()))
-
-	dc := client.NewDatacenter(context.Background())
-
-	assert.NotNil(t, dc)
-}
-
-func TestGtm_ListDatacenters(t *testing.T) {
+func TestGTM_ListDatacenters(t *testing.T) {
 	var result DatacenterList
 
-	respData, err := loadTestData("TestGtm_ListDatacenters.resp.json")
+	respData, err := loadTestData("TestGTM_ListDatacenters.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,10 +89,10 @@ func TestGtm_ListDatacenters(t *testing.T) {
 	}
 }
 
-func TestGtm_GetDatacenter(t *testing.T) {
+func TestGTM_GetDatacenter(t *testing.T) {
 	var result Datacenter
 
-	respData, err := loadTestData("TestGtm_GetDatacenter.resp.json")
+	respData, err := loadTestData("TestGTM_GetDatacenter.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -183,11 +167,11 @@ func TestGtm_GetDatacenter(t *testing.T) {
 	}
 }
 
-func TestGtm_CreateDatacenter(t *testing.T) {
+func TestGTM_CreateDatacenter(t *testing.T) {
 	var result DatacenterResponse
 	var req Datacenter
 
-	respData, err := loadTestData("TestGtm_CreateDatacenter.resp.json")
+	respData, err := loadTestData("TestGTM_CreateDatacenter.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -196,7 +180,7 @@ func TestGtm_CreateDatacenter(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateDatacenter.req.json")
+	reqData, err := loadTestData("TestGTM_CreateDatacenter.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -271,10 +255,10 @@ func TestGtm_CreateDatacenter(t *testing.T) {
 	}
 }
 
-func TestGtm_CreateMapsDefaultDatacenter(t *testing.T) {
+func TestGTM_CreateMapsDefaultDatacenter(t *testing.T) {
 	var result DatacenterResponse
 
-	respData, err := loadTestData("TestGtm_CreateMapsDefaultDatacenter.resp.json")
+	respData, err := loadTestData("TestGTM_CreateMapsDefaultDatacenter.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -356,10 +340,10 @@ func TestGtm_CreateMapsDefaultDatacenter(t *testing.T) {
 	}
 }
 
-func TestGtm_CreateIPv4DefaultDatacenter(t *testing.T) {
+func TestGTM_CreateIPv4DefaultDatacenter(t *testing.T) {
 	var result DatacenterResponse
 
-	respData, err := loadTestData("TestGtm_CreateIPv4DefaultDatacenter.resp.json")
+	respData, err := loadTestData("TestGTM_CreateIPv4DefaultDatacenter.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -441,10 +425,10 @@ func TestGtm_CreateIPv4DefaultDatacenter(t *testing.T) {
 	}
 }
 
-func TestGtm_CreateIPv6DefaultDatacenter(t *testing.T) {
+func TestGTM_CreateIPv6DefaultDatacenter(t *testing.T) {
 	var result DatacenterResponse
 
-	respData, err := loadTestData("TestGtm_CreateIPv6DefaultDatacenter.resp.json")
+	respData, err := loadTestData("TestGTM_CreateIPv6DefaultDatacenter.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -526,11 +510,11 @@ func TestGtm_CreateIPv6DefaultDatacenter(t *testing.T) {
 	}
 }
 
-func TestGtm_UpdateDatacenter(t *testing.T) {
+func TestGTM_UpdateDatacenter(t *testing.T) {
 	var result DatacenterResponse
 	var req Datacenter
 
-	respData, err := loadTestData("TestGtm_CreateDatacenter.resp.json")
+	respData, err := loadTestData("TestGTM_CreateDatacenter.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -539,7 +523,7 @@ func TestGtm_UpdateDatacenter(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateDatacenter.req.json")
+	reqData, err := loadTestData("TestGTM_CreateDatacenter.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -614,11 +598,11 @@ func TestGtm_UpdateDatacenter(t *testing.T) {
 	}
 }
 
-func TestGtm_DeleteDatacenter(t *testing.T) {
+func TestGTM_DeleteDatacenter(t *testing.T) {
 	var result DatacenterResponse
 	var req Datacenter
 
-	respData, err := loadTestData("TestGtm_CreateDatacenter.resp.json")
+	respData, err := loadTestData("TestGTM_CreateDatacenter.resp.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -627,7 +611,7 @@ func TestGtm_DeleteDatacenter(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	reqData, err := loadTestData("TestGtm_CreateDatacenter.req.json")
+	reqData, err := loadTestData("TestGTM_CreateDatacenter.req.json")
 	if err != nil {
 		t.Fatal(err)
 	}

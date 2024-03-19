@@ -24,16 +24,6 @@ func (p *Mock) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapS
 	return args.Get(0).(*NullFieldMapStruct), args.Error(1)
 }
 
-func (p *Mock) NewDomain(ctx context.Context, _ string, _ string) *Domain {
-	args := p.Called(ctx)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*Domain)
-}
-
 func (p *Mock) GetDomainStatus(ctx context.Context, domain string) (*ResponseStatus, error) {
 	args := p.Called(ctx, domain)
 
@@ -134,46 +124,6 @@ func (p *Mock) UpdateProperty(ctx context.Context, prop *Property, domain string
 	return args.Get(0).(*ResponseStatus), args.Error(1)
 }
 
-func (p *Mock) NewTrafficTarget(ctx context.Context) *TrafficTarget {
-	args := p.Called(ctx)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*TrafficTarget)
-}
-
-func (p *Mock) NewStaticRRSet(ctx context.Context) *StaticRRSet {
-	args := p.Called(ctx)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*StaticRRSet)
-}
-
-func (p *Mock) NewLivenessTest(ctx context.Context, a string, b string, c int, d float32) *LivenessTest {
-	args := p.Called(ctx, a, b, c, d)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*LivenessTest)
-}
-
-func (p *Mock) NewProperty(ctx context.Context, prop string) *Property {
-	args := p.Called(ctx, prop)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*Property)
-}
-
 func (p *Mock) ListProperties(ctx context.Context, domain string) ([]*Property, error) {
 	args := p.Called(ctx, domain)
 
@@ -184,8 +134,8 @@ func (p *Mock) ListProperties(ctx context.Context, domain string) ([]*Property, 
 	return args.Get(0).([]*Property), args.Error(1)
 }
 
-func (p *Mock) GetDatacenter(ctx context.Context, dcid int, domain string) (*Datacenter, error) {
-	args := p.Called(ctx, dcid, domain)
+func (p *Mock) GetDatacenter(ctx context.Context, dcID int, domain string) (*Datacenter, error) {
+	args := p.Called(ctx, dcID, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -222,26 +172,6 @@ func (p *Mock) UpdateDatacenter(ctx context.Context, dc *Datacenter, domain stri
 	}
 
 	return args.Get(0).(*ResponseStatus), args.Error(1)
-}
-
-func (p *Mock) NewDatacenterResponse(ctx context.Context) *DatacenterResponse {
-	args := p.Called(ctx)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*DatacenterResponse)
-}
-
-func (p *Mock) NewDatacenter(ctx context.Context) *Datacenter {
-	args := p.Called(ctx)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*Datacenter)
 }
 
 func (p *Mock) ListDatacenters(ctx context.Context, domain string) ([]*Datacenter, error) {
@@ -284,8 +214,8 @@ func (p *Mock) CreateMapsDefaultDatacenter(ctx context.Context, domainName strin
 	return args.Get(0).(*Datacenter), args.Error(1)
 }
 
-func (p *Mock) GetResource(ctx context.Context, rsrc string, domain string) (*Resource, error) {
-	args := p.Called(ctx, rsrc, domain)
+func (p *Mock) GetResource(ctx context.Context, resource string, domain string) (*Resource, error) {
+	args := p.Called(ctx, resource, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -294,8 +224,8 @@ func (p *Mock) GetResource(ctx context.Context, rsrc string, domain string) (*Re
 	return args.Get(0).(*Resource), args.Error(1)
 }
 
-func (p *Mock) CreateResource(ctx context.Context, rsrc *Resource, domain string) (*ResourceResponse, error) {
-	args := p.Called(ctx, rsrc, domain)
+func (p *Mock) CreateResource(ctx context.Context, resource *Resource, domain string) (*ResourceResponse, error) {
+	args := p.Called(ctx, resource, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -304,8 +234,8 @@ func (p *Mock) CreateResource(ctx context.Context, rsrc *Resource, domain string
 	return args.Get(0).(*ResourceResponse), args.Error(1)
 }
 
-func (p *Mock) DeleteResource(ctx context.Context, rsrc *Resource, domain string) (*ResponseStatus, error) {
-	args := p.Called(ctx, rsrc, domain)
+func (p *Mock) DeleteResource(ctx context.Context, resource *Resource, domain string) (*ResponseStatus, error) {
+	args := p.Called(ctx, resource, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -314,34 +244,14 @@ func (p *Mock) DeleteResource(ctx context.Context, rsrc *Resource, domain string
 	return args.Get(0).(*ResponseStatus), args.Error(1)
 }
 
-func (p *Mock) UpdateResource(ctx context.Context, rsrc *Resource, domain string) (*ResponseStatus, error) {
-	args := p.Called(ctx, rsrc, domain)
+func (p *Mock) UpdateResource(ctx context.Context, resource *Resource, domain string) (*ResponseStatus, error) {
+	args := p.Called(ctx, resource, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
 	return args.Get(0).(*ResponseStatus), args.Error(1)
-}
-
-func (p *Mock) NewResourceInstance(ctx context.Context, ri *Resource, a int) *ResourceInstance {
-	args := p.Called(ctx, ri, a)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*ResourceInstance)
-}
-
-func (p *Mock) NewResource(ctx context.Context, rname string) *Resource {
-	args := p.Called(ctx, rname)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*Resource)
 }
 
 func (p *Mock) ListResources(ctx context.Context, domain string) ([]*Resource, error) {
@@ -354,39 +264,28 @@ func (p *Mock) ListResources(ctx context.Context, domain string) ([]*Resource, e
 	return args.Get(0).([]*Resource), args.Error(1)
 }
 
-func (p *Mock) GetAsMap(ctx context.Context, asmap string, domain string) (*AsMap, error) {
-	args := p.Called(ctx, asmap, domain)
+func (p *Mock) GetASMap(ctx context.Context, asMap string, domain string) (*ASMap, error) {
+	args := p.Called(ctx, asMap, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*AsMap), args.Error(1)
+	return args.Get(0).(*ASMap), args.Error(1)
 }
 
-func (p *Mock) CreateAsMap(ctx context.Context, asmap *AsMap, domain string) (*AsMapResponse, error) {
-	args := p.Called(ctx, asmap, domain)
+func (p *Mock) CreateASMap(ctx context.Context, asMap *ASMap, domain string) (*ASMapResponse, error) {
+	args := p.Called(ctx, asMap, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*AsMapResponse), args.Error(1)
+	return args.Get(0).(*ASMapResponse), args.Error(1)
 }
 
-func (p *Mock) DeleteAsMap(ctx context.Context, asmap *AsMap, domain string) (*ResponseStatus, error) {
-	args := p.Called(ctx, asmap, domain)
-
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-
-	return args.Get(0).(*ResponseStatus), args.Error(1)
-}
-
-func (p *Mock) UpdateAsMap(ctx context.Context, asmap *AsMap, domain string) (*ResponseStatus, error) {
-
-	args := p.Called(ctx, asmap, domain)
+func (p *Mock) DeleteASMap(ctx context.Context, asMap *ASMap, domain string) (*ResponseStatus, error) {
+	args := p.Called(ctx, asMap, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -395,34 +294,25 @@ func (p *Mock) UpdateAsMap(ctx context.Context, asmap *AsMap, domain string) (*R
 	return args.Get(0).(*ResponseStatus), args.Error(1)
 }
 
-func (p *Mock) NewAsMap(ctx context.Context, mname string) *AsMap {
-	args := p.Called(ctx, mname)
+func (p *Mock) UpdateASMap(ctx context.Context, asMap *ASMap, domain string) (*ResponseStatus, error) {
+
+	args := p.Called(ctx, asMap, domain)
 
 	if args.Get(0) == nil {
-		return nil
+		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*AsMap)
+	return args.Get(0).(*ResponseStatus), args.Error(1)
 }
 
-func (p *Mock) NewASAssignment(ctx context.Context, as *AsMap, a int, b string) *AsAssignment {
-	args := p.Called(ctx, as, a, b)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*AsAssignment)
-}
-
-func (p *Mock) ListAsMaps(ctx context.Context, domain string) ([]*AsMap, error) {
+func (p *Mock) ListASMaps(ctx context.Context, domain string) ([]*ASMap, error) {
 	args := p.Called(ctx, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).([]*AsMap), args.Error(1)
+	return args.Get(0).([]*ASMap), args.Error(1)
 }
 
 func (p *Mock) GetGeoMap(ctx context.Context, geo string, domain string) (*GeoMap, error) {
@@ -465,26 +355,6 @@ func (p *Mock) UpdateGeoMap(ctx context.Context, geo *GeoMap, domain string) (*R
 	return args.Get(0).(*ResponseStatus), args.Error(1)
 }
 
-func (p *Mock) NewGeoMap(ctx context.Context, mname string) *GeoMap {
-	args := p.Called(ctx, mname)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*GeoMap)
-}
-
-func (p *Mock) NewGeoAssignment(ctx context.Context, as *GeoMap, a int, b string) *GeoAssignment {
-	args := p.Called(ctx, as, a, b)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*GeoAssignment)
-}
-
 func (p *Mock) ListGeoMaps(ctx context.Context, domain string) ([]*GeoMap, error) {
 	args := p.Called(ctx, domain)
 
@@ -495,37 +365,27 @@ func (p *Mock) ListGeoMaps(ctx context.Context, domain string) ([]*GeoMap, error
 	return args.Get(0).([]*GeoMap), args.Error(1)
 }
 
-func (p *Mock) GetCidrMap(ctx context.Context, cidr string, domain string) (*CidrMap, error) {
+func (p *Mock) GetCIDRMap(ctx context.Context, cidr string, domain string) (*CIDRMap, error) {
 	args := p.Called(ctx, cidr, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*CidrMap), args.Error(1)
+	return args.Get(0).(*CIDRMap), args.Error(1)
 }
 
-func (p *Mock) CreateCidrMap(ctx context.Context, cidr *CidrMap, domain string) (*CidrMapResponse, error) {
+func (p *Mock) CreateCIDRMap(ctx context.Context, cidr *CIDRMap, domain string) (*CIDRMapResponse, error) {
 	args := p.Called(ctx, cidr, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*CidrMapResponse), args.Error(1)
+	return args.Get(0).(*CIDRMapResponse), args.Error(1)
 }
 
-func (p *Mock) DeleteCidrMap(ctx context.Context, cidr *CidrMap, domain string) (*ResponseStatus, error) {
-	args := p.Called(ctx, cidr, domain)
-
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-
-	return args.Get(0).(*ResponseStatus), args.Error(1)
-}
-
-func (p *Mock) UpdateCidrMap(ctx context.Context, cidr *CidrMap, domain string) (*ResponseStatus, error) {
+func (p *Mock) DeleteCIDRMap(ctx context.Context, cidr *CIDRMap, domain string) (*ResponseStatus, error) {
 	args := p.Called(ctx, cidr, domain)
 
 	if args.Get(0) == nil {
@@ -535,32 +395,22 @@ func (p *Mock) UpdateCidrMap(ctx context.Context, cidr *CidrMap, domain string) 
 	return args.Get(0).(*ResponseStatus), args.Error(1)
 }
 
-func (p *Mock) NewCidrMap(ctx context.Context, mname string) *CidrMap {
-	args := p.Called(ctx, mname)
+func (p *Mock) UpdateCIDRMap(ctx context.Context, cidr *CIDRMap, domain string) (*ResponseStatus, error) {
+	args := p.Called(ctx, cidr, domain)
 
 	if args.Get(0) == nil {
-		return nil
+		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*CidrMap)
+	return args.Get(0).(*ResponseStatus), args.Error(1)
 }
 
-func (p *Mock) NewCidrAssignment(ctx context.Context, as *CidrMap, a int, b string) *CidrAssignment {
-	args := p.Called(ctx, as, a, b)
-
-	if args.Get(0) == nil {
-		return nil
-	}
-
-	return args.Get(0).(*CidrAssignment)
-}
-
-func (p *Mock) ListCidrMaps(ctx context.Context, domain string) ([]*CidrMap, error) {
+func (p *Mock) ListCIDRMaps(ctx context.Context, domain string) ([]*CIDRMap, error) {
 	args := p.Called(ctx, domain)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).([]*CidrMap), args.Error(1)
+	return args.Get(0).([]*CIDRMap), args.Error(1)
 }

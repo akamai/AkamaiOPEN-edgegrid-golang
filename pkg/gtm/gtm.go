@@ -4,15 +4,9 @@
 package gtm
 
 import (
-	"errors"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
-)
-
-var (
-	// ErrStructValidation is returned returned when given struct validation failed
-	ErrStructValidation = errors.New("struct validation")
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 )
 
 type (
@@ -24,7 +18,7 @@ type (
 		Resources
 		ASMaps
 		GeoMaps
-		CidrMaps
+		CIDRMaps
 	}
 
 	gtm struct {
@@ -51,7 +45,6 @@ func Client(sess session.Session, opts ...Option) GTM {
 }
 
 // Exec overrides the session.Exec to add dns options
-func (p *gtm) Exec(r *http.Request, out interface{}, in ...interface{}) (*http.Response, error) {
-
-	return p.Session.Exec(r, out, in...)
+func (g *gtm) Exec(r *http.Request, out interface{}, in ...interface{}) (*http.Response, error) {
+	return g.Session.Exec(r, out, in...)
 }

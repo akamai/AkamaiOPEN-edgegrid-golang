@@ -1,6 +1,6 @@
-module github.com/akamai/AkamaiOPEN-edgegrid-golang/v7
+module github.com/akamai/AkamaiOPEN-edgegrid-golang/v8
 
-go 1.18
+go 1.21
 
 require (
 	github.com/apex/log v1.9.0
@@ -25,8 +25,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
-	golang.org/x/mod v0.14.0 // indirect
-    golang.org/x/tools v0.17.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

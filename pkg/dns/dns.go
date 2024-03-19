@@ -4,15 +4,9 @@
 package dns
 
 import (
-	"errors"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
-)
-
-var (
-	// ErrStructValidation is returned returned when given struct validation failed
-	ErrStructValidation = errors.New("struct validation")
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 )
 
 type (
@@ -20,7 +14,7 @@ type (
 	DNS interface {
 		Authorities
 		Data
-		RecordSets
+		Recordsets
 		Records
 		TSIGKeys
 		Zones
@@ -39,18 +33,17 @@ type (
 
 // Client returns a new dns Client instance with the specified controller
 func Client(sess session.Session, opts ...Option) DNS {
-	p := &dns{
+	d := &dns{
 		Session: sess,
 	}
 
 	for _, opt := range opts {
-		opt(p)
+		opt(d)
 	}
-	return p
+	return d
 }
 
 // Exec overrides the session.Exec to add dns options
-func (p *dns) Exec(r *http.Request, out interface{}, in ...interface{}) (*http.Response, error) {
-
-	return p.Session.Exec(r, out, in...)
+func (d *dns) Exec(r *http.Request, out interface{}, in ...interface{}) (*http.Response, error) {
+	return d.Session.Exec(r, out, in...)
 }

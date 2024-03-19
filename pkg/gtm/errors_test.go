@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 	"github.com/stretchr/testify/require"
 
 	"github.com/tj/assert"
 )
 
-func TestJsonErrorUnmarshalling(t *testing.T) {
+func TestJSONErrorUnmarshalling(t *testing.T) {
 	req, err := http.NewRequestWithContext(
 		context.TODO(),
 		http.MethodHead,
@@ -27,7 +27,6 @@ func TestJsonErrorUnmarshalling(t *testing.T) {
 		"API failure with HTML response": {
 			input: &http.Response{
 				Request:    req,
-				Status:     "OK",
 				StatusCode: http.StatusServiceUnavailable,
 				Body:       ioutil.NopCloser(strings.NewReader(`<HTML><HEAD>...</HEAD><BODY>...</BODY></HTML>`))},
 			expected: &Error{
@@ -40,7 +39,6 @@ func TestJsonErrorUnmarshalling(t *testing.T) {
 		"API failure with plain text response": {
 			input: &http.Response{
 				Request:    req,
-				Status:     "OK",
 				StatusCode: http.StatusServiceUnavailable,
 				Body:       ioutil.NopCloser(strings.NewReader("Your request did not succeed as this operation has reached  the limit for your account. Please try after 2024-01-16T15:20:55.945Z"))},
 			expected: &Error{
@@ -53,7 +51,6 @@ func TestJsonErrorUnmarshalling(t *testing.T) {
 		"API failure with XML response": {
 			input: &http.Response{
 				Request:    req,
-				Status:     "OK",
 				StatusCode: http.StatusServiceUnavailable,
 				Body:       ioutil.NopCloser(strings.NewReader(`<Root><Item id="1" name="Example" /></Root>`))},
 			expected: &Error{
@@ -61,6 +58,41 @@ func TestJsonErrorUnmarshalling(t *testing.T) {
 				Title:      "Failed to unmarshal error body. GTM API failed. Check details for more information.",
 				Detail:     "<Root><Item id=\"1\" name=\"Example\" /></Root>",
 				StatusCode: http.StatusServiceUnavailable,
+			},
+		},
+		"API failure nested error": {
+			input: &http.Response{
+				Request:    req,
+				StatusCode: http.StatusBadRequest,
+				Body: ioutil.NopCloser(strings.NewReader(`
+{
+ 	"type": "https://problems.luna.akamaiapis.net/config-gtm/v1/propertyValidationFailed",
+ 	"title": "Property Validation Failure",
+ 	"detail": "",
+ 	"instance": "https://akaa-ouijhfns55qwgfuc-knsod5nrjl2w2gmt.luna-dev.akamaiapis.net/config-gtm-api/v1/domains/ddzh-test-1.akadns.net/properties/property_test#d290ddf7-53da-4509-be5a-ba582614f883",
+ 	"errors": [
+ 		{
+ 			"type": "https://problems.luna.akamaiapis.net/config-gtm/v1/propertyValidationError",
+ 			"title": "Property Validation Error",
+ 			"detail": "In Property \"property_test\", there are no enabled traffic targets that have any traffic allowed to go to them",
+ 			"errors": null
+ 		}
+ 	]
+}`))},
+			expected: &Error{
+				Type:       "https://problems.luna.akamaiapis.net/config-gtm/v1/propertyValidationFailed",
+				Title:      "Property Validation Failure",
+				Detail:     "",
+				StatusCode: http.StatusBadRequest,
+				Instance:   "https://akaa-ouijhfns55qwgfuc-knsod5nrjl2w2gmt.luna-dev.akamaiapis.net/config-gtm-api/v1/domains/ddzh-test-1.akadns.net/properties/property_test#d290ddf7-53da-4509-be5a-ba582614f883",
+				Errors: []Error{
+					{
+						Type:   "https://problems.luna.akamaiapis.net/config-gtm/v1/propertyValidationError",
+						Title:  "Property Validation Error",
+						Detail: "In Property \"property_test\", there are no enabled traffic targets that have any traffic allowed to go to them",
+						Errors: nil,
+					},
+				},
 			},
 		},
 	}

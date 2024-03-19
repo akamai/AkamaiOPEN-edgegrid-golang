@@ -11,9 +11,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDns_GetBulkZoneCreateStatus(t *testing.T) {
+func TestDNS_GetBulkZoneCreateStatus(t *testing.T) {
 	tests := map[string]struct {
-		requestid        string
+		requestID        string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -21,7 +21,7 @@ func TestDns_GetBulkZoneCreateStatus(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			requestid:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 			responseStatus: http.StatusOK,
 			responseBody: `
   {
@@ -34,7 +34,7 @@ func TestDns_GetBulkZoneCreateStatus(t *testing.T) {
   }`,
 			expectedPath: "/config-dns/v2/zones/create-requests/15bc138f-8d82-451b-80b7-a56b88ffc474",
 			expectedResponse: &BulkStatusResponse{
-				RequestId:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+				RequestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 				ZonesSubmitted: 2,
 				SuccessCount:   0,
 				FailureCount:   2,
@@ -43,7 +43,7 @@ func TestDns_GetBulkZoneCreateStatus(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			requestid:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -65,14 +65,13 @@ func TestDns_GetBulkZoneCreateStatus(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetBulkZoneCreateStatus(context.Background(), test.requestid)
+			result, err := client.GetBulkZoneCreateStatus(context.Background(), test.requestID)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -83,9 +82,9 @@ func TestDns_GetBulkZoneCreateStatus(t *testing.T) {
 	}
 }
 
-func TestDns_GetBulkZoneCreateResult(t *testing.T) {
+func TestDNS_GetBulkZoneCreateResult(t *testing.T) {
 	tests := map[string]struct {
-		requestid        string
+		requestID        string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -93,7 +92,7 @@ func TestDns_GetBulkZoneCreateResult(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			requestid:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 			responseStatus: http.StatusOK,
 			responseBody: `
   {
@@ -108,7 +107,7 @@ func TestDns_GetBulkZoneCreateResult(t *testing.T) {
   }`,
 			expectedPath: "/config-dns/v2/zones/create-requests/15bc138f-8d82-451b-80b7-a56b88ffc474/result",
 			expectedResponse: &BulkCreateResultResponse{
-				RequestId:                "15bc138f-8d82-451b-80b7-a56b88ffc474",
+				RequestID:                "15bc138f-8d82-451b-80b7-a56b88ffc474",
 				SuccessfullyCreatedZones: make([]string, 0),
 				FailedZones: []*BulkFailedZone{
 					{
@@ -119,7 +118,7 @@ func TestDns_GetBulkZoneCreateResult(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			requestid:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -141,14 +140,13 @@ func TestDns_GetBulkZoneCreateResult(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetBulkZoneCreateResult(context.Background(), test.requestid)
+			result, err := client.GetBulkZoneCreateResult(context.Background(), test.requestID)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -159,7 +157,7 @@ func TestDns_GetBulkZoneCreateResult(t *testing.T) {
 	}
 }
 
-func TestDns_CreateBulkZones(t *testing.T) {
+func TestDNS_CreateBulkZones(t *testing.T) {
 	tests := map[string]struct {
 		zones            BulkZonesCreate
 		query            ZoneQueryString
@@ -194,7 +192,7 @@ func TestDns_CreateBulkZones(t *testing.T) {
     "expirationDate": "2020-10-28T19:50:36.272668Z"
 }`,
 			expectedResponse: &BulkZonesResponse{
-				RequestId:      "93e97a28-4e05-45f4-8b9a-cebd71155949",
+				RequestID:      "93e97a28-4e05-45f4-8b9a-cebd71155949",
 				ExpirationDate: "2020-10-28T19:50:36.272668Z",
 			},
 			expectedPath: "/config-dns/v2/zones/create-requests?contractId=1-2ABCDE&gid=testgroup",
@@ -258,9 +256,9 @@ func TestDns_CreateBulkZones(t *testing.T) {
 }
 
 // Bulk Delete tests
-func TestDns_GetBulkZoneDeleteStatus(t *testing.T) {
+func TestDNS_GetBulkZoneDeleteStatus(t *testing.T) {
 	tests := map[string]struct {
-		requestid        string
+		requestID        string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -268,7 +266,7 @@ func TestDns_GetBulkZoneDeleteStatus(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			requestid:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 			responseStatus: http.StatusOK,
 			responseBody: `
   {
@@ -281,7 +279,7 @@ func TestDns_GetBulkZoneDeleteStatus(t *testing.T) {
   }`,
 			expectedPath: "/config-dns/v2/zones/delete-requests/15bc138f-8d82-451b-80b7-a56b88ffc474",
 			expectedResponse: &BulkStatusResponse{
-				RequestId:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+				RequestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 				ZonesSubmitted: 2,
 				SuccessCount:   0,
 				FailureCount:   2,
@@ -290,7 +288,7 @@ func TestDns_GetBulkZoneDeleteStatus(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			requestid:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -312,14 +310,13 @@ func TestDns_GetBulkZoneDeleteStatus(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetBulkZoneDeleteStatus(context.Background(), test.requestid)
+			result, err := client.GetBulkZoneDeleteStatus(context.Background(), test.requestID)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -330,9 +327,9 @@ func TestDns_GetBulkZoneDeleteStatus(t *testing.T) {
 	}
 }
 
-func TestDns_GetBulkZoneDeleteResult(t *testing.T) {
+func TestDNS_GetBulkZoneDeleteResult(t *testing.T) {
 	tests := map[string]struct {
-		requestid        string
+		requestID        string
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -340,7 +337,7 @@ func TestDns_GetBulkZoneDeleteResult(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			requestid:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 			responseStatus: http.StatusOK,
 			responseBody: `
   {
@@ -355,7 +352,7 @@ func TestDns_GetBulkZoneDeleteResult(t *testing.T) {
   }`,
 			expectedPath: "/config-dns/v2/zones/delete-requests/15bc138f-8d82-451b-80b7-a56b88ffc474/result",
 			expectedResponse: &BulkDeleteResultResponse{
-				RequestId:                "15bc138f-8d82-451b-80b7-a56b88ffc474",
+				RequestID:                "15bc138f-8d82-451b-80b7-a56b88ffc474",
 				SuccessfullyDeletedZones: make([]string, 0),
 				FailedZones: []*BulkFailedZone{
 					{
@@ -366,7 +363,7 @@ func TestDns_GetBulkZoneDeleteResult(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			requestid:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -388,14 +385,13 @@ func TestDns_GetBulkZoneDeleteResult(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetBulkZoneDeleteResult(context.Background(), test.requestid)
+			result, err := client.GetBulkZoneDeleteResult(context.Background(), test.requestID)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -406,9 +402,9 @@ func TestDns_GetBulkZoneDeleteResult(t *testing.T) {
 	}
 }
 
-func TestDns_DeleteBulkZones(t *testing.T) {
+func TestDNS_DeleteBulkZones(t *testing.T) {
 	tests := map[string]struct {
-		zoneslist        ZoneNameListResponse
+		zonesList        ZoneNameListResponse
 		bypassSafety     bool
 		responseStatus   int
 		responseBody     string
@@ -417,7 +413,7 @@ func TestDns_DeleteBulkZones(t *testing.T) {
 		withError        error
 	}{
 		"200 Created": {
-			zoneslist: ZoneNameListResponse{
+			zonesList: ZoneNameListResponse{
 				Zones: []string{"one.testbulk.net", "two.testbulk.net"},
 			},
 			bypassSafety:   true,
@@ -428,13 +424,13 @@ func TestDns_DeleteBulkZones(t *testing.T) {
     "expirationDate": "2020-10-28T19:50:36.272668Z"
 }`,
 			expectedResponse: &BulkZonesResponse{
-				RequestId:      "93e97a28-4e05-45f4-8b9a-cebd71155949",
+				RequestID:      "93e97a28-4e05-45f4-8b9a-cebd71155949",
 				ExpirationDate: "2020-10-28T19:50:36.272668Z",
 			},
 			expectedPath: "/config-dns/v2/zones/delete-requests?bypassSafetyChecks=true",
 		},
 		"500 internal server error": {
-			zoneslist: ZoneNameListResponse{
+			zonesList: ZoneNameListResponse{
 				Zones: []string{"one.testbulk.net", "two.testbulk.net"},
 			},
 			bypassSafety:   true,
@@ -467,7 +463,7 @@ func TestDns_DeleteBulkZones(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.DeleteBulkZones(context.Background(), &test.zoneslist, test.bypassSafety)
+			result, err := client.DeleteBulkZones(context.Background(), &test.zonesList, test.bypassSafety)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

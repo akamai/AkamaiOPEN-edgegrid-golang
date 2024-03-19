@@ -7,12 +7,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestDns_GetRecord(t *testing.T) {
+func TestDNS_GetRecord(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		name             string
@@ -90,7 +90,7 @@ func TestDns_GetRecord(t *testing.T) {
 	}
 }
 
-func TestDns_GetRecordList(t *testing.T) {
+func TestDNS_GetRecordList(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		name             string
@@ -130,14 +130,14 @@ func TestDns_GetRecordList(t *testing.T) {
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/recordsets?showAll=true&types=A",
 			expectedResponse: &RecordSetResponse{
-				Metadata: MetadataH{
+				Metadata: Metadata{
 					LastPage:      0,
 					Page:          1,
 					PageSize:      25,
 					ShowAll:       false,
 					TotalElements: 2,
 				},
-				Recordsets: []Recordset{
+				RecordSets: []RecordSet{
 					{
 						Name:  "www.example.com",
 						Type:  "A",
@@ -189,7 +189,7 @@ func TestDns_GetRecordList(t *testing.T) {
 	}
 }
 
-func TestDns_GetRdata(t *testing.T) {
+func TestDNS_GetRdata(t *testing.T) {
 	tests := map[string]struct {
 		zone             string
 		name             string
@@ -302,7 +302,7 @@ func TestDns_GetRdata(t *testing.T) {
 	}
 }
 
-func TestDns_TestRdata(t *testing.T) {
+func TestDNS_TestRdata(t *testing.T) {
 	client := Client(session.Must(session.New()))
 
 	out := client.ProcessRdata(context.Background(), []string{"2001:0db8:85a3:0000:0000:8a2e:0370:7334"}, "AAAA")
@@ -314,7 +314,7 @@ func TestDns_TestRdata(t *testing.T) {
 	assert.Equal(t, []string{"52 22 23.000 N 4 53 32.000 E -2.00m 0.00m 10000.00m 10.00m"}, out)
 }
 
-func TestDns_ParseRData(t *testing.T) {
+func TestDNS_ParseRData(t *testing.T) {
 	client := Client(session.Must(session.New()))
 
 	tests := map[string]struct {

@@ -4,24 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-)
 
-//
-// Support gtm domain properties thru Edgegrid
-// Based on 1.4 Schema
-//
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+)
 
 // Properties contains operations available on a Property resource.
 type Properties interface {
-	// NewTrafficTarget is a method applied to a property object that instantiates a TrafficTarget object.
-	NewTrafficTarget(context.Context) *TrafficTarget
-	// NewStaticRRSet is a method applied to a property object that instantiates a StaticRRSet object.
-	NewStaticRRSet(context.Context) *StaticRRSet
-	// NewLivenessTest is a method applied to a property object that instantiates a LivenessTest object.
-	NewLivenessTest(context.Context, string, string, int, float32) *LivenessTest
-	// NewProperty creates a new Property object.
-	NewProperty(context.Context, string) *Property
-	// ListProperties retreieves all Properties for the provided domainName.
+	// ListProperties retrieves all Properties for the provided domainName.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-properties
 	ListProperties(context.Context, string) ([]*Property, error)
@@ -45,16 +35,17 @@ type Properties interface {
 
 // TrafficTarget struct contains information about where to direct data center traffic
 type TrafficTarget struct {
-	DatacenterId int      `json:"datacenterId"`
+	DatacenterID int      `json:"datacenterId"`
 	Enabled      bool     `json:"enabled"`
 	Weight       float64  `json:"weight,omitempty"`
 	Servers      []string `json:"servers,omitempty"`
 	Name         string   `json:"name,omitempty"`
 	HandoutCName string   `json:"handoutCName,omitempty"`
+	Precedence   *int     `json:"precedence,omitempty"`
 }
 
-// HttpHeader struct contains HTTP headers to send if the testObjectProtocol is http or https
-type HttpHeader struct {
+// HTTPHeader struct contains HTTP headers to send if the testObjectProtocol is http or https
+type HTTPHeader struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
 }
@@ -69,23 +60,27 @@ type LivenessTest struct {
 	Links                         []*Link       `json:"links,omitempty"`
 	RequestString                 string        `json:"requestString,omitempty"`
 	ResponseString                string        `json:"responseString,omitempty"`
-	HttpError3xx                  bool          `json:"httpError3xx"`
-	HttpError4xx                  bool          `json:"httpError4xx"`
-	HttpError5xx                  bool          `json:"httpError5xx"`
+	HTTPError3xx                  bool          `json:"httpError3xx"`
+	HTTPError4xx                  bool          `json:"httpError4xx"`
+	HTTPError5xx                  bool          `json:"httpError5xx"`
+	HTTPMethod                    *string       `json:"httpMethod"`
+	HTTPRequestBody               *string       `json:"httpRequestBody"`
 	Disabled                      bool          `json:"disabled"`
 	TestObjectProtocol            string        `json:"testObjectProtocol,omitempty"`
 	TestObjectPassword            string        `json:"testObjectPassword,omitempty"`
 	TestObjectPort                int           `json:"testObjectPort,omitempty"`
-	SslClientPrivateKey           string        `json:"sslClientPrivateKey,omitempty"`
-	SslClientCertificate          string        `json:"sslClientCertificate,omitempty"`
+	SSLClientPrivateKey           string        `json:"sslClientPrivateKey,omitempty"`
+	SSLClientCertificate          string        `json:"sslClientCertificate,omitempty"`
+	Pre2023SecurityPosture        bool          `json:"pre2023SecurityPosture"`
 	DisableNonstandardPortWarning bool          `json:"disableNonstandardPortWarning"`
-	HttpHeaders                   []*HttpHeader `json:"httpHeaders,omitempty"`
+	HTTPHeaders                   []*HTTPHeader `json:"httpHeaders,omitempty"`
 	TestObjectUsername            string        `json:"testObjectUsername,omitempty"`
 	TestTimeout                   float32       `json:"testTimeout,omitempty"`
 	TimeoutPenalty                float64       `json:"timeoutPenalty,omitempty"`
 	AnswersRequired               bool          `json:"answersRequired"`
 	ResourceType                  string        `json:"resourceType,omitempty"`
 	RecursionRequested            bool          `json:"recursionRequested"`
+	AlternateCACertificates       []string      `json:"alternateCACertificates"`
 }
 
 // StaticRRSet contains static recordset
@@ -99,13 +94,13 @@ type StaticRRSet struct {
 type Property struct {
 	Name                      string           `json:"name"`
 	Type                      string           `json:"type"`
-	Ipv6                      bool             `json:"ipv6"`
+	IPv6                      bool             `json:"ipv6"`
 	ScoreAggregationType      string           `json:"scoreAggregationType"`
 	StickinessBonusPercentage int              `json:"stickinessBonusPercentage,omitempty"`
 	StickinessBonusConstant   int              `json:"stickinessBonusConstant,omitempty"`
 	HealthThreshold           float64          `json:"healthThreshold,omitempty"`
 	UseComputedTargets        bool             `json:"useComputedTargets"`
-	BackupIp                  string           `json:"backupIp,omitempty"`
+	BackupIP                  string           `json:"backupIp,omitempty"`
 	BalanceByDownloadScore    bool             `json:"balanceByDownloadScore"`
 	StaticTTL                 int              `json:"staticTTL,omitempty"`
 	StaticRRSets              []*StaticRRSet   `json:"staticRRSets,omitempty"`
@@ -139,176 +134,144 @@ type PropertyList struct {
 }
 
 // Validate validates Property
-func (prop *Property) Validate() error {
+func (p *Property) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Name":                  validation.Validate(p.Name, validation.Required),
+		"Type":                  validation.Validate(p.Type, validation.Required),
+		"ScoreAggregationTypes": validation.Validate(p.ScoreAggregationType, validation.Required),
+		"HandoutMode":           validation.Validate(p.HandoutMode, validation.Required),
+		"TrafficTargets":        validation.Validate(p.TrafficTargets, validation.When(p.Type == "ranked-failover", validation.By(validateRankedFailoverTrafficTargets))),
+	})
+}
 
-	if len(prop.Name) < 1 {
-		return fmt.Errorf("Property is missing Name")
+// validateRankedFailoverTrafficTargets validates traffic targets when property type is 'ranked-failover'
+func validateRankedFailoverTrafficTargets(value interface{}) error {
+	tt := value.([]*TrafficTarget)
+	if len(tt) == 0 {
+		return fmt.Errorf("no traffic targets are enabled")
 	}
-	if len(prop.Type) < 1 {
-		return fmt.Errorf("Property is missing Type")
+	precedenceCounter := map[int]int{}
+	minPrecedence := 256
+	for _, t := range tt {
+		if t.Precedence == nil {
+			precedenceCounter[0]++
+			minPrecedence = 0
+		} else {
+			if *t.Precedence > 255 || *t.Precedence < 0 {
+				return fmt.Errorf("'Precedence' value has to be between 0 and 255")
+			}
+			precedenceCounter[*t.Precedence]++
+			if *t.Precedence < minPrecedence {
+				minPrecedence = *t.Precedence
+			}
+		}
 	}
-	if len(prop.ScoreAggregationType) < 1 {
-		return fmt.Errorf("Property is missing ScoreAggregationType")
+	if precedenceCounter[minPrecedence] > 1 {
+		return fmt.Errorf("property cannot have multiple primary traffic targets (targets with lowest precedence)")
 	}
-	if len(prop.HandoutMode) < 1 {
-		return fmt.Errorf("Property is missing HandoutMode")
-	}
-	// is zero a valid value? need to check and uncomment
-	//if prop.HandoutLimit == 0 {
-	//        return fmt.Errorf("Property is missing  handoutLimit"
-	//}
 
 	return nil
 }
 
-func (p *gtm) NewTrafficTarget(ctx context.Context) *TrafficTarget {
-
-	logger := p.Log(ctx)
-	logger.Debug("NewTrafficTarget")
-
-	return &TrafficTarget{}
-
-}
-
-func (p *gtm) NewStaticRRSet(ctx context.Context) *StaticRRSet {
-
-	logger := p.Log(ctx)
-	logger.Debug("NewStaticRRSet")
-
-	return &StaticRRSet{}
-
-}
-
-// NewHttpHeader is a method applied to a livenesstest object that instantiates an HttpHeader  object.
-func (lt *LivenessTest) NewHttpHeader() *HttpHeader {
-
-	return &HttpHeader{}
-
-}
-func (p *gtm) NewLivenessTest(ctx context.Context, name string, objproto string, interval int, timeout float32) *LivenessTest {
-
-	logger := p.Log(ctx)
-	logger.Debug("NewLivenessTest")
-
-	return &LivenessTest{Name: name, TestInterval: interval, TestObjectProtocol: objproto, TestTimeout: timeout}
-
-}
-
-func (p *gtm) NewProperty(ctx context.Context, name string) *Property {
-
-	logger := p.Log(ctx)
-	logger.Debug("NewProperty")
-
-	property := &Property{Name: name}
-	return property
-}
-
-func (p *gtm) ListProperties(ctx context.Context, domainName string) ([]*Property, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) ListProperties(ctx context.Context, domainName string) ([]*Property, error) {
+	logger := g.Log(ctx)
 	logger.Debug("ListProperties")
 
-	var properties PropertyList
 	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/properties", domainName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ListProperties request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &properties)
+
+	var result PropertyList
+	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("ListProperties request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return properties.PropertyItems, nil
+	return result.PropertyItems, nil
 }
 
-func (p *gtm) GetProperty(ctx context.Context, name, domainName string) (*Property, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) GetProperty(ctx context.Context, propertyName, domainName string) (*Property, error) {
+	logger := g.Log(ctx)
 	logger.Debug("GetProperty")
 
-	var property Property
-	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/properties/%s", domainName, name)
+	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/properties/%s", domainName, propertyName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetProperty request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &property)
+
+	var result Property
+	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetProperty request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &property, nil
+	return &result, nil
 }
 
-func (p *gtm) CreateProperty(ctx context.Context, property *Property, domainName string) (*PropertyResponse, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) CreateProperty(ctx context.Context, property *Property, domainName string) (*PropertyResponse, error) {
+	logger := g.Log(ctx)
 	logger.Debug("CreateProperty")
 
-	// Need do any validation?
-	return property.save(ctx, p, domainName)
+	return property.save(ctx, g, domainName)
 }
 
-func (p *gtm) UpdateProperty(ctx context.Context, property *Property, domainName string) (*ResponseStatus, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) UpdateProperty(ctx context.Context, property *Property, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
 	logger.Debug("UpdateProperty")
 
-	// Need do any validation?
-	stat, err := property.save(ctx, p, domainName)
+	stat, err := property.save(ctx, g, domainName)
 	if err != nil {
 		return nil, err
 	}
 	return stat.Status, err
-
 }
 
 // Save Property updates method
-func (prop *Property) save(ctx context.Context, p *gtm, domainName string) (*PropertyResponse, error) {
+func (p *Property) save(ctx context.Context, g *gtm, domainName string) (*PropertyResponse, error) {
 
-	if err := prop.Validate(); err != nil {
-		return nil, fmt.Errorf("Property validation failed. %w", err)
+	if err := p.Validate(); err != nil {
+		return nil, fmt.Errorf("property validation failed. %w", err)
 	}
 
-	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/properties/%s", domainName, prop.Name)
+	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/properties/%s", domainName, p.Name)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Property request: %w", err)
 	}
-
-	var presp PropertyResponse
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &presp, prop)
+
+	var result PropertyResponse
+	resp, err := g.Exec(req, &result, p)
 	if err != nil {
-		return nil, fmt.Errorf("Property request failed: %w", err)
+		return nil, fmt.Errorf("property request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &presp, nil
+	return &result, nil
 }
 
-func (p *gtm) DeleteProperty(ctx context.Context, property *Property, domainName string) (*ResponseStatus, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) DeleteProperty(ctx context.Context, property *Property, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
 	logger.Debug("DeleteProperty")
 
 	if err := property.Validate(); err != nil {
-		logger.Errorf("Property validation failed. %w", err)
-		return nil, fmt.Errorf("Property validation failed. %w", err)
+		return nil, fmt.Errorf("DeleteProperty validation failed. %w", err)
 	}
 
 	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/properties/%s", domainName, property.Name)
@@ -316,17 +279,17 @@ func (p *gtm) DeleteProperty(ctx context.Context, property *Property, domainName
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Property request: %w", err)
 	}
-
-	var presp ResponseBody
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &presp)
+
+	var result ResponseBody
+	resp, err := g.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("Property request failed: %w", err)
+		return nil, fmt.Errorf("DeleteProperty request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return presp.Status, nil
+	return result.Status, nil
 }

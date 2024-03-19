@@ -1,0 +1,14 @@
+{
+  "conditionOperator": "AND",
+  "conditions": [
+    {
+      "type": "filenameMatch",
+      "filenames": [
+        "hh"
+      ],
+      "order": 0,
+      "positiveMatch": true
+    }
+  ]
+}
+

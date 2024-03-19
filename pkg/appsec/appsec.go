@@ -4,7 +4,7 @@ package appsec
 import (
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v7/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 )
 
 var (
@@ -47,6 +47,7 @@ type (
 		Eval
 		EvalGroup
 		EvalPenaltyBox
+		EvalPenaltyBoxConditions
 		EvalRule
 		ExportConfiguration
 		FailoverHostnames
@@ -60,6 +61,7 @@ type (
 		MatchTargetSequence
 		NetworkLayerProtection
 		PenaltyBox
+		PenaltyBoxConditions
 		PolicyProtections
 		RatePolicy
 		RatePolicyAction

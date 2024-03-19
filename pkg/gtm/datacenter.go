@@ -8,17 +8,8 @@ import (
 	"strconv"
 )
 
-//
-// Handle Operations on gtm datacenters
-// Based on 1.4 schema
-//
-
 // Datacenters contains operations available on a Datacenter resource.
 type Datacenters interface {
-	// NewDatacenterResponse instantiates a new DatacenterResponse structure.
-	NewDatacenterResponse(context.Context) *DatacenterResponse
-	// NewDatacenter creates a new Datacenter object.
-	NewDatacenter(context.Context) *Datacenter
 	// ListDatacenters retrieves all Datacenters.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-datacenters
@@ -62,7 +53,7 @@ type Datacenter struct {
 	Nickname                      string      `json:"nickname,omitempty"`
 	PingInterval                  int         `json:"pingInterval,omitempty"`
 	PingPacketSize                int         `json:"pingPacketSize,omitempty"`
-	DatacenterId                  int         `json:"datacenterId,omitempty"`
+	DatacenterID                  int         `json:"datacenterId,omitempty"`
 	ScorePenalty                  int         `json:"scorePenalty,omitempty"`
 	ServermonitorLivenessCount    int         `json:"servermonitorLivenessCount,omitempty"`
 	ServermonitorLoadCount        int         `json:"servermonitorLoadCount,omitempty"`
@@ -76,75 +67,56 @@ type DatacenterList struct {
 	DatacenterItems []*Datacenter `json:"items"`
 }
 
-func (p *gtm) NewDatacenterResponse(ctx context.Context) *DatacenterResponse {
-
-	logger := p.Log(ctx)
-	logger.Debug("NewDatacenterResponse")
-
-	dcResp := &DatacenterResponse{}
-	return dcResp
-}
-
-func (p *gtm) NewDatacenter(ctx context.Context) *Datacenter {
-
-	logger := p.Log(ctx)
-	logger.Debug("NewDatacenter")
-
-	dc := &Datacenter{}
-	return dc
-}
-
-func (p *gtm) ListDatacenters(ctx context.Context, domainName string) ([]*Datacenter, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) ListDatacenters(ctx context.Context, domainName string) ([]*Datacenter, error) {
+	logger := g.Log(ctx)
 	logger.Debug("ListDatacenters")
 
-	var dcs DatacenterList
 	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters", domainName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ListDatacenters request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &dcs)
+
+	var result DatacenterList
+	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("ListDatacenters request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return dcs.DatacenterItems, nil
+	return result.DatacenterItems, nil
 }
 
-func (p *gtm) GetDatacenter(ctx context.Context, dcID int, domainName string) (*Datacenter, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) GetDatacenter(ctx context.Context, dcID int, domainName string) (*Datacenter, error) {
+	logger := g.Log(ctx)
 	logger.Debug("GetDatacenter")
 
-	var dc Datacenter
 	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", domainName, strconv.Itoa(dcID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetDatacenter request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &dc)
+
+	var result Datacenter
+	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetDatacenter request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &dc, nil
+	return &result, nil
 }
 
-func (p *gtm) CreateDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*DatacenterResponse, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) CreateDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*DatacenterResponse, error) {
+	logger := g.Log(ctx)
 	logger.Debug("CreateDatacenter")
 
 	postURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters", domainName)
@@ -152,18 +124,18 @@ func (p *gtm) CreateDatacenter(ctx context.Context, dc *Datacenter, domainName s
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Datacenter request: %w", err)
 	}
-
-	var dcresp DatacenterResponse
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &dcresp, dc)
+
+	var result DatacenterResponse
+	resp, err := g.Exec(req, &result, dc)
 	if err != nil {
-		return nil, fmt.Errorf("Datacenter request failed: %w", err)
+		return nil, fmt.Errorf("CreateDatacenter request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &dcresp, nil
+	return &result, nil
 }
 
 var (
@@ -175,43 +147,38 @@ var (
 	Ipv6DefaultDC = 5402
 )
 
-func (p *gtm) CreateMapsDefaultDatacenter(ctx context.Context, domainName string) (*Datacenter, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) CreateMapsDefaultDatacenter(ctx context.Context, domainName string) (*Datacenter, error) {
+	logger := g.Log(ctx)
 	logger.Debug("CreateMapsDefaultDatacenter")
 
-	return createDefaultDC(ctx, p, MapDefaultDC, domainName)
+	return createDefaultDC(ctx, g, MapDefaultDC, domainName)
 }
 
-func (p *gtm) CreateIPv4DefaultDatacenter(ctx context.Context, domainName string) (*Datacenter, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) CreateIPv4DefaultDatacenter(ctx context.Context, domainName string) (*Datacenter, error) {
+	logger := g.Log(ctx)
 	logger.Debug("CreateIPv4DefaultDatacenter")
 
-	return createDefaultDC(ctx, p, Ipv4DefaultDC, domainName)
+	return createDefaultDC(ctx, g, Ipv4DefaultDC, domainName)
 }
 
-func (p *gtm) CreateIPv6DefaultDatacenter(ctx context.Context, domainName string) (*Datacenter, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) CreateIPv6DefaultDatacenter(ctx context.Context, domainName string) (*Datacenter, error) {
+	logger := g.Log(ctx)
 	logger.Debug("CreateIPv6DefaultDatacenter")
 
-	return createDefaultDC(ctx, p, Ipv6DefaultDC, domainName)
+	return createDefaultDC(ctx, g, Ipv6DefaultDC, domainName)
 }
 
 // createDefaultDC is worker function used to create Default Datacenter identified id in the specified domain.
-func createDefaultDC(ctx context.Context, p *gtm, defaultID int, domainName string) (*Datacenter, error) {
-
+func createDefaultDC(ctx context.Context, g *gtm, defaultID int, domainName string) (*Datacenter, error) {
 	if defaultID != MapDefaultDC && defaultID != Ipv4DefaultDC && defaultID != Ipv6DefaultDC {
-		return nil, fmt.Errorf("Invalid default datacenter id provided for creation")
+		return nil, fmt.Errorf("invalid default datacenter id provided for creation")
 	}
 	// check if already exists
-	dc, err := p.GetDatacenter(ctx, defaultID, domainName)
+	dc, err := g.GetDatacenter(ctx, defaultID, domainName)
 	if err == nil {
 		return dc, err
 	}
 	apiError, ok := err.(*Error)
-	//if !strings.Contains(err.Error(), "not found") || !strings.Contains(err.Error(), "Datacenter") {
 	if !ok || apiError.StatusCode != http.StatusNotFound {
 		return nil, err
 	}
@@ -231,64 +198,61 @@ func createDefaultDC(ctx context.Context, p *gtm, defaultID int, domainName stri
 		return nil, fmt.Errorf("failed to create Default Datacenter request: %w", err)
 	}
 
-	var dcresp DatacenterResponse
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &dcresp, "")
+	var result DatacenterResponse
+	resp, err := g.Exec(req, &result, "")
 	if err != nil {
-		return nil, fmt.Errorf("Default Datacenter request failed: %w", err)
+		return nil, fmt.Errorf("DefaultDatacenter request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return dcresp.Resource, nil
-
+	return result.Resource, nil
 }
 
-func (p *gtm) UpdateDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*ResponseStatus, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) UpdateDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
 	logger.Debug("UpdateDatacenter")
 
-	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", domainName, strconv.Itoa(dc.DatacenterId))
+	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", domainName, strconv.Itoa(dc.DatacenterID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Update Datacenter request: %w", err)
 	}
 
-	var dcresp DatacenterResponse
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &dcresp, dc)
+	var result DatacenterResponse
+	resp, err := g.Exec(req, &result, dc)
 	if err != nil {
-		return nil, fmt.Errorf("Datacenter request failed: %w", err)
+		return nil, fmt.Errorf("UpdateDatacenter request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return dcresp.Status, nil
+	return result.Status, nil
 }
 
-func (p *gtm) DeleteDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*ResponseStatus, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) DeleteDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
 	logger.Debug("DeleteDatacenter")
 
-	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", domainName, strconv.Itoa(dc.DatacenterId))
+	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", domainName, strconv.Itoa(dc.DatacenterID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, delURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Delete Datacenter request: %w", err)
 	}
-
-	var dcresp DatacenterResponse
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &dcresp)
+
+	var result DatacenterResponse
+	resp, err := g.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("Datacenter request failed: %w", err)
+		return nil, fmt.Errorf("DeleteDatacenter request failed: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return dcresp.Status, nil
+	return result.Status, nil
 }

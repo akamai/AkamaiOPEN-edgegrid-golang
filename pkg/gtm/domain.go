@@ -10,18 +10,11 @@ import (
 	"unicode"
 )
 
-//
-// Support gtm domains thru Edgegrid
-// Based on 1.4 Schema
-//
-
 // Domains contains operations available on a Domain resource.
 type Domains interface {
 	// NullFieldMap retrieves map of null fields.
 	NullFieldMap(context.Context, *Domain) (*NullFieldMapStruct, error)
-	// NewDomain is a utility function that creates a new Domain object.
-	NewDomain(context.Context, string, string) *Domain
-	// GetDomainStatus retrieves current status for the given domainname.
+	// GetDomainStatus retrieves current status for the given domain name.
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-status-current
 	GetDomainStatus(context.Context, string) (*ResponseStatus, error)
@@ -51,7 +44,7 @@ type Domains interface {
 type Domain struct {
 	Name                         string          `json:"name"`
 	Type                         string          `json:"type"`
-	AsMaps                       []*AsMap        `json:"asMaps,omitempty"`
+	ASMaps                       []*ASMap        `json:"asMaps,omitempty"`
 	Resources                    []*Resource     `json:"resources,omitempty"`
 	DefaultUnreachableThreshold  float32         `json:"defaultUnreachableThreshold,omitempty"`
 	EmailNotificationList        []string        `json:"emailNotificationList,omitempty"`
@@ -70,26 +63,28 @@ type Domain struct {
 	MapUpdateInterval            int             `json:"mapUpdateInterval,omitempty"`
 	MaxProperties                int             `json:"maxProperties,omitempty"`
 	MaxResources                 int             `json:"maxResources,omitempty"`
-	DefaultSslClientPrivateKey   string          `json:"defaultSslClientPrivateKey,omitempty"`
+	DefaultSSLClientPrivateKey   string          `json:"defaultSslClientPrivateKey,omitempty"`
 	DefaultErrorPenalty          int             `json:"defaultErrorPenalty,omitempty"`
 	Links                        []*Link         `json:"links,omitempty"`
 	Properties                   []*Property     `json:"properties,omitempty"`
 	MaxTestTimeout               float64         `json:"maxTestTimeout,omitempty"`
-	CnameCoalescingEnabled       bool            `json:"cnameCoalescingEnabled"`
+	CNameCoalescingEnabled       bool            `json:"cnameCoalescingEnabled"`
 	DefaultHealthMultiplier      float64         `json:"defaultHealthMultiplier,omitempty"`
 	ServermonitorPool            string          `json:"servermonitorPool,omitempty"`
 	LoadFeedback                 bool            `json:"loadFeedback"`
 	MinTTL                       int64           `json:"minTTL,omitempty"`
 	GeographicMaps               []*GeoMap       `json:"geographicMaps,omitempty"`
-	CidrMaps                     []*CidrMap      `json:"cidrMaps,omitempty"`
+	CIDRMaps                     []*CIDRMap      `json:"cidrMaps,omitempty"`
 	DefaultMaxUnreachablePenalty int             `json:"defaultMaxUnreachablePenalty"`
 	DefaultHealthThreshold       float64         `json:"defaultHealthThreshold,omitempty"`
 	LastModifiedBy               string          `json:"lastModifiedBy,omitempty"`
 	ModificationComments         string          `json:"modificationComments,omitempty"`
 	MinTestInterval              int             `json:"minTestInterval,omitempty"`
 	PingPacketSize               int             `json:"pingPacketSize,omitempty"`
-	DefaultSslClientCertificate  string          `json:"defaultSslClientCertificate,omitempty"`
+	DefaultSSLClientCertificate  string          `json:"defaultSslClientCertificate,omitempty"`
 	EndUserMappingEnabled        bool            `json:"endUserMappingEnabled"`
+	SignAndServe                 bool            `json:"signAndServe"`
+	SignAndServeAlgorithm        *string         `json:"signAndServeAlgorithm"`
 }
 
 // DomainsList contains a list of domain items
@@ -99,7 +94,7 @@ type DomainsList struct {
 
 // DomainItem is a DomainsList item
 type DomainItem struct {
-	AcgId                 string  `json:"acgId"`
+	AcgID                 string  `json:"acgId"`
 	LastModified          string  `json:"lastModified"`
 	Links                 []*Link `json:"links"`
 	Name                  string  `json:"name"`
@@ -114,104 +109,91 @@ type DomainItem struct {
 }
 
 // Validate validates Domain
-func (dom *Domain) Validate() error {
-
-	if len(dom.Name) < 1 {
+func (d *Domain) Validate() error {
+	if len(d.Name) < 1 {
 		return fmt.Errorf("Domain is missing Name")
 	}
-	if len(dom.Type) < 1 {
+	if len(d.Type) < 1 {
 		return fmt.Errorf("Domain is missing Type")
 	}
 
 	return nil
 }
 
-func (p *gtm) NewDomain(ctx context.Context, domainName, domainType string) *Domain {
-
-	logger := p.Log(ctx)
-	logger.Debug("NewDomain")
-
-	domain := &Domain{}
-	domain.Name = domainName
-	domain.Type = domainType
-	return domain
-}
-
-func (p *gtm) GetDomainStatus(ctx context.Context, domainName string) (*ResponseStatus, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) GetDomainStatus(ctx context.Context, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
 	logger.Debug("GetDomainStatus")
 
-	var stat ResponseStatus
 	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/status/current", domainName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetDomain request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &stat)
+
+	var result ResponseStatus
+	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetDomain request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &stat, nil
+	return &result, nil
 }
 
-func (p *gtm) ListDomains(ctx context.Context) ([]*DomainItem, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) ListDomains(ctx context.Context) ([]*DomainItem, error) {
+	logger := g.Log(ctx)
 	logger.Debug("ListDomains")
 
-	var domains DomainsList
 	getURL := fmt.Sprintf("/config-gtm/v1/domains")
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ListDomains request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &domains)
+
+	var result DomainsList
+	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("ListDomains request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return domains.DomainItems, nil
+	return result.DomainItems, nil
 }
 
-func (p *gtm) GetDomain(ctx context.Context, domainName string) (*Domain, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) GetDomain(ctx context.Context, domainName string) (*Domain, error) {
+	logger := g.Log(ctx)
 	logger.Debug("GetDomain")
 
-	var domain Domain
 	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s", domainName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetDomain request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &domain)
+
+	var result Domain
+	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetDomain request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &domain, nil
+	return &result, nil
 }
 
 // save method; Create or Update
-func (dom *Domain) save(_ context.Context, p *gtm, queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
-
+func (d *Domain) save(_ context.Context, g *gtm, queryArgs map[string]string, req *http.Request) (*DomainResponse, error) {
 	// set schema version
 	setVersionHeader(req, schemaVersion)
 
@@ -227,28 +209,25 @@ func (dom *Domain) save(_ context.Context, p *gtm, queryArgs map[string]string, 
 		req.URL.RawQuery = q.Encode()
 	}
 
-	var dresp DomainResponse
-	resp, err := p.Exec(req, &dresp, dom)
+	var result DomainResponse
+	resp, err := g.Exec(req, &result, d)
 	if err != nil {
-		return nil, fmt.Errorf("Domain request failed: %w", err)
+		return nil, fmt.Errorf("domain request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &dresp, nil
-
+	return &result, nil
 }
 
-func (p *gtm) CreateDomain(ctx context.Context, domain *Domain, queryArgs map[string]string) (*DomainResponse, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) CreateDomain(ctx context.Context, domain *Domain, queryArgs map[string]string) (*DomainResponse, error) {
+	logger := g.Log(ctx)
 	logger.Debug("CreateDomain")
 
 	if err := domain.Validate(); err != nil {
-		logger.Errorf("Domain validation failed. %w", err)
-		return nil, fmt.Errorf("Domain validation failed. %w", err)
+		return nil, fmt.Errorf("CreateDomain validation failed. %w", err)
 	}
 
 	postURL := fmt.Sprintf("/config-gtm/v1/domains/")
@@ -257,18 +236,15 @@ func (p *gtm) CreateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 		return nil, fmt.Errorf("failed to create CreateDomain request: %w", err)
 	}
 
-	return domain.save(ctx, p, queryArgs, req)
-
+	return domain.save(ctx, g, queryArgs, req)
 }
 
-func (p *gtm) UpdateDomain(ctx context.Context, domain *Domain, queryArgs map[string]string) (*ResponseStatus, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) UpdateDomain(ctx context.Context, domain *Domain, queryArgs map[string]string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
 	logger.Debug("UpdateDomain")
 
 	if err := domain.Validate(); err != nil {
-		logger.Errorf("Domain validation failed. %w", err)
-		return nil, fmt.Errorf("Domain validation failed. %w", err)
+		return nil, fmt.Errorf("UpdateDomain validation failed. %w", err)
 	}
 
 	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s", domain.Name)
@@ -277,16 +253,15 @@ func (p *gtm) UpdateDomain(ctx context.Context, domain *Domain, queryArgs map[st
 		return nil, fmt.Errorf("failed to create UpdateDomain request: %w", err)
 	}
 
-	stat, err := domain.save(ctx, p, queryArgs, req)
+	stat, err := domain.save(ctx, g, queryArgs, req)
 	if err != nil {
 		return nil, err
 	}
 	return stat.Status, err
 }
 
-func (p *gtm) DeleteDomain(ctx context.Context, domain *Domain) (*ResponseStatus, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) DeleteDomain(ctx context.Context, domain *Domain) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
 	logger.Debug("DeleteDomain")
 
 	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s", domain.Name)
@@ -294,20 +269,19 @@ func (p *gtm) DeleteDomain(ctx context.Context, domain *Domain) (*ResponseStatus
 	if err != nil {
 		return nil, fmt.Errorf("failed to create DeleteDomain request: %w", err)
 	}
-
-	var responseBody ResponseBody
 	setVersionHeader(req, schemaVersion)
 
-	resp, err := p.Exec(req, &responseBody)
+	var result ResponseBody
+	resp, err := g.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("Delete Domain request failed: %w", err)
+		return nil, fmt.Errorf("DeleteDomain request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return responseBody.Status, nil
+	return result.Status, nil
 }
 
 // NullPerObjectAttributeStruct represents core and child null object attributes
@@ -330,14 +304,12 @@ type NullFieldMapStruct struct {
 // ObjectMap represents ObjectMap datatype
 type ObjectMap map[string]interface{}
 
-func (p *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapStruct, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapStruct, error) {
+	logger := g.Log(ctx)
 	logger.Debug("NullFieldMap")
 
 	if err := domain.Validate(); err != nil {
-		logger.Errorf("Domain validation failed. %w", err)
-		return nil, fmt.Errorf("Domain validation failed. %w", err)
+		return nil, fmt.Errorf("domain validation failed. %w", err)
 	}
 
 	var nullFieldMap = &NullFieldMapStruct{}
@@ -351,19 +323,19 @@ func (p *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapSt
 		return nil, fmt.Errorf("failed to create GetDomain request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &objMap)
+	resp, err := g.Exec(req, &objMap)
 	if err != nil {
 		return nil, fmt.Errorf("GetDomain request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
 	for i, d := range objMap {
-		objval := fmt.Sprint(d)
+		objVal := fmt.Sprint(d)
 		if fmt.Sprintf("%T", d) == "<nil>" {
-			if objval == "<nil>" {
+			if objVal == "<nil>" {
 				domainMap[makeFirstCharUpperCase(i)] = ""
 			}
 			continue
@@ -397,7 +369,6 @@ func (p *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapSt
 }
 
 func makeFirstCharUpperCase(origString string) string {
-
 	a := []rune(origString)
 	a[0] = unicode.ToUpper(a[0])
 	// hack
@@ -408,7 +379,6 @@ func makeFirstCharUpperCase(origString string) string {
 }
 
 func processObjectList(objectList []interface{}) map[string]NullPerObjectAttributeStruct {
-
 	nullObjectsList := make(map[string]NullPerObjectAttributeStruct)
 	for _, obj := range objectList {
 		nullObjectFields := NullPerObjectAttributeStruct{}
@@ -416,31 +386,31 @@ func processObjectList(objectList []interface{}) map[string]NullPerObjectAttribu
 		objectDCID := ""
 		objectMap := make(map[string]string)
 		objectChildList := make(map[string]interface{})
-		for objf, objd := range obj.(map[string]interface{}) {
-			objval := fmt.Sprint(objd)
-			switch fmt.Sprintf("%T", objd) {
+		for objF, objD := range obj.(map[string]interface{}) {
+			objVal := fmt.Sprint(objD)
+			switch fmt.Sprintf("%T", objD) {
 			case "<nil>":
-				if objval == "<nil>" {
-					objectMap[makeFirstCharUpperCase(objf)] = ""
+				if objVal == "<nil>" {
+					objectMap[makeFirstCharUpperCase(objF)] = ""
 				}
 			case "map[string]interface {}":
 				// include null stand alone struct elements in core
-				for moname, movalue := range objd.(map[string]interface{}) {
-					if fmt.Sprintf("%T", movalue) == "<nil>" {
-						objectMap[makeFirstCharUpperCase(moname)] = ""
+				for moName, moValue := range objD.(map[string]interface{}) {
+					if fmt.Sprintf("%T", moValue) == "<nil>" {
+						objectMap[makeFirstCharUpperCase(moName)] = ""
 					}
 				}
 			case "[]interface {}":
-				iSlice := objd.([]interface{})
+				iSlice := objD.([]interface{})
 				if len(iSlice) > 0 && reflect.TypeOf(iSlice[0]).Kind() != reflect.String && reflect.TypeOf(iSlice[0]).Kind() != reflect.Int64 && reflect.TypeOf(iSlice[0]).Kind() != reflect.Float64 && reflect.TypeOf(iSlice[0]).Kind() != reflect.Int32 {
-					objectChildList[makeFirstCharUpperCase(objf)] = processObjectList(objd.([]interface{}))
+					objectChildList[makeFirstCharUpperCase(objF)] = processObjectList(objD.([]interface{}))
 				}
 			default:
-				if objf == "name" {
-					objectName = objval
+				if objF == "name" {
+					objectName = objVal
 				}
-				if objf == "datacenterId" {
-					objectDCID = objval
+				if objF == "datacenterId" {
+					objectDCID = objVal
 				}
 			}
 		}
@@ -459,5 +429,4 @@ func processObjectList(objectList []interface{}) map[string]NullPerObjectAttribu
 	}
 
 	return nullObjectsList
-
 }

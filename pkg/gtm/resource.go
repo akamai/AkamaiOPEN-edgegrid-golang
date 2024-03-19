@@ -6,18 +6,9 @@ import (
 	"net/http"
 )
 
-//
-// Handle Operations on gtm resources
-// Based on 1.4 schema
-//
-
 // Resources contains operations available on a Resource resource.
 type Resources interface {
-	// NewResourceInstance instantiates a new ResourceInstance.
-	NewResourceInstance(context.Context, *Resource, int) *ResourceInstance
-	// NewResource creates a new Resource object.
-	NewResource(context.Context, string) *Resource
-	// ListResources retreieves all Resources
+	// ListResources retrieves all Resources
 	//
 	// See: https://techdocs.akamai.com/gtm/reference/get-resources
 	ListResources(context.Context, string) ([]*Resource, error)
@@ -41,7 +32,7 @@ type Resources interface {
 
 // ResourceInstance contains information about the resources that constrain the properties within the data center
 type ResourceInstance struct {
-	DatacenterId         int  `json:"datacenterId"`
+	DatacenterID         int  `json:"datacenterId"`
 	UseDefaultLoadObject bool `json:"useDefaultLoadObject"`
 	LoadObject
 }
@@ -70,163 +61,134 @@ type ResourceList struct {
 }
 
 // Validate validates Resource
-func (rsrc *Resource) Validate() error {
-
-	if len(rsrc.Name) < 1 {
-		return fmt.Errorf("Resource is missing Name")
+func (r *Resource) Validate() error {
+	if len(r.Name) < 1 {
+		return fmt.Errorf("resource is missing Name")
 	}
-	if len(rsrc.Type) < 1 {
-		return fmt.Errorf("Resource is missing Type")
+	if len(r.Type) < 1 {
+		return fmt.Errorf("resource is missing Type")
 	}
 
 	return nil
 }
 
-func (p *gtm) NewResourceInstance(ctx context.Context, _ *Resource, dcID int) *ResourceInstance {
-
-	logger := p.Log(ctx)
-	logger.Debug("NewResourceInstance")
-
-	return &ResourceInstance{DatacenterId: dcID}
-
-}
-
-func (p *gtm) NewResource(ctx context.Context, name string) *Resource {
-
-	logger := p.Log(ctx)
-	logger.Debug("NewResource")
-
-	resource := &Resource{Name: name}
-	return resource
-}
-
-func (p *gtm) ListResources(ctx context.Context, domainName string) ([]*Resource, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) ListResources(ctx context.Context, domainName string) ([]*Resource, error) {
+	logger := g.Log(ctx)
 	logger.Debug("ListResources")
 
-	var rsrcs ResourceList
 	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/resources", domainName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ListResources request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &rsrcs)
+
+	var result ResourceList
+	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("ListResources request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return rsrcs.ResourceItems, nil
+	return result.ResourceItems, nil
 }
 
-func (p *gtm) GetResource(ctx context.Context, name, domainName string) (*Resource, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) GetResource(ctx context.Context, resourceName, domainName string) (*Resource, error) {
+	logger := g.Log(ctx)
 	logger.Debug("GetResource")
 
-	var rsc Resource
-	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", domainName, name)
+	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", domainName, resourceName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetResource request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &rsc)
+
+	var result Resource
+	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetResource request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &rsc, nil
+	return &result, nil
 }
 
-func (p *gtm) CreateResource(ctx context.Context, rsrc *Resource, domainName string) (*ResourceResponse, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) CreateResource(ctx context.Context, resource *Resource, domainName string) (*ResourceResponse, error) {
+	logger := g.Log(ctx)
 	logger.Debug("CreateResource")
 
-	// Use common code. Any specific validation needed?
-	return rsrc.save(ctx, p, domainName)
-
+	return resource.save(ctx, g, domainName)
 }
 
-func (p *gtm) UpdateResource(ctx context.Context, rsrc *Resource, domainName string) (*ResponseStatus, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) UpdateResource(ctx context.Context, resource *Resource, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
 	logger.Debug("UpdateResource")
 
-	// common code
-	stat, err := rsrc.save(ctx, p, domainName)
+	stat, err := resource.save(ctx, g, domainName)
 	if err != nil {
 		return nil, err
 	}
 	return stat.Status, err
-
 }
 
 // save is a function that saves Resource in given domain. Common path for Create and Update.
-func (rsrc *Resource) save(ctx context.Context, p *gtm, domainName string) (*ResourceResponse, error) {
-
-	if err := rsrc.Validate(); err != nil {
-		return nil, fmt.Errorf("Resource validation failed. %w", err)
+func (r *Resource) save(ctx context.Context, g *gtm, domainName string) (*ResourceResponse, error) {
+	if err := r.Validate(); err != nil {
+		return nil, fmt.Errorf("resource validation failed. %w", err)
 	}
 
-	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", domainName, rsrc.Name)
+	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", domainName, r.Name)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Resource request: %w", err)
 	}
-
-	var rscresp ResourceResponse
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &rscresp, rsrc)
+
+	var result ResourceResponse
+	resp, err := g.Exec(req, &result, r)
 	if err != nil {
-		return nil, fmt.Errorf("Resource request failed: %w", err)
+		return nil, fmt.Errorf("resource request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return &rscresp, nil
-
+	return &result, nil
 }
 
-func (p *gtm) DeleteResource(ctx context.Context, rsrc *Resource, domainName string) (*ResponseStatus, error) {
-
-	logger := p.Log(ctx)
+func (g *gtm) DeleteResource(ctx context.Context, resource *Resource, domainName string) (*ResponseStatus, error) {
+	logger := g.Log(ctx)
 	logger.Debug("DeleteResource")
 
-	if err := rsrc.Validate(); err != nil {
+	if err := resource.Validate(); err != nil {
 		logger.Errorf("Resource validation failed. %w", err)
-		return nil, fmt.Errorf("Resource validation failed. %w", err)
+		return nil, fmt.Errorf("DeleteResource validation failed. %w", err)
 	}
 
-	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", domainName, rsrc.Name)
+	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/resources/%s", domainName, resource.Name)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, delURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Delete request: %w", err)
 	}
-
-	var rscresp ResponseBody
 	setVersionHeader(req, schemaVersion)
-	resp, err := p.Exec(req, &rscresp)
+
+	var result ResponseBody
+	resp, err := g.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("Resource request failed: %w", err)
+		return nil, fmt.Errorf("DeleteResource request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, g.Error(resp)
 	}
 
-	return rscresp.Status, nil
-
+	return result.Status, nil
 }

@@ -1,5 +1,148 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 8.0.0 (March 19, 2024)
+
+#### BREAKING CHANGES:
+
+* Migrated to go 1.21
+
+* CPS
+  * Split request and response structures for create and update enrollment operations
+
+* DNS
+  * Renamed following structs:
+    * `RecordsetQueryArgs` into `RecordSetQueryArgs`
+    * `Recordsets` into `RecordSets`
+    * `Recordset` into `RecordSet`
+    * `MetadataH` into `Metadata`
+  * Renamed following fields:
+    * `GroupId` into `GroupID` in `ListGroupRequest`
+    * `Recordsets` into `RecordSets` in `RecordSetResponse`
+    * `ContractIds` into `ContractIDs` in `TSIGQueryString`
+    * `Gid` into `GID` in `TSIGQueryString` and `TSIGReportMeta`
+    * `TsigKey` into `TSIGKey` in `ZoneCreate` and `ZoneResponse`
+    * `VersionId` into `VersionID` in `ZoneResponse`
+    * `RequestId` into `RequestID` in `BulkZonesResponse`, `BulkStatusResponse`, `BulkCreateResultResponse` and `BulkDeleteResultResponse` 
+  * Renamed `RecordSets` interface into `Recordsets`
+  * Renamed following methods:
+    * `ListTsigKeys` into `ListTSIGKeys`
+    * `GetTsigKeyZones` into `GetTSIGKeyZones`
+    * `GetTsigKeyAliases` into `GetTSIGKeyAliases`
+    * `TsigKeyBulkUpdate` into `TSIGKeyBulkUpdate`
+    * `GetTsigKey` into `GetTSIGKey`
+    * `DeleteTsigKey` into `DeleteTSIGKey`
+    * `UpdateTsigKey` into `UpdateTSIGKey`
+    * `GetRecordsets` into `GetRecordSets`
+    * `CreateRecordsets` into `CreateRecordSets`
+    * `UpdateRecordsets` into `UpdateRecordSets`
+  * Deleted following methods:
+    * `NewAuthorityResponse`
+    * `NewChangeListResponse`
+    * `NewRecordBody`
+    * `NewRecordSetResponse`
+    * `NewTsigKey`
+    * `NewTsigQueryString`
+    * `NewZone`
+    * `NewZoneQueryString`
+    * `NewZoneResponse`
+    * `RecordToMap`
+  * Unexported following methods:
+    * `FullIPv6`
+    * `PadCoordinates`
+    * `ValidateZone`
+
+* GTM
+  * Renamed following structs:
+    * `AsAssignment` into `ASAssignment`
+    * `AsMap` into `ASMap`
+    * `AsMapList` into `ASMapList`
+    * `CidrAssignment` into `CIDRAssignment`
+    * `CidrMap` into `CIDRMap`
+    * `CidrMapList` into `CIDRMapList`
+    * `CidrMapResponse` into `CIDRMapResponse`
+    * `AsMapResponse` into `ASMapResponse`
+    * `HttpHeader` into `HTTPHeader`
+  * Renamed following fields:
+    * `AsNumbers` into `ASNumbers` in `ASAssignment`
+    * `AsMapItems` into `ASMapItems` in `ASMapList`
+    * `CidrMapItems` into `CIDRMapItems` in `CIDRMapList`
+    * `ChangeId` into `ChangeID` in `ResponseStatus`
+    * `DatacenterId` into `DatacenterID` in `DatacenterBase`, `Datacenter`, `TrafficTarget` and `ResourceInstance`
+    * `AsMaps` into `ASMaps` in `Domain`
+    * `DefaultSslClientPrivateKey` into `DefaultSSLClientPrivateKey` in `Domain`
+    * `CnameCoalescingEnabled` into `CNameCoalescingEnabled` in `Domain`
+    * `CidrMaps` into `CIDRMaps` in `Domain`
+    * `DefaultSslClientCertificate` into `DefaultSSLClientCertificate` in `Domain`
+    * `AcgId` into `AcgID` in `DomainItem`
+    * `HttpError3xx` into `HTTPError3xx` in `LivenessTest`
+    * `HttpError4xx` into `HTTPError4xx` in `LivenessTest`
+    * `HttpError5xx` into `HTTPError5xx` in `LivenessTest`
+    * `SslClientPrivateKey` into `SSLClientPrivateKey` in `LivenessTest`
+    * `SslClientCertificate` into `SSLClientCertificate` in `LivenessTest`
+    * `HttpHeaders` into `HTTPHeaders` in `LivenessTest`
+    * `Ipv6` into `IPv6` in `Property`
+    * `BackupIp` into `BackupIP` in `Property`
+  * Renamed `CidrMaps` interface into `CIDRMaps`
+  * Renamed following methods:
+    * `ListAsMaps` into `ListASMaps`
+    * `GetAsMap` into `GetASMap`
+    * `CreateAsMap` into `CreateASMap`
+    * `DeleteAsMap` into `DeleteASMap`
+    * `UpdateAsMap` into `UpdateASMap`
+    * `ListCidrMaps` into `ListCIDRMaps`
+    * `GetCidrMap` into `GetCIDRMap`
+    * `CreateCidrMap` into `CreateCIDRMap`
+    * `DeleteCidrMap` into `DeleteCIDRMap`
+    * `UpdateCidrMap` into `UpdateCIDRMap`
+  * Deleted following methods:
+    * `NewASAssignment`
+    * `NewAsMap`
+    * `NewCidrAssignment`
+    * `NewCidrMap`
+    * `NewDatacenter`
+    * `NewDatacenterBase`
+    * `NewDatacenterResponse`
+    * `NewDefaultDatacenter`
+    * `NewDomain`
+    * `NewGeoAssignment`
+    * `NewHttpHeader`
+    * `NewGeoMap`
+    * `NewLivenessTest`
+    * `NewLoadObject`
+    * `NewProperty`
+    * `NewResource`
+    * `NewResourceInstance`
+    * `NewResponseStatus`
+    * `NewStaticRRSet`
+    * `NewTrafficTarget`
+
+#### FEATURES/ENHANCEMENTS:
+
+* Added default value `application/json` for `Accept` header for all requests sent to API
+
+* Appsec
+  * Added `PenaltyBoxConditions` API - read and update
+  * Added `EvalPenaltyBoxConditions` API - read and update
+
+* CPS
+  * Added `ID`, `OrgID`, `ProductionSlots`, `StagingSlots` and `AssignedSlots` to the response structures of `GetEnrollment` and `ListEnrollment` operations
+
+* GTM
+  * Added new fields:
+    * `SignAndServe` and `SignAndServeAlgorithm` for the `Domain`
+    * `HTTPMethod`, `HTTPRequestBody`, `Pre2023SecurityPosture` and `AlternateCACertificates` for the `LivenessTest` in `Property`
+    * `Precedence` for the `TrafficTarget` in `Property`
+  * Enhanced error details by addition of `Errors` field in `Error` structure
+  * Added support for the creation of `ranked-failover` properties
+
+#### BUG FIXES:
+
+* DNS
+  * Removed not working `DeleteZone` method
+* 
+* PAPI
+  * Updated documentation link for `GetProperties` method
+
 ## 7.6.1 (February 14, 2024)
 
 #### BUG FIXES:
