@@ -12,6 +12,8 @@
 
 
 
+* Image and Video Manager
+  * Added `SmartCrop` transformation
 
 
 

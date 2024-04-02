@@ -943,6 +943,34 @@ type (
 	// ShearTransformation ...
 	ShearTransformation string
 
+	// SmartCrop Crops around whatever is most important in the image, to a region around a specified area of interest relative to the specified `width` and `height` values. The crop detects any faces present, otherwise features.
+	SmartCrop struct {
+		// Debug When enabled, the SmartCrop transformation doesn't actually execute. Instead, it outlines found faces or features, the region of interest, and the crop area.
+		Debug *BooleanVariableInline `json:"debug,omitempty"`
+		// Height The height in pixels of the output image relative to the specified `style` value.
+		Height *IntegerVariableInline `json:"height,omitempty"`
+		// Sloppy Whether to sacrifice any image fidelity for transformation performance.
+		Sloppy *BooleanVariableInline `json:"sloppy,omitempty"`
+		// Style Specifies how to crop or scale a crop area for the specified area of interest in the source image, `fill` by default. The output image resizes to the specified `width` and `height` values. A value of `crop` places raw crop around the point of interest.  A value of `fill` scales the crop area to include as much of the image and point of interest as possible, relative to the specified `width` and `height` values. A value of `zoom` scales the crop area as small as possible to fit the point of interest, relative to the specified `width` and `height` values.
+		Style *SmartCropStyleVariableInline `json:"style,omitempty"`
+		// Transformation Identifies this type of transformation, `SmartCrop` in this case.
+		Transformation SmartCropTransformation `json:"transformation"`
+		// Width The width in pixels of the output image relative to the specified `style` value.
+		Width *IntegerVariableInline `json:"width,omitempty"`
+	}
+
+	// SmartCropStyle ...
+	SmartCropStyle string
+
+	// SmartCropStyleVariableInline represents a type which stores either a value or a variable name
+	SmartCropStyleVariableInline struct {
+		Name  *string
+		Value *SmartCropStyle
+	}
+
+	// SmartCropTransformation ...
+	SmartCropTransformation string
+
 	// StringVariableInline represents a type which stores either a value or a variable name
 	StringVariableInline struct {
 		Name  *string
@@ -1495,6 +1523,16 @@ const (
 	// ShearTransformationShear const
 	ShearTransformationShear ShearTransformation = "Shear"
 
+	// SmartCropStyleCrop const
+	SmartCropStyleCrop SmartCropStyle = "crop"
+	// SmartCropStyleFill const
+	SmartCropStyleFill SmartCropStyle = "fill"
+	// SmartCropStyleZoom const
+	SmartCropStyleZoom SmartCropStyle = "zoom"
+
+	// SmartCropTransformationSmartCrop const
+	SmartCropTransformationSmartCrop SmartCropTransformation = "SmartCrop"
+
 	// TextImageTypePostTypeText const
 	TextImageTypePostTypeText TextImageTypePostType = "Text"
 
@@ -1722,6 +1760,10 @@ func (Scale) transformationType() string {
 
 func (Shear) transformationType() string {
 	return "Shear"
+}
+
+func (SmartCrop) transformationType() string {
+	return "SmartCrop"
 }
 
 func (TextImageType) imageType() string {
@@ -2120,6 +2162,16 @@ func ScaleTransformationPtr(v ScaleTransformation) *ScaleTransformation {
 
 // ShearTransformationPtr returns pointer of ShearTransformation
 func ShearTransformationPtr(v ShearTransformation) *ShearTransformation {
+	return &v
+}
+
+// SmartCropStylePtr returns pointer of SmartCropStyle
+func SmartCropStylePtr(v SmartCropStyle) *SmartCropStyle {
+	return &v
+}
+
+// SmartCropTransformationPtr returns pointer of SmartCropTransformation
+func SmartCropTransformationPtr(v SmartCropTransformation) *SmartCropTransformation {
 	return &v
 }
 
@@ -3166,6 +3218,31 @@ func (s Shear) Validate() error {
 	}.Filter()
 }
 
+// Validate validates SmartCrop
+func (s SmartCrop) Validate() error {
+	return validation.Errors{
+		"Debug":  validation.Validate(s.Debug),
+		"Height": validation.Validate(s.Height),
+		"Sloppy": validation.Validate(s.Sloppy),
+		"Style":  validation.Validate(s.Style),
+		"Transformation": validation.Validate(s.Transformation,
+			validation.Required,
+			validation.In(SmartCropTransformationSmartCrop),
+		),
+		"Width": validation.Validate(s.Width),
+	}.Filter()
+}
+
+// Validate validates SmartCropStyleVariableInline
+func (s SmartCropStyleVariableInline) Validate() error {
+	return validation.Errors{
+		"Name": validation.Validate(s.Name),
+		"Value": validation.Validate(s.Value,
+			validation.In(SmartCropStyleCrop, SmartCropStyleFill, SmartCropStyleZoom),
+		),
+	}.Filter()
+}
+
 // Validate validates StringVariableInline
 func (s StringVariableInline) Validate() error {
 	return validation.Errors{
@@ -3432,6 +3509,8 @@ var (
 	ErrUnmarshalVariableResizeAspectVariableInline = errors.New("unmarshalling ResizeAspectVariableInline")
 	// ErrUnmarshalVariableResizeTypeVariableInline represents an error while unmarshalling ResizeTypeVariableInline
 	ErrUnmarshalVariableResizeTypeVariableInline = errors.New("unmarshalling ResizeTypeVariableInline")
+	// ErrUnmarshalVariableSmartCropStyleVariableInline represents an error while unmarshalling SmartCropStyleVariableInline
+	ErrUnmarshalVariableSmartCropStyleVariableInline = errors.New("unmarshalling SmartCropStyleVariableInline")
 	// ErrUnmarshalVariableStringVariableInline represents an error while unmarshalling StringVariableInline
 	ErrUnmarshalVariableStringVariableInline = errors.New("unmarshalling StringVariableInline")
 	// ErrUnmarshalVariableOutputVideoPerceptualQualityVariableInline represents an error while unmarshalling OutputVideoPerceptualQualityVariableInline
@@ -4069,6 +4148,35 @@ func (r *ResizeTypeVariableInline) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
+func (s *SmartCropStyleVariableInline) UnmarshalJSON(in []byte) error {
+	var err error
+	var variable InlineVariable
+	if err = json.Unmarshal(in, &variable); err == nil {
+		s.Name = &variable.Var
+		s.Value = nil
+		return nil
+	}
+	var value SmartCropStyle
+	if err = json.Unmarshal(in, &value); err == nil {
+		s.Name = nil
+		s.Value = &value
+		return nil
+	}
+	return fmt.Errorf("%w: %s", ErrUnmarshalVariableSmartCropStyleVariableInline, err)
+}
+
+// MarshalJSON is a custom marshaler used to encode a variable which can be either a value or a variable object
+func (s *SmartCropStyleVariableInline) MarshalJSON() ([]byte, error) {
+	if s.Value != nil {
+		return json.Marshal(*s.Value)
+	}
+	if s.Name != nil {
+		return json.Marshal(VariableInline{Var: *s.Name})
+	}
+	return nil, nil
+}
+
+// UnmarshalJSON is a custom unmarshaler used to decode a variable which can be either a value or a variable object
 func (s *StringVariableInline) UnmarshalJSON(in []byte) error {
 	var err error
 	var variable InlineVariable
@@ -4466,6 +4574,7 @@ var TransformationHandlers = map[string]func() TransformationType{
 	"Rotate":               func() TransformationType { return &Rotate{} },
 	"Scale":                func() TransformationType { return &Scale{} },
 	"Shear":                func() TransformationType { return &Shear{} },
+	"SmartCrop":            func() TransformationType { return &SmartCrop{} },
 	"Trim":                 func() TransformationType { return &Trim{} },
 	"UnsharpMask":          func() TransformationType { return &UnsharpMask{} },
 }
