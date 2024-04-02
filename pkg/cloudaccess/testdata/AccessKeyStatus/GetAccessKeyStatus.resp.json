@@ -1,0 +1,25 @@
+{
+  "accessKey": {
+    "accessKeyUid": 123,
+    "link": "/cam/v1/access-keys/123"
+  },
+  "accessKeyVersion": {
+    "accessKeyUid": 123,
+    "link": "/cam/v1/access-keys/123/versions/1",
+    "version": 1
+  },
+  "processingStatus": "IN_PROGRESS",
+  "request": {
+    "accessKeyName": "TestAccessKeyName",
+    "authenticationMethod": "AWS4_HMAC_SHA256",
+    "contractId": "TestContractID",
+    "groupId": 123,
+    "networkConfiguration": {
+      "additionalCdn": "CHINA_CDN",
+      "securityNetwork": "ENHANCED_TLS"
+    }
+  },
+  "requestDate": "2021-02-26T13:34:36.715643Z",
+  "requestId": 1,
+  "requestedBy": "user"
+}

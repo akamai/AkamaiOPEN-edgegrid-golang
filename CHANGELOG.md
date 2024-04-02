@@ -15,6 +15,11 @@
 
   * Access Keys
     * [GetAccessKeyStatus] (https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-create-request)
+    * [CreateAccessKey] (https://techdocs.akamai.com/cloud-access-mgr/reference/post-access-key)
+    * [GetAccessKey] (https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key)
+    * [GetAccessKeys] (https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-keys)
+    * [UpdateAccessKey] (https://techdocs.akamai.com/cloud-access-mgr/reference/put-access-key)
+    * [DeleteAccessKey] (https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key)
   
 
 
@@ -82,7 +87,6 @@
 
 * General
   * Added `To` utility function in the `ptr` package that helps with creating value pointers
-
 
 
 
