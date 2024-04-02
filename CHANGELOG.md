@@ -24,6 +24,9 @@
 
 
 
+* DNS
+  * Modified `ParseRData` method to remove priority, weight and port from targets **only** when those values are same for all `SRV` targets.
+    Otherwise, targets are returned untouched and `priority`, `weight` and `port` in the map are not populated.
 
 
 
@@ -41,7 +44,6 @@
 
 
 #### BUG FIXES:
-
 
 
 

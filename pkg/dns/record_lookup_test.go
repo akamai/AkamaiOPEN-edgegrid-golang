@@ -318,10 +318,12 @@ func TestDNS_ParseRData(t *testing.T) {
 	client := Client(session.Must(session.New()))
 
 	tests := map[string]struct {
+		rType  string
 		rdata  []string
 		expect map[string]interface{}
 	}{
 		"AFSDB": {
+			rType: "AFSDB",
 			rdata: []string{"1 bar.com"},
 			expect: map[string]interface{}{
 				"subtype": 1,
@@ -329,6 +331,7 @@ func TestDNS_ParseRData(t *testing.T) {
 			},
 		},
 		"SVCB": {
+			rType: "SVCB",
 			rdata: []string{"0 svc4.example.com."},
 			expect: map[string]interface{}{
 				"target":       []string{},
@@ -337,6 +340,7 @@ func TestDNS_ParseRData(t *testing.T) {
 			},
 		},
 		"HTTPS": {
+			rType: "HTTPS",
 			rdata: []string{"3 https.example.com. alpn=bar port=8080"},
 			expect: map[string]interface{}{
 				"target":       []string{},
@@ -345,11 +349,28 @@ func TestDNS_ParseRData(t *testing.T) {
 				"svc_params":   "alpn=bar port=8080",
 			},
 		},
+		"SRV with default values": {
+			rType: "SRV",
+			rdata: []string{"10 60 5060 big.example.com.", "10 60 5060 small.example.com."},
+			expect: map[string]interface{}{
+				"port":     5060,
+				"priority": 10,
+				"weight":   60,
+				"target":   []string{"big.example.com.", "small.example.com."},
+			},
+		},
+		"SRV without default values": {
+			rType: "SRV",
+			rdata: []string{"10 60 5060 big.example.com.", "20 50 5060 small.example.com."},
+			expect: map[string]interface{}{
+				"target": []string{"10 60 5060 big.example.com.", "20 50 5060 small.example.com."},
+			},
+		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			out := client.ParseRData(context.Background(), name, test.rdata)
+			out := client.ParseRData(context.Background(), test.rType, test.rdata)
 
 			assert.Equal(t, test.expect, out)
 		})
