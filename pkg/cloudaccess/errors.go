@@ -14,14 +14,15 @@ type (
 	// Error is a cloudaccess error interface
 	// For details on possible error types, refer to: https://techdocs.akamai.com/cloud-access-mgr/reference/errors
 	Error struct {
-		Type         string      `json:"type"`
-		Title        string      `json:"title"`
-		Detail       string      `json:"detail"`
-		Instance     string      `json:"instance"`
-		Status       int         `json:"status"`
-		AccessKeyUID int         `json:"accessKeyUid"`
-		ProblemID    string      `json:"problemId"`
-		Errors       []ErrorItem `json:"errors"`
+		Type          string      `json:"type"`
+		Title         string      `json:"title"`
+		Detail        string      `json:"detail"`
+		Instance      string      `json:"instance"`
+		Status        int         `json:"status"`
+		AccessKeyUID  int         `json:"accessKeyUid,omitempty"`
+		AccessKeyName string      `json:"accessKeyName,omitempty"`
+		ProblemID     string      `json:"problemId,omitempty"`
+		Errors        []ErrorItem `json:"errors,omitempty"`
 	}
 
 	// ErrorItem is a cloud access error's item

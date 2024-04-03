@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -23,6 +24,75 @@ type (
 	GetAccessKeyVersionStatusRequest struct {
 		RequestID int64
 	}
+
+	// CreateAccessKeyVersionRequest holds parameters for CreateAccessKeyVersion
+	CreateAccessKeyVersionRequest struct {
+		AccessKeyUID int64
+		BodyParams   CreateAccessKeyVersionBodyParams
+	}
+
+	// CreateAccessKeyVersionBodyParams holds body parameters for CreateAccessKeyVersion
+	CreateAccessKeyVersionBodyParams struct {
+		CloudAccessKeyID     string `json:"cloudAccessKeyId"`
+		CloudSecretAccessKey string `json:"cloudSecretAccessKey"`
+	}
+
+	// CreateAccessKeyVersionResponse contains response from CreateAccessKeyVersion
+	CreateAccessKeyVersionResponse struct {
+		RequestID  int64 `json:"requestId"`
+		RetryAfter int64 `json:"retryAfter"`
+	}
+
+	// GetAccessKeyVersionRequest holds parameters for GetAccessKeyVersion
+	GetAccessKeyVersionRequest struct {
+		Version      int64
+		AccessKeyUID int64
+	}
+
+	// GetAccessKeyVersionResponse conatains response from GetAccessKeyVersion
+	GetAccessKeyVersionResponse AccessKeyVersion
+
+	// ListAccessKeyVersionsRequest holds parameters for ListAccessKeyVersion
+	ListAccessKeyVersionsRequest struct {
+		AccessKeyUID int64
+	}
+
+	// ListAccessKeyVersionsResponse contains response from ListAccessKeyVersions
+	ListAccessKeyVersionsResponse struct {
+		AccessKeyVersions []AccessKeyVersion `json:"accessKeyVersions"`
+	}
+
+	// DeleteAccessKeyVersionRequest hold parameters for DeleteAccessKeyVersion
+	DeleteAccessKeyVersionRequest struct {
+		Version      int64
+		AccessKeyUID int64
+	}
+
+	// DeleteAccessKeyVersionResponse contains response from DeleteAccessKeyVersion
+	DeleteAccessKeyVersionResponse AccessKeyVersion
+
+	// AccessKeyVersion holds information about access key version
+	AccessKeyVersion struct {
+		AccessKeyUID     int64            `json:"accessKeyUid"`
+		CloudAccessKeyID *string          `json:"cloudAccessKeyId"`
+		CreatedBy        string           `json:"createdBy"`
+		CreatedTime      time.Time        `json:"createdTime"`
+		DeploymentStatus DeploymentStatus `json:"deploymentStatus"`
+		Version          int64            `json:"version"`
+		VersionGUID      string           `json:"versionGuid"`
+	}
+
+	// DeploymentStatus represents deployment information
+	DeploymentStatus string
+)
+
+const (
+	// PendingActivation represents pending activation deployment status of access key version
+	PendingActivation DeploymentStatus = "PENDING_ACTIVATION"
+	// Active represents activated deployment status of access key version
+	Active DeploymentStatus = "ACTIVE"
+	// PendingDeletion represents pending deletion deployment status of access key version
+	PendingDeletion DeploymentStatus = "PENDING_DELETION"
 )
 
 // Validate validates GetAccessKeyVersionStatusRequest
@@ -32,9 +102,56 @@ func (r GetAccessKeyVersionStatusRequest) Validate() error {
 	})
 }
 
+// Validate validates CreateAccessKeyVersionRequest
+func (r CreateAccessKeyVersionRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"AccessKeyUID": validation.Validate(r.AccessKeyUID, validation.Required),
+		"BodyParams":   validation.Validate(r.BodyParams, validation.Required),
+	})
+}
+
+// Validate validates CreateAccessKeyVersionBodyParams
+func (r CreateAccessKeyVersionBodyParams) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"CloudAccessKeyID":     validation.Validate(r.CloudAccessKeyID, validation.Required),
+		"CloudSecretAccessKey": validation.Validate(r.CloudSecretAccessKey, validation.Required),
+	})
+}
+
+// Validate validates GetAccessKeyVersionRequest
+func (r GetAccessKeyVersionRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"AccessKeyUID": validation.Validate(r.AccessKeyUID, validation.Required),
+		"Version":      validation.Validate(r.Version, validation.Required),
+	})
+}
+
+// Validate validates ListAccessKeyVersionsRequest
+func (r ListAccessKeyVersionsRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"AccessKeyUID": validation.Validate(r.AccessKeyUID, validation.Required),
+	})
+}
+
+// Validate validates DeleteAccessKeyVersionRequest
+func (r DeleteAccessKeyVersionRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"AccessKeyUID": validation.Validate(r.AccessKeyUID, validation.Required),
+		"Version":      validation.Validate(r.Version, validation.Required),
+	})
+}
+
 var (
 	// ErrGetAccessKeyVersionStatus is returned when GetAccessKeyVersionStatus fails
 	ErrGetAccessKeyVersionStatus = errors.New("get the status of an access key version")
+	// ErrCreateAccessKeyVersion is returned when CreateAccessKeyVersion fails
+	ErrCreateAccessKeyVersion = errors.New("create access key version")
+	// ErrGetAccessKeyVersion is returned when GetAccessKeyVersion fails
+	ErrGetAccessKeyVersion = errors.New("get access key version")
+	// ErrListAccessKeyVersions is returned when ListAccessKeyVersions fails
+	ErrListAccessKeyVersions = errors.New("list access key versions")
+	// ErrDeleteAccessKeyVersion is returned when DeleteAccessKeyVersion fails
+	ErrDeleteAccessKeyVersion = errors.New("delete access key version")
 )
 
 func (c *cloudaccess) GetAccessKeyVersionStatus(ctx context.Context, params GetAccessKeyVersionStatusRequest) (*GetAccessKeyVersionStatusResponse, error) {
@@ -48,17 +165,129 @@ func (c *cloudaccess) GetAccessKeyVersionStatus(ctx context.Context, params GetA
 	getURL := fmt.Sprintf("/cam/v1/access-key-version-create-requests/%d", params.RequestID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create GetAccessKeyStatusVersion request: %w", err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAccessKeyVersionStatus, err)
 	}
 
 	var result GetAccessKeyVersionStatusResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("GetAccessKeyStatusVersion request failed: %w", err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetAccessKeyVersionStatus, err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, c.Error(resp)
+		return nil, fmt.Errorf("%s: %w", ErrGetAccessKeyVersionStatus, c.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func (c *cloudaccess) CreateAccessKeyVersion(ctx context.Context, params CreateAccessKeyVersionRequest) (*CreateAccessKeyVersionResponse, error) {
+	logger := c.Log(ctx)
+	logger.Debug("CreateAccessKeyVersion")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateAccessKeyVersion, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf("/cam/v1/access-keys/%d/versions", params.AccessKeyUID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateAccessKeyVersion, err)
+	}
+
+	var result CreateAccessKeyVersionResponse
+	resp, err := c.Exec(req, &result, params.BodyParams)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %w", ErrCreateAccessKeyVersion, err)
+	}
+
+	if resp.StatusCode != http.StatusAccepted {
+		return nil, fmt.Errorf("%s: %w", ErrCreateAccessKeyVersion, c.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func (c *cloudaccess) GetAccessKeyVersion(ctx context.Context, params GetAccessKeyVersionRequest) (*GetAccessKeyVersionResponse, error) {
+	logger := c.Log(ctx)
+	logger.Debug("GetAccessKeyVersion")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetAccessKeyVersion, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf("/cam/v1/access-keys/%d/versions/%d", params.AccessKeyUID, params.Version)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAccessKeyVersion, err)
+	}
+
+	var result GetAccessKeyVersionResponse
+	resp, err := c.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetAccessKeyVersion, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrGetAccessKeyVersion, c.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func (c *cloudaccess) ListAccessKeyVersions(ctx context.Context, params ListAccessKeyVersionsRequest) (*ListAccessKeyVersionsResponse, error) {
+	logger := c.Log(ctx)
+	logger.Debug("ListAccessKeyVersions")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListAccessKeyVersions, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf("/cam/v1/access-keys/%d/versions", params.AccessKeyUID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAccessKeyVersions, err)
+	}
+
+	var result ListAccessKeyVersionsResponse
+	resp, err := c.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListAccessKeyVersions, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListAccessKeyVersions, c.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func (c *cloudaccess) DeleteAccessKeyVersion(ctx context.Context, params DeleteAccessKeyVersionRequest) (*DeleteAccessKeyVersionResponse, error) {
+	logger := c.Log(ctx)
+	logger.Debug("DeleteAccessKeyVersion")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrDeleteAccessKeyVersion, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf("/cam/v1/access-keys/%d/versions/%d", params.AccessKeyUID, params.Version)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeleteAccessKeyVersion, err)
+	}
+
+	var result DeleteAccessKeyVersionResponse
+	resp, err := c.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %w", ErrDeleteAccessKeyVersion, err)
+	}
+
+	if resp.StatusCode != http.StatusAccepted {
+		return nil, fmt.Errorf("%s: %w", ErrDeleteAccessKeyVersion, c.Error(resp))
 	}
 
 	return &result, nil

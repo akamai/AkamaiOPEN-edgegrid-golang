@@ -28,8 +28,8 @@
 
 
   
-  * Access Keys Version
-    * [GetAccessKeyVersionStatus] (https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-create-request)
+
+    
 
 
 
@@ -37,7 +37,12 @@
 
 
 
-
+* Access Key Versions
+  * [GetAccessKeyVersionStatus](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-create-request)
+  * [GetAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version)
+  * [CreateAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/post-access-key-version)
+  * [ListAccessKeyVersions](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-versions)
+  * [DeleteAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key-version)
 
 
 
@@ -87,6 +92,7 @@
 
 * General
   * Added `To` utility function in the `ptr` package that helps with creating value pointers
+
 
 
 

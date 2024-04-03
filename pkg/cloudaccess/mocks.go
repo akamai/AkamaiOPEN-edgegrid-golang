@@ -79,3 +79,43 @@ func (m *Mock) DeleteAccessKey(ctx context.Context, r AccessKeyRequest) error {
 
 	return args.Error(0)
 }
+
+func (m *Mock) GetAccessKeyVersion(ctx context.Context, r GetAccessKeyVersionRequest) (*GetAccessKeyVersionResponse, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetAccessKeyVersionResponse), args.Error(1)
+}
+
+func (m *Mock) CreateAccessKeyVersion(ctx context.Context, r CreateAccessKeyVersionRequest) (*CreateAccessKeyVersionResponse, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*CreateAccessKeyVersionResponse), args.Error(1)
+}
+
+func (m *Mock) ListAccessKeyVersions(ctx context.Context, r ListAccessKeyVersionsRequest) (*ListAccessKeyVersionsResponse, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListAccessKeyVersionsResponse), args.Error(1)
+}
+
+func (m *Mock) DeleteAccessKeyVersion(ctx context.Context, r DeleteAccessKeyVersionRequest) (*DeleteAccessKeyVersionResponse, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*DeleteAccessKeyVersionResponse), args.Error(1)
+}

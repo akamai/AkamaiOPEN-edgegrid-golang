@@ -50,6 +50,26 @@ type (
 		//
 		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key
 		DeleteAccessKey(context.Context, AccessKeyRequest) error
+
+		// CreateAccessKeyVersion rotates an access key to a new version.
+		//
+		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/post-access-key-version
+		CreateAccessKeyVersion(context.Context, CreateAccessKeyVersionRequest) (*CreateAccessKeyVersionResponse, error)
+
+		// GetAccessKeyVersion returns detailed information for a specific version of an access key.
+		//
+		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version
+		GetAccessKeyVersion(context.Context, GetAccessKeyVersionRequest) (*GetAccessKeyVersionResponse, error)
+
+		// ListAccessKeyVersions returns detailed information about all the versions for a specific access key.
+		//
+		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-versions
+		ListAccessKeyVersions(context.Context, ListAccessKeyVersionsRequest) (*ListAccessKeyVersionsResponse, error)
+
+		// DeleteAccessKeyVersion deletes a specific version of an access key.
+		//
+		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key-version
+		DeleteAccessKeyVersion(context.Context, DeleteAccessKeyVersionRequest) (*DeleteAccessKeyVersionResponse, error)
 	}
 
 	cloudaccess struct {
