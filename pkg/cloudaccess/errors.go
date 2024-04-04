@@ -18,10 +18,11 @@ type (
 		Title         string      `json:"title"`
 		Detail        string      `json:"detail"`
 		Instance      string      `json:"instance"`
-		Status        int         `json:"status"`
-		AccessKeyUID  int         `json:"accessKeyUid,omitempty"`
+		Status        int64       `json:"status"`
+		AccessKeyUID  int64       `json:"accessKeyUid,omitempty"`
 		AccessKeyName string      `json:"accessKeyName,omitempty"`
 		ProblemID     string      `json:"problemId,omitempty"`
+		Version       int64       `json:"version"`
 		Errors        []ErrorItem `json:"errors,omitempty"`
 	}
 
@@ -40,7 +41,7 @@ func (c *cloudaccess) Error(r *http.Response) error {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		c.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
-		e.Status = r.StatusCode
+		e.Status = int64(r.StatusCode)
 		e.Title = fmt.Sprintf("Failed to read error body")
 		e.Detail = err.Error()
 		return &e
@@ -52,7 +53,7 @@ func (c *cloudaccess) Error(r *http.Response) error {
 		e.Detail = errs.UnescapeContent(string(body))
 	}
 
-	e.Status = r.StatusCode
+	e.Status = int64(r.StatusCode)
 
 	return &e
 }

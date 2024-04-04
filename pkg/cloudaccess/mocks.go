@@ -34,6 +34,36 @@ func (m *Mock) GetAccessKeyVersionStatus(ctx context.Context, r GetAccessKeyVers
 	return args.Get(0).(*GetAccessKeyVersionStatusResponse), args.Error(1)
 }
 
+func (m *Mock) LookupProperties(ctx context.Context, r LookupPropertiesRequest) (*LookupPropertiesResponse, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*LookupPropertiesResponse), args.Error(1)
+}
+
+func (m *Mock) GetAsyncPropertiesLookupID(ctx context.Context, r GetAsyncPropertiesLookupIDRequest) (*GetAsyncPropertiesLookupIDResponse, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetAsyncPropertiesLookupIDResponse), args.Error(1)
+}
+
+func (m *Mock) PerformAsyncPropertiesLookup(ctx context.Context, r PerformAsyncPropertiesLookupRequest) (*PerformAsyncPropertiesLookupResponse, error) {
+	args := m.Called(ctx, r)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*PerformAsyncPropertiesLookupResponse), args.Error(1)
+}
+
 func (m *Mock) CreateAccessKey(ctx context.Context, r CreateAccessKeyRequest) (*CreateAccessKeyResponse, error) {
 	args := m.Called(ctx, r)
 

@@ -46,7 +46,10 @@
 
 
 
-
+  * Properties using Access Key
+    * [LookupProperties](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-properties)
+    * [GetAsyncPropertiesLookupID](https://techdocs.akamai.com/cloud-access-mgr/reference/get-async-version-property-lookup)
+    * [PerformAsyncPropertiesLookup](https://techdocs.akamai.com/cloud-access-mgr/reference/get-property-lookup)
 
 ## X.X.X (X X, X)
 

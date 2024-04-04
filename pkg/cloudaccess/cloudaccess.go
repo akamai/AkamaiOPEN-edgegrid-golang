@@ -70,6 +70,22 @@ type (
 		//
 		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key-version
 		DeleteAccessKeyVersion(context.Context, DeleteAccessKeyVersionRequest) (*DeleteAccessKeyVersionResponse, error)
+
+		// LookupProperties returns information about all the Property Manager properties that use a specific version of an access key.
+		// This operation gets the data directly. To avoid any latency problems, use the GetAsyncPropertiesLookupID and PerformAsyncPropertiesLookup
+		//
+		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-properties
+		LookupProperties(ctx context.Context, params LookupPropertiesRequest) (*LookupPropertiesResponse, error)
+
+		// GetAsyncPropertiesLookupID gets the unique identifier used to perform an PerformAsyncPropertiesLookup
+		//
+		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/get-async-version-property-lookup
+		GetAsyncPropertiesLookupID(ctx context.Context, params GetAsyncPropertiesLookupIDRequest) (*GetAsyncPropertiesLookupIDResponse, error)
+
+		// PerformAsyncPropertiesLookup returns in asynchronous way information about all the Property Manager properties that use a specific version of an access key.
+		//
+		// See: https://techdocs.akamai.com/cloud-access-mgr/reference/get-property-lookup
+		PerformAsyncPropertiesLookup(ctx context.Context, params PerformAsyncPropertiesLookupRequest) (*PerformAsyncPropertiesLookupResponse, error)
 	}
 
 	cloudaccess struct {
