@@ -5,6 +5,7 @@ VERSION ?= $(shell git describe --tags --always | grep '^v\d' || \
 BIN      = $(CURDIR)/bin
 GOLANGCI_LINT_VERSION = v1.55.2
 GO      = go
+GOMODTIDY = $(GO) mod tidy
 TIMEOUT = 15
 V = 0
 Q = $(if $(filter 1,$V),,@)
@@ -42,7 +43,7 @@ $(BIN)/golangci-lint: ; $(info $(M) Installing golangci-lint...) @
 
 
 .PHONY: all
-all: clean fmt-check lint test-verbose create-junit-report create-coverage-files clean-tools
+all: clean tidy fmt-check lint test-verbose create-junit-report create-coverage-files clean-tools
 
 # Tests
 
@@ -82,6 +83,10 @@ create-coverage-files: | $(GOCOV) $(GOCOVXML); $(info $(M) Creating coverage fil
 .PHONY: lint
 lint: | $(GOLANGCILINT) ; $(info $(M) Running golangci-lint...) @
 	$Q $(BIN)/golangci-lint run
+
+.PHONY: tidy
+tidy: ; $(info $(M) Running go mod tidy...) @
+	@$(GOMODTIDY)
 
 .PHONY: fmt
 fmt:  | $(GOIMPORTS); $(info $(M) Running goimports...) @ ## Run goimports on all source files
