@@ -31,6 +31,8 @@
 
 #### FEATURES/ENHANCEMENTS:
 
+* PAPI
+  * Removed `rule_format` and `product_id` from `Property` struct as this information is populated from `GetPropertyVersion`
 
 
 

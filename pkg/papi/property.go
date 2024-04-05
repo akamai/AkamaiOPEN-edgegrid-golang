@@ -56,11 +56,9 @@ type (
 		GroupID           string `json:"groupId"`
 		LatestVersion     int    `json:"latestVersion"`
 		Note              string `json:"note"`
-		ProductID         string `json:"productId"`
 		ProductionVersion *int   `json:"productionVersion,omitempty"`
 		PropertyID        string `json:"propertyId"`
 		PropertyName      string `json:"propertyName"`
-		RuleFormat        string `json:"ruleFormat"`
 		StagingVersion    *int   `json:"stagingVersion,omitempty"`
 	}
 
