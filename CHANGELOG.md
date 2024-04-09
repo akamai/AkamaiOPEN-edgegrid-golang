@@ -1,87 +1,15 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## X.X.X (X X, X)
+## 8.1.0 (April 11, 2024)
 
 #### FEATURES/ENHANCEMENTS:
-
-
-
-
-
-
-
-
-
-* Image and Video Manager
-  * Added `SmartCrop` transformation
-
-
-
-
-
-
-
-
-
 
 * DNS
   * Modified `ParseRData` method to remove priority, weight and port from targets **only** when those values are same for all `SRV` targets.
     Otherwise, targets are returned untouched and `priority`, `weight` and `port` in the map are not populated.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### BUG FIXES:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* Image and Video Manager
+  * Added `SmartCrop` transformation
 
 ## 8.0.0 (March 19, 2024)
 
