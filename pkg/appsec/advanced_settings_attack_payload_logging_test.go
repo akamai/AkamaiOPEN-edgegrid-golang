@@ -17,7 +17,7 @@ func TestAppSec_ListAdvancedSettingsAttackPayloadLogging(t *testing.T) {
 
 	result := GetAdvancedSettingsAttackPayloadLoggingResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsAttackPayloadLogging/AdvancedSettingsAttackPayloadLogging.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsAttackPayloadLogging/AdvancedSettingsAttackPayloadLoggingConfig.json"))
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
@@ -98,7 +98,7 @@ func TestAppSec_GetAdvancedSettingsAttackPayloadLoggingPolicy(t *testing.T) {
 
 	result := GetAdvancedSettingsAttackPayloadLoggingResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsAttackPayloadLogging/AdvancedSettingsAttackPayloadLogging.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsAttackPayloadLogging/AdvancedSettingsAttackPayloadLoggingPolicy.json"))
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
@@ -169,13 +169,13 @@ func TestAppSec_GetAdvancedSettingsAttackPayloadLoggingPolicy(t *testing.T) {
 func TestAppSec_UpdateAdvancedSettingsAttackPayloadLogging(t *testing.T) {
 	result := UpdateAdvancedSettingsAttackPayloadLoggingResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsLogging/AdvancedSettingsLogging.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsAttackPayloadLogging/AdvancedSettingsAttackPayloadLoggingConfig.json"))
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
 	req := UpdateAdvancedSettingsAttackPayloadLoggingRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsLogging/AdvancedSettingsLogging.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsAttackPayloadLogging/AdvancedSettingsAttackPayloadLoggingConfig.json"))
 	err = json.Unmarshal([]byte(reqData), &req)
 	require.NoError(t, err)
 
@@ -252,13 +252,13 @@ func TestAppSec_UpdateAdvancedSettingsAttackPayloadLogging(t *testing.T) {
 func TestAppSec_UpdateAdvancedSettingsAttackPayloadLoggingPolicy(t *testing.T) {
 	result := UpdateAdvancedSettingsAttackPayloadLoggingResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsLogging/AdvancedSettingsLogging.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsAttackPayloadLogging/AdvancedSettingsAttackPayloadLoggingPolicy.json"))
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
 	req := UpdateAdvancedSettingsAttackPayloadLoggingRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsLogging/AdvancedSettingsLogging.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsAttackPayloadLogging/AdvancedSettingsAttackPayloadLoggingPolicy.json"))
 	err = json.Unmarshal([]byte(reqData), &req)
 	require.NoError(t, err)
 

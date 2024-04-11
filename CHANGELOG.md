@@ -68,6 +68,15 @@
 * CLOUDLETS
   * Added validation that `ObjectMatchValue` is not supported with `MatchType` `query` in `MatchRuleER`
 
+* APPSEC
+  * The `Override` field in the following structs has been updated from a pointer to a value type within the 'AdvancedSettingsAttackPayloadLogging' interface:
+    * 'GetAdvancedSettingsAttackPayloadLoggingResponse',
+    * 'UpdateAdvancedSettingsAttackPayloadLoggingResponse',
+    * 'RemoveAdvancedSettingsAttackPayloadLoggingRequest',
+    * 'RemoveAdvancedSettingsAttackPayloadLoggingResponse'
+    This update was made to address a drift issue related to policy level settings.
+
+
 
 
 

@@ -45,7 +45,7 @@ type (
 
 	// GetAdvancedSettingsAttackPayloadLoggingResponse is returned from a call to GetAdvancedSettingsAttackPayloadLogging.
 	GetAdvancedSettingsAttackPayloadLoggingResponse struct {
-		Override     *bool                            `json:"override,omitempty"`
+		Override     bool                             `json:"override"`
 		Enabled      bool                             `json:"enabled"`
 		RequestBody  AttackPayloadLoggingRequestBody  `json:"requestBody"`
 		ResponseBody AttackPayloadLoggingResponseBody `json:"responseBody"`
@@ -71,7 +71,7 @@ type (
 
 	// UpdateAdvancedSettingsAttackPayloadLoggingResponse is returned from a call to UpdateAdvancedSettingsAttackPayloadLogging.
 	UpdateAdvancedSettingsAttackPayloadLoggingResponse struct {
-		Override     *bool                            `json:"override,omitempty"`
+		Override     bool                             `json:"override"`
 		Enabled      bool                             `json:"enabled"`
 		RequestBody  AttackPayloadLoggingRequestBody  `json:"requestBody"`
 		ResponseBody AttackPayloadLoggingResponseBody `json:"responseBody"`
@@ -90,7 +90,7 @@ type (
 
 	// RemoveAdvancedSettingsAttackPayloadLoggingResponse is returned from a call to RemoveAdvancedSettingsAttackPayloadLogging.
 	RemoveAdvancedSettingsAttackPayloadLoggingResponse struct {
-		Override     *bool                            `json:"override,omitempty"`
+		Override     bool                             `json:"override"`
 		Enabled      bool                             `json:"enabled"`
 		RequestBody  AttackPayloadLoggingRequestBody  `json:"requestBody"`
 		ResponseBody AttackPayloadLoggingResponseBody `json:"responseBody"`
