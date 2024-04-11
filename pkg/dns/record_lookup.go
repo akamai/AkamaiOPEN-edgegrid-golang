@@ -387,15 +387,39 @@ func resolveRRSIGType(rData []string, fieldMap map[string]interface{}) {
 }
 
 func resolveSRVType(rData, newRData []string, fieldMap map[string]interface{}) {
-	// pull out some fields
-	parts := strings.Split(rData[0], " ")
-	fieldMap["priority"], _ = strconv.Atoi(parts[0])
-	fieldMap["weight"], _ = strconv.Atoi(parts[1])
-	fieldMap["port"], _ = strconv.Atoi(parts[2])
-	// populate target
+	// if all targets have the same priority, weight and port, process it in the old way
+	priorityMap := make(map[int]struct{})
+	weightMap := make(map[int]struct{})
+	portMap := make(map[int]struct{})
 	for _, rContent := range rData {
-		parts = strings.Split(rContent, " ")
-		newRData = append(newRData, parts[3])
+		parts := strings.Split(rContent, " ")
+		priority, _ := strconv.Atoi(parts[0])
+		weight, _ := strconv.Atoi(parts[1])
+		port, _ := strconv.Atoi(parts[2])
+		priorityMap[priority] = struct{}{}
+		weightMap[weight] = struct{}{}
+		portMap[port] = struct{}{}
+	}
+	// all values are the same, so process in the old way
+	if len(priorityMap) == 1 && len(weightMap) == 1 && len(portMap) == 1 {
+		// pull out some fields
+		parts := strings.Split(rData[0], " ")
+		fieldMap["priority"], _ = strconv.Atoi(parts[0])
+		fieldMap["weight"], _ = strconv.Atoi(parts[1])
+		fieldMap["port"], _ = strconv.Atoi(parts[2])
+		// populate target
+		for _, rContent := range rData {
+			parts = strings.Split(rContent, " ")
+			newRData = append(newRData, parts[3])
+		}
+	} else {
+		delete(fieldMap, "priority")
+		delete(fieldMap, "weight")
+		delete(fieldMap, "port")
+		// populate target
+		for _, rContent := range rData {
+			newRData = append(newRData, rContent)
+		}
 	}
 	fieldMap["target"] = newRData
 }
