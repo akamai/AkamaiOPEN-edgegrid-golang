@@ -75,7 +75,7 @@
     * 'RemoveAdvancedSettingsAttackPayloadLoggingRequest',
     * 'RemoveAdvancedSettingsAttackPayloadLoggingResponse'
     This update was made to address a drift issue related to policy level settings.
-
+  * Omit `Prefetch` within `AdvancedOptions` in `GetExportConfigurationResponse` when empty
 
 
 
