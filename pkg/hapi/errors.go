@@ -71,6 +71,10 @@ func (e *Error) Error() string {
 
 // Is handles error comparisons
 func (e *Error) Is(target error) bool {
+	if errors.Is(target, ErrNotFound) {
+		return e.isErrNotFound()
+	}
+
 	var t *Error
 	if !errors.As(target, &t) {
 		return false
@@ -85,4 +89,8 @@ func (e *Error) Is(target error) bool {
 	}
 
 	return e.Error() == t.Error()
+}
+
+func (e *Error) isErrNotFound() bool {
+	return e.Status == http.StatusNotFound
 }

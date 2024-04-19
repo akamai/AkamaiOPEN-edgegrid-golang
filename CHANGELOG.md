@@ -52,8 +52,10 @@
 
 
 
-
-
+* HAPI
+  * Added method to return certificate for the edge hostname 
+    * [GetCertificate](https://techdocs.akamai.com/edge-hostnames/reference/get-edge-hostname-certificate)
+  * Added fields to `GetEdgeHostnameResponse`: `ProductID`, `MapAlias` and `UseCases`
 
 
 
