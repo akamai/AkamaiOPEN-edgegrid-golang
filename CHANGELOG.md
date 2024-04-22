@@ -28,7 +28,8 @@
 
 #### FEATURES/ENHANCEMENTS:
 
-
+* APPSEC
+  * Added `CounterType` field to `CreateRatePolicyResponse`, `UpdateRatePolicyResponse`, `RemoveRatePolicyResponse`, `GetRatePoliciesResponse` and `GetRatePolicyResponse` structs to support managing rate policy counter type
 
 
 
@@ -145,7 +146,7 @@
     * `Gid` into `GID` in `TSIGQueryString` and `TSIGReportMeta`
     * `TsigKey` into `TSIGKey` in `ZoneCreate` and `ZoneResponse`
     * `VersionId` into `VersionID` in `ZoneResponse`
-    * `RequestId` into `RequestID` in `BulkZonesResponse`, `BulkStatusResponse`, `BulkCreateResultResponse` and `BulkDeleteResultResponse` 
+    * `RequestId` into `RequestID` in `BulkZonesResponse`, `BulkStatusResponse`, `BulkCreateResultResponse` and `BulkDeleteResultResponse`
   * Renamed `RecordSets` interface into `Recordsets`
   * Renamed following methods:
     * `ListTsigKeys` into `ListTSIGKeys`
@@ -262,7 +263,7 @@
 
 * DNS
   * Removed not working `DeleteZone` method
-* 
+*
 * PAPI
   * Updated documentation link for `GetProperties` method
 
@@ -271,7 +272,7 @@
 #### BUG FIXES:
 
 * Edgeworkers
-  * Fixed case when not providing optional `note` field in `ActivateVersion` would cause activation to fail 
+  * Fixed case when not providing optional `note` field in `ActivateVersion` would cause activation to fail
 
 ## 7.6.0 (February 8, 2024)
 
