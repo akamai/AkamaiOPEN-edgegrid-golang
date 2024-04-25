@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,16 +28,18 @@ func TestGTM_ListCIDRMaps(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		domainName       string
+		params           ListCIDRMapsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse []*CIDRMap
+		expectedResponse []CIDRMap
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			domainName: "example.akadns.net",
+			params: ListCIDRMapsRequest{
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
@@ -46,7 +49,9 @@ func TestGTM_ListCIDRMaps(t *testing.T) {
 			expectedResponse: result.CIDRMapItems,
 		},
 		"500 internal server error": {
-			domainName:     "example.akadns.net",
+			params: ListCIDRMapsRequest{
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -79,7 +84,7 @@ func TestGTM_ListCIDRMaps(t *testing.T) {
 			result, err := client.ListCIDRMaps(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -91,7 +96,7 @@ func TestGTM_ListCIDRMaps(t *testing.T) {
 }
 
 func TestGTM_GetCIDRMap(t *testing.T) {
-	var result CIDRMap
+	var result GetCIDRMapResponse
 
 	respData, err := loadTestData("TestGTM_GetCIDRMap.resp.json")
 	if err != nil {
@@ -103,18 +108,19 @@ func TestGTM_GetCIDRMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		name             string
-		domainName       string
+		params           GetCIDRMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *CIDRMap
+		expectedResponse *GetCIDRMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			name:       "Software-rollout",
-			domainName: "example.akadns.net",
+			params: GetCIDRMapRequest{
+				MapName:    "Software-rollout",
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
@@ -124,8 +130,10 @@ func TestGTM_GetCIDRMap(t *testing.T) {
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			name:           "Software-rollout",
-			domainName:     "example.akadns.net",
+			params: GetCIDRMapRequest{
+				MapName:    "Software-rollout",
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -158,7 +166,7 @@ func TestGTM_GetCIDRMap(t *testing.T) {
 			result, err := client.GetCIDRMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.name, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -170,7 +178,7 @@ func TestGTM_GetCIDRMap(t *testing.T) {
 }
 
 func TestGTM_CreateCIDRMap(t *testing.T) {
-	var result CIDRMapResponse
+	var result CreateCIDRMapResponse
 	var req CIDRMap
 
 	respData, err := loadTestData("TestGTM_CreateCIDRMap.resp.json")
@@ -192,29 +200,85 @@ func TestGTM_CreateCIDRMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		cmap             *CIDRMap
-		domainName       string
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CIDRMapResponse
-		withError        error
-		headers          http.Header
+		params              CreateCIDRMapRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateCIDRMapResponse
+		expectedRequestBody string
+		withError           error
+		headers             http.Header
 	}{
 		"200 OK": {
-			cmap:       &req,
-			domainName: "example.akadns.net",
+			params: CreateCIDRMapRequest{
+				CIDR:       &req,
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusOK,
+			responseStatus:   http.StatusCreated,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
 			expectedResponse: &result,
+			expectedRequestBody: `{
+    "name": "The North",
+    "defaultDatacenter": {
+        "datacenterId": 5400,
+        "nickname": "All Other CIDR Blocks"
+    },
+    "assignments": [
+        {
+            "datacenterId": 3134,
+            "nickname": "Frostfangs and the Fist of First Men",
+            "blocks": [
+                "1.3.5.9",
+                "1.2.3.0/24"
+            ]
+        },
+        {
+            "datacenterId": 3133,
+            "nickname": "Winterfell",
+            "blocks": [
+                "1.2.4.0/24"
+            ]
+        }
+    ]
+}`,
+		},
+		"200 test": {
+			params: CreateCIDRMapRequest{
+				CIDR: &CIDRMap{
+					DefaultDatacenter: &DatacenterBase{
+						Nickname:     "test_datacenter",
+						DatacenterID: 200,
+					},
+					Assignments: nil,
+					Name:        "test_name",
+					Links:       nil,
+				},
+				DomainName: "example.akadns.net",
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusCreated,
+			responseBody:     string(respData),
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/test_name",
+			expectedResponse: &result,
+			expectedRequestBody: `{
+    "name": "test_name",
+    "defaultDatacenter": {
+        "datacenterId": 200,
+        "nickname": "test_datacenter"
+    }
+}`,
 		},
 		"500 internal server error": {
-			cmap:           &req,
-			domainName:     "example.akadns.net",
+			params: CreateCIDRMapRequest{
+				CIDR:       &req,
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -241,12 +305,17 @@ func TestGTM_CreateCIDRMap(t *testing.T) {
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCIDRMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -258,7 +327,7 @@ func TestGTM_CreateCIDRMap(t *testing.T) {
 }
 
 func TestGTM_UpdateCIDRMap(t *testing.T) {
-	var result CIDRMapResponse
+	var result UpdateCIDRMapResponse
 	var req CIDRMap
 
 	respData, err := loadTestData("TestGTM_CreateCIDRMap.resp.json")
@@ -280,29 +349,32 @@ func TestGTM_UpdateCIDRMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		cmap             *CIDRMap
-		domainName       string
+		params           UpdateCIDRMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ResponseStatus
+		expectedResponse *UpdateCIDRMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			cmap:       &req,
-			domainName: "example.akadns.net",
+			params: UpdateCIDRMapRequest{
+				CIDR:       &req,
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
-			expectedResponse: result.Status,
+			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			cmap:           &req,
-			domainName:     "example.akadns.net",
+			params: UpdateCIDRMapRequest{
+				CIDR:       &req,
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -334,7 +406,7 @@ func TestGTM_UpdateCIDRMap(t *testing.T) {
 			result, err := client.UpdateCIDRMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -346,7 +418,7 @@ func TestGTM_UpdateCIDRMap(t *testing.T) {
 }
 
 func TestGTM_DeleteCIDRMap(t *testing.T) {
-	var result CIDRMapResponse
+	var result DeleteCIDRMapResponse
 	var req CIDRMap
 
 	respData, err := loadTestData("TestGTM_CreateCIDRMap.resp.json")
@@ -368,29 +440,32 @@ func TestGTM_DeleteCIDRMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		cmap             *CIDRMap
-		domainName       string
+		params           DeleteCIDRMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ResponseStatus
+		expectedResponse *DeleteCIDRMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			cmap:       &req,
-			domainName: "example.akadns.net",
+			params: DeleteCIDRMapRequest{
+				MapName:    "The%20North",
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
-			expectedResponse: result.Status,
+			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			cmap:           &req,
-			domainName:     "example.akadns.net",
+			params: DeleteCIDRMapRequest{
+				MapName:    "The%20North",
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -422,7 +497,7 @@ func TestGTM_DeleteCIDRMap(t *testing.T) {
 			result, err := client.DeleteCIDRMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.cmap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

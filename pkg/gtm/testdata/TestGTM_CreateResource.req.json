@@ -8,7 +8,7 @@
     "healthThreshold": null,
     "ipv6": false,
     "name": "origin",
-    "scoreAggregationType": "mean",
+    "aggregationType": "mean",
     "staticTTL": 600,
     "stickinessBonusConstant": 0,
     "stickinessBonusPercentage": 0,

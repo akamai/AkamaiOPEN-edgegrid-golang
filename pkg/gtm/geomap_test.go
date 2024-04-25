@@ -27,16 +27,18 @@ func TestGTM_ListGeoMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		domainName       string
+		params           ListGeoMapsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse []*GeoMap
+		expectedResponse []GeoMap
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			domainName: "example.akadns.net",
+			params: ListGeoMapsRequest{
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
@@ -46,7 +48,9 @@ func TestGTM_ListGeoMap(t *testing.T) {
 			expectedResponse: result.GeoMapItems,
 		},
 		"500 internal server error": {
-			domainName:     "example.akadns.net",
+			params: ListGeoMapsRequest{
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -79,7 +83,7 @@ func TestGTM_ListGeoMap(t *testing.T) {
 			result, err := client.ListGeoMaps(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -91,7 +95,7 @@ func TestGTM_ListGeoMap(t *testing.T) {
 }
 
 func TestGTM_GetGeoMap(t *testing.T) {
-	var result GeoMap
+	var result GetGeoMapResponse
 
 	respData, err := loadTestData("TestGTM_GetGeoMap.resp.json")
 	if err != nil {
@@ -103,18 +107,19 @@ func TestGTM_GetGeoMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		name             string
-		domainName       string
+		params           GetGeoMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GeoMap
+		expectedResponse *GetGeoMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			name:       "Software-rollout",
-			domainName: "example.akadns.net",
+			params: GetGeoMapRequest{
+				MapName:    "Software-rollout",
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
@@ -124,8 +129,10 @@ func TestGTM_GetGeoMap(t *testing.T) {
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			name:           "Software-rollout",
-			domainName:     "example.akadns.net",
+			params: GetGeoMapRequest{
+				MapName:    "Software-rollout",
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -158,7 +165,7 @@ func TestGTM_GetGeoMap(t *testing.T) {
 			result, err := client.GetGeoMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.name, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -170,7 +177,7 @@ func TestGTM_GetGeoMap(t *testing.T) {
 }
 
 func TestGTM_CreateGeoMap(t *testing.T) {
-	var result GeoMapResponse
+	var result CreateGeoMapResponse
 	var req GeoMap
 
 	respData, err := loadTestData("TestGTM_CreateGeoMap.resp.json")
@@ -192,29 +199,32 @@ func TestGTM_CreateGeoMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		GeoMap           *GeoMap
-		domainName       string
+		params           CreateGeoMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GeoMapResponse
+		expectedResponse *CreateGeoMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			GeoMap:     &req,
-			domainName: "example.akadns.net",
+			params: CreateGeoMapRequest{
+				GeoMap:     &req,
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusOK,
+			responseStatus:   http.StatusCreated,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			GeoMap:         &req,
-			domainName:     "example.akadns.net",
+			params: CreateGeoMapRequest{
+				GeoMap:     &req,
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -246,7 +256,7 @@ func TestGTM_CreateGeoMap(t *testing.T) {
 			result, err := client.CreateGeoMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.GeoMap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -258,7 +268,7 @@ func TestGTM_CreateGeoMap(t *testing.T) {
 }
 
 func TestGTM_UpdateGeoMap(t *testing.T) {
-	var result GeoMapResponse
+	var result UpdateGeoMapResponse
 	var req GeoMap
 
 	respData, err := loadTestData("TestGTM_CreateGeoMap.resp.json")
@@ -280,29 +290,32 @@ func TestGTM_UpdateGeoMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		GeoMap           *GeoMap
-		domainName       string
+		params           UpdateGeoMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ResponseStatus
+		expectedResponse *UpdateGeoMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			GeoMap:     &req,
-			domainName: "example.akadns.net",
+			params: UpdateGeoMapRequest{
+				GeoMap:     &req,
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
-			expectedResponse: result.Status,
+			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			GeoMap:         &req,
-			domainName:     "example.akadns.net",
+			params: UpdateGeoMapRequest{
+				GeoMap:     &req,
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -334,7 +347,7 @@ func TestGTM_UpdateGeoMap(t *testing.T) {
 			result, err := client.UpdateGeoMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.GeoMap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -346,7 +359,7 @@ func TestGTM_UpdateGeoMap(t *testing.T) {
 }
 
 func TestGTM_DeleteGeoMap(t *testing.T) {
-	var result GeoMapResponse
+	var result DeleteGeoMapResponse
 	var req GeoMap
 
 	respData, err := loadTestData("TestGTM_CreateGeoMap.resp.json")
@@ -368,29 +381,32 @@ func TestGTM_DeleteGeoMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		GeoMap           *GeoMap
-		domainName       string
+		params           DeleteGeoMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ResponseStatus
+		expectedResponse *DeleteGeoMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			GeoMap:     &req,
-			domainName: "example.akadns.net",
+			params: DeleteGeoMapRequest{
+				MapName:    "UK%20Delivery",
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/geographic-maps/UK%20Delivery",
-			expectedResponse: result.Status,
+			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			GeoMap:         &req,
-			domainName:     "example.akadns.net",
+			params: DeleteGeoMapRequest{
+				MapName:    "UK%20Delivery",
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -422,7 +438,7 @@ func TestGTM_DeleteGeoMap(t *testing.T) {
 			result, err := client.DeleteGeoMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.GeoMap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

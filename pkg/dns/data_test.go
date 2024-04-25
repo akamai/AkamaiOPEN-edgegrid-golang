@@ -18,7 +18,7 @@ func TestDNS_ListGroups(t *testing.T) {
 		responseBody     string
 		expectedPath     string
 		expectedResponse *ListGroupResponse
-		withError        error
+		withError        func(*testing.T, error)
 	}{
 		"200 OK, when optional query parameter provided": {
 			request: ListGroupRequest{
@@ -137,11 +137,14 @@ func TestDNS_ListGroups(t *testing.T) {
     				"status": 500
 				}`,
 			expectedPath: "/config-dns/v2/data/groups/",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching authorities",
-				StatusCode: http.StatusInternalServerError,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error fetching authorities",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
 	}
@@ -158,7 +161,7 @@ func TestDNS_ListGroups(t *testing.T) {
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListGroups(context.Background(), test.request)
 			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				test.withError(t, err)
 				return
 			}
 			require.NoError(t, err)

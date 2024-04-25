@@ -13,16 +13,16 @@ import (
 
 func TestDNS_ListTSIGKeys(t *testing.T) {
 	tests := map[string]struct {
-		query            TSIGQueryString
+		params           ListTSIGKeysRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *TSIGReportResponse
+		expectedResponse *ListTSIGKeysResponse
 		withError        error
 	}{
 		"200 OK": {
-			query: TSIGQueryString{
-				ContractIDs: []string{"1-1ABCD"},
+			params: ListTSIGKeysRequest{
+				TsigQuery: &TSIGQueryString{ContractIDs: []string{"1-1ABCD"}},
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -40,11 +40,11 @@ func TestDNS_ListTSIGKeys(t *testing.T) {
 				]
 			}`,
 			expectedPath: "/config-dns/v2/keys?contractIds=1-1ABCD",
-			expectedResponse: &TSIGReportResponse{
+			expectedResponse: &ListTSIGKeysResponse{
 				Metadata: &TSIGReportMeta{
 					TotalElements: 1,
 				},
-				Keys: []*TSIGKeyResponse{
+				Keys: []TSIGKeyResponse{
 					{
 						TSIGKey: TSIGKey{
 							Name:      "a.test.key.",
@@ -57,8 +57,8 @@ func TestDNS_ListTSIGKeys(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			query: TSIGQueryString{
-				ContractIDs: []string{"1-1ABCD"},
+			params: ListTSIGKeysRequest{
+				TsigQuery: &TSIGQueryString{ContractIDs: []string{"1-1ABCD"}},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -88,7 +88,7 @@ func TestDNS_ListTSIGKeys(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListTSIGKeys(context.Background(), &test.query)
+			result, err := client.ListTSIGKeys(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -101,18 +101,20 @@ func TestDNS_ListTSIGKeys(t *testing.T) {
 
 func TestDNS_GetTSIGKeyZones(t *testing.T) {
 	tests := map[string]struct {
-		key              TSIGKey
+		params           GetTSIGKeyZonesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ZoneNameListResponse
+		expectedResponse *GetTSIGKeyZonesResponse
 		withError        error
 	}{
 		"200 OK": {
-			key: TSIGKey{
-				Name:      "example.com.akamai.com.",
-				Algorithm: "hmac-sha512",
-				Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+			params: GetTSIGKeyZonesRequest{
+				TsigKey: &TSIGKey{
+					Name:      "example.com.akamai.com.",
+					Algorithm: "hmac-sha512",
+					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+				},
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -123,15 +125,17 @@ func TestDNS_GetTSIGKeyZones(t *testing.T) {
 				]
 			}`,
 			expectedPath: "/config-dns/v2/keys/used-by",
-			expectedResponse: &ZoneNameListResponse{
+			expectedResponse: &GetTSIGKeyZonesResponse{
 				Zones: []string{"river.com", "stream.com"},
 			},
 		},
 		"500 internal server error": {
-			key: TSIGKey{
-				Name:      "example.com.akamai.com.",
-				Algorithm: "hmac-sha512",
-				Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+			params: GetTSIGKeyZonesRequest{
+				TsigKey: &TSIGKey{
+					Name:      "example.com.akamai.com.",
+					Algorithm: "hmac-sha512",
+					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+				},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -161,7 +165,7 @@ func TestDNS_GetTSIGKeyZones(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetTSIGKeyZones(context.Background(), &test.key)
+			result, err := client.GetTSIGKeyZones(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -174,15 +178,17 @@ func TestDNS_GetTSIGKeyZones(t *testing.T) {
 
 func TestDNS_GetTSIGKeyAliases(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
+		params           GetTSIGKeyAliasesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ZoneNameListResponse
+		expectedResponse *GetTSIGKeyAliasesResponse
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
+			params: GetTSIGKeyAliasesRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -194,12 +200,14 @@ func TestDNS_GetTSIGKeyAliases(t *testing.T) {
 				]
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com/key/used-by",
-			expectedResponse: &ZoneNameListResponse{
+			expectedResponse: &GetTSIGKeyAliasesResponse{
 				Aliases: []string{"exmaple.com", "river.com", "brook.com", "ocean.com"},
 			},
 		},
 		"500 internal server error": {
-			zone:           "example.com",
+			params: GetTSIGKeyAliasesRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -228,7 +236,7 @@ func TestDNS_GetTSIGKeyAliases(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetTSIGKeyAliases(context.Background(), test.zone)
+			result, err := client.GetTSIGKeyAliases(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -241,7 +249,7 @@ func TestDNS_GetTSIGKeyAliases(t *testing.T) {
 
 func TestDNS_TSIGKeyBulkUpdate(t *testing.T) {
 	tests := map[string]struct {
-		bulk             TSIGKeyBulkPost
+		params           UpdateTSIGKeyBulkRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -249,13 +257,15 @@ func TestDNS_TSIGKeyBulkUpdate(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			bulk: TSIGKeyBulkPost{
-				Key: &TSIGKey{
-					Name:      "brook.com.akamai.com.",
-					Algorithm: "hmac-sha512",
-					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+			params: UpdateTSIGKeyBulkRequest{
+				TSIGKeyBulk: &TSIGKeyBulkPost{
+					Key: &TSIGKey{
+						Name:      "brook.com.akamai.com.",
+						Algorithm: "hmac-sha512",
+						Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+					},
+					Zones: []string{"brook.com", "river.com"},
 				},
-				Zones: []string{"brook.com", "river.com"},
 			},
 			responseStatus: http.StatusNoContent,
 			expectedPath:   "/config-dns/v2/keys/bulk-update",
@@ -264,13 +274,15 @@ func TestDNS_TSIGKeyBulkUpdate(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			bulk: TSIGKeyBulkPost{
-				Key: &TSIGKey{
-					Name:      "brook.com.akamai.com.",
-					Algorithm: "hmac-sha512",
-					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+			params: UpdateTSIGKeyBulkRequest{
+				TSIGKeyBulk: &TSIGKeyBulkPost{
+					Key: &TSIGKey{
+						Name:      "brook.com.akamai.com.",
+						Algorithm: "hmac-sha512",
+						Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+					},
+					Zones: []string{"brook.com", "river.com"},
 				},
-				Zones: []string{"brook.com", "river.com"},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -302,7 +314,7 @@ func TestDNS_TSIGKeyBulkUpdate(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.TSIGKeyBulkUpdate(context.Background(), &test.bulk)
+			err := client.UpdateTSIGKeyBulk(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -314,15 +326,17 @@ func TestDNS_TSIGKeyBulkUpdate(t *testing.T) {
 
 func TestDNS_GetTSIGKey(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
+		params           GetTSIGKeyRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *TSIGKeyResponse
+		expectedResponse *GetTSIGKeyResponse
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
+			params: GetTSIGKeyRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -332,7 +346,7 @@ func TestDNS_GetTSIGKey(t *testing.T) {
 				"zonesCount": 7
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com/key",
-			expectedResponse: &TSIGKeyResponse{
+			expectedResponse: &GetTSIGKeyResponse{
 				TSIGKey: TSIGKey{
 					Name:      "example.com.akamai.com.",
 					Algorithm: "hmac-sha512",
@@ -342,7 +356,9 @@ func TestDNS_GetTSIGKey(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			zone:           "example.com",
+			params: GetTSIGKeyRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -371,7 +387,7 @@ func TestDNS_GetTSIGKey(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetTSIGKey(context.Background(), test.zone)
+			result, err := client.GetTSIGKey(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -384,7 +400,7 @@ func TestDNS_GetTSIGKey(t *testing.T) {
 
 func TestDNS_DeleteTSIGKey(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
+		params           DeleteTSIGKeyRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -392,12 +408,16 @@ func TestDNS_DeleteTSIGKey(t *testing.T) {
 		withError        error
 	}{
 		"204 No Content": {
-			zone:           "example.com",
+			params: DeleteTSIGKeyRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusNoContent,
 			expectedPath:   "/config-dns/v2/zones/example.com/key",
 		},
 		"500 internal server error": {
-			zone:           "example.com",
+			params: DeleteTSIGKeyRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -428,7 +448,7 @@ func TestDNS_DeleteTSIGKey(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeleteTSIGKey(context.Background(), test.zone)
+			err := client.DeleteTSIGKey(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -440,8 +460,7 @@ func TestDNS_DeleteTSIGKey(t *testing.T) {
 
 func TestDNS_UpdateTSIGKey(t *testing.T) {
 	tests := map[string]struct {
-		key              TSIGKey
-		zone             string
+		params           UpdateTSIGKeyRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -449,22 +468,26 @@ func TestDNS_UpdateTSIGKey(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			key: TSIGKey{
-				Name:      "example.com.akamai.com.",
-				Algorithm: "hmac-sha512",
-				Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+			params: UpdateTSIGKeyRequest{
+				TsigKey: &TSIGKey{
+					Name:      "example.com.akamai.com.",
+					Algorithm: "hmac-sha512",
+					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+				},
+				Zone: "example.com",
 			},
-			zone:           "example.com",
 			responseStatus: http.StatusNoContent,
 			expectedPath:   "/config-dns/v2/zones/example.com/key",
 		},
 		"500 internal server error": {
-			key: TSIGKey{
-				Name:      "example.com.akamai.com.",
-				Algorithm: "hmac-sha512",
-				Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+			params: UpdateTSIGKeyRequest{
+				TsigKey: &TSIGKey{
+					Name:      "example.com.akamai.com.",
+					Algorithm: "hmac-sha512",
+					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+				},
+				Zone: "example.com",
 			},
-			zone:           "example.com",
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -495,7 +518,7 @@ func TestDNS_UpdateTSIGKey(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.UpdateTSIGKey(context.Background(), &test.key, test.zone)
+			err := client.UpdateTSIGKey(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

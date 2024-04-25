@@ -20,7 +20,7 @@ func TestGTM_ListDomains(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse []*DomainItem
+		expectedResponse []DomainItem
 		withError        error
 		headers          http.Header
 	}{
@@ -65,7 +65,7 @@ func TestGTM_ListDomains(t *testing.T) {
 				}]
 			}]}`,
 			expectedPath: "/config-gtm/v1/domains",
-			expectedResponse: []*DomainItem{{
+			expectedResponse: []DomainItem{{
 				AcgID:                 "1-2345",
 				LastModified:          "2014-03-03T16:02:45.000+0000",
 				Name:                  "example.akadns.net",
@@ -77,7 +77,7 @@ func TestGTM_ListDomains(t *testing.T) {
 				SignAndServe:          false,
 				SignAndServeAlgorithm: "",
 				DeleteRequestID:       "",
-				Links: []*Link{{
+				Links: []Link{{
 					Rel:  "self",
 					Href: "/config-gtm/v1/domains/example.akadns.net",
 				}},
@@ -94,7 +94,7 @@ func TestGTM_ListDomains(t *testing.T) {
 					SignAndServe:          false,
 					SignAndServeAlgorithm: "",
 					DeleteRequestID:       "",
-					Links: []*Link{{
+					Links: []Link{{
 						Rel:  "self",
 						Href: "/config-gtm/v1/domains/example.akadns.net",
 					}},
@@ -261,7 +261,7 @@ func TestGTM_NullFieldMap(t *testing.T) {
 }
 
 func TestGTM_GetDomain(t *testing.T) {
-	var result Domain
+	var result GetDomainResponse
 
 	respData, err := loadTestData("TestGTM_GetDomain.resp.json")
 	if err != nil {
@@ -273,22 +273,26 @@ func TestGTM_GetDomain(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		domain           string
+		params           GetDomainRequest
 		responseStatus   int
 		responseBody     []byte
 		expectedPath     string
-		expectedResponse *Domain
+		expectedResponse *GetDomainResponse
 		withError        error
 	}{
 		"200 OK": {
-			domain:           "example.akadns.net",
+			params: GetDomainRequest{
+				DomainName: "example.akadns.net",
+			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			domain:         "example.akadns.net",
+			params: GetDomainRequest{
+				DomainName: "example.akadns.net",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: []byte(`
 {
@@ -316,7 +320,7 @@ func TestGTM_GetDomain(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetDomain(context.Background(), test.domain)
+			result, err := client.GetDomain(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -328,7 +332,7 @@ func TestGTM_GetDomain(t *testing.T) {
 }
 
 func TestGTM_CreateDomain(t *testing.T) {
-	var result DomainResponse
+	var result CreateDomainResponse
 
 	respData, err := loadTestData("TestGTM_GetDomain.resp.json")
 	if err != nil {
@@ -340,21 +344,22 @@ func TestGTM_CreateDomain(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		domain           Domain
-		query            map[string]string
+		params           CreateDomainRequest
 		responseStatus   int
 		responseBody     []byte
 		expectedPath     string
-		expectedResponse *DomainResponse
+		expectedResponse *CreateDomainResponse
 		withError        error
 		headers          http.Header
 	}{
 		"201 Created": {
-			domain: Domain{
-				Name: "gtmdomtest.akadns.net",
-				Type: "basic",
+			params: CreateDomainRequest{
+				Domain: &Domain{
+					Name: "gtmdomtest.akadns.net",
+					Type: "basic",
+				},
+				QueryArgs: &DomainQueryArgs{ContractID: "1-2ABCDE"},
 			},
-			query: map[string]string{"contractId": "1-2ABCDE"},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
@@ -364,11 +369,13 @@ func TestGTM_CreateDomain(t *testing.T) {
 			expectedPath:     "/config-gtm/v1/domains?contractId=1-2ABCDE",
 		},
 		"500 internal server error": {
-			domain: Domain{
-				Name: "gtmdomtest.akadns.net",
-				Type: "basic",
+			params: CreateDomainRequest{
+				Domain: &Domain{
+					Name: "gtmdomtest.akadns.net",
+					Type: "basic",
+				},
+				QueryArgs: &DomainQueryArgs{ContractID: "1-2ABCDE"},
 			},
-			query:          map[string]string{"contractId": "1-2ABCDE"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: []byte(`
 {
@@ -389,6 +396,7 @@ func TestGTM_CreateDomain(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
@@ -400,7 +408,7 @@ func TestGTM_CreateDomain(t *testing.T) {
 			result, err := client.CreateDomain(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), &test.domain, test.query)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -412,7 +420,7 @@ func TestGTM_CreateDomain(t *testing.T) {
 }
 
 func TestGTM_UpdateDomain(t *testing.T) {
-	var result DomainResponse
+	var result UpdateDomainResponse
 
 	respData, err := loadTestData("TestGTM_UpdateDomain.resp.json")
 	if err != nil {
@@ -424,36 +432,40 @@ func TestGTM_UpdateDomain(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		domain           Domain
-		query            map[string]string
+		params           UpdateDomainRequest
 		responseStatus   int
 		responseBody     []byte
 		expectedPath     string
-		expectedResponse *ResponseStatus
+		expectedResponse *UpdateDomainResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 Success": {
-			domain: Domain{
-				EndUserMappingEnabled: false,
-				Name:                  "gtmdomtest.akadns.net",
-				Type:                  "basic",
+			params: UpdateDomainRequest{
+				Domain: &Domain{
+					EndUserMappingEnabled: false,
+					Name:                  "gtmdomtest.akadns.net",
+					Type:                  "basic",
+				},
+				QueryArgs: &DomainQueryArgs{ContractID: "1-2ABCDE"},
 			},
-			query: map[string]string{"contractId": "1-2ABCDE"},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusCreated,
+			responseStatus:   http.StatusOK,
 			responseBody:     respData,
-			expectedResponse: result.Status,
-			expectedPath:     "/config-gtm/v1/domains?contractId=1-2ABCDE",
+			expectedResponse: &result,
+			expectedPath:     "/config-gtm/v1/domains/gtmdomtest.akadns.net?contractId=1-2ABCDE",
 		},
 		"500 internal server error": {
-			domain: Domain{
-				Name: "gtmdomtest.akadns.net",
-				Type: "basic",
+			params: UpdateDomainRequest{
+				Domain: &Domain{
+					EndUserMappingEnabled: false,
+					Name:                  "gtmdomtest.akadns.net",
+					Type:                  "basic",
+				},
+				QueryArgs: &DomainQueryArgs{ContractID: "1-2ABCDE"},
 			},
-			query:          map[string]string{"contractId": "1-2ABCDE"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: []byte(`
 {
@@ -461,7 +473,7 @@ func TestGTM_UpdateDomain(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error creating zone"
 }`),
-			expectedPath: "/config-gtm/v1/domains?contractId=1-2ABCDE",
+			expectedPath: "/config-gtm/v1/domains/gtmdomtest.akadns.net?contractId=1-2ABCDE",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -474,6 +486,7 @@ func TestGTM_UpdateDomain(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
@@ -485,7 +498,7 @@ func TestGTM_UpdateDomain(t *testing.T) {
 			result, err := client.UpdateDomain(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), &test.domain, test.query)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

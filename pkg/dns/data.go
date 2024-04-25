@@ -9,14 +9,6 @@ import (
 )
 
 type (
-	// Data contains operations available on Data resources.
-	Data interface {
-		// ListGroups returns group list associated with particular user
-		//
-		// See: https://techdocs.akamai.com/edge-dns/reference/get-data-groups
-		ListGroups(context.Context, ListGroupRequest) (*ListGroupResponse, error)
-	}
-
 	// ListGroupResponse lists the groups accessible to the current user
 	ListGroupResponse struct {
 		Groups []Group `json:"groups"`

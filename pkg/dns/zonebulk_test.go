@@ -7,21 +7,24 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestDNS_GetBulkZoneCreateStatus(t *testing.T) {
 	tests := map[string]struct {
-		requestID        string
+		params           GetBulkZoneCreateStatusRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *BulkStatusResponse
+		expectedResponse *GetBulkZoneCreateStatusResponse
 		withError        error
 	}{
 		"200 OK": {
-			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			params: GetBulkZoneCreateStatusRequest{
+				RequestID: "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
   {
@@ -33,7 +36,7 @@ func TestDNS_GetBulkZoneCreateStatus(t *testing.T) {
     "expirationDate": "2020-10-28T17:10:04.515792Z"
   }`,
 			expectedPath: "/config-dns/v2/zones/create-requests/15bc138f-8d82-451b-80b7-a56b88ffc474",
-			expectedResponse: &BulkStatusResponse{
+			expectedResponse: &GetBulkZoneCreateStatusResponse{
 				RequestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 				ZonesSubmitted: 2,
 				SuccessCount:   0,
@@ -43,7 +46,9 @@ func TestDNS_GetBulkZoneCreateStatus(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			params: GetBulkZoneCreateStatusRequest{
+				RequestID: "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -71,7 +76,7 @@ func TestDNS_GetBulkZoneCreateStatus(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetBulkZoneCreateStatus(context.Background(), test.requestID)
+			result, err := client.GetBulkZoneCreateStatus(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -84,15 +89,17 @@ func TestDNS_GetBulkZoneCreateStatus(t *testing.T) {
 
 func TestDNS_GetBulkZoneCreateResult(t *testing.T) {
 	tests := map[string]struct {
-		requestID        string
+		params           GetBulkZoneCreateResultRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *BulkCreateResultResponse
+		expectedResponse *GetBulkZoneCreateResultResponse
 		withError        error
 	}{
 		"200 OK": {
-			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			params: GetBulkZoneCreateResultRequest{
+				RequestID: "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
   {
@@ -106,10 +113,10 @@ func TestDNS_GetBulkZoneCreateResult(t *testing.T) {
     ]
   }`,
 			expectedPath: "/config-dns/v2/zones/create-requests/15bc138f-8d82-451b-80b7-a56b88ffc474/result",
-			expectedResponse: &BulkCreateResultResponse{
+			expectedResponse: &GetBulkZoneCreateResultResponse{
 				RequestID:                "15bc138f-8d82-451b-80b7-a56b88ffc474",
 				SuccessfullyCreatedZones: make([]string, 0),
-				FailedZones: []*BulkFailedZone{
+				FailedZones: []BulkFailedZone{
 					{
 						Zone:          "one.testbulk.net",
 						FailureReason: "ZONE_ALREADY_EXISTS",
@@ -118,7 +125,9 @@ func TestDNS_GetBulkZoneCreateResult(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			params: GetBulkZoneCreateResultRequest{
+				RequestID: "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -146,7 +155,7 @@ func TestDNS_GetBulkZoneCreateResult(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetBulkZoneCreateResult(context.Background(), test.requestID)
+			result, err := client.GetBulkZoneCreateResult(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -159,62 +168,67 @@ func TestDNS_GetBulkZoneCreateResult(t *testing.T) {
 
 func TestDNS_CreateBulkZones(t *testing.T) {
 	tests := map[string]struct {
+		params           CreateBulkZonesRequest
 		zones            BulkZonesCreate
 		query            ZoneQueryString
 		responseStatus   int
 		responseBody     string
-		expectedResponse *BulkZonesResponse
+		expectedResponse *CreateBulkZonesResponse
 		expectedPath     string
 		withError        error
 	}{
 		"200 Created": {
-			zones: BulkZonesCreate{
-				Zones: []*ZoneCreate{
-					{
-						Zone:    "one.testbulk.net",
-						Type:    "secondary",
-						Comment: "testing bulk operations",
-						Masters: []string{"1.2.3.4", "1.2.3.10"},
-					},
-					{
-						Zone:    "two.testbulk.net",
-						Type:    "secondary",
-						Comment: "testing bulk operations",
-						Masters: []string{"1.2.3.6", "1.2.3.70"},
+			params: CreateBulkZonesRequest{
+				BulkZones: &BulkZonesCreate{
+					Zones: []ZoneCreate{
+						{
+							Zone:    "one.testbulk.net",
+							Type:    "secondary",
+							Comment: "testing bulk operations",
+							Masters: []string{"1.2.3.4", "1.2.3.10"},
+						},
+						{
+							Zone:    "two.testbulk.net",
+							Type:    "secondary",
+							Comment: "testing bulk operations",
+							Masters: []string{"1.2.3.6", "1.2.3.70"},
+						},
 					},
 				},
+				ZoneQueryString: ZoneQueryString{Contract: "1-2ABCDE", Group: "testgroup"},
 			},
-			query:          ZoneQueryString{Contract: "1-2ABCDE", Group: "testgroup"},
 			responseStatus: http.StatusCreated,
 			responseBody: `
 {
     "requestId": "93e97a28-4e05-45f4-8b9a-cebd71155949",
     "expirationDate": "2020-10-28T19:50:36.272668Z"
 }`,
-			expectedResponse: &BulkZonesResponse{
+			expectedResponse: &CreateBulkZonesResponse{
 				RequestID:      "93e97a28-4e05-45f4-8b9a-cebd71155949",
 				ExpirationDate: "2020-10-28T19:50:36.272668Z",
 			},
 			expectedPath: "/config-dns/v2/zones/create-requests?contractId=1-2ABCDE&gid=testgroup",
 		},
 		"500 internal server error": {
-			zones: BulkZonesCreate{
-				Zones: []*ZoneCreate{
-					{
-						Zone:    "one.testbulk.net",
-						Type:    "secondary",
-						Comment: "testing bulk operations",
-						Masters: []string{"1.2.3.4", "1.2.3.10"},
-					},
-					{
-						Zone:    "two.testbulk.net",
-						Type:    "secondary",
-						Comment: "testing bulk operations",
-						Masters: []string{"1.2.3.6", "1.2.3.70"},
+			params: CreateBulkZonesRequest{
+				BulkZones: &BulkZonesCreate{
+					Zones: []ZoneCreate{
+						{
+							Zone:    "one.testbulk.net",
+							Type:    "secondary",
+							Comment: "testing bulk operations",
+							Masters: []string{"1.2.3.4", "1.2.3.10"},
+						},
+						{
+							Zone:    "two.testbulk.net",
+							Type:    "secondary",
+							Comment: "testing bulk operations",
+							Masters: []string{"1.2.3.6", "1.2.3.70"},
+						},
 					},
 				},
+				ZoneQueryString: ZoneQueryString{Contract: "1-2ABCDE", Group: "testgroup"},
 			},
-			query:          ZoneQueryString{Contract: "1-2ABCDE", Group: "testgroup"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -244,7 +258,7 @@ func TestDNS_CreateBulkZones(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateBulkZones(context.Background(), &test.zones, test.query)
+			result, err := client.CreateBulkZones(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -258,15 +272,17 @@ func TestDNS_CreateBulkZones(t *testing.T) {
 // Bulk Delete tests
 func TestDNS_GetBulkZoneDeleteStatus(t *testing.T) {
 	tests := map[string]struct {
-		requestID        string
+		params           GetBulkZoneDeleteStatusRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *BulkStatusResponse
+		expectedResponse *GetBulkZoneDeleteStatusResponse
 		withError        error
 	}{
 		"200 OK": {
-			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			params: GetBulkZoneDeleteStatusRequest{
+				RequestID: "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
   {
@@ -278,7 +294,7 @@ func TestDNS_GetBulkZoneDeleteStatus(t *testing.T) {
     "expirationDate": "2020-10-28T17:10:04.515792Z"
   }`,
 			expectedPath: "/config-dns/v2/zones/delete-requests/15bc138f-8d82-451b-80b7-a56b88ffc474",
-			expectedResponse: &BulkStatusResponse{
+			expectedResponse: &GetBulkZoneDeleteStatusResponse{
 				RequestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
 				ZonesSubmitted: 2,
 				SuccessCount:   0,
@@ -288,7 +304,9 @@ func TestDNS_GetBulkZoneDeleteStatus(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			params: GetBulkZoneDeleteStatusRequest{
+				RequestID: "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -316,7 +334,7 @@ func TestDNS_GetBulkZoneDeleteStatus(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetBulkZoneDeleteStatus(context.Background(), test.requestID)
+			result, err := client.GetBulkZoneDeleteStatus(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -329,15 +347,17 @@ func TestDNS_GetBulkZoneDeleteStatus(t *testing.T) {
 
 func TestDNS_GetBulkZoneDeleteResult(t *testing.T) {
 	tests := map[string]struct {
-		requestID        string
+		params           GetBulkZoneDeleteResultRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *BulkDeleteResultResponse
+		expectedResponse *GetBulkZoneDeleteResultResponse
 		withError        error
 	}{
 		"200 OK": {
-			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			params: GetBulkZoneDeleteResultRequest{
+				RequestID: "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
   {
@@ -351,10 +371,10 @@ func TestDNS_GetBulkZoneDeleteResult(t *testing.T) {
     ]
   }`,
 			expectedPath: "/config-dns/v2/zones/delete-requests/15bc138f-8d82-451b-80b7-a56b88ffc474/result",
-			expectedResponse: &BulkDeleteResultResponse{
+			expectedResponse: &GetBulkZoneDeleteResultResponse{
 				RequestID:                "15bc138f-8d82-451b-80b7-a56b88ffc474",
 				SuccessfullyDeletedZones: make([]string, 0),
-				FailedZones: []*BulkFailedZone{
+				FailedZones: []BulkFailedZone{
 					{
 						Zone:          "one.testbulk.net",
 						FailureReason: "ZONE_ALREADY_EXISTS",
@@ -363,7 +383,9 @@ func TestDNS_GetBulkZoneDeleteResult(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			requestID:      "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			params: GetBulkZoneDeleteResultRequest{
+				RequestID: "15bc138f-8d82-451b-80b7-a56b88ffc474",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -391,7 +413,7 @@ func TestDNS_GetBulkZoneDeleteResult(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetBulkZoneDeleteResult(context.Background(), test.requestID)
+			result, err := client.GetBulkZoneDeleteResult(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -404,36 +426,39 @@ func TestDNS_GetBulkZoneDeleteResult(t *testing.T) {
 
 func TestDNS_DeleteBulkZones(t *testing.T) {
 	tests := map[string]struct {
-		zonesList        ZoneNameListResponse
-		bypassSafety     bool
+		params           DeleteBulkZonesRequest
 		responseStatus   int
 		responseBody     string
-		expectedResponse *BulkZonesResponse
+		expectedResponse *DeleteBulkZonesResponse
 		expectedPath     string
 		withError        error
 	}{
 		"200 Created": {
-			zonesList: ZoneNameListResponse{
-				Zones: []string{"one.testbulk.net", "two.testbulk.net"},
+			params: DeleteBulkZonesRequest{
+				ZonesList: &ZoneNameListResponse{
+					Zones: []string{"one.testbulk.net", "two.testbulk.net"},
+				},
+				BypassSafetyChecks: tools.BoolPtr(true),
 			},
-			bypassSafety:   true,
 			responseStatus: http.StatusCreated,
 			responseBody: `
 {
     "requestId": "93e97a28-4e05-45f4-8b9a-cebd71155949",
     "expirationDate": "2020-10-28T19:50:36.272668Z"
 }`,
-			expectedResponse: &BulkZonesResponse{
+			expectedResponse: &DeleteBulkZonesResponse{
 				RequestID:      "93e97a28-4e05-45f4-8b9a-cebd71155949",
 				ExpirationDate: "2020-10-28T19:50:36.272668Z",
 			},
 			expectedPath: "/config-dns/v2/zones/delete-requests?bypassSafetyChecks=true",
 		},
 		"500 internal server error": {
-			zonesList: ZoneNameListResponse{
-				Zones: []string{"one.testbulk.net", "two.testbulk.net"},
+			params: DeleteBulkZonesRequest{
+				ZonesList: &ZoneNameListResponse{
+					Zones: []string{"one.testbulk.net", "two.testbulk.net"},
+				},
+				BypassSafetyChecks: tools.BoolPtr(true),
 			},
-			bypassSafety:   true,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -463,7 +488,7 @@ func TestDNS_DeleteBulkZones(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.DeleteBulkZones(context.Background(), &test.zonesList, test.bypassSafety)
+			result, err := client.DeleteBulkZones(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

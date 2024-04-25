@@ -27,16 +27,18 @@ func TestGTM_ListASMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		domainName       string
+		params           ListASMapsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse []*ASMap
+		expectedResponse []ASMap
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			domainName: "example.akadns.net",
+			params: ListASMapsRequest{
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
@@ -46,7 +48,9 @@ func TestGTM_ListASMap(t *testing.T) {
 			expectedResponse: result.ASMapItems,
 		},
 		"500 internal server error": {
-			domainName:     "example.akadns.net",
+			params: ListASMapsRequest{
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -79,7 +83,7 @@ func TestGTM_ListASMap(t *testing.T) {
 			result, err := client.ListASMaps(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -91,7 +95,7 @@ func TestGTM_ListASMap(t *testing.T) {
 }
 
 func TestGTM_GetASMap(t *testing.T) {
-	var result ASMap
+	var result GetASMapResponse
 
 	respData, err := loadTestData("TestGTM_GetASMap.resp.json")
 	if err != nil {
@@ -103,18 +107,19 @@ func TestGTM_GetASMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		name             string
-		domainName       string
+		params           GetASMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ASMap
+		expectedResponse *GetASMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			name:       "Software-rollout",
-			domainName: "example.akadns.net",
+			params: GetASMapRequest{
+				DomainName: "example.akadns.net",
+				ASMapName:  "Software-rollout",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
@@ -124,8 +129,10 @@ func TestGTM_GetASMap(t *testing.T) {
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			name:           "Software-rollout",
-			domainName:     "example.akadns.net",
+			params: GetASMapRequest{
+				DomainName: "example.akadns.net",
+				ASMapName:  "Software-rollout",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -158,7 +165,7 @@ func TestGTM_GetASMap(t *testing.T) {
 			result, err := client.GetASMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.name, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -170,7 +177,7 @@ func TestGTM_GetASMap(t *testing.T) {
 }
 
 func TestGTM_CreateASMap(t *testing.T) {
-	var result ASMapResponse
+	var result CreateASMapResponse
 	var req ASMap
 
 	respData, err := loadTestData("TestGTM_CreateASMap.resp.json")
@@ -192,29 +199,32 @@ func TestGTM_CreateASMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		asMap            *ASMap
-		domainName       string
+		params           CreateASMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ASMapResponse
+		expectedResponse *CreateASMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			asMap:      &req,
-			domainName: "example.akadns.net",
+			params: CreateASMapRequest{
+				ASMap:      &req,
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusOK,
+			responseStatus:   http.StatusCreated,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			asMap:          &req,
-			domainName:     "example.akadns.net",
+			params: CreateASMapRequest{
+				ASMap:      &req,
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -246,7 +256,7 @@ func TestGTM_CreateASMap(t *testing.T) {
 			result, err := client.CreateASMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.asMap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -258,7 +268,7 @@ func TestGTM_CreateASMap(t *testing.T) {
 }
 
 func TestGTM_UpdateASMap(t *testing.T) {
-	var result ASMapResponse
+	var result UpdateASMapResponse
 	var req ASMap
 
 	respData, err := loadTestData("TestGTM_CreateASMap.resp.json")
@@ -280,29 +290,32 @@ func TestGTM_UpdateASMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		asMap            *ASMap
-		domainName       string
+		params           UpdateASMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ResponseStatus
+		expectedResponse *UpdateASMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			asMap:      &req,
-			domainName: "example.akadns.net",
+			params: UpdateASMapRequest{
+				ASMap:      &req,
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
-			expectedResponse: result.Status,
+			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			asMap:          &req,
-			domainName:     "example.akadns.net",
+			params: UpdateASMapRequest{
+				ASMap:      &req,
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -334,7 +347,7 @@ func TestGTM_UpdateASMap(t *testing.T) {
 			result, err := client.UpdateASMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.asMap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -346,7 +359,7 @@ func TestGTM_UpdateASMap(t *testing.T) {
 }
 
 func TestGTM_DeleteASMap(t *testing.T) {
-	var result ASMapResponse
+	var result DeleteASMapResponse
 	var req ASMap
 
 	respData, err := loadTestData("TestGTM_CreateASMap.resp.json")
@@ -368,29 +381,32 @@ func TestGTM_DeleteASMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		asMap            *ASMap
-		domainName       string
+		params           DeleteASMapRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ResponseStatus
+		expectedResponse *DeleteASMapResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			asMap:      &req,
-			domainName: "example.akadns.net",
+			params: DeleteASMapRequest{
+				ASMapName:  "The%20North",
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
-			expectedResponse: result.Status,
+			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			asMap:          &req,
-			domainName:     "example.akadns.net",
+			params: DeleteASMapRequest{
+				ASMapName:  "The%20North",
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -422,7 +438,7 @@ func TestGTM_DeleteASMap(t *testing.T) {
 			result, err := client.DeleteASMap(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.asMap, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
