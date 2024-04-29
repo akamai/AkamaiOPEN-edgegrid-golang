@@ -124,7 +124,7 @@ func (v RemoveWAPBypassNetworkListsRequest) Validate() error {
 
 func (p *appsec) GetWAPBypassNetworkLists(ctx context.Context, params GetWAPBypassNetworkListsRequest) (*GetWAPBypassNetworkListsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debugf("GetWAPBypassNetworkLists")
+	logger.Debug("GetWAPBypassNetworkLists")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -158,7 +158,7 @@ func (p *appsec) GetWAPBypassNetworkLists(ctx context.Context, params GetWAPBypa
 
 func (p *appsec) UpdateWAPBypassNetworkLists(ctx context.Context, params UpdateWAPBypassNetworkListsRequest) (*UpdateWAPBypassNetworkListsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debugf("UpdateWAPBypassNetworkLists")
+	logger.Debug("UpdateWAPBypassNetworkLists")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
@@ -193,7 +193,7 @@ func (p *appsec) UpdateWAPBypassNetworkLists(ctx context.Context, params UpdateW
 // Deprecated: this method will be removed in a future release.
 func (p *appsec) RemoveWAPBypassNetworkLists(ctx context.Context, params RemoveWAPBypassNetworkListsRequest) (*RemoveWAPBypassNetworkListsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debugf("RemoveWAPBypassNetworkLists")
+	logger.Debug("RemoveWAPBypassNetworkLists")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())

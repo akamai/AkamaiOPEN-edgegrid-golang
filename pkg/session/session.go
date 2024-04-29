@@ -10,8 +10,7 @@ import (
 	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/discard"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log"
 )
 
 type (
@@ -76,7 +75,7 @@ func New(opts ...Option) (Session, error) {
 
 	s := &session{
 		client:    http.DefaultClient,
-		log:       log.Log,
+		log:       log.Default(),
 		userAgent: defaultUserAgent,
 		trace:     false,
 	}
@@ -192,9 +191,8 @@ func (s *session) Log(ctx context.Context) log.Interface {
 		return s.log
 	}
 
-	return &log.Logger{
-		Handler: discard.New(),
-	}
+	// if context/session logs were not set, it will return default logger
+	return log.Default()
 }
 
 // Client returns the http client interface

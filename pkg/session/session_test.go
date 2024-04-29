@@ -8,8 +8,7 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/discard"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -25,7 +24,7 @@ func TestNew(t *testing.T) {
 			expected: &session{
 				client:    http.DefaultClient,
 				signer:    &edgegrid.Config{},
-				log:       log.Log,
+				log:       log.Default(),
 				trace:     false,
 				userAgent: "Akamai-Open-Edgegrid-golang/9.0.0 golang/" + strings.TrimPrefix(runtime.Version(), "go"),
 			},
@@ -63,7 +62,7 @@ func TestNew(t *testing.T) {
 			options: []Option{
 				WithSigner(&edgegrid.Config{}),
 				WithClient(&http.Client{Timeout: 500}),
-				WithLog(log.Log),
+				WithLog(log.NOPLogger()),
 				WithUserAgent("test user agent"),
 				WithHTTPTracing(true)},
 			expected: &session{
@@ -71,7 +70,7 @@ func TestNew(t *testing.T) {
 					Timeout: 500,
 				},
 				signer:    &edgegrid.Config{},
-				log:       log.Log,
+				log:       log.NOPLogger(),
 				trace:     true,
 				userAgent: "test user agent",
 			},
@@ -95,39 +94,22 @@ func TestSession_Log(t *testing.T) {
 	tests := map[string]struct {
 		ctx           context.Context
 		sessionLogger log.Interface
-		expected      *log.Logger
+		expected      log.Interface
 	}{
 		"logger found in context, omit logger from session": {
-			ctx: ContextWithOptions(context.Background(), WithContextLog(&log.Logger{
-				Handler: discard.New(),
-				Level:   1,
-			})),
-			sessionLogger: &log.Logger{
-				Handler: discard.New(),
-				Level:   2,
-			},
-			expected: &log.Logger{
-				Handler: discard.New(),
-				Level:   1,
-			},
+			ctx:           ContextWithOptions(context.Background(), WithContextLog(log.NOPLogger())),
+			sessionLogger: log.Default(),
+			expected:      log.NOPLogger(),
 		},
 		"logger not found in context, pick logger from session": {
-			ctx: context.Background(),
-			sessionLogger: &log.Logger{
-				Handler: discard.New(),
-				Level:   2,
-			},
-			expected: &log.Logger{
-				Handler: discard.New(),
-				Level:   2,
-			},
+			ctx:           context.Background(),
+			sessionLogger: log.NOPLogger(),
+			expected:      log.NOPLogger(),
 		},
 		"logger not found in context or session": {
 			ctx:           context.Background(),
 			sessionLogger: nil,
-			expected: &log.Logger{
-				Handler: discard.New(),
-			},
+			expected:      log.Default(),
 		},
 	}
 

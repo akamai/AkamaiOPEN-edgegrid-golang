@@ -445,7 +445,7 @@ func main() {
 }
 ```
 
-The `session` package also supports the structured logging interface from `github.com/apex`. Thanks to this, you can create a custom logger in one of these ways:
+The `session` package also supports the structured logging interface from `github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log`. Thanks to this, you can create a custom logger in one of these ways:
 
 - Apply a logger globally to the session with the `session.WithLog()` method.
   

@@ -13,8 +13,7 @@ import (
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/discard"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -302,10 +301,9 @@ maximum retry wait time cannot be shorter than minimum retry wait time
 malformed exclude endpoint pattern: syntax error in pattern: [-]`,
 		},
 	}
-	sessionLogger := &log.Logger{
-		Handler: discard.New(),
-		Level:   1,
-	}
+
+	sessionLogger := log.NOPLogger()
+
 	testSession := &session{log: sessionLogger}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {

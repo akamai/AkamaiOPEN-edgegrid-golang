@@ -71,7 +71,7 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 	if s.trace {
 		data, err := httputil.DumpRequestOut(r, true)
 		if err != nil {
-			log.WithError(err).Error("Failed to dump request")
+			log.Error("Failed to dump request", "error", err)
 		} else {
 			log.Debug(string(data))
 		}
@@ -85,7 +85,7 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 	if s.trace {
 		data, err := httputil.DumpResponse(resp, true)
 		if err != nil {
-			log.WithError(err).Error("Failed to dump response")
+			log.Error("Failed to dump response", "error", err)
 		} else {
 			log.Debug(string(data))
 		}

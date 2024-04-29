@@ -12,6 +12,20 @@
 
 
 
+* Logging
+  * Changed logger from apex to the custom interface
+    * Logger method differences:
+      *  A new method `With` has been added that condenses the apex methods (`WithError`, `WithField`, `WithFields`, `WithDuration`) into one.
+          * `WithError`, `WithField`, `WithFields`, `WithDuration` methods are not included in the new logger.
+          * The `Entry` ([documentation](https://pkg.go.dev/github.com/apex/log#Entry)) type no longer exists in the new logger, `With` instead of `Entry` returns a new logger instance with new fields.
+      * Logging methods (`Fatal`, `Error`, `Warn`, `Info`, `Debug`) can accept key-value pairs in addition to a message,
+          * The attribute arguments are processed as follows: If an argument is a string and this is not the last argument, the following argument is treated as the value and the two are combined into an key - value pair. Otherwise, the argument is treated as a value with key "!BADKEY".
+          * formatted logging methods (`Fatalf`, `Errorf`, `Warnf`, `Infof`, `Debugf`) remain unchanged.
+  * By default `slog` with custom handler is used.
+  * `log.Interface` allows users to define default logger with `SetLogger` method and provides option to use different logger backend.
+    * Instructions on using different logger backends can be found in `pkg/log/README.md` file
+  * Log output structure have changed slightly,
+    * Time format was adjusted, logger will use 24-hour clock with milliseconds instead of 12-hour clock used previously.
 
 
 

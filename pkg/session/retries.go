@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/apex/log"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log"
 	"github.com/hashicorp/go-retryablehttp"
 )
 
@@ -153,7 +153,7 @@ func getXRateLimitBackoff(resp *http.Response, logger log.Interface) (time.Durat
 	next, err := time.Parse(time.RFC3339Nano, nextHeader)
 	if err != nil {
 		if logger != nil {
-			logger.WithError(err).Error("Could not parse X-RateLimit-Next header")
+			logger.Error("Could not parse X-RateLimit-Next header", "error", err)
 		}
 		return 0, false
 	}
@@ -168,7 +168,7 @@ func getXRateLimitBackoff(resp *http.Response, logger log.Interface) (time.Durat
 	date, err := time.Parse(time.RFC1123, dateHeader)
 	if err != nil {
 		if logger != nil {
-			logger.WithError(err).Error("Could not parse Date header")
+			logger.Error("Could not parse Date header", "error", err)
 		}
 		return 0, false
 	}
