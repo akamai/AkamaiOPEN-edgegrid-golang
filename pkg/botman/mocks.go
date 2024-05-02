@@ -580,3 +580,19 @@ func (p *Mock) UpdateCustomCode(ctx context.Context, params UpdateCustomCodeRequ
 	}
 	return args.Get(0).(map[string]interface{}), nil
 }
+
+func (p *Mock) GetCustomBotCategoryItemSequence(ctx context.Context, params GetCustomBotCategoryItemSequenceRequest) (*GetCustomBotCategoryItemSequenceResponse, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetCustomBotCategoryItemSequenceResponse), nil
+}
+
+func (p *Mock) UpdateCustomBotCategoryItemSequence(ctx context.Context, params UpdateCustomBotCategoryItemSequenceRequest) (*UpdateCustomBotCategoryItemSequenceResponse, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateCustomBotCategoryItemSequenceResponse), nil
+}

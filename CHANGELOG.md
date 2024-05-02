@@ -22,15 +22,12 @@
 
 
 
-
-
-
-
 #### FEATURES/ENHANCEMENTS:
 
 * APPSEC
   * Added `CounterType` field to `CreateRatePolicyResponse`, `UpdateRatePolicyResponse`, `RemoveRatePolicyResponse`, `GetRatePoliciesResponse` and `GetRatePolicyResponse` structs to support managing rate policy counter type
-
+* BOTMAN 
+  * Added [GetCustomBotCategoryItemSequence](https://techdocs.akamai.com/bot-manager/reference/get-custom-bot-category-item-sequence)  and [UpdateCustomBotCategoryItemSequence](https://techdocs.akamai.com/bot-manager/reference/put-custom-bot-category-item-sequence)
 
 
 
