@@ -568,7 +568,7 @@ func (m MatchCriteriaPR) Validate() error {
 
 // Validate validates MatchCriteriaER
 func (m MatchCriteriaER) Validate() error {
-	return validation.Errors{
+	errs := validation.Errors{
 		"MatchType": validation.Validate(m.MatchType, validation.In("header", "hostname", "path", "extension", "query",
 			"regex", "cookie", "deviceCharacteristics", "clientip", "continent", "countrycode", "regioncode", "protocol", "method", "proxy").Error(
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'header', 'hostname', 'path', 'extension', 'query', 'regex', 'cookie', "+
@@ -581,7 +581,12 @@ func (m MatchCriteriaER) Validate() error {
 			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CONNECTING_IP', 'XFF_HEADERS', 'CONNECTING_IP XFF_HEADERS' or '' (empty)", (&m).CheckIPs))),
 		"ObjectMatchValue": validation.Validate(m.ObjectMatchValue, validation.Required.When(m.MatchValue == "").Error("cannot be blank when MatchValue is blank"),
 			validation.Empty.When(m.MatchValue != "").Error("must be blank when MatchValue is set"), validation.By(objectMatchValueSimpleOrObjectValidation)),
-	}.Filter()
+	}
+	// Additional validation for MatchType and ObjectMatchValue
+	if m.MatchType == "query" && m.ObjectMatchValue != nil {
+		errs["ObjectMatchValue"] = errors.New("ObjectMatchValue not supported with MatchType 'query'")
+	}
+	return errs.Filter()
 }
 
 // Validate validates MatchCriteriaFR

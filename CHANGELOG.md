@@ -61,9 +61,10 @@
 
 
 
-
 #### BUG FIXES:
 
+* CLOUDLETS
+  * Added validation that `ObjectMatchValue` is not supported with `MatchType` `query` in `MatchRuleER`
 
 
 
