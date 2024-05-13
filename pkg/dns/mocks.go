@@ -85,12 +85,6 @@ func (d *Mock) UpdateZone(ctx context.Context, req UpdateZoneRequest) error {
 	return args.Error(0)
 }
 
-func (d *Mock) DeleteZone(ctx context.Context, req DeleteRecordRequest) error {
-	args := d.Called(ctx, req)
-
-	return args.Error(0)
-}
-
 func (d *Mock) GetZoneNames(ctx context.Context, req GetZoneNamesRequest) (*GetZoneNamesResponse, error) {
 	args := d.Called(ctx, req)
 

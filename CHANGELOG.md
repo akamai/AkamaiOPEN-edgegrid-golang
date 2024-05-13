@@ -29,6 +29,192 @@
 
 
 
+
+
+
+
+
+* DNS
+  * Refactored parameters in following methods:
+    * `GetAuthorities` - from (context.Context, string) into (context.Context, `GetAuthoritiesRequest`)
+    * `GetNameServerRecordList` - from (context.Context, string) into (context.Context, `GetNameServerRecordListRequest`)
+    * `GetRecord` - from (context.Context, string, string, string) into (context.Context, `GetRecordRequest`)
+    * `GetRecordList` - from (context.Context, string, string, string) into (context.Context, `GetRecordListRequest`)
+    * `CreateRecord` - from (context.Context, *RecordBody, string, ...bool) into (context.Context, `CreateRecordRequest`)
+    * `UpdateRecord` - from (context.Context, *RecordBody, string, ...bool) into (context.Context, `UpdateRecordRequest`)
+    * `DeleteRecord` - from (context.Context, *RecordBody, string, ...bool) into (context.Context, `DeleteRecordRequest`)
+    * `GetRecordSets` - from (context.Context, string, ...RecordSetQueryArgs) into (context.Context, `GetRecordSetsRequest`)
+    * `CreateRecordSets` - from (context.Context, *RecordSets, string, ...bool) into (context.Context, `CreateRecordSetsRequest`)
+    * `UpdateRecordSets` - from (context.Context, *RecordSets, string, ...bool) into (context.Context, `UpdateRecordSetsRequest`)
+    * `ListTSIGKeys` - from (context.Context, *TSIGQueryString) into (context.Context, `ListTSIGKeysRequest`)
+    * `GetTSIGKeyZones` - from (context.Context, *TSIGKey) into (context.Context, `GetTSIGKeyZonesRequest`)
+    * `GetTSIGKeyAliases` - from (context.Context, string) into (context.Context, `GetTSIGKeyAliasesRequest`)
+    * `UpdateTSIGKeyBulk` - from (context.Context, *TSIGKeyBulkPost) into (context.Context, `UpdateTSIGKeyBulkRequest`)
+    * `GetTSIGKey` - from (context.Context, string) into (context.Context, `GetTSIGKeyRequest`)
+    * `DeleteTSIGKey` - from (context.Context, string) into (context.Context, `DeleteTSIGKeyRequest`)
+    * `UpdateTSIGKey` - from (context.Context, *TSIGKey, string) into (context.Context, `UpdateTSIGKeyRequest`)
+    * `ListZones` - from (context.Context, ...ZoneListQueryArgs) into (context.Context, `ListZonesRequest`)
+    * `GetZone` - from (context.Context, string) into (context.Context, `GetZoneRequest`)
+    * `GetChangeList` - from (context.Context, string) into (context.Context, `GetChangeListRequest`)
+    * `GetMasterZoneFile` - from (context.Context, string) into (context.Context, `GetMasterZoneFileRequest`)
+    * `PostMasterZoneFile` - from (context.Context, string, string) into (context.Context, `PostMasterZoneFileRequest`)
+    * `CreateZone` - from (context.Context, *ZoneCreate, ZoneQueryString, ...bool) into (context.Context, `CreateZoneRequest`)
+    * `SaveChangeList` - from (context.Context, *ZoneCreate) into (context.Context, `SaveChangeListRequest`)
+    * `SubmitChangeList` - from (context.Context, *ZoneCreate) into (context.Context, `SubmitChangeListRequest`)
+    * `UpdateZone` - from (context.Context, *ZoneCreate) into (context.Context, `UpdateZoneRequest`)
+    * `GetZoneNames` - from (context.Context, string) into (context.Context, `GetZoneNamesRequest`)
+    * `GetZoneNameTypes` - from (context.Context, string, string) into (context.Context, `GetZoneNameTypesRequest`)
+    * `GetBulkZoneCreateStatus` - from (context.Context, string) into (context.Context, `GetBulkZoneCreateStatusRequest`)
+    * `GetBulkZoneDeleteStatus` - from (context.Context, string) into (context.Context, `GetBulkZoneDeleteStatusRequest`)
+    * `GetBulkZoneCreateResult` - from (context.Context, string) into (context.Context, `GetBulkZoneCreateResultRequest`)
+    * `GetBulkZoneDeleteResult` - from (context.Context, string) into (context.Context, `GetBulkZoneDeleteResultRequest`)
+    * `CreateBulkZones` - from (context.Context, *BulkZonesCreate, ZoneQueryString) into (context.Context, `CreateBulkZonesRequest`)
+    * `DeleteBulkZones` - from (context.Context, *ZoneNameListResponse, ...bool) into (context.Context, `DeleteBulkZonesRequest`)
+    * `GetRdata` - from (context.Context, string, string, string) into (context.Context, `GetRdataRequest`)
+
+  * Refactored response in following methods:
+    * `GetAuthorities` - `*AuthorityResponse` into `*GetAuthoritiesResponse`
+    * `GetRecord` - `*RecordBody` into `*GetRecordResponse`
+    * `GetRecordList` - `*RecordSetResponse` into `*GetRecordListResponse`
+    * `GetRecordSets` - `*RecordSetResponse` into `*GetRecordSetsResponse`
+    * `GetTSIGKey` - `*TSIGKeyResponse` into `*GetTSIGKeyResponse`
+    * `ListTSIGKeys` - `*TSIGReportResponse` into `*ListTSIGKeysResponse`
+    * `GetTSIGKeyZones` - `*ZoneNameListResponse` into `*GetTSIGKeyZonesResponse`
+    * `GetTSIGKeyAliases` - `*ZoneNameListResponse` into `*GetTSIGKeyAliasesResponse`
+    * `GetZone` - `*ZoneResponse` into `*GetZoneResponse`
+    * `GetChangeList` - `*ChangeListResponse` into `*GetChangeListResponse`
+    * `GetZoneNames` - `*ZoneNamesResponse` into `*GetZoneNamesResponse`
+    * `GetZoneNameTypes` - `*ZoneNameTypesResponse` into `*GetZoneNameTypesResponse`
+    * `GetBulkZoneCreateStatus` - `*BulkStatusResponse` into `*GetBulkZoneCreateStatusResponse`
+    * `GetBulkZoneDeleteStatus` - `*BulkStatusResponse` into `*GetBulkZoneDeleteStatusResponse`
+    * `GetBulkZoneCreateResult` - `*BulkCreateResultResponse` into `*GetBulkZoneCreateResultResponse`
+    * `GetBulkZoneDeleteResult` - `*BulkDeleteResultResponse` into `*GetBulkZoneDeleteResultResponse`
+    * `CreateBulkZones` - `*BulkZonesResponse` into `*CreateBulkZonesResponse`
+    * `DeleteBulkZones` - `*BulkZonesResponse` into `*DeleteBulkZonesResponse`
+
+  * Removed following interfaces:
+    * `Authorities`
+    * `Data`
+    * `Records`
+    * `Recordsets`
+    * `TSIGKeys`
+    * `Zones`
+
+  * Renamed following methods:
+    * `SaveChangelist` into `SaveChangeList`
+    * `SubmitChangelist` into `SubmitChangeList`
+    * `TSIGKeyBulkUpdate` into `UpdateTSIGKeyBulk`
+
+* GTM
+  * Refactored parameters in following methods:
+    * `ListASMaps` - from (context.Context, string) into (context.Context, `ListASMapsRequest`)
+    * `GetASMap` - from (context.Context, string, string) into (context.Context, `GetASMapRequests`)
+    * `CreateASMap` - from (context.Context, *ASMap, string) into (context.Context, `CreateASMapRequest`)
+    * `UpdateASMap` - from (context.Context, *ASMap, string) into (context.Context, `UpdateASMapRequest`)
+    * `DeleteASMap` - from (context.Context, *ASMap, string) into (context.Context, `DeleteASMapRequest`)
+    * `ListCIDRMaps` - from (context.Context, string) into (context.Context, `ListCIDRMapsRequest`)
+    * `GetCIDRMap` - from (context.Context, string, string) into (context.Context, `GetCIDRMapRequest`)
+    * `CreateCIDRMap` - from (context.Context, *CIDRMap, string) into (context.Context, `CreateCIDRMapRequest`)
+    * `UpdateCIDRMap` - from (context.Context, *CIDRMap, string) into (context.Context, `UpdateCIDRMapRequest`)
+    * `DeleteCIDRMap` - from (context.Context, *CIDRMap, string) into (context.Context, `DeleteCIDRMapRequest`)
+    * `ListDatacenters` - from (context.Context, string) into (context.Context, `ListDatacentersRequest`)
+    * `GetDatacenter` - from (context.Context, int, string) into (context.Context, `GetDatacenterRequest`)
+    * `CreateDatacenter` - from (context.Context, *Datacenter, string) into (context.Context, `CreateDatacenterRequest`)
+    * `UpdateDatacenter` - from (context.Context, *Datacenter, string) into (context.Context, `UpdateDatacenterRequest`)
+    * `DeleteDatacenter` - from (context.Context, *Datacenter, string) into (context.Context, `DeleteDatacenterRequest`)
+    * `GetDomainStatus` - from (context.Context, string) into (context.Context, `GetDomainStatusRequest`)
+    * `GetDomain` - from (context.Context, string) into (context.Context, `GetDomainRequest`)
+    * `CreateDomain` - from (context.Context, *Domain, map[string]string) into (context.Context, `CreateDomainRequest`)
+    * `UpdateDomain` - from (context.Context, *Domain, map[string]string) into (context.Context, `UpdateDomainRequest`)
+    * `DeleteDomain` - from (context.Context, *Domain) into (context.Context, `DeleteDomainRequest`)
+    * `ListGeoMaps` - from (context.Context, string) into (context.Context, `ListGeoMapsRequest`)
+    * `GetGeoMap` - from (context.Context, string, string) into (context.Context, `GetGeoMapRequest`)
+    * `CreateGeoMap` - from (context.Context, *GeoMap, string) into (context.Context, `CreateGeoMapRequest`)
+    * `UpdateGeoMap` - from (context.Context, *GeoMap, string) into (context.Context, `UpdateGeoMapRequest`)
+    * `DeleteGeoMap` - from (context.Context, *GeoMap, string) into (context.Context, `DeleteGeoMapRequest`)
+    * `ListProperties` - from (context.Context, string) into (context.Context, `ListPropertiesRequest`)
+    * `GetProperty` - from (context.Context, string, string) into (context.Context, `GetPropertyRequest`)
+    * `CreateProperty` - from (context.Context, *Property, string) into (context.Context, `CreatePropertyRequest`)
+    * `UpdateProperty` - from (context.Context, *Property, string) into (context.Context, `UpdatePropertyRequest`)
+    * `DeleteProperty` - from (context.Context, *Property, string) into (context.Context, `DeletePropertyRequest`)
+    * `ListResources` - from (context.Context, string) into (context.Context, `ListResourcesRequest`)
+    * `GetResource` - from (context.Context, string, string) into (context.Context, `GetResourceRequest`)
+    * `CreateResource` - from (context.Context, *Resource, string) into (context.Context, `CreateResourceRequest`)
+    * `UpdateResource` - from (context.Context, *Resource, string) into (context.Context, `UpdateResourceRequest`)
+    * `DeleteResource` - from (context.Context, *Resource, string) into (context.Context, `DeleteResourceRequest`) 
+
+  * Refactored response in following methods:
+    * `ListASMaps` - `[]*ASMap` into `[]ASMap`
+    * `GetASMap` - `*ASMap` into `*GetASMapResponse`
+    * `CreateASMap` - `*ASMapResponse` into `*CreateASMapResponse`
+    * `UpdateASMap` - `*ResponseStatus` into `*UpdateASMapResponse`
+    * `DeleteASMap` -`*ResponseStatus` into `*DeleteASMapResponse`
+    * `ListCIDRMaps` - `[]*CIDRMap` into `[]CIDRMap`
+    * `GetCIDRMap` - `*CIDRMap` into `*GetCIDRMapResponse`
+    * `CreateCIDRMap` - `*CIDRMapResponse` into `*CreateCIDRMapResponse`
+    * `UpdateCIDRMap` - `*ResponseStatus` into `*UpdateCIDRMapResponse`
+    * `DeleteCIDRMap` - `*ResponseStatus` into `*DeleteCIDRMapResponse`
+    * `ListDatacenters` - `[]*Datacenter` into `[]Datacenter`
+    * `CreateDatacenter` - `*DatacenterResponse` into `*CreateDatacenterResponse`
+    * `UpdateDatacenter` - `*ResponseStatus` into `*UpdateDatacenterResponse`
+    * `DeleteDatacenter` - `*ResponseStatus` into `*DeleteDatacenterResponse`
+    * `ListDomains` - `[]*DomainItem` into `[]DomainItem`
+    * `GetDomain` - `*Domain` into `*GetDomainResponse`
+    * `CreateDomain` - `*DomainResponse` into `*CreateDomainResponse`
+    * `UpdateDomain` - `*ResponseStatus` into `*UpdateDomainResponse`
+    * `DeleteDomain` - `*ResponseStatus` into `*DeleteDomainResponse`
+    * `GetDomainStatus` - `*ResponseStatus` into `*GetDomainStatusResponse`
+    * `ListGeoMaps` - `[]*GeoMap` into `[]GeoMap`
+    * `GetGeoMap` - `*GeoMap` into `*GetGeoMapResponse`
+    * `CreateGeoMap` - `*GeoMapResponse` into `*CreateGeoMapResponse`
+    * `UpdateGeoMap` - `*ResponseStatus` into `*UpdateGeoMapResponse`
+    * `DeleteGeoMap` - `*ResponseStatus` into `*DeleteGeoMapResponse`
+    * `ListProperties` - `[]*Property` into `[]Property`
+    * `GetProperty` - `*Property` into `*GetPropertyResponse`
+    * `CreateProperty` - `*PropertyResponse` into `*CreatePropertyResponse`
+    * `UpdateProperty` - `*ResponseStatus` into `*UpdatePropertyResponse`
+    * `DeleteProperty` - `*ResponseStatus` into `*DeletePropertyResponse`
+    * `ListResources` - `[]*Resource` into `[]Resource`
+    * `GetResource` - `*Resource` into `*GetResourceResponse`
+    * `CreateResource` - `*ResourceResponse` into `*CreateResourceResponse`
+    * `UpdateResource` - `*ResponseStatus` into `*UpdateResourceResponse`
+    * `DeleteResource` - `*ResponseStatus` into `*DeleteResourceResponse`
+
+  * Extended response for following methods - previously only status was returned, now status and resource are returned:
+    * `UpdateASMap`
+    * `DeleteASMap`
+    * `UpdateCIDRMap`
+    * `DeleteCIDRMap`
+    * `UpdateDatacenter`
+    * `DeleteDatacenter`
+    * `UpdateDomain`
+    * `UpdateGeoMap`
+    * `DeleteGeoMap`
+    * `UpdateProperty`
+    * `DeleteProperty`
+    * `UpdateResource`
+    * `DeleteResource`
+
+  * Removed following interfaces:
+    * `ASMaps`
+    * `CIDRMaps`
+    * `Datacenters`
+    * `Domains`
+    * `GeoMaps`
+    * `Properties`
+    * `Resources`
+
+
+
+
+
+
+
+
+
+
+
+
 #### FEATURES/ENHANCEMENTS:
 
 * PAPI
