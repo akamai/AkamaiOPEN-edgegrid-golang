@@ -11,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/tj/assert v0.0.3
 	go.uber.org/ratelimit v0.2.0
-	golang.org/x/net v0.20.0
+	golang.org/x/net v0.23.0
 	gopkg.in/ini.v1 v1.51.1
 )
 
