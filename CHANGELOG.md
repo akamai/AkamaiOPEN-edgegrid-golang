@@ -1,114 +1,33 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## X.X.X (X X, X)
-
-#### BREAKING CHANGES:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## 8.2.0 (May 21, 2024)
 
 #### FEATURES/ENHANCEMENTS:
 
 * APPSEC
   * Added `CounterType` field to `CreateRatePolicyResponse`, `UpdateRatePolicyResponse`, `RemoveRatePolicyResponse`, `GetRatePoliciesResponse` and `GetRatePolicyResponse` structs to support managing rate policy counter type
+
 * BOTMAN 
   * Added [GetCustomBotCategoryItemSequence](https://techdocs.akamai.com/bot-manager/reference/get-custom-bot-category-item-sequence)  and [UpdateCustomBotCategoryItemSequence](https://techdocs.akamai.com/bot-manager/reference/put-custom-bot-category-item-sequence)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 * HAPI
   * Added method to return certificate for the edge hostname 
     * [GetCertificate](https://techdocs.akamai.com/edge-hostnames/reference/get-edge-hostname-certificate)
   * Added fields to `GetEdgeHostnameResponse`: `ProductID`, `MapAlias` and `UseCases`
 
-
-
-
-
-
-
 #### BUG FIXES:
 
-* CLOUDLETS
-  * Added validation that `ObjectMatchValue` is not supported with `MatchType` `query` in `MatchRuleER`
-
 * APPSEC
-  * The `Override` field in the following structs has been updated from a pointer to a value type within the 'AdvancedSettingsAttackPayloadLogging' interface:
-    * 'GetAdvancedSettingsAttackPayloadLoggingResponse',
-    * 'UpdateAdvancedSettingsAttackPayloadLoggingResponse',
-    * 'RemoveAdvancedSettingsAttackPayloadLoggingRequest',
-    * 'RemoveAdvancedSettingsAttackPayloadLoggingResponse'
-    This update was made to address a drift issue related to policy level settings.
+  * The `Override` field in the following structs has been updated from a pointer to a value type within the `AdvancedSettingsAttackPayloadLogging` interface:
+    * `GetAdvancedSettingsAttackPayloadLoggingResponse`,
+    * `UpdateAdvancedSettingsAttackPayloadLoggingResponse`,
+    * `RemoveAdvancedSettingsAttackPayloadLoggingRequest`,
+    * `RemoveAdvancedSettingsAttackPayloadLoggingResponse`
+      This update was made to address a drift issue related to policy level settings.
   * Omit `Prefetch` within `AdvancedOptions` in `GetExportConfigurationResponse` when empty
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* CLOUDLETS
+  * Added validation that `ObjectMatchValue` is not supported with `MatchType` `query` in `MatchRuleER` ([#535](https://github.com/akamai/terraform-provider-akamai/issues/535))
 
 ## 8.1.0 (April 11, 2024)
 
