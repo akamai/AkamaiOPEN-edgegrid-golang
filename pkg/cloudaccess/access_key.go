@@ -57,8 +57,8 @@ type (
 		AccessKeyUID int64
 	}
 
-	// GetAccessKeyResponse contains response from GetAccessKey
-	GetAccessKeyResponse struct {
+	// AccessKeyResponse contains response from ListAccessKeys
+	AccessKeyResponse struct {
 		AccessKeyUID         int64          `json:"accessKeyUid"`
 		AccessKeyName        string         `json:"accessKeyName"`
 		AuthenticationMethod string         `json:"authenticationMethod"`
@@ -68,6 +68,9 @@ type (
 		CreatedBy            string         `json:"createdBy"`
 		CreatedTime          time.Time      `json:"createdTime"`
 	}
+
+	// GetAccessKeyResponse contains response from GetAccessKey
+	GetAccessKeyResponse AccessKeyResponse
 
 	// Group is an object to which the access key is assigned
 	Group struct {
@@ -83,7 +86,7 @@ type (
 
 	// ListAccessKeysResponse contains array of GetAccessKeyResponse
 	ListAccessKeysResponse struct {
-		AccessKeys []*GetAccessKeyResponse `json:"accessKeys"`
+		AccessKeys []AccessKeyResponse `json:"accessKeys"`
 	}
 
 	// UpdateAccessKeyRequest holds request body for UpdateAccessKey

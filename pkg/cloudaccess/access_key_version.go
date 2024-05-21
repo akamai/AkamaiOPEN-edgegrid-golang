@@ -49,7 +49,7 @@ type (
 		AccessKeyUID int64
 	}
 
-	// GetAccessKeyVersionResponse conatains response from GetAccessKeyVersion
+	// GetAccessKeyVersionResponse contains response from GetAccessKeyVersion
 	GetAccessKeyVersionResponse AccessKeyVersion
 
 	// ListAccessKeyVersionsRequest holds parameters for ListAccessKeyVersion
