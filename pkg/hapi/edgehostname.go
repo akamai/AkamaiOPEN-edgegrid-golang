@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
 
@@ -35,6 +36,11 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-hostnames/reference/patch-edgehostnames
 		UpdateEdgeHostname(context.Context, UpdateEdgeHostnameRequest) (*UpdateEdgeHostnameResponse, error)
+
+		// GetCertificate gets the certificate associated with an enhanced TLS edge hostname
+		//
+		// See: https://techdocs.akamai.com/edge-hostnames/reference/get-edge-hostname-certificate
+		GetCertificate(context.Context, GetCertificateRequest) (*GetCertificateResponse, error)
 	}
 
 	// DeleteEdgeHostnameRequest is used to delete edge hostname
@@ -128,40 +134,61 @@ type (
 
 	// GetEdgeHostnameResponse represents edge hostname
 	GetEdgeHostnameResponse struct {
-		EdgeHostnameID         int      `json:"edgeHostnameId"`
-		RecordName             string   `json:"recordName"`
-		DNSZone                string   `json:"dnsZone"`
-		SecurityType           string   `json:"securityType"`
-		UseDefaultTTL          bool     `json:"useDefaultTtl"`
-		UseDefaultMap          bool     `json:"useDefaultMap"`
-		IPVersionBehavior      string   `json:"ipVersionBehavior"`
-		TTL                    int      `json:"ttl"`
-		Map                    string   `json:"map,omitempty"`
-		SlotNumber             int      `json:"slotNumber,omitempty"`
-		Comments               string   `json:"comments"`
-		SerialNumber           int      `json:"serialNumber,omitempty"`
-		CustomTarget           string   `json:"customTarget,omitempty"`
-		ChinaCdn               ChinaCDN `json:"chinaCdn,omitempty"`
-		IsEdgeIPBindingEnabled bool     `json:"isEdgeIPBindingEnabled,omitempty"`
+		EdgeHostnameID         int       `json:"edgeHostnameId"`
+		RecordName             string    `json:"recordName"`
+		DNSZone                string    `json:"dnsZone"`
+		SecurityType           string    `json:"securityType"`
+		UseDefaultTTL          bool      `json:"useDefaultTtl"`
+		UseDefaultMap          bool      `json:"useDefaultMap"`
+		IPVersionBehavior      string    `json:"ipVersionBehavior"`
+		ProductID              string    `json:"productId"`
+		TTL                    int       `json:"ttl"`
+		Map                    string    `json:"map,omitempty"`
+		SlotNumber             int       `json:"slotNumber,omitempty"`
+		Comments               string    `json:"comments"`
+		SerialNumber           int       `json:"serialNumber,omitempty"`
+		CustomTarget           string    `json:"customTarget,omitempty"`
+		ChinaCdn               ChinaCDN  `json:"chinaCdn,omitempty"`
+		IsEdgeIPBindingEnabled bool      `json:"isEdgeIPBindingEnabled,omitempty"`
+		MapAlias               string    `json:"mapAlias"`
+		UseCases               []UseCase `json:"useCases"`
+	}
+
+	// GetCertificateRequest is used to get certificate associated with edge hostname
+	GetCertificateRequest struct {
+		DNSZone    string
+		RecordName string
+	}
+
+	// GetCertificateResponse represents edge hostname certificate
+	GetCertificateResponse struct {
+		AvailableDomains []string  `json:"availableDomains"`
+		CertificateID    string    `json:"certificateId"`
+		CertificateType  string    `json:"certificateType"`
+		CommonName       string    `json:"commonName"`
+		ExpirationDate   time.Time `json:"expirationDate"`
+		SerialNumber     string    `json:"serialNumber"`
+		SlotNumber       int       `json:"slotNumber"`
+		Status           string    `json:"status"`
+		ValidationType   string    `json:"validationType"`
 	}
 )
 
 // Validate validates DeleteEdgeHostnameRequest
 func (r DeleteEdgeHostnameRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"DNSZone":    validation.Validate(r.DNSZone, validation.Required),
 		"RecordName": validation.Validate(r.RecordName, validation.Required),
-	}.Filter()
+	})
 }
 
 // Validate validates DeleteEdgeHostnameRequest
 func (r UpdateEdgeHostnameRequest) Validate() error {
-	errs := validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"DNSZone":    validation.Validate(r.DNSZone, validation.Required),
 		"RecordName": validation.Validate(r.RecordName, validation.Required),
 		"Body":       validation.Validate(r.Body),
-	}
-	return edgegriderr.ParseValidationErrors(errs)
+	})
 }
 
 // Validate validates UpdateEdgeHostnameRequestBody
@@ -173,6 +200,14 @@ func (b UpdateEdgeHostnameRequestBody) Validate() error {
 	}.Filter()
 }
 
+// Validate validates GetCertificateRequest
+func (r GetCertificateRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DNSZone":    validation.Validate(r.DNSZone, validation.Required),
+		"RecordName": validation.Validate(r.RecordName, validation.Required),
+	})
+}
+
 var (
 	// ErrDeleteEdgeHostname represents error when deleting edge hostname fails
 	ErrDeleteEdgeHostname = errors.New("delete edge hostname")
@@ -180,15 +215,19 @@ var (
 	ErrGetEdgeHostname = errors.New("get edge hostname")
 	// ErrUpdateEdgeHostname represents error when updating edge hostname fails
 	ErrUpdateEdgeHostname = errors.New("update edge hostname")
+	// ErrGetCertificate represents error when getting edge hostname certificate fails
+	ErrGetCertificate = errors.New("get edge hostname certificate")
+	// ErrNotFound represents error when getting edge hostname fails
+	ErrNotFound = errors.New("not found")
 )
 
 func (h *hapi) DeleteEdgeHostname(ctx context.Context, params DeleteEdgeHostnameRequest) (*DeleteEdgeHostnameResponse, error) {
+	logger := h.Log(ctx)
+	logger.Debug("DeleteEdgeHostname")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrDeleteEdgeHostname, ErrStructValidation, err)
 	}
-
-	logger := h.Log(ctx)
-	logger.Debug("DeleteEdgeHostname")
 
 	uri := fmt.Sprintf(
 		"/hapi/v1/dns-zones/%s/edge-hostnames/%s",
@@ -249,12 +288,12 @@ func (h *hapi) GetEdgeHostname(ctx context.Context, edgeHostnameID int) (*GetEdg
 }
 
 func (h *hapi) UpdateEdgeHostname(ctx context.Context, request UpdateEdgeHostnameRequest) (*UpdateEdgeHostnameResponse, error) {
+	logger := h.Log(ctx)
+	logger.Debug("UpdateEdgeHostname")
+
 	if err := request.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s: %s", ErrUpdateEdgeHostname, ErrStructValidation, err)
 	}
-
-	logger := h.Log(ctx)
-	logger.Debug("UpdateEdgeHostname")
 
 	uri := fmt.Sprintf("/hapi/v1/dns-zones/%s/edge-hostnames/%s", request.DNSZone, request.RecordName)
 
@@ -289,6 +328,41 @@ func (h *hapi) UpdateEdgeHostname(ctx context.Context, request UpdateEdgeHostnam
 
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%w: %s", ErrUpdateEdgeHostname, h.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func (h *hapi) GetCertificate(ctx context.Context, params GetCertificateRequest) (*GetCertificateResponse, error) {
+	logger := h.Log(ctx)
+	logger.Debug("GetCertificate")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetCertificate, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf(
+		"/hapi/v1/dns-zones/%s/edge-hostnames/%s/certificate",
+		params.DNSZone,
+		params.RecordName,
+	)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCertificate, err)
+	}
+
+	var result GetCertificateResponse
+
+	resp, err := h.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCertificate, err)
+	}
+
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, fmt.Errorf("%s: %s: %w", ErrGetCertificate, ErrNotFound, h.Error(resp))
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrGetCertificate, h.Error(resp))
 	}
 
 	return &result, nil

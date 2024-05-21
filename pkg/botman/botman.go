@@ -32,6 +32,7 @@ type (
 		ConditionalAction
 		CustomBotCategory
 		CustomBotCategoryAction
+		CustomBotCategoryItemSequence
 		CustomBotCategorySequence
 		CustomClient
 		CustomClientSequence

@@ -1234,6 +1234,20 @@ MatchRules[4]: {
 						},
 					},
 				},
+				MatchRuleER{
+					StatusCode:  301,
+					RedirectURL: "abc.com",
+					Type:        "erMatchRule",
+					Matches: []MatchCriteriaER{
+						{
+							MatchType: "query",
+							ObjectMatchValue: ObjectMatchValueObject{
+								Type: "simple",
+								Name: "p",
+							},
+						},
+					},
+				},
 			},
 			withError: `
 MatchRules[0]: {
@@ -1247,6 +1261,11 @@ MatchRules[1]: {
 }
 MatchRules[2]: {
 	Matches/MatchesAlways: only one of [ "Matches", "MatchesAlways" ] can be specified
+}
+MatchRules[3]: {
+	Matches[0]: {
+		ObjectMatchValue: ObjectMatchValue not supported with MatchType 'query'
+	}
 }`,
 		},
 		"valid match rules FR": {

@@ -82,9 +82,10 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate string          `json:"-"`
-		UpdateDate string          `json:"-"`
-		Used       json.RawMessage `json:"used"`
+		CreateDate  string          `json:"-"`
+		UpdateDate  string          `json:"-"`
+		Used        json.RawMessage `json:"used"`
+		CounterType string          `json:"counterType"`
 	}
 
 	// UpdateRatePolicyRequest is used to modify an existing rate policy.
@@ -131,9 +132,10 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate string          `json:"-"`
-		UpdateDate string          `json:"-"`
-		Used       json.RawMessage `json:"used"`
+		CreateDate  string          `json:"-"`
+		UpdateDate  string          `json:"-"`
+		Used        json.RawMessage `json:"used"`
+		CounterType string          `json:"counterType"`
 	}
 
 	// RemoveRatePolicyRequest is used to remove a rate policy.
@@ -179,9 +181,10 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate string          `json:"-"`
-		UpdateDate string          `json:"-"`
-		Used       json.RawMessage `json:"used"`
+		CreateDate  string          `json:"-"`
+		UpdateDate  string          `json:"-"`
+		Used        json.RawMessage `json:"used"`
+		CounterType string          `json:"counterType"`
 	}
 
 	// GetRatePoliciesRequest is used to retrieve the rate policies for a configuration.
@@ -223,6 +226,7 @@ type (
 			SameActionOnIpv        bool                       `json:"sameActionOnIpv"`
 			APISelectors           *RatePolicyAPISelectors    `json:"apiSelectors,omitempty"`
 			BodyParameters         *RatePolicyBodyParameters  `json:"bodyParameters,omitempty"`
+			CounterType            string                     `json:"counterType"`
 		} `json:"ratePolicies,omitempty"`
 	}
 
@@ -261,6 +265,7 @@ type (
 		CreateDate             string                     `json:"-"`
 		UpdateDate             string                     `json:"-"`
 		Used                   bool                       `json:"-"`
+		CounterType            string                     `json:"counterType"`
 	}
 
 	// RatePolicyAPISelectors is used as part of a rate policy description.

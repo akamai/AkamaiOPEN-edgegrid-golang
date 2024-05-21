@@ -503,18 +503,13 @@ type (
 
 	// AdvancedOptionsexp is returned as part of GetExportConfigurationResponse.
 	AdvancedOptionsexp struct {
-		Logging              *Loggingexp           `json:"logging"`
-		AttackPayloadLogging *AttackPayloadLogging `json:"attackPayloadLogging"`
-		EvasivePathMatch     *EvasivePathMatchexp  `json:"evasivePathMatch,omitempty"`
-		Prefetch             struct {
-			AllExtensions      bool     `json:"allExtensions"`
-			EnableAppLayer     bool     `json:"enableAppLayer"`
-			EnableRateControls bool     `json:"enableRateControls"`
-			Extensions         []string `json:"extensions,omitempty"`
-		} `json:"prefetch"`
-		PragmaHeader *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-		RequestBody  *RequestBody                       `json:"requestBody,omitempty"`
-		PIILearning  *PIILearningexp                    `json:"piiLearning,omitempty"`
+		Logging              *Loggingexp                        `json:"logging"`
+		AttackPayloadLogging *AttackPayloadLogging              `json:"attackPayloadLogging"`
+		EvasivePathMatch     *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
+		Prefetch             *Prefetch                          `json:"prefetch"`
+		PragmaHeader         *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
+		RequestBody          *RequestBody                       `json:"requestBody,omitempty"`
+		PIILearning          *PIILearningexp                    `json:"piiLearning,omitempty"`
 	}
 
 	// CustomDenyListexp is returned as part of GetExportConfigurationResponse.
@@ -687,6 +682,14 @@ type (
 	// PIILearningexp contains the PIILearning setting
 	PIILearningexp struct {
 		EnablePIILearning bool `json:"enabled"`
+	}
+
+	// Prefetch is returned as part of AdvancedOptionsexp
+	Prefetch struct {
+		AllExtensions      bool     `json:"allExtensions"`
+		EnableAppLayer     bool     `json:"enableAppLayer"`
+		EnableRateControls bool     `json:"enableRateControls"`
+		Extensions         []string `json:"extensions,omitempty"`
 	}
 
 	// RequestBody is returned as part of GetExportConfigurationResponse.

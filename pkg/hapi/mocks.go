@@ -53,3 +53,13 @@ func (m *Mock) GetChangeRequest(ctx context.Context, req GetChangeRequest) (*Cha
 
 	return args.Get(0).(*ChangeRequest), nil
 }
+
+func (m *Mock) GetCertificate(ctx context.Context, req GetCertificateRequest) (*GetCertificateResponse, error) {
+	args := m.Called(ctx, req)
+
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetCertificateResponse), nil
+}

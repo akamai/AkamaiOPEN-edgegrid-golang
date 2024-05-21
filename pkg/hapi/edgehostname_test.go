@@ -3,9 +3,11 @@ package hapi
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -187,13 +189,22 @@ func TestGetEdgeHostname(t *testing.T) {
 				"dnsZone": "edgekey.net",
 				"edgeHostnameId": 4617960,
 				"ipVersionBehavior": "IPV6_IPV4_DUALSTACK",
+				"productId": "DSA",
 				"map": "e;dscx.akamaiedge.net",
 				"recordName": "aws_ci_pearltest-asorigin-na-as-eu-ionp.cumulus-essl.webexp-ipqa-ion.com-v2",
 				"securityType": "ENHANCED-TLS",
 				"slotNumber": 47463,
 				"ttl": 21600,
 				"useDefaultMap": true,
-				"useDefaultTtl": true
+				"useDefaultTtl": true,
+				"mapAlias": "al",
+				"useCases": [
+					{
+						"type": "GLOBAL",
+						"option": "LIVE",
+						"useCase": "Segmented_Media_Mode"
+					}
+				]
 			}`,
 			expectedPath: "/hapi/v1/edge-hostnames/1234",
 			expectedResponse: &GetEdgeHostnameResponse{
@@ -204,6 +215,7 @@ func TestGetEdgeHostname(t *testing.T) {
 				DNSZone:           "edgekey.net",
 				EdgeHostnameID:    4617960,
 				IPVersionBehavior: "IPV6_IPV4_DUALSTACK",
+				ProductID:         "DSA",
 				Map:               "e;dscx.akamaiedge.net",
 				RecordName:        "aws_ci_pearltest-asorigin-na-as-eu-ionp.cumulus-essl.webexp-ipqa-ion.com-v2",
 				SecurityType:      "ENHANCED-TLS",
@@ -211,6 +223,14 @@ func TestGetEdgeHostname(t *testing.T) {
 				TTL:               21600,
 				UseDefaultMap:     true,
 				UseDefaultTTL:     true,
+				MapAlias:          "al",
+				UseCases: []UseCase{
+					{
+						Type:    "GLOBAL",
+						Option:  "LIVE",
+						UseCase: "Segmented_Media_Mode",
+					},
+				},
 			},
 		},
 		"404 could not find edge hostname": {
@@ -430,4 +450,136 @@ func TestPatchEdgeHostname(t *testing.T) {
 			assert.Equal(t, test.expectedResponse, result)
 		})
 	}
+}
+
+func TestGetCertificate(t *testing.T) {
+	tests := map[string]struct {
+		request          GetCertificateRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *GetCertificateResponse
+		withError        error
+	}{
+		"200 OK": {
+			request: GetCertificateRequest{
+				DNSZone:    "edgekey.net",
+				RecordName: "mgw-test-002",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"certificateId": "1234",
+				"commonName": "example.com",
+				"serialNumber": "12:34:56:78:90:AB:CD:EF",
+				"slotNumber": 8927,
+				"expirationDate": "2019-10-31T23:59:59Z",
+				"certificateType": "SAN",
+				"validationType": "DOMAIN_VALIDATION",
+				"status": "PENDING",
+				"availableDomains": [
+				"live.example.com",
+				"secure.example.com",
+				"www.example.com"
+				]
+			}`,
+			expectedPath: "/hapi/v1/dns-zones/edgekey.net/edge-hostnames/mgw-test-002/certificate",
+			expectedResponse: &GetCertificateResponse{
+				CertificateID:   "1234",
+				CommonName:      "example.com",
+				SerialNumber:    "12:34:56:78:90:AB:CD:EF",
+				SlotNumber:      8927,
+				ExpirationDate:  *newTimeFromString(t, "2019-10-31T23:59:59Z"),
+				CertificateType: "SAN",
+				ValidationType:  "DOMAIN_VALIDATION",
+				Status:          "PENDING",
+				AvailableDomains: []string{
+					"live.example.com",
+					"secure.example.com",
+					"www.example.com",
+				},
+			},
+		},
+		"404 certificate not found": {
+			request: GetCertificateRequest{
+				DNSZone:    "edgekey.net",
+				RecordName: "unknown",
+			},
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+			{
+				"type": "CERTIFICATE_NOT_FOUND",
+				"title": "Certificate Not Found",
+				"status": 404,
+				"detail": "Details are not available for this certificate; the certificate is missing or access is denied",
+				"instance": "/hapi/error-instances/a30f67cc-df20-4e02-bbc3-cf7c204a4aab",
+				"requestInstance": "http://origin.pulsar.akamai.com/hapi/open/v1/dns-zones/edgekey.net/edge-hostnames/example.com/certificate?depth=ALL&accountSwitchKey=F-AC-1937217#d7aa7348",
+				"method": "GET",
+				"requestTime": "2022-11-30T18:51:43.482982Z",
+				"errors": [],
+				"extensionFields": []
+			}`,
+			expectedPath: "/hapi/v1/dns-zones/edgekey.net/edge-hostnames/unknown/certificate",
+			withError: fmt.Errorf("%s: %s: %w", ErrGetCertificate, ErrNotFound, &Error{
+				Type:            "CERTIFICATE_NOT_FOUND",
+				Title:           "Certificate Not Found",
+				Status:          404,
+				Detail:          "Details are not available for this certificate; the certificate is missing or access is denied",
+				Instance:        "/hapi/error-instances/a30f67cc-df20-4e02-bbc3-cf7c204a4aab",
+				RequestInstance: "http://origin.pulsar.akamai.com/hapi/open/v1/dns-zones/edgekey.net/edge-hostnames/example.com/certificate?depth=ALL&accountSwitchKey=F-AC-1937217#d7aa7348",
+				Method:          "GET",
+				RequestTime:     "2022-11-30T18:51:43.482982Z",
+			}),
+		},
+		"500 internal server error": {
+			request: GetCertificateRequest{
+				DNSZone:    "edgekey.net",
+				RecordName: "mgw-test-002",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+			{
+				"type": "internal_error",
+				"title": "Internal Server Error",
+				"detail": "Error deleting activation",
+				"status": 500
+			}`,
+			expectedPath: "/hapi/v1/dns-zones/edgekey.net/edge-hostnames/mgw-test-002/certificate",
+			withError: &Error{
+				Type:   "internal_error",
+				Title:  "Internal Server Error",
+				Detail: "Error deleting activation",
+				Status: http.StatusInternalServerError,
+			},
+		},
+		"missing required values": {
+			request:   GetCertificateRequest{},
+			withError: ErrStructValidation,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetCertificate(context.Background(), test.request)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func newTimeFromString(t *testing.T, s string) *time.Time {
+	parsedTime, err := time.Parse(time.RFC3339Nano, s)
+	require.NoError(t, err)
+	return &parsedTime
 }
