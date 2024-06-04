@@ -299,7 +299,7 @@ func (c *cloudaccess) DeleteAccessKey(ctx context.Context, params AccessKeyReque
 		return fmt.Errorf("DeleteAccessKey request failed: %s", err.Error())
 	}
 
-	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusNoContent {
 		return c.Error(resp)
 	}
 
