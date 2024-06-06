@@ -21,7 +21,8 @@
 
 
 
-
+* DNS
+  * Added `GetZonesDNSSecStatus` method returning the current DNSSEC status for one or more zones
 
 
 

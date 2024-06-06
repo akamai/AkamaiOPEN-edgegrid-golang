@@ -1,18 +1,21 @@
 package dns
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
-
-	"bytes"
-	"encoding/json"
 	"reflect"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 var (
@@ -90,6 +93,10 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-delete-requests-requestid-result
 		GetBulkZoneDeleteResult(context.Context, string) (*BulkDeleteResultResponse, error)
+		// GetZonesDNSSecStatus returns the current DNSSEC status for one or more zones.
+		//
+		// See: https://techdocs.akamai.com/edge-dns/reference/post-zones-dns-sec-status
+		GetZonesDNSSecStatus(context.Context, GetZonesDNSSecStatusRequest) (*GetZonesDNSSecStatusResponse, error)
 	}
 
 	// ZoneQueryString contains zone query parameters
@@ -182,7 +189,41 @@ type (
 	ZoneNameTypesResponse struct {
 		Types []string `json:"types"`
 	}
+
+	// GetZonesDNSSecStatusRequest is used to get the DNSSEC status for one or more zones
+	GetZonesDNSSecStatusRequest struct {
+		Zones []string `json:"zones"`
+	}
+
+	// GetZonesDNSSecStatusResponse represents a list of DNSSEC statuses for DNS zones specified
+	// in the GetZonesDNSSecStatus request
+	GetZonesDNSSecStatusResponse struct {
+		DNSSecStatuses []SecStatus `json:"dnsSecStatuses"`
+	}
+
+	// SecStatus represents the DNSSEC status for a DNS zone
+	SecStatus struct {
+		Zone           string      `json:"zone"`
+		Alerts         []string    `json:"alerts"`
+		CurrentRecords SecRecords  `json:"currentRecords"`
+		NewRecords     *SecRecords `json:"newRecords"`
+	}
+
+	// SecRecords represents a set of DNSSEC records for a DNS zone
+	SecRecords struct {
+		DNSKeyRecord     string    `json:"dnskeyRecord"`
+		DSRecord         string    `json:"dsRecord"`
+		ExpectedTTL      int       `json:"expectedTtl"`
+		LastModifiedDate time.Time `json:"lastModifiedDate"`
+	}
 )
+
+// Validate validates GetZonesDNSSecStatusRequest
+func (r GetZonesDNSSecStatusRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Zones": validation.Validate(r.Zones, validation.Required),
+	})
+}
 
 var zoneStructMap = map[string]string{
 	"Zone":                  "zone",
@@ -640,6 +681,32 @@ func (d *dns) GetZoneNameTypes(ctx context.Context, zName, zone string) (*ZoneNa
 	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetZoneNameTypes request failed: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, d.Error(resp)
+	}
+
+	return &result, nil
+}
+
+func (d *dns) GetZonesDNSSecStatus(ctx context.Context, params GetZonesDNSSecStatusRequest) (*GetZonesDNSSecStatusResponse, error) {
+	logger := d.Log(ctx)
+	logger.Debug("GetZonesDNSSecStatus")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/config-dns/v2/zones/dns-sec-status", nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GetZonesDNSSecStatus request: %w", err)
+	}
+
+	var result GetZonesDNSSecStatusResponse
+	resp, err := d.Exec(req, &result, params)
+	if err != nil {
+		return nil, fmt.Errorf("GetZonesDNSSecStatus request failed: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {

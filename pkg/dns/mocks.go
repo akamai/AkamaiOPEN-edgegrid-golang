@@ -30,6 +30,16 @@ func (d *Mock) ListZones(ctx context.Context, query ...ZoneListQueryArgs) (*Zone
 	return args.Get(0).(*ZoneListResponse), args.Error(1)
 }
 
+func (d *Mock) GetZonesDNSSecStatus(ctx context.Context, params GetZonesDNSSecStatusRequest) (*GetZonesDNSSecStatusResponse, error) {
+	args := d.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetZonesDNSSecStatusResponse), args.Error(1)
+}
+
 func (d *Mock) GetZone(ctx context.Context, name string) (*ZoneResponse, error) {
 	args := d.Called(ctx, name)
 
