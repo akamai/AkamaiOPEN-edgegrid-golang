@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
@@ -87,37 +89,37 @@ func TestListPolicyVersions(t *testing.T) {
 				PolicyVersions: []ListPolicyVersionsItem{
 					{
 						CreatedBy:     "jsmith",
-						CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+						CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 						Description:   nil,
 						ID:            6551184,
 						Immutable:     false,
 						Links:         []Link{},
 						ModifiedBy:    "jsmith",
-						ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+						ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 						PolicyID:      670790,
 						PolicyVersion: 3,
 					},
 					{
 						CreatedBy:     "jsmith",
-						CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:46.225Z"),
+						CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:46.225Z"),
 						Description:   nil,
 						ID:            6551183,
 						Immutable:     false,
 						Links:         []Link{},
 						ModifiedBy:    "jsmith",
-						ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:46.225Z"),
+						ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:46.225Z")),
 						PolicyID:      670790,
 						PolicyVersion: 2,
 					},
 					{
 						CreatedBy:     "jsmith",
-						CreatedDate:   *newTimeFromString(t, "2023-10-19T08:44:34.398Z"),
+						CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:44:34.398Z"),
 						Description:   nil,
 						ID:            6551182,
 						Immutable:     false,
 						Links:         []Link{},
 						ModifiedBy:    "jsmith",
-						ModifiedDate:  newTimeFromString(t, "2023-10-19T08:44:34.398Z"),
+						ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:44:34.398Z")),
 						PolicyID:      670790,
 						PolicyVersion: 1,
 					},
@@ -279,13 +281,13 @@ func TestGetPolicyVersion(t *testing.T) {
 			expectedPath: "/cloudlets/v3/policies/670798/versions/2",
 			expectedResponse: &PolicyVersion{
 				CreatedBy:          "jsmith",
-				CreatedDate:        *newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
+				CreatedDate:        test.NewTimeFromString(t, "2023-10-19T09:46:57.395Z"),
 				Description:        tools.StringPtr("test description"),
 				ID:                 6551191,
 				MatchRules:         nil,
 				MatchRulesWarnings: []MatchRulesWarning{},
 				ModifiedBy:         "jsmith",
-				ModifiedDate:       newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
+				ModifiedDate:       ptr.To(test.NewTimeFromString(t, "2023-10-19T09:46:57.395Z")),
 				PolicyID:           670798,
 				PolicyVersion:      2,
 			},
@@ -326,7 +328,7 @@ func TestGetPolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions/1",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T10:45:30.619Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T10:45:30.619Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				PolicyID:      276858,
@@ -349,7 +351,7 @@ func TestGetPolicyVersion(t *testing.T) {
 				},
 				MatchRulesWarnings: []MatchRulesWarning{},
 				ModifiedBy:         "jsmith",
-				ModifiedDate:       newTimeFromString(t, "2023-10-19T10:45:30.619Z"),
+				ModifiedDate:       ptr.To(test.NewTimeFromString(t, "2023-10-19T10:45:30.619Z")),
 			},
 		},
 		"200 OK, AS rule with disabled=false": {
@@ -400,7 +402,7 @@ func TestGetPolicyVersion(t *testing.T) {
 			expectedPath: "/cloudlets/v3/policies/355557/versions/2",
 			expectedResponse: &PolicyVersion{
 				CreatedBy:   "jsmith",
-				CreatedDate: *newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
+				CreatedDate: test.NewTimeFromString(t, "2023-10-19T09:46:57.395Z"),
 				Description: tools.StringPtr("Initial version"),
 				MatchRules: MatchRules{
 					&MatchRuleAS{
@@ -430,7 +432,7 @@ func TestGetPolicyVersion(t *testing.T) {
 					},
 				},
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T10:45:30.619Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T10:45:30.619Z")),
 				PolicyID:      355557,
 				PolicyVersion: 2,
 			},
@@ -481,10 +483,10 @@ func TestGetPolicyVersion(t *testing.T) {
 			expectedPath: "/cloudlets/v3/policies/276858/versions/6",
 			expectedResponse: &PolicyVersion{
 				CreatedBy:    "jsmith",
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
+				CreatedDate:  test.NewTimeFromString(t, "2023-10-19T09:46:57.395Z"),
 				Description:  nil,
 				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T09:46:57.395Z")),
 				MatchRules: MatchRules{
 					&MatchRulePR{
 						Type: "cdMatchRule",
@@ -547,11 +549,11 @@ func TestGetPolicyVersion(t *testing.T) {
 		}`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions/6",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T09:46:57.395Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T09:46:57.395Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T09:46:57.395Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -604,12 +606,12 @@ func TestGetPolicyVersion(t *testing.T) {
 			expectedPath: "/cloudlets/v3/policies/276858/versions/6",
 			expectedResponse: &PolicyVersion{
 				CreatedBy:     "jsmith",
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				Description:   nil,
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules: MatchRules{
 					&MatchRuleFR{
 						Name:     "rule 1",
@@ -706,11 +708,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   tools.StringPtr("Description for the policy"),
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules:    nil,
 				PolicyID:      276858,
 				PolicyVersion: 2,
@@ -846,11 +848,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/355557/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:  test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:    "jsmith",
 				Description:  tools.StringPtr("Initial version"),
 				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules: MatchRules{
 					&MatchRuleAS{
 						Type: "asMatchRule",
@@ -1050,11 +1052,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -1185,11 +1187,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -1304,11 +1306,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -1584,11 +1586,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -1727,11 +1729,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -1846,11 +1848,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -1977,11 +1979,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -2201,11 +2203,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -2355,11 +2357,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/139743/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:  test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:    "jsmith",
 				Description:  tools.StringPtr("New version 1630480693371"),
 				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules: MatchRules{
 					&MatchRuleFR{
 						ForwardSettings: ForwardSettingsFR{},
@@ -2468,11 +2470,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/139743/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:  test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:    "jsmith",
 				Description:  tools.StringPtr("New version 1630480693371"),
 				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules: MatchRules{
 					&MatchRuleFR{
 						ForwardSettings: ForwardSettingsFR{
@@ -2568,11 +2570,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -2673,7 +2675,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
@@ -2822,11 +2824,11 @@ func TestCreatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   nil,
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				PolicyID:      276858,
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
@@ -3142,11 +3144,11 @@ func TestUpdatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions/5",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:   *newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
 				Description:   tools.StringPtr("Updated description"),
 				ModifiedBy:    "jsmith",
-				ModifiedDate:  newTimeFromString(t, "2023-10-19T08:50:47.350Z"),
+				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules:    nil,
 				PolicyID:      276858,
 				PolicyVersion: 5,
@@ -3221,11 +3223,11 @@ func TestUpdatePolicyVersion(t *testing.T) {
 }`,
 			expectedPath: "/cloudlets/v3/policies/276858/versions/5",
 			expectedResponse: &PolicyVersion{
-				CreatedDate:  *newTimeFromString(t, "2023-10-20T09:21:04.180Z"),
+				CreatedDate:  test.NewTimeFromString(t, "2023-10-20T09:21:04.180Z"),
 				CreatedBy:    "jsmith",
 				Description:  tools.StringPtr("Updated description"),
 				ModifiedBy:   "jsmith",
-				ModifiedDate: newTimeFromString(t, "2023-10-20T10:32:56.316Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-20T10:32:56.316Z")),
 				ID:           6552305,
 				MatchRules: MatchRules{
 					&MatchRuleER{

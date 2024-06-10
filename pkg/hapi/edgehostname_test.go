@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -488,7 +488,7 @@ func TestGetCertificate(t *testing.T) {
 				CommonName:      "example.com",
 				SerialNumber:    "12:34:56:78:90:AB:CD:EF",
 				SlotNumber:      8927,
-				ExpirationDate:  *newTimeFromString(t, "2019-10-31T23:59:59Z"),
+				ExpirationDate:  test.NewTimeFromString(t, "2019-10-31T23:59:59Z"),
 				CertificateType: "SAN",
 				ValidationType:  "DOMAIN_VALIDATION",
 				Status:          "PENDING",
@@ -576,10 +576,4 @@ func TestGetCertificate(t *testing.T) {
 			assert.Equal(t, test.expectedResponse, result)
 		})
 	}
-}
-
-func newTimeFromString(t *testing.T, s string) *time.Time {
-	parsedTime, err := time.Parse(time.RFC3339Nano, s)
-	require.NoError(t, err)
-	return &parsedTime
 }

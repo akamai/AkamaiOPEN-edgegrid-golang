@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -37,7 +38,7 @@ func TestListPolicyActivations(t *testing.T) {
 				PolicyActivations: []PolicyActivation{
 					{
 						CreatedBy:   "testUser",
-						CreatedDate: *newTimeFromString(t, "2023-10-25T10:33:47.982Z"),
+						CreatedDate: test.NewTimeFromString(t, "2023-10-25T10:33:47.982Z"),
 						FinishDate:  nil,
 						ID:          234,
 						Links: []Link{
@@ -55,8 +56,8 @@ func TestListPolicyActivations(t *testing.T) {
 					},
 					{
 						CreatedBy:   "testUser",
-						CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-						FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+						CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+						FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 						ID:          123,
 						Links: []Link{
 							{
@@ -299,7 +300,7 @@ func TestActivatePolicy(t *testing.T) {
 			expectedPath:   "/cloudlets/v3/policies/1234/activations",
 			expectedResponse: &PolicyActivation{
 				CreatedBy:   "testUser",
-				CreatedDate: *newTimeFromString(t, "2023-10-25T10:33:47.982Z"),
+				CreatedDate: test.NewTimeFromString(t, "2023-10-25T10:33:47.982Z"),
 				FinishDate:  nil,
 				ID:          123,
 				Links: []Link{
@@ -447,7 +448,7 @@ func TestDeactivatePolicy(t *testing.T) {
 			expectedPath:   "/cloudlets/v3/policies/1234/activations",
 			expectedResponse: &PolicyActivation{
 				CreatedBy:   "testUser",
-				CreatedDate: *newTimeFromString(t, "2023-10-25T10:33:47.982Z"),
+				CreatedDate: test.NewTimeFromString(t, "2023-10-25T10:33:47.982Z"),
 				FinishDate:  nil,
 				ID:          123,
 				Links: []Link{
@@ -596,8 +597,8 @@ func TestGetPolicyActivation(t *testing.T) {
 			expectedPath:   "/cloudlets/v3/policies/1234/activations/123",
 			expectedResponse: &PolicyActivation{
 				CreatedBy:   "testUser",
-				CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-				FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+				CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 				ID:          activationID,
 				Links: []Link{
 					{
@@ -730,10 +731,4 @@ func TestGetPolicyActivation(t *testing.T) {
 			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
-}
-
-func newTimeFromString(t *testing.T, s string) *time.Time {
-	parsedTime, err := time.Parse(time.RFC3339Nano, s)
-	require.NoError(t, err)
-	return &parsedTime
 }

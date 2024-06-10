@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -174,7 +176,7 @@ func TestListPolicies(t *testing.T) {
 					{
 						CloudletType:       CloudletTypeCD,
 						CreatedBy:          "User1",
-						CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+						CreatedDate:        test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 						CurrentActivations: CurrentActivations{},
 						Description:        nil,
 						GroupID:            1,
@@ -186,20 +188,20 @@ func TestListPolicies(t *testing.T) {
 							},
 						},
 						ModifiedBy:   "User2",
-						ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+						ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 						Name:         "Name1",
 						PolicyType:   PolicyTypeShared,
 					},
 					{
 						CloudletType: CloudletTypeCD,
 						CreatedBy:    "User1",
-						CreatedDate:  *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+						CreatedDate:  test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 						CurrentActivations: CurrentActivations{
 							Production: ActivationInfo{
 								Effective: &PolicyActivation{
 									CreatedBy:   "User1",
-									CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-									FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+									CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+									FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 									ID:          123,
 									Links: []Link{
 										{
@@ -216,8 +218,8 @@ func TestListPolicies(t *testing.T) {
 								},
 								Latest: &PolicyActivation{
 									CreatedBy:   "User1",
-									CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-									FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+									CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+									FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 									ID:          321,
 									Links: []Link{
 										{
@@ -236,8 +238,8 @@ func TestListPolicies(t *testing.T) {
 							Staging: ActivationInfo{
 								Effective: &PolicyActivation{
 									CreatedBy:   "User3",
-									CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-									FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+									CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+									FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 									ID:          789,
 									Links: []Link{
 										{
@@ -254,8 +256,8 @@ func TestListPolicies(t *testing.T) {
 								},
 								Latest: &PolicyActivation{
 									CreatedBy:   "User3",
-									CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-									FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+									CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+									FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 									ID:          987,
 									Links: []Link{
 										{
@@ -282,7 +284,7 @@ func TestListPolicies(t *testing.T) {
 							},
 						},
 						ModifiedBy:   "User1",
-						ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+						ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 						Name:         "TestName",
 						PolicyType:   PolicyTypeShared,
 					},
@@ -359,7 +361,7 @@ func TestListPolicies(t *testing.T) {
 					{
 						CloudletType:       CloudletTypeCD,
 						CreatedBy:          "User1",
-						CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+						CreatedDate:        test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 						CurrentActivations: CurrentActivations{},
 						Description:        nil,
 						GroupID:            1,
@@ -371,7 +373,7 @@ func TestListPolicies(t *testing.T) {
 							},
 						},
 						ModifiedBy:   "User2",
-						ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+						ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 						Name:         "Name1",
 						PolicyType:   PolicyTypeShared,
 					},
@@ -545,7 +547,7 @@ func TestCreatePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType:       CloudletTypeFR,
 				CreatedBy:          "User1",
-				CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				CreatedDate:        test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
 				Description:        nil,
 				GroupID:            1,
@@ -557,7 +559,7 @@ func TestCreatePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -614,7 +616,7 @@ func TestCreatePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType:       CloudletTypeFR,
 				CreatedBy:          "User1",
-				CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				CreatedDate:        test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
 				Description:        tools.StringPtr("Description"),
 				GroupID:            1,
@@ -626,7 +628,7 @@ func TestCreatePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -771,7 +773,7 @@ func TestGetPolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType:       CloudletTypeFR,
 				CreatedBy:          "User1",
-				CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				CreatedDate:        test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
 				Description:        nil,
 				GroupID:            1,
@@ -783,7 +785,7 @@ func TestGetPolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -898,13 +900,13 @@ func TestGetPolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType: CloudletTypeFR,
 				CreatedBy:    "User1",
-				CreatedDate:  *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				CreatedDate:  test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
 						Effective: &PolicyActivation{
 							CreatedBy:   "User1",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          123,
 							Links: []Link{
 								{
@@ -921,8 +923,8 @@ func TestGetPolicy(t *testing.T) {
 						},
 						Latest: &PolicyActivation{
 							CreatedBy:   "User1",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          321,
 							Links: []Link{
 								{
@@ -941,8 +943,8 @@ func TestGetPolicy(t *testing.T) {
 					Staging: ActivationInfo{
 						Effective: &PolicyActivation{
 							CreatedBy:   "User3",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          789,
 							Links: []Link{
 								{
@@ -959,8 +961,8 @@ func TestGetPolicy(t *testing.T) {
 						},
 						Latest: &PolicyActivation{
 							CreatedBy:   "User3",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          987,
 							Links: []Link{
 								{
@@ -987,7 +989,7 @@ func TestGetPolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -1068,7 +1070,7 @@ func TestGetPolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType: CloudletTypeFR,
 				CreatedBy:    "User1",
-				CreatedDate:  *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				CreatedDate:  test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
 						Effective: nil,
@@ -1077,8 +1079,8 @@ func TestGetPolicy(t *testing.T) {
 					Staging: ActivationInfo{
 						Effective: &PolicyActivation{
 							CreatedBy:   "User3",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          789,
 							Links: []Link{
 								{
@@ -1095,8 +1097,8 @@ func TestGetPolicy(t *testing.T) {
 						},
 						Latest: &PolicyActivation{
 							CreatedBy:   "User3",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          987,
 							Links: []Link{
 								{
@@ -1123,7 +1125,7 @@ func TestGetPolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -1214,7 +1216,7 @@ func TestUpdatePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType:       CloudletTypeFR,
 				CreatedBy:          "User1",
-				CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				CreatedDate:        test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
 				Description:        nil,
 				GroupID:            1,
@@ -1226,7 +1228,7 @@ func TestUpdatePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -1348,13 +1350,13 @@ func TestUpdatePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType: CloudletTypeFR,
 				CreatedBy:    "User1",
-				CreatedDate:  *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				CreatedDate:  test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
 						Effective: &PolicyActivation{
 							CreatedBy:   "User1",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          123,
 							Links: []Link{
 								{
@@ -1371,8 +1373,8 @@ func TestUpdatePolicy(t *testing.T) {
 						},
 						Latest: &PolicyActivation{
 							CreatedBy:   "User1",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          321,
 							Links: []Link{
 								{
@@ -1391,8 +1393,8 @@ func TestUpdatePolicy(t *testing.T) {
 					Staging: ActivationInfo{
 						Effective: &PolicyActivation{
 							CreatedBy:   "User3",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          789,
 							Links: []Link{
 								{
@@ -1409,8 +1411,8 @@ func TestUpdatePolicy(t *testing.T) {
 						},
 						Latest: &PolicyActivation{
 							CreatedBy:   "User3",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          987,
 							Links: []Link{
 								{
@@ -1437,7 +1439,7 @@ func TestUpdatePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -1545,7 +1547,7 @@ func TestClonePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType:       "FR",
 				CreatedBy:          "User1",
-				CreatedDate:        *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				CreatedDate:        test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
 				Description:        nil,
 				GroupID:            1,
@@ -1557,7 +1559,7 @@ func TestClonePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 				Name:         "NewName",
 				PolicyType:   PolicyTypeShared,
 			},
@@ -1681,13 +1683,13 @@ func TestClonePolicy(t *testing.T) {
 			expectedResponse: &Policy{
 				CloudletType: "FR",
 				CreatedBy:    "User1",
-				CreatedDate:  *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				CreatedDate:  test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{
 					Production: ActivationInfo{
 						Effective: &PolicyActivation{
 							CreatedBy:   "User1",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          123,
 							Links: []Link{
 								{
@@ -1704,8 +1706,8 @@ func TestClonePolicy(t *testing.T) {
 						},
 						Latest: &PolicyActivation{
 							CreatedBy:   "User1",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          321,
 							Links: []Link{
 								{
@@ -1724,8 +1726,8 @@ func TestClonePolicy(t *testing.T) {
 					Staging: ActivationInfo{
 						Effective: &PolicyActivation{
 							CreatedBy:   "User3",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          789,
 							Links: []Link{
 								{
@@ -1742,8 +1744,8 @@ func TestClonePolicy(t *testing.T) {
 						},
 						Latest: &PolicyActivation{
 							CreatedBy:   "User3",
-							CreatedDate: *newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
-							FinishDate:  newTimeFromString(t, "2023-10-23T11:22:57.589Z"),
+							CreatedDate: test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+							FinishDate:  ptr.To(test.NewTimeFromString(t, "2023-10-23T11:22:57.589Z")),
 							ID:          987,
 							Links: []Link{
 								{
@@ -1770,7 +1772,7 @@ func TestClonePolicy(t *testing.T) {
 					},
 				},
 				ModifiedBy:   "User1",
-				ModifiedDate: newTimeFromString(t, "2023-10-23T11:21:19.896Z"),
+				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z")),
 				Name:         "NewName",
 				PolicyType:   PolicyTypeShared,
 			},

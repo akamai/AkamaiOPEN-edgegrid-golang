@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -143,12 +143,6 @@ func TestDNS_ListZones(t *testing.T) {
 	}
 }
 
-func newTimeFromString(t *testing.T, s string) *time.Time {
-	parsedTime, err := time.Parse(time.RFC3339Nano, s)
-	require.NoError(t, err)
-	return &parsedTime
-}
-
 func TestDNS_GetZonesDNSSecStatus(t *testing.T) {
 
 	tests := map[string]struct {
@@ -194,7 +188,7 @@ func TestDNS_GetZonesDNSSecStatus(t *testing.T) {
 						DNSKeyRecord:     "foo.test.net. 7200 IN DNSKEY 257 3 7 (DUMMY_HASH_2 ) ",
 						DSRecord:         "foo.test.net. 86400 IN DS 42061 7 2 ( DUMMY_HASH_1 ) ",
 						ExpectedTTL:      0,
-						LastModifiedDate: *newTimeFromString(t, "2024-05-28T06:58:26Z"),
+						LastModifiedDate: test.NewTimeFromString(t, "2024-05-28T06:58:26Z"),
 					},
 				}},
 			},

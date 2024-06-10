@@ -28,7 +28,8 @@
 
 
 
-
+* General
+  * Added `To` utility function in the `ptr` package that helps with creating value pointers
 
 
 
@@ -79,7 +80,15 @@
 
 
 
+### Deprecations
 
+* Deprecated the following functions in the `tools` package. Use `ptr.To` instead.
+  * `BoolPtr`
+  * `IntPtr`
+  * `Int64Ptr`
+  * `Float32Ptr`
+  * `Float64Ptr`
+  * `StringPtr`
 
 
 
