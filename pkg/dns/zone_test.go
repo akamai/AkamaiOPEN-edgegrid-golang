@@ -193,6 +193,56 @@ func TestDNS_GetZonesDNSSecStatus(t *testing.T) {
 				}},
 			},
 		},
+		"200 OK new records returned": {
+			zones: []string{"foo.test.net"},
+			headers: http.Header{
+				"Accept": []string{"application/json"},
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"dnsSecStatuses": [
+					{
+						"alerts": [
+							"PARENT_DS_MISSING"
+						],
+						"currentRecords": {
+							"dnskeyRecord": "foo.test.net. 7200 IN DNSKEY 257 3 13 (DUMMY_HASH_1 ) ",
+							"dsRecord": "foo.test.net. 86400 IN DS 3622 13 2 ( DUMMY_HASH_2 ) ",
+							"expectedTtl": 3600,
+							"lastModifiedDate": "2022-06-19T10:14:35Z"
+						},
+						"newRecords": {
+							"dnskeyRecord": "foo.test.net. 7200 IN DNSKEY 257 3 13 (DUMMY_HASH_3 ) ",
+							"dsRecord": "foo.test.net. 86400 IN DS 39035 13 2 ( DUMMY_HASH_4 ) ",
+							"expectedTtl": 3600,
+							"lastModifiedDate": "2023-06-19T10:14:35Z"
+						},
+						"zone": "foo.test.net"
+					}
+				]
+			}`,
+			expectedPath:        "/config-dns/v2/zones/dns-sec-status",
+			expectedRequestBody: `{"zones":["foo.test.net"]}`,
+			expectedResponse: &GetZonesDNSSecStatusResponse{
+				DNSSecStatuses: []SecStatus{{
+					Zone:   "foo.test.net",
+					Alerts: []string{"PARENT_DS_MISSING"},
+					CurrentRecords: SecRecords{
+						DNSKeyRecord:     "foo.test.net. 7200 IN DNSKEY 257 3 13 (DUMMY_HASH_1 ) ",
+						DSRecord:         "foo.test.net. 86400 IN DS 3622 13 2 ( DUMMY_HASH_2 ) ",
+						ExpectedTTL:      3600,
+						LastModifiedDate: test.NewTimeFromString(t, "2022-06-19T10:14:35Z"),
+					},
+					NewRecords: &SecRecords{
+						DNSKeyRecord:     "foo.test.net. 7200 IN DNSKEY 257 3 13 (DUMMY_HASH_3 ) ",
+						DSRecord:         "foo.test.net. 86400 IN DS 39035 13 2 ( DUMMY_HASH_4 ) ",
+						ExpectedTTL:      3600,
+						LastModifiedDate: test.NewTimeFromString(t, "2023-06-19T10:14:35Z"),
+					},
+				}},
+			},
+		},
 		"500 internal server error": {
 			zones:          []string{"foo.test.net"},
 			responseStatus: http.StatusInternalServerError,

@@ -213,7 +213,7 @@ type (
 	SecRecords struct {
 		DNSKeyRecord     string    `json:"dnskeyRecord"`
 		DSRecord         string    `json:"dsRecord"`
-		ExpectedTTL      int       `json:"expectedTtl"`
+		ExpectedTTL      int64     `json:"expectedTtl"`
 		LastModifiedDate time.Time `json:"lastModifiedDate"`
 	}
 )
