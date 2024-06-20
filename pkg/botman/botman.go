@@ -30,6 +30,9 @@ type (
 		ChallengeInterceptionRules
 		ClientSideSecurity
 		ConditionalAction
+		ContentProtectionJavaScriptInjectionRule
+		ContentProtectionRule
+		ContentProtectionRuleSequence
 		CustomBotCategory
 		CustomBotCategoryAction
 		CustomBotCategoryItemSequence

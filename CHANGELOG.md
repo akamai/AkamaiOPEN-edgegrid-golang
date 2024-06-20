@@ -4,6 +4,20 @@
 
 #### FEATURES/ENHANCEMENTS:
 
+* BOTMAN
+  * Added Content Protection APIs
+    * [CreateContentProtectionRule](https://techdocs.akamai.com/content-protector/reference/post-content-protection-rule)
+    * [GetContentProtectionRuleList](https://techdocs.akamai.com/content-protector/reference/get-content-protection-rules)
+    * [GetContentProtectionRule](https://techdocs.akamai.com/content-protector/reference/get-content-protection-rule)
+    * [UpdateContentProtectionRule](https://techdocs.akamai.com/content-protector/reference/put-content-protection-rule)
+    * [RemoveContentProtectionRule](https://techdocs.akamai.com/content-protector/reference/delete-content-protection-rule)
+    * [GetContentProtectionRuleSequence](https://techdocs.akamai.com/content-protector/reference/get-content-protection-rule-sequence)
+    * [UpdateContentProtectionRuleSequence](https://techdocs.akamai.com/content-protector/reference/put-content-protection-rule-sequence)
+    * [GetContentProtectionJavaScriptInjectionRuleList](https://techdocs.akamai.com/content-protector/reference/get-content-protection-javascript-injection-rules)
+    * [GetContentProtectionJavaScriptInjectionRule](https://techdocs.akamai.com/content-protector/reference/get-content-protection-javascript-injection-rule)
+    * [CreateContentProtectionJavaScriptInjectionRule](https://techdocs.akamai.com/content-protector/reference/post-content-protection-javascript-injection-rule)
+    * [UpdateContentProtectionJavaScriptInjectionRule](https://techdocs.akamai.com/content-protector/reference/put-content-protection-javascript-injection-rule)
+    * [RemoveContentProtectionJavaScriptInjectionRule](https://techdocs.akamai.com/content-protector/reference/delete-content-protection-javascript-injection-rule)
 
 
 
