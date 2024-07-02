@@ -316,3 +316,23 @@ func (m *Mock) SetUserPassword(ctx context.Context, request SetUserPasswordReque
 
 	return args.Error(0)
 }
+
+func (m *Mock) ListProperties(ctx context.Context, request ListPropertiesRequest) (*ListPropertiesResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListPropertiesResponse), args.Error(1)
+}
+
+func (m *Mock) GetProperty(ctx context.Context, request GetPropertyRequest) (*GetPropertyResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetPropertyResponse), args.Error(1)
+}

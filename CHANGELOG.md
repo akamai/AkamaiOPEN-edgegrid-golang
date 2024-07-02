@@ -13,7 +13,10 @@
 
 
 
-
+* IAM
+  * Added new methods:
+    * [GetProperty](https://techdocs.akamai.com/iam-api/reference/get-property)
+    * [ListProperties](https://techdocs.akamai.com/iam-api/reference/get-properties)
 
 
 
