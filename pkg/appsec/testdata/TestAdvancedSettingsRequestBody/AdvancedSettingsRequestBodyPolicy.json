@@ -1,0 +1,4 @@
+{
+  "override": true,
+  "requestBodyInspectionLimitInKB": "32"
+}

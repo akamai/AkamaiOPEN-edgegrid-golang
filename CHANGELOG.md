@@ -6,6 +6,14 @@
 
 * APPSEC
   * Added field `ClientLists` to `RuleConditions` and `AttackGroupConditions`
+* Appsec
+    * The `RequestBodyInspectionLimitOverride` field has been added in the following structures:
+    * `GetAdvancedSettingsRequestBodyResponse`,
+    * `UpdateAdvancedSettingsRequestBodyRequest`,
+    * `UpdateAdvancedSettingsRequestBodyResponse`,
+    * `RemoveAdvancedSettingsRequestBodyRequest`,
+    * `RemoveAdvancedSettingsRequestBodyResponse`
+
 
 
 

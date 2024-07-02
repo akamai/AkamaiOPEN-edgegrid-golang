@@ -694,7 +694,8 @@ type (
 
 	// RequestBody is returned as part of GetExportConfigurationResponse.
 	RequestBody struct {
-		RequestBodyInspectionLimitInKB string `json:"requestBodyInspectionLimitInKB"`
+		RequestBodyInspectionLimitInKB     string `json:"requestBodyInspectionLimitInKB"`
+		RequestBodyInspectionLimitOverride bool   `json:"override"`
 	}
 
 	// ConditionsExp is returned as part of GetExportConfigurationResponse.

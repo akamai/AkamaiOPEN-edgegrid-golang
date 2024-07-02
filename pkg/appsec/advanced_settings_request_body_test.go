@@ -164,7 +164,7 @@ func TestAppsecGetAdvancedSettingsRequestBodyPolicy(t *testing.T) {
 
 	result := GetAdvancedSettingsRequestBodyResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsRequestBody/AdvancedSettingsRequestBody.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsRequestBody/AdvancedSettingsRequestBodyPolicy.json"))
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
@@ -318,13 +318,13 @@ func TestAppsecUpdateAdvancedSettingsRequestBody(t *testing.T) {
 func TestAppsecUpdateAdvancedSettingsRequestBodyPolicy(t *testing.T) {
 	result := UpdateAdvancedSettingsRequestBodyResponse{}
 
-	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsRequestBody/AdvancedSettingsRequestBody.json"))
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsRequestBody/AdvancedSettingsRequestBodyPolicy.json"))
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
 	req := UpdateAdvancedSettingsRequestBodyRequest{}
 
-	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsRequestBody/AdvancedSettingsRequestBody.json"))
+	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsRequestBody/AdvancedSettingsRequestBodyPolicy.json"))
 	err = json.Unmarshal([]byte(reqData), &req)
 	require.NoError(t, err)
 
@@ -350,6 +350,26 @@ func TestAppsecUpdateAdvancedSettingsRequestBodyPolicy(t *testing.T) {
 			responseBody:     respData,
 			expectedResponse: &result,
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/test_policy/advanced-settings/request-body",
+		},
+		"400 invalid input error": {
+			params: UpdateAdvancedSettingsRequestBodyRequest{
+				ConfigID: 43253,
+				Version:  15,
+			},
+			responseStatus: http.StatusBadRequest,
+			responseBody: `
+			{
+    			"detail": "The value of the request body size parameter must be one of [default, 8, 16, 32]",
+    			"title": "Invalid Input Error",
+				"type": "internal_error"
+			}`,
+			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/request-body",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Invalid Input Error",
+				Detail:     "The value of the request body size parameter must be one of [default, 8, 16, 32]",
+				StatusCode: http.StatusBadRequest,
+			},
 		},
 		"500 internal server error": {
 			params: UpdateAdvancedSettingsRequestBodyRequest{
@@ -386,6 +406,142 @@ func TestAppsecUpdateAdvancedSettingsRequestBodyPolicy(t *testing.T) {
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsRequestBody(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestAppsecUpdateAdvancedSettingsRequestBodyPolicyWithInvalidValue(t *testing.T) {
+	result := UpdateAdvancedSettingsRequestBodyResponse{}
+
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsRequestBody/AdvancedSettingsRequestBodyPolicyWithInvalidValue.json"))
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
+
+	req := UpdateAdvancedSettingsRequestBodyRequest{}
+
+	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsRequestBody/AdvancedSettingsRequestBodyPolicyWithInvalidValue.json"))
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
+
+	tests := map[string]struct {
+		params           UpdateAdvancedSettingsRequestBodyRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *UpdateAdvancedSettingsRequestBodyResponse
+		withError        error
+		headers          http.Header
+	}{
+		"400 invalid input error": {
+			params: UpdateAdvancedSettingsRequestBodyRequest{
+				ConfigID:                           43253,
+				Version:                            15,
+				RequestBodyInspectionLimitInKB:     req.RequestBodyInspectionLimitInKB,
+				RequestBodyInspectionLimitOverride: req.RequestBodyInspectionLimitOverride,
+			},
+			responseStatus: http.StatusBadRequest,
+			responseBody: `
+			{
+    			"detail": "The value of the request body size parameter must be one of [default, 8, 16, 32]",
+    			"title": "Invalid Input Error",
+				"type": "internal_error"
+			}`,
+			expectedPath: "/appsec/v1/configs/43253/versions/15/advanced-settings/request-body",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Invalid Input Error",
+				Detail:     "The value of the request body size parameter must be one of [default, 8, 16, 32]",
+				StatusCode: http.StatusBadRequest,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				if len(test.responseBody) > 0 {
+					_, err := w.Write([]byte(test.responseBody))
+					assert.NoError(t, err)
+				}
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.UpdateAdvancedSettingsRequestBody(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestAppsecUpdateAdvancedSettingsRequestBodyPolicyWithOverrideUnset(t *testing.T) {
+	result := RemoveAdvancedSettingsRequestBodyResponse{}
+
+	respData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsRequestBody/AdvancedSettingsRequestBodyPolicyWithOverrideUnsetResponse.json"))
+	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
+
+	req := RemoveAdvancedSettingsRequestBodyRequest{}
+
+	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsRequestBody/AdvancedSettingsRequestBodyPolicyWithOverrideUnsetRequest.json"))
+	err = json.Unmarshal([]byte(reqData), &req)
+	require.NoError(t, err)
+
+	tests := map[string]struct {
+		params           RemoveAdvancedSettingsRequestBodyRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *RemoveAdvancedSettingsRequestBodyResponse
+		withError        error
+		headers          http.Header
+	}{
+		"200 Success": {
+			params: RemoveAdvancedSettingsRequestBodyRequest{
+				ConfigID:                           43253,
+				Version:                            15,
+				PolicyID:                           "test_policy",
+				RequestBodyInspectionLimitInKB:     req.RequestBodyInspectionLimitInKB,
+				RequestBodyInspectionLimitOverride: req.RequestBodyInspectionLimitOverride,
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusCreated,
+			responseBody:     respData,
+			expectedResponse: &result,
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/test_policy/advanced-settings/request-body",
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				if len(test.responseBody) > 0 {
+					_, err := w.Write([]byte(test.responseBody))
+					assert.NoError(t, err)
+				}
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.RemoveAdvancedSettingsRequestBody(
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)
