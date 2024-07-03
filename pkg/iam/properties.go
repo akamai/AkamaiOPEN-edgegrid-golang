@@ -25,6 +25,11 @@ type (
 		//
 		// See: https://techdocs.akamai.com/iam-api/reference/get-property
 		GetProperty(context.Context, GetPropertyRequest) (*GetPropertyResponse, error)
+
+		// MoveProperty moves a property from one group to another group.
+		//
+		// See: https://techdocs.akamai.com/iam-api/reference/put-property
+		MoveProperty(context.Context, MovePropertyRequest) error
 	}
 
 	// ListPropertiesRequest contains the request parameters for the list properties operation.
@@ -55,6 +60,18 @@ type (
 		PropertyName  string    `json:"propertyName"`
 	}
 
+	// MovePropertyRequest contains the request parameters for the MoveProperty operation.
+	MovePropertyRequest struct {
+		PropertyID int64
+		BodyParams MovePropertyReqBody
+	}
+
+	// MovePropertyReqBody contains body parameters for the MoveProperty operation.
+	MovePropertyReqBody struct {
+		DestinationGroupID int64 `json:"destinationGroupId"`
+		SourceGroupID      int64 `json:"sourceGroupId"`
+	}
+
 	// Property holds the property details.
 	Property struct {
 		PropertyID              int64           `json:"propertyId"`
@@ -79,11 +96,29 @@ func (r GetPropertyRequest) Validate() error {
 	})
 }
 
+// Validate validates MovePropertyRequest
+func (r MovePropertyRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
+		"BodyParams": validation.Validate(r.BodyParams, validation.Required),
+	})
+}
+
+// Validate validates MovePropertyReqBody
+func (r MovePropertyReqBody) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DestinationGroupID": validation.Validate(r.DestinationGroupID, validation.Required),
+		"SourceGroupID":      validation.Validate(r.SourceGroupID, validation.Required),
+	})
+}
+
 var (
 	// ErrListProperties is returned when ListProperties fails
 	ErrListProperties = errors.New("list properties")
 	// ErrGetProperty is returned when GetProperty fails
 	ErrGetProperty = errors.New("get property")
+	// ErrMoveProperty is returned when MoveProperty fails
+	ErrMoveProperty = errors.New("move property")
 )
 
 func (i *iam) ListProperties(ctx context.Context, params ListPropertiesRequest) (*ListPropertiesResponse, error) {
@@ -153,4 +188,31 @@ func (i *iam) GetProperty(ctx context.Context, params GetPropertyRequest) (*GetP
 	}
 
 	return &result, nil
+}
+
+func (i *iam) MoveProperty(ctx context.Context, params MovePropertyRequest) error {
+	logger := i.Log(ctx)
+	logger.Debug("MoveProperty")
+
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w: %s", ErrMoveProperty, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf("/identity-management/v3/user-admin/properties/%d", params.PropertyID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
+	if err != nil {
+		return fmt.Errorf("%w: failed to create request: %s", ErrMoveProperty, err)
+	}
+
+	resp, err := i.Exec(req, nil, params.BodyParams)
+	if err != nil {
+		return fmt.Errorf("%w: request failed: %s", ErrMoveProperty, err)
+	}
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("%s: %w", ErrMoveProperty, i.Error(resp))
+	}
+
+	return nil
 }

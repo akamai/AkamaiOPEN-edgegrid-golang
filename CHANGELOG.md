@@ -22,7 +22,8 @@
 
 
 
-
+* IAM 
+  * Added new [MoveProperty](https://techdocs.akamai.com/iam-api/reference/put-property) method
 
 
 

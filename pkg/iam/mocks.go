@@ -336,3 +336,9 @@ func (m *Mock) GetProperty(ctx context.Context, request GetPropertyRequest) (*Ge
 
 	return args.Get(0).(*GetPropertyResponse), args.Error(1)
 }
+
+func (m *Mock) MoveProperty(ctx context.Context, request MovePropertyRequest) error {
+	args := m.Called(ctx, request)
+
+	return args.Error(0)
+}

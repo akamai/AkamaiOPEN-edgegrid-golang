@@ -3,12 +3,14 @@ package iam
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestListProperties(t *testing.T) {
@@ -236,6 +238,96 @@ func TestGetProperty(t *testing.T) {
 			}
 			assert.NoError(t, err)
 			assert.Equal(t, test.expectedResponse, users)
+		})
+	}
+}
+
+func TestMoveProperty(t *testing.T) {
+	tests := map[string]struct {
+		params              MovePropertyRequest
+		expectedPath        string
+		expectedRequestBody string
+		responseStatus      int
+		responseBody        string
+		withError           func(*testing.T, error)
+	}{
+		"204 OK": {
+			params: MovePropertyRequest{
+				PropertyID: 1,
+				BodyParams: MovePropertyReqBody{
+					DestinationGroupID: 22,
+					SourceGroupID:      11,
+				},
+			},
+			expectedRequestBody: `
+{
+	"destinationGroupId": 22,
+	"sourceGroupId": 11
+}`,
+			responseStatus: http.StatusNoContent,
+			expectedPath:   "/identity-management/v3/user-admin/properties/1",
+		},
+		"validation errors": {
+			params: MovePropertyRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "move property: struct validation: BodyParams: DestinationGroupID: cannot be blank\nSourceGroupID: cannot be blank\nPropertyID: cannot be blank", err.Error())
+			},
+		},
+		"400 not allowed": {
+			params: MovePropertyRequest{
+				PropertyID: 1,
+				BodyParams: MovePropertyReqBody{
+					DestinationGroupID: 22,
+					SourceGroupID:      11,
+				},
+			},
+			responseStatus: http.StatusBadRequest,
+			expectedPath:   "/identity-management/v3/user-admin/properties/1",
+			responseBody: `
+{
+    "instance": "",
+    "httpStatus": 400,
+    "detail": "Property move is not allowed from the group 11",
+    "title": "Validation Exception",
+    "type": "/useradmin-api/error-types/1806"
+}
+`,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "/useradmin-api/error-types/1806",
+					Title:      "Validation Exception",
+					Detail:     "Property move is not allowed from the group 11",
+					HTTPStatus: http.StatusBadRequest,
+					StatusCode: http.StatusBadRequest,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
+				w.WriteHeader(test.responseStatus)
+				if test.responseBody != "" {
+					_, err := w.Write([]byte(test.responseBody))
+					assert.NoError(t, err)
+				}
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.MoveProperty(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			assert.NoError(t, err)
 		})
 	}
 }
