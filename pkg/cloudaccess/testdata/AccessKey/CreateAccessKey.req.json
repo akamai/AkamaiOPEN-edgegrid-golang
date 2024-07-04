@@ -6,7 +6,7 @@
     "cloudSecretAccessKey": "testKey",
     "cloudAccessKeyID": "456"
   },
-  "groupID": "123",
+  "groupID": 123,
   "networkConfiguration": {
     "additionalCDN": "CHINA_CDN",
     "securityNetwork": "ENHANCED_TLS"

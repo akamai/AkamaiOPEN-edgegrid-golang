@@ -119,7 +119,7 @@ type (
 
 	// SecureNetwork contains additional information about network
 	SecureNetwork struct {
-		AdditionalCDN   CDNType     `json:"additionalCdn"`
+		AdditionalCDN   *CDNType    `json:"additionalCdn,omitempty"`
 		SecurityNetwork NetworkType `json:"securityNetwork"`
 	}
 

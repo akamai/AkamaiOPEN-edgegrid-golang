@@ -35,7 +35,7 @@ type (
 		AuthenticationMethod string        `json:"authenticationMethod"`
 		ContractID           string        `json:"contractId"`
 		Credentials          Credentials   `json:"credentials"`
-		GroupID              string        `json:"groupId"`
+		GroupID              int64         `json:"groupId"`
 		NetworkConfiguration SecureNetwork `json:"networkConfiguration"`
 	}
 
