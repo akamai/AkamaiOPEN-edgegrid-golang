@@ -16,7 +16,7 @@ type (
 	GetAccessKeyVersionStatusResponse struct {
 		AccessKeyVersion *KeyVersion    `json:"accessKeyVersion"`
 		ProcessingStatus ProcessingType `json:"processingStatus"`
-		RequestDate      string         `json:"requestDate"`
+		RequestDate      time.Time      `json:"requestDate"`
 		RequestedBy      string         `json:"requestedBy"`
 	}
 

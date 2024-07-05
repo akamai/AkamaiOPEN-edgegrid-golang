@@ -131,7 +131,7 @@ func (r AccessKeyRequest) Validate() error {
 // Validate validates UpdateAccessKeyRequest
 func (r UpdateAccessKeyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"AccessKeyName": validation.Validate(r.AccessKeyName, validation.Required),
+		"AccessKeyName": validation.Validate(r.AccessKeyName, validation.Required, validation.Length(1, 50)),
 	})
 }
 

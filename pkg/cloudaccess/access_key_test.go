@@ -496,6 +496,17 @@ func TestUpdateAccessKey(t *testing.T) {
 				assert.Equal(t, "update an access key: struct validation: AccessKeyName: cannot be blank", err.Error())
 			},
 		},
+		"max length - validation error": {
+			params: AccessKeyRequest{
+				AccessKeyUID: 1,
+			},
+			accessKey: UpdateAccessKeyRequest{
+				AccessKeyName: "asdfghjkloasdfghjkloasdfghjkloasdfghjkloasdfghjkloasdfghjkloasdfghjkloasdfghjklo",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "update an access key: struct validation: AccessKeyName: the length must be between 1 and 50", err.Error())
+			},
+		},
 		"500 internal server error": {
 			accessKey: UpdateAccessKeyRequest{
 				AccessKeyName: "key2",

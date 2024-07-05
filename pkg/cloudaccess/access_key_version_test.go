@@ -41,7 +41,7 @@ func TestGetAccessKeyVersionStatus(t *testing.T) {
 			expectedPath: "/cam/v1/access-key-version-create-requests/1",
 			expectedResponse: &GetAccessKeyVersionStatusResponse{
 				ProcessingStatus: ProcessingInProgress,
-				RequestDate:      "2021-02-26T14:54:38.622074Z",
+				RequestDate:      time.Date(2021, 2, 26, 14, 54, 38, 622074000, time.UTC),
 				RequestedBy:      "user",
 				AccessKeyVersion: &KeyVersion{
 					AccessKeyUID: 123,
@@ -65,7 +65,7 @@ func TestGetAccessKeyVersionStatus(t *testing.T) {
 			expectedPath: "/cam/v1/access-key-version-create-requests/1",
 			expectedResponse: &GetAccessKeyVersionStatusResponse{
 				ProcessingStatus: ProcessingInProgress,
-				RequestDate:      "2021-02-26T14:54:38.622074Z",
+				RequestDate:      time.Date(2021, 2, 26, 14, 54, 38, 622074000, time.UTC),
 				RequestedBy:      "user",
 			},
 		},
