@@ -1,59 +1,11 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## X.X.X (X X, X) Cloud Access
-
-
-
-
-
-
-* Added Cloud Access Manager API support
-
-
-
-
-
-  * Access Keys
-    * [GetAccessKeyStatus] (https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-create-request)
-    * [CreateAccessKey] (https://techdocs.akamai.com/cloud-access-mgr/reference/post-access-key)
-    * [GetAccessKey] (https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key)
-    * [GetAccessKeys] (https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-keys)
-    * [UpdateAccessKey] (https://techdocs.akamai.com/cloud-access-mgr/reference/put-access-key)
-    * [DeleteAccessKey] (https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key)
-  
-
-
-
-
-
-
-  
-
-    
-
-
-
-
-
-
-
-* Access Key Versions
-  * [GetAccessKeyVersionStatus](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-create-request)
-  * [GetAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version)
-  * [CreateAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/post-access-key-version)
-  * [ListAccessKeyVersions](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-versions)
-  * [DeleteAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key-version)
-
-
-
-  * Properties using Access Key
-    * [LookupProperties](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-properties)
-    * [GetAsyncPropertiesLookupID](https://techdocs.akamai.com/cloud-access-mgr/reference/get-async-version-property-lookup)
-    * [PerformAsyncPropertiesLookup](https://techdocs.akamai.com/cloud-access-mgr/reference/get-property-lookup)
-
-## X.X.X (X X, X)
+## 8.3.0 (July 09, 2024)
 
 #### FEATURES/ENHANCEMENTS:
+
+* General
+  * Added `To` utility function in the `ptr` package that helps with creating value pointers
 
 * BOTMAN
   * Added Content Protection APIs
@@ -70,81 +22,29 @@
     * [UpdateContentProtectionJavaScriptInjectionRule](https://techdocs.akamai.com/content-protector/reference/put-content-protection-javascript-injection-rule)
     * [RemoveContentProtectionJavaScriptInjectionRule](https://techdocs.akamai.com/content-protector/reference/delete-content-protection-javascript-injection-rule)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* Added Cloud Access Manager API support
+  * Access Keys
+    * [GetAccessKeyStatus](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-create-request)
+    * [CreateAccessKey](https://techdocs.akamai.com/cloud-access-mgr/reference/post-access-key)
+    * [GetAccessKey](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key)
+    * [ListAccessKeys](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-keys)
+    * [UpdateAccessKey](https://techdocs.akamai.com/cloud-access-mgr/reference/put-access-key)
+    * [DeleteAccessKey](https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key)
+  * Access Key Versions
+    * [GetAccessKeyVersionStatus](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-create-request)
+    * [GetAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version)
+    * [CreateAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/post-access-key-version)
+    * [ListAccessKeyVersions](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-versions)
+    * [DeleteAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key-version)
+  * Properties using Access Key
+    * [LookupProperties](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-properties)
+    * [GetAsyncPropertiesLookupID](https://techdocs.akamai.com/cloud-access-mgr/reference/get-async-version-property-lookup)
+    * [PerformAsyncPropertiesLookup](https://techdocs.akamai.com/cloud-access-mgr/reference/get-property-lookup)
 
 * DNS
-  * Added `GetZonesDNSSecStatus` method returning the current DNSSEC status for one or more zones
+  * Added [GetZonesDNSSecStatus](https://techdocs.akamai.com/edge-dns/reference/post-zones-dns-sec-status) method returning the current DNSSEC status for one or more zones
 
-
-
-
-
-* General
-  * Added `To` utility function in the `ptr` package that helps with creating value pointers
-
-
-
-
-
-
-
-
-
-#### BUG FIXES:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Deprecations
+#### Deprecations
 
 * Deprecated the following functions in the `tools` package. Use `ptr.To` instead.
   * `BoolPtr`
@@ -153,13 +53,6 @@
   * `Float32Ptr`
   * `Float64Ptr`
   * `StringPtr`
-
-
-
-
-
-
-
 
 ## 8.2.0 (May 21, 2024)
 
