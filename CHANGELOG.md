@@ -1,5 +1,59 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 8.3.0 (July 09, 2024)
+
+#### FEATURES/ENHANCEMENTS:
+
+* General
+  * Added `To` utility function in the `ptr` package that helps with creating value pointers
+
+* BOTMAN
+  * Added Content Protection APIs
+    * [CreateContentProtectionRule](https://techdocs.akamai.com/content-protector/reference/post-content-protection-rule)
+    * [GetContentProtectionRuleList](https://techdocs.akamai.com/content-protector/reference/get-content-protection-rules)
+    * [GetContentProtectionRule](https://techdocs.akamai.com/content-protector/reference/get-content-protection-rule)
+    * [UpdateContentProtectionRule](https://techdocs.akamai.com/content-protector/reference/put-content-protection-rule)
+    * [RemoveContentProtectionRule](https://techdocs.akamai.com/content-protector/reference/delete-content-protection-rule)
+    * [GetContentProtectionRuleSequence](https://techdocs.akamai.com/content-protector/reference/get-content-protection-rule-sequence)
+    * [UpdateContentProtectionRuleSequence](https://techdocs.akamai.com/content-protector/reference/put-content-protection-rule-sequence)
+    * [GetContentProtectionJavaScriptInjectionRuleList](https://techdocs.akamai.com/content-protector/reference/get-content-protection-javascript-injection-rules)
+    * [GetContentProtectionJavaScriptInjectionRule](https://techdocs.akamai.com/content-protector/reference/get-content-protection-javascript-injection-rule)
+    * [CreateContentProtectionJavaScriptInjectionRule](https://techdocs.akamai.com/content-protector/reference/post-content-protection-javascript-injection-rule)
+    * [UpdateContentProtectionJavaScriptInjectionRule](https://techdocs.akamai.com/content-protector/reference/put-content-protection-javascript-injection-rule)
+    * [RemoveContentProtectionJavaScriptInjectionRule](https://techdocs.akamai.com/content-protector/reference/delete-content-protection-javascript-injection-rule)
+
+* Added Cloud Access Manager API support
+  * Access Keys
+    * [GetAccessKeyStatus](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-create-request)
+    * [CreateAccessKey](https://techdocs.akamai.com/cloud-access-mgr/reference/post-access-key)
+    * [GetAccessKey](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key)
+    * [ListAccessKeys](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-keys)
+    * [UpdateAccessKey](https://techdocs.akamai.com/cloud-access-mgr/reference/put-access-key)
+    * [DeleteAccessKey](https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key)
+  * Access Key Versions
+    * [GetAccessKeyVersionStatus](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-create-request)
+    * [GetAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version)
+    * [CreateAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/post-access-key-version)
+    * [ListAccessKeyVersions](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-versions)
+    * [DeleteAccessKeyVersion](https://techdocs.akamai.com/cloud-access-mgr/reference/delete-access-key-version)
+  * Properties using Access Key
+    * [LookupProperties](https://techdocs.akamai.com/cloud-access-mgr/reference/get-access-key-version-properties)
+    * [GetAsyncPropertiesLookupID](https://techdocs.akamai.com/cloud-access-mgr/reference/get-async-version-property-lookup)
+    * [PerformAsyncPropertiesLookup](https://techdocs.akamai.com/cloud-access-mgr/reference/get-property-lookup)
+
+* DNS
+  * Added [GetZonesDNSSecStatus](https://techdocs.akamai.com/edge-dns/reference/post-zones-dns-sec-status) method returning the current DNSSEC status for one or more zones
+
+#### Deprecations
+
+* Deprecated the following functions in the `tools` package. Use `ptr.To` instead.
+  * `BoolPtr`
+  * `IntPtr`
+  * `Int64Ptr`
+  * `Float32Ptr`
+  * `Float64Ptr`
+  * `StringPtr`
+
 ## 8.2.0 (May 21, 2024)
 
 #### FEATURES/ENHANCEMENTS:

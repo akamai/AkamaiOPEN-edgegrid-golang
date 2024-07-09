@@ -1,0 +1,19 @@
+{
+  "accessKeyName": "key1",
+  "AccessKeyUid": 1,
+  "authenticationMethod": "AWS4_HMAC_SHA256",
+  "createdBy": "user1",
+  "groups": [
+    {
+      "contractIds": [
+        "TestContractID"
+      ],
+      "groupId": 123
+    }
+  ],
+  "latestVersion": 1,
+  "networkConfiguration": {
+    "additionalCdn": "RUSSIA_CDN",
+    "securityNetwork": "ENHANCED_TLS"
+  }
+}

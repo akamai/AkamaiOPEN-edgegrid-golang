@@ -4,9 +4,15 @@
 package dns
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
+)
+
+var (
+	// ErrStructValidation is returned when given struct validation failed
+	ErrStructValidation = errors.New("struct validation")
 )
 
 type (

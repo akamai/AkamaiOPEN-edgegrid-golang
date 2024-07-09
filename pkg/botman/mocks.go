@@ -596,3 +596,93 @@ func (p *Mock) UpdateCustomBotCategoryItemSequence(ctx context.Context, params U
 	}
 	return args.Get(0).(*UpdateCustomBotCategoryItemSequenceResponse), nil
 }
+
+func (p *Mock) GetContentProtectionRuleList(ctx context.Context, params GetContentProtectionRuleListRequest) (*GetContentProtectionRuleListResponse, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetContentProtectionRuleListResponse), nil
+}
+
+func (p *Mock) GetContentProtectionRule(ctx context.Context, params GetContentProtectionRuleRequest) (map[string]interface{}, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]interface{}), nil
+}
+
+func (p *Mock) CreateContentProtectionRule(ctx context.Context, params CreateContentProtectionRuleRequest) (map[string]interface{}, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]interface{}), nil
+}
+
+func (p *Mock) UpdateContentProtectionRule(ctx context.Context, params UpdateContentProtectionRuleRequest) (map[string]interface{}, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]interface{}), nil
+}
+
+func (p *Mock) RemoveContentProtectionRule(ctx context.Context, params RemoveContentProtectionRuleRequest) error {
+	args := p.Called(ctx, params)
+	return args.Error(0)
+}
+
+func (p *Mock) GetContentProtectionRuleSequence(ctx context.Context, params GetContentProtectionRuleSequenceRequest) (*GetContentProtectionRuleSequenceResponse, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetContentProtectionRuleSequenceResponse), nil
+}
+
+func (p *Mock) UpdateContentProtectionRuleSequence(ctx context.Context, params UpdateContentProtectionRuleSequenceRequest) (*UpdateContentProtectionRuleSequenceResponse, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateContentProtectionRuleSequenceResponse), nil
+}
+
+func (p *Mock) GetContentProtectionJavaScriptInjectionRuleList(ctx context.Context, params GetContentProtectionJavaScriptInjectionRuleListRequest) (*GetContentProtectionJavaScriptInjectionRuleListResponse, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetContentProtectionJavaScriptInjectionRuleListResponse), nil
+}
+
+func (p *Mock) GetContentProtectionJavaScriptInjectionRule(ctx context.Context, params GetContentProtectionJavaScriptInjectionRuleRequest) (map[string]interface{}, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]interface{}), nil
+}
+
+func (p *Mock) CreateContentProtectionJavaScriptInjectionRule(ctx context.Context, params CreateContentProtectionJavaScriptInjectionRuleRequest) (map[string]interface{}, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]interface{}), nil
+}
+
+func (p *Mock) UpdateContentProtectionJavaScriptInjectionRule(ctx context.Context, params UpdateContentProtectionJavaScriptInjectionRuleRequest) (map[string]interface{}, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]interface{}), nil
+}
+
+func (p *Mock) RemoveContentProtectionJavaScriptInjectionRule(ctx context.Context, params RemoveContentProtectionJavaScriptInjectionRuleRequest) error {
+	args := p.Called(ctx, params)
+	return args.Error(0)
+}

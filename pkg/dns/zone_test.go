@@ -3,10 +3,12 @@ package dns
 import (
 	"context"
 	"errors"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -131,6 +133,164 @@ func TestDNS_ListZones(t *testing.T) {
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.args...)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestDNS_GetZonesDNSSecStatus(t *testing.T) {
+
+	tests := map[string]struct {
+		zones               []string
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *GetZonesDNSSecStatusResponse
+		withError           error
+		headers             http.Header
+	}{
+		"200 OK current records only": {
+			zones: []string{"foo.test.net"},
+			headers: http.Header{
+				"Accept": []string{"application/json"},
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"dnsSecStatuses": [
+					{
+						"zone": "foo.test.net",
+						"alerts": [
+							"PARENT_DS_MISSING"
+						],
+						"currentRecords": {
+							"dsRecord": "foo.test.net. 86400 IN DS 42061 7 2 ( DUMMY_HASH_1 ) ",
+							"dnskeyRecord": "foo.test.net. 7200 IN DNSKEY 257 3 7 (DUMMY_HASH_2 ) ",
+							"lastModifiedDate": "2024-05-28T06:58:26Z",
+							"expectedTtl": 0
+						}
+					}
+				]
+			}`,
+			expectedPath:        "/config-dns/v2/zones/dns-sec-status",
+			expectedRequestBody: `{"zones":["foo.test.net"]}`,
+			expectedResponse: &GetZonesDNSSecStatusResponse{
+				DNSSecStatuses: []SecStatus{{
+					Zone:   "foo.test.net",
+					Alerts: []string{"PARENT_DS_MISSING"},
+					CurrentRecords: SecRecords{
+						DNSKeyRecord:     "foo.test.net. 7200 IN DNSKEY 257 3 7 (DUMMY_HASH_2 ) ",
+						DSRecord:         "foo.test.net. 86400 IN DS 42061 7 2 ( DUMMY_HASH_1 ) ",
+						ExpectedTTL:      0,
+						LastModifiedDate: test.NewTimeFromString(t, "2024-05-28T06:58:26Z"),
+					},
+				}},
+			},
+		},
+		"200 OK new records returned": {
+			zones: []string{"foo.test.net"},
+			headers: http.Header{
+				"Accept": []string{"application/json"},
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"dnsSecStatuses": [
+					{
+						"alerts": [
+							"PARENT_DS_MISSING"
+						],
+						"currentRecords": {
+							"dnskeyRecord": "foo.test.net. 7200 IN DNSKEY 257 3 13 (DUMMY_HASH_1 ) ",
+							"dsRecord": "foo.test.net. 86400 IN DS 3622 13 2 ( DUMMY_HASH_2 ) ",
+							"expectedTtl": 3600,
+							"lastModifiedDate": "2022-06-19T10:14:35Z"
+						},
+						"newRecords": {
+							"dnskeyRecord": "foo.test.net. 7200 IN DNSKEY 257 3 13 (DUMMY_HASH_3 ) ",
+							"dsRecord": "foo.test.net. 86400 IN DS 39035 13 2 ( DUMMY_HASH_4 ) ",
+							"expectedTtl": 3600,
+							"lastModifiedDate": "2023-06-19T10:14:35Z"
+						},
+						"zone": "foo.test.net"
+					}
+				]
+			}`,
+			expectedPath:        "/config-dns/v2/zones/dns-sec-status",
+			expectedRequestBody: `{"zones":["foo.test.net"]}`,
+			expectedResponse: &GetZonesDNSSecStatusResponse{
+				DNSSecStatuses: []SecStatus{{
+					Zone:   "foo.test.net",
+					Alerts: []string{"PARENT_DS_MISSING"},
+					CurrentRecords: SecRecords{
+						DNSKeyRecord:     "foo.test.net. 7200 IN DNSKEY 257 3 13 (DUMMY_HASH_1 ) ",
+						DSRecord:         "foo.test.net. 86400 IN DS 3622 13 2 ( DUMMY_HASH_2 ) ",
+						ExpectedTTL:      3600,
+						LastModifiedDate: test.NewTimeFromString(t, "2022-06-19T10:14:35Z"),
+					},
+					NewRecords: &SecRecords{
+						DNSKeyRecord:     "foo.test.net. 7200 IN DNSKEY 257 3 13 (DUMMY_HASH_3 ) ",
+						DSRecord:         "foo.test.net. 86400 IN DS 39035 13 2 ( DUMMY_HASH_4 ) ",
+						ExpectedTTL:      3600,
+						LastModifiedDate: test.NewTimeFromString(t, "2023-06-19T10:14:35Z"),
+					},
+				}},
+			},
+		},
+		"500 internal server error": {
+			zones:          []string{"foo.test.net"},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+			{
+			   "type": "https://problems.luna.akamaiapis.net/authoritative-dns/serverError",
+			   "title": "Server error",
+			   "instance": "29aa48de-ec7d-4214-ad6c-649163889be7",
+			   "status": 500,
+			   "detail": "An internal error occurred.",
+			   "problemId": "29aa48de-ec7d-4214-ad6c-649163889be7"
+			}`,
+			expectedPath:        "/config-dns/v2/zones/dns-sec-status",
+			expectedRequestBody: `{"zones":["foo.test.net"]}`,
+			withError: &Error{
+				Type:       "https://problems.luna.akamaiapis.net/authoritative-dns/serverError",
+				Title:      "Server error",
+				Detail:     "An internal error occurred.",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+		"validation error: empty zone list": {
+			zones:     []string{},
+			withError: ErrStructValidation,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPost, r.Method)
+				if len(test.expectedRequestBody) > 0 {
+					body, err := ioutil.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.Equal(t, test.expectedRequestBody, string(body))
+				}
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetZonesDNSSecStatus(
+				session.ContextWithOptions(
+					context.Background(),
+					session.WithContextHeaders(test.headers)),
+				GetZonesDNSSecStatusRequest{
+					Zones: test.zones})
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
