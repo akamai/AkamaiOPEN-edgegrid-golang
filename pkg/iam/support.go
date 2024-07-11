@@ -12,6 +12,11 @@ import (
 type (
 	// Support is a list of IAM supported objects API interfaces
 	Support interface {
+		// GetPasswordPolicy gets the password policy for the account.
+		//
+		// See: https://techdocs.akamai.com/iam-api/reference/get-common-password-policy
+		GetPasswordPolicy(ctx context.Context) (*GetPasswordPolicyResponse, error)
+
 		// ListProducts lists products a user can subscribe to and receive notifications for on the account
 		//
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-notification-products
@@ -48,6 +53,19 @@ type (
 		SupportedTimezones(context.Context) ([]Timezone, error)
 	}
 
+	// GetPasswordPolicyResponse holds the response data from GetPasswordPolicy.
+	GetPasswordPolicyResponse struct {
+		CaseDiff        int64  `json:"caseDif"`
+		MaxRepeating    int64  `json:"maxRepeating"`
+		MinDigits       int64  `json:"minDigits"`
+		MinLength       int64  `json:"minLength"`
+		MinLetters      int64  `json:"minLetters"`
+		MinNonAlpha     int64  `json:"minNonAlpha"`
+		MinReuse        int64  `json:"minReuse"`
+		PwClass         string `json:"pwclass"`
+		RotateFrequency int64  `json:"rotateFrequency"`
+	}
+
 	// TimeoutPolicy encapsulates the response of the list timeout policies endpoint
 	TimeoutPolicy struct {
 		Name  string `json:"name"`
@@ -69,6 +87,9 @@ type (
 )
 
 var (
+	// ErrGetPasswordPolicy is returned when GetPasswordPolicy fails
+	ErrGetPasswordPolicy = errors.New("get password policy")
+
 	// ErrListProducts is returned when ListProducts fails
 	ErrListProducts = errors.New("list products")
 
@@ -96,6 +117,30 @@ func (r ListStatesRequest) Validate() error {
 	return validation.Errors{
 		"country": validation.Validate(r.Country, validation.Required),
 	}.Filter()
+}
+
+func (i *iam) GetPasswordPolicy(ctx context.Context) (*GetPasswordPolicyResponse, error) {
+	logger := i.Log(ctx)
+	logger.Debug("GetPasswordPolicy")
+
+	getURL := "/identity-management/v3/user-admin/common/password-policy"
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPasswordPolicy, err)
+	}
+
+	var result GetPasswordPolicyResponse
+	resp, err := i.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPasswordPolicy, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrGetPasswordPolicy, i.Error(resp))
+	}
+
+	return &result, nil
 }
 
 func (i *iam) ListProducts(ctx context.Context) ([]string, error) {

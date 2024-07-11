@@ -74,6 +74,16 @@ func (m *Mock) SupportedTimezones(ctx context.Context) ([]Timezone, error) {
 	return args.Get(0).([]Timezone), args.Error(1)
 }
 
+func (m *Mock) GetPasswordPolicy(ctx context.Context) (*GetPasswordPolicyResponse, error) {
+	args := m.Called(ctx)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetPasswordPolicyResponse), args.Error(1)
+}
+
 func (m *Mock) ListProducts(ctx context.Context) ([]string, error) {
 	args := m.Called(ctx)
 

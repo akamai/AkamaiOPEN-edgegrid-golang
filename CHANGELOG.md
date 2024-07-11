@@ -1,3 +1,83 @@
+# RELEASE NOTES
+
+## X.X.X (X X, X)
+
+#### BREAKING CHANGES:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### FEATURES/ENHANCEMENTS:
+
+
+
+
+
+
+
+
+
+
+
+
+* IAM
+  * Added method to get the password policy for the account
+    * [GetPasswordPolicy](https://techdocs.akamai.com/iam-api/reference/get-common-password-policy)
+
+
+
+
+
+
+
 # EDGEGRID GOLANG RELEASE NOTES
 
 ## X.X.X (X X, X)

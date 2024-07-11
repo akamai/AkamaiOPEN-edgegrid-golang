@@ -11,6 +11,85 @@ import (
 	"github.com/tj/assert"
 )
 
+func TestIAM_GetPasswordPolicy(t *testing.T) {
+	tests := map[string]struct {
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *GetPasswordPolicyResponse
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			responseStatus: http.StatusOK,
+			expectedPath:   "/identity-management/v3/user-admin/common/password-policy",
+			responseBody: `
+{
+	  "caseDif": 0,
+	  "maxRepeating": 1,
+	  "minDigits": 1,
+	  "minLength": 1,
+	  "minLetters": 1,
+	  "minNonAlpha": 0,
+	  "minReuse": 1,
+	  "pwclass": "test_class",
+	  "rotateFrequency": 10
+}
+`,
+			expectedResponse: &GetPasswordPolicyResponse{
+				CaseDiff:        0,
+				MaxRepeating:    1,
+				MinDigits:       1,
+				MinLength:       1,
+				MinLetters:      1,
+				MinNonAlpha:     0,
+				MinReuse:        1,
+				PwClass:         "test_class",
+				RotateFrequency: 10,
+			},
+		},
+		"500 internal server error": {
+			responseStatus: http.StatusInternalServerError,
+			expectedPath:   "/identity-management/v3/user-admin/common/password-policy",
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error making request",
+    "status": 500
+}`,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error making request",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetPasswordPolicy(context.Background())
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
 func TestIAM_SupportedCountries(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus   int
