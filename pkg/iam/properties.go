@@ -30,6 +30,16 @@ type (
 		//
 		// See: https://techdocs.akamai.com/iam-api/reference/put-property
 		MoveProperty(context.Context, MovePropertyRequest) error
+
+		// MapPropertyIDToName returns property name for given (IAM) property ID
+		// Mainly to be used to map (IAM) Property ID to (PAPI) Property ID
+		// To finish the mapping, please use papi.MapPropertyNameToID
+		MapPropertyIDToName(context.Context, MapPropertyIDToNameRequest) (*string, error)
+
+		// MapPropertyNameToID returns (IAM) property ID for given property name
+		// Mainly to be used to map (PAPI) Property ID to (IAM) Property ID
+		// To get property name for the mapping, please use papi.MapPropertyIDToName
+		MapPropertyNameToID(context.Context, MapPropertyNameToIDRequest) (*int64, error)
 	}
 
 	// ListPropertiesRequest contains the request parameters for the list properties operation.
@@ -43,6 +53,9 @@ type (
 		PropertyID int64
 		GroupID    int64
 	}
+
+	// MapPropertyNameToIDRequest is the argument for MapPropertyNameToID
+	MapPropertyNameToIDRequest string
 
 	// ListPropertiesResponse holds the response data from ListProperties.
 	ListPropertiesResponse []Property
@@ -86,10 +99,24 @@ type (
 	PropertyActions struct {
 		Move bool `json:"move"`
 	}
+
+	// MapPropertyIDToNameRequest is the argument for MapPropertyIDToName
+	MapPropertyIDToNameRequest struct {
+		PropertyID int64
+		GroupID    int64
+	}
 )
 
 // Validate validates GetPropertyRequest
 func (r GetPropertyRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
+		"GroupID":    validation.Validate(r.GroupID, validation.Required),
+	})
+}
+
+// Validate validates MapPropertyIDToNameRequest
+func (r MapPropertyIDToNameRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
 		"GroupID":    validation.Validate(r.GroupID, validation.Required),
@@ -119,6 +146,12 @@ var (
 	ErrGetProperty = errors.New("get property")
 	// ErrMoveProperty is returned when MoveProperty fails
 	ErrMoveProperty = errors.New("move property")
+	// ErrMapPropertyIDToName is returned when MapPropertyIDToName fails
+	ErrMapPropertyIDToName = errors.New("map property by id")
+	// ErrMapPropertyNameToID is returned when MapPropertyNameToID fails
+	ErrMapPropertyNameToID = errors.New("map property by name")
+	// ErrNoProperty is returned when MapPropertyNameToID did not find given property
+	ErrNoProperty = errors.New("no such property")
 )
 
 func (i *iam) ListProperties(ctx context.Context, params ListPropertiesRequest) (*ListPropertiesResponse, error) {
@@ -215,4 +248,47 @@ func (i *iam) MoveProperty(ctx context.Context, params MovePropertyRequest) erro
 	}
 
 	return nil
+}
+
+func (i *iam) MapPropertyIDToName(ctx context.Context, params MapPropertyIDToNameRequest) (*string, error) {
+	logger := i.Log(ctx)
+	logger.Debug("MapPropertyIDToName")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrMapPropertyIDToName, ErrStructValidation, err)
+	}
+
+	req := GetPropertyRequest{
+		PropertyID: params.PropertyID,
+		GroupID:    params.GroupID,
+	}
+
+	property, err := i.GetProperty(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrMapPropertyIDToName, err)
+	}
+
+	return &property.PropertyName, nil
+}
+
+func (i *iam) MapPropertyNameToID(ctx context.Context, name MapPropertyNameToIDRequest) (*int64, error) {
+	logger := i.Log(ctx)
+	logger.Debug("MapPropertyNameToID")
+
+	if name == "" {
+		return nil, fmt.Errorf("%s: %w:\n name cannot be blank", ErrMapPropertyNameToID, ErrStructValidation)
+	}
+
+	properties, err := i.ListProperties(ctx, ListPropertiesRequest{})
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrMapPropertyNameToID, err)
+	}
+
+	for _, property := range *properties {
+		if property.PropertyName == string(name) {
+			return &property.PropertyID, nil
+		}
+	}
+
+	return nil, fmt.Errorf("%w: %s", ErrNoProperty, name)
 }

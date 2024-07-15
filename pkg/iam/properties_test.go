@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -328,6 +329,178 @@ func TestMoveProperty(t *testing.T) {
 				return
 			}
 			assert.NoError(t, err)
+		})
+	}
+}
+
+func TestMapPropertyIDToName(t *testing.T) {
+	tests := map[string]struct {
+		params           MapPropertyIDToNameRequest
+		responseStatus   int
+		responseBody     string
+		expectedResponse *string
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			params: MapPropertyIDToNameRequest{
+				PropertyID: 1,
+				GroupID:    11,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "createdDate": "2023-08-18T09:10:37.000Z",
+    "createdBy": "user1",
+    "modifiedDate": "2023-08-18T09:10:37.000Z",
+    "modifiedBy": "user2",
+    "groupName": "group1",
+    "groupId": 11,
+    "arlConfigFile": "test.xml",
+    "propertyId": 1,
+    "propertyName": "name1"
+}
+`,
+			expectedResponse: ptr.To("name1"),
+		},
+		"validation errors": {
+			params: MapPropertyIDToNameRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "map property by id: struct validation:\nGroupID: cannot be blank\nPropertyID: cannot be blank", err.Error())
+			},
+		},
+		"404 not found": {
+			params: MapPropertyIDToNameRequest{
+				PropertyID: 1,
+				GroupID:    11,
+			},
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+		{
+			"instance": "",
+			"httpStatus": 404,
+			"detail": "",
+			"title": "Property not found",
+			"type": "/useradmin-api/error-types/1806"
+		}
+		`,
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, err.Error(), `map property by id: request failed: get property: API error: 
+{
+	"type": "/useradmin-api/error-types/1806",
+	"title": "Property not found",
+	"detail": "",
+	"statusCode": 404,
+	"httpStatus": 404
+}`)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			users, err := client.MapPropertyIDToName(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, users)
+		})
+	}
+}
+
+func TestMapPropertyNameToID(t *testing.T) {
+	listPropertiesResponse := `
+[
+    {
+        "propertyId": 1,
+        "propertyName": "name1",
+        "propertyTypeDescription": "Site",
+        "groupId": 11,
+        "groupName": "group1"
+    },
+    {
+        "propertyId": 2,
+        "propertyName": "name2",
+        "propertyTypeDescription": "Site",
+        "groupId": 22,
+        "groupName": "group2"
+    }
+]
+`
+	tests := map[string]struct {
+		name             MapPropertyNameToIDRequest
+		responseStatus   int
+		responseBody     string
+		expectedResponse *int64
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			name:             "name2",
+			responseStatus:   http.StatusOK,
+			responseBody:     listPropertiesResponse,
+			expectedResponse: ptr.To(int64(2)),
+		},
+		"200 but not found": {
+			name:           "name3",
+			responseStatus: http.StatusOK,
+			responseBody:   listPropertiesResponse,
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrNoProperty))
+				assert.Equal(t, "no such property: name3", err.Error())
+			},
+		},
+		"validation errors": {
+			name: "",
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "map property by name: struct validation:\n name cannot be blank", err.Error())
+			},
+		},
+		"500 internal server error": {
+			name:           "name2",
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+					{
+						"type": "internal_error",
+						"title": "Internal Server Error",
+						"detail": "Error processing request",
+						"status": 500
+					}`,
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, err.Error(), `map property by name: request failed: list properties: API error: 
+{
+	"type": "internal_error",
+	"title": "Internal Server Error",
+	"detail": "Error processing request",
+	"statusCode": 500
+}`)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			users, err := client.MapPropertyNameToID(context.Background(), test.name)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, users)
 		})
 	}
 }

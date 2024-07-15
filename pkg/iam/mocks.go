@@ -342,3 +342,23 @@ func (m *Mock) MoveProperty(ctx context.Context, request MovePropertyRequest) er
 
 	return args.Error(0)
 }
+
+func (m *Mock) MapPropertyIDToName(ctx context.Context, request MapPropertyIDToNameRequest) (*string, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*string), args.Error(1)
+}
+
+func (m *Mock) MapPropertyNameToID(ctx context.Context, request MapPropertyNameToIDRequest) (*int64, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*int64), args.Error(1)
+}

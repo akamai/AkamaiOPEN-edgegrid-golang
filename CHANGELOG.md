@@ -20,7 +20,14 @@
 
 
 
-
+* IAM
+  * Added new methods for mapping to and from PAPI property ID:
+    * `MapPropertyNameToID` - to provide IAM property ID for given property name
+    * `MapPropertyIDToName` - to provide property name for given IAM property ID
+* PAPI
+  * Added new methods for mapping to and from IAM property ID:
+    * `MapPropertyNameToID` - to provide PAPI property ID for given property name 
+    * `MapPropertyIDToName` - to provide property name for given PAPI property ID
 
 * IAM 
   * Added new [MoveProperty](https://techdocs.akamai.com/iam-api/reference/put-property) method

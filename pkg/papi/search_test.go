@@ -14,7 +14,7 @@ import (
 	"github.com/tj/assert"
 )
 
-func TestPapi_SearchProperties(t *testing.T) {
+func TestPapiSearchProperties(t *testing.T) {
 	tests := map[string]struct {
 		params           SearchRequest
 		responseStatus   int

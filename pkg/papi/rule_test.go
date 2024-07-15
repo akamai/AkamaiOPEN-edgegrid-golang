@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapi_GetRuleTree(t *testing.T) {
+func TestPapiGetRuleTree(t *testing.T) {
 	tests := map[string]struct {
 		params           GetRuleTreeRequest
 		responseStatus   int
@@ -643,7 +643,7 @@ func TestPapi_GetRuleTree(t *testing.T) {
 	}
 }
 
-func TestPapi_UpdateRuleTree(t *testing.T) {
+func TestPapiUpdateRuleTree(t *testing.T) {
 	tests := map[string]struct {
 		params           UpdateRulesRequest
 		requestBody      string

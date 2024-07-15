@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapi_CreateActivation(t *testing.T) {
+func TestPapiCreateActivation(t *testing.T) {
 	tests := map[string]struct {
 		request          CreateActivationRequest
 		responseStatus   int
@@ -321,7 +321,7 @@ func TestPapi_CreateActivation(t *testing.T) {
 	}
 }
 
-func TestPapi_GetActivations(t *testing.T) {
+func TestPapiGetActivations(t *testing.T) {
 	tests := map[string]struct {
 		request          GetActivationsRequest
 		responseStatus   int
@@ -459,7 +459,7 @@ func TestPapi_GetActivations(t *testing.T) {
 	}
 }
 
-func TestPapi_GetActivation(t *testing.T) {
+func TestPapiGetActivation(t *testing.T) {
 	tests := map[string]struct {
 		request          GetActivationRequest
 		responseStatus   int
@@ -648,7 +648,7 @@ func TestPapi_GetActivation(t *testing.T) {
 	}
 }
 
-func TestPapi_CancelActivation(t *testing.T) {
+func TestPapiCancelActivation(t *testing.T) {
 	tests := map[string]struct {
 		request          CancelActivationRequest
 		responseStatus   int
