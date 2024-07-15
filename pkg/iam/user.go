@@ -9,6 +9,7 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
@@ -23,12 +24,12 @@ type (
 
 		// GetUser gets  a specific user's profile
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-ui-identity
+		// See: https://techdocs.akamai.com/iam-api/reference/get-ui-identity
 		GetUser(context.Context, GetUserRequest) (*User, error)
 
 		// ListUsers returns a list of users who have access on this account
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-ui-identities
+		// See: https://techdocs.akamai.com/iam-api/reference/get-ui-identities
 		ListUsers(context.Context, ListUsersRequest) ([]UserListItem, error)
 
 		// RemoveUser removes a user identity
@@ -38,7 +39,7 @@ type (
 
 		// UpdateUserAuthGrants edits what groups a user has access to, and how the user can interact with the objects in those groups
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-ui-uiidentity-auth-grants
+		// See: https://techdocs.akamai.com/iam-api/reference/put-ui-uiidentity-auth-grants
 		UpdateUserAuthGrants(context.Context, UpdateUserAuthGrantsRequest) ([]AuthGrant, error)
 
 		// UpdateUserInfo updates a user's information
@@ -46,9 +47,9 @@ type (
 		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-ui-identity-basic-info
 		UpdateUserInfo(context.Context, UpdateUserInfoRequest) (*UserBasicInfo, error)
 
-		// UpdateUserNotifications subscribes or un-subscribe user to product notification emails
+		// UpdateUserNotifications subscribes or un-subscribes user to product notification emails
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-notifications
+		// See: https://techdocs.akamai.com/iam-api/reference/put-notifications
 		UpdateUserNotifications(context.Context, UpdateUserNotificationsRequest) (*UserNotifications, error)
 
 		// UpdateTFA updates a user's two-factor authentication setting and can reset tfa
@@ -106,64 +107,73 @@ type (
 	// User describes the response of the get and create user endpoints
 	User struct {
 		UserBasicInfo
-		IdentityID         string            `json:"uiIdentityId"`
-		IsLocked           bool              `json:"isLocked"`
-		LastLoginDate      string            `json:"lastLoginDate,omitempty"`
-		PasswordExpiryDate string            `json:"passwordExpiryDate,omitempty"`
-		TFAConfigured      bool              `json:"tfaConfigured"`
-		EmailUpdatePending bool              `json:"emailUpdatePending"`
-		AuthGrants         []AuthGrant       `json:"authGrants,omitempty"`
-		Notifications      UserNotifications `json:"notifications,omitempty"`
+		IdentityID                         string            `json:"uiIdentityId"`
+		IsLocked                           bool              `json:"isLocked"`
+		LastLoginDate                      string            `json:"lastLoginDate,omitempty"`
+		PasswordExpiryDate                 string            `json:"passwordExpiryDate,omitempty"`
+		TFAConfigured                      bool              `json:"tfaConfigured"`
+		EmailUpdatePending                 bool              `json:"emailUpdatePending"`
+		AuthGrants                         []AuthGrant       `json:"authGrants,omitempty"`
+		Notifications                      UserNotifications `json:"notifications,omitempty"`
+		Actions                            *UserActions      `json:"actions,omitempty"`
+		AdditionalAuthenticationConfigured bool              `json:"additionalAuthenticationConfigured"`
 	}
 
 	// UserListItem describes the response of the list endpoint
 	UserListItem struct {
-		FirstName     string       `json:"firstName"`
-		LastName      string       `json:"lastName"`
-		UserName      string       `json:"uiUserName,omitempty"`
-		Email         string       `json:"email"`
-		TFAEnabled    bool         `json:"tfaEnabled"`
-		IdentityID    string       `json:"uiIdentityId"`
-		IsLocked      bool         `json:"isLocked"`
-		LastLoginDate string       `json:"lastLoginDate,omitempty"`
-		TFAConfigured bool         `json:"tfaConfigured"`
-		AccountID     string       `json:"accountId"`
-		Actions       *UserActions `json:"actions,omitempty"`
-		AuthGrants    []AuthGrant  `json:"authGrants,omitempty"`
+		FirstName                          string         `json:"firstName"`
+		LastName                           string         `json:"lastName"`
+		UserName                           string         `json:"uiUserName,omitempty"`
+		Email                              string         `json:"email"`
+		TFAEnabled                         bool           `json:"tfaEnabled"`
+		IdentityID                         string         `json:"uiIdentityId"`
+		IsLocked                           bool           `json:"isLocked"`
+		LastLoginDate                      string         `json:"lastLoginDate,omitempty"`
+		TFAConfigured                      bool           `json:"tfaConfigured"`
+		AccountID                          string         `json:"accountId"`
+		Actions                            *UserActions   `json:"actions,omitempty"`
+		AuthGrants                         []AuthGrant    `json:"authGrants,omitempty"`
+		AdditionalAuthentication           Authentication `json:"additionalAuthentication"`
+		AdditionalAuthenticationConfigured bool           `json:"additionalAuthenticationConfigured"`
 	}
 
 	// UserBasicInfo is the user basic info structure
 	UserBasicInfo struct {
-		FirstName         string `json:"firstName"`
-		LastName          string `json:"lastName"`
-		UserName          string `json:"uiUserName,omitempty"`
-		Email             string `json:"email"`
-		Phone             string `json:"phone,omitempty"`
-		TimeZone          string `json:"timeZone,omitempty"`
-		JobTitle          string `json:"jobTitle"`
-		TFAEnabled        bool   `json:"tfaEnabled"`
-		SecondaryEmail    string `json:"secondaryEmail,omitempty"`
-		MobilePhone       string `json:"mobilePhone,omitempty"`
-		Address           string `json:"address,omitempty"`
-		City              string `json:"city,omitempty"`
-		State             string `json:"state,omitempty"`
-		ZipCode           string `json:"zipCode,omitempty"`
-		Country           string `json:"country"`
-		ContactType       string `json:"contactType,omitempty"`
-		PreferredLanguage string `json:"preferredLanguage,omitempty"`
-		SessionTimeOut    *int   `json:"sessionTimeOut,omitempty"`
+		FirstName                string         `json:"firstName"`
+		LastName                 string         `json:"lastName"`
+		UserName                 string         `json:"uiUserName,omitempty"`
+		Email                    string         `json:"email"`
+		Phone                    string         `json:"phone,omitempty"`
+		TimeZone                 string         `json:"timeZone,omitempty"`
+		JobTitle                 string         `json:"jobTitle"`
+		TFAEnabled               bool           `json:"tfaEnabled"`
+		SecondaryEmail           string         `json:"secondaryEmail,omitempty"`
+		MobilePhone              string         `json:"mobilePhone,omitempty"`
+		Address                  string         `json:"address,omitempty"`
+		City                     string         `json:"city,omitempty"`
+		State                    string         `json:"state,omitempty"`
+		ZipCode                  string         `json:"zipCode,omitempty"`
+		Country                  string         `json:"country"`
+		ContactType              string         `json:"contactType,omitempty"`
+		PreferredLanguage        string         `json:"preferredLanguage,omitempty"`
+		SessionTimeOut           *int           `json:"sessionTimeOut,omitempty"`
+		AdditionalAuthentication Authentication `json:"additionalAuthentication"`
 	}
 
 	// UserActions encapsulates permissions available to the user for this group
 	UserActions struct {
-		APIClient        bool `json:"apiClient"`
-		Delete           bool `json:"delete"`
-		Edit             bool `json:"edit"`
-		IsCloneable      bool `json:"isCloneable"`
-		ResetPassword    bool `json:"resetPassword"`
-		ThirdPartyAccess bool `json:"thirdPartyAccess"`
-		CanEditTFA       bool `json:"canEditTFA"`
-		EditProfile      bool `json:"editProfile"`
+		APIClient             bool `json:"apiClient"`
+		Delete                bool `json:"delete"`
+		Edit                  bool `json:"edit"`
+		IsCloneable           bool `json:"isCloneable"`
+		ResetPassword         bool `json:"resetPassword"`
+		ThirdPartyAccess      bool `json:"thirdPartyAccess"`
+		CanEditTFA            bool `json:"canEditTFA"`
+		CanEditMFA            bool `json:"canEditMFA"`
+		CanEditNone           bool `json:"canEditNone"`
+		EditProfile           bool `json:"editProfile"`
+		EditRole              bool `json:"editRole"`
+		CanGenerateBypassCode bool `json:"canGenerateBypassCode"`
 	}
 
 	// AuthGrant is user’s role assignments, per group
@@ -193,10 +203,11 @@ type (
 
 	// UserNotificationOptions types of notification emails the user receives
 	UserNotificationOptions struct {
-		NewUser        bool     `json:"newUserNotification"`
-		PasswordExpiry bool     `json:"passwordExpiry"`
-		Proactive      []string `json:"proactive"`
-		Upgrade        []string `json:"upgrade"`
+		NewUser                   bool     `json:"newUserNotification"`
+		PasswordExpiry            bool     `json:"passwordExpiry"`
+		Proactive                 []string `json:"proactive"`
+		Upgrade                   []string `json:"upgrade"`
+		APIClientCredentialExpiry bool     `json:"apiClientCredentialExpiryNotification"`
 	}
 
 	// TFAActionType is a type for tfa action constants
@@ -207,15 +218,24 @@ type (
 		IdentityID string
 		Action     TFAActionType
 	}
+
+	// Authentication is a type of additional authentication
+	Authentication string
 )
 
 const (
-	// TFAActionEnable ia an action value to use to enable tfa
+	// TFAActionEnable is an action value to use to enable tfa
 	TFAActionEnable TFAActionType = "enable"
-	// TFAActionDisable ia an action value to use to disable tfa
+	// TFAActionDisable is an action value to use to disable tfa
 	TFAActionDisable TFAActionType = "disable"
-	// TFAActionReset ia an action value to use to reset tfa
+	// TFAActionReset is an action value to use to reset tfa
 	TFAActionReset TFAActionType = "reset"
+	// MFAAuthentication is authentication of type MFA
+	MFAAuthentication Authentication = "MFA"
+	// TFAAuthentication is authentication of type TFA
+	TFAAuthentication Authentication = "TFA"
+	// NoneAuthentication represents a state where no authentication method is configured
+	NoneAuthentication Authentication = "NONE"
 )
 
 var (
@@ -246,10 +266,10 @@ var (
 
 // Validate performs validation on AuthGrant
 func (r AuthGrant) Validate() error {
-	return validation.Errors{
-		"group_id": validation.Validate(r.GroupID, validation.Required),
-		"role_id":  validation.Validate(r.RoleID, validation.Required),
-	}.Filter()
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"GroupID": validation.Validate(r.GroupID, validation.Required),
+		"RoleID":  validation.Validate(r.RoleID, validation.Required),
+	})
 }
 
 // Validate validates CreateUserRequest
@@ -266,9 +286,9 @@ func (r CreateUserRequest) Validate() error {
 
 // Validate validates GetUserRequest
 func (r GetUserRequest) Validate() error {
-	return validation.Errors{
-		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
-	}.Filter()
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"IdentityID": validation.Validate(r.IdentityID, validation.Required),
+	})
 }
 
 // Validate validates UpdateUserInfoRequest
@@ -286,17 +306,17 @@ func (r UpdateUserInfoRequest) Validate() error {
 
 // Validate validates UpdateUserNotificationsRequest
 func (r UpdateUserNotificationsRequest) Validate() error {
-	return validation.Errors{
-		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
-	}.Filter()
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"IdentityID": validation.Validate(r.IdentityID, validation.Required),
+	})
 }
 
 // Validate validates UpdateUserAuthGrantsRequest
 func (r UpdateUserAuthGrantsRequest) Validate() error {
-	return validation.Errors{
-		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
-		"authGrants": validation.Validate(r.AuthGrants, validation.Required),
-	}.Filter()
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"IdentityID": validation.Validate(r.IdentityID, validation.Required),
+		"AuthGrants": validation.Validate(r.AuthGrants, validation.Required),
+	})
 }
 
 // Validate validates RemoveUserRequest
@@ -353,7 +373,7 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s", params.IdentityID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetUser, err)
 	}
@@ -370,8 +390,8 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetUser, err)
 	}
 
-	var rval User
-	resp, err := i.Exec(req, &rval)
+	var result User
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetUser, err)
 	}
@@ -380,11 +400,11 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 		return nil, fmt.Errorf("%s: %w", ErrGetUser, i.Error(resp))
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]UserListItem, error) {
-	u, err := url.Parse("/identity-management/v2/user-admin/ui-identities")
+	u, err := url.Parse("/identity-management/v3/user-admin/ui-identities")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse the URL:\n%s", ErrListUsers, err)
 	}
@@ -393,7 +413,7 @@ func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]UserLis
 	q.Add("actions", strconv.FormatBool(params.Actions))
 	q.Add("authGrants", strconv.FormatBool(params.AuthGrants))
 	if params.GroupID != nil {
-		q.Add("groupId", strconv.FormatInt(int64(*params.GroupID), 10))
+		q.Add("groupId", strconv.FormatInt(*params.GroupID, 10))
 	}
 	u.RawQuery = q.Encode()
 
@@ -447,7 +467,7 @@ func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGra
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserAuthGrants, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/auth-grants", params.IdentityID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/auth-grants", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserAuthGrants, err)
 	}
@@ -457,9 +477,9 @@ func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGra
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserAuthGrants, err)
 	}
 
-	rval := make([]AuthGrant, 0)
+	var result []AuthGrant
 
-	resp, err := i.Exec(req, &rval, params.AuthGrants)
+	resp, err := i.Exec(req, &result, params.AuthGrants)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserAuthGrants, err)
 	}
@@ -468,7 +488,7 @@ func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGra
 		return nil, fmt.Errorf("%s: %w", ErrUpdateUserAuthGrants, i.Error(resp))
 	}
 
-	return rval, nil
+	return result, nil
 }
 
 func (i *iam) UpdateUserInfo(ctx context.Context, params UpdateUserInfoRequest) (*UserBasicInfo, error) {
@@ -504,7 +524,7 @@ func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNoti
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserNotifications, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/notifications", params.IdentityID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/notifications", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserNotifications, err)
 	}
@@ -514,8 +534,8 @@ func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNoti
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserNotifications, err)
 	}
 
-	var rval UserNotifications
-	resp, err := i.Exec(req, &rval, params.Notifications)
+	var result UserNotifications
+	resp, err := i.Exec(req, &result, params.Notifications)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserNotifications, err)
 	}
@@ -524,7 +544,7 @@ func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNoti
 		return nil, fmt.Errorf("%s: %w", ErrUpdateUserNotifications, i.Error(resp))
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (i *iam) UpdateTFA(ctx context.Context, params UpdateTFARequest) error {

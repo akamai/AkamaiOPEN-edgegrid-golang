@@ -359,6 +359,13 @@
 
 
 
+* IAM
+  * Updated structures:
+    * `User` with `AdditionalAuthenticationConfigured` and `Actions`
+    * `UserListItem` with `AdditionalAuthenticationConfigured` and `AdditionalAuthentication`
+    * `UserBasicInfo` with `AdditionalAuthentication`
+    * `UserActions` with `CanGenerateBypassCode`
+    * `UserNotificationOptions` with `APIClientCredentialExpiry`
 
 
 

@@ -26,17 +26,18 @@ func TestIAM_CreateUser(t *testing.T) {
 		"201 OK": {
 			params: CreateUserRequest{
 				UserBasicInfo: UserBasicInfo{
-					FirstName: "John",
-					LastName:  "Doe",
-					Email:     "john.doe@mycompany.com",
-					Phone:     "(123) 321-1234",
-					Country:   "USA",
-					State:     "CA",
+					FirstName:                "John",
+					LastName:                 "Doe",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					Country:                  "USA",
+					State:                    "CA",
+					AdditionalAuthentication: NoneAuthentication,
 				},
 				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
 				Notifications: UserNotifications{},
 			},
-			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","authGrants":[{"groupId":1,"isBlocked":false,"roleId":1}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null}}}`,
+			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","additionalAuthentication":"NONE","authGrants":[{"groupId":1,"isBlocked":false,"roleId":1}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null,"apiClientCredentialExpiryNotification":false}}}`,
 			responseStatus: http.StatusCreated,
 			responseBody: `
 {
@@ -46,19 +47,23 @@ func TestIAM_CreateUser(t *testing.T) {
 	"email": "john.doe@mycompany.com",
 	"phone": "(123) 321-1234",
 	"state": "CA",
-	"country": "USA"
+	"country": "USA",
+	"additionalAuthenticationConfigured": false,
+	"additionalAuthentication": "NONE"
 }`,
 			expectedPath: "/identity-management/v2/user-admin/ui-identities?sendEmail=false",
 			expectedResponse: &User{
 				IdentityID: "A-BC-1234567",
 				UserBasicInfo: UserBasicInfo{
-					FirstName: "John",
-					LastName:  "Doe",
-					Email:     "john.doe@mycompany.com",
-					Phone:     "(123) 321-1234",
-					Country:   "USA",
-					State:     "CA",
+					FirstName:                "John",
+					LastName:                 "Doe",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					Country:                  "USA",
+					State:                    "CA",
+					AdditionalAuthentication: NoneAuthentication,
 				},
+				AdditionalAuthenticationConfigured: false,
 			},
 		},
 		"500 internal server error": {
@@ -147,7 +152,7 @@ func TestIAM_GetUser(t *testing.T) {
 	"state": "CA",
 	"country": "USA"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
 			expectedResponse: &User{
 				IdentityID: "A-BC-1234567",
 				UserBasicInfo: UserBasicInfo{
@@ -172,7 +177,7 @@ func TestIAM_GetUser(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -222,7 +227,7 @@ func TestIam_ListUsers(t *testing.T) {
 				Actions:    true,
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=true&authGrants=true&groupId=12345",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities?actions=true&authGrants=true&groupId=12345",
 			responseBody: `[
 			  {
 				"uiIdentityId": "A-B-123456",
@@ -235,6 +240,8 @@ func TestIam_ListUsers(t *testing.T) {
 				"tfaEnabled": true,
 				"tfaConfigured": true,
 				"isLocked": false,
+				"additionalAuthentication": "TFA",
+				"additionalAuthenticationConfigured": false,
 				"actions": {
 				  "resetPassword": true,
 				  "delete": true,
@@ -243,7 +250,9 @@ func TestIam_ListUsers(t *testing.T) {
 				  "thirdPartyAccess": true,
 				  "isCloneable": true,
 				  "editProfile": true,
-				  "canEditTFA": false
+				  "canEditTFA": true,
+				  "canEditMFA": true,
+				  "canEditNone": true
 				},
 				"authGrants": [
 				  {
@@ -259,16 +268,18 @@ func TestIam_ListUsers(t *testing.T) {
 			]`,
 			expectedResponse: []UserListItem{
 				{
-					IdentityID:    "A-B-123456",
-					FirstName:     "John",
-					LastName:      "Doe",
-					UserName:      "johndoe",
-					Email:         "john.doe@mycompany.com",
-					AccountID:     "1-123A",
-					TFAEnabled:    true,
-					LastLoginDate: "2016-01-13T17:53:57Z",
-					TFAConfigured: true,
-					IsLocked:      false,
+					IdentityID:                         "A-B-123456",
+					FirstName:                          "John",
+					LastName:                           "Doe",
+					UserName:                           "johndoe",
+					Email:                              "john.doe@mycompany.com",
+					AccountID:                          "1-123A",
+					TFAEnabled:                         true,
+					LastLoginDate:                      "2016-01-13T17:53:57Z",
+					TFAConfigured:                      true,
+					IsLocked:                           false,
+					AdditionalAuthentication:           TFAAuthentication,
+					AdditionalAuthenticationConfigured: false,
 					Actions: &UserActions{
 						APIClient:        true,
 						Delete:           true,
@@ -277,6 +288,9 @@ func TestIam_ListUsers(t *testing.T) {
 						ResetPassword:    true,
 						ThirdPartyAccess: true,
 						EditProfile:      true,
+						CanEditMFA:       true,
+						CanEditNone:      true,
+						CanEditTFA:       true,
 					},
 					AuthGrants: []AuthGrant{
 						{
@@ -295,7 +309,7 @@ func TestIam_ListUsers(t *testing.T) {
 				GroupID: ptr.To(int64(12345)),
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=false&authGrants=false&groupId=12345",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities?actions=false&authGrants=false&groupId=12345",
 			responseBody: `[
 			  {
 				"uiIdentityId": "A-B-123456",
@@ -307,27 +321,31 @@ func TestIam_ListUsers(t *testing.T) {
 				"lastLoginDate": "2016-01-13T17:53:57Z",
 				"tfaEnabled": true,
 				"tfaConfigured": true,
-				"isLocked": false
+				"isLocked": false,
+				"additionalAuthentication": "MFA",
+				"additionalAuthenticationConfigured": true
 			  }
 			]`,
 			expectedResponse: []UserListItem{
 				{
-					IdentityID:    "A-B-123456",
-					FirstName:     "John",
-					LastName:      "Doe",
-					UserName:      "johndoe",
-					Email:         "john.doe@mycompany.com",
-					AccountID:     "1-123A",
-					TFAEnabled:    true,
-					LastLoginDate: "2016-01-13T17:53:57Z",
-					TFAConfigured: true,
-					IsLocked:      false,
+					IdentityID:                         "A-B-123456",
+					FirstName:                          "John",
+					LastName:                           "Doe",
+					UserName:                           "johndoe",
+					Email:                              "john.doe@mycompany.com",
+					AccountID:                          "1-123A",
+					TFAEnabled:                         true,
+					LastLoginDate:                      "2016-01-13T17:53:57Z",
+					TFAConfigured:                      true,
+					IsLocked:                           false,
+					AdditionalAuthenticationConfigured: true,
+					AdditionalAuthentication:           MFAAuthentication,
 				},
 			},
 		},
-		"no group id": {
+		"200 OK, no group id": {
 			params:       ListUsersRequest{},
-			expectedPath: "/identity-management/v2/user-admin/ui-identities?actions=false&authGrants=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities?actions=false&authGrants=false",
 			responseBody: `[
 			  {
 				"uiIdentityId": "A-B-123456",
@@ -339,21 +357,25 @@ func TestIam_ListUsers(t *testing.T) {
 				"lastLoginDate": "2016-01-13T17:53:57Z",
 				"tfaEnabled": true,
 				"tfaConfigured": true,
-				"isLocked": false
+				"isLocked": false,
+				"additionalAuthentication": "TFA",
+				"additionalAuthenticationConfigured": true
 			  }
 			]`,
 			expectedResponse: []UserListItem{
 				{
-					IdentityID:    "A-B-123456",
-					FirstName:     "John",
-					LastName:      "Doe",
-					UserName:      "johndoe",
-					Email:         "john.doe@mycompany.com",
-					AccountID:     "1-123A",
-					TFAEnabled:    true,
-					LastLoginDate: "2016-01-13T17:53:57Z",
-					TFAConfigured: true,
-					IsLocked:      false,
+					IdentityID:                         "A-B-123456",
+					FirstName:                          "John",
+					LastName:                           "Doe",
+					UserName:                           "johndoe",
+					Email:                              "john.doe@mycompany.com",
+					AccountID:                          "1-123A",
+					TFAEnabled:                         true,
+					LastLoginDate:                      "2016-01-13T17:53:57Z",
+					TFAConfigured:                      true,
+					IsLocked:                           false,
+					AdditionalAuthentication:           TFAAuthentication,
+					AdditionalAuthenticationConfigured: true,
 				},
 			},
 			responseStatus: http.StatusOK,
@@ -365,7 +387,7 @@ func TestIam_ListUsers(t *testing.T) {
 				Actions:    true,
 			},
 			responseStatus: http.StatusInternalServerError,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=true&authGrants=true&groupId=12345",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities?actions=true&authGrants=true&groupId=12345",
 			responseBody: `
 			{
 				"type": "internal_error",
@@ -419,19 +441,20 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 			params: UpdateUserInfoRequest{
 				IdentityID: "1-ABCDE",
 				User: UserBasicInfo{
-					FirstName:         "John",
-					LastName:          "Doe",
-					Email:             "john.doe@mycompany.com",
-					Phone:             "(123) 321-1234",
-					Country:           "USA",
-					State:             "CA",
-					PreferredLanguage: "English",
-					ContactType:       "Billing",
-					SessionTimeOut:    ptr.To(30),
-					TimeZone:          "GMT",
+					FirstName:                "John",
+					LastName:                 "Doe",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					Country:                  "USA",
+					State:                    "CA",
+					PreferredLanguage:        "English",
+					ContactType:              "Billing",
+					SessionTimeOut:           ptr.To(30),
+					TimeZone:                 "GMT",
+					AdditionalAuthentication: NoneAuthentication,
 				},
 			},
-			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","timeZone":"GMT","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","contactType":"Billing","preferredLanguage":"English","sessionTimeOut":30}`,
+			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","timeZone":"GMT","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","contactType":"Billing","preferredLanguage":"English","sessionTimeOut":30,"additionalAuthentication":"NONE"}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -444,20 +467,22 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 	"preferredLanguage": "English",
 	"contactType": "Billing",
 	"sessionTimeOut": 30,
-	"timeZone": "GMT"
+	"timeZone": "GMT",
+	"additionalAuthentication": "NONE"
 }`,
 			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/basic-info",
 			expectedResponse: &UserBasicInfo{
-				FirstName:         "John",
-				LastName:          "Doe",
-				Email:             "john.doe@mycompany.com",
-				Phone:             "(123) 321-1234",
-				Country:           "USA",
-				State:             "CA",
-				PreferredLanguage: "English",
-				ContactType:       "Billing",
-				SessionTimeOut:    ptr.To(30),
-				TimeZone:          "GMT",
+				FirstName:                "John",
+				LastName:                 "Doe",
+				Email:                    "john.doe@mycompany.com",
+				Phone:                    "(123) 321-1234",
+				Country:                  "USA",
+				State:                    "CA",
+				PreferredLanguage:        "English",
+				ContactType:              "Billing",
+				SessionTimeOut:           ptr.To(30),
+				TimeZone:                 "GMT",
+				AdditionalAuthentication: NoneAuthentication,
 			},
 		},
 		"500 internal server error": {
@@ -541,14 +566,15 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 				Notifications: UserNotifications{
 					EnableEmail: true,
 					Options: UserNotificationOptions{
-						Upgrade:        []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
-						Proactive:      []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
-						PasswordExpiry: true,
-						NewUser:        true,
+						Upgrade:                   []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
+						Proactive:                 []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
+						PasswordExpiry:            true,
+						NewUser:                   true,
+						APIClientCredentialExpiry: true,
 					},
 				},
 			},
-			requestBody:    `{"enableEmailNotifications":true,"options":{"newUserNotification":true,"passwordExpiry":true,"proactive":["EdgeScape","EdgeSuite (HTTP Content Delivery)"],"upgrade":["NetStorage","Other Upgrade Notifications (Planned)"]}}`,
+			requestBody:    `{"enableEmailNotifications":true,"options":{"newUserNotification":true,"passwordExpiry":true,"proactive":["EdgeScape","EdgeSuite (HTTP Content Delivery)"],"upgrade":["NetStorage","Other Upgrade Notifications (Planned)"],"apiClientCredentialExpiryNotification":true}}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -563,17 +589,19 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 			"EdgeSuite (HTTP Content Delivery)"
 		],
 		"passwordExpiry": true,
-		"newUserNotification": true
+		"newUserNotification": true,
+		"apiClientCredentialExpiryNotification": true
 	}
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/notifications",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/notifications",
 			expectedResponse: &UserNotifications{
 				EnableEmail: true,
 				Options: UserNotificationOptions{
-					Upgrade:        []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
-					Proactive:      []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
-					PasswordExpiry: true,
-					NewUser:        true,
+					Upgrade:                   []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
+					Proactive:                 []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
+					PasswordExpiry:            true,
+					NewUser:                   true,
+					APIClientCredentialExpiry: true,
 				},
 			},
 		},
@@ -598,7 +626,7 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/notifications",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/notifications",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -676,7 +704,7 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 		]
 	}
 ]`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/auth-grants",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/auth-grants",
 			expectedResponse: []AuthGrant{
 				{
 					GroupID: 12345,
@@ -712,7 +740,7 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/auth-grants",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/auth-grants",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
