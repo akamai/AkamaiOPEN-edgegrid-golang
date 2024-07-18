@@ -372,3 +372,25 @@ func (m *Mock) MapPropertyNameToID(ctx context.Context, request MapPropertyNameT
 
 	return args.Get(0).(*int64), args.Error(1)
 }
+
+func (m *Mock) DisableIPAllowlist(ctx context.Context) error {
+	args := m.Called(ctx)
+
+	return args.Error(0)
+}
+
+func (m *Mock) EnableIPAllowlist(ctx context.Context) error {
+	args := m.Called(ctx)
+
+	return args.Error(0)
+}
+
+func (m *Mock) GetIPAllowlistStatus(ctx context.Context) (*GetIPAllowlistStatusResponse, error) {
+	args := m.Called(ctx)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetIPAllowlistStatusResponse), args.Error(1)
+}

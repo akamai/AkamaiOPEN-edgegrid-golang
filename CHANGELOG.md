@@ -394,7 +394,11 @@
 
 
 
-
+* IAM
+    * Added support for new endpoints:
+        * [DisableIPAllowlist](https://techdocs.akamai.com/iam-api/reference/post-allowlist-disable)
+        * [EnableIPAllowlist](https://techdocs.akamai.com/iam-api/reference/post-allowlist-enable)
+        * [GetIPAllowlistStatus](https://techdocs.akamai.com/iam-api/reference/get-allowlist-status)
 
 
 
