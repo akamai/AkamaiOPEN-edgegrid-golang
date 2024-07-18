@@ -19,37 +19,37 @@ type (
 
 		// ListProducts lists products a user can subscribe to and receive notifications for on the account
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-notification-products
+		// See: https://techdocs.akamai.com/iam-api/reference/get-common-notification-products
 		ListProducts(context.Context) ([]string, error)
 
 		// ListStates lists U.S. states or Canadian provinces
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-states
+		// See: https://techdocs.akamai.com/iam-api/reference/get-common-states
 		ListStates(context.Context, ListStatesRequest) ([]string, error)
 
 		// ListTimeoutPolicies lists all the possible session timeout policies
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-timeout-policies
+		// See: https://techdocs.akamai.com/iam-api/reference/get-common-timeout-policies
 		ListTimeoutPolicies(context.Context) ([]TimeoutPolicy, error)
 
 		// SupportedContactTypes lists supported contact types
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-contact-types
+		// See: https://techdocs.akamai.com/iam-api/reference/get-common-contact-types
 		SupportedContactTypes(context.Context) ([]string, error)
 
 		// SupportedCountries lists supported countries
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-countries
+		// See: https://techdocs.akamai.com/iam-api/reference/get-common-countries
 		SupportedCountries(context.Context) ([]string, error)
 
 		// SupportedLanguages lists supported languages
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-languages
+		// See: https://techdocs.akamai.com/iam-api/reference/get-common-languages
 		SupportedLanguages(context.Context) ([]string, error)
 
 		// SupportedTimezones lists supported timezones
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-common-timezones
+		// See: https://techdocs.akamai.com/iam-api/reference/get-common-timezones
 		SupportedTimezones(context.Context) ([]Timezone, error)
 	}
 
@@ -115,7 +115,7 @@ var (
 // Validate validates ListStatesRequest
 func (r ListStatesRequest) Validate() error {
 	return validation.Errors{
-		"country": validation.Validate(r.Country, validation.Required),
+		"Country": validation.Validate(r.Country, validation.Required),
 	}.Filter()
 }
 
@@ -147,7 +147,7 @@ func (i *iam) ListProducts(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListProducts")
 
-	getURL := "/identity-management/v2/user-admin/common/notification-products"
+	getURL := "/identity-management/v3/user-admin/common/notification-products"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -175,7 +175,7 @@ func (i *iam) ListStates(ctx context.Context, params ListStatesRequest) ([]strin
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListStates, ErrStructValidation, err)
 	}
 
-	getURL := fmt.Sprintf("/identity-management/v2/user-admin/common/countries/%s/states", params.Country)
+	getURL := fmt.Sprintf("/identity-management/v3/user-admin/common/countries/%s/states", params.Country)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -199,7 +199,7 @@ func (i *iam) ListTimeoutPolicies(ctx context.Context) ([]TimeoutPolicy, error) 
 	logger := i.Log(ctx)
 	logger.Debug("ListTimeoutPolicies")
 
-	getURL := "/identity-management/v2/user-admin/common/timeout-policies"
+	getURL := "/identity-management/v3/user-admin/common/timeout-policies"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -223,7 +223,7 @@ func (i *iam) SupportedContactTypes(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedContactTypes")
 
-	getURL := "/identity-management/v2/user-admin/common/contact-types"
+	getURL := "/identity-management/v3/user-admin/common/contact-types"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -247,7 +247,7 @@ func (i *iam) SupportedCountries(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedCountries")
 
-	getURL := "/identity-management/v2/user-admin/common/countries"
+	getURL := "/identity-management/v3/user-admin/common/countries"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -271,7 +271,7 @@ func (i *iam) SupportedLanguages(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedLanguages")
 
-	getURL := "/identity-management/v2/user-admin/common/supported-languages"
+	getURL := "/identity-management/v3/user-admin/common/supported-languages"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -295,7 +295,7 @@ func (i *iam) SupportedTimezones(ctx context.Context) ([]Timezone, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedTimezones")
 
-	getURL := "/identity-management/v2/user-admin/common/timezones"
+	getURL := "/identity-management/v3/user-admin/common/timezones"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {

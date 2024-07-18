@@ -25,7 +25,7 @@ func TestIam_ListBlockedProperties(t *testing.T) {
 				IdentityID: "1-ABCDE",
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `[
 								10977166
 							]`,
@@ -39,7 +39,7 @@ func TestIam_ListBlockedProperties(t *testing.T) {
 				IdentityID: "1-ABCDE",
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `[
 							
 							]`,
@@ -52,7 +52,7 @@ func TestIam_ListBlockedProperties(t *testing.T) {
 				IdentityID: "1-ABCDE",
 			},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/123450000/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/123450000/blocked-properties",
 			responseBody: `
 			{
     "instance": "",
@@ -80,7 +80,7 @@ func TestIam_ListBlockedProperties(t *testing.T) {
 				IdentityID: "1-ABCDE",
 			},
 			responseStatus: http.StatusInternalServerError,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `
 			{
 				"type": "internal_error",
@@ -136,7 +136,7 @@ func TestIam_UpdateBlockedProperties(t *testing.T) {
 				Properties: []int64{10977166, 10977167},
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `[
 								10977166,10977167
 							]`,
@@ -151,7 +151,7 @@ func TestIam_UpdateBlockedProperties(t *testing.T) {
 				Properties: []int64{0, 1},
 			},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `
 			{
     "instance": "",
@@ -180,7 +180,7 @@ func TestIam_UpdateBlockedProperties(t *testing.T) {
 				Properties: []int64{10977166, 10977167},
 			},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/123450000/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/123450000/blocked-properties",
 			responseBody: `
 			{
     "instance": "",
@@ -208,7 +208,7 @@ func TestIam_UpdateBlockedProperties(t *testing.T) {
 				IdentityID: "1-ABCDE",
 			},
 			responseStatus: http.StatusInternalServerError,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `
 			{
 				"type": "internal_error",

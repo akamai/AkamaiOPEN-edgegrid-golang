@@ -15,12 +15,12 @@ type (
 	BlockedProperties interface {
 		// ListBlockedProperties returns all properties a user doesn't have access to in a group
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-blocked-properties
+		// See: https://techdocs.akamai.com/iam-api/reference/get-blocked-properties
 		ListBlockedProperties(context.Context, ListBlockedPropertiesRequest) ([]int64, error)
 
-		// UpdateBlockedProperties removes or grant user access to properties
+		// UpdateBlockedProperties removes or grants user access to properties
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-blocked-properties
+		// See: https://techdocs.akamai.com/iam-api/reference/put-blocked-properties
 		UpdateBlockedProperties(context.Context, UpdateBlockedPropertiesRequest) ([]int64, error)
 	}
 
@@ -67,7 +67,7 @@ func (i *iam) ListBlockedProperties(ctx context.Context, params ListBlockedPrope
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListBlockedProperties, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/groups/%d/blocked-properties", params.IdentityID, params.GroupID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/groups/%d/blocked-properties", params.IdentityID, params.GroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListBlockedProperties, err)
 	}
@@ -95,7 +95,7 @@ func (i *iam) UpdateBlockedProperties(ctx context.Context, params UpdateBlockedP
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateBlockedProperties, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/groups/%d/blocked-properties", params.IdentityID, params.GroupID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/groups/%d/blocked-properties", params.IdentityID, params.GroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateBlockedProperties, err)
 	}

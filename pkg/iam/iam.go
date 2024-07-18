@@ -2,7 +2,10 @@
 package iam
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
+	"io"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
 )
@@ -48,4 +51,12 @@ func Client(sess session.Session, opts ...Option) IAM {
 		opt(p)
 	}
 	return p
+}
+
+func convertStructToReqBody(srcStruct interface{}) (io.Reader, error) {
+	reqBody, err := json.Marshal(srcStruct)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewBuffer(reqBody), nil
 }

@@ -152,7 +152,7 @@ func TestIAM_GetUser(t *testing.T) {
 	"state": "CA",
 	"country": "USA"
 }`,
-			expectedPath: "/identity-management/v3/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
+			expectedPath: "/identity-management/v2/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
 			expectedResponse: &User{
 				IdentityID: "A-BC-1234567",
 				UserBasicInfo: UserBasicInfo{
@@ -177,7 +177,7 @@ func TestIAM_GetUser(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v3/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
+			expectedPath: "/identity-management/v2/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -470,7 +470,7 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 	"timeZone": "GMT",
 	"additionalAuthentication": "NONE"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/basic-info",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/basic-info",
 			expectedResponse: &UserBasicInfo{
 				FirstName:                "John",
 				LastName:                 "Doe",
@@ -509,7 +509,7 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/basic-info",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/basic-info",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -788,7 +788,7 @@ func TestIAM_RemoveUser(t *testing.T) {
 			},
 			responseStatus: http.StatusOK,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE",
 		},
 		"204 No Content": {
 			params: RemoveUserRequest{
@@ -796,7 +796,7 @@ func TestIAM_RemoveUser(t *testing.T) {
 			},
 			responseStatus: http.StatusNoContent,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE",
 		},
 		"500 internal server error": {
 			params: RemoveUserRequest{
@@ -810,7 +810,7 @@ func TestIAM_RemoveUser(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -897,6 +897,130 @@ func TestIAM_UpdateTFA(t *testing.T) {
 			}))
 			client := mockAPIClient(t, mockServer)
 			err := client.UpdateTFA(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestIAM_UpdateMFA(t *testing.T) {
+	tests := map[string]struct {
+		params         UpdateMFARequest
+		responseStatus int
+		responseBody   string
+		expectedPath   string
+		withError      func(*testing.T, error)
+	}{
+		"204 No Content": {
+			params: UpdateMFARequest{
+				IdentityID: "1-ABCDE",
+				Value:      MFAAuthentication,
+			},
+			responseStatus: http.StatusNoContent,
+			responseBody:   "",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/additionalAuthentication",
+		},
+		"500 internal server error": {
+			params: UpdateMFARequest{
+				IdentityID: "1-ABCDE",
+				Value:      MFAAuthentication,
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error making request",
+    "status": 500
+}`,
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/additionalAuthentication",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error making request",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.UpdateMFA(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestIAM_ResetMFA(t *testing.T) {
+	tests := map[string]struct {
+		params         ResetMFARequest
+		responseStatus int
+		responseBody   string
+		expectedPath   string
+		withError      func(*testing.T, error)
+	}{
+		"204 No Content": {
+			params: ResetMFARequest{
+				IdentityID: "1-ABCDE",
+			},
+			responseStatus: http.StatusNoContent,
+			responseBody:   "",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/additionalAuthentication/reset",
+		},
+		"500 internal server error": {
+			params: ResetMFARequest{
+				IdentityID: "1-ABCDE",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error making request",
+    "status": 500
+}`,
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/additionalAuthentication/reset",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error making request",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.ResetMFA(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return

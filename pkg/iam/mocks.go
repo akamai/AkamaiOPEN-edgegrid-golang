@@ -311,6 +311,18 @@ func (m *Mock) UpdateTFA(ctx context.Context, request UpdateTFARequest) error {
 	return args.Error(0)
 }
 
+func (m *Mock) UpdateMFA(ctx context.Context, request UpdateMFARequest) error {
+	args := m.Called(ctx, request)
+
+	return args.Error(0)
+}
+
+func (m *Mock) ResetMFA(ctx context.Context, request ResetMFARequest) error {
+	args := m.Called(ctx, request)
+
+	return args.Error(0)
+}
+
 func (m *Mock) ResetUserPassword(ctx context.Context, request ResetUserPasswordRequest) (*ResetUserPasswordResponse, error) {
 	args := m.Called(ctx, request)
 

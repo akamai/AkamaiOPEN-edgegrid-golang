@@ -33,7 +33,7 @@ func TestIAM_ResetUserPassword(t *testing.T) {
 			expectedResponse: ResetUserPasswordResponse{
 				NewPassword: "K8QVa7Q2",
 			},
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=false",
 		},
 		"204 No Content": {
 			params: ResetUserPasswordRequest{
@@ -42,7 +42,7 @@ func TestIAM_ResetUserPassword(t *testing.T) {
 			},
 			responseStatus: http.StatusNoContent,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=true",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=true",
 		},
 		"404 Not Found": {
 			params: ResetUserPasswordRequest{
@@ -57,7 +57,7 @@ func TestIAM_ResetUserPassword(t *testing.T) {
 				"title": "User not found",
 				"type": "/useradmin-api/error-types/1100"
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/X1-ABCDE/reset-password?sendEmail=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/X1-ABCDE/reset-password?sendEmail=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Instance:   "",
@@ -82,7 +82,7 @@ func TestIAM_ResetUserPassword(t *testing.T) {
 				"detail": "Error making request",
 				"status": 500
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -133,7 +133,7 @@ func TestIAM_SetUserPassword(t *testing.T) {
 			responseStatus:      http.StatusNoContent,
 			responseBody:        "",
 			expectedRequestBody: `{"newPassword":"newpwd"}`,
-			expectedPath:        "/identity-management/v2/user-admin/ui-identities/1-ABCDE/set-password",
+			expectedPath:        "/identity-management/v3/user-admin/ui-identities/1-ABCDE/set-password",
 		},
 		"400 Bad Request - same password": {
 			params: SetUserPasswordRequest{
@@ -148,7 +148,7 @@ func TestIAM_SetUserPassword(t *testing.T) {
 				"title": "Validation Exception",
 				"type": "/useradmin-api/error-types/1508"
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/X1-ABCDE/set-password",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/X1-ABCDE/set-password",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Instance:   "",
@@ -175,7 +175,7 @@ func TestIAM_SetUserPassword(t *testing.T) {
 				"title": "User not found",
 				"type": "/useradmin-api/error-types/1100"
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/X1-ABCDE/set-password",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/X1-ABCDE/set-password",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Instance:   "",
@@ -201,7 +201,7 @@ func TestIAM_SetUserPassword(t *testing.T) {
 				"detail": "Error making request",
 				"status": 500
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/set-password",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/set-password",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",

@@ -38,7 +38,7 @@ func TestCreateGroup(t *testing.T) {
 	"modifiedDate": "2012-04-28T00:00:00.000Z",
 	"modifiedBy": "johndoe"
 }`,
-			expectedPath:        "/identity-management/v2/user-admin/groups/12345",
+			expectedPath:        "/identity-management/v3/user-admin/groups/12345",
 			expectedRequestBody: `{"groupName":"Test Group"}`,
 			expectedResponse: &Group{
 				GroupID:       98765,
@@ -63,7 +63,7 @@ func TestCreateGroup(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -140,7 +140,7 @@ func TestMoveGroup(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, "/identity-management/v2/user-admin/groups/move", r.URL.String())
+				assert.Equal(t, "/identity-management/v3/user-admin/groups/move", r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 				body, err := ioutil.ReadAll(r.Body)
 				require.NoError(t, err)
@@ -188,7 +188,7 @@ func TestGetGroup(t *testing.T) {
 		"delete": true
 	}
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345?actions=true",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345?actions=true",
 			expectedResponse: &Group{
 				GroupID:      12345,
 				GroupName:    "Top Level group",
@@ -216,7 +216,7 @@ func TestGetGroup(t *testing.T) {
 	"modifiedDate": "2012-04-28T00:00:00.000Z",
 	"modifiedBy": "johndoe"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345?actions=false",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345?actions=false",
 			expectedResponse: &Group{
 				GroupID:      12345,
 				GroupName:    "Top Level group",
@@ -238,7 +238,7 @@ func TestGetGroup(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345?actions=false",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345?actions=false",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -303,7 +303,7 @@ func TestListAffectedUsers(t *testing.T) {
         "lastLoginDate": "2022-02-22T17:06:50.000Z"
     }
 ]`,
-			expectedPath: "/identity-management/v2/user-admin/groups/move/12344/12345/affected-users?userType=gainAccess",
+			expectedPath: "/identity-management/v3/user-admin/groups/move/12344/12345/affected-users?userType=gainAccess",
 			expectedResponse: []GroupUser{
 				{
 					IdentityID:    "test-identity",
@@ -330,7 +330,7 @@ func TestListAffectedUsers(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/move/12344/12345/affected-users?userType=gainAccess",
+			expectedPath: "/identity-management/v3/user-admin/groups/move/12344/12345/affected-users?userType=gainAccess",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -412,7 +412,7 @@ func TestListGroups(t *testing.T) {
 					}
 				}
 			]`,
-			expectedPath: "/identity-management/v2/user-admin/groups?actions=true",
+			expectedPath: "/identity-management/v3/user-admin/groups?actions=true",
 			expectedResponse: []Group{
 				{
 					GroupID:      12345,
@@ -444,7 +444,7 @@ func TestListGroups(t *testing.T) {
 					"modifiedBy": "johndoe"
 				}
 			]`,
-			expectedPath: "/identity-management/v2/user-admin/groups?actions=false",
+			expectedPath: "/identity-management/v3/user-admin/groups?actions=false",
 			expectedResponse: []Group{
 				{
 					GroupID:      12345,
@@ -468,7 +468,7 @@ func TestListGroups(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups?actions=true",
+			expectedPath: "/identity-management/v3/user-admin/groups?actions=true",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -515,7 +515,7 @@ func TestRemoveGroup(t *testing.T) {
 				GroupID: 12345,
 			},
 			responseStatus: http.StatusNoContent,
-			expectedPath:   "/identity-management/v2/user-admin/groups/12345",
+			expectedPath:   "/identity-management/v3/user-admin/groups/12345",
 		},
 		"500 internal server error": {
 			params: RemoveGroupRequest{
@@ -529,7 +529,7 @@ func TestRemoveGroup(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -550,7 +550,7 @@ func TestRemoveGroup(t *testing.T) {
     "title": "Forbidden",
     "type": "/useradmin-api/error-types/1001"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345",
 			withError: &Error{
 				Instance:   "",
 				StatusCode: http.StatusForbidden,
@@ -612,7 +612,7 @@ func TestUpdateGroupName(t *testing.T) {
 	"modifiedDate": "2012-04-28T00:00:00.000Z",
 	"modifiedBy": "johndoe"
 }`,
-			expectedPath:        "/identity-management/v2/user-admin/groups/12345",
+			expectedPath:        "/identity-management/v3/user-admin/groups/12345",
 			expectedRequestBody: `{"groupName":"New Group Name"}`,
 			expectedResponse: &Group{
 				GroupID:       12345,
@@ -637,7 +637,7 @@ func TestUpdateGroupName(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",

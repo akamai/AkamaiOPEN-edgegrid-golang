@@ -16,32 +16,32 @@ type (
 	Roles interface {
 		// CreateRole creates a custom role
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-role
+		// See: https://techdocs.akamai.com/iam-api/reference/post-role
 		CreateRole(context.Context, CreateRoleRequest) (*Role, error)
 
 		// GetRole gets details for a specific role
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-role
+		// See: https://techdocs.akamai.com/iam-api/reference/get-role
 		GetRole(context.Context, GetRoleRequest) (*Role, error)
 
 		// UpdateRole adds or removes permissions from a role and updates other parameters
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-role
+		// See: https://techdocs.akamai.com/iam-api/reference/put-role
 		UpdateRole(context.Context, UpdateRoleRequest) (*Role, error)
 
 		// DeleteRole deletes a role. This operation is only allowed if the role isn't assigned to any users.
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/delete-role
+		// See: https://techdocs.akamai.com/iam-api/reference/delete-role
 		DeleteRole(context.Context, DeleteRoleRequest) error
 
 		// ListRoles lists roles for the current account and contract type
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-roles
+		// See: https://techdocs.akamai.com/iam-api/reference/get-roles
 		ListRoles(context.Context, ListRolesRequest) ([]Role, error)
 
 		// ListGrantableRoles lists which grantable roles can be included in a new custom role or added to an existing custom role
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-grantable-roles
+		// See: https://techdocs.akamai.com/iam-api/reference/get-grantable-roles
 		ListGrantableRoles(context.Context) ([]RoleGrantedRole, error)
 	}
 
@@ -191,7 +191,7 @@ func (i *iam) CreateRole(ctx context.Context, params CreateRoleRequest) (*Role, 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/identity-management/v2/user-admin/roles")
+	uri, err := url.Parse("/identity-management/v3/user-admin/roles")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateRole, err)
 	}
@@ -222,7 +222,7 @@ func (i *iam) GetRole(ctx context.Context, params GetRoleRequest) (*Role, error)
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/roles/%d", params.ID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/roles/%d", params.ID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetRole, err)
 	}
@@ -260,7 +260,7 @@ func (i *iam) UpdateRole(ctx context.Context, params UpdateRoleRequest) (*Role, 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/roles/%d", params.ID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/roles/%d", params.ID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateRole, err)
 	}
@@ -291,7 +291,7 @@ func (i *iam) DeleteRole(ctx context.Context, params DeleteRoleRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrDeleteRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/roles/%d", params.ID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/roles/%d", params.ID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to parse url: %s", ErrDeleteRole, err)
 	}
@@ -317,7 +317,7 @@ func (i *iam) ListRoles(ctx context.Context, params ListRolesRequest) ([]Role, e
 	logger := i.Log(ctx)
 	logger.Debug("ListRoles")
 
-	u, err := url.Parse("/identity-management/v2/user-admin/roles")
+	u, err := url.Parse("/identity-management/v3/user-admin/roles")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListRoles, err)
 	}
@@ -354,7 +354,7 @@ func (i *iam) ListGrantableRoles(ctx context.Context) ([]RoleGrantedRole, error)
 	logger := i.Log(ctx)
 	logger.Debug("ListGrantableRoles")
 
-	uri, err := url.Parse("/identity-management/v2/user-admin/roles/grantable-roles")
+	uri, err := url.Parse("/identity-management/v3/user-admin/roles/grantable-roles")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListGrantableRoles, err)
 	}

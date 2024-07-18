@@ -4,6 +4,11 @@
 
 #### BREAKING CHANGES:
 
+* IAM
+  * Migrated V2 endpoints to V3.
+  * Added new methods:
+    * [UpdateMFA](https://techdocs.akamai.com/iam-api/reference/put-user-profile-additional-authentication)
+    * [ResetMFA](https://techdocs.akamai.com/iam-api/reference/put-ui-identity-reset-additional-authentication)
 
 
 

@@ -16,37 +16,37 @@ type (
 	Groups interface {
 		// CreateGroup creates a new group within a parent group_id specified in the request
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-group
+		// See: https://techdocs.akamai.com/iam-api/reference/post-group
 		CreateGroup(context.Context, GroupRequest) (*Group, error)
 
 		// GetGroup returns a group's details
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-group
+		// See: https://techdocs.akamai.com/iam-api/reference/get-group
 		GetGroup(context.Context, GetGroupRequest) (*Group, error)
 
 		// ListAffectedUsers lists users who are affected when a group is moved
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-move-affected-users
+		// See: https://techdocs.akamai.com/iam-api/reference/get-move-affected-users
 		ListAffectedUsers(context.Context, ListAffectedUsersRequest) ([]GroupUser, error)
 
 		// ListGroups lists all groups in which you have a scope of admin for the current account and contract type
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-groups
+		// See: https://techdocs.akamai.com/iam-api/reference/get-groups
 		ListGroups(context.Context, ListGroupsRequest) ([]Group, error)
 
 		// RemoveGroup removes a group based on group_id. We can only delete a sub-group, and only if that sub-group doesn't include any users
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/delete-group
+		// See: https://techdocs.akamai.com/iam-api/reference/delete-group
 		RemoveGroup(context.Context, RemoveGroupRequest) error
 
 		// UpdateGroupName changes the name of the group
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-group
+		// See: https://techdocs.akamai.com/iam-api/reference/put-group
 		UpdateGroupName(context.Context, GroupRequest) (*Group, error)
 
-		// MoveGroup Move a nested group under another group within the same parent hierarchy
+		// MoveGroup moves a nested group under another group within the same parent hierarchy
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-groups-move
+		// See: https://techdocs.akamai.com/iam-api/reference/post-groups-move
 		MoveGroup(context.Context, MoveGroupRequest) error
 	}
 
@@ -143,39 +143,39 @@ var (
 // Validate validates GetGroupRequest
 func (r GetGroupRequest) Validate() error {
 	return validation.Errors{
-		"groupID": validation.Validate(r.GroupID, validation.Required),
+		"GroupID": validation.Validate(r.GroupID, validation.Required),
 	}.Filter()
 }
 
 // Validate validates GroupRequest
 func (r GroupRequest) Validate() error {
 	return validation.Errors{
-		"groupID":   validation.Validate(r.GroupID, validation.Required),
-		"groupName": validation.Validate(r.GroupName, validation.Required),
+		"GroupID":   validation.Validate(r.GroupID, validation.Required),
+		"GroupName": validation.Validate(r.GroupName, validation.Required),
 	}.Filter()
 }
 
 // Validate validates MoveGroupRequest
 func (r MoveGroupRequest) Validate() error {
 	return validation.Errors{
-		"destinationGroupID": validation.Validate(r.DestinationGroupID, validation.Required),
-		"sourceGroupID":      validation.Validate(r.SourceGroupID, validation.Required),
+		"DestinationGroupID": validation.Validate(r.DestinationGroupID, validation.Required),
+		"SourceGroupID":      validation.Validate(r.SourceGroupID, validation.Required),
 	}.Filter()
 }
 
 // Validate validates ListAffectedUsersRequest
 func (r ListAffectedUsersRequest) Validate() error {
 	return validation.Errors{
-		"destinationGroupID": validation.Validate(r.DestinationGroupID, validation.Required),
-		"sourceGroupID":      validation.Validate(r.SourceGroupID, validation.Required),
-		"userType":           validation.Validate(r.UserType, validation.In(LostAccessUsers, GainAccessUsers)),
+		"DestinationGroupID": validation.Validate(r.DestinationGroupID, validation.Required),
+		"SourceGroupID":      validation.Validate(r.SourceGroupID, validation.Required),
+		"UserType":           validation.Validate(r.UserType, validation.In(LostAccessUsers, GainAccessUsers)),
 	}.Filter()
 }
 
 // Validate validates RemoveGroupRequest
 func (r RemoveGroupRequest) Validate() error {
 	return validation.Errors{
-		"groupID": validation.Validate(r.GroupID, validation.Required),
+		"GroupID": validation.Validate(r.GroupID, validation.Required),
 	}.Filter()
 }
 
@@ -187,7 +187,7 @@ func (i *iam) CreateGroup(ctx context.Context, params GroupRequest) (*Group, err
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateGroup, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/groups/%d", params.GroupID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/groups/%d", params.GroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateGroup, err)
 	}
@@ -218,7 +218,7 @@ func (i *iam) GetGroup(ctx context.Context, params GetGroupRequest) (*Group, err
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetGroup, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/groups/%d", params.GroupID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/groups/%d", params.GroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetGroup, err)
 	}
@@ -253,7 +253,7 @@ func (i *iam) ListAffectedUsers(ctx context.Context, params ListAffectedUsersReq
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListAffectedUsers, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/groups/move/%d/%d/affected-users", params.SourceGroupID, params.DestinationGroupID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/groups/move/%d/%d/affected-users", params.SourceGroupID, params.DestinationGroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAffectedUsers, err)
 	}
@@ -286,7 +286,7 @@ func (i *iam) ListGroups(ctx context.Context, params ListGroupsRequest) ([]Group
 	logger := i.Log(ctx)
 	logger.Debug("ListGroups")
 
-	u, err := url.Parse("/identity-management/v2/user-admin/groups")
+	u, err := url.Parse("/identity-management/v3/user-admin/groups")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListGroups, err)
 	}
@@ -321,7 +321,7 @@ func (i *iam) RemoveGroup(ctx context.Context, params RemoveGroupRequest) error 
 		return fmt.Errorf("%s: %w:\n%s", ErrRemoveGroup, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/groups/%d", params.GroupID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/groups/%d", params.GroupID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveGroup, err)
 	}
@@ -351,7 +351,7 @@ func (i *iam) UpdateGroupName(ctx context.Context, params GroupRequest) (*Group,
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateGroupName, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/groups/%d", params.GroupID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/groups/%d", params.GroupID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateGroupName, err)
 	}
@@ -382,7 +382,7 @@ func (i *iam) MoveGroup(ctx context.Context, params MoveGroupRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrMoveGroup, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse("/identity-management/v2/user-admin/groups/move")
+	u, err := url.Parse("/identity-management/v3/user-admin/groups/move")
 	if err != nil {
 		return fmt.Errorf("%w: failed to parse url: %s", ErrMoveGroup, err)
 	}

@@ -13,14 +13,14 @@ import (
 type (
 	// UserLock is the IAM user lock/unlock API interface
 	UserLock interface {
-		// LockUser lock the user
+		// LockUser locks the user
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-ui-identity-lock
+		// See: https://techdocs.akamai.com/iam-api/reference/post-ui-identity-lock
 		LockUser(context.Context, LockUserRequest) error
 
-		// UnlockUser release the lock on a user's account
+		// UnlockUser releases the lock on a user's account
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-ui-identity-unlock
+		// See: https://techdocs.akamai.com/iam-api/reference/post-ui-identity-unlock
 		UnlockUser(context.Context, UnlockUserRequest) error
 	}
 
@@ -62,7 +62,7 @@ func (i *iam) LockUser(ctx context.Context, params LockUserRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrLockUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/lock", params.IdentityID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/lock", params.IdentityID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrLockUser, err)
 	}
@@ -89,7 +89,7 @@ func (i *iam) UnlockUser(ctx context.Context, params UnlockUserRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrUnlockUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/unlock", params.IdentityID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/unlock", params.IdentityID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUnlockUser, err)
 	}

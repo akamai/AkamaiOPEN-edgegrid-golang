@@ -25,7 +25,7 @@ func TestIAM_LockUser(t *testing.T) {
 			},
 			responseStatus: http.StatusOK,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/lock",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/lock",
 		},
 		"204 No Content": {
 			params: LockUserRequest{
@@ -33,7 +33,7 @@ func TestIAM_LockUser(t *testing.T) {
 			},
 			responseStatus: http.StatusNoContent,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/lock",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/lock",
 		},
 		"404 Not Found": {
 			params: LockUserRequest{
@@ -48,7 +48,7 @@ func TestIAM_LockUser(t *testing.T) {
 				"title": "User not found",
 				"type": "/useradmin-api/error-types/1100"
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/X1-ABCDE/lock",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/X1-ABCDE/lock",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Instance:   "",
@@ -73,7 +73,7 @@ func TestIAM_LockUser(t *testing.T) {
 				"detail": "Error making request",
 				"status": 500
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/lock",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/lock",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -120,7 +120,7 @@ func TestIAM_UnlockUser(t *testing.T) {
 			},
 			responseStatus: http.StatusOK,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/unlock",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/unlock",
 		},
 		"204 No Content": {
 			params: UnlockUserRequest{
@@ -128,7 +128,7 @@ func TestIAM_UnlockUser(t *testing.T) {
 			},
 			responseStatus: http.StatusNoContent,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/unlock",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/unlock",
 		},
 		"404 Not Found": {
 			params: UnlockUserRequest{
@@ -143,7 +143,7 @@ func TestIAM_UnlockUser(t *testing.T) {
 				"title": "User not found",
 				"type": "/useradmin-api/error-types/1100"
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/X1-ABCDE/unlock",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/X1-ABCDE/unlock",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Instance:   "",
@@ -168,7 +168,7 @@ func TestIAM_UnlockUser(t *testing.T) {
 				"detail": "Error making request",
 				"status": 500
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/unlock",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/unlock",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",

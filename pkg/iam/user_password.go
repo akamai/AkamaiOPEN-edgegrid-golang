@@ -18,12 +18,12 @@ type (
 		// If you send the email with the password directly to the user, the response for this operation doesn't include that password.
 		// If you don't send the password to the user through email, the password is included in the response.
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-reset-password
+		// See: https://techdocs.akamai.com/iam-api/reference/post-reset-password
 		ResetUserPassword(context.Context, ResetUserPasswordRequest) (*ResetUserPasswordResponse, error)
 
 		// SetUserPassword sets a specific password for a user
 		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-set-password
+		// See: https://techdocs.akamai.com/iam-api/reference/post-set-password
 		SetUserPassword(context.Context, SetUserPasswordRequest) error
 	}
 
@@ -73,7 +73,7 @@ func (i *iam) ResetUserPassword(ctx context.Context, params ResetUserPasswordReq
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrResetUserPassword, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/reset-password", params.IdentityID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/reset-password", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrResetUserPassword, err)
 	}
@@ -105,7 +105,7 @@ func (i *iam) SetUserPassword(ctx context.Context, params SetUserPasswordRequest
 		return fmt.Errorf("%s: %w:\n%s", ErrSetUserPassword, ErrStructValidation, err)
 	}
 
-	u := fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/set-password", params.IdentityID)
+	u := fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/set-password", params.IdentityID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, nil)
 	if err != nil {

@@ -106,7 +106,7 @@ func TestIAM_SupportedCountries(t *testing.T) {
 				"Greenland",
 				"Grenada"
 			]`,
-			expectedPath:     "/identity-management/v2/user-admin/common/countries",
+			expectedPath:     "/identity-management/v3/user-admin/common/countries",
 			expectedResponse: []string{"Greece", "Greenland", "Grenada"},
 		},
 		"500 internal server error": {
@@ -118,7 +118,7 @@ func TestIAM_SupportedCountries(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/common/countries",
+			expectedPath: "/identity-management/v3/user-admin/common/countries",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -171,7 +171,7 @@ func TestIAM_SupportedTimezones(t *testing.T) {
 					"posix": "Asia/Rangoon"
 				}
 			]`,
-			expectedPath: "/identity-management/v2/user-admin/common/timezones",
+			expectedPath: "/identity-management/v3/user-admin/common/timezones",
 			expectedResponse: []Timezone{
 				{
 					Timezone:    "Asia/Rangoon",
@@ -190,7 +190,7 @@ func TestIAM_SupportedTimezones(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/common/timezones",
+			expectedPath: "/identity-management/v3/user-admin/common/timezones",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -239,7 +239,7 @@ func TestIAM_SupportedContactTypes(t *testing.T) {
     "Billing",
     "Security"
 ]`,
-			expectedPath:     "/identity-management/v2/user-admin/common/contact-types",
+			expectedPath:     "/identity-management/v3/user-admin/common/contact-types",
 			expectedResponse: []string{"Billing", "Security"},
 		},
 		"500 internal server error": {
@@ -251,7 +251,7 @@ func TestIAM_SupportedContactTypes(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/common/contact-types",
+			expectedPath: "/identity-management/v3/user-admin/common/contact-types",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -300,7 +300,7 @@ func TestIAM_SupportedLanguages(t *testing.T) {
     "Deutsch",
     "English"
 ]`,
-			expectedPath:     "/identity-management/v2/user-admin/common/supported-languages",
+			expectedPath:     "/identity-management/v3/user-admin/common/supported-languages",
 			expectedResponse: []string{"Deutsch", "English"},
 		},
 		"500 internal server error": {
@@ -312,7 +312,7 @@ func TestIAM_SupportedLanguages(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/common/supported-languages",
+			expectedPath: "/identity-management/v3/user-admin/common/supported-languages",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -361,7 +361,7 @@ func TestIAM_ListProducts(t *testing.T) {
     "EdgeComputing for Java",
     "Streaming"
 ]`,
-			expectedPath:     "/identity-management/v2/user-admin/common/notification-products",
+			expectedPath:     "/identity-management/v3/user-admin/common/notification-products",
 			expectedResponse: []string{"EdgeComputing for Java", "Streaming"},
 		},
 		"500 internal server error": {
@@ -373,7 +373,7 @@ func TestIAM_ListProducts(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/common/notification-products",
+			expectedPath: "/identity-management/v3/user-admin/common/notification-products",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -428,7 +428,7 @@ func TestIAM_ListTimeoutPolicies(t *testing.T) {
         "value": 1800
     }
 ]`,
-			expectedPath: "/identity-management/v2/user-admin/common/timeout-policies",
+			expectedPath: "/identity-management/v3/user-admin/common/timeout-policies",
 			expectedResponse: []TimeoutPolicy{
 				{
 					Name:  "after15Minutes",
@@ -449,7 +449,7 @@ func TestIAM_ListTimeoutPolicies(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/common/timeout-policies",
+			expectedPath: "/identity-management/v3/user-admin/common/timeout-policies",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -502,7 +502,7 @@ func TestIAM_ListStates(t *testing.T) {
 	"AB",
 	"BC"
 ]`,
-			expectedPath:     "/identity-management/v2/user-admin/common/countries/canada/states",
+			expectedPath:     "/identity-management/v3/user-admin/common/countries/canada/states",
 			expectedResponse: []string{"AB", "BC"},
 		},
 		"500 internal server error": {
@@ -517,7 +517,7 @@ func TestIAM_ListStates(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/common/countries/canada/states",
+			expectedPath: "/identity-management/v3/user-admin/common/countries/canada/states",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",

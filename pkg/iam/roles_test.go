@@ -52,7 +52,7 @@ func TestIAM_CreateRole(t *testing.T) {
         }
     ]
 }`,
-			expectedPath:        "/identity-management/v2/user-admin/roles",
+			expectedPath:        "/identity-management/v3/user-admin/roles",
 			expectedRequestBody: `{"roleName":"Terraform admin","roleDescription":"Admin granted role for tests","grantedRoles":[{"grantedRoleId":12345}]}`,
 			expectedResponse: &Role{
 				RoleID:          123456,
@@ -90,7 +90,7 @@ func TestIAM_CreateRole(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles",
+			expectedPath: "/identity-management/v3/user-admin/roles",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -190,7 +190,7 @@ func TestIAM_GetRole(t *testing.T) {
         }
 	]
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=true&grantedRoles=true&users=true",
+			expectedPath: "/identity-management/v3/user-admin/roles/123456?actions=true&grantedRoles=true&users=true",
 			expectedResponse: &Role{
 				RoleID:          123456,
 				RoleName:        "Terraform admin updated",
@@ -250,7 +250,7 @@ func TestIAM_GetRole(t *testing.T) {
     "modifiedDate": "2022-04-11T10:59:30.000Z",
     "modifiedBy": "jBond"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
+			expectedPath: "/identity-management/v3/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
 			expectedResponse: &Role{
 				RoleID:          123456,
 				RoleName:        "Terraform admin updated",
@@ -265,7 +265,7 @@ func TestIAM_GetRole(t *testing.T) {
 		"404 Not found": {
 			params:         GetRoleRequest{ID: 123456},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
+			expectedPath:   "/identity-management/v3/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
 			responseBody: `
 {
     "instance": "",
@@ -293,7 +293,7 @@ func TestIAM_GetRole(t *testing.T) {
 	"detail": "Error making request",
 	"status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
+			expectedPath: "/identity-management/v3/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -378,7 +378,7 @@ func TestIAM_UpdateRole(t *testing.T) {
         }
     ]
 }`,
-			expectedPath:        "/identity-management/v2/user-admin/roles/123456",
+			expectedPath:        "/identity-management/v3/user-admin/roles/123456",
 			expectedRequestBody: `{"roleName":"Terraform admin updated","grantedRoles":[{"grantedRoleId":54321},{"grantedRoleId":12345}]}`,
 			expectedResponse: &Role{
 				RoleID:          123456,
@@ -422,7 +422,7 @@ func TestIAM_UpdateRole(t *testing.T) {
 	"detail": "Error making request",
 	"status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456",
+			expectedPath: "/identity-management/v3/user-admin/roles/123456",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -471,12 +471,12 @@ func TestIAM_DeleteRole(t *testing.T) {
 		"204 Deleted": {
 			params:         DeleteRoleRequest{ID: 123456},
 			responseStatus: http.StatusNoContent,
-			expectedPath:   "/identity-management/v2/user-admin/roles/123456",
+			expectedPath:   "/identity-management/v3/user-admin/roles/123456",
 		},
 		"404 Not found": {
 			params:         DeleteRoleRequest{ID: 123456},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/roles/123456",
+			expectedPath:   "/identity-management/v3/user-admin/roles/123456",
 			responseBody: `
 {
     "instance": "",
@@ -504,7 +504,7 @@ func TestIAM_DeleteRole(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456",
+			expectedPath: "/identity-management/v3/user-admin/roles/123456",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -566,7 +566,7 @@ func TestIAM_ListRoles(t *testing.T) {
         }
 	}
 ]`,
-			expectedPath: "/identity-management/v2/user-admin/roles?actions=true&ignoreContext=false&users=false",
+			expectedPath: "/identity-management/v3/user-admin/roles?actions=true&ignoreContext=false&users=false",
 			expectedResponse: []Role{
 				{
 					RoleID:          123456,
@@ -596,7 +596,7 @@ func TestIAM_ListRoles(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles?actions=true&ignoreContext=false&users=false",
+			expectedPath: "/identity-management/v3/user-admin/roles?actions=true&ignoreContext=false&users=false",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -651,7 +651,7 @@ func TestIAM_ListGrantableRoles(t *testing.T) {
         "grantedRoleDescription": "second role description"
     }
 ]`,
-			expectedPath: "/identity-management/v2/user-admin/roles/grantable-roles",
+			expectedPath: "/identity-management/v3/user-admin/roles/grantable-roles",
 			expectedResponse: []RoleGrantedRole{
 				{
 					RoleID:      123456,
@@ -674,7 +674,7 @@ func TestIAM_ListGrantableRoles(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/grantable-roles",
+			expectedPath: "/identity-management/v3/user-admin/roles/grantable-roles",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
