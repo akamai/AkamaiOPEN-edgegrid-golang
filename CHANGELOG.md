@@ -438,6 +438,41 @@
 
 
 
+* IAM
+  * Add support for new methods:
+    * [ListCIDRBlocks](https://techdocs.akamai.com/iam-api/reference/get-allowlist)
+    * [CreateCIDRBlock](https://techdocs.akamai.com/iam-api/reference/post-allowlist)
+    * [GetCIDRBlock](https://techdocs.akamai.com/iam-api/reference/get-allowlist-cidrblockid)
+    * [UpdateCIDRBlock](https://techdocs.akamai.com/iam-api/reference/put-allowlist-cidrblockid)
+    * [DeleteCIDRBlock](https://techdocs.akamai.com/iam-api/reference/delete-allowlist-cidrblockid)
+    * [ValidateCIDRBlock](https://techdocs.akamai.com/iam-api/reference/get-allowlist-validate)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #### BUG FIXES:
 

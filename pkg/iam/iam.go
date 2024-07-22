@@ -19,6 +19,7 @@ type (
 	// IAM is the IAM api interface
 	IAM interface {
 		BlockedProperties
+		CIDR
 		Groups
 		Helper
 		IPAllowlist
