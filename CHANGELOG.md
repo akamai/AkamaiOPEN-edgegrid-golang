@@ -398,7 +398,11 @@
   * Added Helper APIs
     * [ListAllowedCPCodes](https://techdocs.akamai.com/iam-api/reference/post-api-clients-users-allowed-cpcodes)
 
-    
+
+* IAM
+    * Added new methods:
+        * [ListUsersForProperty](https://techdocs.akamai.com/iam-api/reference/get-property-users)
+        * [BlockUsers](https://techdocs.akamai.com/iam-api/reference/put-property-users-block)
 
 
 

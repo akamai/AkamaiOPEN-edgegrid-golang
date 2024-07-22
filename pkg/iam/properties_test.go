@@ -147,6 +147,111 @@ func TestListProperties(t *testing.T) {
 	}
 }
 
+func TestListUserForProperty(t *testing.T) {
+	tests := map[string]struct {
+		params           ListUsersForPropertyRequest
+		responseStatus   int
+		expectedPath     string
+		responseBody     string
+		expectedResponse *ListUsersForPropertyResponse
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			params: ListUsersForPropertyRequest{
+				PropertyID: 1,
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/identity-management/v3/user-admin/properties/1/users",
+			responseBody: `
+[
+  {
+    "firstName": "John",
+    "isBlocked": true,
+    "lastName": "Doe",
+    "uiIdentityId": "A-test-1234",
+    "uiUserName": "jdoe"
+  },
+  {
+    "firstName": "Jan",
+    "isBlocked": false,
+    "lastName": "Kowalski",
+    "uiIdentityId": "A-test-12345",
+    "uiUserName": "jkowalski"
+  }
+]
+`,
+			expectedResponse: &ListUsersForPropertyResponse{
+				{
+					FirstName:    "John",
+					IsBlocked:    true,
+					LastName:     "Doe",
+					UIIdentityID: "A-test-1234",
+					UIUserName:   "jdoe",
+				},
+				{
+					FirstName:    "Jan",
+					IsBlocked:    false,
+					LastName:     "Kowalski",
+					UIIdentityID: "A-test-12345",
+					UIUserName:   "jkowalski",
+				},
+			},
+		},
+		"validation errors": {
+			params: ListUsersForPropertyRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "list users for property: struct validation:\nPropertyID: cannot be blank", err.Error())
+			},
+		},
+		"404 not found": {
+			params: ListUsersForPropertyRequest{
+				PropertyID: 1,
+				UserType:   GainAccessUsers,
+			},
+			responseStatus: http.StatusNotFound,
+			expectedPath:   "/identity-management/v3/user-admin/properties/1/users?userType=gainAccess",
+			responseBody: `
+{
+	"instance": "",
+	"httpStatus": 404,
+	"detail": "",
+	"title": "Property not found",
+	"type": "/useradmin-api/error-types/1806"
+}					
+`,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "/useradmin-api/error-types/1806",
+					Title:      "Property not found",
+					StatusCode: http.StatusNotFound,
+					HTTPStatus: http.StatusNotFound,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			users, err := client.ListUsersForProperty(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, users)
+		})
+	}
+}
+
 func TestGetProperty(t *testing.T) {
 	tests := map[string]struct {
 		params           GetPropertyRequest
@@ -406,6 +511,181 @@ func TestMapPropertyIDToName(t *testing.T) {
 			}))
 			client := mockAPIClient(t, mockServer)
 			users, err := client.MapPropertyIDToName(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, users)
+		})
+	}
+}
+
+func TestBlockUsers(t *testing.T) {
+	tests := map[string]struct {
+		params              BlockUsersRequest
+		expectedPath        string
+		expectedRequestBody string
+		responseStatus      int
+		responseBody        string
+		expectedResponse    *BlockUsersResponse
+		withError           func(*testing.T, error)
+	}{
+		"200 OK": {
+			params: BlockUsersRequest{
+				PropertyID: 1,
+				BodyParams: BlockUsersReqBody{
+					BlockUserItem{
+						UIIdentityID: "A-test-1234",
+					},
+					BlockUserItem{
+						UIIdentityID: "A-test-12345",
+					},
+				},
+			},
+			expectedRequestBody: `
+[
+   {
+	"uiIdentityId": "A-test-1234"
+   },
+   {
+	"uiIdentityId": "A-test-12345"
+   }
+]`,
+			responseStatus: http.StatusOK,
+			expectedPath:   "/identity-management/v3/user-admin/properties/1/users/block",
+			responseBody: `
+[
+  {
+    "firstName": "John",
+    "isBlocked": true,
+    "lastName": "Doe",
+    "uiIdentityId": "A-test-1234",
+    "uiUserName": "jdoe"
+  },
+  {
+    "firstName": "Jan",
+    "isBlocked": true,
+    "lastName": "Kowalski",
+    "uiIdentityId": "A-test-12345",
+    "uiUserName": "jkowalski"
+  }
+]
+`,
+			expectedResponse: &BlockUsersResponse{
+				{
+					FirstName:    "John",
+					IsBlocked:    true,
+					LastName:     "Doe",
+					UIIdentityID: "A-test-1234",
+					UIUserName:   "jdoe",
+				},
+				{
+					FirstName:    "Jan",
+					IsBlocked:    true,
+					LastName:     "Kowalski",
+					UIIdentityID: "A-test-12345",
+					UIUserName:   "jkowalski",
+				},
+			},
+		},
+		"validation errors - no params": {
+			params: BlockUsersRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "block users: struct validation: BodyParams: cannot be blank\nPropertyID: cannot be blank", err.Error())
+			},
+		},
+		"validation errors - empty body": {
+			params: BlockUsersRequest{
+				PropertyID: 1,
+				BodyParams: BlockUsersReqBody{},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "block users: struct validation: BodyParams: cannot be blank", err.Error())
+			},
+		},
+		"404 invalid identity": {
+			params: BlockUsersRequest{
+				PropertyID: 1,
+				BodyParams: BlockUsersReqBody{
+					BlockUserItem{
+						UIIdentityID: "test",
+					},
+				},
+			},
+			responseStatus: http.StatusNotFound,
+			expectedPath:   "/identity-management/v3/user-admin/properties/1/users/block",
+			responseBody: `
+{
+    "instance": "",
+    "httpStatus": 404,
+    "detail": "",
+    "title": "Identities  [test] are not valid.",
+    "type": "/useradmin-api/error-types/1100"
+}
+`,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "/useradmin-api/error-types/1100",
+					Title:      "Identities  [test] are not valid.",
+					Detail:     "",
+					HTTPStatus: http.StatusNotFound,
+					StatusCode: http.StatusNotFound,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"404 not found": {
+			params: BlockUsersRequest{
+				PropertyID: 2,
+				BodyParams: BlockUsersReqBody{
+					BlockUserItem{
+						UIIdentityID: "A-test-1234",
+					},
+				},
+			},
+			responseStatus: http.StatusNotFound,
+			expectedPath:   "/identity-management/v3/user-admin/properties/2/users/block",
+			responseBody: `
+{
+    "instance": "",
+    "httpStatus": 404,
+    "detail": "",
+    "title": "Property not found",
+    "type": "/useradmin-api/error-types/1806"
+}
+`,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "/useradmin-api/error-types/1806",
+					Title:      "Property not found",
+					Detail:     "",
+					HTTPStatus: http.StatusNotFound,
+					StatusCode: http.StatusNotFound,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
+				w.WriteHeader(test.responseStatus)
+				if test.responseBody != "" {
+					_, err := w.Write([]byte(test.responseBody))
+					assert.NoError(t, err)
+				}
+			}))
+			client := mockAPIClient(t, mockServer)
+			users, err := client.BlockUsers(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return

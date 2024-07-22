@@ -349,6 +349,16 @@ func (m *Mock) ListProperties(ctx context.Context, request ListPropertiesRequest
 	return args.Get(0).(*ListPropertiesResponse), args.Error(1)
 }
 
+func (m *Mock) ListUsersForProperty(ctx context.Context, request ListUsersForPropertyRequest) (*ListUsersForPropertyResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListUsersForPropertyResponse), args.Error(1)
+}
+
 func (m *Mock) GetProperty(ctx context.Context, request GetPropertyRequest) (*GetPropertyResponse, error) {
 	args := m.Called(ctx, request)
 
@@ -467,4 +477,14 @@ func (m *Mock) ValidateCIDRBlock(ctx context.Context, request ValidateCIDRBlockR
 	args := m.Called(ctx, request)
 
 	return args.Error(0)
+}
+
+func (m *Mock) BlockUsers(ctx context.Context, request BlockUsersRequest) (*BlockUsersResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*BlockUsersResponse), args.Error(1)
 }
