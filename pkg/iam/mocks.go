@@ -394,3 +394,13 @@ func (m *Mock) GetIPAllowlistStatus(ctx context.Context) (*GetIPAllowlistStatusR
 
 	return args.Get(0).(*GetIPAllowlistStatusResponse), args.Error(1)
 }
+
+func (m *Mock) ListAllowedCPCodes(ctx context.Context, params ListAllowedCPCodesRequest) (ListAllowedCPCodesResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(ListAllowedCPCodesResponse), args.Error(1)
+}

@@ -17,6 +17,7 @@ type (
 	IAM interface {
 		BlockedProperties
 		Groups
+		Helper
 		IPAllowlist
 		Properties
 		Roles

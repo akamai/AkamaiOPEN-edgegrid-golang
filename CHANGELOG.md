@@ -389,7 +389,11 @@
 
 
 
+* IAM
+  * Added Helper APIs
+    * [ListAllowedCPCodes](https://techdocs.akamai.com/iam-api/reference/post-api-clients-users-allowed-cpcodes)
 
+    
 
 
 
