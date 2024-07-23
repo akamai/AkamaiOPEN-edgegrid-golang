@@ -624,17 +624,12 @@ func (i *iam) UpdateMFA(ctx context.Context, params UpdateMFARequest) error {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateMFA, err)
 	}
 
-	reqBody, err := convertStructToReqBody(params.Value)
-	if err != nil {
-		return fmt.Errorf("failed to generate request body: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), reqBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateMFA, err)
 	}
 
-	resp, err := i.Exec(req, nil, nil)
+	resp, err := i.Exec(req, nil, params.Value)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrUpdateMFA, err)
 	}
