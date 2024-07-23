@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -31,6 +32,11 @@ type (
 		//
 		// See: https://techdocs.akamai.com/iam-api/reference/get-common-timeout-policies
 		ListTimeoutPolicies(context.Context) ([]TimeoutPolicy, error)
+
+		// ListAccountSwitchKeys lists account switch keys available for a specific API client. If `ClientID` is not provided, it lists account switch keys available for your API client.
+		//
+		// See: https://techdocs.akamai.com/iam-api/reference/get-client-account-switch-keys, https://techdocs.akamai.com/iam-api/reference/get-self-account-switch-keys
+		ListAccountSwitchKeys(context.Context, ListAccountSwitchKeysRequest) (*ListAccountSwitchKeysResponse, error)
 
 		// SupportedContactTypes lists supported contact types
 		//
@@ -77,6 +83,21 @@ type (
 		Country string
 	}
 
+	// ListAccountSwitchKeysRequest contains the request parameters for the ListAccountSwitchKeys endpoint
+	ListAccountSwitchKeysRequest struct {
+		ClientID string
+		Search   string
+	}
+
+	// ListAccountSwitchKeysResponse holds the response data from ListAccountSwitchKeys
+	ListAccountSwitchKeysResponse []AccountSwitchKey
+
+	// AccountSwitchKey contains information about account switch key
+	AccountSwitchKey struct {
+		AccountName      string `json:"accountName"`
+		AccountSwitchKey string `json:"accountSwitchKey"`
+	}
+
 	// Timezone contains the response of the list supported timezones endpoint
 	Timezone struct {
 		Description string `json:"description"`
@@ -98,6 +119,9 @@ var (
 
 	// ErrListTimeoutPolicies is returned when ListTimeoutPolicies fails
 	ErrListTimeoutPolicies = errors.New("list timeout policies")
+
+	// ErrListAccountSwitchKeys is returned when ListAccountSwitchKeys fails
+	ErrListAccountSwitchKeys = errors.New("list account switch keys")
 
 	// ErrSupportedContactTypes is returned when SupportedContactTypes fails
 	ErrSupportedContactTypes = errors.New("supported contact types")
@@ -217,6 +241,43 @@ func (i *iam) ListTimeoutPolicies(ctx context.Context) ([]TimeoutPolicy, error) 
 	}
 
 	return rval, nil
+}
+
+func (i *iam) ListAccountSwitchKeys(ctx context.Context, params ListAccountSwitchKeysRequest) (*ListAccountSwitchKeysResponse, error) {
+	logger := i.Log(ctx)
+	logger.Debug("ListAccountSwitchKeys")
+
+	if params.ClientID == "" {
+		params.ClientID = "self"
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/account-switch-keys", params.ClientID))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListAccountSwitchKeys, err)
+	}
+
+	if params.Search != "" {
+		q := uri.Query()
+		q.Add("search", params.Search)
+		uri.RawQuery = q.Encode()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAccountSwitchKeys, err)
+	}
+
+	var result ListAccountSwitchKeysResponse
+	resp, err := i.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListAccountSwitchKeys, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListAccountSwitchKeys, i.Error(resp))
+	}
+
+	return &result, nil
 }
 
 func (i *iam) SupportedContactTypes(ctx context.Context) ([]string, error) {

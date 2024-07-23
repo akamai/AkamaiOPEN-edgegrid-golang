@@ -104,6 +104,16 @@ func (m *Mock) ListTimeoutPolicies(ctx context.Context) ([]TimeoutPolicy, error)
 	return args.Get(0).([]TimeoutPolicy), args.Error(1)
 }
 
+func (m *Mock) ListAccountSwitchKeys(ctx context.Context, request ListAccountSwitchKeysRequest) (*ListAccountSwitchKeysResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListAccountSwitchKeysResponse), args.Error(1)
+}
+
 func (m *Mock) ListStates(ctx context.Context, request ListStatesRequest) ([]string, error) {
 	args := m.Called(ctx, request)
 
@@ -393,6 +403,26 @@ func (m *Mock) MapPropertyNameToID(ctx context.Context, request MapPropertyNameT
 	}
 
 	return args.Get(0).(*int64), args.Error(1)
+}
+
+func (m *Mock) LockAPIClient(ctx context.Context, request LockAPIClientRequest) (*LockAPIClientResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*LockAPIClientResponse), args.Error(1)
+}
+
+func (m *Mock) UnlockAPIClient(ctx context.Context, request UnlockAPIClientRequest) (*UnlockAPIClientResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*UnlockAPIClientResponse), args.Error(1)
 }
 
 func (m *Mock) DisableIPAllowlist(ctx context.Context) error {

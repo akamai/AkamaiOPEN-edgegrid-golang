@@ -420,6 +420,13 @@
 
 
 
+* IAM
+  * Added new methods:
+    * ListAccountSwitchKeys based on [ListAccountSwitchKeys](https://techdocs.akamai.com/iam-api/reference/get-client-account-switch-keys) and [ListYourAccountSwitchKeys](https://techdocs.akamai.com/iam-api/reference/get-self-account-switch-keys)
+    * LockAPIClient based on [LockAPIClient](https://techdocs.akamai.com/iam-api/reference/put-lock-api-client) and [LockYourAPIClient](https://techdocs.akamai.com/iam-api/reference/put-lock-api-client-self)
+    * [UnlockAPIClient](https://techdocs.akamai.com/iam-api/reference/put-unlock-api-client)
+  
+
 
 
 

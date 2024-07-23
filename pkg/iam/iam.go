@@ -18,6 +18,7 @@ var (
 type (
 	// IAM is the IAM api interface
 	IAM interface {
+		APIClients
 		BlockedProperties
 		CIDR
 		Groups
