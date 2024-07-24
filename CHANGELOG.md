@@ -404,6 +404,11 @@
   * Added Helper APIs
     * [ListAllowedCPCodes](https://techdocs.akamai.com/iam-api/reference/post-api-clients-users-allowed-cpcodes)
 
+* IAM
+  * Added Helper APIs
+    * [ListAuthorizedUsers](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users)    
+    * [ListAllowedAPIs](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users-allowed-apis)    
+    * [ListAccessibleGroups](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users-group-access)    
 
 * IAM
     * Added new methods:

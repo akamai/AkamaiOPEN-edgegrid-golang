@@ -518,3 +518,33 @@ func (m *Mock) BlockUsers(ctx context.Context, request BlockUsersRequest) (*Bloc
 
 	return args.Get(0).(*BlockUsersResponse), args.Error(1)
 }
+
+func (m *Mock) ListAuthorizedUsers(ctx context.Context) (ListAuthorizedUsersResponse, error) {
+	args := m.Called(ctx)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(ListAuthorizedUsersResponse), args.Error(1)
+}
+
+func (m *Mock) ListAllowedAPIs(ctx context.Context, request ListAllowedAPIsRequest) (ListAllowedAPIsResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(ListAllowedAPIsResponse), args.Error(1)
+}
+
+func (m *Mock) ListAccessibleGroups(ctx context.Context, request ListAccessibleGroupsRequest) (ListAccessibleGroupsResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(ListAccessibleGroupsResponse), args.Error(1)
+}
