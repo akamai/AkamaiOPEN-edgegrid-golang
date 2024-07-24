@@ -34,10 +34,9 @@ func TestIAM_CreateUser(t *testing.T) {
 					State:                    "CA",
 					AdditionalAuthentication: NoneAuthentication,
 				},
-				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
-				Notifications: UserNotifications{},
+				AuthGrants: []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
 			},
-			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","additionalAuthentication":"NONE","authGrants":[{"groupId":1,"isBlocked":false,"roleId":1}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null,"apiClientCredentialExpiryNotification":false}}}`,
+			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","additionalAuthentication":"NONE","authGrants":[{"groupId":1,"isBlocked":false,"roleId":1}]}`,
 			responseStatus: http.StatusCreated,
 			responseBody: `
 {
@@ -51,7 +50,7 @@ func TestIAM_CreateUser(t *testing.T) {
 	"additionalAuthenticationConfigured": false,
 	"additionalAuthentication": "NONE"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities?sendEmail=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities?sendEmail=false",
 			expectedResponse: &User{
 				IdentityID: "A-BC-1234567",
 				UserBasicInfo: UserBasicInfo{
@@ -66,18 +65,88 @@ func TestIAM_CreateUser(t *testing.T) {
 				AdditionalAuthenticationConfigured: false,
 			},
 		},
+		"201 OK - all fields": {
+			params: CreateUserRequest{
+				UserBasicInfo: UserBasicInfo{
+					FirstName:                "John",
+					LastName:                 "Doe",
+					UserName:                 "UserName",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					TimeZone:                 "GMT+2",
+					JobTitle:                 "Title",
+					SecondaryEmail:           "second@email.com",
+					MobilePhone:              "123123123",
+					Address:                  "Address",
+					City:                     "City",
+					State:                    "CA",
+					ZipCode:                  "11-111",
+					Country:                  "USA",
+					ContactType:              "Dev",
+					PreferredLanguage:        "EN",
+					SessionTimeOut:           ptr.To(1),
+					AdditionalAuthentication: MFAAuthentication,
+				},
+				AuthGrants: []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
+				Notifications: &UserNotifications{
+					EnableEmail: false,
+					Options: UserNotificationOptions{
+						NewUser:                   false,
+						PasswordExpiry:            false,
+						Proactive:                 []string{"Test1"},
+						Upgrade:                   []string{"Test2"},
+						APIClientCredentialExpiry: false,
+					},
+				},
+				SendEmail: true,
+			},
+			requestBody:    `{"firstName":"John","lastName":"Doe","uiUserName":"UserName","email":"john.doe@mycompany.com","phone":"(123) 321-1234","timeZone":"GMT+2","jobTitle":"Title","tfaEnabled":false,"secondaryEmail":"second@email.com","mobilePhone":"123123123","address":"Address","city":"City","state":"CA","zipCode":"11-111","country":"USA","contactType":"Dev","preferredLanguage":"EN","sessionTimeOut":1,"additionalAuthentication":"MFA","authGrants":[{"groupId":1,"isBlocked":false,"roleId":1}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":["Test1"],"upgrade":["Test2"],"apiClientCredentialExpiryNotification":false}}}`,
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+	"uiIdentityId": "A-BC-1234567",
+	"firstName": "John",
+	"lastName": "Doe",
+	"email": "john.doe@mycompany.com",
+	"phone": "(123) 321-1234",
+	"state": "CA",
+	"country": "USA",
+	"additionalAuthenticationConfigured": false,
+	"additionalAuthentication": "NONE"
+}`,
+			expectedPath: "/identity-management/v3/user-admin/ui-identities?sendEmail=true",
+			expectedResponse: &User{
+				IdentityID: "A-BC-1234567",
+				UserBasicInfo: UserBasicInfo{
+					FirstName:                "John",
+					LastName:                 "Doe",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					Country:                  "USA",
+					State:                    "CA",
+					AdditionalAuthentication: NoneAuthentication,
+				},
+				AdditionalAuthenticationConfigured: false,
+			},
+		},
+		"validation errors": {
+			params: CreateUserRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create user: struct validation:\nAdditionalAuthentication: cannot be blank; AuthGrants: cannot be blank; Country: cannot be blank; Email: cannot be blank; FirstName: cannot be blank; LastName: cannot be blank.", err.Error())
+			},
+		},
 		"500 internal server error": {
 			params: CreateUserRequest{
 				UserBasicInfo: UserBasicInfo{
-					FirstName: "John",
-					LastName:  "Doe",
-					Email:     "john.doe@mycompany.com",
-					Phone:     "(123) 321-1234",
-					Country:   "USA",
-					State:     "CA",
+					FirstName:                "John",
+					LastName:                 "Doe",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					Country:                  "USA",
+					State:                    "CA",
+					AdditionalAuthentication: TFAAuthentication,
 				},
-				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
-				Notifications: UserNotifications{},
+				AuthGrants: []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -87,7 +156,7 @@ func TestIAM_CreateUser(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities?sendEmail=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities?sendEmail=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -150,9 +219,11 @@ func TestIAM_GetUser(t *testing.T) {
 	"email": "john.doe@mycompany.com",
 	"phone": "(123) 321-1234",
 	"state": "CA",
-	"country": "USA"
+	"country": "USA",
+	"accountId": "sampleID",
+	"userStatus": "PENDING"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
 			expectedResponse: &User{
 				IdentityID: "A-BC-1234567",
 				UserBasicInfo: UserBasicInfo{
@@ -163,6 +234,8 @@ func TestIAM_GetUser(t *testing.T) {
 					Country:   "USA",
 					State:     "CA",
 				},
+				UserStatus: "PENDING",
+				AccountID:  "sampleID",
 			},
 		},
 		"500 internal server error": {
@@ -177,7 +250,7 @@ func TestIAM_GetUser(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -563,7 +636,7 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 		"200 OK": {
 			params: UpdateUserNotificationsRequest{
 				IdentityID: "1-ABCDE",
-				Notifications: UserNotifications{
+				Notifications: &UserNotifications{
 					EnableEmail: true,
 					Options: UserNotificationOptions{
 						Upgrade:                   []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
@@ -605,10 +678,16 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 				},
 			},
 		},
+		"validation errors": {
+			params: UpdateUserNotificationsRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "update user notifications: struct validation:\nIdentityID: cannot be blank\nNotifications: cannot be blank", err.Error())
+			},
+		},
 		"500 internal server error": {
 			params: UpdateUserNotificationsRequest{
 				IdentityID: "1-ABCDE",
-				Notifications: UserNotifications{
+				Notifications: &UserNotifications{
 					EnableEmail: true,
 					Options: UserNotificationOptions{
 						Upgrade:        []string{"NetStorage", "Other Upgrade Notifications (Planned)"},

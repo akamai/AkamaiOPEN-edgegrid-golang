@@ -16,7 +16,13 @@
 
 
 
-
+* IAM
+  * Changed `Notifications` to pointer type in following structures:
+    * `CreateUserRequest`
+    * `UpdateUserNotificationsRequest`
+  * Added `UsertStatus`, `AccountID` to the `User` structure
+  * Added required field `AdditionalAuthentication` to the `CreateUserRequest`
+  * Made `Notifications` required in `UpdateUserNotifications` method
 
 
 

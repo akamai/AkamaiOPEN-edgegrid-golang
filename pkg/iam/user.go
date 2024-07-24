@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"path"
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
@@ -73,7 +72,7 @@ type (
 	CreateUserRequest struct {
 		UserBasicInfo
 		AuthGrants    []AuthGrantRequest `json:"authGrants,omitempty"`
-		Notifications UserNotifications  `json:"notifications,omitempty"`
+		Notifications *UserNotifications `json:"notifications,omitempty"`
 		SendEmail     bool               `json:"-"`
 	}
 
@@ -101,7 +100,7 @@ type (
 	// UpdateUserNotificationsRequest contains the request parameters of the update user notifications endpoint
 	UpdateUserNotificationsRequest struct {
 		IdentityID    string
-		Notifications UserNotifications
+		Notifications *UserNotifications
 	}
 
 	// UpdateUserAuthGrantsRequest contains the request parameters of the update user auth grants endpoint
@@ -127,6 +126,8 @@ type (
 		AuthGrants                         []AuthGrant       `json:"authGrants,omitempty"`
 		Notifications                      UserNotifications `json:"notifications,omitempty"`
 		Actions                            *UserActions      `json:"actions,omitempty"`
+		UserStatus                         string            `json:"userStatus"`
+		AccountID                          string            `json:"accountId"`
 		AdditionalAuthenticationConfigured bool              `json:"additionalAuthenticationConfigured"`
 	}
 
@@ -303,12 +304,13 @@ func (r AuthGrant) Validate() error {
 // Validate validates CreateUserRequest
 func (r CreateUserRequest) Validate() error {
 	return validation.Errors{
-		"Country":       validation.Validate(r.Country, validation.Required),
-		"Email":         validation.Validate(r.Email, validation.Required, is.EmailFormat),
-		"FirstName":     validation.Validate(r.FirstName, validation.Required),
-		"LastName":      validation.Validate(r.LastName, validation.Required),
-		"AuthGrants":    validation.Validate(r.AuthGrants, validation.Required),
-		"Notifications": validation.Validate(r.Notifications, validation.Required),
+		"Country":                  validation.Validate(r.Country, validation.Required),
+		"Email":                    validation.Validate(r.Email, validation.Required, is.EmailFormat),
+		"FirstName":                validation.Validate(r.FirstName, validation.Required),
+		"LastName":                 validation.Validate(r.LastName, validation.Required),
+		"AuthGrants":               validation.Validate(r.AuthGrants, validation.Required),
+		"Notifications":            validation.Validate(r.Notifications),
+		"AdditionalAuthentication": validation.Validate(r.AdditionalAuthentication, validation.In(MFAAuthentication, TFAAuthentication, NoneAuthentication), validation.Required),
 	}.Filter()
 }
 
@@ -335,7 +337,8 @@ func (r UpdateUserInfoRequest) Validate() error {
 // Validate validates UpdateUserNotificationsRequest
 func (r UpdateUserNotificationsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"IdentityID": validation.Validate(r.IdentityID, validation.Required),
+		"IdentityID":    validation.Validate(r.IdentityID, validation.Required),
+		"Notifications": validation.Validate(r.Notifications, validation.Required),
 	})
 }
 
@@ -376,7 +379,7 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(path.Join("/identity-management/v2/user-admin", "ui-identities"))
+	u, err := url.Parse("/identity-management/v3/user-admin/ui-identities")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateUser, err)
 	}
@@ -409,7 +412,7 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s", params.IdentityID))
+	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetUser, err)
 	}
