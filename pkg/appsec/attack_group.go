@@ -63,6 +63,7 @@ type (
 		ValueCase     bool     `json:"valueCase,omitempty"`
 		ValueWildcard bool     `json:"valueWildcard,omitempty"`
 		UseHeaders    bool     `json:"useHeaders,omitempty"`
+		ClientLists   []string `json:"clientLists,omitempty"`
 	}
 
 	// AttackGroupAdvancedCriteria describes the hostname and path criteria used to limit the scope of an exception.

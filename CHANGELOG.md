@@ -4,6 +4,8 @@
 
 #### FEATURES/ENHANCEMENTS:
 
+* APPSEC
+  * Added field `ClientLists` to `RuleConditions` and `AttackGroupConditions`
 
 
 
