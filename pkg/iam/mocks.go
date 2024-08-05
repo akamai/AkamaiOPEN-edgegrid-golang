@@ -548,3 +548,61 @@ func (m *Mock) ListAccessibleGroups(ctx context.Context, request ListAccessibleG
 
 	return args.Get(0).(ListAccessibleGroupsResponse), args.Error(1)
 }
+
+func (m *Mock) CreateCredential(ctx context.Context, request CreateCredentialRequest) (*CreateCredentialResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*CreateCredentialResponse), args.Error(1)
+}
+
+func (m *Mock) ListCredentials(ctx context.Context, request ListCredentialsRequest) (ListCredentialsResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(ListCredentialsResponse), args.Error(1)
+}
+
+func (m *Mock) GetCredential(ctx context.Context, request GetCredentialRequest) (*GetCredentialResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetCredentialResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateCredential(ctx context.Context, request UpdateCredentialRequest) (*UpdateCredentialResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*UpdateCredentialResponse), args.Error(1)
+}
+
+func (m *Mock) DeleteCredential(ctx context.Context, request DeleteCredentialRequest) error {
+	args := m.Called(ctx, request)
+
+	return args.Error(0)
+}
+
+func (m *Mock) DeactivateCredential(ctx context.Context, request DeactivateCredentialRequest) error {
+	args := m.Called(ctx, request)
+
+	return args.Error(0)
+}
+
+func (m *Mock) DeactivateCredentials(ctx context.Context, request DeactivateCredentialsRequest) error {
+	args := m.Called(ctx, request)
+
+	return args.Error(0)
+}

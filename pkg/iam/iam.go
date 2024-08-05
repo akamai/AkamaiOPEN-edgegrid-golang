@@ -19,6 +19,7 @@ type (
 	// IAM is the IAM api interface
 	IAM interface {
 		APIClients
+		APIClientsCredentials
 		BlockedProperties
 		CIDR
 		Groups

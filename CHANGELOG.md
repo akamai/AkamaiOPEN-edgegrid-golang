@@ -71,7 +71,16 @@
 
 
 
-
+* IAM
+  * Added API Clients Credentials methods
+    * [CreateYourCredential](https://techdocs.akamai.com/iam-api/reference/post-self-credentials) and [CreateCredential](https://techdocs.akamai.com/iam-api/reference/post-client-credentials) 
+    * [GetYourCredential](https://techdocs.akamai.com/iam-api/reference/get-self-credential) and [GetCredential](https://techdocs.akamai.com/iam-api/reference/get-client-credential)  
+    * [UpdateYourCredential](https://techdocs.akamai.com/iam-api/reference/put-self-credential) and [UpdateCredential](https://techdocs.akamai.com/iam-api/reference/put-client-credential)
+    * [DeleteYourCredential](https://techdocs.akamai.com/iam-api/reference/delete-self-credential) and [DeleteCredential](https://techdocs.akamai.com/iam-api/reference/delete-client-credential)
+    * [ListYourCredentials](https://techdocs.akamai.com/iam-api/reference/get-self-credentials) and [ListCredentials](https://techdocs.akamai.com/iam-api/reference/get-client-credentials)
+    * [DeactivateYourCredential](https://techdocs.akamai.com/iam-api/reference/post-self-credential-deactivate) and [DeactivateCredential](https://techdocs.akamai.com/iam-api/reference/post-client-credential-deactivate)
+    * [DeactivateYourCredentials](https://techdocs.akamai.com/iam-api/reference/post-self-credentials-deactivate) and [DeactivateCredentials](https://techdocs.akamai.com/iam-api/reference/post-client-credentials-deactivate)
+  
 
 
 
