@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -44,9 +45,9 @@ func TestCreateGroup(t *testing.T) {
 				GroupID:       98765,
 				GroupName:     "Test Group",
 				ParentGroupID: 12345,
-				CreatedDate:   "2012-04-28T00:00:00.000Z",
+				CreatedDate:   test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				CreatedBy:     "johndoe",
-				ModifiedDate:  "2012-04-28T00:00:00.000Z",
+				ModifiedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				ModifiedBy:    "johndoe",
 			},
 		},
@@ -192,9 +193,9 @@ func TestGetGroup(t *testing.T) {
 			expectedResponse: &Group{
 				GroupID:      12345,
 				GroupName:    "Top Level group",
-				CreatedDate:  "2012-04-28T00:00:00.000Z",
+				CreatedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				CreatedBy:    "johndoe",
-				ModifiedDate: "2012-04-28T00:00:00.000Z",
+				ModifiedDate: test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				ModifiedBy:   "johndoe",
 				Actions: &GroupActions{
 					Edit:   true,
@@ -220,9 +221,9 @@ func TestGetGroup(t *testing.T) {
 			expectedResponse: &Group{
 				GroupID:      12345,
 				GroupName:    "Top Level group",
-				CreatedDate:  "2012-04-28T00:00:00.000Z",
+				CreatedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				CreatedBy:    "johndoe",
-				ModifiedDate: "2012-04-28T00:00:00.000Z",
+				ModifiedDate: test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				ModifiedBy:   "johndoe",
 			},
 		},
@@ -312,7 +313,7 @@ func TestListAffectedUsers(t *testing.T) {
 					AccountID:     "test-account",
 					Email:         "john.doe@mycompany.com",
 					UserName:      "john.doe@mycompany.com",
-					LastLoginDate: "2022-02-22T17:06:50.000Z",
+					LastLoginDate: test.NewTimeFromString(t, "2022-02-22T17:06:50.000Z"),
 				},
 			},
 		},
@@ -417,9 +418,9 @@ func TestListGroups(t *testing.T) {
 				{
 					GroupID:      12345,
 					GroupName:    "Top Level group",
-					CreatedDate:  "2012-04-28T00:00:00.000Z",
+					CreatedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 					CreatedBy:    "johndoe",
-					ModifiedDate: "2012-04-28T00:00:00.000Z",
+					ModifiedDate: test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 					ModifiedBy:   "johndoe",
 					Actions: &GroupActions{
 						Edit:   true,
@@ -449,9 +450,9 @@ func TestListGroups(t *testing.T) {
 				{
 					GroupID:      12345,
 					GroupName:    "Top Level group",
-					CreatedDate:  "2012-04-28T00:00:00.000Z",
+					CreatedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 					CreatedBy:    "johndoe",
-					ModifiedDate: "2012-04-28T00:00:00.000Z",
+					ModifiedDate: test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 					ModifiedBy:   "johndoe",
 				},
 			},
@@ -618,9 +619,9 @@ func TestUpdateGroupName(t *testing.T) {
 				GroupID:       12345,
 				GroupName:     "New Group Name",
 				ParentGroupID: 12344,
-				CreatedDate:   "2012-04-28T00:00:00.000Z",
+				CreatedDate:   test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				CreatedBy:     "johndoe",
-				ModifiedDate:  "2012-04-28T00:00:00.000Z",
+				ModifiedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				ModifiedBy:    "johndoe",
 			},
 		},

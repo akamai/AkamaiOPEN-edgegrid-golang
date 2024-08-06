@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -119,8 +120,8 @@ type (
 		UserBasicInfo
 		IdentityID                         string            `json:"uiIdentityId"`
 		IsLocked                           bool              `json:"isLocked"`
-		LastLoginDate                      string            `json:"lastLoginDate,omitempty"`
-		PasswordExpiryDate                 string            `json:"passwordExpiryDate,omitempty"`
+		LastLoginDate                      time.Time         `json:"lastLoginDate,omitempty"`
+		PasswordExpiryDate                 time.Time         `json:"passwordExpiryDate,omitempty"`
 		TFAConfigured                      bool              `json:"tfaConfigured"`
 		EmailUpdatePending                 bool              `json:"emailUpdatePending"`
 		AuthGrants                         []AuthGrant       `json:"authGrants,omitempty"`
@@ -140,7 +141,7 @@ type (
 		TFAEnabled                         bool           `json:"tfaEnabled"`
 		IdentityID                         string         `json:"uiIdentityId"`
 		IsLocked                           bool           `json:"isLocked"`
-		LastLoginDate                      string         `json:"lastLoginDate,omitempty"`
+		LastLoginDate                      time.Time      `json:"lastLoginDate,omitempty"`
 		TFAConfigured                      bool           `json:"tfaConfigured"`
 		AccountID                          string         `json:"accountId"`
 		Actions                            *UserActions   `json:"actions,omitempty"`

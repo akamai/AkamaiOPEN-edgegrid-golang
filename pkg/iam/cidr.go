@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -61,10 +62,10 @@ type (
 		CIDRBlockID  int64        `json:"cidrBlockId"`
 		Comments     string       `json:"comments"`
 		CreatedBy    string       `json:"createdBy"`
-		CreatedDate  string       `json:"createdDate"`
+		CreatedDate  time.Time    `json:"createdDate"`
 		Enabled      bool         `json:"enabled"`
 		ModifiedBy   string       `json:"modifiedBy"`
-		ModifiedDate string       `json:"modifiedDate"`
+		ModifiedDate time.Time    `json:"modifiedDate"`
 	}
 
 	// CIDRActions specifies activities available for the CIDR block

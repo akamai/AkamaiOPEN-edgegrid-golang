@@ -13,6 +13,21 @@
 
 
 
+* IAM
+  * Improved date handling to use `time.Time` instead of `string`
+    * Changed fields in following structures:
+      * `Users`
+        * `LastLoginDate` changed type from `string` to `time.Time`
+        * `PasswordExpiryDate` changed type from `string` to `time.Time`
+      * `UserListItem`
+        * `LastLoginDate` changed type from `string` to `time.Time`
+      * `Role`
+        * `CreatedDate` changed type from `string` to `time.Time`
+        * `ModifiedDate` changed type from `string` to `time.Time`
+      * `RoleUser`
+        * `LastLoginDate` changed type from `string` to `time.Time`
+      * `GroupUser`
+        * `LastLoginDate` changed type from `string` to `time.Time`
 
 
 

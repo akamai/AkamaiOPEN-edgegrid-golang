@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -60,11 +61,11 @@ type (
 	Group struct {
 		Actions       *GroupActions `json:"actions,omitempty"`
 		CreatedBy     string        `json:"createdBy"`
-		CreatedDate   string        `json:"createdDate"`
+		CreatedDate   time.Time     `json:"createdDate"`
 		GroupID       int64         `json:"groupId"`
 		GroupName     string        `json:"groupName"`
 		ModifiedBy    string        `json:"modifiedBy"`
-		ModifiedDate  string        `json:"modifiedDate"`
+		ModifiedDate  time.Time     `json:"modifiedDate"`
 		ParentGroupID int64         `json:"parentGroupId"`
 		SubGroups     []Group       `json:"subGroups,omitempty"`
 	}
@@ -77,13 +78,13 @@ type (
 
 	// GroupUser describes the response of the list affected users endpoint
 	GroupUser struct {
-		AccountID     string `json:"accountId"`
-		Email         string `json:"email"`
-		FirstName     string `json:"firstName"`
-		IdentityID    string `json:"uiIdentityId"`
-		LastLoginDate string `json:"lastLoginDate"`
-		LastName      string `json:"lastName"`
-		UserName      string `json:"uiUserName"`
+		AccountID     string    `json:"accountId"`
+		Email         string    `json:"email"`
+		FirstName     string    `json:"firstName"`
+		IdentityID    string    `json:"uiIdentityId"`
+		LastLoginDate time.Time `json:"lastLoginDate"`
+		LastName      string    `json:"lastName"`
+		UserName      string    `json:"uiUserName"`
 	}
 
 	// GroupRequest describes the request and body parameters for creating new group or updating a group name endpoint

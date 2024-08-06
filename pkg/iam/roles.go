@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -103,22 +104,22 @@ type (
 
 	// RoleUser user who shares the same role
 	RoleUser struct {
-		AccountID     string `json:"accountId"`
-		Email         string `json:"email"`
-		FirstName     string `json:"firstName"`
-		LastLoginDate string `json:"lastLoginDate"`
-		LastName      string `json:"lastName"`
-		UIIdentityID  string `json:"uiIdentityId"`
+		AccountID     string    `json:"accountId"`
+		Email         string    `json:"email"`
+		FirstName     string    `json:"firstName"`
+		LastLoginDate time.Time `json:"lastLoginDate"`
+		LastName      string    `json:"lastName"`
+		UIIdentityID  string    `json:"uiIdentityId"`
 	}
 
 	// Role encapsulates the response of the list roles endpoint
 	Role struct {
 		Actions         *RoleAction       `json:"actions,omitempty"`
 		CreatedBy       string            `json:"createdBy"`
-		CreatedDate     string            `json:"createdDate"`
+		CreatedDate     time.Time         `json:"createdDate"`
 		GrantedRoles    []RoleGrantedRole `json:"grantedRoles,omitempty"`
 		ModifiedBy      string            `json:"modifiedBy"`
-		ModifiedDate    string            `json:"modifiedDate"`
+		ModifiedDate    time.Time         `json:"modifiedDate"`
 		RoleDescription string            `json:"roleDescription"`
 		RoleID          int64             `json:"roleId"`
 		RoleName        string            `json:"roleName"`

@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
@@ -309,7 +310,7 @@ func TestIam_ListUsers(t *testing.T) {
 				"uiUserName": "johndoe",
 				"email": "john.doe@mycompany.com",
 				"accountId": "1-123A",
-				"lastLoginDate": "2016-01-13T17:53:57Z",
+				"lastLoginDate": "2016-01-13T17:53:57.000Z",
 				"tfaEnabled": true,
 				"tfaConfigured": true,
 				"isLocked": false,
@@ -348,7 +349,7 @@ func TestIam_ListUsers(t *testing.T) {
 					Email:                              "john.doe@mycompany.com",
 					AccountID:                          "1-123A",
 					TFAEnabled:                         true,
-					LastLoginDate:                      "2016-01-13T17:53:57Z",
+					LastLoginDate:                      test.NewTimeFromString(t, "2016-01-13T17:53:57.000Z"),
 					TFAConfigured:                      true,
 					IsLocked:                           false,
 					AdditionalAuthentication:           TFAAuthentication,
@@ -391,7 +392,7 @@ func TestIam_ListUsers(t *testing.T) {
 				"uiUserName": "johndoe",
 				"email": "john.doe@mycompany.com",
 				"accountId": "1-123A",
-				"lastLoginDate": "2016-01-13T17:53:57Z",
+				"lastLoginDate": "2016-01-13T17:53:57.000Z",
 				"tfaEnabled": true,
 				"tfaConfigured": true,
 				"isLocked": false,
@@ -408,7 +409,7 @@ func TestIam_ListUsers(t *testing.T) {
 					Email:                              "john.doe@mycompany.com",
 					AccountID:                          "1-123A",
 					TFAEnabled:                         true,
-					LastLoginDate:                      "2016-01-13T17:53:57Z",
+					LastLoginDate:                      test.NewTimeFromString(t, "2016-01-13T17:53:57.000Z"),
 					TFAConfigured:                      true,
 					IsLocked:                           false,
 					AdditionalAuthenticationConfigured: true,
@@ -427,7 +428,7 @@ func TestIam_ListUsers(t *testing.T) {
 				"uiUserName": "johndoe",
 				"email": "john.doe@mycompany.com",
 				"accountId": "1-123A",
-				"lastLoginDate": "2016-01-13T17:53:57Z",
+				"lastLoginDate": "2016-01-13T17:53:57.000Z",
 				"tfaEnabled": true,
 				"tfaConfigured": true,
 				"isLocked": false,
@@ -444,7 +445,7 @@ func TestIam_ListUsers(t *testing.T) {
 					Email:                              "john.doe@mycompany.com",
 					AccountID:                          "1-123A",
 					TFAEnabled:                         true,
-					LastLoginDate:                      "2016-01-13T17:53:57Z",
+					LastLoginDate:                      test.NewTimeFromString(t, "2016-01-13T17:53:57.000Z"),
 					TFAConfigured:                      true,
 					IsLocked:                           false,
 					AdditionalAuthentication:           TFAAuthentication,

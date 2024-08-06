@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -59,9 +60,9 @@ func TestIAM_CreateRole(t *testing.T) {
 				RoleName:        "Terraform admin",
 				RoleDescription: "Admin granted role for tests",
 				RoleType:        RoleTypeCustom,
-				CreatedDate:     "2022-04-11T10:52:03.811Z",
+				CreatedDate:     test.NewTimeFromString(t, "2022-04-11T10:52:03.811Z"),
 				CreatedBy:       "jBond",
-				ModifiedDate:    "2022-04-11T10:52:03.811Z",
+				ModifiedDate:    test.NewTimeFromString(t, "2022-04-11T10:52:03.811Z"),
 				ModifiedBy:      "jBond",
 				Actions: &RoleAction{
 					Edit:   true,
@@ -196,9 +197,9 @@ func TestIAM_GetRole(t *testing.T) {
 				RoleName:        "Terraform admin updated",
 				RoleDescription: "Admin granted role for tests",
 				RoleType:        RoleTypeCustom,
-				CreatedDate:     "2022-04-11T10:52:03.000Z",
+				CreatedDate:     test.NewTimeFromString(t, "2022-04-11T10:52:03.000Z"),
 				CreatedBy:       "jBond",
-				ModifiedDate:    "2022-04-11T10:59:30.000Z",
+				ModifiedDate:    test.NewTimeFromString(t, "2022-04-11T10:59:30.000Z"),
 				ModifiedBy:      "jBond",
 				Actions: &RoleAction{
 					Edit:   true,
@@ -223,7 +224,7 @@ func TestIAM_GetRole(t *testing.T) {
 						LastName:      "Smith",
 						AccountID:     "ACCOUNT1",
 						Email:         "example@akamai.com",
-						LastLoginDate: "2016-02-17T18:46:42.000Z",
+						LastLoginDate: test.NewTimeFromString(t, "2016-02-17T18:46:42.000Z"),
 					},
 					{
 						UIIdentityID:  "USER2",
@@ -231,7 +232,7 @@ func TestIAM_GetRole(t *testing.T) {
 						LastName:      "Smith",
 						AccountID:     "ACCOUNT2",
 						Email:         "example1@akamai.com",
-						LastLoginDate: "2016-02-17T18:46:42.000Z",
+						LastLoginDate: test.NewTimeFromString(t, "2016-02-17T18:46:42.000Z"),
 					},
 				},
 			},
@@ -256,9 +257,9 @@ func TestIAM_GetRole(t *testing.T) {
 				RoleName:        "Terraform admin updated",
 				RoleDescription: "Admin granted role for tests",
 				RoleType:        RoleTypeCustom,
-				CreatedDate:     "2022-04-11T10:52:03.000Z",
+				CreatedDate:     test.NewTimeFromString(t, "2022-04-11T10:52:03.000Z"),
 				CreatedBy:       "jBond",
-				ModifiedDate:    "2022-04-11T10:59:30.000Z",
+				ModifiedDate:    test.NewTimeFromString(t, "2022-04-11T10:59:30.000Z"),
 				ModifiedBy:      "jBond",
 			},
 		},
@@ -385,9 +386,9 @@ func TestIAM_UpdateRole(t *testing.T) {
 				RoleName:        "Terraform admin updated",
 				RoleDescription: "Admin granted role for tests",
 				RoleType:        RoleTypeCustom,
-				CreatedDate:     "2022-04-11T10:52:03.000Z",
+				CreatedDate:     test.NewTimeFromString(t, "2022-04-11T10:52:03.000Z"),
 				CreatedBy:       "jBond",
-				ModifiedDate:    "2022-04-11T10:59:30.000Z",
+				ModifiedDate:    test.NewTimeFromString(t, "2022-04-11T10:59:30.000Z"),
 				ModifiedBy:      "jBond",
 				Actions: &RoleAction{
 					Edit:   true,
@@ -573,9 +574,9 @@ func TestIAM_ListRoles(t *testing.T) {
 					RoleName:        "View Only",
 					RoleDescription: "This role will allow you to view",
 					RoleType:        RoleTypeCustom,
-					CreatedDate:     "2017-07-27T18:11:25.000Z",
+					CreatedDate:     test.NewTimeFromString(t, "2017-07-27T18:11:25.000Z"),
 					CreatedBy:       "john.doe@mycompany.com",
-					ModifiedDate:    "2017-07-27T18:11:25.000Z",
+					ModifiedDate:    test.NewTimeFromString(t, "2017-07-27T18:11:25.000Z"),
 					ModifiedBy:      "john.doe@mycompany.com",
 					Actions: &RoleAction{
 						Edit:   true,
