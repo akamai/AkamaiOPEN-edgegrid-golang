@@ -44,6 +44,7 @@ type (
 		PropertyRules
 		PropertyVersionHostnames
 		PropertyVersions
+		PropertyHostnames
 		RuleFormats
 		Search
 	}
