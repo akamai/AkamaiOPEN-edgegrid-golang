@@ -679,3 +679,40 @@ func (p *Mock) CancelIncludeActivation(ctx context.Context, r CancelIncludeActiv
 
 	return args.Get(0).(*CancelIncludeActivationResponse), args.Error(1)
 }
+
+func (p *Mock) ListPropertyHostnames(ctx context.Context, r ListPropertyHostnamesRequest) (*ListPropertyHostnamesResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListPropertyHostnamesResponse), args.Error(1)
+}
+func (p *Mock) ListPropertyHostnameActivations(ctx context.Context, r ListPropertyHostnameActivationsRequest) (*ListPropertyHostnameActivationsResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListPropertyHostnameActivationsResponse), args.Error(1)
+}
+func (p *Mock) GetPropertyHostnameActivation(ctx context.Context, r GetPropertyHostnameActivationRequest) (*GetPropertyHostnameActivationResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetPropertyHostnameActivationResponse), args.Error(1)
+}
+func (p *Mock) PatchPropertyHostnames(ctx context.Context, r PatchPropertyHostnamesRequest) (*PatchPropertyHostnamesResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*PatchPropertyHostnamesResponse), args.Error(1)
+}
