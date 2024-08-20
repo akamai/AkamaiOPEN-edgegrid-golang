@@ -120,14 +120,14 @@ type (
 
 	// AllowedAPI contains the details about the API
 	AllowedAPI struct {
-		AccessLevels      []string `json:"accessLevels"`
-		APIID             int64    `json:"apiId"`
-		APIName           string   `json:"apiName"`
-		Description       string   `json:"description"`
-		DocumentationURL  string   `json:"documentationUrl"`
-		Endpoint          string   `json:"endpoint"`
-		HasAccess         bool     `json:"hasAccess"`
-		ServiceProviderID int64    `json:"serviceProviderId"`
+		AccessLevels      []AccessLevel `json:"accessLevels"`
+		APIID             int64         `json:"apiId"`
+		APIName           string        `json:"apiName"`
+		Description       string        `json:"description"`
+		DocumentationURL  string        `json:"documentationUrl"`
+		Endpoint          string        `json:"endpoint"`
+		HasAccess         bool          `json:"hasAccess"`
+		ServiceProviderID int64         `json:"serviceProviderId"`
 	}
 
 	// ClientType represents the type of the client

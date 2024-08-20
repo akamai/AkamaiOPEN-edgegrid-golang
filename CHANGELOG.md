@@ -457,14 +457,26 @@
 
 * IAM
   * Added new methods:
-    * ListAccountSwitchKeys based on [ListAccountSwitchKeys](https://techdocs.akamai.com/iam-api/reference/get-client-account-switch-keys) and [ListYourAccountSwitchKeys](https://techdocs.akamai.com/iam-api/reference/get-self-account-switch-keys)
-    * LockAPIClient based on [LockAPIClient](https://techdocs.akamai.com/iam-api/reference/put-lock-api-client) and [LockYourAPIClient](https://techdocs.akamai.com/iam-api/reference/put-lock-api-client-self)
+    * `ListAccountSwitchKeys` based on [ListAccountSwitchKeys](https://techdocs.akamai.com/iam-api/reference/get-client-account-switch-keys) and [ListYourAccountSwitchKeys](https://techdocs.akamai.com/iam-api/reference/get-self-account-switch-keys)
+    * `LockAPIClient` based on [LockAPIClient](https://techdocs.akamai.com/iam-api/reference/put-lock-api-client) and [LockYourAPIClient](https://techdocs.akamai.com/iam-api/reference/put-lock-api-client-self)
     * [UnlockAPIClient](https://techdocs.akamai.com/iam-api/reference/put-unlock-api-client)
   
 
 
 
 
+
+
+
+
+
+* IAM
+  * Added new methods:
+    * [ListAPIClients](https://techdocs.akamai.com/iam-api/reference/get-api-clients)
+    * [CreateAPIClient](https://techdocs.akamai.com/iam-api/reference/post-api-clients)
+    * `GetAPIClient` based on [GetAPIClient](https://techdocs.akamai.com/iam-api/reference/get-api-client) and [GetYourAPIClient](https://techdocs.akamai.com/iam-api/reference/get-api-client-self)
+    * `UpdateAPIClient` based on [UpdateAPIClient](https://techdocs.akamai.com/iam-api/reference/put-api-clients) and [UpdateYourAPIClient](https://techdocs.akamai.com/iam-api/reference/put-api-clients-self)
+    * `DeleteAPIClient` based on [DeleteAPIClient](https://techdocs.akamai.com/iam-api/reference/delete-api-client) and [DeleteYourAPIClient](https://techdocs.akamai.com/iam-api/reference/delete-api-client-self)
 
 
 

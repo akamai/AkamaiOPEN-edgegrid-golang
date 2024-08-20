@@ -606,3 +606,49 @@ func (m *Mock) DeactivateCredentials(ctx context.Context, request DeactivateCred
 
 	return args.Error(0)
 }
+
+func (m *Mock) ListAPIClients(ctx context.Context, request ListAPIClientsRequest) (ListAPIClientsResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(ListAPIClientsResponse), args.Error(1)
+}
+
+func (m *Mock) GetAPIClient(ctx context.Context, request GetAPIClientRequest) (*GetAPIClientResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetAPIClientResponse), args.Error(1)
+}
+
+func (m *Mock) CreateAPIClient(ctx context.Context, request CreateAPIClientRequest) (*CreateAPIClientResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*CreateAPIClientResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateAPIClient(ctx context.Context, request UpdateAPIClientRequest) (*UpdateAPIClientResponse, error) {
+	args := m.Called(ctx, request)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*UpdateAPIClientResponse), args.Error(1)
+}
+
+func (m *Mock) DeleteAPIClient(ctx context.Context, request DeleteAPIClientRequest) error {
+	args := m.Called(ctx, request)
+
+	return args.Error(0)
+}
