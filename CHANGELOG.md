@@ -6,120 +6,24 @@
 
 * APPSEC
   * Added field `ClientLists` to `RuleConditions` and `AttackGroupConditions`
-* Appsec
-    * The `RequestBodyInspectionLimitOverride` field has been added in the following structures:
-    * `GetAdvancedSettingsRequestBodyResponse`,
-    * `UpdateAdvancedSettingsRequestBodyRequest`,
-    * `UpdateAdvancedSettingsRequestBodyResponse`,
-    * `RemoveAdvancedSettingsRequestBodyRequest`,
-    * `RemoveAdvancedSettingsRequestBodyResponse`
-
-
-
-
-
-
-
+  * The `RequestBodyInspectionLimitOverride` field has been added in the following structures:
+  * `GetAdvancedSettingsRequestBodyResponse`,
+  * `UpdateAdvancedSettingsRequestBodyRequest`,
+  * `UpdateAdvancedSettingsRequestBodyResponse`,
+  * `RemoveAdvancedSettingsRequestBodyRequest`,
+  * `RemoveAdvancedSettingsRequestBodyResponse`
 
 * IAM
   * Added new methods:
     * [GetProperty](https://techdocs.akamai.com/iam-api/reference/get-property)
     * [ListProperties](https://techdocs.akamai.com/iam-api/reference/get-properties)
-
-
-
-* IAM
+    * Added new [MoveProperty](https://techdocs.akamai.com/iam-api/reference/put-property) method
   * Added new methods for mapping to and from PAPI property ID:
     * `MapPropertyIDToName` - to provide property name for given IAM property ID
+    
 * PAPI
   * Added new methods for mapping to and from IAM property ID:
     * `MapPropertyNameToID` - to provide PAPI property ID for given property name
-
-* IAM 
-  * Added new [MoveProperty](https://techdocs.akamai.com/iam-api/reference/put-property) method
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### BUG FIXES:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 8.3.0 (July 09, 2024)
 
