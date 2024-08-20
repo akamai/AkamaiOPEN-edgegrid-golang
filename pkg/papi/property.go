@@ -34,11 +34,6 @@ type (
 		// https://techdocs.akamai.com/property-mgr/reference/delete-property
 		RemoveProperty(ctx context.Context, params RemovePropertyRequest) (*RemovePropertyResponse, error)
 
-		// MapPropertyIDToName returns property name for given (PAPI) property ID
-		// Mainly to be used to map (PAPI) Property ID to (IAM) Property ID
-		// To finish the mapping, please use iam.MapPropertyNameToID
-		MapPropertyIDToName(context.Context, MapPropertyIDToNameRequest) (*string, error)
-
 		// MapPropertyNameToID returns (PAPI) property ID for given property name
 		// Mainly to be used to map (IAM) Property ID to (PAPI) Property ID
 		// To get property name for the mapping, please use iam.MapPropertyIDToName

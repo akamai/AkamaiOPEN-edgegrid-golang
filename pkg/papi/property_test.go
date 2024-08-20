@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
@@ -416,120 +415,6 @@ func TestPapiRemoveProperty(t *testing.T) {
 			result, err := client.RemoveProperty(context.Background(), test.request)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
-		})
-	}
-}
-
-func TestPapiMapPropertyIDToName(t *testing.T) {
-	tests := map[string]struct {
-		request          MapPropertyIDToNameRequest
-		responseStatus   int
-		responseBody     string
-		expectedResponse *string
-		withError        func(*testing.T, error)
-	}{
-		"200 OK": {
-			request: MapPropertyIDToNameRequest{
-				ContractID: "ctr_1-1TJZFW",
-				GroupID:    "grp_15166",
-				PropertyID: "prp_175780",
-			},
-			responseStatus: http.StatusOK,
-			responseBody: `
-{
-	"properties": {
-		"items": [
-			{
-				"accountId": "act_1-1TJZFB",
-				"contractId": "ctr_1-1TJZH5",
-				"groupId": "grp_15166",
-				"propertyId": "prp_175780",
-				"propertyName": "example.com",
-				"latestVersion": 2,
-				"stagingVersion": 1,
-				"productId": "prp_175780",
-				"productionVersion": null,
-				"assetId": "aid_101",
-				"note": "Notes about example.com"
-			}
-		]
-	}
-}`,
-			expectedResponse: ptr.To("example.com"),
-		},
-		"Property not found": {
-			request: MapPropertyIDToNameRequest{
-				ContractID: "ctr_1-1TJZFW",
-				GroupID:    "grp_15166",
-				PropertyID: "prp_175780",
-			},
-			responseStatus: http.StatusNotFound,
-			responseBody: `
-{
-    "type": "https://problems.luna.akamaiapis.net/papi/v0/http/not-found",
-    "title": "Not Found",
-    "detail": "The system was unable to locate the requested resource.",
-    "instance": "https://akaa-abc.luna-dev.akamaiapis.net/papi/v1/properties/prp_175780?contractId=ctr_1-1TJZFW&groupId=grp_15166#c71c668bf194003f",
-    "status": 404
-}
-`,
-			withError: func(t *testing.T, err error) {
-				assert.Equal(t, err.Error(), `map property by ID: fetching property: API error: 
-{
-	"type": "https://problems.luna.akamaiapis.net/papi/v0/http/not-found",
-	"title": "Not Found",
-	"detail": "The system was unable to locate the requested resource.",
-	"instance": "https://akaa-abc.luna-dev.akamaiapis.net/papi/v1/properties/prp_175780?contractId=ctr_1-1TJZFW\u0026groupId=grp_15166#c71c668bf194003f",
-	"statusCode": 404
-}`)
-			},
-		},
-		"500 internal server error": {
-			request: MapPropertyIDToNameRequest{
-				ContractID: "ctr_1-1TJZFW",
-				GroupID:    "grp_15166",
-				PropertyID: "prp_175780",
-			},
-			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-{
-	"type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching properties",
-    "status": 500
-}`,
-			withError: func(t *testing.T, err error) {
-				assert.True(t, strings.HasPrefix(err.Error(), "map property by ID:"))
-				assert.Contains(t, err.Error(), `"title": "Internal Server Error"`)
-			},
-		},
-		"validation error": {
-			request: MapPropertyIDToNameRequest{
-				ContractID: "ctr_1-1TJZFW",
-				GroupID:    "grp_15166",
-			},
-			withError: func(t *testing.T, err error) {
-				assert.Equal(t, err.Error(), "map property by ID: struct validation: PropertyID: cannot be blank")
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			client := mockAPIClient(t, mockServer)
-			result, err := client.MapPropertyIDToName(context.Background(), test.request)
-			if test.withError != nil {
-				test.withError(t, err)
 				return
 			}
 			require.NoError(t, err)

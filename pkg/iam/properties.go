@@ -35,11 +35,6 @@ type (
 		// Mainly to be used to map (IAM) Property ID to (PAPI) Property ID
 		// To finish the mapping, please use papi.MapPropertyNameToID
 		MapPropertyIDToName(context.Context, MapPropertyIDToNameRequest) (*string, error)
-
-		// MapPropertyNameToID returns (IAM) property ID for given property name
-		// Mainly to be used to map (PAPI) Property ID to (IAM) Property ID
-		// To get property name for the mapping, please use papi.MapPropertyIDToName
-		MapPropertyNameToID(context.Context, MapPropertyNameToIDRequest) (*int64, error)
 	}
 
 	// ListPropertiesRequest contains the request parameters for the list properties operation.
