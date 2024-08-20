@@ -1,6 +1,6 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
-## X.X.X (X X, X)
+## 8.4.0 (Aug 22, 2024)
 
 #### FEATURES/ENHANCEMENTS:
 
@@ -17,13 +17,11 @@
   * Added new methods:
     * [GetProperty](https://techdocs.akamai.com/iam-api/reference/get-property)
     * [ListProperties](https://techdocs.akamai.com/iam-api/reference/get-properties)
-    * Added new [MoveProperty](https://techdocs.akamai.com/iam-api/reference/put-property) method
-  * Added new methods for mapping to and from PAPI property ID:
+    * [MoveProperty](https://techdocs.akamai.com/iam-api/reference/put-property)
     * `MapPropertyIDToName` - to provide property name for given IAM property ID
     
 * PAPI
-  * Added new methods for mapping to and from IAM property ID:
-    * `MapPropertyNameToID` - to provide PAPI property ID for given property name
+  * Added new method `MapPropertyNameToID` to provide PAPI property ID for given property name
 
 ## 8.3.0 (July 09, 2024)
 
