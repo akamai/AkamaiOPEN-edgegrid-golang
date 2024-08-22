@@ -564,7 +564,7 @@ func TestIAM_ListAccountSwitchKeys(t *testing.T) {
 		responseStatus   int
 		expectedPath     string
 		responseBody     string
-		expectedResponse *ListAccountSwitchKeysResponse
+		expectedResponse ListAccountSwitchKeysResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK with specified client": {
@@ -589,7 +589,7 @@ func TestIAM_ListAccountSwitchKeys(t *testing.T) {
   }
 ]
 `,
-			expectedResponse: &ListAccountSwitchKeysResponse{
+			expectedResponse: ListAccountSwitchKeysResponse{
 				AccountSwitchKey{
 					AccountName:      "Test Name A",
 					AccountSwitchKey: "ABC-123",
@@ -624,7 +624,7 @@ func TestIAM_ListAccountSwitchKeys(t *testing.T) {
   }
 ]
 `,
-			expectedResponse: &ListAccountSwitchKeysResponse{
+			expectedResponse: ListAccountSwitchKeysResponse{
 				AccountSwitchKey{
 					AccountName:      "Test Name A",
 					AccountSwitchKey: "ABC-123",
@@ -646,7 +646,7 @@ func TestIAM_ListAccountSwitchKeys(t *testing.T) {
 			responseStatus:   http.StatusOK,
 			expectedPath:     "/identity-management/v3/api-clients/test1234/account-switch-keys",
 			responseBody:     `[]`,
-			expectedResponse: &ListAccountSwitchKeysResponse{},
+			expectedResponse: ListAccountSwitchKeysResponse{},
 		},
 		"200 OK with query param": {
 			params: ListAccountSwitchKeysRequest{
@@ -667,7 +667,7 @@ func TestIAM_ListAccountSwitchKeys(t *testing.T) {
   }
 ]
 `,
-			expectedResponse: &ListAccountSwitchKeysResponse{
+			expectedResponse: ListAccountSwitchKeysResponse{
 				AccountSwitchKey{
 					AccountName:      "Test Name A",
 					AccountSwitchKey: "ABC-123",

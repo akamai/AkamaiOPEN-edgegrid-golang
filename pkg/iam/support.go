@@ -36,7 +36,7 @@ type (
 		// ListAccountSwitchKeys lists account switch keys available for a specific API client. If `ClientID` is not provided, it lists account switch keys available for your API client.
 		//
 		// See: https://techdocs.akamai.com/iam-api/reference/get-client-account-switch-keys, https://techdocs.akamai.com/iam-api/reference/get-self-account-switch-keys
-		ListAccountSwitchKeys(context.Context, ListAccountSwitchKeysRequest) (*ListAccountSwitchKeysResponse, error)
+		ListAccountSwitchKeys(context.Context, ListAccountSwitchKeysRequest) (ListAccountSwitchKeysResponse, error)
 
 		// SupportedContactTypes lists supported contact types
 		//
@@ -243,7 +243,7 @@ func (i *iam) ListTimeoutPolicies(ctx context.Context) ([]TimeoutPolicy, error) 
 	return rval, nil
 }
 
-func (i *iam) ListAccountSwitchKeys(ctx context.Context, params ListAccountSwitchKeysRequest) (*ListAccountSwitchKeysResponse, error) {
+func (i *iam) ListAccountSwitchKeys(ctx context.Context, params ListAccountSwitchKeysRequest) (ListAccountSwitchKeysResponse, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListAccountSwitchKeys")
 
@@ -277,7 +277,7 @@ func (i *iam) ListAccountSwitchKeys(ctx context.Context, params ListAccountSwitc
 		return nil, fmt.Errorf("%s: %w", ErrListAccountSwitchKeys, i.Error(resp))
 	}
 
-	return &result, nil
+	return result, nil
 }
 
 func (i *iam) SupportedContactTypes(ctx context.Context) ([]string, error) {

@@ -104,14 +104,14 @@ func (m *Mock) ListTimeoutPolicies(ctx context.Context) ([]TimeoutPolicy, error)
 	return args.Get(0).([]TimeoutPolicy), args.Error(1)
 }
 
-func (m *Mock) ListAccountSwitchKeys(ctx context.Context, request ListAccountSwitchKeysRequest) (*ListAccountSwitchKeysResponse, error) {
+func (m *Mock) ListAccountSwitchKeys(ctx context.Context, request ListAccountSwitchKeysRequest) (ListAccountSwitchKeysResponse, error) {
 	args := m.Called(ctx, request)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*ListAccountSwitchKeysResponse), args.Error(1)
+	return args.Get(0).(ListAccountSwitchKeysResponse), args.Error(1)
 }
 
 func (m *Mock) ListStates(ctx context.Context, request ListStatesRequest) ([]string, error) {
