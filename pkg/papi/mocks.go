@@ -679,3 +679,23 @@ func (p *Mock) CancelIncludeActivation(ctx context.Context, r CancelIncludeActiv
 
 	return args.Get(0).(*CancelIncludeActivationResponse), args.Error(1)
 }
+
+func (p *Mock) MapPropertyIDToName(ctx context.Context, r MapPropertyIDToNameRequest) (*string, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*string), args.Error(1)
+}
+
+func (p *Mock) MapPropertyNameToID(ctx context.Context, r MapPropertyNameToIDRequest) (*string, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*string), args.Error(1)
+}

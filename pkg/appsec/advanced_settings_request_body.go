@@ -44,33 +44,38 @@ type (
 
 	// GetAdvancedSettingsRequestBodyResponse is returned from a call to GetAdvancedSettingsRequestBody.
 	GetAdvancedSettingsRequestBodyResponse struct {
-		RequestBodyInspectionLimitInKB RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
+		RequestBodyInspectionLimitInKB     RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
+		RequestBodyInspectionLimitOverride bool                 `json:"override"`
 	}
 
 	// UpdateAdvancedSettingsRequestBodyRequest is used to update the Request body settings for a configuration or policy.
 	UpdateAdvancedSettingsRequestBodyRequest struct {
-		ConfigID                       int
-		Version                        int
-		PolicyID                       string
-		RequestBodyInspectionLimitInKB RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
+		ConfigID                           int
+		Version                            int
+		PolicyID                           string
+		RequestBodyInspectionLimitInKB     RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
+		RequestBodyInspectionLimitOverride bool                 `json:"override"`
 	}
 
 	// UpdateAdvancedSettingsRequestBodyResponse is returned from a call to UpdateAdvancedSettingsRequestBody.
 	UpdateAdvancedSettingsRequestBodyResponse struct {
-		RequestBodyInspectionLimitInKB RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
+		RequestBodyInspectionLimitInKB     RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
+		RequestBodyInspectionLimitOverride bool                 `json:"override"`
 	}
 
 	// RemoveAdvancedSettingsRequestBodyRequest is used to reset the Request body settings for a configuration or policy.
 	RemoveAdvancedSettingsRequestBodyRequest struct {
-		ConfigID                       int
-		Version                        int
-		PolicyID                       string
-		RequestBodyInspectionLimitInKB RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
+		ConfigID                           int
+		Version                            int
+		PolicyID                           string
+		RequestBodyInspectionLimitInKB     RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
+		RequestBodyInspectionLimitOverride bool                 `json:"override"`
 	}
 
 	// RemoveAdvancedSettingsRequestBodyResponse is returned from a call to RemoveAdvancedSettingsRequestBody.
 	RemoveAdvancedSettingsRequestBodyResponse struct {
-		RequestBodyInspectionLimitInKB RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
+		RequestBodyInspectionLimitInKB     RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
+		RequestBodyInspectionLimitOverride bool                 `json:"override"`
 	}
 
 	// RequestBodySizeLimit is used to create an "enum" of possible types default, 8, 16, 32

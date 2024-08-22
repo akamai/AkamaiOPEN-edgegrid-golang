@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapi_GetProducts(t *testing.T) {
+func TestPapiGetProducts(t *testing.T) {
 	tests := map[string]struct {
 		params           GetProductsRequest
 		responseStatus   int

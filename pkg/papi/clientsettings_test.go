@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapi_GetClientSettings(t *testing.T) {
+func TestPapiGetClientSettings(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus   int
 		responseBody     string
@@ -77,7 +77,7 @@ func TestPapi_GetClientSettings(t *testing.T) {
 	}
 }
 
-func TestPapi_UpdateClientSettings(t *testing.T) {
+func TestPapiUpdateClientSettings(t *testing.T) {
 	tests := map[string]struct {
 		params           ClientSettingsBody
 		responseStatus   int

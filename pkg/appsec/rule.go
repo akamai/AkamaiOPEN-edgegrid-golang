@@ -111,6 +111,7 @@ type (
 		ValueCase     bool     `json:"valueCase,omitempty"`
 		ValueWildcard bool     `json:"valueWildcard,omitempty"`
 		UseHeaders    bool     `json:"useHeaders,omitempty"`
+		ClientLists   []string `json:"clientLists,omitempty"`
 	}
 
 	// RuleException is used to describe the exceptions for a rule.

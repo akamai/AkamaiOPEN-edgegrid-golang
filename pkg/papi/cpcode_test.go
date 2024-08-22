@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapi_GetCPCodes(t *testing.T) {
+func TestPapiGetCPCodes(t *testing.T) {
 	tests := map[string]struct {
 		params           GetCPCodesRequest
 		responseStatus   int
@@ -129,7 +129,7 @@ func TestPapi_GetCPCodes(t *testing.T) {
 	}
 }
 
-func TestPapi_GetCPCode(t *testing.T) {
+func TestPapiGetCPCode(t *testing.T) {
 	tests := map[string]struct {
 		params           GetCPCodeRequest
 		responseStatus   int
@@ -401,7 +401,7 @@ func TestGetCPCodeDetail(t *testing.T) {
 	}
 }
 
-func TestPapi_CreateCPCode(t *testing.T) {
+func TestPapiCreateCPCode(t *testing.T) {
 	tests := map[string]struct {
 		params         CreateCPCodeRequest
 		responseStatus int

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapi_GetEdgeHostnames(t *testing.T) {
+func TestPapiGetEdgeHostnames(t *testing.T) {
 	tests := map[string]struct {
 		params           GetEdgeHostnamesRequest
 		responseStatus   int
@@ -136,7 +136,7 @@ func TestPapi_GetEdgeHostnames(t *testing.T) {
 	}
 }
 
-func TestPapi_GetEdgeHostname(t *testing.T) {
+func TestPapiGetEdgeHostname(t *testing.T) {
 	tests := map[string]struct {
 		params           GetEdgeHostnameRequest
 		responseStatus   int
@@ -311,7 +311,7 @@ func TestPapi_GetEdgeHostname(t *testing.T) {
 	}
 }
 
-func TestPapi_CreateEdgeHostname(t *testing.T) {
+func TestPapiCreateEdgeHostname(t *testing.T) {
 	tests := map[string]struct {
 		params           CreateEdgeHostnameRequest
 		responseStatus   int

@@ -33,6 +33,11 @@ type (
 		//
 		// https://techdocs.akamai.com/property-mgr/reference/delete-property
 		RemoveProperty(ctx context.Context, params RemovePropertyRequest) (*RemovePropertyResponse, error)
+
+		// MapPropertyNameToID returns (PAPI) property ID for given property name
+		// Mainly to be used to map (IAM) Property ID to (PAPI) Property ID
+		// To get property name for the mapping, please use iam.MapPropertyIDToName
+		MapPropertyNameToID(context.Context, MapPropertyNameToIDRequest) (*string, error)
 	}
 
 	// PropertyCloneFrom optionally identifies another property instance to clone when making a POST request to create a new property
@@ -122,6 +127,20 @@ type (
 	RemovePropertyResponse struct {
 		Message string `json:"message"`
 	}
+
+	// MapPropertyIDToNameRequest is the argument for MapPropertyIDToName
+	MapPropertyIDToNameRequest struct {
+		GroupID    string
+		ContractID string
+		PropertyID string
+	}
+
+	// MapPropertyNameToIDRequest is the argument for MapPropertyNameToID
+	MapPropertyNameToIDRequest struct {
+		GroupID    string
+		ContractID string
+		Name       string
+	}
 )
 
 // Validate validates GetPropertiesRequest
@@ -173,6 +192,22 @@ func (v RemovePropertyRequest) Validate() error {
 	}.Filter()
 }
 
+// Validate validates MapPropertyIDToNameRequest
+func (v MapPropertyIDToNameRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"PropertyID": validation.Validate(v.PropertyID, validation.Required),
+	})
+}
+
+// Validate validates RemovePropertyRequest
+func (v MapPropertyNameToIDRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"GroupID":    validation.Validate(v.GroupID, validation.Required),
+		"ContractID": validation.Validate(v.ContractID, validation.Required),
+		"Name":       validation.Validate(v.Name, validation.Required),
+	})
+}
+
 var (
 	// ErrGetProperties represents error when fetching properties fails
 	ErrGetProperties = errors.New("fetching properties")
@@ -182,6 +217,12 @@ var (
 	ErrCreateProperty = errors.New("creating property")
 	// ErrRemoveProperty represents error when removing property fails
 	ErrRemoveProperty = errors.New("removing property")
+	// ErrMapPropertyIDToName represents error when mapping property by ID fails
+	ErrMapPropertyIDToName = errors.New("map property by ID")
+	// ErrMapPropertyNameToID represents error when mapping property by Name fails
+	ErrMapPropertyNameToID = errors.New("map property by name")
+	// ErrNoProperty is returned when finding property by name did not find given property
+	ErrNoProperty = errors.New("no such property")
 )
 
 func (p *papi) GetProperties(ctx context.Context, params GetPropertiesRequest) (*GetPropertiesResponse, error) {
@@ -348,4 +389,36 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 	}
 
 	return &rval, nil
+}
+
+func (p *papi) MapPropertyIDToName(ctx context.Context, params MapPropertyIDToNameRequest) (*string, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrMapPropertyIDToName, ErrStructValidation, err)
+	}
+
+	property, err := p.GetProperty(ctx, GetPropertyRequest{ContractID: params.ContractID, GroupID: params.GroupID, PropertyID: params.PropertyID})
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", ErrMapPropertyIDToName, err)
+	}
+
+	return &property.Property.PropertyName, nil
+}
+
+func (p *papi) MapPropertyNameToID(ctx context.Context, params MapPropertyNameToIDRequest) (*string, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrMapPropertyNameToID, ErrStructValidation, err)
+	}
+
+	properties, err := p.GetProperties(ctx, GetPropertiesRequest{ContractID: params.ContractID, GroupID: params.GroupID})
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", ErrMapPropertyNameToID, err)
+	}
+
+	for _, property := range properties.Properties.Items {
+		if property.PropertyName == params.Name {
+			return &property.PropertyID, nil
+		}
+	}
+
+	return nil, fmt.Errorf("%w: %s", ErrNoProperty, params.Name)
 }

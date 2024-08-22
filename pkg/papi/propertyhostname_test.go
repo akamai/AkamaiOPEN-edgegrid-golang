@@ -11,7 +11,7 @@ import (
 	"github.com/tj/assert"
 )
 
-func TestPapi_GetPropertyVersionHostnames(t *testing.T) {
+func TestPapiGetPropertyVersionHostnames(t *testing.T) {
 	tests := map[string]struct {
 		params           GetPropertyVersionHostnamesRequest
 		responseStatus   int
@@ -149,7 +149,7 @@ func TestPapi_GetPropertyVersionHostnames(t *testing.T) {
 	}
 }
 
-func TestPapi_UpdatePropertyVersionHostnames(t *testing.T) {
+func TestPapiUpdatePropertyVersionHostnames(t *testing.T) {
 	tests := map[string]struct {
 		params           UpdatePropertyVersionHostnamesRequest
 		responseStatus   int

@@ -1,5 +1,28 @@
 # EDGEGRID GOLANG RELEASE NOTES
 
+## 8.4.0 (Aug 22, 2024)
+
+#### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Added field `ClientLists` to `RuleConditions` and `AttackGroupConditions`
+  * The `RequestBodyInspectionLimitOverride` field has been added in the following structures:
+    * `GetAdvancedSettingsRequestBodyResponse`,
+    * `UpdateAdvancedSettingsRequestBodyRequest`,
+    * `UpdateAdvancedSettingsRequestBodyResponse`,
+    * `RemoveAdvancedSettingsRequestBodyRequest`,
+    * `RemoveAdvancedSettingsRequestBodyResponse`
+
+* IAM
+  * Added new methods:
+    * [GetProperty](https://techdocs.akamai.com/iam-api/reference/get-property)
+    * [ListProperties](https://techdocs.akamai.com/iam-api/reference/get-properties)
+    * [MoveProperty](https://techdocs.akamai.com/iam-api/reference/put-property)
+    * `MapPropertyIDToName` - to provide property name for given IAM property ID
+    
+* PAPI
+  * Added new method `MapPropertyNameToID` to provide PAPI property ID for given property name
+
 ## 8.3.0 (July 09, 2024)
 
 #### FEATURES/ENHANCEMENTS:

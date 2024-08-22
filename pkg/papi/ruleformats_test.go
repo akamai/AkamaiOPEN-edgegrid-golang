@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapi_GetRuleFormats(t *testing.T) {
+func TestPapiGetRuleFormats(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus   int
 		responseBody     string

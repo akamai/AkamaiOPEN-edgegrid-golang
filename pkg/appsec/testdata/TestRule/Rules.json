@@ -143,6 +143,15 @@
                             "/p2"
                         ],
                         "positiveMatch": true
+                    },
+                    {
+                        "type": "clientListMatch",
+                        "clientLists": [
+                            "/p1",
+                            "/p2"
+                        ],
+                        "positiveMatch": true,
+                        "userHeaders": true
                     }
                 ]
             },

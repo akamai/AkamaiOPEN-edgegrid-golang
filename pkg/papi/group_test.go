@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapi_GetGroups(t *testing.T) {
+func TestPapiGetGroups(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus   int
 		responseBody     string

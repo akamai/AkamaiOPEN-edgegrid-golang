@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapi_GetPropertyVersions(t *testing.T) {
+func TestPapiGetPropertyVersions(t *testing.T) {
 	tests := map[string]struct {
 		params           GetPropertyVersionsRequest
 		responseStatus   int
@@ -138,7 +138,7 @@ func TestPapi_GetPropertyVersions(t *testing.T) {
 	}
 }
 
-func TestPapi_GetPropertyVersion(t *testing.T) {
+func TestPapiGetPropertyVersion(t *testing.T) {
 	tests := map[string]struct {
 		params           GetPropertyVersionRequest
 		responseStatus   int
@@ -311,7 +311,7 @@ func TestPapi_GetPropertyVersion(t *testing.T) {
 	}
 }
 
-func TestPapi_CreatePropertyVersion(t *testing.T) {
+func TestPapiCreatePropertyVersion(t *testing.T) {
 	tests := map[string]struct {
 		params           CreatePropertyVersionRequest
 		responseStatus   int
@@ -459,7 +459,7 @@ func TestPapi_CreatePropertyVersion(t *testing.T) {
 	}
 }
 
-func TestPapi_GetLatestVersion(t *testing.T) {
+func TestPapiGetLatestVersion(t *testing.T) {
 	tests := map[string]struct {
 		params           GetLatestVersionRequest
 		responseStatus   int
@@ -633,7 +633,7 @@ func TestPapi_GetLatestVersion(t *testing.T) {
 	}
 }
 
-func TestPapi_GetAvailableBehaviors(t *testing.T) {
+func TestPapiGetAvailableBehaviors(t *testing.T) {
 	tests := map[string]struct {
 		params           GetAvailableBehaviorsRequest
 		responseStatus   int
@@ -814,7 +814,7 @@ func TestPapi_GetAvailableBehaviors(t *testing.T) {
 	}
 }
 
-func TestPapi_GetAvailableCriteria(t *testing.T) {
+func TestPapiGetAvailableCriteria(t *testing.T) {
 	tests := map[string]struct {
 		params           GetAvailableCriteriaRequest
 		responseStatus   int
@@ -995,7 +995,7 @@ func TestPapi_GetAvailableCriteria(t *testing.T) {
 	}
 }
 
-func TestPapi_ListAvailableIncludes(t *testing.T) {
+func TestPapiListAvailableIncludes(t *testing.T) {
 	tests := map[string]struct {
 		params           ListAvailableIncludesRequest
 		responseStatus   int
@@ -1801,7 +1801,7 @@ func TestPapi_ListAvailableIncludes(t *testing.T) {
 	}
 }
 
-func TestPapi_ListReferencedIncludes(t *testing.T) {
+func TestPapiListReferencedIncludes(t *testing.T) {
 	tests := map[string]struct {
 		params           ListReferencedIncludesRequest
 		responseStatus   int
