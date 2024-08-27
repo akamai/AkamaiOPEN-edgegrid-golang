@@ -13,6 +13,26 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+// PropertyUserType filters property users based on their access to the property
+type PropertyUserType string
+
+const (
+	// PropertyUserTypeAll selects all property users
+	PropertyUserTypeAll PropertyUserType = "all"
+	// PropertyUserTypeAssigned selects users that have access to the property
+	PropertyUserTypeAssigned PropertyUserType = "assigned"
+	// PropertyUserTypeBlocked selects users whose access to the property is blocked
+	PropertyUserTypeBlocked PropertyUserType = "blocked"
+)
+
+// Validate validates PropertyUserType
+func (p PropertyUserType) Validate() error {
+	return validation.In(PropertyUserTypeAll, PropertyUserTypeAssigned, PropertyUserTypeBlocked).
+		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s' or '%s'",
+			p, PropertyUserTypeAll, PropertyUserTypeAssigned, PropertyUserTypeBlocked)).
+		Validate(p)
+}
+
 type (
 	// Properties is the IAM properties API interface
 	Properties interface {
@@ -56,7 +76,7 @@ type (
 	// ListUsersForPropertyRequest contains the request parameters for the ListUsersForProperty operation.
 	ListUsersForPropertyRequest struct {
 		PropertyID int64
-		UserType   string
+		UserType   PropertyUserType
 	}
 
 	// GetPropertyRequest contains the request parameters for the get property operation.
@@ -151,7 +171,7 @@ type (
 func (r ListUsersForPropertyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
-		"UserType":   validation.Validate(r.UserType, validation.In(LostAccessUsers, GainAccessUsers)),
+		"UserType":   r.UserType.Validate(),
 	})
 }
 
@@ -270,7 +290,7 @@ func (i *iam) ListUsersForProperty(ctx context.Context, params ListUsersForPrope
 
 	if params.UserType != "" {
 		q := uri.Query()
-		q.Add("userType", params.UserType)
+		q.Add("userType", string(params.UserType))
 		uri.RawQuery = q.Encode()
 	}
 

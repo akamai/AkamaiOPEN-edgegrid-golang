@@ -197,19 +197,31 @@ func TestListUserForProperty(t *testing.T) {
 				},
 			},
 		},
-		"validation errors": {
+		"validation errors - blank PropertyID": {
 			params: ListUsersForPropertyRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "list users for property: struct validation:\nPropertyID: cannot be blank", err.Error())
+				assert.Equal(t, "list users for property: struct validation:\n"+
+					"PropertyID: cannot be blank", err.Error())
+			},
+		},
+		"validation errors - bad UserType": {
+			params: ListUsersForPropertyRequest{
+				PropertyID: 1,
+				UserType:   "foo",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "list users for property: struct validation:\n"+
+					"UserType: value 'foo' is invalid. Must be one of: 'all', 'assigned' or 'blocked'",
+					err.Error())
 			},
 		},
 		"404 not found": {
 			params: ListUsersForPropertyRequest{
 				PropertyID: 1,
-				UserType:   GainAccessUsers,
+				UserType:   PropertyUserTypeAssigned,
 			},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v3/user-admin/properties/1/users?userType=gainAccess",
+			expectedPath:   "/identity-management/v3/user-admin/properties/1/users?userType=assigned",
 			responseBody: `
 {
 	"instance": "",
