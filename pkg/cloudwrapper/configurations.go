@@ -21,11 +21,11 @@ type (
 	// CreateConfigurationRequest holds parameters for CreateConfiguration
 	CreateConfigurationRequest struct {
 		Activate bool
-		Body     CreateConfigurationBody
+		Body     CreateConfigurationRequestBody
 	}
 
-	// CreateConfigurationBody holds request body parameters for CreateConfiguration
-	CreateConfigurationBody struct {
+	// CreateConfigurationRequestBody holds request body parameters for CreateConfiguration
+	CreateConfigurationRequestBody struct {
 		CapacityAlertsThreshold *int                `json:"capacityAlertsThreshold,omitempty"`
 		Comments                string              `json:"comments"`
 		ContractID              string              `json:"contractId"`
@@ -41,11 +41,11 @@ type (
 	UpdateConfigurationRequest struct {
 		ConfigID int64
 		Activate bool
-		Body     UpdateConfigurationBody
+		Body     UpdateConfigurationRequestBody
 	}
 
-	// UpdateConfigurationBody holds request body parameters for UpdateConfiguration
-	UpdateConfigurationBody struct {
+	// UpdateConfigurationRequestBody holds request body parameters for UpdateConfiguration
+	UpdateConfigurationRequestBody struct {
 		CapacityAlertsThreshold *int                `json:"capacityAlertsThreshold,omitempty"`
 		Comments                string              `json:"comments"`
 		Locations               []ConfigLocationReq `json:"locations"`
@@ -208,8 +208,8 @@ func (r CreateConfigurationRequest) Validate() error {
 	})
 }
 
-// Validate validates CreateConfigurationBody
-func (b CreateConfigurationBody) Validate() error {
+// Validate validates CreateConfigurationRequestBody
+func (b CreateConfigurationRequestBody) Validate() error {
 	return validation.Errors{
 		"Comments":                validation.Validate(b.Comments, validation.Required),
 		"Locations":               validation.Validate(b.Locations, validation.Required),
@@ -229,8 +229,8 @@ func (r UpdateConfigurationRequest) Validate() error {
 	})
 }
 
-// Validate validates UpdateConfigurationBody
-func (b UpdateConfigurationBody) Validate() error {
+// Validate validates UpdateConfigurationRequestBody
+func (b UpdateConfigurationRequestBody) Validate() error {
 	return validation.Errors{
 		"Comments":                validation.Validate(b.Comments, validation.Required),
 		"Locations":               validation.Validate(b.Locations, validation.Required),

@@ -53,8 +53,8 @@ type (
 		ResourceTierID int    `json:"resourceTierId"`
 	}
 
-	// EdgeWorkerIDBodyRequest contains body parameters used to update or clone EdgeWorkerID
-	EdgeWorkerIDBodyRequest struct {
+	// EdgeWorkerIDRequestBody contains body parameters used to update or clone EdgeWorkerID
+	EdgeWorkerIDRequestBody struct {
 		Name           string `json:"name"`
 		GroupID        int    `json:"groupId"`
 		ResourceTierID int    `json:"resourceTierId"`
@@ -62,13 +62,13 @@ type (
 
 	// UpdateEdgeWorkerIDRequest contains body and path parameters used to update EdgeWorkerID
 	UpdateEdgeWorkerIDRequest struct {
-		EdgeWorkerIDBodyRequest
+		Body         EdgeWorkerIDRequestBody
 		EdgeWorkerID int
 	}
 
 	// CloneEdgeWorkerIDRequest contains body and path parameters used to clone EdgeWorkerID
 	CloneEdgeWorkerIDRequest struct {
-		EdgeWorkerIDBodyRequest
+		Body         EdgeWorkerIDRequestBody
 		EdgeWorkerID int
 	}
 )
@@ -92,9 +92,9 @@ func (c CreateEdgeWorkerIDRequest) Validate() error {
 // Validate validates CreateEdgeWorkerIDRequest
 func (c UpdateEdgeWorkerIDRequest) Validate() error {
 	return validation.Errors{
-		"Name":           validation.Validate(c.EdgeWorkerIDBodyRequest.Name, validation.Required),
-		"GroupID":        validation.Validate(c.EdgeWorkerIDBodyRequest.GroupID, validation.Required),
-		"ResourceTierID": validation.Validate(c.EdgeWorkerIDBodyRequest.ResourceTierID, validation.Required),
+		"Name":           validation.Validate(c.Body.Name, validation.Required),
+		"GroupID":        validation.Validate(c.Body.GroupID, validation.Required),
+		"ResourceTierID": validation.Validate(c.Body.ResourceTierID, validation.Required),
 		"EdgeWorkerID":   validation.Validate(c.EdgeWorkerID, validation.Required),
 	}.Filter()
 }
@@ -102,9 +102,9 @@ func (c UpdateEdgeWorkerIDRequest) Validate() error {
 // Validate validates CloneEdgeWorkerIDRequest
 func (c CloneEdgeWorkerIDRequest) Validate() error {
 	return validation.Errors{
-		"Name":           validation.Validate(c.EdgeWorkerIDBodyRequest.Name, validation.Required),
-		"GroupID":        validation.Validate(c.EdgeWorkerIDBodyRequest.GroupID, validation.Required),
-		"ResourceTierID": validation.Validate(c.EdgeWorkerIDBodyRequest.ResourceTierID, validation.Required),
+		"Name":           validation.Validate(c.Body.Name, validation.Required),
+		"GroupID":        validation.Validate(c.Body.GroupID, validation.Required),
+		"ResourceTierID": validation.Validate(c.Body.ResourceTierID, validation.Required),
 		"EdgeWorkerID":   validation.Validate(c.EdgeWorkerID, validation.Required),
 	}.Filter()
 }
@@ -244,7 +244,7 @@ func (e *edgeworkers) UpdateEdgeWorkerID(ctx context.Context, params UpdateEdgeW
 	}
 
 	var result EdgeWorkerID
-	resp, err := e.Exec(req, &result, params.EdgeWorkerIDBodyRequest)
+	resp, err := e.Exec(req, &result, params.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEdgeWorkerID, err)
 	}
@@ -275,7 +275,7 @@ func (e *edgeworkers) CloneEdgeWorkerID(ctx context.Context, params CloneEdgeWor
 	}
 
 	var result EdgeWorkerID
-	resp, err := e.Exec(req, &result, params.EdgeWorkerIDBodyRequest)
+	resp, err := e.Exec(req, &result, params.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCloneEdgeWorkerID, err)
 	}

@@ -49,10 +49,26 @@
 
 
 
+* Cloudaccess
+  * Changed naming of request body fields for following structures: 
+    * `BodyParams` to `Body` in `CreateAccessKeyVersionRequest`
+    * `CreateAccessKeyVersionBodyParams` to `CreateAccessKeyVersionRequestBody`
+
+
+
+* Cloudlets
+  * Changed naming of request body fields for following structures:
+    * `BodyParams` to `Body` in `UpdatePolicyRequest` and `ClonePolicyRequest`
+    * `UpdatePolicyBodyParams` to `UpdatePolicyRequestBody`
+    * `ClonePolicyBodyParams` to `ClonePolicyRequestBody`
 
 
 
 
+* Cloudwrapper
+  * Changed naming of request body fields for following structures:
+    * `CreateConfigurationBody` to `CreateConfigurationRequestBody`
+    * `UpdateConfigurationBody` to `UpdateConfigurationRequestBody`
 
 * DNS
   * Refactored parameters in following methods:
@@ -223,6 +239,10 @@
     * `GeoMaps`
     * `Properties`
     * `Resources`
+
+* Edgeworkers
+  * Changed naming of request body fields for following structures:
+    * `EdgeWorkerIDBodyRequest` to `EdgeWorkerIDRequestBody`
 
 
 

@@ -1171,7 +1171,7 @@ func TestUpdatePolicy(t *testing.T) {
 		"200 OK - minimal data": {
 			params: UpdatePolicyRequest{
 				PolicyID: 1,
-				BodyParams: UpdatePolicyBodyParams{
+				Body: UpdatePolicyRequestBody{
 					GroupID: 11,
 				},
 			},
@@ -1235,7 +1235,7 @@ func TestUpdatePolicy(t *testing.T) {
 		"200 OK - with description and activations": {
 			params: UpdatePolicyRequest{
 				PolicyID: 1,
-				BodyParams: UpdatePolicyBodyParams{
+				Body: UpdatePolicyRequestBody{
 					GroupID:     11,
 					Description: ptr.To("Description"),
 				},
@@ -1452,7 +1452,7 @@ func TestUpdatePolicy(t *testing.T) {
 		"validation errors - description too long": {
 			params: UpdatePolicyRequest{
 				PolicyID: 1,
-				BodyParams: UpdatePolicyBodyParams{
+				Body: UpdatePolicyRequestBody{
 					GroupID:     11,
 					Description: ptr.To(strings.Repeat("TestDescription", 30)),
 				},
@@ -1502,7 +1502,7 @@ func TestClonePolicy(t *testing.T) {
 		"200 OK - minimal data": {
 			params: ClonePolicyRequest{
 				PolicyID: 1,
-				BodyParams: ClonePolicyBodyParams{
+				Body: ClonePolicyRequestBody{
 					NewName: "NewName",
 				},
 			},
@@ -1566,7 +1566,7 @@ func TestClonePolicy(t *testing.T) {
 		"200 OK - all data": {
 			params: ClonePolicyRequest{
 				PolicyID: 1,
-				BodyParams: ClonePolicyBodyParams{
+				Body: ClonePolicyRequestBody{
 					AdditionalVersions: []int64{1, 2},
 					GroupID:            11,
 					NewName:            "NewName",
@@ -1785,7 +1785,7 @@ func TestClonePolicy(t *testing.T) {
 		"validation errors - newName too long": {
 			params: ClonePolicyRequest{
 				PolicyID: 1,
-				BodyParams: ClonePolicyBodyParams{
+				Body: ClonePolicyRequestBody{
 					GroupID: 11,
 					NewName: strings.Repeat("TestNameTooLong", 10),
 				},

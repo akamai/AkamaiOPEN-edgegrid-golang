@@ -28,11 +28,11 @@ type (
 	// CreateAccessKeyVersionRequest holds parameters for CreateAccessKeyVersion
 	CreateAccessKeyVersionRequest struct {
 		AccessKeyUID int64
-		BodyParams   CreateAccessKeyVersionBodyParams
+		Body         CreateAccessKeyVersionRequestBody
 	}
 
-	// CreateAccessKeyVersionBodyParams holds body parameters for CreateAccessKeyVersion
-	CreateAccessKeyVersionBodyParams struct {
+	// CreateAccessKeyVersionRequestBody holds body parameters for CreateAccessKeyVersion
+	CreateAccessKeyVersionRequestBody struct {
 		CloudAccessKeyID     string `json:"cloudAccessKeyId"`
 		CloudSecretAccessKey string `json:"cloudSecretAccessKey"`
 	}
@@ -106,12 +106,12 @@ func (r GetAccessKeyVersionStatusRequest) Validate() error {
 func (r CreateAccessKeyVersionRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"AccessKeyUID": validation.Validate(r.AccessKeyUID, validation.Required),
-		"BodyParams":   validation.Validate(r.BodyParams, validation.Required),
+		"Body":         validation.Validate(r.Body, validation.Required),
 	})
 }
 
-// Validate validates CreateAccessKeyVersionBodyParams
-func (r CreateAccessKeyVersionBodyParams) Validate() error {
+// Validate validates CreateAccessKeyVersionRequestBody
+func (r CreateAccessKeyVersionRequestBody) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"CloudAccessKeyID":     validation.Validate(r.CloudAccessKeyID, validation.Required),
 		"CloudSecretAccessKey": validation.Validate(r.CloudSecretAccessKey, validation.Required),
@@ -197,7 +197,7 @@ func (c *cloudaccess) CreateAccessKeyVersion(ctx context.Context, params CreateA
 	}
 
 	var result CreateAccessKeyVersionResponse
-	resp, err := c.Exec(req, &result, params.BodyParams)
+	resp, err := c.Exec(req, &result, params.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrCreateAccessKeyVersion, err)
 	}

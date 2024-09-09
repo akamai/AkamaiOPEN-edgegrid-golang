@@ -42,26 +42,26 @@ type (
 
 	// UpdatePolicyRequest contains request parameters for UpdatePolicy
 	UpdatePolicyRequest struct {
-		PolicyID   int64
-		BodyParams UpdatePolicyBodyParams
+		PolicyID int64
+		Body     UpdatePolicyRequestBody
 	}
 
 	// ClonePolicyRequest contains request parameters for ClonePolicy
 	ClonePolicyRequest struct {
-		PolicyID   int64
-		BodyParams ClonePolicyBodyParams
+		PolicyID int64
+		Body     ClonePolicyRequestBody
 	}
 
-	// ClonePolicyBodyParams contains request body parameters used in ClonePolicy operation
+	// ClonePolicyRequestBody contains request body parameters used in ClonePolicy operation
 	// GroupID is required only when cloning v2
-	ClonePolicyBodyParams struct {
+	ClonePolicyRequestBody struct {
 		AdditionalVersions []int64 `json:"additionalVersions,omitempty"`
 		GroupID            int64   `json:"groupId,omitempty"`
 		NewName            string  `json:"newName"`
 	}
 
-	// UpdatePolicyBodyParams contains request body parameters used in UpdatePolicy operation
-	UpdatePolicyBodyParams struct {
+	// UpdatePolicyRequestBody contains request body parameters used in UpdatePolicy operation
+	UpdatePolicyRequestBody struct {
 		GroupID     int64   `json:"groupId"`
 		Description *string `json:"description,omitempty"`
 	}
@@ -179,13 +179,13 @@ func (r GetPolicyRequest) Validate() error {
 // Validate validates UpdatePolicyRequest
 func (r UpdatePolicyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"PolicyID":   validation.Validate(r.PolicyID, validation.Required),
-		"BodyParams": validation.Validate(r.BodyParams, validation.Required),
+		"PolicyID": validation.Validate(r.PolicyID, validation.Required),
+		"Body":     validation.Validate(r.Body, validation.Required),
 	})
 }
 
-// Validate validates UpdatePolicyBodyParams
-func (b UpdatePolicyBodyParams) Validate() error {
+// Validate validates UpdatePolicyRequestBody
+func (b UpdatePolicyRequestBody) Validate() error {
 	return validation.Errors{
 		"GroupID":     validation.Validate(b.GroupID, validation.Required),
 		"Description": validation.Validate(b.Description, validation.Length(0, 255)),
@@ -195,13 +195,13 @@ func (b UpdatePolicyBodyParams) Validate() error {
 // Validate validates ClonePolicyRequest
 func (r ClonePolicyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"PolicyID":   validation.Validate(r.PolicyID, validation.Required),
-		"BodyParams": validation.Validate(r.BodyParams, validation.Required),
+		"PolicyID": validation.Validate(r.PolicyID, validation.Required),
+		"Body":     validation.Validate(r.Body, validation.Required),
 	})
 }
 
 // Validate validates ClonePolicyBodyParams
-func (b ClonePolicyBodyParams) Validate() error {
+func (b ClonePolicyRequestBody) Validate() error {
 	return validation.Errors{
 		"NewName": validation.Validate(b.NewName, validation.Required, validation.Length(0, 64), validation.Match(regexp.MustCompile("^[a-z_A-Z0-9]+$")).
 			Error(fmt.Sprintf("value '%s' is invalid. Must be of format: ^[a-z_A-Z0-9]+$", b.NewName))),
@@ -352,7 +352,7 @@ func (c *cloudlets) UpdatePolicy(ctx context.Context, params UpdatePolicyRequest
 	}
 
 	var result Policy
-	resp, err := c.Exec(req, &result, params.BodyParams)
+	resp, err := c.Exec(req, &result, params.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePolicy, err)
 	}
@@ -380,7 +380,7 @@ func (c *cloudlets) ClonePolicy(ctx context.Context, params ClonePolicyRequest) 
 	}
 
 	var result Policy
-	resp, err := c.Exec(req, &result, params.BodyParams)
+	resp, err := c.Exec(req, &result, params.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrClonePolicy, err)
 	}

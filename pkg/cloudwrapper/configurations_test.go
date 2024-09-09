@@ -597,7 +597,7 @@ func TestCreateConfiguration(t *testing.T) {
 	}{
 		"200 OK - minimal": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -694,7 +694,7 @@ func TestCreateConfiguration(t *testing.T) {
 		"200 OK - minimal with activate query param": {
 			params: CreateConfigurationRequest{
 				Activate: true,
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -790,7 +790,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"200 OK - minimal MultiCDNSettings": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1005,7 +1005,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"200 OK - full MultiCDNSettings": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					CapacityAlertsThreshold: ptr.To(70),
 					Comments:                "TestComments",
 					ContractID:              "TestContractID",
@@ -1350,7 +1350,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"200 OK - BOCC struct fields default values": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1547,7 +1547,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"200 OK - DataStreams struct fields default values": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1749,7 +1749,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"missing required params - location fields": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1769,7 +1769,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"missing required params - multiCDN fields": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1793,7 +1793,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"missing required params - BOCC struct fields when enabled": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1840,7 +1840,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"missing required params - Origin struct fields": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{Comments: "TestComments",
+				Body: CreateConfigurationRequestBody{Comments: "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
 						{
@@ -1880,7 +1880,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"validation error - at least one CDN must be enabled": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1930,7 +1930,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"validation error - authKeys nor IPACLCIDRs specified": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1974,7 +1974,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"struct fields validations": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					CapacityAlertsThreshold: ptr.To(20),
 					Comments:                "TestComments",
 					ContractID:              "TestContractID",
@@ -2033,7 +2033,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"500 internal server error": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -2074,9 +2074,6 @@ func TestCreateConfiguration(t *testing.T) {
 	}
 
 	for name, test := range tests {
-		if name != "200 OK - full MultiCDNSettings" {
-			continue
-		}
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
@@ -2115,7 +2112,7 @@ func TestUpdateConfiguration(t *testing.T) {
 		"200 OK - minimal": {
 			params: UpdateConfigurationRequest{
 				ConfigID: 111,
-				Body: UpdateConfigurationBody{
+				Body: UpdateConfigurationRequestBody{
 					Comments: "TestCommentsUpdated",
 					Locations: []ConfigLocationReq{
 						{
@@ -2211,7 +2208,7 @@ func TestUpdateConfiguration(t *testing.T) {
 		"200 OK - minimal MultiCDNSettings": {
 			params: UpdateConfigurationRequest{
 				ConfigID: 111,
-				Body: UpdateConfigurationBody{
+				Body: UpdateConfigurationRequestBody{
 					Comments: "TestCommentsUpdated",
 					Locations: []ConfigLocationReq{
 						{
@@ -2405,7 +2402,7 @@ func TestUpdateConfiguration(t *testing.T) {
 		"200 OK - all fields": {
 			params: UpdateConfigurationRequest{
 				ConfigID: 111,
-				Body: UpdateConfigurationBody{
+				Body: UpdateConfigurationRequestBody{
 					CapacityAlertsThreshold: ptr.To(80),
 					Comments:                "TestCommentsUpdated",
 					Locations: []ConfigLocationReq{
@@ -2681,7 +2678,7 @@ func TestUpdateConfiguration(t *testing.T) {
 		"500 internal server error": {
 			params: UpdateConfigurationRequest{
 				ConfigID: 1,
-				Body: UpdateConfigurationBody{
+				Body: UpdateConfigurationRequestBody{
 					Comments: "TestCommentsUpdated",
 					Locations: []ConfigLocationReq{
 						{
