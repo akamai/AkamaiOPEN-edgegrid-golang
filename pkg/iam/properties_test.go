@@ -372,7 +372,7 @@ func TestMoveProperty(t *testing.T) {
 		"204 OK": {
 			params: MovePropertyRequest{
 				PropertyID: 1,
-				BodyParams: MovePropertyReqBody{
+				Body: MovePropertyRequestBody{
 					DestinationGroupID: 22,
 					SourceGroupID:      11,
 				},
@@ -388,13 +388,13 @@ func TestMoveProperty(t *testing.T) {
 		"validation errors": {
 			params: MovePropertyRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "move property: struct validation: BodyParams: DestinationGroupID: cannot be blank\nSourceGroupID: cannot be blank\nPropertyID: cannot be blank", err.Error())
+				assert.Equal(t, "move property: struct validation: Body: DestinationGroupID: cannot be blank\nSourceGroupID: cannot be blank\nPropertyID: cannot be blank", err.Error())
 			},
 		},
 		"400 not allowed": {
 			params: MovePropertyRequest{
 				PropertyID: 1,
-				BodyParams: MovePropertyReqBody{
+				Body: MovePropertyRequestBody{
 					DestinationGroupID: 22,
 					SourceGroupID:      11,
 				},
@@ -546,7 +546,7 @@ func TestBlockUsers(t *testing.T) {
 		"200 OK": {
 			params: BlockUsersRequest{
 				PropertyID: 1,
-				BodyParams: BlockUsersReqBody{
+				Body: BlockUsersRequestBody{
 					BlockUserItem{
 						UIIdentityID: "A-test-1234",
 					},
@@ -604,22 +604,22 @@ func TestBlockUsers(t *testing.T) {
 		"validation errors - no params": {
 			params: BlockUsersRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "block users: struct validation: BodyParams: cannot be blank\nPropertyID: cannot be blank", err.Error())
+				assert.Equal(t, "block users: struct validation: Body: cannot be blank\nPropertyID: cannot be blank", err.Error())
 			},
 		},
 		"validation errors - empty body": {
 			params: BlockUsersRequest{
 				PropertyID: 1,
-				BodyParams: BlockUsersReqBody{},
+				Body:       BlockUsersRequestBody{},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "block users: struct validation: BodyParams: cannot be blank", err.Error())
+				assert.Equal(t, "block users: struct validation: Body: cannot be blank", err.Error())
 			},
 		},
 		"404 invalid identity": {
 			params: BlockUsersRequest{
 				PropertyID: 1,
-				BodyParams: BlockUsersReqBody{
+				Body: BlockUsersRequestBody{
 					BlockUserItem{
 						UIIdentityID: "test",
 					},
@@ -650,7 +650,7 @@ func TestBlockUsers(t *testing.T) {
 		"404 not found": {
 			params: BlockUsersRequest{
 				PropertyID: 2,
-				BodyParams: BlockUsersReqBody{
+				Body: BlockUsersRequestBody{
 					BlockUserItem{
 						UIIdentityID: "A-test-1234",
 					},

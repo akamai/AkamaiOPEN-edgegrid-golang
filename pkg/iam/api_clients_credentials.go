@@ -74,7 +74,7 @@ type (
 	UpdateCredentialRequest struct {
 		CredentialID int64
 		ClientID     string
-		RequestBody  UpdateCredentialRequestBody
+		Body         UpdateCredentialRequestBody
 	}
 
 	// UpdateCredentialRequestBody contains request body parameters for UpdateCredential operation
@@ -170,7 +170,7 @@ func (r GetCredentialRequest) Validate() error {
 func (r UpdateCredentialRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"CredentialID": validation.Validate(r.CredentialID, validation.Required),
-		"RequestBody":  validation.Validate(r.RequestBody, validation.Required),
+		"Body":         validation.Validate(r.Body, validation.Required),
 	})
 }
 
@@ -332,8 +332,8 @@ func (i *iam) UpdateCredential(ctx context.Context, params UpdateCredentialReque
 
 	// Because API does not accept date without providing milliseconds, if there are no millisecond add a small duration to allow the request to
 	// be processed. Only applicable when no milliseconds are provided, or they are equal to zero. Ticket for tracking: IDM-3347.
-	if params.RequestBody.ExpiresOn.Nanosecond() == 0 {
-		params.RequestBody.ExpiresOn = params.RequestBody.ExpiresOn.Add(time.Nanosecond)
+	if params.Body.ExpiresOn.Nanosecond() == 0 {
+		params.Body.ExpiresOn = params.Body.ExpiresOn.Add(time.Nanosecond)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/credentials/%d", params.ClientID, params.CredentialID))
@@ -347,7 +347,7 @@ func (i *iam) UpdateCredential(ctx context.Context, params UpdateCredentialReque
 	}
 
 	var result UpdateCredentialResponse
-	resp, err := i.Exec(req, &result, params.RequestBody)
+	resp, err := i.Exec(req, &result, params.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateCredential, err)
 	}

@@ -522,7 +522,7 @@ func TestUpdateCIDRBlock(t *testing.T) {
 		"200 OK": {
 			params: UpdateCIDRBlockRequest{
 				CIDRBlockID: 1,
-				Body: UpdateCIDRBlockBody{
+				Body: UpdateCIDRBlockRequestBody{
 					CIDRBlock: "1.2.3.4/32",
 					Comments:  "abc - updated",
 					Enabled:   false,
@@ -564,7 +564,7 @@ func TestUpdateCIDRBlock(t *testing.T) {
 		"invalid required parameters": {
 			params: UpdateCIDRBlockRequest{
 				CIDRBlockID: -1,
-				Body: UpdateCIDRBlockBody{
+				Body: UpdateCIDRBlockRequestBody{
 					CIDRBlock: "1.2.3.4/32",
 					Comments:  "abc - updated",
 					Enabled:   false,
@@ -578,7 +578,7 @@ func TestUpdateCIDRBlock(t *testing.T) {
 		"500 internal server error": {
 			params: UpdateCIDRBlockRequest{
 				CIDRBlockID: 1,
-				Body: UpdateCIDRBlockBody{
+				Body: UpdateCIDRBlockRequestBody{
 					CIDRBlock: "1.2.3.4/32",
 					Comments:  "abc - updated",
 					Enabled:   false,

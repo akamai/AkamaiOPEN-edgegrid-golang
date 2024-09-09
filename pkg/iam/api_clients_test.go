@@ -1159,7 +1159,7 @@ func TestUpdateAPIClient(t *testing.T) {
 	}{
 		"200 Updated self": {
 			params: UpdateAPIClientRequest{
-				Body: UpdateAPIClientBody{
+				Body: UpdateAPIClientRequestBody{
 					APIAccess: APIAccess{
 						AllAccessibleAPIs: true,
 					},
@@ -1332,7 +1332,7 @@ func TestUpdateAPIClient(t *testing.T) {
 		"200 Updated with allAPI, cpCodes and clone group": {
 			params: UpdateAPIClientRequest{
 				ClientID: "abcdefgh12345678",
-				Body: UpdateAPIClientBody{
+				Body: UpdateAPIClientRequestBody{
 					APIAccess: APIAccess{
 						AllAccessibleAPIs: true,
 					},
@@ -1536,7 +1536,7 @@ func TestUpdateAPIClient(t *testing.T) {
 		"200 Updated with all fields and custom API and group": {
 			params: UpdateAPIClientRequest{
 				ClientID: "abcdefgh12345678",
-				Body: UpdateAPIClientBody{
+				Body: UpdateAPIClientRequestBody{
 					AllowAccountSwitch: true,
 					APIAccess: APIAccess{
 						AllAccessibleAPIs: false,
@@ -1839,14 +1839,14 @@ func TestUpdateAPIClient(t *testing.T) {
 			},
 		},
 		"validation errors - internal validations": {
-			params: UpdateAPIClientRequest{Body: UpdateAPIClientBody{APIAccess: APIAccess{APIs: []API{{}}}, AuthorizedUsers: []string{"user1"}, ClientType: "abc", GroupAccess: GroupAccess{Groups: []ClientGroup{{}}}, PurgeOptions: &PurgeOptions{CPCodeAccess: CPCodeAccess{AllCurrentAndNewCPCodes: false, CPCodes: nil}}}},
+			params: UpdateAPIClientRequest{Body: UpdateAPIClientRequestBody{APIAccess: APIAccess{APIs: []API{{}}}, AuthorizedUsers: []string{"user1"}, ClientType: "abc", GroupAccess: GroupAccess{Groups: []ClientGroup{{}}}, PurgeOptions: &PurgeOptions{CPCodeAccess: CPCodeAccess{AllCurrentAndNewCPCodes: false, CPCodes: nil}}}},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "update api client: struct validation:\nAPIs[0]: {\n\tAPIID: cannot be blank\n\tAccessLevel: cannot be blank\n}\nClientType: value 'abc' is invalid. Must be one of: 'CLIENT' or 'USER_CLIENT'\nGroups[0]: {\n\tGroupID: cannot be blank\n\tRoleID: cannot be blank\n}\nCPCodes: is required", err.Error())
 			},
 		},
 		"500 internal server error": {
 			params: UpdateAPIClientRequest{
-				Body: UpdateAPIClientBody{
+				Body: UpdateAPIClientRequestBody{
 					APIAccess: APIAccess{
 						AllAccessibleAPIs: true,
 					},

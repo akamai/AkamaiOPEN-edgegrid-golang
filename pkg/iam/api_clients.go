@@ -294,11 +294,11 @@ type (
 	// UpdateAPIClientRequest contains the request parameters for the UpdateAPIClient endpoint
 	UpdateAPIClientRequest struct {
 		ClientID string
-		Body     UpdateAPIClientBody
+		Body     UpdateAPIClientRequestBody
 	}
 
-	// UpdateAPIClientBody represents body params for UpdateAPIClient
-	UpdateAPIClientBody struct {
+	// UpdateAPIClientRequestBody represents body params for UpdateAPIClient
+	UpdateAPIClientRequestBody struct {
 		AllowAccountSwitch      bool          `json:"allowAccountSwitch"`
 		APIAccess               APIAccess     `json:"apiAccess"`
 		AuthorizedUsers         []string      `json:"authorizedUsers"`
@@ -388,8 +388,8 @@ func (r UpdateAPIClientRequest) Validate() error {
 	})
 }
 
-// Validate validates UpdateAPIClientBody
-func (r UpdateAPIClientBody) Validate() error {
+// Validate validates UpdateAPIClientRequestBody
+func (r UpdateAPIClientRequestBody) Validate() error {
 	return validation.Errors{
 		"APIAccess":       validation.Validate(r.APIAccess, validation.Required),
 		"AuthorizedUsers": validation.Validate(r.AuthorizedUsers, validation.Required, validation.Length(1, 0)),

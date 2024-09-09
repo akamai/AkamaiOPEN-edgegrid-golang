@@ -23,7 +23,7 @@ func TestIAMListAllowedCPCodes(t *testing.T) {
 		"200 OK": {
 			params: ListAllowedCPCodesRequest{
 				UserName: "jsmith",
-				ListAllowedCPCodesRequestBody: ListAllowedCPCodesRequestBody{
+				Body: ListAllowedCPCodesRequestBody{
 					ClientType: ClientClientType,
 				},
 			},
@@ -69,7 +69,7 @@ func TestIAMListAllowedCPCodes(t *testing.T) {
 		"200 OK with groups": {
 			params: ListAllowedCPCodesRequest{
 				UserName: "jsmith",
-				ListAllowedCPCodesRequestBody: ListAllowedCPCodesRequestBody{
+				Body: ListAllowedCPCodesRequestBody{
 					ClientType: ServiceAccountClientType,
 					Groups: []AllowedCPCodesGroup{
 						{
@@ -120,7 +120,7 @@ func TestIAMListAllowedCPCodes(t *testing.T) {
 		"500 internal server error": {
 			params: ListAllowedCPCodesRequest{
 				UserName: "jsmith",
-				ListAllowedCPCodesRequestBody: ListAllowedCPCodesRequestBody{
+				Body: ListAllowedCPCodesRequestBody{
 					ClientType: ClientClientType,
 				},
 			},
@@ -154,7 +154,7 @@ func TestIAMListAllowedCPCodes(t *testing.T) {
 		"group is required for client type SERVICE_ACCOUNT": {
 			params: ListAllowedCPCodesRequest{
 				UserName: "jsmith",
-				ListAllowedCPCodesRequestBody: ListAllowedCPCodesRequestBody{
+				Body: ListAllowedCPCodesRequestBody{
 					ClientType: ServiceAccountClientType,
 				},
 			},

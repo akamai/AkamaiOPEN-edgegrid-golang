@@ -508,7 +508,7 @@ func TestUpdateCredential(t *testing.T) {
 			params: UpdateCredentialRequest{
 				ClientID:     "test1234",
 				CredentialID: 123,
-				RequestBody: UpdateCredentialRequestBody{
+				Body: UpdateCredentialRequestBody{
 					ExpiresOn: test.NewTimeFromString(t, "2026-05-14T11:10:25.000Z"),
 					Status:    CredentialActive,
 				},
@@ -536,7 +536,7 @@ func TestUpdateCredential(t *testing.T) {
 			params: UpdateCredentialRequest{
 				ClientID:     "test1234",
 				CredentialID: 123,
-				RequestBody: UpdateCredentialRequestBody{
+				Body: UpdateCredentialRequestBody{
 					ExpiresOn: test.NewTimeFromString(t, "2026-05-14T11:10:25Z"),
 					Status:    CredentialActive,
 				},
@@ -564,7 +564,7 @@ func TestUpdateCredential(t *testing.T) {
 			params: UpdateCredentialRequest{
 				ClientID:     "test1234",
 				CredentialID: 123,
-				RequestBody: UpdateCredentialRequestBody{
+				Body: UpdateCredentialRequestBody{
 					ExpiresOn: test.NewTimeFromString(t, "2026-05-14T11:10:25.123Z"),
 					Status:    CredentialActive,
 				},
@@ -591,7 +591,7 @@ func TestUpdateCredential(t *testing.T) {
 		"200 OK without specified client, with description": {
 			params: UpdateCredentialRequest{
 				CredentialID: 123,
-				RequestBody: UpdateCredentialRequestBody{
+				Body: UpdateCredentialRequestBody{
 					ExpiresOn:   test.NewTimeFromString(t, "2026-05-14T11:10:25.123Z"),
 					Status:      CredentialInactive,
 					Description: "test description",
@@ -622,13 +622,13 @@ func TestUpdateCredential(t *testing.T) {
 		"validation errors": {
 			params: UpdateCredentialRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "update credential: struct validation: CredentialID: cannot be blank\nExpiresOn: cannot be blank\nStatus: cannot be blank", err.Error())
+				assert.Equal(t, "update credential: struct validation: ExpiresOn: cannot be blank\nStatus: cannot be blank\nCredentialID: cannot be blank", err.Error())
 			},
 		},
 		"404 Not Found": {
 			params: UpdateCredentialRequest{
 				CredentialID: 123,
-				RequestBody: UpdateCredentialRequestBody{
+				Body: UpdateCredentialRequestBody{
 					ExpiresOn: test.NewTimeFromString(t, "2026-05-14T11:10:25.000Z"),
 					Status:    "ACTIVE",
 				},
@@ -658,7 +658,7 @@ func TestUpdateCredential(t *testing.T) {
 		"500 internal server error": {
 			params: UpdateCredentialRequest{
 				CredentialID: 123,
-				RequestBody: UpdateCredentialRequestBody{
+				Body: UpdateCredentialRequestBody{
 					ExpiresOn: test.NewTimeFromString(t, "2026-05-14T11:10:25.000Z"),
 					Status:    CredentialActive,
 				},

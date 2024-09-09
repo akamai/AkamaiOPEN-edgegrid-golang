@@ -39,7 +39,7 @@ type (
 	// ListAllowedCPCodesRequest contains the request parameter for the list of allowed CP codes endpoint
 	ListAllowedCPCodesRequest struct {
 		UserName string
-		ListAllowedCPCodesRequestBody
+		Body     ListAllowedCPCodesRequestBody
 	}
 
 	// ListAllowedAPIsRequest contains the request parameters for the list of allowed APIs endpoint
@@ -158,7 +158,7 @@ var (
 func (r ListAllowedCPCodesRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"UserName": validation.Validate(r.UserName, validation.Required),
-		"Body":     validation.Validate(r.ListAllowedCPCodesRequestBody, validation.Required),
+		"Body":     validation.Validate(r.Body, validation.Required),
 	})
 }
 
@@ -201,7 +201,7 @@ func (i *iam) ListAllowedCPCodes(ctx context.Context, params ListAllowedCPCodesR
 	}
 
 	var result ListAllowedCPCodesResponse
-	resp, err := i.Exec(req, &result, params.ListAllowedCPCodesRequestBody)
+	resp, err := i.Exec(req, &result, params.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListAllowedCPCodes, err)
 	}

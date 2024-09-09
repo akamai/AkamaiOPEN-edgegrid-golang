@@ -96,11 +96,11 @@ type (
 	// UpdateCIDRBlockRequest contains the request parameters for the UpdateCIDRBlock endpoint
 	UpdateCIDRBlockRequest struct {
 		CIDRBlockID int64
-		Body        UpdateCIDRBlockBody
+		Body        UpdateCIDRBlockRequestBody
 	}
 
-	// UpdateCIDRBlockBody contains the request body to be used in UpdateCIDRBlock endpoint
-	UpdateCIDRBlockBody struct {
+	// UpdateCIDRBlockRequestBody contains the request body to be used in UpdateCIDRBlock endpoint
+	UpdateCIDRBlockRequestBody struct {
 		CIDRBlock string `json:"cidrBlock"`
 		Comments  string `json:"comments,omitempty"`
 		Enabled   bool   `json:"enabled"`
@@ -142,8 +142,8 @@ func (r UpdateCIDRBlockRequest) Validate() error {
 	})
 }
 
-// Validate performs validation on UpdateCIDRBlockBody
-func (r UpdateCIDRBlockBody) Validate() error {
+// Validate performs validation on UpdateCIDRBlockRequestBody
+func (r UpdateCIDRBlockRequestBody) Validate() error {
 	return validation.Errors{
 		"CIDRBlock": validation.Validate(r.CIDRBlock, validation.Required),
 	}.Filter()

@@ -91,7 +91,7 @@ type (
 	// BlockUsersRequest contains the request parameters for the BlockUsers operation.
 	BlockUsersRequest struct {
 		PropertyID int64
-		BodyParams BlockUsersReqBody
+		Body       BlockUsersRequestBody
 	}
 
 	// ListPropertiesResponse holds the response data from ListProperties.
@@ -119,17 +119,17 @@ type (
 	// MovePropertyRequest contains the request parameters for the MoveProperty operation.
 	MovePropertyRequest struct {
 		PropertyID int64
-		BodyParams MovePropertyReqBody
+		Body       MovePropertyRequestBody
 	}
 
-	// MovePropertyReqBody contains body parameters for the MoveProperty operation.
-	MovePropertyReqBody struct {
+	// MovePropertyRequestBody contains body parameters for the MoveProperty operation.
+	MovePropertyRequestBody struct {
 		DestinationGroupID int64 `json:"destinationGroupId"`
 		SourceGroupID      int64 `json:"sourceGroupId"`
 	}
 
-	// BlockUsersReqBody hold the request body parameters for BlockUsers operation.
-	BlockUsersReqBody []BlockUserItem
+	// BlockUsersRequestBody hold the request body parameters for BlockUsers operation.
+	BlockUsersRequestBody []BlockUserItem
 
 	// BlockUserItem contains body parameters for the BlockUsers operation.
 	BlockUserItem struct {
@@ -195,12 +195,12 @@ func (r MapPropertyIDToNameRequest) Validate() error {
 func (r MovePropertyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
-		"BodyParams": validation.Validate(r.BodyParams, validation.Required),
+		"Body":       validation.Validate(r.Body, validation.Required),
 	})
 }
 
-// Validate validates MovePropertyReqBody
-func (r MovePropertyReqBody) Validate() error {
+// Validate validates MovePropertyRequestBody
+func (r MovePropertyRequestBody) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"DestinationGroupID": validation.Validate(r.DestinationGroupID, validation.Required),
 		"SourceGroupID":      validation.Validate(r.SourceGroupID, validation.Required),
@@ -211,11 +211,11 @@ func (r MovePropertyReqBody) Validate() error {
 func (r BlockUsersRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
-		"BodyParams": validation.Validate(r.BodyParams, validation.Required),
+		"Body":       validation.Validate(r.Body, validation.Required),
 	})
 }
 
-// Validate validates BlockUsersReqBody
+// Validate validates BlockUserItem
 func (r BlockUserItem) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"UIIdentityID": validation.Validate(r.UIIdentityID, validation.Required),
@@ -362,7 +362,7 @@ func (i *iam) MoveProperty(ctx context.Context, params MovePropertyRequest) erro
 		return fmt.Errorf("%w: failed to create request: %s", ErrMoveProperty, err)
 	}
 
-	resp, err := i.Exec(req, nil, params.BodyParams)
+	resp, err := i.Exec(req, nil, params.Body)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrMoveProperty, err)
 	}
@@ -433,7 +433,7 @@ func (i *iam) BlockUsers(ctx context.Context, params BlockUsersRequest) (*BlockU
 	}
 
 	var result BlockUsersResponse
-	resp, err := i.Exec(req, &result, params.BodyParams)
+	resp, err := i.Exec(req, &result, params.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrBlockUsers, err)
 	}
