@@ -2,5 +2,24 @@
     "enableForAllPolicies": true,
     "enableSiem": true,
     "enabledBotmanSiemEvents": false,
-    "siemDefinitionId": 1
+    "siemDefinitionId": 1,
+    "exceptions":[
+      {
+        "actionTypes": [
+            "*"
+        ],
+        "protection": "botmanagement"
+      },
+      {
+          "actionTypes": [
+              "alert"
+          ],
+          "protection": "ipgeo"
+      },
+      {
+          "actionTypes": [
+              "alert"
+          ],
+          "protection": "rate"
+      }]
 }

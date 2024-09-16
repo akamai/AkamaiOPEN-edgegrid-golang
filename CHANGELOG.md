@@ -265,7 +265,12 @@
 
 
 
-
+* APPSEC
+  * Added field `Exceptions` in the following structures:
+    * `GetSiemSettingsResponse`
+    * `GetSiemSettingResponse`
+    * `UpdateSiemSettingsRequest`
+    * `UpdateSiemSettingsResponse`
 
 
 

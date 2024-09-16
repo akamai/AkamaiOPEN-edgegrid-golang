@@ -188,8 +188,23 @@ func TestAppSec_UpdateSiemSettings(t *testing.T) {
 	}{
 		"200 Success": {
 			params: UpdateSiemSettingsRequest{
-				ConfigID: 43253,
-				Version:  15,
+				ConfigID:   43253,
+				Version:    15,
+				EnableSiem: true,
+				Exceptions: []Exception{
+					{
+						ActionTypes: []string{"*"},
+						Protection:  "botmanagement",
+					},
+					{
+						ActionTypes: []string{"deny"},
+						Protection:  "ipgeo",
+					},
+					{
+						ActionTypes: []string{"alert"},
+						Protection:  "rate",
+					},
+				},
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
