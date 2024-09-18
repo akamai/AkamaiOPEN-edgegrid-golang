@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -20,7 +21,7 @@ func TestListCIDRBlocks(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ListCIDRBlocksResponse
+		expectedResponse ListCIDRBlocksResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
@@ -50,11 +51,11 @@ func TestListCIDRBlocks(t *testing.T) {
     }
 ]`,
 			expectedPath: "/identity-management/v3/user-admin/ip-acl/allowlist?actions=false",
-			expectedResponse: &ListCIDRBlocksResponse{
+			expectedResponse: ListCIDRBlocksResponse{
 				{
 					CIDRBlockID:  1,
 					Enabled:      true,
-					Comments:     "abc",
+					Comments:     ptr.To("abc"),
 					CIDRBlock:    "1.2.3.4/8",
 					CreatedDate:  test.NewTimeFromString(t, "2024-06-17T08:46:41.000Z"),
 					CreatedBy:    "johndoe",
@@ -65,7 +66,7 @@ func TestListCIDRBlocks(t *testing.T) {
 				{
 					CIDRBlockID:  2,
 					Enabled:      false,
-					Comments:     "",
+					Comments:     nil,
 					CIDRBlock:    "2.4.8.16/32",
 					CreatedDate:  test.NewTimeFromString(t, "2024-06-25T06:14:36.000Z"),
 					CreatedBy:    "johndoe",
@@ -110,11 +111,11 @@ func TestListCIDRBlocks(t *testing.T) {
     }
 ]`,
 			expectedPath: "/identity-management/v3/user-admin/ip-acl/allowlist?actions=true",
-			expectedResponse: &ListCIDRBlocksResponse{
+			expectedResponse: ListCIDRBlocksResponse{
 				{
 					CIDRBlockID:  1,
 					Enabled:      true,
-					Comments:     "abc",
+					Comments:     ptr.To("abc"),
 					CIDRBlock:    "1.2.3.4/8",
 					CreatedDate:  test.NewTimeFromString(t, "2024-06-17T08:46:41.000Z"),
 					CreatedBy:    "johndoe",
@@ -128,7 +129,7 @@ func TestListCIDRBlocks(t *testing.T) {
 				{
 					CIDRBlockID:  2,
 					Enabled:      false,
-					Comments:     "",
+					Comments:     nil,
 					CIDRBlock:    "2.4.8.16/32",
 					CreatedDate:  test.NewTimeFromString(t, "2024-06-25T06:14:36.000Z"),
 					CreatedBy:    "johndoe",
@@ -200,7 +201,7 @@ func TestCreateCIDRBlock(t *testing.T) {
 		"201 created": {
 			params: CreateCIDRBlockRequest{
 				CIDRBlock: "1.2.3.4/32",
-				Comments:  "abc",
+				Comments:  ptr.To("abc"),
 				Enabled:   true,
 			},
 			responseStatus: http.StatusCreated,
@@ -220,7 +221,7 @@ func TestCreateCIDRBlock(t *testing.T) {
 			expectedResponse: &CreateCIDRBlockResponse{
 				CIDRBlockID:  1234,
 				Enabled:      true,
-				Comments:     "abc",
+				Comments:     ptr.To("abc"),
 				CIDRBlock:    "1.2.3.4/32",
 				CreatedDate:  test.NewTimeFromString(t, "2024-07-15T13:53:49.000Z"),
 				CreatedBy:    "johndoe",
@@ -251,7 +252,7 @@ func TestCreateCIDRBlock(t *testing.T) {
 			expectedResponse: &CreateCIDRBlockResponse{
 				CIDRBlockID:  1234,
 				Enabled:      true,
-				Comments:     "",
+				Comments:     nil,
 				CIDRBlock:    "1.2.3.4/32",
 				CreatedDate:  test.NewTimeFromString(t, "2024-07-15T13:53:49.000Z"),
 				CreatedBy:    "johndoe",
@@ -270,7 +271,7 @@ func TestCreateCIDRBlock(t *testing.T) {
 		"403 - incorrect cidrblock": {
 			params: CreateCIDRBlockRequest{
 				CIDRBlock: "1.2.3.4:32",
-				Comments:  "abc",
+				Comments:  ptr.To("abc"),
 				Enabled:   true,
 			},
 			responseStatus: http.StatusForbidden,
@@ -301,7 +302,7 @@ func TestCreateCIDRBlock(t *testing.T) {
 		"500 internal server error": {
 			params: CreateCIDRBlockRequest{
 				CIDRBlock: "1.2.3.4/32",
-				Comments:  "abc",
+				Comments:  ptr.To("abc"),
 				Enabled:   true,
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -380,7 +381,7 @@ func TestGetCIDRBlock(t *testing.T) {
 			expectedResponse: &GetCIDRBlockResponse{
 				CIDRBlockID:  1,
 				Enabled:      true,
-				Comments:     "abc",
+				Comments:     ptr.To("abc"),
 				CIDRBlock:    "1.2.3.4/8",
 				CreatedDate:  test.NewTimeFromString(t, "2024-06-17T08:46:41.000Z"),
 				CreatedBy:    "johndoe",
@@ -411,7 +412,7 @@ func TestGetCIDRBlock(t *testing.T) {
 			expectedResponse: &GetCIDRBlockResponse{
 				CIDRBlockID:  1,
 				Enabled:      true,
-				Comments:     "abc",
+				Comments:     ptr.To("abc"),
 				CIDRBlock:    "1.2.3.4/8",
 				CreatedDate:  test.NewTimeFromString(t, "2024-06-17T08:46:41.000Z"),
 				CreatedBy:    "johndoe",
@@ -524,7 +525,7 @@ func TestUpdateCIDRBlock(t *testing.T) {
 				CIDRBlockID: 1,
 				Body: UpdateCIDRBlockRequestBody{
 					CIDRBlock: "1.2.3.4/32",
-					Comments:  "abc - updated",
+					Comments:  ptr.To("abc - updated"),
 					Enabled:   false,
 				},
 			},
@@ -545,7 +546,7 @@ func TestUpdateCIDRBlock(t *testing.T) {
 			expectedResponse: &UpdateCIDRBlockResponse{
 				CIDRBlockID:  1234,
 				Enabled:      false,
-				Comments:     "abc - updated",
+				Comments:     ptr.To("abc - updated"),
 				CIDRBlock:    "1.2.3.4/32",
 				CreatedDate:  test.NewTimeFromString(t, "2024-07-15T13:53:49.000Z"),
 				CreatedBy:    "johndoe",
@@ -566,7 +567,7 @@ func TestUpdateCIDRBlock(t *testing.T) {
 				CIDRBlockID: -1,
 				Body: UpdateCIDRBlockRequestBody{
 					CIDRBlock: "1.2.3.4/32",
-					Comments:  "abc - updated",
+					Comments:  ptr.To("abc - updated"),
 					Enabled:   false,
 				},
 			},
@@ -580,7 +581,7 @@ func TestUpdateCIDRBlock(t *testing.T) {
 				CIDRBlockID: 1,
 				Body: UpdateCIDRBlockRequestBody{
 					CIDRBlock: "1.2.3.4/32",
-					Comments:  "abc - updated",
+					Comments:  ptr.To("abc - updated"),
 					Enabled:   false,
 				},
 			},

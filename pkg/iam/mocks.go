@@ -457,14 +457,14 @@ func (m *Mock) ListAllowedCPCodes(ctx context.Context, params ListAllowedCPCodes
 	return args.Get(0).(ListAllowedCPCodesResponse), args.Error(1)
 }
 
-func (m *Mock) ListCIDRBlocks(ctx context.Context, request ListCIDRBlocksRequest) (*ListCIDRBlocksResponse, error) {
+func (m *Mock) ListCIDRBlocks(ctx context.Context, request ListCIDRBlocksRequest) (ListCIDRBlocksResponse, error) {
 	args := m.Called(ctx, request)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*ListCIDRBlocksResponse), args.Error(1)
+	return args.Get(0).(ListCIDRBlocksResponse), args.Error(1)
 }
 
 func (m *Mock) CreateCIDRBlock(ctx context.Context, request CreateCIDRBlockRequest) (*CreateCIDRBlockResponse, error) {

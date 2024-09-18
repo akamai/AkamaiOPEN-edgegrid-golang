@@ -19,7 +19,7 @@ type (
 		// ListCIDRBlocks lists all CIDR blocks on selected account's allowlist
 		//
 		// See: https://techdocs.akamai.com/iam-api/reference/get-allowlist
-		ListCIDRBlocks(context.Context, ListCIDRBlocksRequest) (*ListCIDRBlocksResponse, error)
+		ListCIDRBlocks(context.Context, ListCIDRBlocksRequest) (ListCIDRBlocksResponse, error)
 
 		// CreateCIDRBlock adds CIDR blocks to your account's allowlist
 		//
@@ -60,7 +60,7 @@ type (
 		Actions      *CIDRActions `json:"actions"`
 		CIDRBlock    string       `json:"cidrBlock"`
 		CIDRBlockID  int64        `json:"cidrBlockId"`
-		Comments     string       `json:"comments"`
+		Comments     *string      `json:"comments"`
 		CreatedBy    string       `json:"createdBy"`
 		CreatedDate  time.Time    `json:"createdDate"`
 		Enabled      bool         `json:"enabled"`
@@ -76,9 +76,9 @@ type (
 
 	// CreateCIDRBlockRequest contains the request parameters for the CreateCIDRBlock endpoint
 	CreateCIDRBlockRequest struct {
-		CIDRBlock string `json:"cidrBlock"`
-		Comments  string `json:"comments,omitempty"`
-		Enabled   bool   `json:"enabled"`
+		CIDRBlock string  `json:"cidrBlock"`
+		Comments  *string `json:"comments,omitempty"`
+		Enabled   bool    `json:"enabled"`
 	}
 
 	// CreateCIDRBlockResponse describes the response of the CreateCIDRBlock endpoint
@@ -101,9 +101,9 @@ type (
 
 	// UpdateCIDRBlockRequestBody contains the request body to be used in UpdateCIDRBlock endpoint
 	UpdateCIDRBlockRequestBody struct {
-		CIDRBlock string `json:"cidrBlock"`
-		Comments  string `json:"comments,omitempty"`
-		Enabled   bool   `json:"enabled"`
+		CIDRBlock string  `json:"cidrBlock"`
+		Comments  *string `json:"comments,omitempty"`
+		Enabled   bool    `json:"enabled"`
 	}
 
 	// UpdateCIDRBlockResponse describes the response of the UpdateCIDRBlock endpoint
@@ -178,7 +178,7 @@ var (
 	ErrValidateCIDRBlock = errors.New("validate CIDR block")
 )
 
-func (i *iam) ListCIDRBlocks(ctx context.Context, params ListCIDRBlocksRequest) (*ListCIDRBlocksResponse, error) {
+func (i *iam) ListCIDRBlocks(ctx context.Context, params ListCIDRBlocksRequest) (ListCIDRBlocksResponse, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListCIDRBlocks")
 
@@ -206,7 +206,7 @@ func (i *iam) ListCIDRBlocks(ctx context.Context, params ListCIDRBlocksRequest) 
 		return nil, fmt.Errorf("%s: %w", ErrListCIDRBlocks, i.Error(resp))
 	}
 
-	return &result, nil
+	return result, nil
 }
 
 func (i *iam) CreateCIDRBlock(ctx context.Context, params CreateCIDRBlockRequest) (*CreateCIDRBlockResponse, error) {
