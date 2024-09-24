@@ -8,14 +8,6 @@ import (
 )
 
 type (
-	// Contracts contains operations available on Contract resource
-	Contracts interface {
-		// GetContracts provides a read-only list of contract names and identifiers
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-contracts
-		GetContracts(context.Context) (*GetContractsResponse, error)
-	}
-
 	// Contract represents a property contract resource
 	Contract struct {
 		ContractID       string `json:"contractId"`

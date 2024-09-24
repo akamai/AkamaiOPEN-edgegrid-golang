@@ -10,34 +10,6 @@ import (
 )
 
 type (
-	// The NetworkList interface supports creating, retrieving, modifying and removing network lists.
-	NetworkList interface {
-		// GetNetworkLists lists all network lists available for an authenticated user.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/get-network-lists
-		GetNetworkLists(ctx context.Context, params GetNetworkListsRequest) (*GetNetworkListsResponse, error)
-
-		// GetNetworkList retrieves network list with specific network list id.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/get-network-list
-		GetNetworkList(ctx context.Context, params GetNetworkListRequest) (*GetNetworkListResponse, error)
-
-		// CreateNetworkList creates a new network list.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/post-network-lists
-		CreateNetworkList(ctx context.Context, params CreateNetworkListRequest) (*CreateNetworkListResponse, error)
-
-		// UpdateNetworkList modifies the network list.
-		//
-		//See: https://techdocs.akamai.com/network-lists/reference/put-network-list
-		UpdateNetworkList(ctx context.Context, params UpdateNetworkListRequest) (*UpdateNetworkListResponse, error)
-
-		// RemoveNetworkList removes a network list.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/delete-network-list
-		RemoveNetworkList(ctx context.Context, params RemoveNetworkListRequest) (*RemoveNetworkListResponse, error)
-	}
-
 	// GetNetworkListRequest contains request parameters for GetNetworkList method
 	GetNetworkListRequest struct {
 		UniqueID string `json:"-"`

@@ -14,19 +14,6 @@ import (
 )
 
 type (
-	// LoadBalancerActivations is a cloudlets LoadBalancer Activation API interface.
-	LoadBalancerActivations interface {
-		// ListLoadBalancerActivations fetches activations with the most recent listed first.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-origin-activations
-		ListLoadBalancerActivations(context.Context, ListLoadBalancerActivationsRequest) ([]LoadBalancerActivation, error)
-
-		// ActivateLoadBalancerVersion activates the load balancing version.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-origin-activations
-		ActivateLoadBalancerVersion(context.Context, ActivateLoadBalancerVersionRequest) (*LoadBalancerActivation, error)
-	}
-
 	// ListLoadBalancerActivationsRequest contains request parameters for ListLoadBalancerActivations
 	ListLoadBalancerActivationsRequest struct {
 		OriginID   string

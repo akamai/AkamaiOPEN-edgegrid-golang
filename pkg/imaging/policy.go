@@ -17,31 +17,6 @@ import (
 // https://git.source.akamai.com/users/eleclair/repos/terraform/browse/docs/schemas
 
 type (
-	// Policies is an Image and Video Manager API interface for Policy
-	//
-	// See: https://techdocs.akamai.com/ivm/reference/api
-	Policies interface {
-		// ListPolicies lists all Policies for the given network and an account
-		//
-		// See: https://techdocs.akamai.com/ivm/reference/get-policies
-		ListPolicies(context.Context, ListPoliciesRequest) (*ListPoliciesResponse, error)
-
-		// GetPolicy gets specific policy by PolicyID
-		GetPolicy(context.Context, GetPolicyRequest) (PolicyOutput, error)
-
-		// UpsertPolicy creates or updates the configuration for a policy
-		UpsertPolicy(context.Context, UpsertPolicyRequest) (*PolicyResponse, error)
-
-		// DeletePolicy deletes a policy
-		DeletePolicy(context.Context, DeletePolicyRequest) (*PolicyResponse, error)
-
-		// GetPolicyHistory retrieves history of changes for a policy
-		GetPolicyHistory(context.Context, GetPolicyHistoryRequest) (*GetPolicyHistoryResponse, error)
-
-		// RollbackPolicy reverts a policy to its previous version and deploys it to the network
-		RollbackPolicy(ctx context.Context, request RollbackPolicyRequest) (*PolicyResponse, error)
-	}
-
 	// ListPoliciesRequest describes the parameters of the ListPolicies request
 	ListPoliciesRequest struct {
 		Network     PolicyNetwork

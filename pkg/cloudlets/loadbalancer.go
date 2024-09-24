@@ -13,32 +13,6 @@ import (
 )
 
 type (
-	// LoadBalancers is a cloudlets LoadBalancer API interface.
-	LoadBalancers interface {
-		// ListOrigins lists all origins of specified type for the current account.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-origins
-		ListOrigins(context.Context, ListOriginsRequest) ([]OriginResponse, error)
-
-		// GetOrigin gets specific origin by originID.
-		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-origin
-		GetOrigin(context.Context, GetOriginRequest) (*Origin, error)
-
-		// CreateOrigin creates configuration for an origin.
-		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-origin
-		CreateOrigin(context.Context, CreateOriginRequest) (*Origin, error)
-
-		// UpdateOrigin creates configuration for an origin.
-		// This operation is only available for the APPLICATION_LOAD_BALANCER origin type.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/put-origin
-		UpdateOrigin(context.Context, UpdateOriginRequest) (*Origin, error)
-	}
-
 	// OriginResponse is an Origin returned in ListOrigins
 	OriginResponse struct {
 		Hostname string `json:"hostname"`

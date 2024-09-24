@@ -13,34 +13,6 @@ import (
 )
 
 type (
-	// EdgeWorkerVersions is EdgeWorker Version API interface
-	EdgeWorkerVersions interface {
-		// GetEdgeWorkerVersion gets details for a specific EdgeWorkerVersion
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-version
-		GetEdgeWorkerVersion(context.Context, GetEdgeWorkerVersionRequest) (*EdgeWorkerVersion, error)
-
-		// ListEdgeWorkerVersions lists EdgeWorkerVersions in the identified group
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-versions
-		ListEdgeWorkerVersions(context.Context, ListEdgeWorkerVersionsRequest) (*ListEdgeWorkerVersionsResponse, error)
-
-		// GetEdgeWorkerVersionContent gets content bundle for a specific EdgeWorkerVersion
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-version-content
-		GetEdgeWorkerVersionContent(context.Context, GetEdgeWorkerVersionContentRequest) (*Bundle, error)
-
-		// CreateEdgeWorkerVersion creates a new EdgeWorkerVersion
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/post-versions
-		CreateEdgeWorkerVersion(context.Context, CreateEdgeWorkerVersionRequest) (*EdgeWorkerVersion, error)
-
-		// DeleteEdgeWorkerVersion deletes an EdgeWorkerVersion
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/delete-version
-		DeleteEdgeWorkerVersion(context.Context, DeleteEdgeWorkerVersionRequest) error
-	}
-
 	// GetEdgeWorkerVersionRequest contains parameters used to get an EdgeWorkerVersion
 	GetEdgeWorkerVersionRequest EdgeWorkerVersionRequest
 

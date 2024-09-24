@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func mockAPIClient(t *testing.T, mockServer *httptest.Server) NTWRKLISTS {
+func mockAPIClient(t *testing.T, mockServer *httptest.Server) NetworkList {
 	serverURL, err := url.Parse(mockServer.URL)
 	require.NoError(t, err)
 	certPool := x509.NewCertPool()

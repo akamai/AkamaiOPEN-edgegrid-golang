@@ -9,15 +9,6 @@ import (
 )
 
 type (
-	// Capacities is a Cloud Wrapper API interface.
-	Capacities interface {
-		// ListCapacities fetches capacities available for a given contractId.
-		// If no contract id is provided, lists all available capacity locations
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-capacity-inventory
-		ListCapacities(context.Context, ListCapacitiesRequest) (*ListCapacitiesResponse, error)
-	}
-
 	// ListCapacitiesRequest is a request struct
 	ListCapacitiesRequest struct {
 		ContractIDs []string

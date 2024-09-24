@@ -11,39 +11,6 @@ import (
 )
 
 type (
-	// EdgeWorkerIDs is EdgeWorker ID API interface
-	EdgeWorkerIDs interface {
-		// GetEdgeWorkerID gets details for a specific EdgeWorkerID
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-id
-		GetEdgeWorkerID(context.Context, GetEdgeWorkerIDRequest) (*EdgeWorkerID, error)
-
-		// ListEdgeWorkersID lists EdgeWorkerIDs in the identified group
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-ids
-		ListEdgeWorkersID(context.Context, ListEdgeWorkersIDRequest) (*ListEdgeWorkersIDResponse, error)
-
-		// CreateEdgeWorkerID creates a new EdgeWorkerID
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/post-ids
-		CreateEdgeWorkerID(context.Context, CreateEdgeWorkerIDRequest) (*EdgeWorkerID, error)
-
-		// UpdateEdgeWorkerID updates an EdgeWorkerID
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/put-id
-		UpdateEdgeWorkerID(context.Context, UpdateEdgeWorkerIDRequest) (*EdgeWorkerID, error)
-
-		// CloneEdgeWorkerID clones an EdgeWorkerID to change the resource tier
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/post-id-clone
-		CloneEdgeWorkerID(context.Context, CloneEdgeWorkerIDRequest) (*EdgeWorkerID, error)
-
-		// DeleteEdgeWorkerID deletes an EdgeWorkerID
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/delete-id
-		DeleteEdgeWorkerID(context.Context, DeleteEdgeWorkerIDRequest) error
-	}
-
 	// GetEdgeWorkerIDRequest contains parameters used to get an EdgeWorkerID
 	GetEdgeWorkerIDRequest struct {
 		EdgeWorkerID int

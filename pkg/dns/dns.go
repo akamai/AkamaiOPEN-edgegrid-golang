@@ -19,6 +19,8 @@ var (
 type (
 	// DNS is the dns api interface
 	DNS interface {
+		// Authorities
+
 		// GetAuthorities provides a list of structured read-only list of name servers.
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-data-authorities
@@ -33,6 +35,17 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-data-groups
 		ListGroups(context.Context, ListGroupRequest) (*ListGroupResponse, error)
+
+		// Data
+
+		// GetRdata retrieves record rdata, e.g. target.
+		GetRdata(ctx context.Context, params GetRdataRequest) ([]string, error)
+		// ProcessRdata process rdata.
+		ProcessRdata(context.Context, []string, string) []string
+		// ParseRData parses rdata. returning map.
+		ParseRData(context.Context, string, []string) map[string]interface{}
+
+		// Recordsets
 
 		// GetRecordSets retrieves record sets with Query Args. No formatting of arg values.
 		//
@@ -51,12 +64,9 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-zone-recordsets
 		GetRecordList(context.Context, GetRecordListRequest) (*GetRecordListResponse, error)
-		// GetRdata retrieves record rdata, e.g. target.
-		GetRdata(context.Context, GetRdataRequest) ([]string, error)
-		// ProcessRdata process rdata.
-		ProcessRdata(context.Context, []string, string) []string
-		// ParseRData parses rdata. returning map.
-		ParseRData(context.Context, string, []string) map[string]interface{}
+
+		// Records
+
 		// GetRecord retrieves a recordset and returns as RecordBody.
 		//
 		// See:  https://techdocs.akamai.com/edge-dns/reference/get-zone-name-type
@@ -73,6 +83,8 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/put-zones-zone-names-name-types-type
 		UpdateRecord(context.Context, UpdateRecordRequest) error
+
+		// TSIGKeys
 
 		// ListTSIGKeys lists the TSIG keys used by zones that you are allowed to manage.
 		//
@@ -102,6 +114,8 @@ type (
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/put-zones-zone-key
 		UpdateTSIGKey(context.Context, UpdateTSIGKeyRequest) error
+
+		// Zones
 
 		// ListZones retrieves a list of all zones user can access.
 		//

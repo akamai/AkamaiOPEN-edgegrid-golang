@@ -12,29 +12,6 @@ import (
 )
 
 type (
-	// EdgeKVAccessTokens is EdgeKV access token API interface
-	EdgeKVAccessTokens interface {
-		// CreateEdgeKVAccessToken generates EdgeKV specific access token
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/post-tokens
-		CreateEdgeKVAccessToken(context.Context, CreateEdgeKVAccessTokenRequest) (*CreateEdgeKVAccessTokenResponse, error)
-
-		// GetEdgeKVAccessToken retrieves an EdgeKV access token
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/get-token
-		GetEdgeKVAccessToken(context.Context, GetEdgeKVAccessTokenRequest) (*GetEdgeKVAccessTokenResponse, error)
-
-		// ListEdgeKVAccessTokens lists EdgeKV access tokens
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/get-tokens
-		ListEdgeKVAccessTokens(context.Context, ListEdgeKVAccessTokensRequest) (*ListEdgeKVAccessTokensResponse, error)
-
-		// DeleteEdgeKVAccessToken revokes an EdgeKV access token
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/delete-token
-		DeleteEdgeKVAccessToken(context.Context, DeleteEdgeKVAccessTokenRequest) (*DeleteEdgeKVAccessTokenResponse, error)
-	}
-
 	// CreateEdgeKVAccessTokenRequest contains parameters used to create EdgeKV access token
 	CreateEdgeKVAccessTokenRequest struct {
 		// Whether to allow this token access to the Akamai production network

@@ -8,19 +8,6 @@ import (
 )
 
 type (
-	// ClientSettings contains operations available on ClientSettings resource
-	ClientSettings interface {
-		// GetClientSettings returns client's settings.
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-client-settings
-		GetClientSettings(context.Context) (*ClientSettingsBody, error)
-
-		// UpdateClientSettings updates client's settings.
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/put-client-settings
-		UpdateClientSettings(context.Context, ClientSettingsBody) (*ClientSettingsBody, error)
-	}
-
 	// ClientSettingsBody represents both the request and response bodies for operating on client settings resource
 	ClientSettingsBody struct {
 		RuleFormat  string `json:"ruleFormat"`

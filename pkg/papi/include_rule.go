@@ -13,19 +13,6 @@ import (
 )
 
 type (
-	// IncludeRules contains operations available on IncludeRule resource
-	IncludeRules interface {
-		// GetIncludeRuleTree gets the entire rule tree for an include version
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-include-version-rules
-		GetIncludeRuleTree(context.Context, GetIncludeRuleTreeRequest) (*GetIncludeRuleTreeResponse, error)
-
-		// UpdateIncludeRuleTree updates the rule tree for an include version
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/patch-include-version-rules
-		UpdateIncludeRuleTree(context.Context, UpdateIncludeRuleTreeRequest) (*UpdateIncludeRuleTreeResponse, error)
-	}
-
 	// GetIncludeRuleTreeRequest contains path and query params necessary to perform GetIncludeRuleTree
 	GetIncludeRuleTreeRequest struct {
 		ContractID     string

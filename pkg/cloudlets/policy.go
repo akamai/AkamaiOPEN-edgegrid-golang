@@ -13,34 +13,6 @@ import (
 )
 
 type (
-	// Policies is a cloudlets policies API interface.
-	Policies interface {
-		// ListPolicies lists policies.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-policies
-		ListPolicies(context.Context, ListPoliciesRequest) ([]Policy, error)
-
-		// GetPolicy gets policy by policyID.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-policy
-		GetPolicy(context.Context, GetPolicyRequest) (*Policy, error)
-
-		// CreatePolicy creates policy.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-policy
-		CreatePolicy(context.Context, CreatePolicyRequest) (*Policy, error)
-
-		// RemovePolicy removes policy.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/delete-policy
-		RemovePolicy(context.Context, RemovePolicyRequest) error
-
-		// UpdatePolicy updates policy.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/put-policy
-		UpdatePolicy(context.Context, UpdatePolicyRequest) (*Policy, error)
-	}
-
 	// Policy is response returned by GetPolicy or UpdatePolicy
 	Policy struct {
 		Location         string             `json:"location"`

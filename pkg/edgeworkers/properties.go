@@ -12,14 +12,6 @@ import (
 )
 
 type (
-	// Properties is an edgeworkers properties API interface
-	Properties interface {
-		// ListProperties lists all properties for a given edgeworker ID
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-properties
-		ListProperties(context.Context, ListPropertiesRequest) (*ListPropertiesResponse, error)
-	}
-
 	// ListPropertiesRequest contains parameters used to list properties
 	ListPropertiesRequest struct {
 		EdgeWorkerID int

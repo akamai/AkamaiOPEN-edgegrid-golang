@@ -8,14 +8,6 @@ import (
 )
 
 type (
-	// Locations is the cloudwrapper location API interface
-	Locations interface {
-		// ListLocations returns a list of locations available to distribute Cloud Wrapper capacity
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-locations
-		ListLocations(context.Context) (*ListLocationResponse, error)
-	}
-
 	// ListLocationResponse represents a response object returned by ListLocations
 	ListLocationResponse struct {
 		Locations []Location `json:"locations"`

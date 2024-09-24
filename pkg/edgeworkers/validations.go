@@ -11,14 +11,6 @@ import (
 )
 
 type (
-	// Validations is an edgeworkers validations API interface
-	Validations interface {
-		// ValidateBundle given bundle validates it and returns a list of errors and/or warnings
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/post-validations
-		ValidateBundle(context.Context, ValidateBundleRequest) (*ValidateBundleResponse, error)
-	}
-
 	// ValidateBundleRequest contains request bundle parameter to validate
 	ValidateBundleRequest struct {
 		Bundle

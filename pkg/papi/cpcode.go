@@ -10,34 +10,6 @@ import (
 )
 
 type (
-	// CPCodes contains operations available on CPCode resource
-	CPCodes interface {
-		// GetCPCodes lists all available CP codes
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-cpcodes
-		GetCPCodes(context.Context, GetCPCodesRequest) (*GetCPCodesResponse, error)
-
-		// GetCPCode gets the CP code with provided ID
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-cpcode
-		GetCPCode(context.Context, GetCPCodeRequest) (*GetCPCodesResponse, error)
-
-		// GetCPCodeDetail lists detailed information about a specific CP code
-		//
-		// See: https://techdocs.akamai.com/cp-codes/reference/get-cpcode
-		GetCPCodeDetail(context.Context, int) (*CPCodeDetailResponse, error)
-
-		// CreateCPCode creates a new CP code
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/post-cpcodes
-		CreateCPCode(context.Context, CreateCPCodeRequest) (*CreateCPCodeResponse, error)
-
-		// UpdateCPCode modifies a specific CP code. You should only modify a CP code's name, time zone, and purgeable member
-		//
-		// See: https://techdocs.akamai.com/cp-codes/reference/put-cpcode
-		UpdateCPCode(context.Context, UpdateCPCodeRequest) (*CPCodeDetailResponse, error)
-	}
-
 	// CPCode contains CP code resource data
 	CPCode struct {
 		ID          string   `json:"cpcodeId"`

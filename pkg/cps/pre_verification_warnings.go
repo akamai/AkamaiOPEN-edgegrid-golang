@@ -9,19 +9,6 @@ import (
 )
 
 type (
-	// PreVerification is a CPS API enabling management of pre-verification-warnings
-	PreVerification interface {
-		// GetChangePreVerificationWarnings gets detailed information about Domain Validation challenges
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
-		GetChangePreVerificationWarnings(ctx context.Context, params GetChangeRequest) (*PreVerificationWarnings, error)
-
-		// AcknowledgePreVerificationWarnings sends acknowledgement request to CPS informing that the warnings should be ignored
-		//
-		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
-		AcknowledgePreVerificationWarnings(context.Context, AcknowledgementRequest) error
-	}
-
 	// PreVerificationWarnings is a response object containing all warnings encountered during enrollment pre-verification
 	PreVerificationWarnings struct {
 		Warnings string `json:"warnings"`

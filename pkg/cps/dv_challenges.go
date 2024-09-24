@@ -9,19 +9,6 @@ import (
 )
 
 type (
-	// DVChallenges is a CPS DV challenges API interface
-	DVChallenges interface {
-		// GetChangeLetsEncryptChallenges gets detailed information about Domain Validation challenges
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
-		GetChangeLetsEncryptChallenges(context.Context, GetChangeRequest) (*DVArray, error)
-
-		// AcknowledgeDVChallenges sends acknowledgement request to CPS informing that the validation is completed
-		//
-		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
-		AcknowledgeDVChallenges(context.Context, AcknowledgementRequest) error
-	}
-
 	// DVArray is an array of DV objects
 	DVArray struct {
 		DV []DV `json:"dv"`

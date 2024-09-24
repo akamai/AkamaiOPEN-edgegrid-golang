@@ -12,19 +12,6 @@ import (
 )
 
 type (
-	// MultiCDN is the cloudwrapper Multi-CDN API interface
-	MultiCDN interface {
-		// ListAuthKeys lists the cdnAuthKeys for a specified contractId and cdnCode
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-auth-keys
-		ListAuthKeys(context.Context, ListAuthKeysRequest) (*ListAuthKeysResponse, error)
-
-		// ListCDNProviders lists CDN providers
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-providers
-		ListCDNProviders(context.Context) (*ListCDNProvidersResponse, error)
-	}
-
 	// ListAuthKeysRequest is a request struct
 	ListAuthKeysRequest struct {
 		ContractID string

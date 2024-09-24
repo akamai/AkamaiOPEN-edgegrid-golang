@@ -10,24 +10,6 @@ import (
 )
 
 type (
-	// Activation interface to support activating client lists.
-	Activation interface {
-		// GetActivation retrieves details of a specified activation ID.
-		//
-		// See: https://techdocs.akamai.com/client-lists/reference/get-retrieve-activation-status
-		GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error)
-
-		// GetActivationStatus retrieves activation status for a client list in a network environment.
-		//
-		// See: https://techdocs.akamai.com/client-lists/reference/get-activation-status
-		GetActivationStatus(ctx context.Context, params GetActivationStatusRequest) (*GetActivationStatusResponse, error)
-
-		// CreateActivation activates a client list
-		//
-		// See: https://techdocs.akamai.com/client-lists/reference/post-activate-list
-		CreateActivation(ctx context.Context, params CreateActivationRequest) (*CreateActivationResponse, error)
-	}
-
 	// ActivationParams contains activation general parameters
 	ActivationParams struct {
 		Action                 ActivationAction  `json:"action"`

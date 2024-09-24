@@ -10,14 +10,6 @@ import (
 )
 
 type (
-	// Search contains SearchProperty method used for fetching properties
-	Search interface {
-		// SearchProperties searches properties by name, or by the hostname or edge hostname for which it’s currently active
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/post-search-find-by-value
-		SearchProperties(context.Context, SearchRequest) (*SearchResponse, error)
-	}
-
 	// SearchResponse contains response body of POST /search request
 	SearchResponse struct {
 		Versions SearchItems `json:"versions"`

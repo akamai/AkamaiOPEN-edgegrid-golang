@@ -5,7 +5,8 @@
 #### BREAKING CHANGES:
 
 
-
+* General
+  * Consolidated multiple sub-interfaces into a single interface for each sub-provider.
 
 
 

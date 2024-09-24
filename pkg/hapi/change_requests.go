@@ -8,15 +8,6 @@ import (
 )
 
 type (
-	// ChangeRequests contains operations to query for Change Requests.
-	ChangeRequests interface {
-		// GetChangeRequest request status and details specified by the change ID
-		// that is provided when you make a change request.
-		//
-		// See: https://techdocs.akamai.com/edge-hostnames/reference/get-changeid
-		GetChangeRequest(context.Context, GetChangeRequest) (*ChangeRequest, error)
-	}
-
 	// GetChangeRequest is a request struct
 	GetChangeRequest struct {
 		ChangeID int

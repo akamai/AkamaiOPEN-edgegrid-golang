@@ -11,29 +11,6 @@ import (
 )
 
 type (
-	// EdgeKVNamespaces is an EdgeKV namespaces API interface
-	EdgeKVNamespaces interface {
-		// ListEdgeKVNamespaces lists all namespaces in the given network
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/get-namespaces
-		ListEdgeKVNamespaces(context.Context, ListEdgeKVNamespacesRequest) (*ListEdgeKVNamespacesResponse, error)
-
-		// GetEdgeKVNamespace fetches a namespace by name
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/get-namespace
-		GetEdgeKVNamespace(context.Context, GetEdgeKVNamespaceRequest) (*Namespace, error)
-
-		// CreateEdgeKVNamespace creates a namespace on the given network
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/post-namespace
-		CreateEdgeKVNamespace(context.Context, CreateEdgeKVNamespaceRequest) (*Namespace, error)
-
-		// UpdateEdgeKVNamespace updates a namespace
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/put-namespace
-		UpdateEdgeKVNamespace(context.Context, UpdateEdgeKVNamespaceRequest) (*Namespace, error)
-	}
-
 	// ListEdgeKVNamespacesRequest contains path parameters used to list namespaces
 	ListEdgeKVNamespacesRequest struct {
 		Network NamespaceNetwork

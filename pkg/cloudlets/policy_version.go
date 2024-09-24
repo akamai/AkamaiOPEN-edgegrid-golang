@@ -14,34 +14,6 @@ import (
 )
 
 type (
-	// PolicyVersions is a cloudlets policy versions API interface.
-	PolicyVersions interface {
-		// ListPolicyVersions lists policy versions by policyID.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-policy-versions
-		ListPolicyVersions(context.Context, ListPolicyVersionsRequest) ([]PolicyVersion, error)
-
-		// GetPolicyVersion gets policy version by policyID and version.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-policy-version
-		GetPolicyVersion(context.Context, GetPolicyVersionRequest) (*PolicyVersion, error)
-
-		// CreatePolicyVersion creates policy version.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-policy-versions
-		CreatePolicyVersion(context.Context, CreatePolicyVersionRequest) (*PolicyVersion, error)
-
-		// DeletePolicyVersion deletes policy version.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/delete-policy-version
-		DeletePolicyVersion(context.Context, DeletePolicyVersionRequest) error
-
-		// UpdatePolicyVersion updates policy version.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/put-policy-version
-		UpdatePolicyVersion(context.Context, UpdatePolicyVersionRequest) (*PolicyVersion, error)
-	}
-
 	// PolicyVersion is response returned by GetPolicyVersion, CreatePolicyVersion or UpdatePolicyVersion
 	PolicyVersion struct {
 		Location         string             `json:"location"`

@@ -19,6 +19,8 @@ var (
 type (
 	// GTM is the gtm api interface
 	GTM interface {
+		// Domains
+
 		// NullFieldMap retrieves map of null fields.
 		NullFieldMap(context.Context, *Domain) (*NullFieldMapStruct, error)
 
@@ -52,6 +54,8 @@ type (
 		// See: https://techdocs.akamai.com/gtm/reference/put-domain
 		UpdateDomain(context.Context, UpdateDomainRequest) (*UpdateDomainResponse, error)
 
+		// Properties
+
 		// ListProperties retrieves all Properties for the provided domainName.
 		//
 		// See: https://techdocs.akamai.com/gtm/reference/get-properties
@@ -76,6 +80,8 @@ type (
 		//
 		// See: https://techdocs.akamai.com/gtm/reference/put-property
 		UpdateProperty(context.Context, UpdatePropertyRequest) (*UpdatePropertyResponse, error)
+
+		// Datacenters
 
 		// ListDatacenters retrieves all Datacenters.
 		//
@@ -111,6 +117,8 @@ type (
 		// CreateIPv6DefaultDatacenter creates Default Datacenter for IPv6 Selector.
 		CreateIPv6DefaultDatacenter(context.Context, string) (*Datacenter, error)
 
+		// Resources
+
 		// ListResources retrieves all Resources
 		//
 		// See: https://techdocs.akamai.com/gtm/reference/get-resources
@@ -135,6 +143,8 @@ type (
 		//
 		// See: https://techdocs.akamai.com/gtm/reference/put-resource
 		UpdateResource(context.Context, UpdateResourceRequest) (*UpdateResourceResponse, error)
+
+		// ASMaps
 
 		// ListASMaps retrieves all AsMaps.
 		//
@@ -161,6 +171,8 @@ type (
 		// See: https://techdocs.akamai.com/gtm/reference/put-as-map
 		UpdateASMap(context.Context, UpdateASMapRequest) (*UpdateASMapResponse, error)
 
+		// GeoMaps
+
 		// ListGeoMaps retrieves all GeoMaps.
 		//
 		// See: https://techdocs.akamai.com/gtm/reference/get-geographic-maps
@@ -185,6 +197,8 @@ type (
 		//
 		// See: https://techdocs.akamai.com/gtm/reference/put-geographic-map
 		UpdateGeoMap(context.Context, UpdateGeoMapRequest) (*UpdateGeoMapResponse, error)
+
+		// CIDRMaps
 
 		// ListCIDRMaps retrieves all CIDRMaps.
 		//

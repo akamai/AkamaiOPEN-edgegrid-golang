@@ -10,19 +10,6 @@ import (
 )
 
 type (
-	// PropertyVersionHostnames contains operations available on PropertyVersionHostnames resource
-	PropertyVersionHostnames interface {
-		// GetPropertyVersionHostnames lists all the hostnames assigned to a property version
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version-hostnames
-		GetPropertyVersionHostnames(context.Context, GetPropertyVersionHostnamesRequest) (*GetPropertyVersionHostnamesResponse, error)
-
-		// UpdatePropertyVersionHostnames modifies the set of hostnames for a property version
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/patch-property-version-hostnames
-		UpdatePropertyVersionHostnames(context.Context, UpdatePropertyVersionHostnamesRequest) (*UpdatePropertyVersionHostnamesResponse, error)
-	}
-
 	// GetPropertyVersionHostnamesRequest contains parameters required to list property version hostnames
 	GetPropertyVersionHostnamesRequest struct {
 		PropertyID        string

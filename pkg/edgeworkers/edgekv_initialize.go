@@ -9,18 +9,6 @@ import (
 
 // EdgeKVInitialize is EdgeKV Initialize API interface
 type (
-	EdgeKVInitialize interface {
-		// InitializeEdgeKV Initialize the EdgeKV database
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/put-initialize
-		InitializeEdgeKV(ctx context.Context) (*EdgeKVInitializationStatus, error)
-
-		// GetEdgeKVInitializationStatus is used to check on the current initialization status
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/get-initialize
-		GetEdgeKVInitializationStatus(ctx context.Context) (*EdgeKVInitializationStatus, error)
-	}
-
 	// EdgeKVInitializationStatus represents a response object returned by InitializeEdgeKV and GetEdgeKVInitializeStatus
 	EdgeKVInitializationStatus struct {
 		AccountStatus    string `json:"accountStatus"`

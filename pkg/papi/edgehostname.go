@@ -12,24 +12,6 @@ import (
 )
 
 type (
-	// EdgeHostnames contains operations available on EdgeHostnames resource
-	EdgeHostnames interface {
-		// GetEdgeHostnames fetches a list of edge hostnames
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-edgehostnames
-		GetEdgeHostnames(context.Context, GetEdgeHostnamesRequest) (*GetEdgeHostnamesResponse, error)
-
-		// GetEdgeHostname fetches edge hostname with given ID
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-edgehostname
-		GetEdgeHostname(context.Context, GetEdgeHostnameRequest) (*GetEdgeHostnamesResponse, error)
-
-		// CreateEdgeHostname creates a new edge hostname
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/post-edgehostnames
-		CreateEdgeHostname(context.Context, CreateEdgeHostnameRequest) (*CreateEdgeHostnameResponse, error)
-	}
-
 	// GetEdgeHostnamesRequest contains query params used for listing edge hostnames
 	GetEdgeHostnamesRequest struct {
 		ContractID string

@@ -12,14 +12,6 @@ import (
 )
 
 type (
-	// Groups is EdgeKV groups within a namespace API interface
-	Groups interface {
-		// ListGroupsWithinNamespace lists group identifiers created when writing items to a namespace
-		//
-		// See: https://techdocs.akamai.com/edgekv/reference/get-groups
-		ListGroupsWithinNamespace(context.Context, ListGroupsWithinNamespaceRequest) ([]string, error)
-	}
-
 	// ListGroupsWithinNamespaceRequest contains parameters used to get groups within a namespace
 	ListGroupsWithinNamespaceRequest struct {
 		Network     NamespaceNetwork

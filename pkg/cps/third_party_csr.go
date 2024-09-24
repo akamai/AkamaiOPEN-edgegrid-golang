@@ -11,19 +11,6 @@ import (
 )
 
 type (
-	// ThirdPartyCSR is a CPS API enabling management of third-party certificates
-	ThirdPartyCSR interface {
-		// GetChangeThirdPartyCSR gets certificate signing request
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
-		GetChangeThirdPartyCSR(ctx context.Context, params GetChangeRequest) (*ThirdPartyCSRResponse, error)
-
-		// UploadThirdPartyCertAndTrustChain uploads signed certificate and trust chain to cps
-		//
-		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
-		UploadThirdPartyCertAndTrustChain(context.Context, UploadThirdPartyCertAndTrustChainRequest) error
-	}
-
 	// ThirdPartyCSRResponse is a response object containing list of csrs
 	ThirdPartyCSRResponse struct {
 		CSRs []CertSigningRequest `json:"csrs"`

@@ -15,34 +15,6 @@ import (
 )
 
 type (
-	// IncludeActivations contains operations available on IncludeVersion resource
-	IncludeActivations interface {
-		// ActivateInclude creates a new include activation, which deactivates any current activation
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/post-include-activation
-		ActivateInclude(context.Context, ActivateIncludeRequest) (*ActivationIncludeResponse, error)
-
-		// DeactivateInclude deactivates the include activation
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/post-include-activation
-		DeactivateInclude(context.Context, DeactivateIncludeRequest) (*DeactivationIncludeResponse, error)
-
-		// CancelIncludeActivation cancels specified include activation, if it is still in `PENDING` state
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/delete-include-activation
-		CancelIncludeActivation(context.Context, CancelIncludeActivationRequest) (*CancelIncludeActivationResponse, error)
-
-		// GetIncludeActivation gets details about an activation
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-include-activation
-		GetIncludeActivation(context.Context, GetIncludeActivationRequest) (*GetIncludeActivationResponse, error)
-
-		// ListIncludeActivations lists all activations for all versions of the include, on both production and staging networks
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-include-activations
-		ListIncludeActivations(context.Context, ListIncludeActivationsRequest) (*ListIncludeActivationsResponse, error)
-	}
-
 	// ActivateIncludeRequest contains parameters used to activate include
 	ActivateIncludeRequest ActivateOrDeactivateIncludeRequest
 

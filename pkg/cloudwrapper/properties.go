@@ -13,18 +13,6 @@ import (
 )
 
 type (
-	// Properties is a CloudWrapper properties API interface
-	Properties interface {
-		// ListProperties lists unused properties
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-properties
-		ListProperties(context.Context, ListPropertiesRequest) (*ListPropertiesResponse, error)
-		// ListOrigins lists property origins
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-origins
-		ListOrigins(context.Context, ListOriginsRequest) (*ListOriginsResponse, error)
-	}
-
 	// ListPropertiesRequest holds parameters for ListProperties
 	ListPropertiesRequest struct {
 		Unused      bool
