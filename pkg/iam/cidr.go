@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -120,10 +121,27 @@ type (
 	}
 )
 
+// validateCIDR validates the format of CIDRBlock
+func validateCIDR() validation.Rule {
+	return validation.By(func(value interface{}) error {
+		stringVal, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("expected type 'string', got: %T", value)
+		}
+
+		_, _, err := net.ParseCIDR(stringVal)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
 // Validate performs validation on CreateCIDRBlockRequest
 func (r CreateCIDRBlockRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"CIDRBlock": validation.Validate(r.CIDRBlock, validation.Required),
+		"CIDRBlock": validation.Validate(r.CIDRBlock, validation.Required, validateCIDR()),
 	})
 }
 
@@ -145,7 +163,7 @@ func (r UpdateCIDRBlockRequest) Validate() error {
 // Validate performs validation on UpdateCIDRBlockRequestBody
 func (r UpdateCIDRBlockRequestBody) Validate() error {
 	return validation.Errors{
-		"CIDRBlock": validation.Validate(r.CIDRBlock, validation.Required),
+		"CIDRBlock": validation.Validate(r.CIDRBlock, validation.Required, validateCIDR()),
 	}.Filter()
 }
 
@@ -159,7 +177,7 @@ func (r DeleteCIDRBlockRequest) Validate() error {
 // Validate performs validation on ValidateCIDRBlockRequest
 func (r ValidateCIDRBlockRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"CIDRBlock": validation.Validate(r.CIDRBlock, validation.Required),
+		"CIDRBlock": validation.Validate(r.CIDRBlock, validation.Required, validateCIDR()),
 	})
 }
 

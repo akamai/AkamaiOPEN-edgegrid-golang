@@ -268,35 +268,22 @@ func TestCreateCIDRBlock(t *testing.T) {
 				assert.Contains(t, err.Error(), "create CIDR block: struct validation: CIDRBlock: cannot be blank")
 			},
 		},
-		"403 - incorrect cidrblock": {
+		"validation error - incorrect IPv4 CIDR": {
 			params: CreateCIDRBlockRequest{
-				CIDRBlock: "1.2.3.4:32",
-				Comments:  ptr.To("abc"),
-				Enabled:   true,
+				CIDRBlock: "1.2.3.555/32",
 			},
-			responseStatus: http.StatusForbidden,
-			responseBody: `
-{
-    "type": "/ip-acl/error-types/1013",
-    "httpStatus": 403,
-    "title": "CIDR format not correct",
-    "detail": "invalid cidrblock/ip",
-    "instance": "",
-    "errors": []
-}`,
-			expectedPath:        "/identity-management/v3/user-admin/ip-acl/allowlist",
-			expectedRequestBody: `{"cidrBlock":"1.2.3.4:32","comments":"abc","enabled":true}`,
-			withError: func(t *testing.T, e error) {
-				err := Error{
-					Type:       "/ip-acl/error-types/1013",
-					HTTPStatus: http.StatusForbidden,
-					Title:      "CIDR format not correct",
-					Detail:     "invalid cidrblock/ip",
-					StatusCode: http.StatusForbidden,
-					Instance:   "",
-					Errors:     json.RawMessage("[]"),
-				}
-				assert.Equal(t, true, err.Is(e))
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+				assert.Contains(t, err.Error(), "create CIDR block: struct validation: CIDRBlock: invalid CIDR address: 1.2.3.555/32")
+			},
+		},
+		"validation error - incorrect IPv6 CIDR": {
+			params: CreateCIDRBlockRequest{
+				CIDRBlock: "aa::wqert:1:0:ff/48",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+				assert.Contains(t, err.Error(), "create CIDR block: struct validation: CIDRBlock: invalid CIDR address: aa::wqert:1:0:ff/48")
 			},
 		},
 		"500 internal server error": {
@@ -576,6 +563,18 @@ func TestUpdateCIDRBlock(t *testing.T) {
 				assert.Contains(t, err.Error(), "update CIDR block: struct validation: CIDRBlockID: must be no less than 1")
 			},
 		},
+		"validation error - invalid IP address": {
+			params: UpdateCIDRBlockRequest{
+				CIDRBlockID: 1,
+				Body: UpdateCIDRBlockRequestBody{
+					CIDRBlock: "1a.2.3.4/32",
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+				assert.Contains(t, err.Error(), "update CIDR block: struct validation: CIDRBlock: invalid CIDR address: 1a.2.3.4/32")
+			},
+		},
 		"500 internal server error": {
 			params: UpdateCIDRBlockRequest{
 				CIDRBlockID: 1,
@@ -752,30 +751,13 @@ func TestValidateCIDRBlocks(t *testing.T) {
 				assert.Contains(t, err.Error(), "validate CIDR block: struct validation: CIDRBlock: cannot be blank")
 			},
 		},
-		"400 invalid": {
-			params:         ValidateCIDRBlockRequest{CIDRBlock: "abc"},
-			responseStatus: http.StatusBadRequest,
-			responseBody: `
-{
-    "type": "/ip-acl/error-types/1013",
-    "httpStatus": 400,
-    "title": "CIDR format not correct",
-    "detail": "invalid cidr format",
-    "instance": "",
-    "errors": []
-}`,
-			expectedPath: "/identity-management/v3/user-admin/ip-acl/allowlist/validate?cidrblock=abc",
-			withError: func(t *testing.T, e error) {
-				err := Error{
-					Type:       "/ip-acl/error-types/1013",
-					HTTPStatus: http.StatusBadRequest,
-					Title:      "CIDR format not correct",
-					Detail:     "invalid cidr format",
-					StatusCode: http.StatusBadRequest,
-					Instance:   "",
-					Errors:     json.RawMessage("[]"),
-				}
-				assert.Equal(t, true, err.Is(e))
+		"validation error - invalid IP address": {
+			params: ValidateCIDRBlockRequest{
+				CIDRBlock: "255.255.255.256/24",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+				assert.Contains(t, err.Error(), "validate CIDR block: struct validation: CIDRBlock: invalid CIDR address: 255.255.255.256/24")
 			},
 		},
 		"500 internal server error": {
