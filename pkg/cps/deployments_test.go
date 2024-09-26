@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -103,7 +103,7 @@ func TestListDeployments(t *testing.T) {
 			},
 			expectedResponse: &ListDeploymentsResponse{
 				Production: &Deployment{
-					OCSPStapled: tools.BoolPtr(false),
+					OCSPStapled: ptr.To(false),
 					OCSPURIs:    []string{},
 					NetworkConfiguration: DeploymentNetworkConfiguration{
 						Geography:        "core",
@@ -138,7 +138,7 @@ func TestListDeployments(t *testing.T) {
 					},
 				},
 				Staging: &Deployment{
-					OCSPStapled: tools.BoolPtr(false),
+					OCSPStapled: ptr.To(false),
 					OCSPURIs:    []string{},
 					NetworkConfiguration: DeploymentNetworkConfiguration{
 						Geography:        "core",
@@ -277,7 +277,7 @@ func TestGetProductionDeployment(t *testing.T) {
 				"Accept": "application/vnd.akamai.cps.deployment.v8+json",
 			},
 			expectedResponse: &GetProductionDeploymentResponse{
-				OCSPStapled: tools.BoolPtr(false),
+				OCSPStapled: ptr.To(false),
 				OCSPURIs:    []string{},
 				NetworkConfiguration: DeploymentNetworkConfiguration{
 					Geography:        "core",
@@ -422,7 +422,7 @@ func TestGetStagingDeployment(t *testing.T) {
 			},
 			expectedResponse: &GetStagingDeploymentResponse{
 
-				OCSPStapled: tools.BoolPtr(false),
+				OCSPStapled: ptr.To(false),
 				OCSPURIs:    []string{},
 				NetworkConfiguration: DeploymentNetworkConfiguration{
 					Geography:        "core",

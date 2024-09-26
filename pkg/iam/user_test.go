@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -33,7 +33,7 @@ func TestIAM_CreateUser(t *testing.T) {
 					Country:   "USA",
 					State:     "CA",
 				},
-				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: tools.IntPtr(1)}},
+				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
 				Notifications: UserNotifications{},
 			},
 			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","authGrants":[{"groupId":1,"isBlocked":false,"roleId":1}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null}}}`,
@@ -71,7 +71,7 @@ func TestIAM_CreateUser(t *testing.T) {
 					Country:   "USA",
 					State:     "CA",
 				},
-				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: tools.IntPtr(1)}},
+				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
 				Notifications: UserNotifications{},
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -217,7 +217,7 @@ func TestIam_ListUsers(t *testing.T) {
 	}{
 		"200 OK": {
 			params: ListUsersRequest{
-				GroupID:    tools.Int64Ptr(12345),
+				GroupID:    ptr.To(int64(12345)),
 				AuthGrants: true,
 				Actions:    true,
 			},
@@ -281,7 +281,7 @@ func TestIam_ListUsers(t *testing.T) {
 					AuthGrants: []AuthGrant{
 						{
 							GroupID:         12345,
-							RoleID:          tools.IntPtr(12),
+							RoleID:          ptr.To(12),
 							GroupName:       "mygroup",
 							RoleName:        "admin",
 							RoleDescription: "This is a new role that has been created to",
@@ -292,7 +292,7 @@ func TestIam_ListUsers(t *testing.T) {
 		},
 		"200 OK, no actions nor grants": {
 			params: ListUsersRequest{
-				GroupID: tools.Int64Ptr(12345),
+				GroupID: ptr.To(int64(12345)),
 			},
 			responseStatus: http.StatusOK,
 			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=false&authGrants=false&groupId=12345",
@@ -360,7 +360,7 @@ func TestIam_ListUsers(t *testing.T) {
 		},
 		"500 internal server error": {
 			params: ListUsersRequest{
-				GroupID:    tools.Int64Ptr(12345),
+				GroupID:    ptr.To(int64(12345)),
 				AuthGrants: true,
 				Actions:    true,
 			},
@@ -427,7 +427,7 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 					State:             "CA",
 					PreferredLanguage: "English",
 					ContactType:       "Billing",
-					SessionTimeOut:    tools.IntPtr(30),
+					SessionTimeOut:    ptr.To(30),
 					TimeZone:          "GMT",
 				},
 			},
@@ -456,7 +456,7 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 				State:             "CA",
 				PreferredLanguage: "English",
 				ContactType:       "Billing",
-				SessionTimeOut:    tools.IntPtr(30),
+				SessionTimeOut:    ptr.To(30),
 				TimeZone:          "GMT",
 			},
 		},
@@ -472,7 +472,7 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 					State:             "CA",
 					PreferredLanguage: "English",
 					ContactType:       "Billing",
-					SessionTimeOut:    tools.IntPtr(30),
+					SessionTimeOut:    ptr.To(30),
 					TimeZone:          "GMT",
 				},
 			},
@@ -654,7 +654,7 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 				AuthGrants: []AuthGrantRequest{
 					{
 						GroupID: 12345,
-						RoleID:  tools.IntPtr(16),
+						RoleID:  ptr.To(16),
 						Subgroups: []AuthGrantRequest{
 							{
 								GroupID: 54321,
@@ -680,7 +680,7 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 			expectedResponse: []AuthGrant{
 				{
 					GroupID: 12345,
-					RoleID:  tools.IntPtr(16),
+					RoleID:  ptr.To(16),
 					Subgroups: []AuthGrant{
 						{
 							GroupID: 54321,
@@ -695,7 +695,7 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 				AuthGrants: []AuthGrantRequest{
 					{
 						GroupID: 12345,
-						RoleID:  tools.IntPtr(16),
+						RoleID:  ptr.To(16),
 						Subgroups: []AuthGrantRequest{
 							{
 								GroupID: 54321,

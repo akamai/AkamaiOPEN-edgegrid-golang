@@ -7,8 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -73,8 +72,8 @@ func TestGetLoadBalancerActivations(t *testing.T) {
 				OriginID:   "clorigin1",
 				Network:    "prod",
 				LatestOnly: true,
-				PageSize:   tools.Int64Ptr(3),
-				Page:       tools.Int64Ptr(1),
+				PageSize:   ptr.To(int64(3)),
+				Page:       ptr.To(int64(1)),
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `

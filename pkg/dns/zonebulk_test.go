@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -438,7 +438,7 @@ func TestDNS_DeleteBulkZones(t *testing.T) {
 				ZonesList: &ZoneNameListResponse{
 					Zones: []string{"one.testbulk.net", "two.testbulk.net"},
 				},
-				BypassSafetyChecks: tools.BoolPtr(true),
+				BypassSafetyChecks: ptr.To(true),
 			},
 			responseStatus: http.StatusCreated,
 			responseBody: `
@@ -457,7 +457,7 @@ func TestDNS_DeleteBulkZones(t *testing.T) {
 				ZonesList: &ZoneNameListResponse{
 					Zones: []string{"one.testbulk.net", "two.testbulk.net"},
 				},
-				BypassSafetyChecks: tools.BoolPtr(true),
+				BypassSafetyChecks: ptr.To(true),
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `

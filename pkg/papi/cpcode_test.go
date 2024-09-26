@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -724,7 +724,7 @@ func TestUpdateCPCode(t *testing.T) {
 			params: UpdateCPCodeRequest{
 				ID:        123,
 				Name:      "test-cp-code",
-				Purgeable: tools.BoolPtr(false),
+				Purgeable: ptr.To(false),
 				Contracts: []CPCodeContract{
 					{
 						ContractID: "test-contract-id",

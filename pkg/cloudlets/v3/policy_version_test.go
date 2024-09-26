@@ -11,7 +11,6 @@ import (
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -282,7 +281,7 @@ func TestGetPolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				CreatedBy:          "jsmith",
 				CreatedDate:        test.NewTimeFromString(t, "2023-10-19T09:46:57.395Z"),
-				Description:        tools.StringPtr("test description"),
+				Description:        ptr.To("test description"),
 				ID:                 6551191,
 				MatchRules:         nil,
 				MatchRulesWarnings: []MatchRulesWarning{},
@@ -403,7 +402,7 @@ func TestGetPolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				CreatedBy:   "jsmith",
 				CreatedDate: test.NewTimeFromString(t, "2023-10-19T09:46:57.395Z"),
-				Description: tools.StringPtr("Initial version"),
+				Description: ptr.To("Initial version"),
 				MatchRules: MatchRules{
 					&MatchRuleAS{
 						Type: "asMatchRule",
@@ -690,7 +689,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 		"201 created, simple ER": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
-					Description: tools.StringPtr("Description for the policy"),
+					Description: ptr.To("Description for the policy"),
 				},
 				PolicyID: 276858,
 			},
@@ -710,7 +709,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
-				Description:   tools.StringPtr("Description for the policy"),
+				Description:   ptr.To("Description for the policy"),
 				ModifiedBy:    "jsmith",
 				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules:    nil,
@@ -850,7 +849,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				CreatedDate:  test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:    "jsmith",
-				Description:  tools.StringPtr("Initial version"),
+				Description:  ptr.To("Initial version"),
 				ModifiedBy:   "jsmith",
 				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules: MatchRules{
@@ -2279,7 +2278,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 		"201 created, complex FR with objectMatchValue - object": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
-					Description: tools.StringPtr("New version 1630480693371"),
+					Description: ptr.To("New version 1630480693371"),
 					MatchRules: MatchRules{
 						&MatchRuleFR{
 							ForwardSettings: ForwardSettingsFR{},
@@ -2359,7 +2358,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				CreatedDate:  test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:    "jsmith",
-				Description:  tools.StringPtr("New version 1630480693371"),
+				Description:  ptr.To("New version 1630480693371"),
 				ModifiedBy:   "jsmith",
 				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules: MatchRules{
@@ -2399,7 +2398,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 		"201 created, complex FR with objectMatchValue - simple": {
 			request: CreatePolicyVersionRequest{
 				CreatePolicyVersion: CreatePolicyVersion{
-					Description: tools.StringPtr("New version 1630480693371"),
+					Description: ptr.To("New version 1630480693371"),
 					MatchRules: MatchRules{
 						&MatchRuleFR{
 							ForwardSettings: ForwardSettingsFR{
@@ -2472,7 +2471,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				CreatedDate:  test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:    "jsmith",
-				Description:  tools.StringPtr("New version 1630480693371"),
+				Description:  ptr.To("New version 1630480693371"),
 				ModifiedBy:   "jsmith",
 				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules: MatchRules{
@@ -2513,7 +2512,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:                0,
 							Type:               "apMatchRule",
 							Name:               "rul3",
-							PassThroughPercent: tools.Float64Ptr(0),
+							PassThroughPercent: ptr.To(float64(0)),
 							ID:                 0,
 							Matches: []MatchCriteriaAP{
 								{
@@ -2584,7 +2583,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						ID:                 0,
 						MatchURL:           "",
 						Name:               "rul3",
-						PassThroughPercent: tools.Float64Ptr(-1),
+						PassThroughPercent: ptr.To(float64(-1)),
 						Start:              0,
 						Matches: []MatchCriteriaAP{
 							{
@@ -2611,7 +2610,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:                0,
 							Type:               "apMatchRule",
 							Name:               "rul3",
-							PassThroughPercent: tools.Float64Ptr(-1),
+							PassThroughPercent: ptr.To(float64(-1)),
 							ID:                 0,
 							Matches: []MatchCriteriaAP{
 								{
@@ -2689,7 +2688,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						ID:                 0,
 						MatchURL:           "",
 						Name:               "rul3",
-						PassThroughPercent: tools.Float64Ptr(-1),
+						PassThroughPercent: ptr.To(float64(-1)),
 						Start:              0,
 						Matches: []MatchCriteriaAP{
 							{
@@ -2917,7 +2916,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "apMatchRule",
-							PassThroughPercent: tools.Float64Ptr(50.50),
+							PassThroughPercent: ptr.To(50.50),
 							Name:               "rul3",
 							ID:                 0,
 							Matches: []MatchCriteriaAP{
@@ -2983,7 +2982,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "apMatchRule",
-							PassThroughPercent: tools.Float64Ptr(101),
+							PassThroughPercent: ptr.To(float64(101)),
 							Name:               "rul3",
 							ID:                 0,
 						},
@@ -3125,7 +3124,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 		"201 updated simple ER": {
 			request: UpdatePolicyVersionRequest{
 				UpdatePolicyVersion: UpdatePolicyVersion{
-					Description: tools.StringPtr("Updated description"),
+					Description: ptr.To("Updated description"),
 				},
 				PolicyID:      276858,
 				PolicyVersion: 5,
@@ -3146,7 +3145,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				CreatedDate:   test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z"),
 				CreatedBy:     "jsmith",
-				Description:   tools.StringPtr("Updated description"),
+				Description:   ptr.To("Updated description"),
 				ModifiedBy:    "jsmith",
 				ModifiedDate:  ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules:    nil,
@@ -3157,7 +3156,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 		"201 updated simple ER with warnings": {
 			request: UpdatePolicyVersionRequest{
 				UpdatePolicyVersion: UpdatePolicyVersion{
-					Description: tools.StringPtr("Updated description"),
+					Description: ptr.To("Updated description"),
 					MatchRules: MatchRules{
 						&MatchRuleER{
 							Name:          "er_rule",
@@ -3225,7 +3224,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 			expectedResponse: &PolicyVersion{
 				CreatedDate:  test.NewTimeFromString(t, "2023-10-20T09:21:04.180Z"),
 				CreatedBy:    "jsmith",
-				Description:  tools.StringPtr("Updated description"),
+				Description:  ptr.To("Updated description"),
 				ModifiedBy:   "jsmith",
 				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-20T10:32:56.316Z")),
 				ID:           6552305,
@@ -3273,7 +3272,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 			expectedPath: "/cloudlets/v3/policies/0",
 			request: UpdatePolicyVersionRequest{
 				UpdatePolicyVersion: UpdatePolicyVersion{
-					Description: tools.StringPtr(strings.Repeat("A", 256)),
+					Description: ptr.To(strings.Repeat("A", 256)),
 				},
 			},
 			withError: ErrStructValidation,

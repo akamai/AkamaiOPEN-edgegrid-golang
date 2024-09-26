@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -1110,7 +1110,7 @@ func TestCreateEnrollment(t *testing.T) {
 					},
 					NetworkConfiguration: &NetworkConfiguration{},
 					Org:                  &Org{Name: "Akamai"},
-					OrgID:                tools.IntPtr(10),
+					OrgID:                ptr.To(10),
 					RA:                   "third-party",
 					TechContact: &Contact{
 						Email: "r2d2@akamai.com",
@@ -1374,7 +1374,7 @@ func TestUpdateEnrollment(t *testing.T) {
 					},
 					NetworkConfiguration: &NetworkConfiguration{},
 					Org:                  &Org{Name: "Akamai"},
-					OrgID:                tools.IntPtr(20),
+					OrgID:                ptr.To(20),
 					RA:                   "third-party",
 					TechContact: &Contact{
 						Email: "r2d2@akamai.com",

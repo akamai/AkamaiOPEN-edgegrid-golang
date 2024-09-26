@@ -24,7 +24,8 @@
 
 
 
-
+* Global
+  * Removed `tools` package in favour of `ptr` package
 
 
 

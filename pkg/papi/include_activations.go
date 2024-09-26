@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -350,7 +350,7 @@ func (p *papi) ActivateInclude(ctx context.Context, params ActivateIncludeReques
 	}
 
 	if params.IgnoreHTTPErrors == nil {
-		params.IgnoreHTTPErrors = tools.BoolPtr(true)
+		params.IgnoreHTTPErrors = ptr.To(true)
 	}
 
 	requestBody := struct {
@@ -396,7 +396,7 @@ func (p *papi) DeactivateInclude(ctx context.Context, params DeactivateIncludeRe
 	}
 
 	if params.IgnoreHTTPErrors == nil {
-		params.IgnoreHTTPErrors = tools.BoolPtr(true)
+		params.IgnoreHTTPErrors = ptr.To(true)
 	}
 
 	requestBody := struct {

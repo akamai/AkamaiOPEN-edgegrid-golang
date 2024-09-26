@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -246,7 +246,7 @@ func TestDs_GetDatasetFields(t *testing.T) {
 			},
 		},
 		"validation error - invalid product id": {
-			request:        GetDatasetFieldsRequest{ProductID: tools.StringPtr("INVALID_PROD_ID")},
+			request:        GetDatasetFieldsRequest{ProductID: ptr.To("INVALID_PROD_ID")},
 			responseStatus: http.StatusBadRequest,
 			responseBody: `
 {

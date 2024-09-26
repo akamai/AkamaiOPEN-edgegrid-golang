@@ -8,8 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -83,7 +82,7 @@ func TestListIncludes(t *testing.T) {
 							IncludeName:    "test_include_1",
 							IncludeType:    IncludeTypeCommonSettings,
 							LatestVersion:  1,
-							StagingVersion: tools.IntPtr(1),
+							StagingVersion: ptr.To(1),
 						},
 					},
 				},
@@ -148,7 +147,7 @@ func TestListIncludes(t *testing.T) {
 							IncludeName:    "test_include_1",
 							IncludeType:    IncludeTypeCommonSettings,
 							LatestVersion:  1,
-							StagingVersion: tools.IntPtr(1),
+							StagingVersion: ptr.To(1),
 						},
 					},
 				},
@@ -262,7 +261,7 @@ func TestListIncludeParents(t *testing.T) {
 							GroupID:        "test_group",
 							PropertyID:     "prp_123456",
 							PropertyName:   "test_property",
-							StagingVersion: tools.IntPtr(1),
+							StagingVersion: ptr.To(1),
 						},
 					},
 				},
@@ -301,7 +300,7 @@ func TestListIncludeParents(t *testing.T) {
 							GroupID:        "test_group",
 							PropertyID:     "prp_123456",
 							PropertyName:   "test_property",
-							StagingVersion: tools.IntPtr(1),
+							StagingVersion: ptr.To(1),
 						},
 					},
 				},
@@ -423,7 +422,7 @@ func TestGetInclude(t *testing.T) {
 							IncludeName:   "test_include",
 							IncludeType:   "MICROSERVICES",
 							LatestVersion: 1,
-							PropertyType:  tools.StringPtr("INCLUDE"),
+							PropertyType:  ptr.To("INCLUDE"),
 						},
 					},
 				},
@@ -436,7 +435,7 @@ func TestGetInclude(t *testing.T) {
 					IncludeName:   "test_include",
 					IncludeType:   "MICROSERVICES",
 					LatestVersion: 1,
-					PropertyType:  tools.StringPtr("INCLUDE"),
+					PropertyType:  ptr.To("INCLUDE"),
 				},
 			},
 		},

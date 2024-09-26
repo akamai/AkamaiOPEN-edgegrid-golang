@@ -11,7 +11,6 @@ import (
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -274,7 +273,7 @@ func TestListPolicies(t *testing.T) {
 								},
 							},
 						},
-						Description: tools.StringPtr("Test"),
+						Description: ptr.To("Test"),
 						GroupID:     1,
 						ID:          22,
 						Links: []Link{
@@ -567,7 +566,7 @@ func TestCreatePolicy(t *testing.T) {
 		"200 OK - all data": {
 			params: CreatePolicyRequest{
 				CloudletType: CloudletTypeFR,
-				Description:  tools.StringPtr("Description"),
+				Description:  ptr.To("Description"),
 				GroupID:      1,
 				Name:         "TestName",
 				PolicyType:   PolicyTypeShared,
@@ -618,7 +617,7 @@ func TestCreatePolicy(t *testing.T) {
 				CreatedBy:          "User1",
 				CreatedDate:        test.NewTimeFromString(t, "2023-10-23T11:21:19.896Z"),
 				CurrentActivations: CurrentActivations{},
-				Description:        tools.StringPtr("Description"),
+				Description:        ptr.To("Description"),
 				GroupID:            1,
 				ID:                 11,
 				Links: []Link{
@@ -636,7 +635,7 @@ func TestCreatePolicy(t *testing.T) {
 		"validation errors": {
 			params: CreatePolicyRequest{
 				CloudletType: "Wrong Cloudlet Type",
-				Description:  tools.StringPtr(strings.Repeat("Too long description", 20)),
+				Description:  ptr.To(strings.Repeat("Too long description", 20)),
 				GroupID:      1,
 				Name:         "TestName not match",
 				PolicyType:   "Wrong Policy Type",
@@ -979,7 +978,7 @@ func TestGetPolicy(t *testing.T) {
 						},
 					},
 				},
-				Description: tools.StringPtr("Description"),
+				Description: ptr.To("Description"),
 				GroupID:     1,
 				ID:          11,
 				Links: []Link{
@@ -1115,7 +1114,7 @@ func TestGetPolicy(t *testing.T) {
 						},
 					},
 				},
-				Description: tools.StringPtr("Description"),
+				Description: ptr.To("Description"),
 				GroupID:     1,
 				ID:          11,
 				Links: []Link{
@@ -1238,7 +1237,7 @@ func TestUpdatePolicy(t *testing.T) {
 				PolicyID: 1,
 				BodyParams: UpdatePolicyBodyParams{
 					GroupID:     11,
-					Description: tools.StringPtr("Description"),
+					Description: ptr.To("Description"),
 				},
 			},
 			responseStatus: http.StatusOK,
@@ -1429,7 +1428,7 @@ func TestUpdatePolicy(t *testing.T) {
 						},
 					},
 				},
-				Description: tools.StringPtr("Description"),
+				Description: ptr.To("Description"),
 				GroupID:     1,
 				ID:          11,
 				Links: []Link{
@@ -1455,7 +1454,7 @@ func TestUpdatePolicy(t *testing.T) {
 				PolicyID: 1,
 				BodyParams: UpdatePolicyBodyParams{
 					GroupID:     11,
-					Description: tools.StringPtr(strings.Repeat("TestDescription", 30)),
+					Description: ptr.To(strings.Repeat("TestDescription", 30)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -1762,7 +1761,7 @@ func TestClonePolicy(t *testing.T) {
 						},
 					},
 				},
-				Description: tools.StringPtr("Description"),
+				Description: ptr.To("Description"),
 				GroupID:     1,
 				ID:          11,
 				Links: []Link{

@@ -6,10 +6,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
-
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 )
 
 func TestUnmarshalJSONMatchRules(t *testing.T) {
@@ -574,7 +573,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 				&MatchRuleVP{
 					Type:               "vpMatchRule",
 					End:                0,
-					PassThroughPercent: tools.Float64Ptr(50.50),
+					PassThroughPercent: ptr.To(50.50),
 					ID:                 0,
 					MatchURL:           "",
 					Matches: []MatchCriteriaVP{
@@ -640,7 +639,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 				&MatchRuleAP{
 					Type:               "apMatchRule",
 					End:                0,
-					PassThroughPercent: tools.Float64Ptr(50.50),
+					PassThroughPercent: ptr.To(50.50),
 					ID:                 0,
 					MatchURL:           "",
 					Matches: []MatchCriteriaAP{
@@ -1029,19 +1028,19 @@ MatchRules[1]: {
 			input: MatchRules{
 				MatchRuleAP{
 					Type:               "apMatchRule",
-					PassThroughPercent: tools.Float64Ptr(-1),
+					PassThroughPercent: ptr.To(float64(-1)),
 				},
 				MatchRuleAP{
 					Type:               "apMatchRule",
-					PassThroughPercent: tools.Float64Ptr(50.5),
+					PassThroughPercent: ptr.To(50.5),
 				},
 				MatchRuleAP{
 					Type:               "apMatchRule",
-					PassThroughPercent: tools.Float64Ptr(0),
+					PassThroughPercent: ptr.To(float64(0)),
 				},
 				MatchRuleAP{
 					Type:               "apMatchRule",
-					PassThroughPercent: tools.Float64Ptr(100),
+					PassThroughPercent: ptr.To(float64(100)),
 				},
 			},
 		},
@@ -1052,11 +1051,11 @@ MatchRules[1]: {
 				},
 				MatchRuleAP{
 					Type:               "apMatchRule",
-					PassThroughPercent: tools.Float64Ptr(100.1),
+					PassThroughPercent: ptr.To(100.1),
 				},
 				MatchRuleAP{
 					Type:               "apMatchRule",
-					PassThroughPercent: tools.Float64Ptr(-1.1),
+					PassThroughPercent: ptr.To(-1.1),
 				},
 			},
 			withError: `
@@ -1361,19 +1360,19 @@ MatchRules[2]: {
 			input: MatchRules{
 				MatchRuleVP{
 					Type:               "vpMatchRule",
-					PassThroughPercent: tools.Float64Ptr(-1),
+					PassThroughPercent: ptr.To(float64(-1)),
 				},
 				MatchRuleVP{
 					Type:               "vpMatchRule",
-					PassThroughPercent: tools.Float64Ptr(50.5),
+					PassThroughPercent: ptr.To(50.5),
 				},
 				MatchRuleVP{
 					Type:               "vpMatchRule",
-					PassThroughPercent: tools.Float64Ptr(0),
+					PassThroughPercent: ptr.To(float64(0)),
 				},
 				MatchRuleVP{
 					Type:               "vpMatchRule",
-					PassThroughPercent: tools.Float64Ptr(100),
+					PassThroughPercent: ptr.To(float64(100)),
 				},
 			},
 		},
@@ -1384,11 +1383,11 @@ MatchRules[2]: {
 				},
 				MatchRuleVP{
 					Type:               "vpMatchRule",
-					PassThroughPercent: tools.Float64Ptr(100.1),
+					PassThroughPercent: ptr.To(100.1),
 				},
 				MatchRuleVP{
 					Type:               "vpMatchRule",
-					PassThroughPercent: tools.Float64Ptr(-1.1),
+					PassThroughPercent: ptr.To(-1.1),
 				},
 			},
 			withError: `

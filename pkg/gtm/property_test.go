@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -401,8 +401,8 @@ func TestGTM_CreateProperty(t *testing.T) {
 							HTTPError3xx:                  true,
 							HTTPError4xx:                  true,
 							HTTPError5xx:                  true,
-							HTTPMethod:                    tools.StringPtr("GET"),
-							HTTPRequestBody:               tools.StringPtr("TestBody"),
+							HTTPMethod:                    ptr.To("GET"),
+							HTTPRequestBody:               ptr.To("TestBody"),
 							Name:                          "health-check",
 							TestInterval:                  60,
 							TestObject:                    "/status",
@@ -419,7 +419,7 @@ func TestGTM_CreateProperty(t *testing.T) {
 							Enabled:      true,
 							Weight:       50.0,
 							Servers:      []string{"1.2.3.5"},
-							Precedence:   tools.IntPtr(255),
+							Precedence:   ptr.To(255),
 						},
 						{
 							DatacenterID: 3133,
@@ -553,8 +553,8 @@ func TestGTM_CreateProperty(t *testing.T) {
 							HTTPError3xx:                  true,
 							HTTPError4xx:                  true,
 							HTTPError5xx:                  true,
-							HTTPMethod:                    tools.StringPtr("GET"),
-							HTTPRequestBody:               tools.StringPtr("TestBody"),
+							HTTPMethod:                    ptr.To("GET"),
+							HTTPRequestBody:               ptr.To("TestBody"),
 							Pre2023SecurityPosture:        true,
 							AlternateCACertificates:       []string{"test1"},
 							Name:                          "health-check",
@@ -571,7 +571,7 @@ func TestGTM_CreateProperty(t *testing.T) {
 							Enabled:      true,
 							Weight:       50.0,
 							Servers:      []string{"1.2.3.5"},
-							Precedence:   tools.IntPtr(255),
+							Precedence:   ptr.To(255),
 						},
 						{
 							DatacenterID: 3133,
@@ -641,7 +641,7 @@ func TestGTM_CreateProperty(t *testing.T) {
 						{
 							DatacenterID: 1,
 							Enabled:      false,
-							Precedence:   tools.IntPtr(256),
+							Precedence:   ptr.To(256),
 						},
 					},
 				},
@@ -750,7 +750,7 @@ func TestGTM_UpdateProperty(t *testing.T) {
 							Enabled:      true,
 							Weight:       50.0,
 							Servers:      []string{"1.2.3.5"},
-							Precedence:   tools.IntPtr(255),
+							Precedence:   ptr.To(255),
 						},
 						{
 							DatacenterID: 3133,
@@ -894,7 +894,7 @@ func TestGTM_UpdateProperty(t *testing.T) {
 							Enabled:      true,
 							Weight:       50.0,
 							Servers:      []string{"1.2.3.5"},
-							Precedence:   tools.IntPtr(255),
+							Precedence:   ptr.To(255),
 						},
 						{
 							DatacenterID: 3133,

@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -1547,7 +1547,7 @@ func TestDs_ListStreams(t *testing.T) {
 		},
 		"200 OK - with groupId": {
 			request: ListStreamsRequest{
-				GroupID: tools.IntPtr(1234),
+				GroupID: ptr.To(1234),
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `

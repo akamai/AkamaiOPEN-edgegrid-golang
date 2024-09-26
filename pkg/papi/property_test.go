@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -58,7 +57,7 @@ func TestPapiGetProperties(t *testing.T) {
 						PropertyID:        "prp_175780",
 						PropertyName:      "example.com",
 						LatestVersion:     2,
-						StagingVersion:    tools.IntPtr(1),
+						StagingVersion:    ptr.To(1),
 						ProductionVersion: nil,
 						AssetID:           "aid_101",
 						Note:              "Notes about example.com",
@@ -162,7 +161,7 @@ func TestPapiGetProperty(t *testing.T) {
 						PropertyID:        "prp_175780",
 						PropertyName:      "example.com",
 						LatestVersion:     2,
-						StagingVersion:    tools.IntPtr(1),
+						StagingVersion:    ptr.To(1),
 						ProductionVersion: nil,
 						AssetID:           "aid_101",
 						Note:              "Notes about example.com",
@@ -176,7 +175,7 @@ func TestPapiGetProperty(t *testing.T) {
 					PropertyID:        "prp_175780",
 					PropertyName:      "example.com",
 					LatestVersion:     2,
-					StagingVersion:    tools.IntPtr(1),
+					StagingVersion:    ptr.To(1),
 					ProductionVersion: nil,
 					AssetID:           "aid_101",
 					Note:              "Notes about example.com",

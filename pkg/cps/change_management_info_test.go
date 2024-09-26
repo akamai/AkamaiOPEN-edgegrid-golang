@@ -7,8 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -225,7 +224,7 @@ func TestGetChangeDeploymentInfo(t *testing.T) {
 				},
 				MultiStackedCertificates: []DeploymentCertificate{},
 				OCSPURIs:                 []string{},
-				OCSPStapled:              tools.BoolPtr(false),
+				OCSPStapled:              ptr.To(false),
 			},
 		},
 		"500 internal server error": {

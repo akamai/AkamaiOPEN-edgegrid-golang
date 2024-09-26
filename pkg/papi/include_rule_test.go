@@ -8,8 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -185,11 +184,11 @@ func TestGetIncludeRuleTree(t *testing.T) {
 					},
 					Variables: []RuleVariable{
 						{
-							Description: tools.StringPtr("This is a sample Property Manager variable."),
+							Description: ptr.To("This is a sample Property Manager variable."),
 							Hidden:      false,
 							Name:        "VAR_NAME",
 							Sensitive:   false,
-							Value:       tools.StringPtr("default value"),
+							Value:       ptr.To("default value"),
 						},
 					},
 				},
@@ -358,11 +357,11 @@ func TestGetIncludeRuleTree(t *testing.T) {
 					},
 					Variables: []RuleVariable{
 						{
-							Description: tools.StringPtr("This is a sample Property Manager variable."),
+							Description: ptr.To("This is a sample Property Manager variable."),
 							Hidden:      false,
 							Name:        "VAR_NAME",
 							Sensitive:   false,
-							Value:       tools.StringPtr("default value"),
+							Value:       ptr.To("default value"),
 						},
 					},
 				},
@@ -562,11 +561,11 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: tools.StringPtr("This is a sample Property Manager variable."),
+								Description: ptr.To("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       tools.StringPtr("default value"),
+								Value:       ptr.To("default value"),
 							},
 						},
 					},
@@ -783,11 +782,11 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 					TemplateLink: "/platformtoolkit/service/ruletemplate/30582260/1?accountId=1-1TJZFB&gid=61726&ck=16.3.1.1",
 					Variables: []RuleVariable{
 						{
-							Description: tools.StringPtr("This is a sample Property Manager variable."),
+							Description: ptr.To("This is a sample Property Manager variable."),
 							Hidden:      false,
 							Name:        "VAR_NAME",
 							Sensitive:   false,
-							Value:       tools.StringPtr("default value"),
+							Value:       ptr.To("default value"),
 						},
 					},
 				},
@@ -863,11 +862,11 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: tools.StringPtr("This is a sample Property Manager variable."),
+								Description: ptr.To("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       tools.StringPtr("default value"),
+								Value:       ptr.To("default value"),
 							},
 						},
 					},
@@ -958,11 +957,11 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: tools.StringPtr("This is a sample Property Manager variable."),
+								Description: ptr.To("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       tools.StringPtr("default value"),
+								Value:       ptr.To("default value"),
 							},
 						},
 					},
@@ -1039,11 +1038,11 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: tools.StringPtr("This is a sample Property Manager variable."),
+								Description: ptr.To("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       tools.StringPtr("default value"),
+								Value:       ptr.To("default value"),
 							},
 						},
 					},
@@ -1120,11 +1119,11 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: tools.StringPtr("This is a sample Property Manager variable."),
+								Description: ptr.To("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       tools.StringPtr("default value"),
+								Value:       ptr.To("default value"),
 							},
 						},
 					},
@@ -1201,11 +1200,11 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: tools.StringPtr("This is a sample Property Manager variable."),
+								Description: ptr.To("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       tools.StringPtr("default value"),
+								Value:       ptr.To("default value"),
 							},
 						},
 					},
@@ -1283,11 +1282,11 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 						},
 						Variables: []RuleVariable{
 							{
-								Description: tools.StringPtr("This is a sample Property Manager variable."),
+								Description: ptr.To("This is a sample Property Manager variable."),
 								Hidden:      false,
 								Name:        "VAR_NAME",
 								Sensitive:   false,
-								Value:       tools.StringPtr("default value"),
+								Value:       ptr.To("default value"),
 							},
 						},
 					},

@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -225,8 +225,8 @@ func TestGetClientLists(t *testing.T) {
 				IncludeItems:       true,
 				IncludeDeprecated:  true,
 				IncludeNetworkList: true,
-				Page:               tools.IntPtr(0),
-				PageSize:           tools.IntPtr(2),
+				Page:               ptr.To(0),
+				PageSize:           ptr.To(2),
 				Sort:               []string{"updatedBy:desc", "value:desc"},
 			},
 			responseStatus: http.StatusOK,

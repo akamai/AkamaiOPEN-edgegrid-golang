@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -38,8 +38,8 @@ func TestGetDeploymentSchedule(t *testing.T) {
 				"Accept": "application/vnd.akamai.cps.deployment-schedule.v1+json",
 			},
 			expectedResponse: &DeploymentSchedule{
-				NotAfter:  tools.StringPtr("2021-11-03T08:02:46.655484Z"),
-				NotBefore: tools.StringPtr("2021-10-03T08:02:46.655484Z"),
+				NotAfter:  ptr.To("2021-11-03T08:02:46.655484Z"),
+				NotBefore: ptr.To("2021-10-03T08:02:46.655484Z"),
 			},
 		},
 		"500 internal server error": {
@@ -128,8 +128,8 @@ func TestUpdateDeploymentSchedule(t *testing.T) {
 				ChangeID:     1,
 				EnrollmentID: 10,
 				DeploymentSchedule: DeploymentSchedule{
-					NotAfter:  tools.StringPtr("2021-11-03T08:02:46.655484Z"),
-					NotBefore: tools.StringPtr("2021-10-03T08:02:46.655484Z"),
+					NotAfter:  ptr.To("2021-11-03T08:02:46.655484Z"),
+					NotBefore: ptr.To("2021-10-03T08:02:46.655484Z"),
 				},
 			},
 			responseStatus: http.StatusOK,
@@ -151,8 +151,8 @@ func TestUpdateDeploymentSchedule(t *testing.T) {
 				ChangeID:     1,
 				EnrollmentID: 10,
 				DeploymentSchedule: DeploymentSchedule{
-					NotAfter:  tools.StringPtr("2021-11-03T08:02:46.655484Z"),
-					NotBefore: tools.StringPtr("2021-10-03T08:02:46.655484Z"),
+					NotAfter:  ptr.To("2021-11-03T08:02:46.655484Z"),
+					NotBefore: ptr.To("2021-10-03T08:02:46.655484Z"),
 				},
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -178,8 +178,8 @@ func TestUpdateDeploymentSchedule(t *testing.T) {
 			params: UpdateDeploymentScheduleRequest{
 				EnrollmentID: 10,
 				DeploymentSchedule: DeploymentSchedule{
-					NotAfter:  tools.StringPtr("2021-11-03T08:02:46.655484Z"),
-					NotBefore: tools.StringPtr("2021-10-03T08:02:46.655484Z"),
+					NotAfter:  ptr.To("2021-11-03T08:02:46.655484Z"),
+					NotBefore: ptr.To("2021-10-03T08:02:46.655484Z"),
 				},
 			},
 			expectedPath: "/cps/v2/enrollments/10/changes/1/deployment-schedule",
@@ -192,8 +192,8 @@ func TestUpdateDeploymentSchedule(t *testing.T) {
 			params: UpdateDeploymentScheduleRequest{
 				ChangeID: 1,
 				DeploymentSchedule: DeploymentSchedule{
-					NotAfter:  tools.StringPtr("2021-11-03T08:02:46.655484Z"),
-					NotBefore: tools.StringPtr("2021-10-03T08:02:46.655484Z"),
+					NotAfter:  ptr.To("2021-11-03T08:02:46.655484Z"),
+					NotBefore: ptr.To("2021-10-03T08:02:46.655484Z"),
 				},
 			},
 			expectedPath: "/cps/v2/enrollments/10/changes/1/deployment-schedule",

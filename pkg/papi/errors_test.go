@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -95,7 +95,7 @@ func TestErrorIs(t *testing.T) {
 			err: Error{
 				StatusCode: http.StatusTooManyRequests,
 				LimitKey:   "DEFAULT_CERTS_PER_CONTRACT",
-				Remaining:  tools.IntPtr(0),
+				Remaining:  ptr.To(0),
 			},
 			given:    ErrDefaultCertLimitReached,
 			expected: true,
@@ -104,7 +104,7 @@ func TestErrorIs(t *testing.T) {
 			err: Error{
 				StatusCode: http.StatusTooManyRequests,
 				LimitKey:   "DEFAULT_CERTS_PER_CONTRACT",
-				Remaining:  tools.IntPtr(0),
+				Remaining:  ptr.To(0),
 			},
 			given:    ErrSBDNotEnabled,
 			expected: false,
