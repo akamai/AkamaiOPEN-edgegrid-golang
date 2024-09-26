@@ -124,7 +124,7 @@ var (
 	ErrCancelActivation = errors.New("cancel activation")
 )
 
-func (e edgeworkers) ListActivations(ctx context.Context, params ListActivationsRequest) (*ListActivationsResponse, error) {
+func (e *edgeworkers) ListActivations(ctx context.Context, params ListActivationsRequest) (*ListActivationsResponse, error) {
 	logger := e.Log(ctx)
 	logger.Debug("ListActivations")
 
@@ -161,7 +161,7 @@ func (e edgeworkers) ListActivations(ctx context.Context, params ListActivations
 	return &result, nil
 }
 
-func (e edgeworkers) GetActivation(ctx context.Context, params GetActivationRequest) (*Activation, error) {
+func (e *edgeworkers) GetActivation(ctx context.Context, params GetActivationRequest) (*Activation, error) {
 	logger := e.Log(ctx)
 	logger.Debug("GetActivation")
 
@@ -189,7 +189,7 @@ func (e edgeworkers) GetActivation(ctx context.Context, params GetActivationRequ
 	return &result, nil
 }
 
-func (e edgeworkers) ActivateVersion(ctx context.Context, params ActivateVersionRequest) (*Activation, error) {
+func (e *edgeworkers) ActivateVersion(ctx context.Context, params ActivateVersionRequest) (*Activation, error) {
 	logger := e.Log(ctx)
 	logger.Debug("ActivateVersion")
 
@@ -218,7 +218,7 @@ func (e edgeworkers) ActivateVersion(ctx context.Context, params ActivateVersion
 	return &result, nil
 }
 
-func (e edgeworkers) CancelPendingActivation(ctx context.Context, params CancelActivationRequest) (*Activation, error) {
+func (e *edgeworkers) CancelPendingActivation(ctx context.Context, params CancelActivationRequest) (*Activation, error) {
 	logger := e.Log(ctx)
 	logger.Debug("CancelPendingActivation")
 

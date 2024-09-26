@@ -27,6 +27,24 @@
 * Global
   * Removed `tools` package in favour of `ptr` package
 
+* EDGEKV
+  * For `CreateEdgeKVAccessTokenRequest` removed `Expiry` and added `RestrictToEdgeWorkerIDs`
+  * For `CreateEdgeKVAccessTokenResponse` removed `Expiry`, `Value` and added
+    * `AllowOnProduction`
+    * `AllowOnStaging`
+    * `CPCode`
+    * `IssueDate`
+    * `LatestRefreshDate`
+    * `NamespacePermissions`
+    * `NextScheduledRefreshDate`
+    * `RestrictToEdgeWorkerIDs`
+    * `TokenActivationStatus`
+  * For `EdgeKVAccessToken` added fields:
+    * `TokenActivationStatus`
+    * `IssueDate`
+    * `LatestRefreshDate`
+    * `NextScheduledRefreshDate`
+
 
 
 

@@ -18,12 +18,12 @@ type (
 		AllowOnProduction bool `json:"allowOnProduction"`
 		// Whether to allow this token access to the Akamai staging network
 		AllowOnStaging bool `json:"allowOnStaging"`
-		// Desired token expiry date in ISO format. Expiry can be up to 6 months from creation.
-		Expiry string `json:"expiry"`
 		// Friendly name of the token. Used when retrieving tokens by name.
 		Name string `json:"name"`
 		// A list of namespace identifiers the token should have access to, plus the associated read, write, delete permissions
 		NamespacePermissions NamespacePermissions `json:"namespacePermissions"`
+		// A set of EdgeWorker IDs authorized to access EdgeKV via the token. By default, if you omit this array, the token authorizes access for all IDs.
+		RestrictToEdgeWorkerIDs []string `json:"restrictToEdgeWorkerIds"`
 	}
 
 	// NamespacePermissions represents mapping between namespaces and permissions
@@ -43,18 +43,33 @@ type (
 		Name string `json:"name"`
 		// Internally generated unique identifier for the access token
 		UUID string `json:"uuid"`
+		// The IN_PROGRESS status indicates token activation is still in progress,
+		// and it's not yet possible to make successful EdgeKV requests from EdgeWorkers that use the token.
+		// Once activation completes, status is COMPLETE.
+		// Otherwise, a value of ERROR indicates a problem that prevented activation.
+		TokenActivationStatus *string `json:"tokenActivationStatus"`
+		// Initial token creation date in ISO 8601 format.
+		IssueDate *string `json:"issueDate"`
+		// Most recent token refresh date in ISO 8601 format. A null value indicates the token has not yet been refreshed.
+		LatestRefreshDate *string `json:"latestRefreshDate"`
+		// Next scheduled date of the token refresh in ISO 8601 format.
+		NextScheduledRefreshDate *string `json:"nextScheduledRefreshDate"`
 	}
 
 	// CreateEdgeKVAccessTokenResponse contains response from EdgeKV access token creation
 	CreateEdgeKVAccessTokenResponse struct {
-		// The expiry date
-		Expiry string `json:"expiry"`
-		// The name assigned to the access token. You can't modify an access token name.
-		Name string `json:"name"`
-		// Internally generated unique identifier for the access token
-		UUID string `json:"uuid"`
-		// The access token details
-		Value string `json:"value"`
+		AllowOnProduction        bool                 `json:"allowOnProduction"`
+		AllowOnStaging           bool                 `json:"allowOnStaging"`
+		CPCode                   string               `json:"cpcode"`
+		Expiry                   string               `json:"expiry"`
+		IssueDate                string               `json:"issueDate"`
+		LatestRefreshDate        *string              `json:"latestRefreshDate"`
+		Name                     string               `json:"name"`
+		NamespacePermissions     NamespacePermissions `json:"namespacePermissions"`
+		NextScheduledRefreshDate string               `json:"nextScheduledRefreshDate"`
+		RestrictToEdgeWorkerIDs  []string             `json:"restrictToEdgeWorkerIds"`
+		TokenActivationStatus    string               `json:"tokenActivationStatus"`
+		UUID                     string               `json:"uuid"`
 	}
 
 	// GetEdgeKVAccessTokenRequest represents an TokenName object
@@ -106,7 +121,6 @@ func (c CreateEdgeKVAccessTokenRequest) Validate() error {
 	return validation.Errors{
 		"AllowOnProduction":          validation.Validate(c.AllowOnProduction, validation.Required.When(c.AllowOnStaging == false).Error("at least one of AllowOnProduction or AllowOnStaging has to be provided")),
 		"AllowOnStaging":             validation.Validate(c.AllowOnStaging, validation.Required.When(c.AllowOnProduction == false).Error("at least one of AllowOnProduction or AllowOnStaging has to be provided")),
-		"Expiry":                     validation.Validate(c.Expiry, validation.Required, validation.Date("2006-01-02").Error("the time format should be provided as per ISO-8601")),
 		"Name":                       validation.Validate(c.Name, validation.Required, validation.Length(1, 32)),
 		"NamespacePermissions.Names": validation.Validate(namespaces, validation.Required, validation.Each(validation.Required)),
 		"NamespacePermissions": validation.Validate(c.NamespacePermissions,
