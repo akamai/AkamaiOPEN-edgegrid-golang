@@ -272,7 +272,7 @@
     * `UpdateSiemSettingsRequest`
     * `UpdateSiemSettingsResponse`
 
-
+  * Added field `Source` in `GetExportConfigurationRequest` and field `TargetProduct` in `GetExportConfigurationResponse`
 
 
 

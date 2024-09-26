@@ -9,6 +9,7 @@
 	"production": {
 		"status": "Inactive"
 	},
+	"targetProduct" : "KSD",
 	"createDate": "2020-10-06T18:00:20Z",
 	"createdBy": "akava-terraform",
 	"selectedHosts": [

@@ -3,11 +3,16 @@ package appsec
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"reflect"
 
 	"time"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
@@ -32,8 +37,9 @@ type (
 
 	// GetExportConfigurationRequest is used to call GetExportConfiguration.
 	GetExportConfigurationRequest struct {
-		ConfigID int `json:"configId"`
-		Version  int `json:"version"`
+		ConfigID int    `json:"configId"`
+		Version  int    `json:"version"`
+		Source   string `json:"source,omitempty"`
 	}
 
 	// EvaluatingSecurityPolicy is returned from a call to GetExportConfiguration.
@@ -59,6 +65,7 @@ type (
 		Production struct {
 			Status string `json:"status"`
 		} `json:"production"`
+		TargetProduct   string    `json:"targetProduct"`
 		CreateDate      time.Time `json:"-"`
 		CreatedBy       string    `json:"createdBy"`
 		SelectedHosts   []string  `json:"selectedHosts"`
@@ -816,6 +823,19 @@ type (
 	}
 )
 
+// Validate validates an GetExportConfigurationRequest struct.
+func (v GetExportConfigurationRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Source": validation.Validate(v.Source, validation.In("TF").Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: 'TF' or empty", v.Source))),
+	})
+}
+
+var (
+	// ErrGetExportConfiguration is returned when ErrGetExportConfiguration fails
+	ErrGetExportConfiguration = errors.New("get export configuration")
+)
+
 // UnmarshalJSON reads a ConditionsValue struct from its data argument.
 func (c *ConditionsValue) UnmarshalJSON(data []byte) error {
 	var nums interface{}
@@ -848,12 +868,22 @@ func (p *appsec) GetExportConfiguration(ctx context.Context, params GetExportCon
 	logger := p.Log(ctx)
 	logger.Debug("GetExportConfiguration")
 
-	uri := fmt.Sprintf(
-		"/appsec/v1/export/configs/%d/versions/%d",
-		params.ConfigID,
-		params.Version)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetExportConfiguration, ErrStructValidation, err)
+	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	uri, err := url.Parse(fmt.Sprintf("/appsec/v1/export/configs/%d/versions/%d", params.ConfigID, params.Version))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse url: %s", err)
+	}
+
+	if params.Source != "" {
+		q := uri.Query()
+		q.Add("source", params.Source)
+		uri.RawQuery = q.Encode()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetExportConfiguration request: %w", err)
 	}
