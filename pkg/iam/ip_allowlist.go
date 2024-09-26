@@ -8,39 +8,18 @@ import (
 )
 
 type (
-	// IPAllowlist is the IAM IP allowlist API interface
-	IPAllowlist interface {
-		// DisableIPAllowlist disables IP allowlist on your account. After you disable IP allowlist,
-		// users can access Control Center regardless of their IP address or who assigns it.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/post-allowlist-disable
-		DisableIPAllowlist(context.Context) error
-
-		// EnableIPAllowlist enables IP allowlist on your account. Before you enable IP allowlist,
-		// add at least one IP address to allow access to Control Center.
-		// The allowlist can't be empty with IP allowlist enabled.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/post-allowlist-enable
-		EnableIPAllowlist(context.Context) error
-
-		// GetIPAllowlistStatus indicates whether IP allowlist is enabled or disabled on your account.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-allowlist-status
-		GetIPAllowlistStatus(context.Context) (*GetIPAllowlistStatusResponse, error)
-	}
-
-	// GetIPAllowlistStatusResponse contains response from GetIPAllowlistStatus operation
+	// GetIPAllowlistStatusResponse contains response from the GetIPAllowlistStatus endpoint.
 	GetIPAllowlistStatusResponse struct {
 		Enabled bool `json:"enabled"`
 	}
 )
 
 var (
-	// ErrDisableIPAllowlist is returned when DisableIPAllowlist fails
+	// ErrDisableIPAllowlist is returned when DisableIPAllowlist fails.
 	ErrDisableIPAllowlist = errors.New("disable ip allowlist")
-	// ErrEnableIPAllowlist is returned when EnableIPAllowlist fails
+	// ErrEnableIPAllowlist is returned when EnableIPAllowlist fails.
 	ErrEnableIPAllowlist = errors.New("enable ip allowlist")
-	// ErrGetIPAllowlistStatus is returned when GetIPAllowlistStatus fails
+	// ErrGetIPAllowlistStatus is returned when GetIPAllowlistStatus fails.
 	ErrGetIPAllowlistStatus = errors.New("get ip allowlist status")
 )
 

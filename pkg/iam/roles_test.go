@@ -3,7 +3,7 @@ package iam
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -101,30 +101,30 @@ func TestIAM_CreateRole(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateRole(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			result, err := client.CreateRole(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -304,24 +304,24 @@ func TestIAM_GetRole(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetRole(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			result, err := client.GetRole(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -433,30 +433,30 @@ func TestIAM_UpdateRole(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateRole(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			result, err := client.UpdateRole(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -515,20 +515,20 @@ func TestIAM_DeleteRole(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeleteRole(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			err := client.DeleteRole(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
@@ -607,24 +607,24 @@ func TestIAM_ListRoles(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListRoles(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			result, err := client.ListRoles(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -685,24 +685,24 @@ func TestIAM_ListGrantableRoles(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListGrantableRoles(context.Background())
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }

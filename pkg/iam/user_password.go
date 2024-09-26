@@ -8,37 +8,23 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// UserPassword is the IAM managing user's password API interface
-	UserPassword interface {
-		// ResetUserPassword optionally sends a one-time use password to the user.
-		// If you send the email with the password directly to the user, the response for this operation doesn't include that password.
-		// If you don't send the password to the user through email, the password is included in the response.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/post-reset-password
-		ResetUserPassword(context.Context, ResetUserPasswordRequest) (*ResetUserPasswordResponse, error)
-
-		// SetUserPassword sets a specific password for a user
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/post-set-password
-		SetUserPassword(context.Context, SetUserPasswordRequest) error
-	}
-
-	// ResetUserPasswordRequest contains the request parameters of the reset user password endpoint
+	// ResetUserPasswordRequest contains the request parameters for the ResetUserPassword endpoint.
 	ResetUserPasswordRequest struct {
 		IdentityID string
 		SendEmail  bool
 	}
 
-	// ResetUserPasswordResponse contains the response from the reset user password endpoint
+	// ResetUserPasswordResponse contains the response from the ResetUserPassword endpoint.
 	ResetUserPasswordResponse struct {
 		NewPassword string `json:"newPassword"`
 	}
 
-	// SetUserPasswordRequest contains the request parameters of the set user password endpoint
+	// SetUserPasswordRequest contains the request parameters for the SetUserPassword endpoint.
 	SetUserPasswordRequest struct {
 		IdentityID  string `json:"-"`
 		NewPassword string `json:"newPassword"`
@@ -46,43 +32,46 @@ type (
 )
 
 var (
-	// ErrResetUserPassword is returned when ResetUserPassword fails
+	// ErrResetUserPassword is returned when ResetUserPassword fails.
 	ErrResetUserPassword = errors.New("reset user password")
 
-	// ErrSetUserPassword is returned when SetUserPassword fails
+	// ErrSetUserPassword is returned when SetUserPassword fails.
 	ErrSetUserPassword = errors.New("set user password")
 )
 
-// Validate validates ResetUserPasswordRequest
+// Validate validates ResetUserPasswordRequest.
 func (r ResetUserPasswordRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"IdentityID": validation.Validate(r.IdentityID, validation.Required),
-	}.Filter()
+	})
 }
 
-// Validate validates SetUserPasswordRequest
+// Validate validates SetUserPasswordRequest.
 func (r SetUserPasswordRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"IdentityID":  validation.Validate(r.IdentityID, validation.Required),
 		"NewPassword": validation.Validate(r.NewPassword, validation.Required),
-	}.Filter()
+	})
 }
 
 func (i *iam) ResetUserPassword(ctx context.Context, params ResetUserPasswordRequest) (*ResetUserPasswordResponse, error) {
+	logger := i.Log(ctx)
+	logger.Debug("ResetUserPassword")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrResetUserPassword, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/reset-password", params.IdentityID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/reset-password", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrResetUserPassword, err)
 	}
 
-	q := u.Query()
+	q := uri.Query()
 	q.Add("sendEmail", strconv.FormatBool(params.SendEmail))
-	u.RawQuery = q.Encode()
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrResetUserPassword, err)
 	}
@@ -101,13 +90,19 @@ func (i *iam) ResetUserPassword(ctx context.Context, params ResetUserPasswordReq
 }
 
 func (i *iam) SetUserPassword(ctx context.Context, params SetUserPasswordRequest) error {
+	logger := i.Log(ctx)
+	logger.Debug("SetUserPassword")
+
 	if err := params.Validate(); err != nil {
 		return fmt.Errorf("%s: %w:\n%s", ErrSetUserPassword, ErrStructValidation, err)
 	}
 
-	u := fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/set-password", params.IdentityID)
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/set-password", params.IdentityID))
+	if err != nil {
+		return fmt.Errorf("%w: failed to parse url: %s", ErrSetUserPassword, err)
+	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrSetUserPassword, err)
 	}

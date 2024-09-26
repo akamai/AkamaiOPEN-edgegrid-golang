@@ -11,7 +11,7 @@ import (
 	"github.com/tj/assert"
 )
 
-func TestIAMListAllowedCPCodes(t *testing.T) {
+func TestIAM_ListAllowedCPCodes(t *testing.T) {
 	tests := map[string]struct {
 		params           ListAllowedCPCodesRequest
 		responseStatus   int
@@ -166,28 +166,28 @@ func TestIAMListAllowedCPCodes(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListAllowedCPCodes(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.ListAllowedCPCodes(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestIAMListAuthorizedUsers(t *testing.T) {
+func TestIAM_ListAuthorizedUsers(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus   int
 		responseBody     string
@@ -267,28 +267,28 @@ func TestIAMListAuthorizedUsers(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAuthorizedUsers(context.Background())
-			if test.withError != nil {
-				test.withError(t, err)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestIAMListAllowedAPIs(t *testing.T) {
+func TestIAM_ListAllowedAPIs(t *testing.T) {
 	tests := map[string]struct {
 		params           ListAllowedAPIsRequest
 		responseStatus   int
@@ -457,28 +457,28 @@ func TestIAMListAllowedAPIs(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListAllowedAPIs(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.ListAllowedAPIs(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestIAMAccessibleGroups(t *testing.T) {
+func TestIAM_AccessibleGroups(t *testing.T) {
 	tests := map[string]struct {
 		params           ListAccessibleGroupsRequest
 		responseStatus   int
@@ -581,23 +581,23 @@ func TestIAMAccessibleGroups(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListAccessibleGroups(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.ListAccessibleGroups(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }

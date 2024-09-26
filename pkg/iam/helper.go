@@ -13,54 +13,31 @@ import (
 )
 
 type (
-	// Helper is a list of IAM helper API interfaces
-	Helper interface {
-		// ListAllowedCPCodes lists available CP codes for a user
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/post-api-clients-users-allowed-cpcodes
-		ListAllowedCPCodes(context.Context, ListAllowedCPCodesRequest) (ListAllowedCPCodesResponse, error)
-
-		// ListAuthorizedUsers lists authorized API client users
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-api-clients-users
-		ListAuthorizedUsers(context.Context) (ListAuthorizedUsersResponse, error)
-
-		// ListAllowedAPIs lists available APIs for a user
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-api-clients-users-allowed-apis
-		ListAllowedAPIs(context.Context, ListAllowedAPIsRequest) (ListAllowedAPIsResponse, error)
-
-		// ListAccessibleGroups lists groups available to a user
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-api-clients-users-group-access
-		ListAccessibleGroups(context.Context, ListAccessibleGroupsRequest) (ListAccessibleGroupsResponse, error)
-	}
-
-	// ListAllowedCPCodesRequest contains the request parameter for the list of allowed CP codes endpoint
+	// ListAllowedCPCodesRequest contains the request parameters for the ListAllowedCPCodes endpoint.
 	ListAllowedCPCodesRequest struct {
 		UserName string
 		Body     ListAllowedCPCodesRequestBody
 	}
 
-	// ListAllowedAPIsRequest contains the request parameters for the list of allowed APIs endpoint
+	// ListAllowedAPIsRequest contains the request parameters for the ListAllowedAPIs endpoint.
 	ListAllowedAPIsRequest struct {
 		UserName           string
 		ClientType         ClientType
 		AllowAccountSwitch bool
 	}
 
-	// ListAccessibleGroupsRequest contains the request parameter for the list of accessible groups endpoint
+	// ListAccessibleGroupsRequest contains the request parameter for the ListAccessibleGroups endpoint.
 	ListAccessibleGroupsRequest struct {
 		UserName string
 	}
 
-	// ListAllowedCPCodesRequestBody contains the filtering parameters for the list of allowed CP codes endpoint
+	// ListAllowedCPCodesRequestBody contains the filtering parameters for the ListAllowedCPCodes endpoint.
 	ListAllowedCPCodesRequestBody struct {
 		ClientType ClientType            `json:"clientType"`
 		Groups     []AllowedCPCodesGroup `json:"groups"`
 	}
 
-	// AllowedCPCodesGroup contains the group parameters for the list of allowed CP codes endpoint
+	// AllowedCPCodesGroup contains the group parameters for the ListAllowedCPCodes endpoint.
 	AllowedCPCodesGroup struct {
 		GroupID         int64                 `json:"groupId,omitempty"`
 		RoleID          int64                 `json:"roleId,omitempty"`
@@ -72,19 +49,19 @@ type (
 		SubGroups       []AllowedCPCodesGroup `json:"subGroups,omitempty"`
 	}
 
-	// ListAllowedCPCodesResponse contains response for the list of allowed CP codes endpoint
+	// ListAllowedCPCodesResponse contains response for the ListAllowedCPCodes endpoint.
 	ListAllowedCPCodesResponse []ListAllowedCPCodesResponseItem
 
-	// ListAllowedCPCodesResponseItem contains single item of the response for allowed CP codes endpoint
+	// ListAllowedCPCodesResponseItem contains single item of the response from the ListAllowedCPCodes endpoint.
 	ListAllowedCPCodesResponseItem struct {
 		Name  string `json:"name"`
 		Value int    `json:"value"`
 	}
 
-	// ListAuthorizedUsersResponse contains the response for the list of authorized users endpoint
+	// ListAuthorizedUsersResponse contains the response from the ListAuthorizedUsers endpoint.
 	ListAuthorizedUsersResponse []AuthorizedUser
 
-	// AuthorizedUser contains the details about the authorized user
+	// AuthorizedUser contains the details about the authorized user.
 	AuthorizedUser struct {
 		FirstName    string `json:"firstName"`
 		LastName     string `json:"lastName"`
@@ -93,10 +70,10 @@ type (
 		UIIdentityID string `json:"uiIdentityId"`
 	}
 
-	// ListAccessibleGroupsResponse contains the response for the list of accessible groups endpoint
+	// ListAccessibleGroupsResponse contains the response from the ListAccessibleGroups endpoint.
 	ListAccessibleGroupsResponse []AccessibleGroup
 
-	// AccessibleGroup contains the details about accessible group
+	// AccessibleGroup contains the details about accessible group.
 	AccessibleGroup struct {
 		GroupID         int64                `json:"groupId"`
 		RoleID          int64                `json:"roleId"`
@@ -107,7 +84,7 @@ type (
 		SubGroups       []AccessibleSubGroup `json:"subGroups"`
 	}
 
-	// AccessibleSubGroup contains the details about subgroup
+	// AccessibleSubGroup contains the details about subgroup.
 	AccessibleSubGroup struct {
 		GroupID       int64                `json:"groupId"`
 		GroupName     string               `json:"groupName"`
@@ -115,10 +92,10 @@ type (
 		SubGroups     []AccessibleSubGroup `json:"subGroups"`
 	}
 
-	// ListAllowedAPIsResponse contains the response for the list of allowed APIs endpoint
+	// ListAllowedAPIsResponse contains the response from the ListAllowedAPIs endpoint.
 	ListAllowedAPIsResponse []AllowedAPI
 
-	// AllowedAPI contains the details about the API
+	// AllowedAPI contains the details about the API.
 	AllowedAPI struct {
 		AccessLevels      []AccessLevel `json:"accessLevels"`
 		APIID             int64         `json:"apiId"`
@@ -130,31 +107,39 @@ type (
 		ServiceProviderID int64         `json:"serviceProviderId"`
 	}
 
-	// ClientType represents the type of the client
+	// ClientType represents the type of the client.
 	ClientType string
 )
 
 const (
-	// UserClientType is the `USER_CLIENT` client type
+	// UserClientType is the `USER_CLIENT` client type.
 	UserClientType ClientType = "USER_CLIENT"
-	// ServiceAccountClientType is the `SERVICE_ACCOUNT` client type
+	// ServiceAccountClientType is the `SERVICE_ACCOUNT` client type.
 	ServiceAccountClientType ClientType = "SERVICE_ACCOUNT"
-	// ClientClientType is the `CLIENT` client type
+	// ClientClientType is the `CLIENT` client type.
 	ClientClientType ClientType = "CLIENT"
 )
 
 var (
-	// ErrListAllowedCPCodes is returned when ListAllowedCPCodes fails
+	// ErrListAllowedCPCodes is returned when ListAllowedCPCodes fails.
 	ErrListAllowedCPCodes = errors.New("list allowed CP codes")
-	// ErrListAuthorizedUsers is returned when ListAuthorizedUsers fails
+	// ErrListAuthorizedUsers is returned when ListAuthorizedUsers fails.
 	ErrListAuthorizedUsers = errors.New("list authorized users")
-	// ErrListAllowedAPIs is returned when ListAllowedAPIs fails
+	// ErrListAllowedAPIs is returned when ListAllowedAPIs fails.
 	ErrListAllowedAPIs = errors.New("list allowed APIs")
-	// ErrAccessibleGroups is returned when ListAccessibleGroups fails
+	// ErrAccessibleGroups is returned when ListAccessibleGroups fails.
 	ErrAccessibleGroups = errors.New("list accessible groups")
 )
 
-// Validate validates ListAllowedCPCodesRequest
+// Validate validates ClientType.
+func (c ClientType) Validate() error {
+	return validation.In(ClientClientType, ServiceAccountClientType, UserClientType).
+		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s' or '%s'",
+			c, ClientClientType, ServiceAccountClientType, UserClientType)).
+		Validate(c)
+}
+
+// Validate validates ListAllowedCPCodesRequest.
 func (r ListAllowedCPCodesRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"UserName": validation.Validate(r.UserName, validation.Required),
@@ -162,7 +147,7 @@ func (r ListAllowedCPCodesRequest) Validate() error {
 	})
 }
 
-// Validate validates ListAllowedCPCodesRequestBody
+// Validate validates ListAllowedCPCodesRequestBody.
 func (r ListAllowedCPCodesRequestBody) Validate() error {
 	return validation.Errors{
 		"ClientType": validation.Validate(r.ClientType, validation.Required, validation.In(ClientClientType, UserClientType, ServiceAccountClientType).Error(fmt.Sprintf("value '%s' is invalid. Must be one of: 'CLIENT' or 'USER_CLIENT' or 'SERVICE_ACCOUNT'", r.ClientType))),
@@ -170,7 +155,7 @@ func (r ListAllowedCPCodesRequestBody) Validate() error {
 	}.Filter()
 }
 
-// Validate validates ListAllowedAPIsRequest
+// Validate validates ListAllowedAPIsRequest.
 func (r ListAllowedAPIsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"UserName":   validation.Validate(r.UserName, validation.Required),
@@ -178,7 +163,7 @@ func (r ListAllowedAPIsRequest) Validate() error {
 	})
 }
 
-// Validate validates ListAccessibleGroupsRequest
+// Validate validates ListAccessibleGroupsRequest.
 func (r ListAccessibleGroupsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"UserName": validation.Validate(r.UserName, validation.Required),
@@ -193,9 +178,9 @@ func (i *iam) ListAllowedCPCodes(ctx context.Context, params ListAllowedCPCodesR
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListAllowedCPCodes, ErrStructValidation, err)
 	}
 
-	u := fmt.Sprintf("/identity-management/v3/users/%s/allowed-cpcodes", params.UserName)
+	uri := fmt.Sprintf("/identity-management/v3/users/%s/allowed-cpcodes", params.UserName)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAllowedCPCodes, err)
 	}
@@ -243,20 +228,20 @@ func (i *iam) ListAllowedAPIs(ctx context.Context, params ListAllowedAPIsRequest
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListAllowedAPIs, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/users/%s/allowed-apis", params.UserName))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/users/%s/allowed-apis", params.UserName))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAllowedAPIs, err)
 	}
 
-	q := u.Query()
+	q := uri.Query()
 	if params.ClientType != "" {
 		q.Add("clientType", string(params.ClientType))
 
 	}
 	q.Add("allowAccountSwitch", strconv.FormatBool(params.AllowAccountSwitch))
-	u.RawQuery = q.Encode()
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAllowedAPIs, err)
 	}
@@ -282,9 +267,9 @@ func (i *iam) ListAccessibleGroups(ctx context.Context, params ListAccessibleGro
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrAccessibleGroups, ErrStructValidation, err)
 	}
 
-	u := fmt.Sprintf("/identity-management/v3/users/%s/group-access", params.UserName)
+	uri := fmt.Sprintf("/identity-management/v3/users/%s/group-access", params.UserName)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrAccessibleGroups, err)
 	}

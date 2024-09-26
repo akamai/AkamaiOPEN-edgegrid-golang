@@ -3,7 +3,7 @@ package iam
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,7 +13,7 @@ import (
 	"github.com/tj/assert"
 )
 
-func TestCreateGroup(t *testing.T) {
+func TestIAM_CreateGroup(t *testing.T) {
 	tests := map[string]struct {
 		params              GroupRequest
 		responseStatus      int
@@ -86,34 +86,34 @@ func TestCreateGroup(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateGroup(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			result, err := client.CreateGroup(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestMoveGroup(t *testing.T) {
+func TestIAM_MoveGroup(t *testing.T) {
 	tests := map[string]struct {
 		params              MoveGroupRequest
 		expectedRequestBody string
@@ -138,22 +138,22 @@ func TestMoveGroup(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, "/identity-management/v3/user-admin/groups/move", r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				body, err := ioutil.ReadAll(r.Body)
+				body, err := io.ReadAll(r.Body)
 				require.NoError(t, err)
-				assert.Equal(t, test.expectedRequestBody, string(body))
-				w.WriteHeader(test.responseStatus)
-				_, err = w.Write([]byte(test.responseBody))
+				assert.Equal(t, tc.expectedRequestBody, string(body))
+				w.WriteHeader(tc.responseStatus)
+				_, err = w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.MoveGroup(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			err := client.MoveGroup(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
@@ -161,7 +161,7 @@ func TestMoveGroup(t *testing.T) {
 	}
 }
 
-func TestGetGroup(t *testing.T) {
+func TestIAM_GetGroup(t *testing.T) {
 	tests := map[string]struct {
 		params           GetGroupRequest
 		responseStatus   int
@@ -255,28 +255,28 @@ func TestGetGroup(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetGroup(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			result, err := client.GetGroup(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestListAffectedUsers(t *testing.T) {
+func TestIAM_ListAffectedUsers(t *testing.T) {
 	tests := map[string]struct {
 		params           ListAffectedUsersRequest
 		responseStatus   int
@@ -363,28 +363,28 @@ func TestListAffectedUsers(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListAffectedUsers(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			result, err := client.ListAffectedUsers(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestListGroups(t *testing.T) {
+func TestIAM_ListGroups(t *testing.T) {
 	tests := map[string]struct {
 		params           ListGroupsRequest
 		responseStatus   int
@@ -482,28 +482,28 @@ func TestListGroups(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListGroups(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.ListGroups(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestRemoveGroup(t *testing.T) {
+func TestIAM_RemoveGroup(t *testing.T) {
 	tests := map[string]struct {
 		params         RemoveGroupRequest
 		responseStatus int
@@ -567,19 +567,19 @@ func TestRemoveGroup(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.RemoveGroup(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			err := client.RemoveGroup(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
@@ -587,7 +587,7 @@ func TestRemoveGroup(t *testing.T) {
 	}
 }
 
-func TestUpdateGroupName(t *testing.T) {
+func TestIAM_UpdateGroupName(t *testing.T) {
 	tests := map[string]struct {
 		params              GroupRequest
 		responseStatus      int
@@ -660,29 +660,29 @@ func TestUpdateGroupName(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateGroupName(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			result, err := client.UpdateGroupName(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }

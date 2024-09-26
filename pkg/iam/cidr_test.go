@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestListCIDRBlocks(t *testing.T) {
+func TestIAM_ListCIDRBlocks(t *testing.T) {
 	tests := map[string]struct {
 		params           ListCIDRBlocksRequest
 		responseStatus   int
@@ -166,29 +166,29 @@ func TestListCIDRBlocks(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListCIDRBlocks(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.ListCIDRBlocks(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestCreateCIDRBlock(t *testing.T) {
+func TestIAM_CreateCIDRBlock(t *testing.T) {
 	tests := map[string]struct {
 		params              CreateCIDRBlockRequest
 		responseStatus      int
@@ -314,34 +314,34 @@ func TestCreateCIDRBlock(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateCIDRBlock(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.CreateCIDRBlock(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestGetCIDRBlock(t *testing.T) {
+func TestIAM_GetCIDRBlock(t *testing.T) {
 	tests := map[string]struct {
 		params           GetCIDRBlockRequest
 		responseStatus   int
@@ -475,29 +475,29 @@ func TestGetCIDRBlock(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetCIDRBlock(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.GetCIDRBlock(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestUpdateCIDRBlock(t *testing.T) {
+func TestIAM_UpdateCIDRBlock(t *testing.T) {
 	tests := map[string]struct {
 		params              UpdateCIDRBlockRequest
 		responseStatus      int
@@ -606,34 +606,34 @@ func TestUpdateCIDRBlock(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateCIDRBlock(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.UpdateCIDRBlock(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestDeleteCIDRBlocks(t *testing.T) {
+func TestIAM_DeleteCIDRBlock(t *testing.T) {
 	tests := map[string]struct {
 		params         DeleteCIDRBlockRequest
 		responseStatus int
@@ -710,20 +710,20 @@ func TestDeleteCIDRBlocks(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeleteCIDRBlock(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.DeleteCIDRBlock(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -731,7 +731,7 @@ func TestDeleteCIDRBlocks(t *testing.T) {
 	}
 }
 
-func TestValidateCIDRBlocks(t *testing.T) {
+func TestIAM_ValidateCIDRBlock(t *testing.T) {
 	tests := map[string]struct {
 		params         ValidateCIDRBlockRequest
 		responseStatus int
@@ -784,20 +784,20 @@ func TestValidateCIDRBlocks(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.ValidateCIDRBlock(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.ValidateCIDRBlock(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)

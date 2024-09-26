@@ -13,94 +13,41 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// PropertyUserType filters property users based on their access to the property
-type PropertyUserType string
-
-const (
-	// PropertyUserTypeAll selects all property users
-	PropertyUserTypeAll PropertyUserType = "all"
-	// PropertyUserTypeAssigned selects users that have access to the property
-	PropertyUserTypeAssigned PropertyUserType = "assigned"
-	// PropertyUserTypeBlocked selects users whose access to the property is blocked
-	PropertyUserTypeBlocked PropertyUserType = "blocked"
-)
-
-// Validate validates PropertyUserType
-func (p PropertyUserType) Validate() error {
-	return validation.In(PropertyUserTypeAll, PropertyUserTypeAssigned, PropertyUserTypeBlocked).
-		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s' or '%s'",
-			p, PropertyUserTypeAll, PropertyUserTypeAssigned, PropertyUserTypeBlocked)).
-		Validate(p)
-}
-
 type (
-	// Properties is the IAM properties API interface
-	Properties interface {
-		// ListProperties lists the properties for the current account or other managed accounts using the accountSwitchKey parameter.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-properties
-		ListProperties(context.Context, ListPropertiesRequest) (*ListPropertiesResponse, error)
-
-		// ListUsersForProperty lists users who can access a property.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-property-users
-		ListUsersForProperty(context.Context, ListUsersForPropertyRequest) (*ListUsersForPropertyResponse, error)
-
-		// GetProperty lists a property's details.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-property
-		GetProperty(context.Context, GetPropertyRequest) (*GetPropertyResponse, error)
-
-		// MoveProperty moves a property from one group to another group.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-property
-		MoveProperty(context.Context, MovePropertyRequest) error
-
-		// MapPropertyIDToName returns property name for given (IAM) property ID
-		// Mainly to be used to map (IAM) Property ID to (PAPI) Property ID
-		// To finish the mapping, please use papi.MapPropertyNameToID
-		MapPropertyIDToName(context.Context, MapPropertyIDToNameRequest) (*string, error)
-
-		// BlockUsers blocks the users on a property.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-property-users-block
-		BlockUsers(context.Context, BlockUsersRequest) (*BlockUsersResponse, error)
-	}
-
-	// ListPropertiesRequest contains the request parameters for the list properties operation.
+	// ListPropertiesRequest contains the request parameters for the ListProperties endpoint.
 	ListPropertiesRequest struct {
 		GroupID int64
 		Actions bool
 	}
 
-	// ListUsersForPropertyRequest contains the request parameters for the ListUsersForProperty operation.
+	// ListUsersForPropertyRequest contains the request parameters for the ListUsersForProperty endpoint.
 	ListUsersForPropertyRequest struct {
 		PropertyID int64
 		UserType   PropertyUserType
 	}
 
-	// GetPropertyRequest contains the request parameters for the get property operation.
+	// GetPropertyRequest contains the request parameters for the GetProperty endpoint.
 	GetPropertyRequest struct {
 		PropertyID int64
 		GroupID    int64
 	}
 
-	// MapPropertyNameToIDRequest is the argument for MapPropertyNameToID
+	// MapPropertyNameToIDRequest is the argument for MapPropertyNameToID.
 	MapPropertyNameToIDRequest string
 
-	// BlockUsersRequest contains the request parameters for the BlockUsers operation.
+	// BlockUsersRequest contains the request parameters for the BlockUsers endpoint.
 	BlockUsersRequest struct {
 		PropertyID int64
 		Body       BlockUsersRequestBody
 	}
 
-	// ListPropertiesResponse holds the response data from ListProperties.
+	// ListPropertiesResponse holds the response data from the ListProperties endpoint.
 	ListPropertiesResponse []Property
 
-	// ListUsersForPropertyResponse holds the response data from ListUsersForProperty.
+	// ListUsersForPropertyResponse holds the response data from the ListUsersForProperty endpoint.
 	ListUsersForPropertyResponse []UsersForProperty
 
-	// GetPropertyResponse holds the response data from GetProperty.
+	// GetPropertyResponse holds the response data from the GetProperty endpoint.
 	GetPropertyResponse struct {
 		ARLConfigFile string    `json:"arlConfigFile"`
 		CreatedBy     string    `json:"createdBy"`
@@ -113,25 +60,25 @@ type (
 		PropertyName  string    `json:"propertyName"`
 	}
 
-	// BlockUsersResponse holds the response data from BlockUsers.
+	// BlockUsersResponse holds the response data from the BlockUsers endpoint.
 	BlockUsersResponse []UsersForProperty
 
-	// MovePropertyRequest contains the request parameters for the MoveProperty operation.
+	// MovePropertyRequest contains the request parameters for the MoveProperty endpoint.
 	MovePropertyRequest struct {
 		PropertyID int64
 		Body       MovePropertyRequestBody
 	}
 
-	// MovePropertyRequestBody contains body parameters for the MoveProperty operation.
+	// MovePropertyRequestBody contains body parameters for the MoveProperty endpoint.
 	MovePropertyRequestBody struct {
 		DestinationGroupID int64 `json:"destinationGroupId"`
 		SourceGroupID      int64 `json:"sourceGroupId"`
 	}
 
-	// BlockUsersRequestBody hold the request body parameters for BlockUsers operation.
+	// BlockUsersRequestBody hold the request body parameters for the BlockUsers endpoint.
 	BlockUsersRequestBody []BlockUserItem
 
-	// BlockUserItem contains body parameters for the BlockUsers operation.
+	// BlockUserItem contains body parameters for the BlockUsers endpoint.
 	BlockUserItem struct {
 		UIIdentityID string `json:"uiIdentityId"`
 	}
@@ -151,7 +98,7 @@ type (
 		Move bool `json:"move"`
 	}
 
-	// MapPropertyIDToNameRequest is the argument for MapPropertyIDToName
+	// MapPropertyIDToNameRequest is the argument for MapPropertyIDToName.
 	MapPropertyIDToNameRequest struct {
 		PropertyID int64
 		GroupID    int64
@@ -165,9 +112,29 @@ type (
 		UIIdentityID string `json:"uiIdentityId"`
 		UIUserName   string `json:"uiUserName"`
 	}
+
+	// PropertyUserType filters property users based on their access to the property.
+	PropertyUserType string
 )
 
-// Validate validates ListUsersForPropertyRequest
+const (
+	// PropertyUserTypeAll selects all property users.
+	PropertyUserTypeAll PropertyUserType = "all"
+	// PropertyUserTypeAssigned selects users that have access to the property.
+	PropertyUserTypeAssigned PropertyUserType = "assigned"
+	// PropertyUserTypeBlocked selects users whose access to the property is blocked.
+	PropertyUserTypeBlocked PropertyUserType = "blocked"
+)
+
+// Validate validates PropertyUserType.
+func (p PropertyUserType) Validate() error {
+	return validation.In(PropertyUserTypeAll, PropertyUserTypeAssigned, PropertyUserTypeBlocked).
+		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s' or '%s'",
+			p, PropertyUserTypeAll, PropertyUserTypeAssigned, PropertyUserTypeBlocked)).
+		Validate(p)
+}
+
+// Validate validates ListUsersForPropertyRequest.
 func (r ListUsersForPropertyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
@@ -175,7 +142,7 @@ func (r ListUsersForPropertyRequest) Validate() error {
 	})
 }
 
-// Validate validates GetPropertyRequest
+// Validate validates GetPropertyRequest.
 func (r GetPropertyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
@@ -183,7 +150,7 @@ func (r GetPropertyRequest) Validate() error {
 	})
 }
 
-// Validate validates MapPropertyIDToNameRequest
+// Validate validates MapPropertyIDToNameRequest.
 func (r MapPropertyIDToNameRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
@@ -191,7 +158,7 @@ func (r MapPropertyIDToNameRequest) Validate() error {
 	})
 }
 
-// Validate validates MovePropertyRequest
+// Validate validates MovePropertyRequest.
 func (r MovePropertyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
@@ -199,15 +166,15 @@ func (r MovePropertyRequest) Validate() error {
 	})
 }
 
-// Validate validates MovePropertyRequestBody
+// Validate validates MovePropertyRequestBody.
 func (r MovePropertyRequestBody) Validate() error {
-	return edgegriderr.ParseValidationErrors(validation.Errors{
+	return validation.Errors{
 		"DestinationGroupID": validation.Validate(r.DestinationGroupID, validation.Required),
 		"SourceGroupID":      validation.Validate(r.SourceGroupID, validation.Required),
-	})
+	}.Filter()
 }
 
-// Validate validates BlockUsersRequest
+// Validate validates BlockUsersRequest.
 func (r BlockUsersRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
@@ -215,7 +182,7 @@ func (r BlockUsersRequest) Validate() error {
 	})
 }
 
-// Validate validates BlockUserItem
+// Validate validates BlockUserItem.
 func (r BlockUserItem) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"UIIdentityID": validation.Validate(r.UIIdentityID, validation.Required),
@@ -223,25 +190,25 @@ func (r BlockUserItem) Validate() error {
 }
 
 var (
-	// ErrListProperties is returned when ListProperties fails
+	// ErrListProperties is returned when ListProperties fails.
 	ErrListProperties = errors.New("list properties")
-	// ErrListUsersForProperty is returned when ListUsersForProperty fails
+	// ErrListUsersForProperty is returned when ListUsersForProperty fails.
 	ErrListUsersForProperty = errors.New("list users for property")
-	// ErrGetProperty is returned when GetProperty fails
+	// ErrGetProperty is returned when GetProperty fails.
 	ErrGetProperty = errors.New("get property")
-	// ErrMoveProperty is returned when MoveProperty fails
+	// ErrMoveProperty is returned when MoveProperty fails.
 	ErrMoveProperty = errors.New("move property")
-	// ErrMapPropertyIDToName is returned when MapPropertyIDToName fails
+	// ErrMapPropertyIDToName is returned when MapPropertyIDToName fails.
 	ErrMapPropertyIDToName = errors.New("map property by id")
-	// ErrMapPropertyNameToID is returned when MapPropertyNameToID fails
+	// ErrMapPropertyNameToID is returned when MapPropertyNameToID fails.
 	ErrMapPropertyNameToID = errors.New("map property by name")
-	// ErrNoProperty is returned when MapPropertyNameToID did not find given property
+	// ErrNoProperty is returned when MapPropertyNameToID did not find given property.
 	ErrNoProperty = errors.New("no such property")
-	// ErrBlockUsers is returned when BlockUsers fails
+	// ErrBlockUsers is returned when BlockUsers fails.
 	ErrBlockUsers = errors.New("block users")
 )
 
-func (i *iam) ListProperties(ctx context.Context, params ListPropertiesRequest) (*ListPropertiesResponse, error) {
+func (i *iam) ListProperties(ctx context.Context, params ListPropertiesRequest) (ListPropertiesResponse, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListProperties")
 
@@ -272,10 +239,10 @@ func (i *iam) ListProperties(ctx context.Context, params ListPropertiesRequest) 
 		return nil, fmt.Errorf("%s: %w", ErrListProperties, i.Error(resp))
 	}
 
-	return &result, nil
+	return result, nil
 }
 
-func (i *iam) ListUsersForProperty(ctx context.Context, params ListUsersForPropertyRequest) (*ListUsersForPropertyResponse, error) {
+func (i *iam) ListUsersForProperty(ctx context.Context, params ListUsersForPropertyRequest) (ListUsersForPropertyResponse, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListUsersForProperty")
 
@@ -309,7 +276,7 @@ func (i *iam) ListUsersForProperty(ctx context.Context, params ListUsersForPrope
 		return nil, fmt.Errorf("%s: %w", ErrListUsersForProperty, i.Error(resp))
 	}
 
-	return &result, nil
+	return result, nil
 }
 
 func (i *iam) GetProperty(ctx context.Context, params GetPropertyRequest) (*GetPropertyResponse, error) {
@@ -408,7 +375,7 @@ func (i *iam) MapPropertyNameToID(ctx context.Context, name MapPropertyNameToIDR
 		return nil, fmt.Errorf("%w: request failed: %s", ErrMapPropertyNameToID, err)
 	}
 
-	for _, property := range *properties {
+	for _, property := range properties {
 		if property.PropertyName == string(name) {
 			return &property.PropertyID, nil
 		}

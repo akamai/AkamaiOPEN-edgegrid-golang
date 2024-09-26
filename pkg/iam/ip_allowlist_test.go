@@ -10,7 +10,7 @@ import (
 	"github.com/tj/assert"
 )
 
-func TestDisableIPAllowlist(t *testing.T) {
+func TestIAM_DisableIPAllowlist(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus int
 		expectedPath   string
@@ -43,21 +43,21 @@ func TestDisableIPAllowlist(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				if test.responseBody != "" {
-					_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				if tc.responseBody != "" {
+					_, err := w.Write([]byte(tc.responseBody))
 					assert.NoError(t, err)
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
 			err := client.DisableIPAllowlist(context.Background())
-			if test.withError != nil {
-				test.withError(t, err)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -65,7 +65,7 @@ func TestDisableIPAllowlist(t *testing.T) {
 	}
 }
 
-func TestEnableIPAllowlist(t *testing.T) {
+func TestIAM_EnableIPAllowlist(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus int
 		expectedPath   string
@@ -98,21 +98,21 @@ func TestEnableIPAllowlist(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				if test.responseBody != "" {
-					_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				if tc.responseBody != "" {
+					_, err := w.Write([]byte(tc.responseBody))
 					assert.NoError(t, err)
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
 			err := client.EnableIPAllowlist(context.Background())
-			if test.withError != nil {
-				test.withError(t, err)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -120,7 +120,7 @@ func TestEnableIPAllowlist(t *testing.T) {
 	}
 }
 
-func TestGetIPAllowlistStatus(t *testing.T) {
+func TestIAM_GetIPAllowlistStatus(t *testing.T) {
 	tests := map[string]struct {
 		responseStatus   int
 		responseBody     string
@@ -173,23 +173,23 @@ func TestGetIPAllowlistStatus(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetIPAllowlistStatus(context.Background())
-			if test.withError != nil {
-				test.withError(t, err)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }

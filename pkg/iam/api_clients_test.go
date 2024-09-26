@@ -3,7 +3,7 @@ package iam
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -157,23 +157,23 @@ func TestIAM_LockAPIClient(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			response, err := client.LockAPIClient(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			response, err := client.LockAPIClient(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, response)
+			assert.Equal(t, tc.expectedResponse, response)
 		})
 	}
 }
@@ -287,28 +287,28 @@ func TestIAM_UnlockAPIClient(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			response, err := client.UnlockAPIClient(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			response, err := client.UnlockAPIClient(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, response)
+			assert.Equal(t, tc.expectedResponse, response)
 		})
 	}
 }
 
-func TestListAPIClients(t *testing.T) {
+func TestIAM_ListAPIClients(t *testing.T) {
 	tests := map[string]struct {
 		params           ListAPIClientsRequest
 		responseStatus   int
@@ -537,29 +537,29 @@ func TestListAPIClients(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListAPIClients(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.ListAPIClients(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestCreateAPIClient(t *testing.T) {
+func TestIAM_CreateAPIClient(t *testing.T) {
 	tests := map[string]struct {
 		params              CreateAPIClientRequest
 		expectedPath        string
@@ -1080,7 +1080,7 @@ func TestCreateAPIClient(t *testing.T) {
 		"validation errors - internal validations": {
 			params: CreateAPIClientRequest{APIAccess: APIAccess{APIs: []API{{}}}, AuthorizedUsers: []string{"user1"}, ClientType: "abc", GroupAccess: GroupAccess{Groups: []ClientGroup{{}}}, PurgeOptions: &PurgeOptions{CPCodeAccess: CPCodeAccess{AllCurrentAndNewCPCodes: false, CPCodes: nil}}},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create api client: struct validation:\nAPIs[0]: {\n\tAPIID: cannot be blank\n\tAccessLevel: cannot be blank\n}\nClientType: value 'abc' is invalid. Must be one of: 'CLIENT' or 'USER_CLIENT'\nGroups[0]: {\n\tGroupID: cannot be blank\n\tRoleID: cannot be blank\n}\nCPCodes: is required", err.Error())
+				assert.Equal(t, "create api client: struct validation:\nAPIs[0]: {\n\tAPIID: cannot be blank\n\tAccessLevel: cannot be blank\n}\nClientType: value 'abc' is invalid. Must be one of: 'CLIENT', 'SERVICE_ACCOUNT' or 'USER_CLIENT'\nGroups[0]: {\n\tGroupID: cannot be blank\n\tRoleID: cannot be blank\n}\nCPCodes: is required", err.Error())
 			},
 		},
 		"500 internal server error": {
@@ -1119,35 +1119,35 @@ func TestCreateAPIClient(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.JSONEq(t, test.expectedRequestBody, string(body))
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			response, err := client.CreateAPIClient(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			response, err := client.CreateAPIClient(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, response)
+			assert.Equal(t, tc.expectedResponse, response)
 		})
 	}
 }
 
-func TestUpdateAPIClient(t *testing.T) {
+func TestIAM_UpdateAPIClient(t *testing.T) {
 	tests := map[string]struct {
 		params              UpdateAPIClientRequest
 		expectedPath        string
@@ -1835,13 +1835,13 @@ func TestUpdateAPIClient(t *testing.T) {
 		"validation errors": {
 			params: UpdateAPIClientRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "update api client: struct validation:\nAPIs: cannot be blank\nAuthorizedUsers: cannot be blank\nClientType: cannot be blank\nGroups: cannot be blank", err.Error())
+				assert.Equal(t, "update api client: struct validation:\nAPIs: cannot be blank\nAuthorizedUsers: cannot be blank\nClientName: cannot be blank\nClientType: cannot be blank\nGroups: cannot be blank", err.Error())
 			},
 		},
 		"validation errors - internal validations": {
 			params: UpdateAPIClientRequest{Body: UpdateAPIClientRequestBody{APIAccess: APIAccess{APIs: []API{{}}}, AuthorizedUsers: []string{"user1"}, ClientType: "abc", GroupAccess: GroupAccess{Groups: []ClientGroup{{}}}, PurgeOptions: &PurgeOptions{CPCodeAccess: CPCodeAccess{AllCurrentAndNewCPCodes: false, CPCodes: nil}}}},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "update api client: struct validation:\nAPIs[0]: {\n\tAPIID: cannot be blank\n\tAccessLevel: cannot be blank\n}\nClientType: value 'abc' is invalid. Must be one of: 'CLIENT' or 'USER_CLIENT'\nGroups[0]: {\n\tGroupID: cannot be blank\n\tRoleID: cannot be blank\n}\nCPCodes: is required", err.Error())
+				assert.Equal(t, "update api client: struct validation:\nAPIs[0]: {\n\tAPIID: cannot be blank\n\tAccessLevel: cannot be blank\n}\nClientName: cannot be blank\nClientType: value 'abc' is invalid. Must be one of: 'CLIENT', 'SERVICE_ACCOUNT' or 'USER_CLIENT'\nGroups[0]: {\n\tGroupID: cannot be blank\n\tRoleID: cannot be blank\n}\nCPCodes: is required", err.Error())
 			},
 		},
 		"500 internal server error": {
@@ -1882,35 +1882,35 @@ func TestUpdateAPIClient(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.JSONEq(t, test.expectedRequestBody, string(body))
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			response, err := client.UpdateAPIClient(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			response, err := client.UpdateAPIClient(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, response)
+			assert.Equal(t, tc.expectedResponse, response)
 		})
 	}
 }
 
-func TestGetAPIClient(t *testing.T) {
+func TestIAM_GetAPIClient(t *testing.T) {
 	tests := map[string]struct {
 		params           GetAPIClientRequest
 		responseStatus   int
@@ -2284,29 +2284,29 @@ func TestGetAPIClient(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetAPIClient(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.GetAPIClient(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestDeleteAPIClient(t *testing.T) {
+func TestIAM_DeleteAPIClient(t *testing.T) {
 	tests := map[string]struct {
 		params         DeleteAPIClientRequest
 		responseStatus int
@@ -2348,20 +2348,20 @@ func TestDeleteAPIClient(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeleteAPIClient(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.DeleteAPIClient(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)

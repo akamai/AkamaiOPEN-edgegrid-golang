@@ -15,61 +15,7 @@ import (
 )
 
 type (
-	// Users is the IAM user identity API interface
-	Users interface {
-		// CreateUser creates a user in the account specified in your own API client credentials or clone an existing user's role assignments
-		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/post-ui-identity
-		CreateUser(context.Context, CreateUserRequest) (*User, error)
-
-		// GetUser gets  a specific user's profile
-		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/get-ui-identity
-		GetUser(context.Context, GetUserRequest) (*User, error)
-
-		// ListUsers returns a list of users who have access on this account
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-ui-identities
-		ListUsers(context.Context, ListUsersRequest) ([]UserListItem, error)
-
-		// RemoveUser removes a user identity
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/delete-ui-identity
-		RemoveUser(context.Context, RemoveUserRequest) error
-
-		// UpdateUserAuthGrants edits what groups a user has access to, and how the user can interact with the objects in those groups
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-ui-uiidentity-auth-grants
-		UpdateUserAuthGrants(context.Context, UpdateUserAuthGrantsRequest) ([]AuthGrant, error)
-
-		// UpdateUserInfo updates a user's information
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-ui-identity-basic-info
-		UpdateUserInfo(context.Context, UpdateUserInfoRequest) (*UserBasicInfo, error)
-
-		// UpdateUserNotifications subscribes or un-subscribes user to product notification emails
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-notifications
-		UpdateUserNotifications(context.Context, UpdateUserNotificationsRequest) (*UserNotifications, error)
-
-		// UpdateTFA updates a user's two-factor authentication setting and can reset tfa
-		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-ui-identity-tfa
-		/** @deprecated */
-		UpdateTFA(context.Context, UpdateTFARequest) error
-
-		// UpdateMFA updates a user's profile authentication method
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-user-profile-additional-authentication
-		UpdateMFA(context.Context, UpdateMFARequest) error
-
-		// ResetMFA resets a user's profile authentication method
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-ui-identity-reset-additional-authentication
-		ResetMFA(context.Context, ResetMFARequest) error
-	}
-
-	// CreateUserRequest contains the request parameters for the create user endpoint
+	// CreateUserRequest contains the request parameters for the CreateUser endpoint.
 	CreateUserRequest struct {
 		UserBasicInfo
 		AuthGrants    []AuthGrantRequest `json:"authGrants,omitempty"`
@@ -77,14 +23,14 @@ type (
 		SendEmail     bool               `json:"-"`
 	}
 
-	// ListUsersRequest contains the request parameters for the list users endpoint
+	// ListUsersRequest contains the request parameters for the ListUsers endpoint.
 	ListUsersRequest struct {
 		GroupID    *int64
 		AuthGrants bool
 		Actions    bool
 	}
 
-	// GetUserRequest contains the request parameters of the get user endpoint
+	// GetUserRequest contains the request parameters for the GetUser endpoint.
 	GetUserRequest struct {
 		IdentityID    string
 		Actions       bool
@@ -92,30 +38,30 @@ type (
 		Notifications bool
 	}
 
-	// UpdateUserInfoRequest contains the request parameters of the update user endpoint
+	// UpdateUserInfoRequest contains the request parameters for the UpdateUser endpoint.
 	UpdateUserInfoRequest struct {
 		IdentityID string
 		User       UserBasicInfo
 	}
 
-	// UpdateUserNotificationsRequest contains the request parameters of the update user notifications endpoint
+	// UpdateUserNotificationsRequest contains the request parameters for the UpdateUserNotifications endpoint.
 	UpdateUserNotificationsRequest struct {
 		IdentityID    string
 		Notifications *UserNotifications
 	}
 
-	// UpdateUserAuthGrantsRequest contains the request parameters of the update user auth grants endpoint
+	// UpdateUserAuthGrantsRequest contains the request parameters for the UpdateUserAuthGrants endpoint.
 	UpdateUserAuthGrantsRequest struct {
 		IdentityID string
 		AuthGrants []AuthGrantRequest
 	}
 
-	// RemoveUserRequest contains the request parameters of the remove user endpoint
+	// RemoveUserRequest contains the request parameters of the RemoveUser endpoint.
 	RemoveUserRequest struct {
 		IdentityID string
 	}
 
-	// User describes the response of the get and create user endpoints
+	// User describes the response from the GetUser and CreateUser endpoints.
 	User struct {
 		UserBasicInfo
 		IdentityID                         string            `json:"uiIdentityId"`
@@ -132,7 +78,7 @@ type (
 		AdditionalAuthenticationConfigured bool              `json:"additionalAuthenticationConfigured"`
 	}
 
-	// UserListItem describes the response of the list endpoint
+	// UserListItem describes the response from the ListUsers endpoint.
 	UserListItem struct {
 		FirstName                          string         `json:"firstName"`
 		LastName                           string         `json:"lastName"`
@@ -150,7 +96,7 @@ type (
 		AdditionalAuthenticationConfigured bool           `json:"additionalAuthenticationConfigured"`
 	}
 
-	// UserBasicInfo is the user basic info structure
+	// UserBasicInfo is the user basic info structure.
 	UserBasicInfo struct {
 		FirstName                string         `json:"firstName"`
 		LastName                 string         `json:"lastName"`
@@ -173,7 +119,7 @@ type (
 		AdditionalAuthentication Authentication `json:"additionalAuthentication"`
 	}
 
-	// UserActions encapsulates permissions available to the user for this group
+	// UserActions encapsulates permissions available to the user for this group.
 	UserActions struct {
 		APIClient             bool `json:"apiClient"`
 		Delete                bool `json:"delete"`
@@ -189,7 +135,7 @@ type (
 		CanGenerateBypassCode bool `json:"canGenerateBypassCode"`
 	}
 
-	// AuthGrant is user’s role assignments, per group
+	// AuthGrant is user’s role assignments, per group.
 	AuthGrant struct {
 		GroupID         int64       `json:"groupId"`
 		GroupName       string      `json:"groupName"`
@@ -200,7 +146,7 @@ type (
 		Subgroups       []AuthGrant `json:"subGroups,omitempty"`
 	}
 
-	// AuthGrantRequest is user’s role assignments, per group for the create/update operation
+	// AuthGrantRequest is user’s role assignments, per group for the create/update operation.
 	AuthGrantRequest struct {
 		GroupID   int64              `json:"groupId"`
 		IsBlocked bool               `json:"isBlocked"`
@@ -208,13 +154,13 @@ type (
 		Subgroups []AuthGrantRequest `json:"subGroups,omitempty"`
 	}
 
-	// UserNotifications types of notification emails the user receives
+	// UserNotifications types of notification emails the user receives.
 	UserNotifications struct {
 		EnableEmail bool                    `json:"enableEmailNotifications"`
 		Options     UserNotificationOptions `json:"options"`
 	}
 
-	// UserNotificationOptions types of notification emails the user receives
+	// UserNotificationOptions types of notification emails the user receives.
 	UserNotificationOptions struct {
 		NewUser                   bool     `json:"newUserNotification"`
 		PasswordExpiry            bool     `json:"passwordExpiry"`
@@ -223,78 +169,86 @@ type (
 		APIClientCredentialExpiry bool     `json:"apiClientCredentialExpiryNotification"`
 	}
 
-	// TFAActionType is a type for tfa action constants
+	// TFAActionType is a type for tfa action constants.
 	TFAActionType string
 
-	// UpdateTFARequest contains the request parameters of the tfa user endpoint
+	// UpdateTFARequest contains the request parameters for the UpdateTFA endpoint.
 	UpdateTFARequest struct {
 		IdentityID string
 		Action     TFAActionType
 	}
 
-	// Authentication is a type of additional authentication
+	// Authentication is a type of additional authentication.
 	Authentication string
 
-	// UpdateMFARequest contains the request body of the mfa user endpoint
+	// UpdateMFARequest contains the request body for the UpdateMFA endpoint.
 	UpdateMFARequest struct {
 		IdentityID string
 		Value      Authentication
 	}
 
-	// ResetMFARequest contains the request parameters of the rest mfa endpoint
+	// ResetMFARequest contains the request parameters for the ResetMFA endpoint.
 	ResetMFARequest struct {
 		IdentityID string
 	}
 )
 
 const (
-	// TFAActionEnable is an action value to use to enable tfa
+	// TFAActionEnable is an action value to use to enable tfa.
 	TFAActionEnable TFAActionType = "enable"
-	// TFAActionDisable is an action value to use to disable tfa
+	// TFAActionDisable is an action value to use to disable tfa.
 	TFAActionDisable TFAActionType = "disable"
-	// TFAActionReset is an action value to use to reset tfa
+	// TFAActionReset is an action value to use to reset tfa.
 	TFAActionReset TFAActionType = "reset"
-	// MFAAuthentication is authentication of type MFA
+	// MFAAuthentication is authentication of type MFA.
 	MFAAuthentication Authentication = "MFA"
-	// TFAAuthentication is authentication of type TFA
+	// TFAAuthentication is authentication of type TFA.
 	TFAAuthentication Authentication = "TFA"
-	// NoneAuthentication represents a state where no authentication method is configured
+	// NoneAuthentication represents a state where no authentication method is configured.
 	NoneAuthentication Authentication = "NONE"
 )
 
 var (
-	// ErrCreateUser is returned when CreateUser fails
+	// ErrCreateUser is returned when CreateUser fails.
 	ErrCreateUser = errors.New("create user")
 
-	// ErrGetUser is returned when GetUser fails
+	// ErrGetUser is returned when GetUser fails.
 	ErrGetUser = errors.New("get user")
 
-	// ErrListUsers is returned when GetUser fails
+	// ErrListUsers is returned when ListUsers fails.
 	ErrListUsers = errors.New("list users")
 
-	// ErrRemoveUser is returned when RemoveUser fails
+	// ErrRemoveUser is returned when RemoveUser fails.
 	ErrRemoveUser = errors.New("remove user")
 
-	// ErrUpdateUserAuthGrants is returned when UpdateUserAuthGrants fails
+	// ErrUpdateUserAuthGrants is returned when UpdateUserAuthGrants fails.
 	ErrUpdateUserAuthGrants = errors.New("update user auth grants")
 
-	// ErrUpdateUserInfo is returned when UpdateUserInfo fails
+	// ErrUpdateUserInfo is returned when UpdateUserInfo fails.
 	ErrUpdateUserInfo = errors.New("update user info")
 
-	// ErrUpdateUserNotifications is returned when UpdateUserNotifications fails
+	// ErrUpdateUserNotifications is returned when UpdateUserNotifications fails.
 	ErrUpdateUserNotifications = errors.New("update user notifications")
 
-	// ErrUpdateTFA is returned when UpdateTFA fails
+	// ErrUpdateTFA is returned when UpdateTFA fails.
 	ErrUpdateTFA = errors.New("update user's two-factor authentication")
 
-	// ErrUpdateMFA is returned when UpdateMFA fails
+	// ErrUpdateMFA is returned when UpdateMFA fails.
 	ErrUpdateMFA = errors.New("update user's authentication method")
 
-	// ErrResetMFA is returned when ResetMFA fails
+	// ErrResetMFA is returned when ResetMFA fails.
 	ErrResetMFA = errors.New("reset user's authentication method")
 )
 
-// Validate performs validation on AuthGrant
+// Validate validates Authentication.
+func (a Authentication) Validate() error {
+	return validation.In(MFAAuthentication, TFAAuthentication, NoneAuthentication).
+		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s' or '%s'",
+			a, MFAAuthentication, TFAAuthentication, NoneAuthentication)).
+		Validate(a)
+}
+
+// Validate validates validation on AuthGrant.
 func (r AuthGrant) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"GroupID": validation.Validate(r.GroupID, validation.Required),
@@ -302,29 +256,29 @@ func (r AuthGrant) Validate() error {
 	})
 }
 
-// Validate validates CreateUserRequest
+// Validate validates CreateUserRequest.
 func (r CreateUserRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"Country":                  validation.Validate(r.Country, validation.Required),
 		"Email":                    validation.Validate(r.Email, validation.Required, is.EmailFormat),
 		"FirstName":                validation.Validate(r.FirstName, validation.Required),
 		"LastName":                 validation.Validate(r.LastName, validation.Required),
 		"AuthGrants":               validation.Validate(r.AuthGrants, validation.Required),
 		"Notifications":            validation.Validate(r.Notifications),
-		"AdditionalAuthentication": validation.Validate(r.AdditionalAuthentication, validation.In(MFAAuthentication, TFAAuthentication, NoneAuthentication), validation.Required),
-	}.Filter()
+		"AdditionalAuthentication": validation.Validate(r.AdditionalAuthentication, validation.Required),
+	})
 }
 
-// Validate validates GetUserRequest
+// Validate validates GetUserRequest.
 func (r GetUserRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"IdentityID": validation.Validate(r.IdentityID, validation.Required),
 	})
 }
 
-// Validate validates UpdateUserInfoRequest
+// Validate validates UpdateUserInfoRequest.
 func (r UpdateUserInfoRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"IdentityID":        validation.Validate(r.IdentityID, validation.Required),
 		"FirstName":         validation.Validate(r.User.FirstName, validation.Required),
 		"LastName":          validation.Validate(r.User.LastName, validation.Required),
@@ -332,10 +286,10 @@ func (r UpdateUserInfoRequest) Validate() error {
 		"TimeZone":          validation.Validate(r.User.TimeZone, validation.Required),
 		"PreferredLanguage": validation.Validate(r.User.PreferredLanguage, validation.Required),
 		"SessionTimeOut":    validation.Validate(r.User.SessionTimeOut, validation.Required),
-	}.Filter()
+	})
 }
 
-// Validate validates UpdateUserNotificationsRequest
+// Validate validates UpdateUserNotificationsRequest.
 func (r UpdateUserNotificationsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"IdentityID":    validation.Validate(r.IdentityID, validation.Required),
@@ -343,7 +297,7 @@ func (r UpdateUserNotificationsRequest) Validate() error {
 	})
 }
 
-// Validate validates UpdateUserAuthGrantsRequest
+// Validate validates UpdateUserAuthGrantsRequest.
 func (r UpdateUserAuthGrantsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"IdentityID": validation.Validate(r.IdentityID, validation.Required),
@@ -351,46 +305,48 @@ func (r UpdateUserAuthGrantsRequest) Validate() error {
 	})
 }
 
-// Validate validates RemoveUserRequest
+// Validate validates RemoveUserRequest.
 func (r RemoveUserRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
-	}.Filter()
+	})
 }
 
-// Validate validates UpdateTFARequest
+// Validate validates UpdateTFARequest.
 func (r UpdateTFARequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"IdentityID": validation.Validate(r.IdentityID, validation.Required),
 		"Action": validation.Validate(r.Action, validation.Required, validation.In(TFAActionEnable, TFAActionDisable, TFAActionReset).
 			Error(fmt.Sprintf("value '%s' is invalid. Must be one of: 'enable', 'disable' or 'reset'", r.Action))),
-	}.Filter()
+	})
 }
 
-// Validate validates UpdateMFARequest
+// Validate validates UpdateMFARequest.
 func (r UpdateMFARequest) Validate() error {
-	return validation.Errors{
-		"Value": validation.Validate(r.Value, validation.Required, validation.In(MFAAuthentication, TFAAuthentication, NoneAuthentication).
-			Error(fmt.Sprintf("value '%s' is invalid. Must be one of: 'TFA', 'MFA' or 'NONE'", r.Value))),
-	}.Filter()
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Value": validation.Validate(r.Value, validation.Required),
+	})
 }
 
 func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, error) {
+	logger := i.Log(ctx)
+	logger.Debug("CreateUser")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse("/identity-management/v3/user-admin/ui-identities")
+	uri, err := url.Parse("/identity-management/v3/user-admin/ui-identities")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateUser, err)
 	}
 
-	q := u.Query()
+	q := uri.Query()
 	q.Add("sendEmail", strconv.FormatBool(params.SendEmail))
 
-	u.RawQuery = q.Encode()
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateUser, err)
 	}
@@ -409,23 +365,26 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 }
 
 func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error) {
+	logger := i.Log(ctx)
+	logger.Debug("GetUser")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s", params.IdentityID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetUser, err)
 	}
 
-	q := u.Query()
+	q := uri.Query()
 	q.Add("actions", strconv.FormatBool(params.Actions))
 	q.Add("authGrants", strconv.FormatBool(params.AuthGrants))
 	q.Add("notifications", strconv.FormatBool(params.Notifications))
 
-	u.RawQuery = q.Encode()
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetUser, err)
 	}
@@ -444,20 +403,23 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 }
 
 func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]UserListItem, error) {
-	u, err := url.Parse("/identity-management/v3/user-admin/ui-identities")
+	logger := i.Log(ctx)
+	logger.Debug("ListUsers")
+
+	uri, err := url.Parse("/identity-management/v3/user-admin/ui-identities")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse the URL:\n%s", ErrListUsers, err)
 	}
 
-	q := u.Query()
+	q := uri.Query()
 	q.Add("actions", strconv.FormatBool(params.Actions))
 	q.Add("authGrants", strconv.FormatBool(params.AuthGrants))
 	if params.GroupID != nil {
 		q.Add("groupId", strconv.FormatInt(*params.GroupID, 10))
 	}
-	u.RawQuery = q.Encode()
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request:\n%s", ErrListUsers, err)
 	}
@@ -476,16 +438,19 @@ func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]UserLis
 }
 
 func (i *iam) RemoveUser(ctx context.Context, params RemoveUserRequest) error {
+	logger := i.Log(ctx)
+	logger.Debug("RemoveUser")
+
 	if err := params.Validate(); err != nil {
 		return fmt.Errorf("%s: %w:\n%s", ErrRemoveUser, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s", params.IdentityID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s", params.IdentityID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveUser, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveUser, err)
 	}
@@ -503,16 +468,19 @@ func (i *iam) RemoveUser(ctx context.Context, params RemoveUserRequest) error {
 }
 
 func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGrantsRequest) ([]AuthGrant, error) {
+	logger := i.Log(ctx)
+	logger.Debug("UpdateUserAuthGrants")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserAuthGrants, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/auth-grants", params.IdentityID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/auth-grants", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserAuthGrants, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserAuthGrants, err)
 	}
@@ -532,22 +500,25 @@ func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGra
 }
 
 func (i *iam) UpdateUserInfo(ctx context.Context, params UpdateUserInfoRequest) (*UserBasicInfo, error) {
+	logger := i.Log(ctx)
+	logger.Debug("UpdateUserInfo")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserInfo, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/basic-info", params.IdentityID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/basic-info", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserInfo, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserInfo, err)
 	}
 
-	var rval UserBasicInfo
-	resp, err := i.Exec(req, &rval, params.User)
+	var result UserBasicInfo
+	resp, err := i.Exec(req, &result, params.User)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserInfo, err)
 	}
@@ -556,20 +527,23 @@ func (i *iam) UpdateUserInfo(ctx context.Context, params UpdateUserInfoRequest) 
 		return nil, fmt.Errorf("%s: %w", ErrUpdateUserInfo, i.Error(resp))
 	}
 
-	return &rval, nil
+	return &result, nil
 }
 
 func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNotificationsRequest) (*UserNotifications, error) {
+	logger := i.Log(ctx)
+	logger.Debug("UpdateUserNotifications")
+
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserNotifications, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/notifications", params.IdentityID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/notifications", params.IdentityID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserNotifications, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserNotifications, err)
 	}
@@ -588,20 +562,23 @@ func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNoti
 }
 
 func (i *iam) UpdateTFA(ctx context.Context, params UpdateTFARequest) error {
+	logger := i.Log(ctx)
+	logger.Debug("UpdateTFA")
+
 	if err := params.Validate(); err != nil {
 		return fmt.Errorf("%s: %w:\n%s", ErrUpdateTFA, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/tfa", params.IdentityID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/tfa", params.IdentityID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateTFA, err)
 	}
 
-	q := u.Query()
+	q := uri.Query()
 	q.Add("action", string(params.Action))
-	u.RawQuery = q.Encode()
+	uri.RawQuery = q.Encode()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateTFA, err)
 	}
@@ -619,16 +596,19 @@ func (i *iam) UpdateTFA(ctx context.Context, params UpdateTFARequest) error {
 }
 
 func (i *iam) UpdateMFA(ctx context.Context, params UpdateMFARequest) error {
+	logger := i.Log(ctx)
+	logger.Debug("UpdateMFA")
+
 	if err := params.Validate(); err != nil {
 		return fmt.Errorf("%s: %w:\n%s", ErrUpdateMFA, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/additionalAuthentication", params.IdentityID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/additionalAuthentication", params.IdentityID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateMFA, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateMFA, err)
 	}
@@ -646,13 +626,15 @@ func (i *iam) UpdateMFA(ctx context.Context, params UpdateMFARequest) error {
 }
 
 func (i *iam) ResetMFA(ctx context.Context, params ResetMFARequest) error {
+	logger := i.Log(ctx)
+	logger.Debug("ResetMFA")
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/additionalAuthentication/reset", params.IdentityID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/additionalAuthentication/reset", params.IdentityID))
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrResetMFA, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrResetMFA, err)
 	}

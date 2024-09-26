@@ -14,13 +14,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestListProperties(t *testing.T) {
+func TestIAM_ListProperties(t *testing.T) {
 	tests := map[string]struct {
 		params           ListPropertiesRequest
 		responseStatus   int
 		expectedPath     string
 		responseBody     string
-		expectedResponse *ListPropertiesResponse
+		expectedResponse ListPropertiesResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK - no query params": {
@@ -45,7 +45,7 @@ func TestListProperties(t *testing.T) {
     }
 ]
 `,
-			expectedResponse: &ListPropertiesResponse{
+			expectedResponse: ListPropertiesResponse{
 				{
 					PropertyID:              1,
 					PropertyName:            "property1",
@@ -83,7 +83,7 @@ func TestListProperties(t *testing.T) {
     }
 ]
 `,
-			expectedResponse: &ListPropertiesResponse{
+			expectedResponse: ListPropertiesResponse{
 				{
 					PropertyID:              1,
 					PropertyName:            "property1",
@@ -101,7 +101,7 @@ func TestListProperties(t *testing.T) {
 			responseStatus:   http.StatusOK,
 			expectedPath:     "/identity-management/v3/user-admin/properties?actions=false",
 			responseBody:     `[]`,
-			expectedResponse: &ListPropertiesResponse{},
+			expectedResponse: ListPropertiesResponse{},
 		},
 		"500 internal server error": {
 			params:         ListPropertiesRequest{},
@@ -126,34 +126,34 @@ func TestListProperties(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			users, err := client.ListProperties(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			users, err := client.ListProperties(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, users)
+			assert.Equal(t, tc.expectedResponse, users)
 		})
 	}
 }
 
-func TestListUserForProperty(t *testing.T) {
+func TestIAM_ListUserForProperty(t *testing.T) {
 	tests := map[string]struct {
 		params           ListUsersForPropertyRequest
 		responseStatus   int
 		expectedPath     string
 		responseBody     string
-		expectedResponse *ListUsersForPropertyResponse
+		expectedResponse ListUsersForPropertyResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
@@ -180,7 +180,7 @@ func TestListUserForProperty(t *testing.T) {
   }
 ]
 `,
-			expectedResponse: &ListUsersForPropertyResponse{
+			expectedResponse: ListUsersForPropertyResponse{
 				{
 					FirstName:    "John",
 					IsBlocked:    true,
@@ -243,28 +243,28 @@ func TestListUserForProperty(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			users, err := client.ListUsersForProperty(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			users, err := client.ListUsersForProperty(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, users)
+			assert.Equal(t, tc.expectedResponse, users)
 		})
 	}
 }
 
-func TestGetProperty(t *testing.T) {
+func TestIAM_GetProperty(t *testing.T) {
 	tests := map[string]struct {
 		params           GetPropertyRequest
 		responseStatus   int
@@ -339,28 +339,28 @@ func TestGetProperty(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			users, err := client.GetProperty(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			users, err := client.GetProperty(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, users)
+			assert.Equal(t, tc.expectedResponse, users)
 		})
 	}
 }
 
-func TestMoveProperty(t *testing.T) {
+func TestIAM_MoveProperty(t *testing.T) {
 	tests := map[string]struct {
 		params              MovePropertyRequest
 		expectedPath        string
@@ -388,7 +388,7 @@ func TestMoveProperty(t *testing.T) {
 		"validation errors": {
 			params: MovePropertyRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "move property: struct validation: Body: DestinationGroupID: cannot be blank\nSourceGroupID: cannot be blank\nPropertyID: cannot be blank", err.Error())
+				assert.Equal(t, "move property: struct validation: DestinationGroupID: cannot be blank\nSourceGroupID: cannot be blank\nPropertyID: cannot be blank", err.Error())
 			},
 		},
 		"400 not allowed": {
@@ -423,26 +423,26 @@ func TestMoveProperty(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				if test.expectedRequestBody != "" {
+				if tc.expectedRequestBody != "" {
 					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.JSONEq(t, test.expectedRequestBody, string(body))
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
-				w.WriteHeader(test.responseStatus)
-				if test.responseBody != "" {
-					_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				if tc.responseBody != "" {
+					_, err := w.Write([]byte(tc.responseBody))
 					assert.NoError(t, err)
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.MoveProperty(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.MoveProperty(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			assert.NoError(t, err)
@@ -450,7 +450,7 @@ func TestMoveProperty(t *testing.T) {
 	}
 }
 
-func TestMapPropertyIDToName(t *testing.T) {
+func TestIAM_MapPropertyIDToName(t *testing.T) {
 	tests := map[string]struct {
 		params           MapPropertyIDToNameRequest
 		responseStatus   int
@@ -513,27 +513,27 @@ func TestMapPropertyIDToName(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			users, err := client.MapPropertyIDToName(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			users, err := client.MapPropertyIDToName(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, users)
+			assert.Equal(t, tc.expectedResponse, users)
 		})
 	}
 }
 
-func TestBlockUsers(t *testing.T) {
+func TestIAM_BlockUsers(t *testing.T) {
 	tests := map[string]struct {
 		params              BlockUsersRequest
 		expectedPath        string
@@ -680,30 +680,30 @@ func TestBlockUsers(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				if test.expectedRequestBody != "" {
+				if tc.expectedRequestBody != "" {
 					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.JSONEq(t, test.expectedRequestBody, string(body))
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
-				w.WriteHeader(test.responseStatus)
-				if test.responseBody != "" {
-					_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				if tc.responseBody != "" {
+					_, err := w.Write([]byte(tc.responseBody))
 					assert.NoError(t, err)
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			users, err := client.BlockUsers(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			users, err := client.BlockUsers(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, users)
+			assert.Equal(t, tc.expectedResponse, users)
 		})
 	}
 }

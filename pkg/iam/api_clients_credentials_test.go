@@ -15,7 +15,7 @@ import (
 	"github.com/tj/assert"
 )
 
-func TestCreateCredential(t *testing.T) {
+func TestIAM_CreateCredential(t *testing.T) {
 	tests := map[string]struct {
 		params           CreateCredentialRequest
 		expectedPath     string
@@ -125,28 +125,28 @@ func TestCreateCredential(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			response, err := client.CreateCredential(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			response, err := client.CreateCredential(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, response)
+			assert.Equal(t, tc.expectedResponse, response)
 		})
 	}
 }
 
-func TestListCredentials(t *testing.T) {
+func TestIAM_ListCredentials(t *testing.T) {
 	tests := map[string]struct {
 		params           ListCredentialsRequest
 		expectedPath     string
@@ -316,28 +316,28 @@ func TestListCredentials(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			response, err := client.ListCredentials(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			response, err := client.ListCredentials(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, response)
+			assert.Equal(t, tc.expectedResponse, response)
 		})
 	}
 }
 
-func TestGetCredential(t *testing.T) {
+func TestIAM_GetCredential(t *testing.T) {
 	tests := map[string]struct {
 		params           GetCredentialRequest
 		expectedPath     string
@@ -473,28 +473,28 @@ func TestGetCredential(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			response, err := client.GetCredential(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			response, err := client.GetCredential(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, response)
+			assert.Equal(t, tc.expectedResponse, response)
 		})
 	}
 }
 
-func TestUpdateCredential(t *testing.T) {
+func TestIAM_UpdateCredential(t *testing.T) {
 	tests := map[string]struct {
 		params              UpdateCredentialRequest
 		responseStatus      int
@@ -684,33 +684,33 @@ func TestUpdateCredential(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
-				if test.expectedRequestBody != "" {
+				if tc.expectedRequestBody != "" {
 					body, err := io.ReadAll(r.Body)
 					assert.NoError(t, err)
-					assert.JSONEq(t, test.expectedRequestBody, string(body))
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			response, err := client.UpdateCredential(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			response, err := client.UpdateCredential(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, response)
+			assert.Equal(t, tc.expectedResponse, response)
 		})
 	}
 }
 
-func TestDeleteCredential(t *testing.T) {
+func TestIAM_DeleteCredential(t *testing.T) {
 	tests := map[string]struct {
 		params         DeleteCredentialRequest
 		responseStatus int
@@ -790,19 +790,19 @@ func TestDeleteCredential(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeleteCredential(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.DeleteCredential(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -810,7 +810,7 @@ func TestDeleteCredential(t *testing.T) {
 	}
 }
 
-func TestDeactivateCredential(t *testing.T) {
+func TestIAM_DeactivateCredential(t *testing.T) {
 	tests := map[string]struct {
 		params         DeactivateCredentialRequest
 		responseStatus int
@@ -890,19 +890,19 @@ func TestDeactivateCredential(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeactivateCredential(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.DeactivateCredential(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -910,7 +910,7 @@ func TestDeactivateCredential(t *testing.T) {
 	}
 }
 
-func TestDeactivateCredentials(t *testing.T) {
+func TestIAM_DeactivateCredentials(t *testing.T) {
 	tests := map[string]struct {
 		params         DeactivateCredentialsRequest
 		responseStatus int
@@ -977,19 +977,19 @@ func TestDeactivateCredentials(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeactivateCredentials(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.DeactivateCredentials(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)

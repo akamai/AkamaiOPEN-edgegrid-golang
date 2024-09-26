@@ -14,88 +14,49 @@ import (
 )
 
 type (
-	// APIClients is the IAM API clients interface
-	APIClients interface {
-		// LockAPIClient locks an API client based on `ClientID` parameter. If `ClientID` is not provided, it locks your API client.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-lock-api-client, https://techdocs.akamai.com/iam-api/reference/put-lock-api-client-self
-		LockAPIClient(ctx context.Context, params LockAPIClientRequest) (*LockAPIClientResponse, error)
-
-		// UnlockAPIClient unlocks an API client
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-unlock-api-client
-		UnlockAPIClient(ctx context.Context, params UnlockAPIClientRequest) (*UnlockAPIClientResponse, error)
-
-		// ListAPIClients lists API clients an administrator can manage
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-api-clients
-		ListAPIClients(ctx context.Context, params ListAPIClientsRequest) (ListAPIClientsResponse, error)
-
-		// GetAPIClient provides details about an API client. If `ClientID` is not provided, it returns details about your API client.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-api-client and https://techdocs.akamai.com/iam-api/reference/get-api-client-self
-		GetAPIClient(ctx context.Context, params GetAPIClientRequest) (*GetAPIClientResponse, error)
-
-		// CreateAPIClient creates a new API client. Optionally, it can automatically assign a credential for the client when creating it
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/post-api-clients
-		CreateAPIClient(ctx context.Context, params CreateAPIClientRequest) (*CreateAPIClientResponse, error)
-
-		// UpdateAPIClient updates an API client. If `ClientID` is not provided, it updates your API client.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-api-clients and https://techdocs.akamai.com/iam-api/reference/put-api-clients-self
-		UpdateAPIClient(ctx context.Context, params UpdateAPIClientRequest) (*UpdateAPIClientResponse, error)
-
-		// DeleteAPIClient permanently deletes the API client, breaking any API connections with the client.
-		// If `ClientID` is not provided, it deletes your API client.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/delete-api-client and https://techdocs.akamai.com/iam-api/reference/delete-api-client-self
-		DeleteAPIClient(ctx context.Context, params DeleteAPIClientRequest) error
-	}
-
-	// LockAPIClientRequest contains the request parameters for the LockAPIClient operation
+	// LockAPIClientRequest contains the request parameters for the LockAPIClient endpoint.
 	LockAPIClientRequest struct {
 		ClientID string
 	}
 
-	// UnlockAPIClientRequest contains the request parameters for the UnlockAPIClient endpoint
+	// UnlockAPIClientRequest contains the request parameters for the UnlockAPIClient endpoint.
 	UnlockAPIClientRequest struct {
 		ClientID string
 	}
 
-	// LockAPIClientResponse holds the response data from LockAPIClient
+	// LockAPIClientResponse holds the response data from LockAPIClient.
 	LockAPIClientResponse APIClient
 
-	// UnlockAPIClientResponse holds the response data from UnlockAPIClient
+	// UnlockAPIClientResponse holds the response data from UnlockAPIClient.
 	UnlockAPIClientResponse APIClient
 
-	// APIClient contains information about the API client
+	// APIClient contains information about the API client.
 	APIClient struct {
-		AccessToken             string    `json:"accessToken"`
-		ActiveCredentialCount   int64     `json:"activeCredentialCount"`
-		AllowAccountSwitch      bool      `json:"allowAccountSwitch"`
-		AuthorizedUsers         []string  `json:"authorizedUsers"`
-		CanAutoCreateCredential bool      `json:"canAutoCreateCredential"`
-		ClientDescription       string    `json:"clientDescription"`
-		ClientID                string    `json:"clientId"`
-		ClientName              string    `json:"clientName"`
-		ClientType              string    `json:"clientType"`
-		CreatedBy               string    `json:"createdBy"`
-		CreatedDate             time.Time `json:"createdDate"`
-		IsLocked                bool      `json:"isLocked"`
-		NotificationEmails      []string  `json:"notificationEmails"`
-		ServiceConsumerToken    string    `json:"serviceConsumerToken"`
+		AccessToken             string     `json:"accessToken"`
+		ActiveCredentialCount   int64      `json:"activeCredentialCount"`
+		AllowAccountSwitch      bool       `json:"allowAccountSwitch"`
+		AuthorizedUsers         []string   `json:"authorizedUsers"`
+		CanAutoCreateCredential bool       `json:"canAutoCreateCredential"`
+		ClientDescription       string     `json:"clientDescription"`
+		ClientID                string     `json:"clientId"`
+		ClientName              string     `json:"clientName"`
+		ClientType              ClientType `json:"clientType"`
+		CreatedBy               string     `json:"createdBy"`
+		CreatedDate             time.Time  `json:"createdDate"`
+		IsLocked                bool       `json:"isLocked"`
+		NotificationEmails      []string   `json:"notificationEmails"`
+		ServiceConsumerToken    string     `json:"serviceConsumerToken"`
 	}
 
-	// ListAPIClientsRequest contains the request parameters for the ListAPIClients endpoint
+	// ListAPIClientsRequest contains the request parameters for the ListAPIClients endpoint.
 	ListAPIClientsRequest struct {
 		Actions bool
 	}
 
-	// ListAPIClientsResponse describes the response of the ListAPIClients endpoint
+	// ListAPIClientsResponse describes the response of the ListAPIClients endpoint.
 	ListAPIClientsResponse []ListAPIClientsItem
 
-	// ListAPIClientsItem represents information returned by the ListAPIClients endpoint for a single API client
+	// ListAPIClientsItem represents information returned by the ListAPIClients endpoint for a single API client.
 	ListAPIClientsItem struct {
 		AccessToken             string                 `json:"accessToken"`
 		Actions                 *ListAPIClientsActions `json:"actions"`
@@ -114,7 +75,7 @@ type (
 		ServiceConsumerToken    string                 `json:"serviceConsumerToken"`
 	}
 
-	// ListAPIClientsActions specifies activities available for the API client
+	// ListAPIClientsActions specifies activities available for the API client.
 	ListAPIClientsActions struct {
 		Delete        bool `json:"delete"`
 		DeactivateAll bool `json:"deactivateAll"`
@@ -124,7 +85,7 @@ type (
 		Unlock        bool `json:"unlock"`
 	}
 
-	// GetAPIClientRequest contains the request parameters for the GetAPIClient endpoint
+	// GetAPIClientRequest contains the request parameters for the GetAPIClient endpoint.
 	GetAPIClientRequest struct {
 		ClientID    string
 		Actions     bool
@@ -134,7 +95,7 @@ type (
 		IPACL       bool
 	}
 
-	// CreateAPIClientResponse describes the response of the CreateAPIClient endpoint
+	// CreateAPIClientResponse describes the response of the CreateAPIClient endpoint.
 	CreateAPIClientResponse struct {
 		AccessToken             string                      `json:"accessToken"`
 		Actions                 *APIClientActions           `json:"actions"`
@@ -159,7 +120,7 @@ type (
 		ServiceProviderID       int64                       `json:"serviceProviderId"`
 	}
 
-	// GetAPIClientResponse describes the response of the GetAPIClient endpoint
+	// GetAPIClientResponse describes the response of the GetAPIClient endpoint.
 	GetAPIClientResponse struct {
 		AccessToken             string                `json:"accessToken"`
 		Actions                 *APIClientActions     `json:"actions"`
@@ -184,7 +145,7 @@ type (
 		ServiceProviderID       int64                 `json:"serviceProviderId"`
 	}
 
-	// APIClientActions specifies activities available for the API client
+	// APIClientActions specifies activities available for the API client.
 	APIClientActions struct {
 		Delete            bool `json:"delete"`
 		DeactivateAll     bool `json:"deactivateAll"`
@@ -199,13 +160,13 @@ type (
 		Unlock            bool `json:"unlock"`
 	}
 
-	// APIAccess represents the APIs the API client can access
+	// APIAccess represents the APIs the API client can access.
 	APIAccess struct {
 		AllAccessibleAPIs bool  `json:"allAccessibleApis"`
 		APIs              []API `json:"apis"`
 	}
 
-	// API represents single Application Programming Interface (API)
+	// API represents single Application Programming Interface (API).
 	API struct {
 		AccessLevel      AccessLevel `json:"accessLevel"`
 		APIID            int64       `json:"apiId"`
@@ -215,7 +176,7 @@ type (
 		Endpoint         string      `json:"endPoint"`
 	}
 
-	// APIClientCredential represents single Credential returned by APIClient interfaces
+	// APIClientCredential represents single Credential returned by APIClient interfaces.
 	APIClientCredential struct {
 		Actions      CredentialActions `json:"actions"`
 		ClientToken  string            `json:"clientToken"`
@@ -226,7 +187,7 @@ type (
 		Status       CredentialStatus  `json:"status"`
 	}
 
-	// CreateAPIClientCredential represents single Credential returned by CreateAPIClient method
+	// CreateAPIClientCredential represents single Credential returned by CreateAPIClient endpoint.
 	CreateAPIClientCredential struct {
 		Actions      CredentialActions `json:"actions"`
 		ClientToken  string            `json:"clientToken"`
@@ -256,26 +217,26 @@ type (
 		Subgroups       []ClientGroup `json:"subgroups"`
 	}
 
-	// IPACL specifies the API client's IP list restriction
+	// IPACL specifies the API client's IP list restriction.
 	IPACL struct {
 		CIDR   []string `json:"cidr"`
 		Enable bool     `json:"enable"`
 	}
 
-	//PurgeOptions specifies the API clients configuration for access to the Fast Purge API
+	// PurgeOptions specifies the API clients configuration for access to the Fast Purge API.
 	PurgeOptions struct {
 		CanPurgeByCacheTag bool         `json:"canPurgeByCacheTag"`
 		CanPurgeByCPCode   bool         `json:"canPurgeByCpcode"`
 		CPCodeAccess       CPCodeAccess `json:"cpcodeAccess"`
 	}
 
-	// CPCodeAccess represents the CP codes the API client can purge
+	// CPCodeAccess represents the CP codes the API client can purge.
 	CPCodeAccess struct {
 		AllCurrentAndNewCPCodes bool    `json:"allCurrentAndNewCpcodes"`
 		CPCodes                 []int64 `json:"cpcodes"`
 	}
 
-	// CreateAPIClientRequest contains the request parameters for the CreateAPIClient endpoint
+	// CreateAPIClientRequest contains the request parameters for the CreateAPIClient endpoint.
 	CreateAPIClientRequest struct {
 		AllowAccountSwitch      bool          `json:"allowAccountSwitch"`
 		APIAccess               APIAccess     `json:"apiAccess"`
@@ -291,13 +252,13 @@ type (
 		PurgeOptions            *PurgeOptions `json:"purgeOptions,omitempty"`
 	}
 
-	// UpdateAPIClientRequest contains the request parameters for the UpdateAPIClient endpoint
+	// UpdateAPIClientRequest contains the request parameters for the UpdateAPIClient endpoint.
 	UpdateAPIClientRequest struct {
 		ClientID string
 		Body     UpdateAPIClientRequestBody
 	}
 
-	// UpdateAPIClientRequestBody represents body params for UpdateAPIClient
+	// UpdateAPIClientRequestBody represents body params for the UpdateAPIClient endpoint.
 	UpdateAPIClientRequestBody struct {
 		AllowAccountSwitch      bool          `json:"allowAccountSwitch"`
 		APIAccess               APIAccess     `json:"apiAccess"`
@@ -312,52 +273,51 @@ type (
 		PurgeOptions            *PurgeOptions `json:"purgeOptions,omitempty"`
 	}
 
-	// UpdateAPIClientResponse describes the response of the UpdateAPIClientResponse endpoint
+	// UpdateAPIClientResponse describes the response from the UpdateAPIClient endpoint.
 	UpdateAPIClientResponse GetAPIClientResponse
 
-	// DeleteAPIClientRequest contains the request parameters for the DeleteAPIClient endpoint
+	// DeleteAPIClientRequest contains the request parameters for the DeleteAPIClient endpoint.
 	DeleteAPIClientRequest struct {
 		ClientID string
 	}
 
-	// AccessLevel represents the access level for API
+	// AccessLevel represents the access level for API.
 	AccessLevel string
 )
 
 const (
-	// ReadWriteLevel is the `READ-WRITE` access level
+	// ReadWriteLevel is the `READ-WRITE` access level.
 	ReadWriteLevel AccessLevel = "READ-WRITE"
-	// ReadOnlyLevel is the `READ-ONLY` access level
+	// ReadOnlyLevel is the `READ-ONLY` access level.
 	ReadOnlyLevel AccessLevel = "READ-ONLY"
 )
 
-// Validate validates UnlockAPIClientRequest
+// Validate validates UnlockAPIClientRequest.
 func (r UnlockAPIClientRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"ClientID": validation.Validate(r.ClientID, validation.Required),
 	})
 }
 
-// Validate validates CreateAPIClientRequest
+// Validate validates CreateAPIClientRequest.
 func (r CreateAPIClientRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"APIAccess":       validation.Validate(r.APIAccess, validation.Required),
 		"AuthorizedUsers": validation.Validate(r.AuthorizedUsers, validation.Required, validation.Length(1, 0)),
-		"ClientType": validation.Validate(r.ClientType, validation.Required, validation.In(ClientClientType, UserClientType).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CLIENT' or 'USER_CLIENT'", r.ClientType))),
-		"GroupAccess":  validation.Validate(r.GroupAccess, validation.Required),
-		"PurgeOptions": validation.Validate(r.PurgeOptions),
+		"ClientType":      validation.Validate(r.ClientType, validation.Required),
+		"GroupAccess":     validation.Validate(r.GroupAccess, validation.Required),
+		"PurgeOptions":    validation.Validate(r.PurgeOptions),
 	})
 }
 
-// Validate validates APIAccess
+// Validate validates APIAccess.
 func (a APIAccess) Validate() error {
 	return validation.Errors{
 		"APIs": validation.Validate(a.APIs, validation.When(!a.AllAccessibleAPIs, validation.Required)),
 	}.Filter()
 }
 
-// Validate validates API
+// Validate validates API.
 func (a API) Validate() error {
 	return validation.Errors{
 		"AccessLevel": validation.Validate(a.AccessLevel, validation.Required, validation.In(ReadOnlyLevel, ReadWriteLevel).Error(
@@ -366,14 +326,14 @@ func (a API) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GroupAccess
+// Validate validates GroupAccess.
 func (ga GroupAccess) Validate() error {
 	return validation.Errors{
 		"Groups": validation.Validate(ga.Groups, validation.When(!ga.CloneAuthorizedUserGroups, validation.Required)),
 	}.Filter()
 }
 
-// Validate validates ClientGroup
+// Validate validates ClientGroup.
 func (cg ClientGroup) Validate() error {
 	return validation.Errors{
 		"GroupID": validation.Validate(cg.GroupID, validation.Required),
@@ -381,33 +341,33 @@ func (cg ClientGroup) Validate() error {
 	}.Filter()
 }
 
-// Validate validates UpdateAPIClientRequest
+// Validate validates UpdateAPIClientRequest.
 func (r UpdateAPIClientRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"Body": validation.Validate(r.Body, validation.Required),
 	})
 }
 
-// Validate validates UpdateAPIClientRequestBody
+// Validate validates UpdateAPIClientRequestBody.
 func (r UpdateAPIClientRequestBody) Validate() error {
 	return validation.Errors{
+		"ClientName":      validation.Validate(r.ClientName, validation.Required),
 		"APIAccess":       validation.Validate(r.APIAccess, validation.Required),
 		"AuthorizedUsers": validation.Validate(r.AuthorizedUsers, validation.Required, validation.Length(1, 0)),
-		"ClientType": validation.Validate(r.ClientType, validation.Required, validation.In(ClientClientType, UserClientType).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'CLIENT' or 'USER_CLIENT'", r.ClientType))),
-		"GroupAccess":  validation.Validate(r.GroupAccess, validation.Required),
-		"PurgeOptions": validation.Validate(r.PurgeOptions),
+		"ClientType":      validation.Validate(r.ClientType, validation.Required),
+		"GroupAccess":     validation.Validate(r.GroupAccess, validation.Required),
+		"PurgeOptions":    validation.Validate(r.PurgeOptions),
 	}.Filter()
 }
 
-// Validate validates PurgeOptions
+// Validate validates PurgeOptions.
 func (po PurgeOptions) Validate() error {
 	return validation.Errors{
 		"CPCodeAccess": validation.Validate(po.CPCodeAccess),
 	}.Filter()
 }
 
-// Validate validates UpdateAPIClientBody
+// Validate validates CPCodeAccess.
 func (ca CPCodeAccess) Validate() error {
 	return validation.Errors{
 		"CPCodes": validation.Validate(ca.CPCodes, validation.When(!ca.AllCurrentAndNewCPCodes, validation.NotNil)),
@@ -415,19 +375,19 @@ func (ca CPCodeAccess) Validate() error {
 }
 
 var (
-	// ErrLockAPIClient is returned when LockAPIClient fails
+	// ErrLockAPIClient is returned when LockAPIClient fails.
 	ErrLockAPIClient = errors.New("lock api client")
-	// ErrUnlockAPIClient is returned when UnlockAPIClient fails
+	// ErrUnlockAPIClient is returned when UnlockAPIClient fails.
 	ErrUnlockAPIClient = errors.New("unlock api client")
-	// ErrListAPIClients is returned when ListAPIClients fails
+	// ErrListAPIClients is returned when ListAPIClients fails.
 	ErrListAPIClients = errors.New("list api clients")
-	// ErrGetAPIClient is returned when GetAPIClient fails
+	// ErrGetAPIClient is returned when GetAPIClient fails.
 	ErrGetAPIClient = errors.New("get api client")
-	// ErrCreateAPIClient is returned when CreateAPIClient fails
+	// ErrCreateAPIClient is returned when CreateAPIClient fails.
 	ErrCreateAPIClient = errors.New("create api client")
-	// ErrUpdateAPIClient is returned when UpdateAPIClient fails
+	// ErrUpdateAPIClient is returned when UpdateAPIClient fails.
 	ErrUpdateAPIClient = errors.New("update api client")
-	// ErrDeleteAPIClient is returned when DeleteAPIClient fails
+	// ErrDeleteAPIClient is returned when DeleteAPIClient fails.
 	ErrDeleteAPIClient = errors.New("delete api client")
 )
 
@@ -470,12 +430,12 @@ func (i *iam) UnlockAPIClient(ctx context.Context, params UnlockAPIClientRequest
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUnlockAPIClient, ErrStructValidation, err)
 	}
 
-	u, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/unlock", params.ClientID))
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/unlock", params.ClientID))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUnlockAPIClient, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUnlockAPIClient, err)
 	}

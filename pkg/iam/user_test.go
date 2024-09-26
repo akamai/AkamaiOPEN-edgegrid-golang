@@ -133,7 +133,7 @@ func TestIAM_CreateUser(t *testing.T) {
 		"validation errors": {
 			params: CreateUserRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create user: struct validation:\nAdditionalAuthentication: cannot be blank; AuthGrants: cannot be blank; Country: cannot be blank; Email: cannot be blank; FirstName: cannot be blank; LastName: cannot be blank.", err.Error())
+				assert.Equal(t, "create user: struct validation:\nAdditionalAuthentication: cannot be blank\nAuthGrants: cannot be blank\nCountry: cannot be blank\nEmail: cannot be blank\nFirstName: cannot be blank\nLastName: cannot be blank", err.Error())
 			},
 		},
 		"500 internal server error": {
@@ -170,30 +170,30 @@ func TestIAM_CreateUser(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				if test.requestBody != "" {
+				w.WriteHeader(tc.responseStatus)
+				if tc.requestBody != "" {
 					buf := new(bytes.Buffer)
 					_, err := buf.ReadFrom(r.Body)
 					assert.NoError(t, err)
 					req := buf.String()
-					assert.Equal(t, test.requestBody, req)
+					assert.Equal(t, tc.requestBody, req)
 				}
-				_, err := w.Write([]byte(test.responseBody))
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateUser(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.CreateUser(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -264,28 +264,28 @@ func TestIAM_GetUser(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetUser(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.GetUser(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestIam_ListUsers(t *testing.T) {
+func TestIAM_ListUsers(t *testing.T) {
 	tests := map[string]struct {
 		params           ListUsersRequest
 		responseStatus   int
@@ -480,23 +480,23 @@ func TestIam_ListUsers(t *testing.T) {
 			},
 		},
 	}
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			users, err := client.ListUsers(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			users, err := client.ListUsers(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, users)
+			assert.Equal(t, tc.expectedResponse, users)
 		})
 	}
 }
@@ -596,30 +596,30 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				if test.requestBody != "" {
+				if tc.requestBody != "" {
 					buf := new(bytes.Buffer)
 					_, err := buf.ReadFrom(r.Body)
 					assert.NoError(t, err)
 					req := buf.String()
-					assert.Equal(t, test.requestBody, req)
+					assert.Equal(t, tc.requestBody, req)
 				}
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateUserInfo(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.UpdateUserInfo(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -719,30 +719,30 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				if test.requestBody != "" {
+				if tc.requestBody != "" {
 					buf := new(bytes.Buffer)
 					_, err := buf.ReadFrom(r.Body)
 					assert.NoError(t, err)
 					req := buf.String()
-					assert.Equal(t, test.requestBody, req)
+					assert.Equal(t, tc.requestBody, req)
 				}
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateUserNotifications(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.UpdateUserNotifications(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -833,23 +833,23 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateUserAuthGrants(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.UpdateUserAuthGrants(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -903,19 +903,19 @@ func TestIAM_RemoveUser(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.RemoveUser(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.RemoveUser(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -966,19 +966,19 @@ func TestIAM_UpdateTFA(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.UpdateTFA(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.UpdateTFA(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -1029,19 +1029,19 @@ func TestIAM_UpdateMFA(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.UpdateMFA(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.UpdateMFA(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -1090,19 +1090,19 @@ func TestIAM_ResetMFA(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.ResetMFA(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.ResetMFA(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
