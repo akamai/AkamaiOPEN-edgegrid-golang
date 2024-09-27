@@ -1,184 +1,23 @@
 # RELEASE NOTES
 
-## X.X.X (X X, X)
+## 9.0.0 (Oct 3, 2024)
 
 #### BREAKING CHANGES:
-
-* IAM
-  * Migrated V2 endpoints to V3.
-  * Added new methods:
-    * [UpdateMFA](https://techdocs.akamai.com/iam-api/reference/put-user-profile-additional-authentication)
-    * [ResetMFA](https://techdocs.akamai.com/iam-api/reference/put-ui-identity-reset-additional-authentication)
-
-
-
-
-* IAM
-  * Improved date handling to use `time.Time` instead of `string`
-    * Changed fields in following structures:
-      * `Users`
-        * `LastLoginDate` changed type from `string` to `time.Time`
-        * `PasswordExpiryDate` changed type from `string` to `time.Time`
-      * `UserListItem`
-        * `LastLoginDate` changed type from `string` to `time.Time`
-      * `Role`
-        * `CreatedDate` changed type from `string` to `time.Time`
-        * `ModifiedDate` changed type from `string` to `time.Time`
-      * `RoleUser`
-        * `LastLoginDate` changed type from `string` to `time.Time`
-      * `GroupUser`
-        * `LastLoginDate` changed type from `string` to `time.Time`
-
-
-
-* IAM
-  * Changed `Notifications` to pointer type in following structures:
-    * `CreateUserRequest`
-    * `UpdateUserNotificationsRequest`
-  * Added `UsertStatus`, `AccountID` to the `User` structure
-  * Added required field `AdditionalAuthentication` to the `CreateUserRequest`
-  * Made `Notifications` required in `UpdateUserNotifications` method
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### FEATURES/ENHANCEMENTS:
-
-
-
-
-* IAM
-  * Added API Clients Credentials methods
-    * [CreateYourCredential](https://techdocs.akamai.com/iam-api/reference/post-self-credentials) and [CreateCredential](https://techdocs.akamai.com/iam-api/reference/post-client-credentials) 
-    * [GetYourCredential](https://techdocs.akamai.com/iam-api/reference/get-self-credential) and [GetCredential](https://techdocs.akamai.com/iam-api/reference/get-client-credential)  
-    * [UpdateYourCredential](https://techdocs.akamai.com/iam-api/reference/put-self-credential) and [UpdateCredential](https://techdocs.akamai.com/iam-api/reference/put-client-credential)
-    * [DeleteYourCredential](https://techdocs.akamai.com/iam-api/reference/delete-self-credential) and [DeleteCredential](https://techdocs.akamai.com/iam-api/reference/delete-client-credential)
-    * [ListYourCredentials](https://techdocs.akamai.com/iam-api/reference/get-self-credentials) and [ListCredentials](https://techdocs.akamai.com/iam-api/reference/get-client-credentials)
-    * [DeactivateYourCredential](https://techdocs.akamai.com/iam-api/reference/post-self-credential-deactivate) and [DeactivateCredential](https://techdocs.akamai.com/iam-api/reference/post-client-credential-deactivate)
-    * [DeactivateYourCredentials](https://techdocs.akamai.com/iam-api/reference/post-self-credentials-deactivate) and [DeactivateCredentials](https://techdocs.akamai.com/iam-api/reference/post-client-credentials-deactivate)
-  
-
-
-
-
-
-
-
-* IAM
-  * Added method to get the password policy for the account
-    * [GetPasswordPolicy](https://techdocs.akamai.com/iam-api/reference/get-common-password-policy)
-
-
-
-
-
-
-
-# EDGEGRID GOLANG RELEASE NOTES
-
-## X.X.X (X X, X)
-
-#### BREAKING CHANGES:
-
 
 * General
   * Consolidated multiple sub-interfaces into a single interface for each sub-provider.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-* Global
   * Removed `tools` package in favour of `ptr` package
 
-* EDGEKV
-  * For `CreateEdgeKVAccessTokenRequest` removed `Expiry` and added `RestrictToEdgeWorkerIDs`
-  * For `CreateEdgeKVAccessTokenResponse` removed `Expiry`, `Value` and added
-    * `AllowOnProduction`
-    * `AllowOnStaging`
-    * `CPCode`
-    * `IssueDate`
-    * `LatestRefreshDate`
-    * `NamespacePermissions`
-    * `NextScheduledRefreshDate`
-    * `RestrictToEdgeWorkerIDs`
-    * `TokenActivationStatus`
-  * For `EdgeKVAccessToken` added fields:
-    * `TokenActivationStatus`
-    * `IssueDate`
-    * `LatestRefreshDate`
-    * `NextScheduledRefreshDate`
-
-
-
-
-
 * Cloudaccess
-  * Changed naming of request body fields for following structures: 
+  * Changed naming of request body fields for following structures:
     * `BodyParams` to `Body` in `CreateAccessKeyVersionRequest`
     * `CreateAccessKeyVersionBodyParams` to `CreateAccessKeyVersionRequestBody`
-
-
 
 * Cloudlets
   * Changed naming of request body fields for following structures:
     * `BodyParams` to `Body` in `UpdatePolicyRequest` and `ClonePolicyRequest`
     * `UpdatePolicyBodyParams` to `UpdatePolicyRequestBody`
     * `ClonePolicyBodyParams` to `ClonePolicyRequestBody`
-
-
-
 
 * Cloudwrapper
   * Changed naming of request body fields for following structures:
@@ -222,7 +61,6 @@
     * `CreateBulkZones` - from (context.Context, *BulkZonesCreate, ZoneQueryString) into (context.Context, `CreateBulkZonesRequest`)
     * `DeleteBulkZones` - from (context.Context, *ZoneNameListResponse, ...bool) into (context.Context, `DeleteBulkZonesRequest`)
     * `GetRdata` - from (context.Context, string, string, string) into (context.Context, `GetRdataRequest`)
-
   * Refactored response in following methods:
     * `GetAuthorities` - `*AuthorityResponse` into `*GetAuthoritiesResponse`
     * `GetRecord` - `*RecordBody` into `*GetRecordResponse`
@@ -242,7 +80,6 @@
     * `GetBulkZoneDeleteResult` - `*BulkDeleteResultResponse` into `*GetBulkZoneDeleteResultResponse`
     * `CreateBulkZones` - `*BulkZonesResponse` into `*CreateBulkZonesResponse`
     * `DeleteBulkZones` - `*BulkZonesResponse` into `*DeleteBulkZonesResponse`
-
   * Removed following interfaces:
     * `Authorities`
     * `Data`
@@ -250,14 +87,35 @@
     * `Recordsets`
     * `TSIGKeys`
     * `Zones`
-
   * Renamed following methods:
     * `SaveChangelist` into `SaveChangeList`
     * `SubmitChangelist` into `SubmitChangeList`
     * `TSIGKeyBulkUpdate` into `UpdateTSIGKeyBulk`
 
+* EdgeKV
+  * For the `CreateEdgeKVAccessTokenRequest`, removed the `Expiry` field and added the `RestrictToEdgeWorkerIDs` field.
+  * For the `CreateEdgeKVAccessTokenResponse`, removed the `Expiry` and `Value` fields, and added these fields:
+    * `AllowOnProduction`
+    * `AllowOnStaging`
+    * `CPCode`
+    * `IssueDate`
+    * `LatestRefreshDate`
+    * `NamespacePermissions`
+    * `NextScheduledRefreshDate`
+    * `RestrictToEdgeWorkerIDs`
+    * `TokenActivationStatus`
+  * Added these fields to the `EdgeKVAccessToken` method:
+    * `TokenActivationStatus`
+    * `IssueDate`
+    * `LatestRefreshDate`
+    * `NextScheduledRefreshDate`
+
+* Edgeworkers
+  * Changed naming of request body fields for these structures:
+    * `EdgeWorkerIDBodyRequest` to `EdgeWorkerIDRequestBody`
+
 * GTM
-  * Refactored parameters in following methods:
+  * Refactored parameters in these methods:
     * `ListASMaps` - from (context.Context, string) into (context.Context, `ListASMapsRequest`)
     * `GetASMap` - from (context.Context, string, string) into (context.Context, `GetASMapRequests`)
     * `CreateASMap` - from (context.Context, *ASMap, string) into (context.Context, `CreateASMapRequest`)
@@ -292,9 +150,8 @@
     * `GetResource` - from (context.Context, string, string) into (context.Context, `GetResourceRequest`)
     * `CreateResource` - from (context.Context, *Resource, string) into (context.Context, `CreateResourceRequest`)
     * `UpdateResource` - from (context.Context, *Resource, string) into (context.Context, `UpdateResourceRequest`)
-    * `DeleteResource` - from (context.Context, *Resource, string) into (context.Context, `DeleteResourceRequest`) 
-
-  * Refactored response in following methods:
+    * `DeleteResource` - from (context.Context, *Resource, string) into (context.Context, `DeleteResourceRequest`)
+  * Refactored response in these methods:
     * `ListASMaps` - `[]*ASMap` into `[]ASMap`
     * `GetASMap` - `*ASMap` into `*GetASMapResponse`
     * `CreateASMap` - `*ASMapResponse` into `*CreateASMapResponse`
@@ -330,8 +187,7 @@
     * `CreateResource` - `*ResourceResponse` into `*CreateResourceResponse`
     * `UpdateResource` - `*ResponseStatus` into `*UpdateResourceResponse`
     * `DeleteResource` - `*ResponseStatus` into `*DeleteResourceResponse`
-
-  * Extended response for following methods - previously only status was returned, now status and resource are returned:
+  * Extended response for these methods - previously only status was returned, now status and resource are returned:
     * `UpdateASMap`
     * `DeleteASMap`
     * `UpdateCIDRMap`
@@ -345,8 +201,7 @@
     * `DeleteProperty`
     * `UpdateResource`
     * `DeleteResource`
-
-  * Removed following interfaces:
+  * Removed these interfaces:
     * `ASMaps`
     * `CIDRMaps`
     * `Datacenters`
@@ -355,44 +210,40 @@
     * `Properties`
     * `Resources`
 
-* Edgeworkers
-  * Changed naming of request body fields for following structures:
-    * `EdgeWorkerIDBodyRequest` to `EdgeWorkerIDRequestBody`
+* IAM
+  * Migrated V2 endpoints to V3.
+  * Improved date handling to use `time.Time` instead of `string`.
+    * Changed fields in these structures:
+      * `Users`
+        * `LastLoginDate`. Changed the field data type from `string` to `time.Time`
+        * `PasswordExpiryDate`. Changed the field data type from `string` to `time.Time`
+      * `UserListItem`
+        * `LastLoginDate`. Changed the field data type from `string` to `time.Time`
+      * `Role`
+        * `CreatedDate`. Changed the field data type from `string` to `time.Time`
+        * `ModifiedDate`. Changed the field data type from `string` to `time.Time`
+      * `RoleUser`
+        * `LastLoginDate`. Changed the field data type from `string` to `time.Time`
+      * `GroupUser`
+        * `LastLoginDate`. Changed the field data type from `string` to `time.Time`
+  * Changed the `Notifications` field to a pointer type in these structures:
+    * `CreateUserRequest`
+    * `UpdateUserNotificationsRequest`
+  * Added the required `AdditionalAuthentication` field to the `CreateUserRequest` method.
+  * Made the `Notifications` field required in the `UpdateUserNotifications` method.
 
-
-
-
-
-
-
-
-
-
-
+* PAPI
+  * Removed the `rule_format` and `product_id` fields from the `Property` structure, as this information is populated in the `GetPropertyVersion` method.
 
 #### FEATURES/ENHANCEMENTS:
 
-* PAPI
-  * Removed `rule_format` and `product_id` from `Property` struct as this information is populated from `GetPropertyVersion`
-
-
-
-
-
-
 * APPSEC
-  * Added field `Exceptions` in the following structures:
+  * Added the `Exceptions` field to these structures:
     * `GetSiemSettingsResponse`
     * `GetSiemSettingResponse`
     * `UpdateSiemSettingsRequest`
     * `UpdateSiemSettingsResponse`
-
-  * Added field `Source` in `GetExportConfigurationRequest` and field `TargetProduct` in `GetExportConfigurationResponse`
-
-
-
-
-
+  * Added the `Source` field to the `GetExportConfigurationRequest` method and the `TargetProduct` field to the `GetExportConfigurationResponse` method.
 
 * IAM
   * Updated structures:
@@ -401,103 +252,38 @@
     * `UserBasicInfo` with `AdditionalAuthentication`
     * `UserActions` with `CanGenerateBypassCode`
     * `UserNotificationOptions` with `APIClientCredentialExpiry`
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-* IAM
+  * Added new methods:
+    * [UpdateMFA](https://techdocs.akamai.com/iam-api/reference/put-user-profile-additional-authentication)
+    * [ResetMFA](https://techdocs.akamai.com/iam-api/reference/put-ui-identity-reset-additional-authentication)
+  * Added API Client Credentials methods:
+    * [CreateYourCredential](https://techdocs.akamai.com/iam-api/reference/post-self-credentials) and [CreateCredential](https://techdocs.akamai.com/iam-api/reference/post-client-credentials)
+    * [GetYourCredential](https://techdocs.akamai.com/iam-api/reference/get-self-credential) and [GetCredential](https://techdocs.akamai.com/iam-api/reference/get-client-credential)
+    * [UpdateYourCredential](https://techdocs.akamai.com/iam-api/reference/put-self-credential) and [UpdateCredential](https://techdocs.akamai.com/iam-api/reference/put-client-credential)
+    * [DeleteYourCredential](https://techdocs.akamai.com/iam-api/reference/delete-self-credential) and [DeleteCredential](https://techdocs.akamai.com/iam-api/reference/delete-client-credential)
+    * [ListYourCredentials](https://techdocs.akamai.com/iam-api/reference/get-self-credentials) and [ListCredentials](https://techdocs.akamai.com/iam-api/reference/get-client-credentials)
+    * [DeactivateYourCredential](https://techdocs.akamai.com/iam-api/reference/post-self-credential-deactivate) and [DeactivateCredential](https://techdocs.akamai.com/iam-api/reference/post-client-credential-deactivate)
+    * [DeactivateYourCredentials](https://techdocs.akamai.com/iam-api/reference/post-self-credentials-deactivate) and [DeactivateCredentials](https://techdocs.akamai.com/iam-api/reference/post-client-credentials-deactivate)
+  * Added the `UserStatus` and `AccountID` parameters to the `User` structure.
+  * Added the [GetPasswordPolicy](https://techdocs.akamai.com/iam-api/reference/get-common-password-policy) method to get a password policy for an account.
   * Added Helper APIs
     * [ListAllowedCPCodes](https://techdocs.akamai.com/iam-api/reference/post-api-clients-users-allowed-cpcodes)
-
-* IAM
-  * Added Helper APIs
-    * [ListAuthorizedUsers](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users)    
-    * [ListAllowedAPIs](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users-allowed-apis)    
-    * [ListAccessibleGroups](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users-group-access)    
-
-* IAM
-    * Added new methods:
-        * [ListUsersForProperty](https://techdocs.akamai.com/iam-api/reference/get-property-users)
-        * [BlockUsers](https://techdocs.akamai.com/iam-api/reference/put-property-users-block)
-
-
-
-
-* IAM
-    * Added support for new endpoints:
-        * [DisableIPAllowlist](https://techdocs.akamai.com/iam-api/reference/post-allowlist-disable)
-        * [EnableIPAllowlist](https://techdocs.akamai.com/iam-api/reference/post-allowlist-enable)
-        * [GetIPAllowlistStatus](https://techdocs.akamai.com/iam-api/reference/get-allowlist-status)
-
-
-
-
-
-
-
-
-* IAM
+    * [ListAuthorizedUsers](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users)
+    * [ListAllowedAPIs](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users-allowed-apis)
+    * [ListAccessibleGroups](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users-group-access)
   * Added new methods:
+    * [ListUsersForProperty](https://techdocs.akamai.com/iam-api/reference/get-property-users)
+    * [BlockUsers](https://techdocs.akamai.com/iam-api/reference/put-property-users-block)
+    * [DisableIPAllowlist](https://techdocs.akamai.com/iam-api/reference/post-allowlist-disable)
+    * [EnableIPAllowlist](https://techdocs.akamai.com/iam-api/reference/post-allowlist-enable)
+    * [GetIPAllowlistStatus](https://techdocs.akamai.com/iam-api/reference/get-allowlist-status)
     * `ListAccountSwitchKeys` based on [ListAccountSwitchKeys](https://techdocs.akamai.com/iam-api/reference/get-client-account-switch-keys) and [ListYourAccountSwitchKeys](https://techdocs.akamai.com/iam-api/reference/get-self-account-switch-keys)
     * `LockAPIClient` based on [LockAPIClient](https://techdocs.akamai.com/iam-api/reference/put-lock-api-client) and [LockYourAPIClient](https://techdocs.akamai.com/iam-api/reference/put-lock-api-client-self)
     * [UnlockAPIClient](https://techdocs.akamai.com/iam-api/reference/put-unlock-api-client)
-  
-
-
-
-
-
-
-
-
-
-* IAM
-  * Added new methods:
     * [ListAPIClients](https://techdocs.akamai.com/iam-api/reference/get-api-clients)
     * [CreateAPIClient](https://techdocs.akamai.com/iam-api/reference/post-api-clients)
     * `GetAPIClient` based on [GetAPIClient](https://techdocs.akamai.com/iam-api/reference/get-api-client) and [GetYourAPIClient](https://techdocs.akamai.com/iam-api/reference/get-api-client-self)
     * `UpdateAPIClient` based on [UpdateAPIClient](https://techdocs.akamai.com/iam-api/reference/put-api-clients) and [UpdateYourAPIClient](https://techdocs.akamai.com/iam-api/reference/put-api-clients-self)
     * `DeleteAPIClient` based on [DeleteAPIClient](https://techdocs.akamai.com/iam-api/reference/delete-api-client) and [DeleteYourAPIClient](https://techdocs.akamai.com/iam-api/reference/delete-api-client-self)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-* IAM
-  * Add support for new methods:
     * [ListCIDRBlocks](https://techdocs.akamai.com/iam-api/reference/get-allowlist)
     * [CreateCIDRBlock](https://techdocs.akamai.com/iam-api/reference/post-allowlist)
     * [GetCIDRBlock](https://techdocs.akamai.com/iam-api/reference/get-allowlist-cidrblockid)
@@ -505,71 +291,13 @@
     * [DeleteCIDRBlock](https://techdocs.akamai.com/iam-api/reference/delete-allowlist-cidrblockid)
     * [ValidateCIDRBlock](https://techdocs.akamai.com/iam-api/reference/get-allowlist-validate)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### BUG FIXES:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## 8.4.0 (Aug 22, 2024)
 
 #### FEATURES/ENHANCEMENTS:
 
 * APPSEC
   * Added field `ClientLists` to `RuleConditions` and `AttackGroupConditions`
-  * The `RequestBodyInspectionLimitOverride` field has been added in the following structures:
+  * The `RequestBodyInspectionLimitOverride` field has been added in these structures:
     * `GetAdvancedSettingsRequestBodyResponse`,
     * `UpdateAdvancedSettingsRequestBodyRequest`,
     * `UpdateAdvancedSettingsRequestBodyResponse`,
@@ -632,7 +360,7 @@
 
 #### Deprecations
 
-* Deprecated the following functions in the `tools` package. Use `ptr.To` instead.
+* Deprecated these functions in the `tools` package. Use `ptr.To` instead.
   * `BoolPtr`
   * `IntPtr`
   * `Int64Ptr`
@@ -658,7 +386,7 @@
 #### BUG FIXES:
 
 * APPSEC
-  * The `Override` field in the following structs has been updated from a pointer to a value type within the `AdvancedSettingsAttackPayloadLogging` interface:
+  * The `Override` field in these structs has been updated from a pointer to a value type within the `AdvancedSettingsAttackPayloadLogging` interface:
     * `GetAdvancedSettingsAttackPayloadLoggingResponse`,
     * `UpdateAdvancedSettingsAttackPayloadLoggingResponse`,
     * `RemoveAdvancedSettingsAttackPayloadLoggingRequest`,
@@ -690,12 +418,12 @@
   * Split request and response structures for create and update enrollment operations
 
 * DNS
-  * Renamed following structs:
+  * Renamed these structs:
     * `RecordsetQueryArgs` into `RecordSetQueryArgs`
     * `Recordsets` into `RecordSets`
     * `Recordset` into `RecordSet`
     * `MetadataH` into `Metadata`
-  * Renamed following fields:
+  * Renamed these fields:
     * `GroupId` into `GroupID` in `ListGroupRequest`
     * `Recordsets` into `RecordSets` in `RecordSetResponse`
     * `ContractIds` into `ContractIDs` in `TSIGQueryString`
@@ -704,7 +432,7 @@
     * `VersionId` into `VersionID` in `ZoneResponse`
     * `RequestId` into `RequestID` in `BulkZonesResponse`, `BulkStatusResponse`, `BulkCreateResultResponse` and `BulkDeleteResultResponse`
   * Renamed `RecordSets` interface into `Recordsets`
-  * Renamed following methods:
+  * Renamed these methods:
     * `ListTsigKeys` into `ListTSIGKeys`
     * `GetTsigKeyZones` into `GetTSIGKeyZones`
     * `GetTsigKeyAliases` into `GetTSIGKeyAliases`
@@ -715,7 +443,7 @@
     * `GetRecordsets` into `GetRecordSets`
     * `CreateRecordsets` into `CreateRecordSets`
     * `UpdateRecordsets` into `UpdateRecordSets`
-  * Deleted following methods:
+  * Deleted these methods:
     * `NewAuthorityResponse`
     * `NewChangeListResponse`
     * `NewRecordBody`
@@ -726,13 +454,13 @@
     * `NewZoneQueryString`
     * `NewZoneResponse`
     * `RecordToMap`
-  * Unexported following methods:
+  * Unexported these methods:
     * `FullIPv6`
     * `PadCoordinates`
     * `ValidateZone`
 
 * GTM
-  * Renamed following structs:
+  * Renamed these structs:
     * `AsAssignment` into `ASAssignment`
     * `AsMap` into `ASMap`
     * `AsMapList` into `ASMapList`
@@ -742,7 +470,7 @@
     * `CidrMapResponse` into `CIDRMapResponse`
     * `AsMapResponse` into `ASMapResponse`
     * `HttpHeader` into `HTTPHeader`
-  * Renamed following fields:
+  * Renamed these fields:
     * `AsNumbers` into `ASNumbers` in `ASAssignment`
     * `AsMapItems` into `ASMapItems` in `ASMapList`
     * `CidrMapItems` into `CIDRMapItems` in `CIDRMapList`
@@ -763,7 +491,7 @@
     * `Ipv6` into `IPv6` in `Property`
     * `BackupIp` into `BackupIP` in `Property`
   * Renamed `CidrMaps` interface into `CIDRMaps`
-  * Renamed following methods:
+  * Renamed these methods:
     * `ListAsMaps` into `ListASMaps`
     * `GetAsMap` into `GetASMap`
     * `CreateAsMap` into `CreateASMap`
@@ -774,7 +502,7 @@
     * `CreateCidrMap` into `CreateCIDRMap`
     * `DeleteCidrMap` into `DeleteCIDRMap`
     * `UpdateCidrMap` into `UpdateCIDRMap`
-  * Deleted following methods:
+  * Deleted these methods:
     * `NewASAssignment`
     * `NewAsMap`
     * `NewCidrAssignment`
@@ -985,7 +713,7 @@
 ### Deprecations
 
 * Challenge Interceptions Rules has been deprecated
-* Deprecate the following interfaces used to maintain individual policy protections:
+* Deprecate these interfaces used to maintain individual policy protections:
   * `ApiConstraintsProtection`
   * `IPGeoProtection`
   * `MalwareProtection`
@@ -1063,7 +791,7 @@
 ### FEATURES/ENHANCEMENTS:
 
 * APPSEC
-  * Added following BotManager fields to GetExportConfigurationResponse
+  * Added these BotManager fields to GetExportConfigurationResponse
     * BotManagement
     * CustomBotCategories
     * CustomDefinedBots
@@ -1089,7 +817,7 @@
     * [GetAvailableBehaviors](https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors)
 
 * CPS
-  * Update `Accept` header to the latest schema `application/vnd.akamai.cps.enrollment.v11+json` for the following endpoints:
+  * Update `Accept` header to the latest schema `application/vnd.akamai.cps.enrollment.v11+json` for these endpoints:
     * [ListEnrollments](https://techdocs.akamai.com/cps/reference/get-enrollments)
     * [GetEnrollment](https://techdocs.akamai.com/cps/reference/get-enrollment)
 
@@ -1201,7 +929,7 @@
     * MalwarePolicyAction
     * MalwareProtection
   * Add GetRuleRecommendations method to TuningRecommendations interface
-  * Add deprecation notes for the following:
+  * Add deprecation notes for these:
     * methods:
       * GetIPGeoProtections
       * GetNetworkLayerProtections
@@ -1437,7 +1165,7 @@
 
 #### BREAKING CHANGES:
 * APPSEC
-  * The following have been removed, togther with their unit tests and test data:
+  * The following have been removed, together with their unit tests and test data:
     * pkg/appsec/attack_group_action.go
     * pkg/appsec/attack_group_condition_exception.go
     * pkg/appsec/eval_rule_action.go
@@ -1481,7 +1209,7 @@
 
 ## 2.3.0 (Mar 15, 2021) Network Lists
 
-Add support for the following operations in the Network Lists API v2:
+Add support for the these operations in the Network Lists API v2:
 
 * Create a network list
 * Update an existing network list
