@@ -808,12 +808,15 @@ type (
 
 	// BotManagement is returned as part of GetExportConfigurationResponse
 	BotManagement struct {
-		AkamaiBotCategoryActions []map[string]interface{} `json:"akamaiBotCategoryActions,omitempty"`
-		BotDetectionActions      []map[string]interface{} `json:"botDetectionActions,omitempty"`
-		BotManagementSettings    map[string]interface{}   `json:"botManagementSettings,omitempty"`
-		CustomBotCategoryActions []map[string]interface{} `json:"customBotCategoryActions,omitempty"`
-		JavascriptInjectionRules map[string]interface{}   `json:"javascriptInjectionRules,omitempty"`
-		TransactionalEndpoints   *TransactionalEndpoints  `json:"transactionalEndpoints,omitempty"`
+		AkamaiBotCategoryActions                  []map[string]interface{} `json:"akamaiBotCategoryActions,omitempty"`
+		BotDetectionActions                       []map[string]interface{} `json:"botDetectionActions,omitempty"`
+		BotManagementSettings                     map[string]interface{}   `json:"botManagementSettings,omitempty"`
+		CustomBotCategoryActions                  []map[string]interface{} `json:"customBotCategoryActions,omitempty"`
+		JavascriptInjectionRules                  map[string]interface{}   `json:"javascriptInjectionRules,omitempty"`
+		TransactionalEndpoints                    *TransactionalEndpoints  `json:"transactionalEndpoints,omitempty"`
+		ContentProtectionRules                    []map[string]interface{} `json:"contentProtectionRules,omitempty"`
+		ContentProtectionRuleSequence             []string                 `json:"contentProtectionRuleSequence,omitempty"`
+		ContentProtectionJavaScriptInjectionRules []map[string]interface{} `json:"contentProtectionJavaScriptInjectionRules,omitempty"`
 	}
 
 	// TransactionalEndpoints is returned as port of GetExportConfigurationResponse

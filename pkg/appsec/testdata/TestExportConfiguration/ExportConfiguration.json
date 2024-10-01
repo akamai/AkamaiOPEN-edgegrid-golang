@@ -1851,7 +1851,38 @@
 							"innerKey": "innerValueA"
 						}
 					}
-				}
+				},
+				"contentProtectionRules": [
+					{
+						"contentProtectionRuleId": "fakeba52-5c9e-4aa0-b5f7-5b88601d0d76",
+						"contentProtectionRuleName": "New Rule",
+						"primitiveKey": "primitiveValueA",
+						"arrayKey": [
+							"arrayValueA1",
+							"arrayValueA2"
+						],
+						"objectKey": {
+							"innerKey": "innerValueA"
+						}
+					}
+				],
+				"contentProtectionRuleSequence": [
+					"fakeba52-5c9e-4aa0-b5f7-5b88601d0d76"
+				],
+				"contentProtectionJavaScriptInjectionRules": [
+					{
+						"contentProtectionJavaScriptInjectionRuleId": "fakeb37c-15ce-4ec8-ad99-0252d8a4580b",
+						"contentProtectionJavaScriptInjectionRuleName": "New Injection Rule",
+						"primitiveKey": "primitiveValueA",
+						"arrayKey": [
+							"arrayValueA1",
+							"arrayValueA2"
+						],
+						"objectKey": {
+							"innerKey": "innerValueA"
+						}
+					}
+				]
 			},
 			"RequestBody": {
 				"requestBodyInspectionLimitInKB" : "8"

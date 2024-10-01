@@ -27,7 +27,11 @@
 
 
 #### FEATURES/ENHANCEMENTS:
-
+* APPSEC
+  * Added following content protection fields to `GetExportConfigurationResponse` under `BotManagement` section
+    * `ContentProtectionRules`
+    * `ContentProtectionRuleSequence`
+    * `ContentProtectionJavaScriptInjectionRules`
 
 
 
