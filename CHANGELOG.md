@@ -6,6 +6,7 @@
 
 * General
   * Consolidated multiple sub-interfaces into a single interface for each sub-provider.
+  * Renamed `NTWRKLISTS` interface to `NetworkList` for `networklists` provider
   * Removed `tools` package in favour of `ptr` package
 
 * Cloudaccess
