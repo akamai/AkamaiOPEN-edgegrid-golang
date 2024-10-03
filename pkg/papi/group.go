@@ -8,14 +8,6 @@ import (
 )
 
 type (
-	// Groups contains operations available on Group resource
-	Groups interface {
-		// GetGroups provides a read-only list of groups, which may contain properties.
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-groups
-		GetGroups(context.Context) (*GetGroupsResponse, error)
-	}
-
 	// Group represents a property group resource
 	Group struct {
 		GroupID       string   `json:"groupId"`

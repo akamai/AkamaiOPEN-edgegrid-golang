@@ -14,14 +14,8 @@ type Mock struct {
 
 var _ DNS = &Mock{}
 
-func (d *Mock) ListZones(ctx context.Context, query ...ZoneListQueryArgs) (*ZoneListResponse, error) {
-	var args mock.Arguments
-
-	if len(query) > 0 {
-		args = d.Called(ctx, query[0])
-	} else {
-		args = d.Called(ctx)
-	}
+func (d *Mock) ListZones(ctx context.Context, req ListZonesRequest) (*ZoneListResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -40,156 +34,145 @@ func (d *Mock) GetZonesDNSSecStatus(ctx context.Context, params GetZonesDNSSecSt
 	return args.Get(0).(*GetZonesDNSSecStatusResponse), args.Error(1)
 }
 
-func (d *Mock) GetZone(ctx context.Context, name string) (*ZoneResponse, error) {
-	args := d.Called(ctx, name)
+func (d *Mock) GetZone(ctx context.Context, req GetZoneRequest) (*GetZoneResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*ZoneResponse), args.Error(1)
+	return args.Get(0).(*GetZoneResponse), args.Error(1)
 }
 
-func (d *Mock) GetChangeList(ctx context.Context, param string) (*ChangeListResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetChangeList(ctx context.Context, req GetChangeListRequest) (*GetChangeListResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*ChangeListResponse), args.Error(1)
+	return args.Get(0).(*GetChangeListResponse), args.Error(1)
 }
 
-func (d *Mock) GetMasterZoneFile(ctx context.Context, param string) (string, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetMasterZoneFile(ctx context.Context, req GetMasterZoneFileRequest) (string, error) {
+	args := d.Called(ctx, req)
 
 	return args.String(0), args.Error(1)
 }
 
-func (d *Mock) CreateZone(ctx context.Context, param1 *ZoneCreate, param2 ZoneQueryString, param3 ...bool) error {
+func (d *Mock) CreateZone(ctx context.Context, req CreateZoneRequest) error {
 	var args mock.Arguments
-
-	if len(param3) > 0 {
-		args = d.Called(ctx, param1, param2, param3[0])
-	} else {
-		args = d.Called(ctx, param1, param2)
-	}
+	args = d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) SaveChangelist(ctx context.Context, param *ZoneCreate) error {
-	args := d.Called(ctx, param)
+func (d *Mock) SaveChangeList(ctx context.Context, req SaveChangeListRequest) error {
+	args := d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) SubmitChangelist(ctx context.Context, param *ZoneCreate) error {
-	args := d.Called(ctx, param)
+func (d *Mock) SubmitChangeList(ctx context.Context, req SubmitChangeListRequest) error {
+	args := d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) UpdateZone(ctx context.Context, param1 *ZoneCreate, param2 ZoneQueryString) error {
-	args := d.Called(ctx, param1, param2)
+func (d *Mock) UpdateZone(ctx context.Context, req UpdateZoneRequest) error {
+	args := d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) DeleteZone(ctx context.Context, param1 *ZoneCreate, param2 ZoneQueryString) error {
-	args := d.Called(ctx, param1, param2)
-
-	return args.Error(0)
-}
-
-func (d *Mock) GetZoneNames(ctx context.Context, param string) (*ZoneNamesResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetZoneNames(ctx context.Context, req GetZoneNamesRequest) (*GetZoneNamesResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*ZoneNamesResponse), args.Error(1)
+	return args.Get(0).(*GetZoneNamesResponse), args.Error(1)
 }
 
-func (d *Mock) GetZoneNameTypes(ctx context.Context, param1 string, param2 string) (*ZoneNameTypesResponse, error) {
-	args := d.Called(ctx, param1, param2)
+func (d *Mock) GetZoneNameTypes(ctx context.Context, req GetZoneNameTypesRequest) (*GetZoneNameTypesResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*ZoneNameTypesResponse), args.Error(1)
+	return args.Get(0).(*GetZoneNameTypesResponse), args.Error(1)
 }
 
-func (d *Mock) ListTSIGKeys(ctx context.Context, param *TSIGQueryString) (*TSIGReportResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) ListTSIGKeys(ctx context.Context, req ListTSIGKeysRequest) (*ListTSIGKeysResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*TSIGReportResponse), args.Error(1)
+	return args.Get(0).(*ListTSIGKeysResponse), args.Error(1)
 }
 
-func (d *Mock) GetTSIGKeyZones(ctx context.Context, param *TSIGKey) (*ZoneNameListResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetTSIGKeyZones(ctx context.Context, req GetTSIGKeyZonesRequest) (*GetTSIGKeyZonesResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*ZoneNameListResponse), args.Error(1)
+	return args.Get(0).(*GetTSIGKeyZonesResponse), args.Error(1)
 }
 
-func (d *Mock) GetTSIGKeyAliases(ctx context.Context, param string) (*ZoneNameListResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetTSIGKeyAliases(ctx context.Context, req GetTSIGKeyAliasesRequest) (*GetTSIGKeyAliasesResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*ZoneNameListResponse), args.Error(1)
+	return args.Get(0).(*GetTSIGKeyAliasesResponse), args.Error(1)
 }
 
-func (d *Mock) TSIGKeyBulkUpdate(ctx context.Context, param1 *TSIGKeyBulkPost) error {
-	args := d.Called(ctx, param1)
+func (d *Mock) UpdateTSIGKeyBulk(ctx context.Context, req UpdateTSIGKeyBulkRequest) error {
+	args := d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) GetTSIGKey(ctx context.Context, param string) (*TSIGKeyResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetTSIGKey(ctx context.Context, req GetTSIGKeyRequest) (*GetTSIGKeyResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*TSIGKeyResponse), args.Error(1)
+	return args.Get(0).(*GetTSIGKeyResponse), args.Error(1)
 }
 
-func (d *Mock) DeleteTSIGKey(ctx context.Context, param1 string) error {
-	args := d.Called(ctx, param1)
+func (d *Mock) DeleteTSIGKey(ctx context.Context, req DeleteTSIGKeyRequest) error {
+	args := d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) UpdateTSIGKey(ctx context.Context, param1 *TSIGKey, param2 string) error {
-	args := d.Called(ctx, param1, param2)
+func (d *Mock) UpdateTSIGKey(ctx context.Context, req UpdateTSIGKeyRequest) error {
+	args := d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) GetAuthorities(ctx context.Context, param string) (*AuthorityResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetAuthorities(ctx context.Context, req GetAuthoritiesRequest) (*GetAuthoritiesResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*AuthorityResponse), args.Error(1)
+	return args.Get(0).(*GetAuthoritiesResponse), args.Error(1)
 }
 
-func (d *Mock) GetNameServerRecordList(ctx context.Context, param string) ([]string, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetNameServerRecordList(ctx context.Context, req GetNameServerRecordListRequest) ([]string, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -198,18 +181,18 @@ func (d *Mock) GetNameServerRecordList(ctx context.Context, param string) ([]str
 	return args.Get(0).([]string), args.Error(1)
 }
 
-func (d *Mock) GetRecordList(ctx context.Context, param string, param2 string, param3 string) (*RecordSetResponse, error) {
-	args := d.Called(ctx, param, param2, param3)
+func (d *Mock) GetRecordList(ctx context.Context, req GetRecordListRequest) (*GetRecordListResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*RecordSetResponse), args.Error(1)
+	return args.Get(0).(*GetRecordListResponse), args.Error(1)
 }
 
-func (d *Mock) GetRdata(ctx context.Context, param string, param2 string, param3 string) ([]string, error) {
-	args := d.Called(ctx, param, param2, param3)
+func (d *Mock) GetRdata(ctx context.Context, req GetRdataRequest) ([]string, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
@@ -234,154 +217,119 @@ func (d *Mock) ParseRData(ctx context.Context, param string, param2 []string) ma
 	return args.Get(0).(map[string]interface{})
 }
 
-func (d *Mock) GetRecord(ctx context.Context, param string, param2 string, param3 string) (*RecordBody, error) {
-	args := d.Called(ctx, param, param2, param3)
+func (d *Mock) GetRecord(ctx context.Context, req GetRecordRequest) (*GetRecordResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*RecordBody), args.Error(1)
+	return args.Get(0).(*GetRecordResponse), args.Error(1)
 }
 
-func (d *Mock) CreateRecord(ctx context.Context, param *RecordBody, param2 string, param3 ...bool) error {
+func (d *Mock) CreateRecord(ctx context.Context, req CreateRecordRequest) error {
 	var args mock.Arguments
-
-	if len(param3) > 0 {
-		args = d.Called(ctx, param, param2, param3)
-	} else {
-		args = d.Called(ctx, param, param2)
-	}
+	args = d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) DeleteRecord(ctx context.Context, param *RecordBody, param2 string, param3 ...bool) error {
+func (d *Mock) DeleteRecord(ctx context.Context, req DeleteRecordRequest) error {
 	var args mock.Arguments
-
-	if len(param3) > 0 {
-		args = d.Called(ctx, param, param2, param3)
-	} else {
-		args = d.Called(ctx, param, param2)
-	}
+	args = d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) UpdateRecord(ctx context.Context, param *RecordBody, param2 string, param3 ...bool) error {
+func (d *Mock) UpdateRecord(ctx context.Context, req UpdateRecordRequest) error {
 	var args mock.Arguments
-
-	if len(param3) > 0 {
-		args = d.Called(ctx, param, param2, param3)
-	} else {
-		args = d.Called(ctx, param, param2)
-	}
+	args = d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) GetRecordSets(ctx context.Context, param string, param2 ...RecordSetQueryArgs) (*RecordSetResponse, error) {
+func (d *Mock) GetRecordSets(ctx context.Context, req GetRecordSetsRequest) (*GetRecordSetsResponse, error) {
 	var args mock.Arguments
-
-	if len(param2) > 0 {
-		args = d.Called(ctx, param, param2)
-	} else {
-		args = d.Called(ctx, param)
-	}
+	args = d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*RecordSetResponse), args.Error(1)
+	return args.Get(0).(*GetRecordSetsResponse), args.Error(1)
 }
 
-func (d *Mock) CreateRecordSets(ctx context.Context, param *RecordSets, param2 string, param3 ...bool) error {
+func (d *Mock) CreateRecordSets(ctx context.Context, req CreateRecordSetsRequest) error {
 	var args mock.Arguments
-
-	if len(param3) > 0 {
-		args = d.Called(ctx, param, param2, param3)
-	} else {
-		args = d.Called(ctx, param, param2)
-	}
+	args = d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) UpdateRecordSets(ctx context.Context, param *RecordSets, param2 string, param3 ...bool) error {
+func (d *Mock) UpdateRecordSets(ctx context.Context, req UpdateRecordSetsRequest) error {
 	var args mock.Arguments
-
-	if len(param3) > 0 {
-		args = d.Called(ctx, param, param2, param3)
-	} else {
-		args = d.Called(ctx, param, param2)
-	}
+	args = d.Called(ctx, req)
 
 	return args.Error(0)
 }
 
-func (d *Mock) PostMasterZoneFile(ctx context.Context, param string, param2 string) error {
-	args := d.Called(ctx, param, param2)
+func (d *Mock) PostMasterZoneFile(ctx context.Context, req PostMasterZoneFileRequest) error {
+	args := d.Called(ctx, req)
 
 	return args.Error(0)
 }
-func (d *Mock) CreateBulkZones(ctx context.Context, param *BulkZonesCreate, param2 ZoneQueryString) (*BulkZonesResponse, error) {
-	args := d.Called(ctx, param, param2)
+func (d *Mock) CreateBulkZones(ctx context.Context, req CreateBulkZonesRequest) (*CreateBulkZonesResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*BulkZonesResponse), args.Error(1)
+	return args.Get(0).(*CreateBulkZonesResponse), args.Error(1)
 }
-func (d *Mock) DeleteBulkZones(ctx context.Context, param *ZoneNameListResponse, param2 ...bool) (*BulkZonesResponse, error) {
+func (d *Mock) DeleteBulkZones(ctx context.Context, req DeleteBulkZonesRequest) (*DeleteBulkZonesResponse, error) {
 	var args mock.Arguments
-
-	if len(param2) > 0 {
-		args = d.Called(ctx, param, param2[0])
-	} else {
-		args = d.Called(ctx, param)
-	}
+	args = d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*BulkZonesResponse), args.Error(1)
+	return args.Get(0).(*DeleteBulkZonesResponse), args.Error(1)
 }
-func (d *Mock) GetBulkZoneCreateStatus(ctx context.Context, param string) (*BulkStatusResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetBulkZoneCreateStatus(ctx context.Context, req GetBulkZoneCreateStatusRequest) (*GetBulkZoneCreateStatusResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*BulkStatusResponse), args.Error(1)
+	return args.Get(0).(*GetBulkZoneCreateStatusResponse), args.Error(1)
 }
-func (d *Mock) GetBulkZoneDeleteStatus(ctx context.Context, param string) (*BulkStatusResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetBulkZoneDeleteStatus(ctx context.Context, req GetBulkZoneDeleteStatusRequest) (*GetBulkZoneDeleteStatusResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*BulkStatusResponse), args.Error(1)
+	return args.Get(0).(*GetBulkZoneDeleteStatusResponse), args.Error(1)
 }
-func (d *Mock) GetBulkZoneCreateResult(ctx context.Context, param string) (*BulkCreateResultResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetBulkZoneCreateResult(ctx context.Context, req GetBulkZoneCreateResultRequest) (*GetBulkZoneCreateResultResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*BulkCreateResultResponse), args.Error(1)
+	return args.Get(0).(*GetBulkZoneCreateResultResponse), args.Error(1)
 }
-func (d *Mock) GetBulkZoneDeleteResult(ctx context.Context, param string) (*BulkDeleteResultResponse, error) {
-	args := d.Called(ctx, param)
+func (d *Mock) GetBulkZoneDeleteResult(ctx context.Context, req GetBulkZoneDeleteResultRequest) (*GetBulkZoneDeleteResultResponse, error) {
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*BulkDeleteResultResponse), args.Error(1)
+	return args.Get(0).(*GetBulkZoneDeleteResultResponse), args.Error(1)
 }
 
 func (d *Mock) ListGroups(ctx context.Context, request ListGroupRequest) (*ListGroupResponse, error) {

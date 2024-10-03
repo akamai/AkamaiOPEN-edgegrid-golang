@@ -7,8 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -154,10 +153,10 @@ func TestListPolicies(t *testing.T) {
 		},
 		"200 OK with params": {
 			params: ListPoliciesRequest{
-				CloudletID:     tools.Int64Ptr(2),
+				CloudletID:     ptr.To(int64(2)),
 				IncludeDeleted: true,
 				Offset:         4,
-				PageSize:       tools.IntPtr(5),
+				PageSize:       ptr.To(5),
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     `[]`,

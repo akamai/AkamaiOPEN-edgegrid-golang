@@ -10,14 +10,6 @@ import (
 )
 
 type (
-	// Products contains operations available on Products resource
-	Products interface {
-		// GetProducts lists all available Products
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-products
-		GetProducts(context.Context, GetProductsRequest) (*GetProductsResponse, error)
-	}
-
 	// GetProductsRequest contains data required to list products associated to a contract
 	GetProductsRequest struct {
 		ContractID string

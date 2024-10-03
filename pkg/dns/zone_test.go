@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -17,7 +17,7 @@ import (
 func TestDNS_ListZones(t *testing.T) {
 
 	tests := map[string]struct {
-		args             []ZoneListQueryArgs
+		params           ListZonesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -26,15 +26,13 @@ func TestDNS_ListZones(t *testing.T) {
 		headers          http.Header
 	}{
 		"200 OK": {
-			args: []ZoneListQueryArgs{
-				{
-					ContractIDs: "1-1ACYUM",
-					Search:      "org",
-					SortBy:      "-contractId,zone",
-					Types:       "primary,alias",
-					Page:        1,
-					PageSize:    25,
-				},
+			params: ListZonesRequest{
+				ContractIDs: "1-1ACYUM",
+				Search:      "org",
+				SortBy:      "-contractId,zone",
+				Types:       "primary,alias",
+				Page:        1,
+				PageSize:    25,
 			},
 			headers: http.Header{
 				"Accept": []string{"application/json"},
@@ -75,7 +73,7 @@ func TestDNS_ListZones(t *testing.T) {
 					TotalElements: 17,
 					ContractIDs:   []string{"1-2ABCDE"},
 				},
-				Zones: []*ZoneResponse{
+				Zones: []ZoneResponse{
 					{
 						ContractID:         "1-2ABCDE",
 						Zone:               "example.com",
@@ -92,15 +90,13 @@ func TestDNS_ListZones(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			args: []ZoneListQueryArgs{
-				{
-					ContractIDs: "1-1ACYUM",
-					Search:      "org",
-					SortBy:      "-contractId,zone",
-					Types:       "primary,alias",
-					Page:        1,
-					PageSize:    25,
-				},
+			params: ListZonesRequest{
+				ContractIDs: "1-1ACYUM",
+				Search:      "org",
+				SortBy:      "-contractId,zone",
+				Types:       "primary,alias",
+				Page:        1,
+				PageSize:    25,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -132,7 +128,7 @@ func TestDNS_ListZones(t *testing.T) {
 			result, err := client.ListZones(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.args...)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -303,15 +299,17 @@ func TestDNS_GetZonesDNSSecStatus(t *testing.T) {
 
 func TestDNS_GetZone(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
+		params           GetZoneRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ZoneResponse
+		expectedResponse *GetZoneResponse
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
+			params: GetZoneRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -328,7 +326,7 @@ func TestDNS_GetZone(t *testing.T) {
 				"activationState": "ACTIVE"
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com",
-			expectedResponse: &ZoneResponse{
+			expectedResponse: &GetZoneResponse{
 				ContractID:            "1-2ABCDE",
 				Zone:                  "example.com",
 				Type:                  "primary",
@@ -343,7 +341,9 @@ func TestDNS_GetZone(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			zone:           "example.com",
+			params: GetZoneRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -372,7 +372,7 @@ func TestDNS_GetZone(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetZone(context.Background(), test.zone)
+			result, err := client.GetZone(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -385,7 +385,7 @@ func TestDNS_GetZone(t *testing.T) {
 
 func TestDNS_GetZoneMasterFile(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
+		params           GetMasterZoneFileRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -393,7 +393,9 @@ func TestDNS_GetZoneMasterFile(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
+			params: GetMasterZoneFileRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `"example.com.        10000    IN SOA ns1.akamaidns.com. webmaster.example.com. 1 28800 14400 2419200 86400
 example.com.        10000    IN NS  ns1.akamaidns.com.
@@ -412,7 +414,9 @@ www.example.com.        300 IN  A   10.0.0.1
 www.example.com.        300 IN  A   10.0.0.2"`,
 		},
 		"500 internal server error": {
-			zone:           "example.com",
+			params: GetMasterZoneFileRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -441,7 +445,7 @@ www.example.com.        300 IN  A   10.0.0.2"`,
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetMasterZoneFile(context.Background(), test.zone)
+			result, err := client.GetMasterZoneFile(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -454,35 +458,38 @@ www.example.com.        300 IN  A   10.0.0.2"`,
 
 func TestDNS_UpdateZoneMasterFile(t *testing.T) {
 	tests := map[string]struct {
-		zone           string
-		masterfile     string
+		params         PostMasterZoneFileRequest
 		responseStatus int
 		expectedPath   string
 		responseBody   string
 		withError      error
 	}{
 		"204 Updated": {
-			zone: "example.com",
-			masterfile: `"example.com.        10000    IN SOA ns1.akamaidns.com. webmaster.example.com. 1 28800 14400 2419200 86400
+			params: PostMasterZoneFileRequest{
+				Zone: "example.com",
+				FileData: `"example.com.        10000    IN SOA ns1.akamaidns.com. webmaster.example.com. 1 28800 14400 2419200 86400
 example.com.        10000    IN NS  ns1.akamaidns.com.
 example.com.        10000    IN NS  ns2.akamaidns.com.
 example.com.            300 IN  A   10.0.0.1
 example.com.            300 IN  A   10.0.0.2
 www.example.com.        300 IN  A   10.0.0.1
 www.example.com.        300 IN  A   10.0.0.2"`,
+			},
 			responseStatus: http.StatusNoContent,
 			responseBody:   "",
 			expectedPath:   "/config-dns/v2/zones/example.com/zone-file",
 		},
 		"500 internal server error": {
-			zone: "example.com",
-			masterfile: `"example.com.        10000    IN SOA ns1.akamaidns.com. webmaster.example.com. 1 28800 14400 2419200 86400
+			params: PostMasterZoneFileRequest{
+				Zone: "example.com",
+				FileData: `"example.com.        10000    IN SOA ns1.akamaidns.com. webmaster.example.com. 1 28800 14400 2419200 86400
 example.com.        10000    IN NS  ns1.akamaidns.com.
 example.com.        10000    IN NS  ns2.akamaidns.com.
 example.com.            300 IN  A   10.0.0.1
 example.com.            300 IN  A   10.0.0.2
 www.example.com.        300 IN  A   10.0.0.1
 www.example.com.        300 IN  A   10.0.0.2"`,
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -512,7 +519,7 @@ www.example.com.        300 IN  A   10.0.0.2"`,
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.PostMasterZoneFile(context.Background(), test.zone, test.masterfile)
+			err := client.PostMasterZoneFile(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -524,15 +531,17 @@ www.example.com.        300 IN  A   10.0.0.2"`,
 
 func TestDNS_GetChangeList(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
+		params           GetChangeListRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ChangeListResponse
+		expectedResponse *GetChangeListResponse
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
+			params: GetChangeListRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -543,7 +552,7 @@ func TestDNS_GetChangeList(t *testing.T) {
 				"stale": false
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com",
-			expectedResponse: &ChangeListResponse{
+			expectedResponse: &GetChangeListResponse{
 				Zone:             "example.com",
 				ChangeTag:        "476754f4-d605-479f-853b-db854d7254fa",
 				ZoneVersionID:    "1d9c887c-49bb-4382-87a6-d1bf690aa58f",
@@ -552,7 +561,9 @@ func TestDNS_GetChangeList(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			zone:           "example.com",
+			params: GetChangeListRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -581,7 +592,7 @@ func TestDNS_GetChangeList(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetChangeList(context.Background(), test.zone)
+			result, err := client.GetChangeList(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -594,7 +605,7 @@ func TestDNS_GetChangeList(t *testing.T) {
 
 func TestDNS_GetMasterZoneFile(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
+		params           GetMasterZoneFileRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -602,7 +613,9 @@ func TestDNS_GetMasterZoneFile(t *testing.T) {
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
+			params: GetMasterZoneFileRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			example.com.        10000    IN SOA ns1.akamaidns.com. webmaster.example.com. 1 28800 14400 2419200 86400
@@ -623,7 +636,9 @@ func TestDNS_GetMasterZoneFile(t *testing.T) {
 			www.example.com.        300 IN  A   10.0.0.2`,
 		},
 		"500 internal server error": {
-			zone:           "example.com",
+			params: GetMasterZoneFileRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -654,7 +669,7 @@ func TestDNS_GetMasterZoneFile(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetMasterZoneFile(context.Background(), test.zone)
+			result, err := client.GetMasterZoneFile(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -667,18 +682,19 @@ func TestDNS_GetMasterZoneFile(t *testing.T) {
 
 func TestDNS_CreateZone(t *testing.T) {
 	tests := map[string]struct {
-		zone           ZoneCreate
-		query          ZoneQueryString
+		params         CreateZoneRequest
 		responseStatus int
 		responseBody   string
 		expectedPath   string
 		withError      error
 	}{
 		"201 Created": {
-			zone: ZoneCreate{
-				Zone:       "example.com",
-				ContractID: "1-2ABCDE",
-				Type:       "primary",
+			params: CreateZoneRequest{
+				CreateZone: &ZoneCreate{
+					Zone:       "example.com",
+					ContractID: "1-2ABCDE",
+					Type:       "primary",
+				},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody: `
@@ -707,10 +723,12 @@ func TestDNS_CreateZone(t *testing.T) {
 			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
 		},
 		"500 internal server error": {
-			zone: ZoneCreate{
-				Zone:       "example.com",
-				ContractID: "1-2ABCDE",
-				Type:       "secondary",
+			params: CreateZoneRequest{
+				CreateZone: &ZoneCreate{
+					Zone:       "example.com",
+					ContractID: "1-2ABCDE",
+					Type:       "primary",
+				},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -741,7 +759,7 @@ func TestDNS_CreateZone(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.CreateZone(context.Background(), &test.zone, test.query, true)
+			err := client.CreateZone(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -753,14 +771,15 @@ func TestDNS_CreateZone(t *testing.T) {
 
 func TestDNS_SaveChangelist(t *testing.T) {
 	tests := map[string]struct {
+		params         SaveChangeListRequest
 		zone           ZoneCreate
 		responseStatus int
 		responseBody   string
 		expectedPath   string
-		withError      error
+		withError      func(*testing.T, error)
 	}{
 		"201 Created": {
-			zone: ZoneCreate{
+			params: SaveChangeListRequest{
 				Zone:       "example.com",
 				ContractID: "1-2ABCDE",
 				Type:       "primary",
@@ -769,10 +788,10 @@ func TestDNS_SaveChangelist(t *testing.T) {
 			expectedPath:   "/config-dns/v2/changelists?zone=example.com",
 		},
 		"500 internal server error": {
-			zone: ZoneCreate{
+			params: SaveChangeListRequest{
 				Zone:       "example.com",
 				ContractID: "1-2ABCDE",
-				Type:       "secondary",
+				Type:       "primary",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -783,11 +802,14 @@ func TestDNS_SaveChangelist(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/changelists?zone=example.com",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error creating zone",
-				StatusCode: http.StatusInternalServerError,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error creating zone",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
 	}
@@ -803,9 +825,9 @@ func TestDNS_SaveChangelist(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.SaveChangelist(context.Background(), &test.zone)
+			err := client.SaveChangeList(context.Background(), test.params)
 			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				test.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -815,14 +837,14 @@ func TestDNS_SaveChangelist(t *testing.T) {
 
 func TestDNS_SubmitChangelist(t *testing.T) {
 	tests := map[string]struct {
-		zone           ZoneCreate
+		params         SubmitChangeListRequest
 		responseStatus int
 		responseBody   string
 		expectedPath   string
 		withError      error
 	}{
 		"204 No Content": {
-			zone: ZoneCreate{
+			params: SubmitChangeListRequest{
 				Zone:       "example.com",
 				ContractID: "1-2ABCDE",
 				Type:       "primary",
@@ -831,7 +853,7 @@ func TestDNS_SubmitChangelist(t *testing.T) {
 			expectedPath:   "/config-dns/v2/changelists?zone=example.com",
 		},
 		"500 internal server error": {
-			zone: ZoneCreate{
+			params: SubmitChangeListRequest{
 				Zone:       "example.com",
 				ContractID: "1-2ABCDE",
 				Type:       "secondary",
@@ -865,7 +887,7 @@ func TestDNS_SubmitChangelist(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.SubmitChangelist(context.Background(), &test.zone)
+			err := client.SubmitChangeList(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -877,18 +899,19 @@ func TestDNS_SubmitChangelist(t *testing.T) {
 
 func TestDNS_UpdateZone(t *testing.T) {
 	tests := map[string]struct {
-		zone           ZoneCreate
-		query          ZoneQueryString
+		params         UpdateZoneRequest
 		responseStatus int
 		responseBody   string
 		expectedPath   string
 		withError      error
 	}{
 		"200 OK": {
-			zone: ZoneCreate{
-				Zone:       "example.com",
-				ContractID: "1-2ABCDE",
-				Type:       "primary",
+			params: UpdateZoneRequest{
+				CreateZone: &ZoneCreate{
+					Zone:       "example.com",
+					ContractID: "1-2ABCDE",
+					Type:       "primary",
+				},
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -917,10 +940,12 @@ func TestDNS_UpdateZone(t *testing.T) {
 			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
 		},
 		"500 internal server error": {
-			zone: ZoneCreate{
-				Zone:       "example.com",
-				ContractID: "1-2ABCDE",
-				Type:       "secondary",
+			params: UpdateZoneRequest{
+				CreateZone: &ZoneCreate{
+					Zone:       "example.com",
+					ContractID: "1-2ABCDE",
+					Type:       "secondary",
+				},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -951,7 +976,7 @@ func TestDNS_UpdateZone(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.UpdateZone(context.Background(), &test.zone, test.query)
+			err := client.UpdateZone(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -963,15 +988,17 @@ func TestDNS_UpdateZone(t *testing.T) {
 
 func TestDNS_GetZoneNames(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
+		params           GetZoneNamesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ZoneNamesResponse
+		expectedResponse *GetZoneNamesResponse
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
+			params: GetZoneNamesRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -984,12 +1011,14 @@ func TestDNS_GetZoneNames(t *testing.T) {
 				]
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com/names",
-			expectedResponse: &ZoneNamesResponse{
+			expectedResponse: &GetZoneNamesResponse{
 				Names: []string{"example.com", "www.example.com", "ftp.example.com", "space.example.com", "bar.example.com"},
 			},
 		},
 		"500 internal server error": {
-			zone:           "example.com",
+			params: GetZoneNamesRequest{
+				Zone: "example.com",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -1018,7 +1047,7 @@ func TestDNS_GetZoneNames(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetZoneNames(context.Background(), test.zone)
+			result, err := client.GetZoneNames(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -1031,17 +1060,18 @@ func TestDNS_GetZoneNames(t *testing.T) {
 
 func TestDNS_GetZoneNameTypes(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
-		zname            string
+		params           GetZoneNameTypesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ZoneNameTypesResponse
+		expectedResponse *GetZoneNameTypesResponse
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
-			zname:          "names",
+			params: GetZoneNameTypesRequest{
+				Zone:     "example.com",
+				ZoneName: "names",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -1052,13 +1082,15 @@ func TestDNS_GetZoneNameTypes(t *testing.T) {
 				]
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types",
-			expectedResponse: &ZoneNameTypesResponse{
+			expectedResponse: &GetZoneNameTypesResponse{
 				Types: []string{"A", "AAAA", "MX"},
 			},
 		},
 		"500 internal server error": {
-			zone:           "example.com",
-			zname:          "names",
+			params: GetZoneNameTypesRequest{
+				Zone:     "example.com",
+				ZoneName: "names",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -1087,7 +1119,7 @@ func TestDNS_GetZoneNameTypes(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetZoneNameTypes(context.Background(), test.zname, test.zone)
+			result, err := client.GetZoneNameTypes(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

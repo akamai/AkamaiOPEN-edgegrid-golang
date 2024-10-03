@@ -9,54 +9,11 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// PropertyVersions contains operations available on PropertyVersions resource
-	PropertyVersions interface {
-		// GetPropertyVersions fetches available property versions
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-versions
-		GetPropertyVersions(context.Context, GetPropertyVersionsRequest) (*GetPropertyVersionsResponse, error)
-
-		// GetPropertyVersion fetches specific property version
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version
-		GetPropertyVersion(context.Context, GetPropertyVersionRequest) (*GetPropertyVersionsResponse, error)
-
-		// CreatePropertyVersion creates a new property version and returns location and number for the new version
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/post-property-versions
-		CreatePropertyVersion(context.Context, CreatePropertyVersionRequest) (*CreatePropertyVersionResponse, error)
-
-		// GetLatestVersion fetches the latest property version
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-latest-property-version
-		GetLatestVersion(context.Context, GetLatestVersionRequest) (*GetPropertyVersionsResponse, error)
-
-		// GetAvailableBehaviors fetches a list of available behaviors for given property version
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors
-		GetAvailableBehaviors(context.Context, GetAvailableBehaviorsRequest) (*GetBehaviorsResponse, error)
-
-		// GetAvailableCriteria fetches a list of available criteria for given property version
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-available-criteria
-		GetAvailableCriteria(context.Context, GetAvailableCriteriaRequest) (*GetCriteriaResponse, error)
-
-		// ListAvailableIncludes lists external resources that can be applied within a property version's rules
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version-external-resources
-		ListAvailableIncludes(context.Context, ListAvailableIncludesRequest) (*ListAvailableIncludesResponse, error)
-
-		// ListReferencedIncludes lists referenced includes for parent property
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-version-includes
-		ListReferencedIncludes(context.Context, ListReferencedIncludesRequest) (*ListReferencedIncludesResponse, error)
-	}
-
 	// GetPropertyVersionsRequest contains path and query params used for listing property versions
 	GetPropertyVersionsRequest struct {
 		PropertyID string

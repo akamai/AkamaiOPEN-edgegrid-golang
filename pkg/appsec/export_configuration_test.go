@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -34,19 +34,21 @@ func TestAppSec_ListExportConfiguration(t *testing.T) {
 			params: GetExportConfigurationRequest{
 				ConfigID: 43253,
 				Version:  15,
+				Source:   "TF",
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/appsec/v1/export/configs/43253/versions/15",
+			expectedPath:     "/appsec/v1/export/configs/43253/versions/15?source=TF",
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
 			params: GetExportConfigurationRequest{
 				ConfigID: 43253,
 				Version:  15,
+				Source:   "TF",
 			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
@@ -57,7 +59,7 @@ func TestAppSec_ListExportConfiguration(t *testing.T) {
     "detail": "Error fetching propertys",
     "status": 500
 }`,
-			expectedPath: "/appsec/v1/export/configs/43253/versions/15",
+			expectedPath: "/appsec/v1/export/configs/43253/versions/15?source=TF",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",

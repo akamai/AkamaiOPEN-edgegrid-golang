@@ -9,19 +9,6 @@ import (
 )
 
 type (
-	// The NetworkListDescription interface supports retrieving and updating a network list's description.
-	NetworkListDescription interface {
-		// GetNetworkListDescription retrieves network list with description.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/get-network-list
-		GetNetworkListDescription(ctx context.Context, params GetNetworkListDescriptionRequest) (*GetNetworkListDescriptionResponse, error)
-
-		// UpdateNetworkListDescription modifies network list description.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/put-network-list-details
-		UpdateNetworkListDescription(ctx context.Context, params UpdateNetworkListDescriptionRequest) (*UpdateNetworkListDescriptionResponse, error)
-	}
-
 	// GetNetworkListDescriptionRequest contains request parameters for GetNetworkListDescription method
 	GetNetworkListDescriptionRequest struct {
 		UniqueID    string `json:"uniqueId"`

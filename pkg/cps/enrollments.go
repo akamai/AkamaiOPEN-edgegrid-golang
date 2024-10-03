@@ -12,34 +12,6 @@ import (
 )
 
 type (
-	// Enrollments is a CPS enrollments API interface
-	Enrollments interface {
-		// ListEnrollments fetches all enrollments with given contractId
-		//
-		// See https://techdocs.akamai.com/cps/reference/get-enrollments
-		ListEnrollments(context.Context, ListEnrollmentsRequest) (*ListEnrollmentsResponse, error)
-
-		// GetEnrollment fetches enrollment object with given ID
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-enrollment
-		GetEnrollment(context.Context, GetEnrollmentRequest) (*GetEnrollmentResponse, error)
-
-		// CreateEnrollment creates a new enrollment
-		//
-		// See: https://techdocs.akamai.com/cps/reference/post-enrollment
-		CreateEnrollment(context.Context, CreateEnrollmentRequest) (*CreateEnrollmentResponse, error)
-
-		// UpdateEnrollment updates a single enrollment entry with given ID
-		//
-		// See: https://techdocs.akamai.com/cps/reference/put-enrollment
-		UpdateEnrollment(context.Context, UpdateEnrollmentRequest) (*UpdateEnrollmentResponse, error)
-
-		// RemoveEnrollment removes an enrollment with given ID
-		//
-		// See: https://techdocs.akamai.com/cps/reference/delete-enrollment
-		RemoveEnrollment(context.Context, RemoveEnrollmentRequest) (*RemoveEnrollmentResponse, error)
-	}
-
 	// ListEnrollmentsResponse represents list of CPS enrollment objects under given contractId. It is used as a response body while fetching enrollments by contractId
 	ListEnrollmentsResponse struct {
 		Enrollments []Enrollment `json:"enrollments"`

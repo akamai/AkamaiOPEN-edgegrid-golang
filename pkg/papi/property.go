@@ -7,39 +7,11 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// Properties contains operations available on Property resource
-	Properties interface {
-		// GetProperties lists properties available for the current contract and group
-		//
-		// https://techdocs.akamai.com/property-mgr/reference/get-properties
-		GetProperties(ctx context.Context, r GetPropertiesRequest) (*GetPropertiesResponse, error)
-
-		// CreateProperty creates a new property from scratch or bases one on another property's rule tree and optionally its set of assigned hostnames
-		//
-		// https://techdocs.akamai.com/property-mgr/reference/post-properties
-		CreateProperty(ctx context.Context, params CreatePropertyRequest) (*CreatePropertyResponse, error)
-
-		// GetProperty gets a specific property
-		//
-		// https://techdocs.akamai.com/property-mgr/reference/get-property
-		GetProperty(ctx context.Context, params GetPropertyRequest) (*GetPropertyResponse, error)
-
-		// RemoveProperty removes a specific property, which you can only do if none of its versions are currently active
-		//
-		// https://techdocs.akamai.com/property-mgr/reference/delete-property
-		RemoveProperty(ctx context.Context, params RemovePropertyRequest) (*RemovePropertyResponse, error)
-
-		// MapPropertyNameToID returns (PAPI) property ID for given property name
-		// Mainly to be used to map (IAM) Property ID to (PAPI) Property ID
-		// To get property name for the mapping, please use iam.MapPropertyIDToName
-		MapPropertyNameToID(context.Context, MapPropertyNameToIDRequest) (*string, error)
-	}
-
 	// PropertyCloneFrom optionally identifies another property instance to clone when making a POST request to create a new property
 	PropertyCloneFrom struct {
 		CloneFromVersionEtag string `json:"cloneFromVersionEtag,omitempty"`
@@ -56,11 +28,9 @@ type (
 		GroupID           string `json:"groupId"`
 		LatestVersion     int    `json:"latestVersion"`
 		Note              string `json:"note"`
-		ProductID         string `json:"productId"`
 		ProductionVersion *int   `json:"productionVersion,omitempty"`
 		PropertyID        string `json:"propertyId"`
 		PropertyName      string `json:"propertyName"`
-		RuleFormat        string `json:"ruleFormat"`
 		StagingVersion    *int   `json:"stagingVersion,omitempty"`
 	}
 

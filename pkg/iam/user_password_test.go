@@ -3,7 +3,7 @@ package iam
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -33,7 +33,7 @@ func TestIAM_ResetUserPassword(t *testing.T) {
 			expectedResponse: ResetUserPasswordResponse{
 				NewPassword: "K8QVa7Q2",
 			},
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=false",
 		},
 		"204 No Content": {
 			params: ResetUserPasswordRequest{
@@ -42,7 +42,7 @@ func TestIAM_ResetUserPassword(t *testing.T) {
 			},
 			responseStatus: http.StatusNoContent,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=true",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=true",
 		},
 		"404 Not Found": {
 			params: ResetUserPasswordRequest{
@@ -57,7 +57,7 @@ func TestIAM_ResetUserPassword(t *testing.T) {
 				"title": "User not found",
 				"type": "/useradmin-api/error-types/1100"
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/X1-ABCDE/reset-password?sendEmail=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/X1-ABCDE/reset-password?sendEmail=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Instance:   "",
@@ -82,7 +82,7 @@ func TestIAM_ResetUserPassword(t *testing.T) {
 				"detail": "Error making request",
 				"status": 500
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/reset-password?sendEmail=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -95,23 +95,23 @@ func TestIAM_ResetUserPassword(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			response, err := client.ResetUserPassword(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			response, err := client.ResetUserPassword(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, *response)
+			assert.Equal(t, tc.expectedResponse, *response)
 		})
 	}
 }
@@ -133,7 +133,7 @@ func TestIAM_SetUserPassword(t *testing.T) {
 			responseStatus:      http.StatusNoContent,
 			responseBody:        "",
 			expectedRequestBody: `{"newPassword":"newpwd"}`,
-			expectedPath:        "/identity-management/v2/user-admin/ui-identities/1-ABCDE/set-password",
+			expectedPath:        "/identity-management/v3/user-admin/ui-identities/1-ABCDE/set-password",
 		},
 		"400 Bad Request - same password": {
 			params: SetUserPasswordRequest{
@@ -148,7 +148,7 @@ func TestIAM_SetUserPassword(t *testing.T) {
 				"title": "Validation Exception",
 				"type": "/useradmin-api/error-types/1508"
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/X1-ABCDE/set-password",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/X1-ABCDE/set-password",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Instance:   "",
@@ -175,7 +175,7 @@ func TestIAM_SetUserPassword(t *testing.T) {
 				"title": "User not found",
 				"type": "/useradmin-api/error-types/1100"
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/X1-ABCDE/set-password",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/X1-ABCDE/set-password",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Instance:   "",
@@ -201,7 +201,7 @@ func TestIAM_SetUserPassword(t *testing.T) {
 				"detail": "Error making request",
 				"status": 500
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/set-password",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/set-password",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -214,25 +214,25 @@ func TestIAM_SetUserPassword(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.SetUserPassword(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.SetUserPassword(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)

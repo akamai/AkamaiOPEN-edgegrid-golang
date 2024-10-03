@@ -7,23 +7,12 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// PolicyProperties interface is a cloudlets API interface for policy associated properties.
-	PolicyProperties interface {
-		// GetPolicyProperties gets all the associated properties by the policyID.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-policy-properties
-		GetPolicyProperties(context.Context, GetPolicyPropertiesRequest) (map[string]PolicyProperty, error)
-
-		// DeletePolicyProperty removes a property from a policy activation associated_properties list.
-		DeletePolicyProperty(context.Context, DeletePolicyPropertyRequest) error
-	}
-
 	// GetPolicyPropertiesRequest contains request parameters for GetPolicyPropertiesRequest
 	GetPolicyPropertiesRequest struct {
 		PolicyID int64

@@ -11,28 +11,6 @@ import (
 )
 
 type (
-	// ChangeOperations is a CPS change API interface
-	ChangeOperations interface {
-		// GetChangeStatus fetches change status for given enrollment and change ID
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-enrollment-change
-		GetChangeStatus(context.Context, GetChangeStatusRequest) (*Change, error)
-
-		// CancelChange cancels a pending change
-		//
-		// See: https://techdocs.akamai.com/cps/reference/delete-enrollment-change
-		CancelChange(context.Context, CancelChangeRequest) (*CancelChangeResponse, error)
-
-		// UpdateChange updates a pending change
-		// Deprecated: this function will be removed in a future release. Use one of:
-		// AcknowledgeChangeManagement(), AcknowledgePostVerificationWarnings(),
-		// AcknowledgePreVerificationWarnings(), UploadThirdPartyCertAndTrustChain()
-		// or AcknowledgeDVChallenges()
-		//
-		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
-		UpdateChange(context.Context, UpdateChangeRequest) (*UpdateChangeResponse, error)
-	}
-
 	// Change contains change status information
 	Change struct {
 		AllowedInput []AllowedInput `json:"allowedInput"`

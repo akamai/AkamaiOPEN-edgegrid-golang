@@ -136,7 +136,7 @@ func TestCreateAccessKeyVersion(t *testing.T) {
 		"202 ACCEPTED": {
 			params: CreateAccessKeyVersionRequest{
 				AccessKeyUID: 1,
-				BodyParams: CreateAccessKeyVersionBodyParams{
+				Body: CreateAccessKeyVersionRequestBody{
 					CloudAccessKeyID:     "key-1",
 					CloudSecretAccessKey: "secret-1",
 				},
@@ -162,13 +162,13 @@ func TestCreateAccessKeyVersion(t *testing.T) {
 		"missing required params - validation error": {
 			params: CreateAccessKeyVersionRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create access key version: struct validation: AccessKeyUID: cannot be blank\nBodyParams: CloudAccessKeyID: cannot be blank\nCloudSecretAccessKey: cannot be blank", err.Error())
+				assert.Equal(t, "create access key version: struct validation: AccessKeyUID: cannot be blank\nBody: CloudAccessKeyID: cannot be blank\nCloudSecretAccessKey: cannot be blank", err.Error())
 			},
 		},
 		"404 error": {
 			params: CreateAccessKeyVersionRequest{
 				AccessKeyUID: 1,
-				BodyParams: CreateAccessKeyVersionBodyParams{
+				Body: CreateAccessKeyVersionRequestBody{
 					CloudAccessKeyID:     "key-1",
 					CloudSecretAccessKey: "secret-1",
 				},
@@ -205,7 +205,7 @@ func TestCreateAccessKeyVersion(t *testing.T) {
 		"409 error": {
 			params: CreateAccessKeyVersionRequest{
 				AccessKeyUID: 1,
-				BodyParams: CreateAccessKeyVersionBodyParams{
+				Body: CreateAccessKeyVersionRequestBody{
 					CloudAccessKeyID:     "key-1",
 					CloudSecretAccessKey: "secret-1",
 				},

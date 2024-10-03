@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -269,7 +269,7 @@ func TestListPolicies(t *testing.T) {
 							EndTime:         1626379177,
 							RolloutDuration: 1,
 						},
-						Video:       tools.BoolPtr(false),
+						Video:       ptr.To(false),
 						User:        "system",
 						DateCreated: "2021-07-15 19:59:35+0000",
 					},
@@ -294,10 +294,10 @@ func TestListPolicies(t *testing.T) {
 							&Composite{
 								Transformation: "Composite",
 								XPosition: &IntegerVariableInline{
-									Value: tools.IntPtr(0),
+									Value: ptr.To(0),
 								},
 								YPosition: &IntegerVariableInline{
-									Value: tools.IntPtr(0),
+									Value: ptr.To(0),
 								},
 								Gravity: &GravityVariableInline{
 									Value: GravityPtr(GravityNorthWest),
@@ -308,19 +308,19 @@ func TestListPolicies(t *testing.T) {
 								Image: &TextImageType{
 									Type: "Text",
 									Fill: &StringVariableInline{
-										Value: tools.StringPtr("#000000"),
+										Value: ptr.To("#000000"),
 									},
 									Size: &NumberVariableInline{
-										Value: tools.Float64Ptr(72),
+										Value: ptr.To(float64(72)),
 									},
 									Stroke: &StringVariableInline{
-										Value: tools.StringPtr("#FFFFFF"),
+										Value: ptr.To("#FFFFFF"),
 									},
 									StrokeSize: &NumberVariableInline{
-										Value: tools.Float64Ptr(0),
+										Value: ptr.To(float64(0)),
 									},
 									Text: &StringVariableInline{
-										Value: tools.StringPtr("Hello There"),
+										Value: ptr.To("Hello There"),
 									},
 									Transformation: &Compound{
 										Transformation: "Compound",
@@ -328,7 +328,7 @@ func TestListPolicies(t *testing.T) {
 								},
 							},
 						},
-						Video:       tools.BoolPtr(false),
+						Video:       ptr.To(false),
 						User:        "jsmith",
 						DateCreated: "2021-12-07 16:20:34+0000",
 					},
@@ -349,7 +349,7 @@ func TestListPolicies(t *testing.T) {
 								Value: OutputImagePerceptualQualityPtr(OutputImagePerceptualQualityMediumHigh),
 							},
 						},
-						Video:       tools.BoolPtr(false),
+						Video:       ptr.To(false),
 						User:        "jsmith",
 						DateCreated: "2021-08-06 19:46:32+0000",
 					},
@@ -374,13 +374,13 @@ func TestListPolicies(t *testing.T) {
 							&Blur{
 								Transformation: "Blur",
 								Sigma: &NumberVariableInline{
-									Name: tools.StringPtr("blurVar"),
+									Name: ptr.To("blurVar"),
 								},
 							},
 							&MaxColors{
 								Transformation: "MaxColors",
 								Colors: &IntegerVariableInline{
-									Value: tools.IntPtr(2),
+									Value: ptr.To(2),
 								},
 							},
 						},
@@ -391,7 +391,7 @@ func TestListPolicies(t *testing.T) {
 								DefaultValue: "5",
 							},
 						},
-						Video:       tools.BoolPtr(false),
+						Video:       ptr.To(false),
 						User:        "foofoo5",
 						DateCreated: "2021-12-16 18:46:38+0000",
 					},
@@ -416,13 +416,13 @@ func TestListPolicies(t *testing.T) {
 							&Blur{
 								Transformation: "Blur",
 								Sigma: &NumberVariableInline{
-									Name: tools.StringPtr("blurVar"),
+									Name: ptr.To("blurVar"),
 								},
 							},
 							&MaxColors{
 								Transformation: "MaxColors",
 								Colors: &IntegerVariableInline{
-									Value: tools.IntPtr(2),
+									Value: ptr.To(2),
 								},
 							},
 						},
@@ -433,7 +433,7 @@ func TestListPolicies(t *testing.T) {
 								DefaultValue: "5",
 							},
 						},
-						Video:       tools.BoolPtr(false),
+						Video:       ptr.To(false),
 						User:        "foofoo5",
 						DateCreated: "2021-12-16 18:47:36+0000",
 					},
@@ -446,7 +446,7 @@ func TestListPolicies(t *testing.T) {
 							EndTime:         1643052401,
 							RolloutDuration: 1,
 						},
-						Video:       tools.BoolPtr(false),
+						Video:       ptr.To(false),
 						User:        "jsmith",
 						DateCreated: "2022-01-24 19:26:39+0000",
 					},
@@ -459,7 +459,7 @@ func TestListPolicies(t *testing.T) {
 							EndTime:         1643052165,
 							RolloutDuration: 1,
 						},
-						Video:       tools.BoolPtr(false),
+						Video:       ptr.To(false),
 						User:        "jsmith",
 						DateCreated: "2022-01-24 19:22:43+0000",
 					},
@@ -477,7 +477,7 @@ func TestListPolicies(t *testing.T) {
 								Value: OutputVideoPerceptualQualityPtr(OutputVideoPerceptualQualityMediumHigh),
 							},
 						},
-						Video:       tools.BoolPtr(true),
+						Video:       ptr.To(true),
 						User:        "jsmith",
 						DateCreated: "2022-01-24 20:17:10+0000",
 					},
@@ -760,10 +760,10 @@ func TestListPolicies(t *testing.T) {
 							&Trim{
 								Transformation: "Trim",
 								Fuzz: &NumberVariableInline{
-									Value: tools.Float64Ptr(0.08),
+									Value: ptr.To(0.08),
 								},
 								Padding: &IntegerVariableInline{
-									Value: tools.IntPtr(0),
+									Value: ptr.To(0),
 								},
 							},
 							&IfDimension{
@@ -772,7 +772,7 @@ func TestListPolicies(t *testing.T) {
 									Value: IfDimensionDimensionPtr("width"),
 								},
 								Value: &IntegerVariableInline{
-									Name: tools.StringPtr("MaxDimOld"),
+									Name: ptr.To("MaxDimOld"),
 								},
 								Default: &Compound{
 									Transformation: "Compound",
@@ -783,7 +783,7 @@ func TestListPolicies(t *testing.T) {
 												Value: IfDimensionDimensionPtr("width"),
 											},
 											Value: &IntegerVariableInline{
-												Name: tools.StringPtr("MinDim"),
+												Name: ptr.To("MinDim"),
 											},
 											LessThan: &Compound{
 												Transformation: "Compound",
@@ -797,37 +797,37 @@ func TestListPolicies(t *testing.T) {
 															Value: ResizeTypePtr("normal"),
 														},
 														Width: &IntegerVariableInline{
-															Name: tools.StringPtr("ResizeDimWithBorder"),
+															Name: ptr.To("ResizeDimWithBorder"),
 														},
 														Height: &IntegerVariableInline{
-															Name: tools.StringPtr("ResizeDimWithBorder"),
+															Name: ptr.To("ResizeDimWithBorder"),
 														},
 													},
 													&Crop{
 														Transformation: "Crop",
 														XPosition: &IntegerVariableInline{
-															Value: tools.IntPtr(0),
+															Value: ptr.To(0),
 														},
 														YPosition: &IntegerVariableInline{
-															Value: tools.IntPtr(0),
+															Value: ptr.To(0),
 														},
 														Gravity: &GravityVariableInline{
 															Value: GravityPtr("Center"),
 														},
 														AllowExpansion: &BooleanVariableInline{
-															Value: tools.BoolPtr(true),
+															Value: ptr.To(true),
 														},
 														Width: &IntegerVariableInline{
-															Name: tools.StringPtr("ResizeDim"),
+															Name: ptr.To("ResizeDim"),
 														},
 														Height: &IntegerVariableInline{
-															Name: tools.StringPtr("ResizeDim"),
+															Name: ptr.To("ResizeDim"),
 														},
 													},
 													&BackgroundColor{
 														Transformation: "BackgroundColor",
 														Color: &StringVariableInline{
-															Value: tools.StringPtr("#ffffff"),
+															Value: ptr.To("#ffffff"),
 														},
 													},
 												},
@@ -841,7 +841,7 @@ func TestListPolicies(t *testing.T) {
 															Value: IfDimensionDimensionPtr("height"),
 														},
 														Value: &IntegerVariableInline{
-															Name: tools.StringPtr("MinDim"),
+															Name: ptr.To("MinDim"),
 														},
 														LessThan: &Compound{
 															Transformation: "Compound",
@@ -855,37 +855,37 @@ func TestListPolicies(t *testing.T) {
 																		Value: ResizeTypePtr("normal"),
 																	},
 																	Width: &IntegerVariableInline{
-																		Name: tools.StringPtr("ResizeDimWithBorder"),
+																		Name: ptr.To("ResizeDimWithBorder"),
 																	},
 																	Height: &IntegerVariableInline{
-																		Name: tools.StringPtr("ResizeDimWithBorder"),
+																		Name: ptr.To("ResizeDimWithBorder"),
 																	},
 																},
 																&Crop{
 																	Transformation: "Crop",
 																	XPosition: &IntegerVariableInline{
-																		Value: tools.IntPtr(0),
+																		Value: ptr.To(0),
 																	},
 																	YPosition: &IntegerVariableInline{
-																		Value: tools.IntPtr(0),
+																		Value: ptr.To(0),
 																	},
 																	Gravity: &GravityVariableInline{
 																		Value: GravityPtr("Center"),
 																	},
 																	AllowExpansion: &BooleanVariableInline{
-																		Value: tools.BoolPtr(true),
+																		Value: ptr.To(true),
 																	},
 																	Width: &IntegerVariableInline{
-																		Name: tools.StringPtr("ResizeDim"),
+																		Name: ptr.To("ResizeDim"),
 																	},
 																	Height: &IntegerVariableInline{
-																		Name: tools.StringPtr("ResizeDim"),
+																		Name: ptr.To("ResizeDim"),
 																	},
 																},
 																&BackgroundColor{
 																	Transformation: "BackgroundColor",
 																	Color: &StringVariableInline{
-																		Value: tools.StringPtr("#ffffff"),
+																		Value: ptr.To("#ffffff"),
 																	},
 																},
 															},
@@ -899,7 +899,7 @@ func TestListPolicies(t *testing.T) {
 																		Value: IfDimensionDimensionPtr("height"),
 																	},
 																	Value: &IntegerVariableInline{
-																		Name: tools.StringPtr("MaxDimOld"),
+																		Name: ptr.To("MaxDimOld"),
 																	},
 																	GreaterThan: &Compound{
 																		Transformation: "Compound",
@@ -914,37 +914,37 @@ func TestListPolicies(t *testing.T) {
 																				},
 
 																				Width: &IntegerVariableInline{
-																					Name: tools.StringPtr("ResizeDimWithBorder"),
+																					Name: ptr.To("ResizeDimWithBorder"),
 																				},
 																				Height: &IntegerVariableInline{
-																					Name: tools.StringPtr("ResizeDimWithBorder"),
+																					Name: ptr.To("ResizeDimWithBorder"),
 																				},
 																			},
 																			&Crop{
 																				Transformation: "Crop",
 																				XPosition: &IntegerVariableInline{
-																					Value: tools.IntPtr(0),
+																					Value: ptr.To(0),
 																				},
 																				YPosition: &IntegerVariableInline{
-																					Value: tools.IntPtr(0),
+																					Value: ptr.To(0),
 																				},
 																				Gravity: &GravityVariableInline{
 																					Value: GravityPtr("Center"),
 																				},
 																				AllowExpansion: &BooleanVariableInline{
-																					Value: tools.BoolPtr(true),
+																					Value: ptr.To(true),
 																				},
 																				Width: &IntegerVariableInline{
-																					Name: tools.StringPtr("ResizeDim"),
+																					Name: ptr.To("ResizeDim"),
 																				},
 																				Height: &IntegerVariableInline{
-																					Name: tools.StringPtr("ResizeDim"),
+																					Name: ptr.To("ResizeDim"),
 																				},
 																			},
 																			&BackgroundColor{
 																				Transformation: "BackgroundColor",
 																				Color: &StringVariableInline{
-																					Value: tools.StringPtr("#ffffff"),
+																					Value: ptr.To("#ffffff"),
 																				},
 																			},
 																		},
@@ -961,37 +961,37 @@ func TestListPolicies(t *testing.T) {
 																					Value: ResizeTypePtr("normal"),
 																				},
 																				Width: &IntegerVariableInline{
-																					Name: tools.StringPtr("ResizeDim"),
+																					Name: ptr.To("ResizeDim"),
 																				},
 																				Height: &IntegerVariableInline{
-																					Name: tools.StringPtr("ResizeDim"),
+																					Name: ptr.To("ResizeDim"),
 																				},
 																			},
 																			&Crop{
 																				Transformation: "Crop",
 																				XPosition: &IntegerVariableInline{
-																					Value: tools.IntPtr(0),
+																					Value: ptr.To(0),
 																				},
 																				YPosition: &IntegerVariableInline{
-																					Value: tools.IntPtr(0),
+																					Value: ptr.To(0),
 																				},
 																				Gravity: &GravityVariableInline{
 																					Value: GravityPtr("Center"),
 																				},
 																				AllowExpansion: &BooleanVariableInline{
-																					Value: tools.BoolPtr(true),
+																					Value: ptr.To(true),
 																				},
 																				Width: &IntegerVariableInline{
-																					Name: tools.StringPtr("ResizeDim"),
+																					Name: ptr.To("ResizeDim"),
 																				},
 																				Height: &IntegerVariableInline{
-																					Name: tools.StringPtr("ResizeDim"),
+																					Name: ptr.To("ResizeDim"),
 																				},
 																			},
 																			&BackgroundColor{
 																				Transformation: "BackgroundColor",
 																				Color: &StringVariableInline{
-																					Value: tools.StringPtr("#ffffff"),
+																					Value: ptr.To("#ffffff"),
 																				},
 																			},
 																		},
@@ -1014,9 +1014,9 @@ func TestListPolicies(t *testing.T) {
 							PerceptualQuality: &OutputImagePerceptualQualityVariableInline{
 								Value: OutputImagePerceptualQualityPtr("mediumHigh"),
 							},
-							AdaptiveQuality: tools.IntPtr(50),
+							AdaptiveQuality: ptr.To(50),
 						},
-						Video:           tools.BoolPtr(false),
+						Video:           ptr.To(false),
 						ID:              "multidimension",
 						DateCreated:     "2022-01-01 12:00:00+0000",
 						PreviousVersion: 0,
@@ -1274,14 +1274,14 @@ func TestGetPolicy(t *testing.T) {
 						Transformation:         "Append",
 						Gravity:                &GravityVariableInline{Value: GravityPtr("Center")},
 						GravityPriority:        &AppendGravityPriorityVariableInline{Value: AppendGravityPriorityPtr("horizontal")},
-						PreserveMinorDimension: &BooleanVariableInline{Value: tools.BoolPtr(true)},
+						PreserveMinorDimension: &BooleanVariableInline{Value: ptr.To(true)},
 						Image: &TextImageType{
 							Type:       "Text",
-							Fill:       &StringVariableInline{Value: tools.StringPtr("#000000")},
-							Size:       &NumberVariableInline{Value: tools.Float64Ptr(72)},
-							Stroke:     &StringVariableInline{Value: tools.StringPtr("#FFFFFF")},
-							StrokeSize: &NumberVariableInline{Value: tools.Float64Ptr(0)},
-							Text:       &StringVariableInline{Value: tools.StringPtr("test")},
+							Fill:       &StringVariableInline{Value: ptr.To("#000000")},
+							Size:       &NumberVariableInline{Value: ptr.To(float64(72))},
+							Stroke:     &StringVariableInline{Value: ptr.To("#FFFFFF")},
+							StrokeSize: &NumberVariableInline{Value: ptr.To(float64(0))},
+							Text:       &StringVariableInline{Value: ptr.To("test")},
 							Transformation: &Compound{
 								Transformation: "Compound",
 							},
@@ -1291,24 +1291,24 @@ func TestGetPolicy(t *testing.T) {
 						Transformation: "RegionOfInterestCrop",
 						Style:          &RegionOfInterestCropStyleVariableInline{Value: RegionOfInterestCropStylePtr("fill")},
 						Gravity:        &GravityVariableInline{Value: GravityPtr("Center")},
-						Width:          &IntegerVariableInline{Value: tools.IntPtr(7)},
-						Height:         &IntegerVariableInline{Value: tools.IntPtr(8)},
+						Width:          &IntegerVariableInline{Value: ptr.To(7)},
+						Height:         &IntegerVariableInline{Value: ptr.To(8)},
 						RegionOfInterest: &RectangleShapeType{
 							Anchor: &PointShapeType{
-								X: &NumberVariableInline{Value: tools.Float64Ptr(4)},
-								Y: &NumberVariableInline{Value: tools.Float64Ptr(5)},
+								X: &NumberVariableInline{Value: ptr.To(float64(4))},
+								Y: &NumberVariableInline{Value: ptr.To(float64(5))},
 							},
-							Width:  &NumberVariableInline{Value: tools.Float64Ptr(8)},
-							Height: &NumberVariableInline{Value: tools.Float64Ptr(9)},
+							Width:  &NumberVariableInline{Value: ptr.To(float64(8))},
+							Height: &NumberVariableInline{Value: ptr.To(float64(9))},
 						},
 					},
 					&Composite{
 						Transformation: "Composite",
 						XPosition: &IntegerVariableInline{
-							Value: tools.IntPtr(0),
+							Value: ptr.To(0),
 						},
 						YPosition: &IntegerVariableInline{
-							Value: tools.IntPtr(0),
+							Value: ptr.To(0),
 						},
 						Gravity: &GravityVariableInline{
 							Value: GravityPtr(GravityNorthWest),
@@ -1319,19 +1319,19 @@ func TestGetPolicy(t *testing.T) {
 						Image: &TextImageType{
 							Type: "Text",
 							Fill: &StringVariableInline{
-								Value: tools.StringPtr("#000000"),
+								Value: ptr.To("#000000"),
 							},
 							Size: &NumberVariableInline{
-								Value: tools.Float64Ptr(72),
+								Value: ptr.To(float64(72)),
 							},
 							Stroke: &StringVariableInline{
-								Value: tools.StringPtr("#FFFFFF"),
+								Value: ptr.To("#FFFFFF"),
 							},
 							StrokeSize: &NumberVariableInline{
-								Value: tools.Float64Ptr(0),
+								Value: ptr.To(float64(0)),
 							},
 							Text: &StringVariableInline{
-								Value: tools.StringPtr("Hello There"),
+								Value: ptr.To("Hello There"),
 							},
 							Transformation: &Compound{
 								Transformation: "Compound",
@@ -1339,7 +1339,7 @@ func TestGetPolicy(t *testing.T) {
 						},
 					},
 				},
-				Video:       tools.BoolPtr(false),
+				Video:       ptr.To(false),
 				User:        "jsmith",
 				DateCreated: "2021-12-07 16:20:34+0000",
 			},
@@ -1512,14 +1512,14 @@ func TestGetPolicy(t *testing.T) {
 						Transformation:         "Append",
 						Gravity:                &GravityVariableInline{Value: GravityPtr("Center")},
 						GravityPriority:        &AppendGravityPriorityVariableInline{Value: AppendGravityPriorityPtr("horizontal")},
-						PreserveMinorDimension: &BooleanVariableInline{Value: tools.BoolPtr(true)},
+						PreserveMinorDimension: &BooleanVariableInline{Value: ptr.To(true)},
 						Image: &TextImageType{
 							Type:       "Text",
-							Fill:       &StringVariableInline{Value: tools.StringPtr("#000000")},
-							Size:       &NumberVariableInline{Value: tools.Float64Ptr(72)},
-							Stroke:     &StringVariableInline{Value: tools.StringPtr("#FFFFFF")},
-							StrokeSize: &NumberVariableInline{Value: tools.Float64Ptr(0)},
-							Text:       &StringVariableInline{Value: tools.StringPtr("test")},
+							Fill:       &StringVariableInline{Value: ptr.To("#000000")},
+							Size:       &NumberVariableInline{Value: ptr.To(float64(72))},
+							Stroke:     &StringVariableInline{Value: ptr.To("#FFFFFF")},
+							StrokeSize: &NumberVariableInline{Value: ptr.To(float64(0))},
+							Text:       &StringVariableInline{Value: ptr.To("test")},
 							Transformation: &Compound{
 								Transformation: "Compound",
 							},
@@ -1529,24 +1529,24 @@ func TestGetPolicy(t *testing.T) {
 						Transformation: "RegionOfInterestCrop",
 						Style:          &RegionOfInterestCropStyleVariableInline{Value: RegionOfInterestCropStylePtr("fill")},
 						Gravity:        &GravityVariableInline{Value: GravityPtr("Center")},
-						Width:          &IntegerVariableInline{Value: tools.IntPtr(7)},
-						Height:         &IntegerVariableInline{Value: tools.IntPtr(8)},
+						Width:          &IntegerVariableInline{Value: ptr.To(7)},
+						Height:         &IntegerVariableInline{Value: ptr.To(8)},
 						RegionOfInterest: &RectangleShapeType{
 							Anchor: &PointShapeType{
-								X: &NumberVariableInline{Value: tools.Float64Ptr(4)},
-								Y: &NumberVariableInline{Value: tools.Float64Ptr(5)},
+								X: &NumberVariableInline{Value: ptr.To(float64(4))},
+								Y: &NumberVariableInline{Value: ptr.To(float64(5))},
 							},
-							Width:  &NumberVariableInline{Value: tools.Float64Ptr(8)},
-							Height: &NumberVariableInline{Value: tools.Float64Ptr(9)},
+							Width:  &NumberVariableInline{Value: ptr.To(float64(8))},
+							Height: &NumberVariableInline{Value: ptr.To(float64(9))},
 						},
 					},
 					&Composite{
 						Transformation: "Composite",
 						XPosition: &IntegerVariableInline{
-							Value: tools.IntPtr(0),
+							Value: ptr.To(0),
 						},
 						YPosition: &IntegerVariableInline{
-							Value: tools.IntPtr(0),
+							Value: ptr.To(0),
 						},
 						Gravity: &GravityVariableInline{
 							Value: GravityPtr(GravityNorthWest),
@@ -1557,19 +1557,19 @@ func TestGetPolicy(t *testing.T) {
 						Image: &TextImageType{
 							Type: "Text",
 							Fill: &StringVariableInline{
-								Value: tools.StringPtr("#000000"),
+								Value: ptr.To("#000000"),
 							},
 							Size: &NumberVariableInline{
-								Value: tools.Float64Ptr(72),
+								Value: ptr.To(float64(72)),
 							},
 							Stroke: &StringVariableInline{
-								Value: tools.StringPtr("#FFFFFF"),
+								Value: ptr.To("#FFFFFF"),
 							},
 							StrokeSize: &NumberVariableInline{
-								Value: tools.Float64Ptr(0),
+								Value: ptr.To(float64(0)),
 							},
 							Text: &StringVariableInline{
-								Value: tools.StringPtr("Hello There"),
+								Value: ptr.To("Hello There"),
 							},
 							Transformation: &Compound{
 								Transformation: "Compound",
@@ -1584,7 +1584,7 @@ func TestGetPolicy(t *testing.T) {
 							Value: IfDimensionPostDimensionPtr("width"),
 						},
 						Value: &IntegerVariableInline{
-							Name: tools.StringPtr("MaxDimOld"),
+							Name: ptr.To("MaxDimOld"),
 						},
 						Default: &CompoundPost{
 							Transformation: "Compound",
@@ -1595,7 +1595,7 @@ func TestGetPolicy(t *testing.T) {
 										Value: IfDimensionPostDimensionPtr("width"),
 									},
 									Value: &IntegerVariableInline{
-										Name: tools.StringPtr("MinDim"),
+										Name: ptr.To("MinDim"),
 									},
 									LessThan: &CompoundPost{
 										Transformation: "Compound",
@@ -1603,13 +1603,13 @@ func TestGetPolicy(t *testing.T) {
 											&BackgroundColor{
 												Transformation: "BackgroundColor",
 												Color: &StringVariableInline{
-													Value: tools.StringPtr("#ffffff"),
+													Value: ptr.To("#ffffff"),
 												},
 											},
 											&BackgroundColor{
 												Transformation: "BackgroundColor",
 												Color: &StringVariableInline{
-													Value: tools.StringPtr("#00ffff"),
+													Value: ptr.To("#00ffff"),
 												},
 											},
 										},
@@ -1621,11 +1621,11 @@ func TestGetPolicy(t *testing.T) {
 					&CompositePost{
 						Gravity: &GravityPostVariableInline{Value: GravityPostPtr("NorthWest")},
 						Image: &TextImageTypePost{
-							Fill:       &StringVariableInline{Value: tools.StringPtr("#000000")},
-							Size:       &NumberVariableInline{Value: tools.Float64Ptr(72)},
-							Stroke:     &StringVariableInline{Value: tools.StringPtr("#FFFFFF")},
-							StrokeSize: &NumberVariableInline{Value: tools.Float64Ptr(0)},
-							Text:       &StringVariableInline{Value: tools.StringPtr("test")},
+							Fill:       &StringVariableInline{Value: ptr.To("#000000")},
+							Size:       &NumberVariableInline{Value: ptr.To(float64(72))},
+							Stroke:     &StringVariableInline{Value: ptr.To("#FFFFFF")},
+							StrokeSize: &NumberVariableInline{Value: ptr.To(float64(0))},
+							Text:       &StringVariableInline{Value: ptr.To("test")},
 							Type:       TextImageTypePostTypeText,
 							Transformation: &CompoundPost{
 								Transformation: CompoundPostTransformationCompound,
@@ -1633,11 +1633,11 @@ func TestGetPolicy(t *testing.T) {
 						},
 						Placement:      &CompositePostPlacementVariableInline{Value: CompositePostPlacementPtr(CompositePostPlacementOver)},
 						Transformation: CompositePostTransformationComposite,
-						XPosition:      &IntegerVariableInline{Value: tools.IntPtr(0)},
-						YPosition:      &IntegerVariableInline{Value: tools.IntPtr(0)},
+						XPosition:      &IntegerVariableInline{Value: ptr.To(0)},
+						YPosition:      &IntegerVariableInline{Value: ptr.To(0)},
 					},
 				},
-				Video:       tools.BoolPtr(false),
+				Video:       ptr.To(false),
 				User:        "jsmith",
 				DateCreated: "2021-12-07 16:20:34+0000",
 			},
@@ -1682,7 +1682,7 @@ func TestGetPolicy(t *testing.T) {
 						Value: OutputVideoPerceptualQualityPtr(OutputVideoPerceptualQualityMediumHigh),
 					},
 				},
-				Video:       tools.BoolPtr(true),
+				Video:       ptr.To(true),
 				User:        "jsmith",
 				DateCreated: "2022-01-24 20:17:10+0000",
 			},
@@ -1862,10 +1862,10 @@ func TestPutPolicy(t *testing.T) {
 						&Composite{
 							Transformation: "Composite",
 							XPosition: &IntegerVariableInline{
-								Value: tools.IntPtr(0),
+								Value: ptr.To(0),
 							},
 							YPosition: &IntegerVariableInline{
-								Value: tools.IntPtr(0),
+								Value: ptr.To(0),
 							},
 							Gravity: &GravityVariableInline{
 								Value: GravityPtr(GravityNorthWest),
@@ -1876,19 +1876,19 @@ func TestPutPolicy(t *testing.T) {
 							Image: &TextImageType{
 								Type: "Text",
 								Fill: &StringVariableInline{
-									Value: tools.StringPtr("#000000"),
+									Value: ptr.To("#000000"),
 								},
 								Size: &NumberVariableInline{
-									Value: tools.Float64Ptr(72),
+									Value: ptr.To(float64(72)),
 								},
 								Stroke: &StringVariableInline{
-									Value: tools.StringPtr("#FFFFFF"),
+									Value: ptr.To("#FFFFFF"),
 								},
 								StrokeSize: &NumberVariableInline{
-									Value: tools.Float64Ptr(0),
+									Value: ptr.To(float64(0)),
 								},
 								Text: &StringVariableInline{
-									Value: tools.StringPtr("Hello There"),
+									Value: ptr.To("Hello There"),
 								},
 								Transformation: &Compound{
 									Transformation: "Compound",

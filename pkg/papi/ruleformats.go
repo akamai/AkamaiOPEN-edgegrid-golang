@@ -8,14 +8,6 @@ import (
 )
 
 type (
-	// RuleFormats contains operations available on RuleFormat resource
-	RuleFormats interface {
-		// GetRuleFormats provides a list of rule formats
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-rule-formats
-		GetRuleFormats(context.Context) (*GetRuleFormatsResponse, error)
-	}
-
 	// GetRuleFormatsResponse contains the response body of GET /rule-formats request
 	GetRuleFormatsResponse struct {
 		RuleFormats RuleFormatItems `json:"ruleFormats"`

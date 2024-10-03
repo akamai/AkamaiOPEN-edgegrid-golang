@@ -25,7 +25,7 @@ func TestIAM_LockUser(t *testing.T) {
 			},
 			responseStatus: http.StatusOK,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/lock",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/lock",
 		},
 		"204 No Content": {
 			params: LockUserRequest{
@@ -33,7 +33,7 @@ func TestIAM_LockUser(t *testing.T) {
 			},
 			responseStatus: http.StatusNoContent,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/lock",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/lock",
 		},
 		"404 Not Found": {
 			params: LockUserRequest{
@@ -48,7 +48,7 @@ func TestIAM_LockUser(t *testing.T) {
 				"title": "User not found",
 				"type": "/useradmin-api/error-types/1100"
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/X1-ABCDE/lock",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/X1-ABCDE/lock",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Instance:   "",
@@ -73,7 +73,7 @@ func TestIAM_LockUser(t *testing.T) {
 				"detail": "Error making request",
 				"status": 500
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/lock",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/lock",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -86,19 +86,19 @@ func TestIAM_LockUser(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.LockUser(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.LockUser(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -120,7 +120,7 @@ func TestIAM_UnlockUser(t *testing.T) {
 			},
 			responseStatus: http.StatusOK,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/unlock",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/unlock",
 		},
 		"204 No Content": {
 			params: UnlockUserRequest{
@@ -128,7 +128,7 @@ func TestIAM_UnlockUser(t *testing.T) {
 			},
 			responseStatus: http.StatusNoContent,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/unlock",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/unlock",
 		},
 		"404 Not Found": {
 			params: UnlockUserRequest{
@@ -143,7 +143,7 @@ func TestIAM_UnlockUser(t *testing.T) {
 				"title": "User not found",
 				"type": "/useradmin-api/error-types/1100"
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/X1-ABCDE/unlock",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/X1-ABCDE/unlock",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Instance:   "",
@@ -168,7 +168,7 @@ func TestIAM_UnlockUser(t *testing.T) {
 				"detail": "Error making request",
 				"status": 500
 			}`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/unlock",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/unlock",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -181,19 +181,19 @@ func TestIAM_UnlockUser(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.UnlockUser(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.UnlockUser(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)

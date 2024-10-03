@@ -3,16 +3,17 @@ package iam
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
 
-func TestCreateGroup(t *testing.T) {
+func TestIAM_CreateGroup(t *testing.T) {
 	tests := map[string]struct {
 		params              GroupRequest
 		responseStatus      int
@@ -38,15 +39,15 @@ func TestCreateGroup(t *testing.T) {
 	"modifiedDate": "2012-04-28T00:00:00.000Z",
 	"modifiedBy": "johndoe"
 }`,
-			expectedPath:        "/identity-management/v2/user-admin/groups/12345",
+			expectedPath:        "/identity-management/v3/user-admin/groups/12345",
 			expectedRequestBody: `{"groupName":"Test Group"}`,
 			expectedResponse: &Group{
 				GroupID:       98765,
 				GroupName:     "Test Group",
 				ParentGroupID: 12345,
-				CreatedDate:   "2012-04-28T00:00:00.000Z",
+				CreatedDate:   test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				CreatedBy:     "johndoe",
-				ModifiedDate:  "2012-04-28T00:00:00.000Z",
+				ModifiedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				ModifiedBy:    "johndoe",
 			},
 		},
@@ -63,7 +64,7 @@ func TestCreateGroup(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -85,34 +86,34 @@ func TestCreateGroup(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateGroup(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			result, err := client.CreateGroup(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestMoveGroup(t *testing.T) {
+func TestIAM_MoveGroup(t *testing.T) {
 	tests := map[string]struct {
 		params              MoveGroupRequest
 		expectedRequestBody string
@@ -137,22 +138,22 @@ func TestMoveGroup(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, "/identity-management/v2/user-admin/groups/move", r.URL.String())
+				assert.Equal(t, "/identity-management/v3/user-admin/groups/move", r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				body, err := ioutil.ReadAll(r.Body)
+				body, err := io.ReadAll(r.Body)
 				require.NoError(t, err)
-				assert.Equal(t, test.expectedRequestBody, string(body))
-				w.WriteHeader(test.responseStatus)
-				_, err = w.Write([]byte(test.responseBody))
+				assert.Equal(t, tc.expectedRequestBody, string(body))
+				w.WriteHeader(tc.responseStatus)
+				_, err = w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.MoveGroup(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			err := client.MoveGroup(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
@@ -160,7 +161,7 @@ func TestMoveGroup(t *testing.T) {
 	}
 }
 
-func TestGetGroup(t *testing.T) {
+func TestIAM_GetGroup(t *testing.T) {
 	tests := map[string]struct {
 		params           GetGroupRequest
 		responseStatus   int
@@ -188,13 +189,13 @@ func TestGetGroup(t *testing.T) {
 		"delete": true
 	}
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345?actions=true",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345?actions=true",
 			expectedResponse: &Group{
 				GroupID:      12345,
 				GroupName:    "Top Level group",
-				CreatedDate:  "2012-04-28T00:00:00.000Z",
+				CreatedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				CreatedBy:    "johndoe",
-				ModifiedDate: "2012-04-28T00:00:00.000Z",
+				ModifiedDate: test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				ModifiedBy:   "johndoe",
 				Actions: &GroupActions{
 					Edit:   true,
@@ -216,13 +217,13 @@ func TestGetGroup(t *testing.T) {
 	"modifiedDate": "2012-04-28T00:00:00.000Z",
 	"modifiedBy": "johndoe"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345?actions=false",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345?actions=false",
 			expectedResponse: &Group{
 				GroupID:      12345,
 				GroupName:    "Top Level group",
-				CreatedDate:  "2012-04-28T00:00:00.000Z",
+				CreatedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				CreatedBy:    "johndoe",
-				ModifiedDate: "2012-04-28T00:00:00.000Z",
+				ModifiedDate: test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				ModifiedBy:   "johndoe",
 			},
 		},
@@ -238,7 +239,7 @@ func TestGetGroup(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345?actions=false",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345?actions=false",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -254,28 +255,28 @@ func TestGetGroup(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetGroup(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			result, err := client.GetGroup(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestListAffectedUsers(t *testing.T) {
+func TestIAM_ListAffectedUsers(t *testing.T) {
 	tests := map[string]struct {
 		params           ListAffectedUsersRequest
 		responseStatus   int
@@ -303,7 +304,7 @@ func TestListAffectedUsers(t *testing.T) {
         "lastLoginDate": "2022-02-22T17:06:50.000Z"
     }
 ]`,
-			expectedPath: "/identity-management/v2/user-admin/groups/move/12344/12345/affected-users?userType=gainAccess",
+			expectedPath: "/identity-management/v3/user-admin/groups/move/12344/12345/affected-users?userType=gainAccess",
 			expectedResponse: []GroupUser{
 				{
 					IdentityID:    "test-identity",
@@ -312,7 +313,7 @@ func TestListAffectedUsers(t *testing.T) {
 					AccountID:     "test-account",
 					Email:         "john.doe@mycompany.com",
 					UserName:      "john.doe@mycompany.com",
-					LastLoginDate: "2022-02-22T17:06:50.000Z",
+					LastLoginDate: test.NewTimeFromString(t, "2022-02-22T17:06:50.000Z"),
 				},
 			},
 		},
@@ -330,7 +331,7 @@ func TestListAffectedUsers(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/move/12344/12345/affected-users?userType=gainAccess",
+			expectedPath: "/identity-management/v3/user-admin/groups/move/12344/12345/affected-users?userType=gainAccess",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -362,28 +363,28 @@ func TestListAffectedUsers(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListAffectedUsers(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			result, err := client.ListAffectedUsers(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestListGroups(t *testing.T) {
+func TestIAM_ListGroups(t *testing.T) {
 	tests := map[string]struct {
 		params           ListGroupsRequest
 		responseStatus   int
@@ -412,14 +413,14 @@ func TestListGroups(t *testing.T) {
 					}
 				}
 			]`,
-			expectedPath: "/identity-management/v2/user-admin/groups?actions=true",
+			expectedPath: "/identity-management/v3/user-admin/groups?actions=true",
 			expectedResponse: []Group{
 				{
 					GroupID:      12345,
 					GroupName:    "Top Level group",
-					CreatedDate:  "2012-04-28T00:00:00.000Z",
+					CreatedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 					CreatedBy:    "johndoe",
-					ModifiedDate: "2012-04-28T00:00:00.000Z",
+					ModifiedDate: test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 					ModifiedBy:   "johndoe",
 					Actions: &GroupActions{
 						Edit:   true,
@@ -444,14 +445,14 @@ func TestListGroups(t *testing.T) {
 					"modifiedBy": "johndoe"
 				}
 			]`,
-			expectedPath: "/identity-management/v2/user-admin/groups?actions=false",
+			expectedPath: "/identity-management/v3/user-admin/groups?actions=false",
 			expectedResponse: []Group{
 				{
 					GroupID:      12345,
 					GroupName:    "Top Level group",
-					CreatedDate:  "2012-04-28T00:00:00.000Z",
+					CreatedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 					CreatedBy:    "johndoe",
-					ModifiedDate: "2012-04-28T00:00:00.000Z",
+					ModifiedDate: test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 					ModifiedBy:   "johndoe",
 				},
 			},
@@ -468,7 +469,7 @@ func TestListGroups(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups?actions=true",
+			expectedPath: "/identity-management/v3/user-admin/groups?actions=true",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -481,28 +482,28 @@ func TestListGroups(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListGroups(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.ListGroups(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestRemoveGroup(t *testing.T) {
+func TestIAM_RemoveGroup(t *testing.T) {
 	tests := map[string]struct {
 		params         RemoveGroupRequest
 		responseStatus int
@@ -515,7 +516,7 @@ func TestRemoveGroup(t *testing.T) {
 				GroupID: 12345,
 			},
 			responseStatus: http.StatusNoContent,
-			expectedPath:   "/identity-management/v2/user-admin/groups/12345",
+			expectedPath:   "/identity-management/v3/user-admin/groups/12345",
 		},
 		"500 internal server error": {
 			params: RemoveGroupRequest{
@@ -529,7 +530,7 @@ func TestRemoveGroup(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -550,7 +551,7 @@ func TestRemoveGroup(t *testing.T) {
     "title": "Forbidden",
     "type": "/useradmin-api/error-types/1001"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345",
 			withError: &Error{
 				Instance:   "",
 				StatusCode: http.StatusForbidden,
@@ -566,19 +567,19 @@ func TestRemoveGroup(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.RemoveGroup(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			err := client.RemoveGroup(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
@@ -586,7 +587,7 @@ func TestRemoveGroup(t *testing.T) {
 	}
 }
 
-func TestUpdateGroupName(t *testing.T) {
+func TestIAM_UpdateGroupName(t *testing.T) {
 	tests := map[string]struct {
 		params              GroupRequest
 		responseStatus      int
@@ -612,15 +613,15 @@ func TestUpdateGroupName(t *testing.T) {
 	"modifiedDate": "2012-04-28T00:00:00.000Z",
 	"modifiedBy": "johndoe"
 }`,
-			expectedPath:        "/identity-management/v2/user-admin/groups/12345",
+			expectedPath:        "/identity-management/v3/user-admin/groups/12345",
 			expectedRequestBody: `{"groupName":"New Group Name"}`,
 			expectedResponse: &Group{
 				GroupID:       12345,
 				GroupName:     "New Group Name",
 				ParentGroupID: 12344,
-				CreatedDate:   "2012-04-28T00:00:00.000Z",
+				CreatedDate:   test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				CreatedBy:     "johndoe",
-				ModifiedDate:  "2012-04-28T00:00:00.000Z",
+				ModifiedDate:  test.NewTimeFromString(t, "2012-04-28T00:00:00.000Z"),
 				ModifiedBy:    "johndoe",
 			},
 		},
@@ -637,7 +638,7 @@ func TestUpdateGroupName(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/groups/12345",
+			expectedPath: "/identity-management/v3/user-admin/groups/12345",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -659,29 +660,29 @@ func TestUpdateGroupName(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateGroupName(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+			result, err := client.UpdateGroupName(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }

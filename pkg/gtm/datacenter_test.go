@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,16 +27,18 @@ func TestGTM_ListDatacenters(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		domainName       string
+		params           ListDatacentersRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse []*Datacenter
+		expectedResponse []Datacenter
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			domainName: "example.akadns.net",
+			params: ListDatacentersRequest{
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
@@ -46,7 +48,9 @@ func TestGTM_ListDatacenters(t *testing.T) {
 			expectedResponse: result.DatacenterItems,
 		},
 		"500 internal server error": {
-			domainName:     "example.akadns.net",
+			params: ListDatacentersRequest{
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -78,7 +82,7 @@ func TestGTM_ListDatacenters(t *testing.T) {
 			result, err := client.ListDatacenters(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -102,8 +106,7 @@ func TestGTM_GetDatacenter(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		id               int
-		domainName       string
+		params           GetDatacenterRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -112,8 +115,10 @@ func TestGTM_GetDatacenter(t *testing.T) {
 		headers          http.Header
 	}{
 		"200 OK": {
-			id:         1,
-			domainName: "example.akadns.net",
+			params: GetDatacenterRequest{
+				DatacenterID: 1,
+				DomainName:   "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
@@ -123,8 +128,10 @@ func TestGTM_GetDatacenter(t *testing.T) {
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			id:             1,
-			domainName:     "example.akadns.net",
+			params: GetDatacenterRequest{
+				DatacenterID: 1,
+				DomainName:   "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -156,7 +163,7 @@ func TestGTM_GetDatacenter(t *testing.T) {
 			result, err := client.GetDatacenter(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.id, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -168,7 +175,7 @@ func TestGTM_GetDatacenter(t *testing.T) {
 }
 
 func TestGTM_CreateDatacenter(t *testing.T) {
-	var result DatacenterResponse
+	var result CreateDatacenterResponse
 	var req Datacenter
 
 	respData, err := loadTestData("TestGTM_CreateDatacenter.resp.json")
@@ -190,18 +197,19 @@ func TestGTM_CreateDatacenter(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		dc               *Datacenter
-		domainName       string
+		params           CreateDatacenterRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *DatacenterResponse
+		expectedResponse *CreateDatacenterResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			dc:         &req,
-			domainName: "example.akadns.net",
+			params: CreateDatacenterRequest{
+				Datacenter: &req,
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
@@ -211,8 +219,10 @@ func TestGTM_CreateDatacenter(t *testing.T) {
 			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			dc:             &req,
-			domainName:     "example.akadns.net",
+			params: CreateDatacenterRequest{
+				Datacenter: &req,
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -244,7 +254,7 @@ func TestGTM_CreateDatacenter(t *testing.T) {
 			result, err := client.CreateDatacenter(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.dc, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -511,7 +521,7 @@ func TestGTM_CreateIPv6DefaultDatacenter(t *testing.T) {
 }
 
 func TestGTM_UpdateDatacenter(t *testing.T) {
-	var result DatacenterResponse
+	var result UpdateDatacenterResponse
 	var req Datacenter
 
 	respData, err := loadTestData("TestGTM_CreateDatacenter.resp.json")
@@ -533,29 +543,32 @@ func TestGTM_UpdateDatacenter(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		dc               *Datacenter
-		domainName       string
+		params           UpdateDatacenterRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ResponseStatus
+		expectedResponse *UpdateDatacenterResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			dc:         &req,
-			domainName: "example.akadns.net",
+			params: UpdateDatacenterRequest{
+				Datacenter: &req,
+				DomainName: "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
 			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/0",
-			expectedResponse: result.Status,
+			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			dc:             &req,
-			domainName:     "example.akadns.net",
+			params: UpdateDatacenterRequest{
+				Datacenter: &req,
+				DomainName: "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -587,7 +600,7 @@ func TestGTM_UpdateDatacenter(t *testing.T) {
 			result, err := client.UpdateDatacenter(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.dc, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -599,7 +612,7 @@ func TestGTM_UpdateDatacenter(t *testing.T) {
 }
 
 func TestGTM_DeleteDatacenter(t *testing.T) {
-	var result DatacenterResponse
+	var result DeleteDatacenterResponse
 	var req Datacenter
 
 	respData, err := loadTestData("TestGTM_CreateDatacenter.resp.json")
@@ -621,29 +634,32 @@ func TestGTM_DeleteDatacenter(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		dc               *Datacenter
-		domainName       string
+		params           DeleteDatacenterRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *ResponseStatus
+		expectedResponse *DeleteDatacenterResponse
 		withError        error
 		headers          http.Header
 	}{
 		"200 OK": {
-			dc:         &req,
-			domainName: "example.akadns.net",
+			params: DeleteDatacenterRequest{
+				DatacenterID: 1,
+				DomainName:   "example.akadns.net",
+			},
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/0",
-			expectedResponse: result.Status,
+			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/1",
+			expectedResponse: &result,
 		},
 		"500 internal server error": {
-			dc:             &req,
-			domainName:     "example.akadns.net",
+			params: DeleteDatacenterRequest{
+				DatacenterID: 1,
+				DomainName:   "example.akadns.net",
+			},
 			headers:        http.Header{},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -652,7 +668,7 @@ func TestGTM_DeleteDatacenter(t *testing.T) {
     "title": "Internal Server Error",
     "detail": "Error updating dc"
 }`,
-			expectedPath: "/config-gtm/v1/domains/example.akadns.net/datacenters/0",
+			expectedPath: "/config-gtm/v1/domains/example.akadns.net/datacenters/1",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -675,7 +691,7 @@ func TestGTM_DeleteDatacenter(t *testing.T) {
 			result, err := client.DeleteDatacenter(
 				session.ContextWithOptions(
 					context.Background(),
-					session.WithContextHeaders(test.headers)), test.dc, test.domainName)
+					session.WithContextHeaders(test.headers)), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

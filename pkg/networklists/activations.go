@@ -10,31 +10,6 @@ import (
 )
 
 type (
-	// The Activations interface supports activating and deactivating network lists.
-	//
-	// https://techdocs.akamai.com/network-lists/reference/api
-	Activations interface {
-		// GetActivations retrieves list of network list activations.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/get-network-list-status
-		GetActivations(ctx context.Context, params GetActivationsRequest) (*GetActivationsResponse, error)
-
-		// GetActivation retrieves network list activation.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/get-activation
-		GetActivation(ctx context.Context, params GetActivationRequest) (*GetActivationResponse, error)
-
-		// CreateActivations activates network list.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/post-network-list-activate
-		CreateActivations(ctx context.Context, params CreateActivationsRequest) (*CreateActivationsResponse, error)
-
-		// RemoveActivations deactivates network list.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/post-network-list-activate
-		RemoveActivations(ctx context.Context, params RemoveActivationsRequest) (*RemoveActivationsResponse, error)
-	}
-
 	// GetActivationsRequest contains request parameters for getting activation status
 	GetActivationsRequest struct {
 		UniqueID     string `json:"-"`

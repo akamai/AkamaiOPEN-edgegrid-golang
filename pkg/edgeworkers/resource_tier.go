@@ -11,19 +11,6 @@ import (
 )
 
 type (
-	// ResourceTiers is an edgeworkers resource tiers API interface
-	ResourceTiers interface {
-		// ListResourceTiers lists all resource tiers for a given contract
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-resource-tiers
-		ListResourceTiers(context.Context, ListResourceTiersRequest) (*ListResourceTiersResponse, error)
-
-		// GetResourceTier returns resource tier for a given edgeworker ID
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-id-resource-tier
-		GetResourceTier(context.Context, GetResourceTierRequest) (*ResourceTier, error)
-	}
-
 	// ListResourceTiersRequest contains parameters used to list resource tiers
 	ListResourceTiersRequest struct {
 		ContractID string

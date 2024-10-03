@@ -8,14 +8,6 @@ import (
 )
 
 type (
-	// Contracts is an edgeworkers contracts API interface
-	Contracts interface {
-		// ListContracts lists contract IDs that can be used to list resource tiers
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-contracts-1
-		ListContracts(context.Context) (*ListContractsResponse, error)
-	}
-
 	// ListContractsResponse represents a response object returned by ListContracts
 	ListContractsResponse struct {
 		ContractIDs []string `json:"contractIds"`

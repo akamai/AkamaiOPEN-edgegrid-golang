@@ -13,17 +13,18 @@ import (
 
 func TestDNS_GetRecordSets(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
-		args             []RecordSetQueryArgs
+		params           GetRecordSetsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *RecordSetResponse
+		expectedResponse *GetRecordSetsResponse
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
-			args:           []RecordSetQueryArgs{},
+			params: GetRecordSetsRequest{
+				Zone:      "example.com",
+				QueryArgs: &RecordSetQueryArgs{},
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -48,8 +49,8 @@ func TestDNS_GetRecordSets(t *testing.T) {
 					}
 				]
 			}`,
-			expectedPath: "/config-dns/v2/zones/example.com/recordsets",
-			expectedResponse: &RecordSetResponse{
+			expectedPath: "/config-dns/v2/zones/example.com/recordsets?showAll=false",
+			expectedResponse: &GetRecordSetsResponse{
 				Metadata: Metadata{
 					LastPage:      0,
 					Page:          1,
@@ -68,8 +69,10 @@ func TestDNS_GetRecordSets(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			zone:           "example.com",
-			args:           []RecordSetQueryArgs{},
+			params: GetRecordSetsRequest{
+				Zone:      "example.com",
+				QueryArgs: &RecordSetQueryArgs{},
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -78,7 +81,7 @@ func TestDNS_GetRecordSets(t *testing.T) {
     "detail": "Error fetching authorities",
     "status": 500
 }`,
-			expectedPath: "/config-dns/v2/zones/example.com/recordsets",
+			expectedPath: "/config-dns/v2/zones/example.com/recordsets?showAll=false",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -98,7 +101,7 @@ func TestDNS_GetRecordSets(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetRecordSets(context.Background(), test.zone, test.args...)
+			result, err := client.GetRecordSets(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -111,25 +114,25 @@ func TestDNS_GetRecordSets(t *testing.T) {
 
 func TestDNS_CreateRecordSets(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
-		sets             *RecordSets
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *RecordSetResponse
-		withError        error
+		params         CreateRecordSetsRequest
+		responseStatus int
+		responseBody   string
+		expectedPath   string
+		withError      error
 	}{
 		"200 OK": {
-			zone: "example.com",
-			sets: &RecordSets{
-				[]RecordSet{
-					{
-						Name: "www.example.com",
-						Type: "A",
-						TTL:  300,
-						Rdata: []string{
-							"10.0.0.2",
-							"10.0.0.3",
+			params: CreateRecordSetsRequest{
+				Zone: "example.com",
+				RecordSets: &RecordSets{
+					[]RecordSet{
+						{
+							Name: "www.example.com",
+							Type: "A",
+							TTL:  300,
+							Rdata: []string{
+								"10.0.0.2",
+								"10.0.0.3",
+							},
 						},
 					},
 				},
@@ -138,16 +141,18 @@ func TestDNS_CreateRecordSets(t *testing.T) {
 			expectedPath:   "/config-dns/v2/zones/example.com/recordsets",
 		},
 		"500 internal server error": {
-			zone: "example.com",
-			sets: &RecordSets{
-				[]RecordSet{
-					{
-						Name: "www.example.com",
-						Type: "A",
-						TTL:  300,
-						Rdata: []string{
-							"10.0.0.2",
-							"10.0.0.3",
+			params: CreateRecordSetsRequest{
+				Zone: "example.com",
+				RecordSets: &RecordSets{
+					[]RecordSet{
+						{
+							Name: "www.example.com",
+							Type: "A",
+							TTL:  300,
+							Rdata: []string{
+								"10.0.0.2",
+								"10.0.0.3",
+							},
 						},
 					},
 				},
@@ -182,7 +187,7 @@ func TestDNS_CreateRecordSets(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.CreateRecordSets(context.Background(), test.sets, test.zone)
+			err := client.CreateRecordSets(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -194,25 +199,25 @@ func TestDNS_CreateRecordSets(t *testing.T) {
 
 func TestDNS_UpdateRecordSets(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
-		sets             *RecordSets
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *RecordSetResponse
-		withError        error
+		params         UpdateRecordSetsRequest
+		responseStatus int
+		responseBody   string
+		expectedPath   string
+		withError      error
 	}{
 		"200 OK": {
-			zone: "example.com",
-			sets: &RecordSets{
-				[]RecordSet{
-					{
-						Name: "www.example.com",
-						Type: "A",
-						TTL:  300,
-						Rdata: []string{
-							"10.0.0.2",
-							"10.0.0.3",
+			params: UpdateRecordSetsRequest{
+				Zone: "example.com",
+				RecordSets: &RecordSets{
+					[]RecordSet{
+						{
+							Name: "www.example.com",
+							Type: "A",
+							TTL:  300,
+							Rdata: []string{
+								"10.0.0.2",
+								"10.0.0.3",
+							},
 						},
 					},
 				},
@@ -221,16 +226,18 @@ func TestDNS_UpdateRecordSets(t *testing.T) {
 			expectedPath:   "/config-dns/v2/zones/example.com/recordsets",
 		},
 		"500 internal server error": {
-			zone: "example.com",
-			sets: &RecordSets{
-				[]RecordSet{
-					{
-						Name: "www.example.com",
-						Type: "A",
-						TTL:  300,
-						Rdata: []string{
-							"10.0.0.2",
-							"10.0.0.3",
+			params: UpdateRecordSetsRequest{
+				Zone: "example.com",
+				RecordSets: &RecordSets{
+					[]RecordSet{
+						{
+							Name: "www.example.com",
+							Type: "A",
+							TTL:  300,
+							Rdata: []string{
+								"10.0.0.2",
+								"10.0.0.3",
+							},
 						},
 					},
 				},
@@ -265,7 +272,7 @@ func TestDNS_UpdateRecordSets(t *testing.T) {
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.UpdateRecordSets(context.Background(), test.sets, test.zone)
+			err := client.UpdateRecordSets(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

@@ -11,29 +11,6 @@ import (
 )
 
 type (
-	// Activations is an edgeworkers activations API interface
-	Activations interface {
-		// ListActivations lists all activations for an EdgeWorker
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-activations-1
-		ListActivations(context.Context, ListActivationsRequest) (*ListActivationsResponse, error)
-
-		// GetActivation fetches an EdgeWorker activation by id
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-activation-1
-		GetActivation(context.Context, GetActivationRequest) (*Activation, error)
-
-		// ActivateVersion activates an EdgeWorker version on a given network
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/post-activations-1
-		ActivateVersion(context.Context, ActivateVersionRequest) (*Activation, error)
-
-		// CancelPendingActivation cancels pending activation with a given id
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/cancel-activation
-		CancelPendingActivation(context.Context, CancelActivationRequest) (*Activation, error)
-	}
-
 	// ListActivationsRequest contains parameters used to list activations
 	ListActivationsRequest struct {
 		EdgeWorkerID int
@@ -147,7 +124,7 @@ var (
 	ErrCancelActivation = errors.New("cancel activation")
 )
 
-func (e edgeworkers) ListActivations(ctx context.Context, params ListActivationsRequest) (*ListActivationsResponse, error) {
+func (e *edgeworkers) ListActivations(ctx context.Context, params ListActivationsRequest) (*ListActivationsResponse, error) {
 	logger := e.Log(ctx)
 	logger.Debug("ListActivations")
 
@@ -184,7 +161,7 @@ func (e edgeworkers) ListActivations(ctx context.Context, params ListActivations
 	return &result, nil
 }
 
-func (e edgeworkers) GetActivation(ctx context.Context, params GetActivationRequest) (*Activation, error) {
+func (e *edgeworkers) GetActivation(ctx context.Context, params GetActivationRequest) (*Activation, error) {
 	logger := e.Log(ctx)
 	logger.Debug("GetActivation")
 
@@ -212,7 +189,7 @@ func (e edgeworkers) GetActivation(ctx context.Context, params GetActivationRequ
 	return &result, nil
 }
 
-func (e edgeworkers) ActivateVersion(ctx context.Context, params ActivateVersionRequest) (*Activation, error) {
+func (e *edgeworkers) ActivateVersion(ctx context.Context, params ActivateVersionRequest) (*Activation, error) {
 	logger := e.Log(ctx)
 	logger.Debug("ActivateVersion")
 
@@ -241,7 +218,7 @@ func (e edgeworkers) ActivateVersion(ctx context.Context, params ActivateVersion
 	return &result, nil
 }
 
-func (e edgeworkers) CancelPendingActivation(ctx context.Context, params CancelActivationRequest) (*Activation, error) {
+func (e *edgeworkers) CancelPendingActivation(ctx context.Context, params CancelActivationRequest) (*Activation, error) {
 	logger := e.Log(ctx)
 	logger.Debug("CancelPendingActivation")
 

@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIam_ListBlockedProperties(t *testing.T) {
+func TestIAM_ListBlockedProperties(t *testing.T) {
 	tests := map[string]struct {
 		params           ListBlockedPropertiesRequest
 		responseStatus   int
@@ -25,7 +25,7 @@ func TestIam_ListBlockedProperties(t *testing.T) {
 				IdentityID: "1-ABCDE",
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `[
 								10977166
 							]`,
@@ -39,7 +39,7 @@ func TestIam_ListBlockedProperties(t *testing.T) {
 				IdentityID: "1-ABCDE",
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `[
 							
 							]`,
@@ -52,7 +52,7 @@ func TestIam_ListBlockedProperties(t *testing.T) {
 				IdentityID: "1-ABCDE",
 			},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/123450000/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/123450000/blocked-properties",
 			responseBody: `
 			{
     "instance": "",
@@ -80,7 +80,7 @@ func TestIam_ListBlockedProperties(t *testing.T) {
 				IdentityID: "1-ABCDE",
 			},
 			responseStatus: http.StatusInternalServerError,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `
 			{
 				"type": "internal_error",
@@ -99,28 +99,28 @@ func TestIam_ListBlockedProperties(t *testing.T) {
 			},
 		},
 	}
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			users, err := client.ListBlockedProperties(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			users, err := client.ListBlockedProperties(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, users)
+			assert.Equal(t, tc.expectedResponse, users)
 		})
 	}
 }
 
-func TestIam_UpdateBlockedProperties(t *testing.T) {
+func TestIAM_UpdateBlockedProperties(t *testing.T) {
 	tests := map[string]struct {
 		params           UpdateBlockedPropertiesRequest
 		responseStatus   int
@@ -136,7 +136,7 @@ func TestIam_UpdateBlockedProperties(t *testing.T) {
 				Properties: []int64{10977166, 10977167},
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `[
 								10977166,10977167
 							]`,
@@ -151,7 +151,7 @@ func TestIam_UpdateBlockedProperties(t *testing.T) {
 				Properties: []int64{0, 1},
 			},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `
 			{
     "instance": "",
@@ -180,7 +180,7 @@ func TestIam_UpdateBlockedProperties(t *testing.T) {
 				Properties: []int64{10977166, 10977167},
 			},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/123450000/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/123450000/blocked-properties",
 			responseBody: `
 			{
     "instance": "",
@@ -208,7 +208,7 @@ func TestIam_UpdateBlockedProperties(t *testing.T) {
 				IdentityID: "1-ABCDE",
 			},
 			responseStatus: http.StatusInternalServerError,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/groups/12345/blocked-properties",
 			responseBody: `
 			{
 				"type": "internal_error",
@@ -227,23 +227,23 @@ func TestIam_UpdateBlockedProperties(t *testing.T) {
 			},
 		},
 	}
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			users, err := client.UpdateBlockedProperties(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			users, err := client.UpdateBlockedProperties(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, users)
+			assert.Equal(t, tc.expectedResponse, users)
 		})
 	}
 }

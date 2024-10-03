@@ -7,8 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/ptr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -56,10 +55,9 @@ func TestPapiGetProperties(t *testing.T) {
 						ContractID:        "ctr_1-1TJZH5",
 						GroupID:           "grp_15166",
 						PropertyID:        "prp_175780",
-						ProductID:         "prp_175780",
 						PropertyName:      "example.com",
 						LatestVersion:     2,
-						StagingVersion:    tools.IntPtr(1),
+						StagingVersion:    ptr.To(1),
 						ProductionVersion: nil,
 						AssetID:           "aid_101",
 						Note:              "Notes about example.com",
@@ -146,7 +144,6 @@ func TestPapiGetProperty(t *testing.T) {
 				"propertyName": "example.com",
 				"latestVersion": 2,
 				"stagingVersion": 1,
-				"productId": "prp_175780",
 				"productionVersion": null,
 				"assetId": "aid_101",
 				"note": "Notes about example.com"
@@ -162,10 +159,9 @@ func TestPapiGetProperty(t *testing.T) {
 						ContractID:        "ctr_1-1TJZH5",
 						GroupID:           "grp_15166",
 						PropertyID:        "prp_175780",
-						ProductID:         "prp_175780",
 						PropertyName:      "example.com",
 						LatestVersion:     2,
-						StagingVersion:    tools.IntPtr(1),
+						StagingVersion:    ptr.To(1),
 						ProductionVersion: nil,
 						AssetID:           "aid_101",
 						Note:              "Notes about example.com",
@@ -177,10 +173,9 @@ func TestPapiGetProperty(t *testing.T) {
 					ContractID:        "ctr_1-1TJZH5",
 					GroupID:           "grp_15166",
 					PropertyID:        "prp_175780",
-					ProductID:         "prp_175780",
 					PropertyName:      "example.com",
 					LatestVersion:     2,
-					StagingVersion:    tools.IntPtr(1),
+					StagingVersion:    ptr.To(1),
 					ProductionVersion: nil,
 					AssetID:           "aid_101",
 					Note:              "Notes about example.com",

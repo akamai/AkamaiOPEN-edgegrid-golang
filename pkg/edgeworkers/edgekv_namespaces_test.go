@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -120,21 +120,21 @@ func TestListNamespaces(t *testing.T) {
 				Namespaces: []Namespace{
 					{
 						Name:        "testNs_1",
-						Retention:   tools.IntPtr(0),
+						Retention:   ptr.To(0),
 						GeoLocation: "EU",
-						GroupID:     tools.IntPtr(0),
+						GroupID:     ptr.To(0),
 					},
 					{
 						Name:        "testNs_2",
-						Retention:   tools.IntPtr(86400),
+						Retention:   ptr.To(86400),
 						GeoLocation: "JP",
-						GroupID:     tools.IntPtr(123),
+						GroupID:     ptr.To(123),
 					},
 					{
 						Name:        "testNs_3",
-						Retention:   tools.IntPtr(315360000),
+						Retention:   ptr.To(315360000),
 						GeoLocation: "US",
-						GroupID:     tools.IntPtr(234),
+						GroupID:     ptr.To(234),
 					},
 				},
 			},
@@ -203,9 +203,9 @@ func TestGetNamespace(t *testing.T) {
 			}`,
 			expectedResult: &Namespace{
 				Name:        "testNs",
-				Retention:   tools.IntPtr(0),
+				Retention:   ptr.To(0),
 				GeoLocation: "EU",
-				GroupID:     tools.IntPtr(0),
+				GroupID:     ptr.To(0),
 			},
 		},
 		"200 OK - staging": {
@@ -223,9 +223,9 @@ func TestGetNamespace(t *testing.T) {
 			}`,
 			expectedResult: &Namespace{
 				Name:        "testNs",
-				Retention:   tools.IntPtr(86400),
+				Retention:   ptr.To(86400),
 				GeoLocation: "US",
-				GroupID:     tools.IntPtr(0),
+				GroupID:     ptr.To(0),
 			},
 		},
 		"400 bad request - namespace does not exist": {
@@ -317,9 +317,9 @@ func TestCreateNamespace(t *testing.T) {
 				Network: NamespaceProductionNetwork,
 				Namespace: Namespace{
 					Name:        "testNs",
-					Retention:   tools.IntPtr(0),
+					Retention:   ptr.To(0),
 					GeoLocation: "EU",
-					GroupID:     tools.IntPtr(0),
+					GroupID:     ptr.To(0),
 				},
 			},
 			expectedPath:   "/edgekv/v1/networks/production/namespaces",
@@ -332,9 +332,9 @@ func TestCreateNamespace(t *testing.T) {
 			}`,
 			expectedResult: &Namespace{
 				Name:        "testNs",
-				Retention:   tools.IntPtr(0),
+				Retention:   ptr.To(0),
 				GeoLocation: "EU",
-				GroupID:     tools.IntPtr(0),
+				GroupID:     ptr.To(0),
 			},
 		},
 		"200 OK - staging": {
@@ -342,8 +342,8 @@ func TestCreateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				Namespace: Namespace{
 					Name:      "testNs",
-					Retention: tools.IntPtr(86400),
-					GroupID:   tools.IntPtr(123),
+					Retention: ptr.To(86400),
+					GroupID:   ptr.To(123),
 				},
 			},
 			expectedPath:   "/edgekv/v1/networks/staging/namespaces",
@@ -356,9 +356,9 @@ func TestCreateNamespace(t *testing.T) {
 			}`,
 			expectedResult: &Namespace{
 				Name:        "testNs",
-				Retention:   tools.IntPtr(86400),
+				Retention:   ptr.To(86400),
 				GeoLocation: "US",
-				GroupID:     tools.IntPtr(123),
+				GroupID:     ptr.To(123),
 			},
 		},
 		"400 bad request - invalid geoLocation for staging network": {
@@ -366,9 +366,9 @@ func TestCreateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				Namespace: Namespace{
 					Name:        "testNs",
-					Retention:   tools.IntPtr(0),
+					Retention:   ptr.To(0),
 					GeoLocation: "JP",
-					GroupID:     tools.IntPtr(0),
+					GroupID:     ptr.To(0),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -404,9 +404,9 @@ func TestCreateNamespace(t *testing.T) {
 				Network: NamespaceProductionNetwork,
 				Namespace: Namespace{
 					Name:        "testNs",
-					Retention:   tools.IntPtr(0),
+					Retention:   ptr.To(0),
 					GeoLocation: "INVALID",
-					GroupID:     tools.IntPtr(0),
+					GroupID:     ptr.To(0),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -442,8 +442,8 @@ func TestCreateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				Namespace: Namespace{
 					Name:      "testNs",
-					Retention: tools.IntPtr(0),
-					GroupID:   tools.IntPtr(0),
+					Retention: ptr.To(0),
+					GroupID:   ptr.To(0),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -489,8 +489,8 @@ func TestCreateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				Namespace: Namespace{
 					Name:      "testNs",
-					Retention: tools.IntPtr(86399),
-					GroupID:   tools.IntPtr(0),
+					Retention: ptr.To(86399),
+					GroupID:   ptr.To(0),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -503,8 +503,8 @@ func TestCreateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				Namespace: Namespace{
 					Name:      "testNs",
-					Retention: tools.IntPtr(315360001),
-					GroupID:   tools.IntPtr(0),
+					Retention: ptr.To(315360001),
+					GroupID:   ptr.To(0),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -517,8 +517,8 @@ func TestCreateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				Namespace: Namespace{
 					Name:      "namespaceNameThatHasMoreThan32Letters",
-					Retention: tools.IntPtr(0),
-					GroupID:   tools.IntPtr(0),
+					Retention: ptr.To(0),
+					GroupID:   ptr.To(0),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -531,8 +531,8 @@ func TestCreateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				Namespace: Namespace{
 					Name:      "groupIDLessThan0",
-					Retention: tools.IntPtr(0),
-					GroupID:   tools.IntPtr(-1),
+					Retention: ptr.To(0),
+					GroupID:   ptr.To(-1),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -578,8 +578,8 @@ func TestUpdateNamespace(t *testing.T) {
 				Network: NamespaceProductionNetwork,
 				UpdateNamespace: UpdateNamespace{
 					Name:      "testNs",
-					Retention: tools.IntPtr(86400),
-					GroupID:   tools.IntPtr(0),
+					Retention: ptr.To(86400),
+					GroupID:   ptr.To(0),
 				},
 			},
 			expectedPath:   "/edgekv/v1/networks/production/namespaces/testNs",
@@ -592,9 +592,9 @@ func TestUpdateNamespace(t *testing.T) {
 			}`,
 			expectedResult: &Namespace{
 				Name:        "testNs",
-				Retention:   tools.IntPtr(86400),
+				Retention:   ptr.To(86400),
 				GeoLocation: "EU",
-				GroupID:     tools.IntPtr(0),
+				GroupID:     ptr.To(0),
 			},
 		},
 		"200 OK - staging": {
@@ -602,8 +602,8 @@ func TestUpdateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				UpdateNamespace: UpdateNamespace{
 					Name:      "testNs",
-					Retention: tools.IntPtr(86400),
-					GroupID:   tools.IntPtr(123),
+					Retention: ptr.To(86400),
+					GroupID:   ptr.To(123),
 				},
 			},
 			expectedPath:   "/edgekv/v1/networks/staging/namespaces/testNs",
@@ -616,9 +616,9 @@ func TestUpdateNamespace(t *testing.T) {
 			}`,
 			expectedResult: &Namespace{
 				Name:        "testNs",
-				Retention:   tools.IntPtr(86400),
+				Retention:   ptr.To(86400),
 				GeoLocation: "US",
-				GroupID:     tools.IntPtr(123),
+				GroupID:     ptr.To(123),
 			},
 		},
 		"409 conflict": {
@@ -626,8 +626,8 @@ func TestUpdateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				UpdateNamespace: UpdateNamespace{
 					Name:      "testNs_2",
-					Retention: tools.IntPtr(0),
-					GroupID:   tools.IntPtr(0),
+					Retention: ptr.To(0),
+					GroupID:   ptr.To(0),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -673,8 +673,8 @@ func TestUpdateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				UpdateNamespace: UpdateNamespace{
 					Name:      "namespaceNameThatHasMoreThan32Letters",
-					Retention: tools.IntPtr(0),
-					GroupID:   tools.IntPtr(0),
+					Retention: ptr.To(0),
+					GroupID:   ptr.To(0),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -687,8 +687,8 @@ func TestUpdateNamespace(t *testing.T) {
 				Network: NamespaceStagingNetwork,
 				UpdateNamespace: UpdateNamespace{
 					Name:      "groupIDLessThan0",
-					Retention: tools.IntPtr(0),
-					GroupID:   tools.IntPtr(-1),
+					Retention: ptr.To(0),
+					GroupID:   ptr.To(-1),
 				},
 			},
 			withError: func(t *testing.T, err error) {

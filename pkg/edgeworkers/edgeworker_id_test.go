@@ -547,7 +547,7 @@ func TestUpdateEdgeWorkerID(t *testing.T) {
 	}{
 		"200 OK - update EdgeWorkerID": {
 			params: UpdateEdgeWorkerIDRequest{
-				EdgeWorkerIDBodyRequest: EdgeWorkerIDBodyRequest{
+				Body: EdgeWorkerIDRequestBody{
 					GroupID:        12345,
 					Name:           "Update EdgeWorkerID",
 					ResourceTierID: 123,
@@ -583,14 +583,14 @@ func TestUpdateEdgeWorkerID(t *testing.T) {
 		},
 		"validation error - empty body parameters": {
 			params: UpdateEdgeWorkerIDRequest{
-				EdgeWorkerIDBodyRequest: EdgeWorkerIDBodyRequest{},
-				EdgeWorkerID:            54321,
+				Body:         EdgeWorkerIDRequestBody{},
+				EdgeWorkerID: 54321,
 			},
 			withError: ErrStructValidation,
 		},
 		"validation error - empty edgeworker id": {
 			params: UpdateEdgeWorkerIDRequest{
-				EdgeWorkerIDBodyRequest: EdgeWorkerIDBodyRequest{
+				Body: EdgeWorkerIDRequestBody{
 					GroupID:        12345,
 					Name:           "Update EdgeWorkerID",
 					ResourceTierID: 123,
@@ -600,7 +600,7 @@ func TestUpdateEdgeWorkerID(t *testing.T) {
 		},
 		"500 internal server error": {
 			params: UpdateEdgeWorkerIDRequest{
-				EdgeWorkerIDBodyRequest: EdgeWorkerIDBodyRequest{
+				Body: EdgeWorkerIDRequestBody{
 					GroupID:        12345,
 					Name:           "Update EdgeWorkerID",
 					ResourceTierID: 123,
@@ -635,7 +635,7 @@ func TestUpdateEdgeWorkerID(t *testing.T) {
 		},
 		"403 Forbidden - incorrect credentials": {
 			params: UpdateEdgeWorkerIDRequest{
-				EdgeWorkerIDBodyRequest: EdgeWorkerIDBodyRequest{
+				Body: EdgeWorkerIDRequestBody{
 					GroupID:        12345,
 					Name:           "Update EdgeWorkerID",
 					ResourceTierID: 123,
@@ -712,7 +712,7 @@ func TestCloneEdgeWorkerID(t *testing.T) {
 	}{
 		"200 OK - clone EdgeWorkerID with different resourceTierId": {
 			params: CloneEdgeWorkerIDRequest{
-				EdgeWorkerIDBodyRequest: EdgeWorkerIDBodyRequest{
+				Body: EdgeWorkerIDRequestBody{
 					GroupID:        12345,
 					Name:           "Clone EdgeWorkerID",
 					ResourceTierID: 123,
@@ -754,7 +754,7 @@ func TestCloneEdgeWorkerID(t *testing.T) {
 		},
 		"validation error - empty edgeworker id": {
 			params: CloneEdgeWorkerIDRequest{
-				EdgeWorkerIDBodyRequest: EdgeWorkerIDBodyRequest{
+				Body: EdgeWorkerIDRequestBody{
 					GroupID:        12345,
 					Name:           "Update EdgeWorkerID",
 					ResourceTierID: 123,
@@ -764,7 +764,7 @@ func TestCloneEdgeWorkerID(t *testing.T) {
 		},
 		"500 internal server error": {
 			params: CloneEdgeWorkerIDRequest{
-				EdgeWorkerIDBodyRequest: EdgeWorkerIDBodyRequest{
+				Body: EdgeWorkerIDRequestBody{
 					GroupID:        12345,
 					Name:           "Clone EdgeWorkerID",
 					ResourceTierID: 123,
@@ -799,7 +799,7 @@ func TestCloneEdgeWorkerID(t *testing.T) {
 		},
 		"403 Forbidden - incorrect credentials": {
 			params: CloneEdgeWorkerIDRequest{
-				EdgeWorkerIDBodyRequest: EdgeWorkerIDBodyRequest{
+				Body: EdgeWorkerIDRequestBody{
 					GroupID:        12345,
 					Name:           "Update EdgeWorkerID",
 					ResourceTierID: 123,

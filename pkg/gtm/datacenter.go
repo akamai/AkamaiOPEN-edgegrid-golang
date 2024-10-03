@@ -2,76 +2,161 @@ package gtm
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
-
 	"strconv"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// Datacenters contains operations available on a Datacenter resource.
-type Datacenters interface {
-	// ListDatacenters retrieves all Datacenters.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/get-datacenters
-	ListDatacenters(context.Context, string) ([]*Datacenter, error)
-	// GetDatacenter retrieves a Datacenter with the given name. NOTE: Id arg is int!
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/get-datacenter
-	GetDatacenter(context.Context, int, string) (*Datacenter, error)
-	// CreateDatacenter creates the datacenter identified by the receiver argument in the specified domain.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/post-datacenter
-	CreateDatacenter(context.Context, *Datacenter, string) (*DatacenterResponse, error)
-	// DeleteDatacenter deletes the datacenter identified by the receiver argument from the domain specified.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/delete-datacenter
-	DeleteDatacenter(context.Context, *Datacenter, string) (*ResponseStatus, error)
-	// UpdateDatacenter updates the datacenter identified in the receiver argument in the provided domain.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/put-datacenter
-	UpdateDatacenter(context.Context, *Datacenter, string) (*ResponseStatus, error)
-	// CreateMapsDefaultDatacenter creates Default Datacenter for Maps.
-	CreateMapsDefaultDatacenter(context.Context, string) (*Datacenter, error)
-	// CreateIPv4DefaultDatacenter creates Default Datacenter for IPv4 Selector.
-	CreateIPv4DefaultDatacenter(context.Context, string) (*Datacenter, error)
-	// CreateIPv6DefaultDatacenter creates Default Datacenter for IPv6 Selector.
-	CreateIPv6DefaultDatacenter(context.Context, string) (*Datacenter, error)
+type (
+	// Datacenter represents a GTM datacenter
+	Datacenter struct {
+		City                          string      `json:"city,omitempty"`
+		CloneOf                       int         `json:"cloneOf,omitempty"`
+		CloudServerHostHeaderOverride bool        `json:"cloudServerHostHeaderOverride"`
+		CloudServerTargeting          bool        `json:"cloudServerTargeting"`
+		Continent                     string      `json:"continent,omitempty"`
+		Country                       string      `json:"country,omitempty"`
+		DefaultLoadObject             *LoadObject `json:"defaultLoadObject,omitempty"`
+		Latitude                      float64     `json:"latitude,omitempty"`
+		Links                         []Link      `json:"links,omitempty"`
+		Longitude                     float64     `json:"longitude,omitempty"`
+		Nickname                      string      `json:"nickname,omitempty"`
+		PingInterval                  int         `json:"pingInterval,omitempty"`
+		PingPacketSize                int         `json:"pingPacketSize,omitempty"`
+		DatacenterID                  int         `json:"datacenterId,omitempty"`
+		ScorePenalty                  int         `json:"scorePenalty,omitempty"`
+		ServermonitorLivenessCount    int         `json:"servermonitorLivenessCount,omitempty"`
+		ServermonitorLoadCount        int         `json:"servermonitorLoadCount,omitempty"`
+		ServermonitorPool             string      `json:"servermonitorPool,omitempty"`
+		StateOrProvince               string      `json:"stateOrProvince,omitempty"`
+		Virtual                       bool        `json:"virtual"`
+	}
+
+	// DatacenterList contains a list of Datacenters
+	DatacenterList struct {
+		DatacenterItems []Datacenter `json:"items"`
+	}
+
+	// ListDatacentersRequest contains request parameters for ListDatacenters
+	ListDatacentersRequest struct {
+		DomainName string
+	}
+
+	// GetDatacenterRequest contains request parameters for GetDatacenter
+	GetDatacenterRequest struct {
+		DatacenterID int
+		DomainName   string
+	}
+
+	// DatacenterRequest contains request parameters
+	DatacenterRequest struct {
+		Datacenter *Datacenter
+		DomainName string
+	}
+
+	// CreateDatacenterRequest contains request parameters for CreateDatacenter
+	CreateDatacenterRequest DatacenterRequest
+
+	// CreateDatacenterResponse contains the response data from CreateDatacenter operation
+	CreateDatacenterResponse struct {
+		Status   *ResponseStatus `json:"status"`
+		Resource *Datacenter     `json:"resource"`
+	}
+
+	// UpdateDatacenterRequest contains request parameters for UpdateDatacenter
+	UpdateDatacenterRequest DatacenterRequest
+
+	// UpdateDatacenterResponse contains the response data from UpdateDatacenter operation
+	UpdateDatacenterResponse struct {
+		Status   *ResponseStatus `json:"status"`
+		Resource *Datacenter     `json:"resource"`
+	}
+
+	// DeleteDatacenterRequest contains request parameters for DeleteDatacenter
+	DeleteDatacenterRequest struct {
+		DatacenterID int
+		DomainName   string
+	}
+
+	// DeleteDatacenterResponse contains the response data from DeleteDatacenter operation
+	DeleteDatacenterResponse struct {
+		Status   *ResponseStatus `json:"status"`
+		Resource *Datacenter     `json:"resource"`
+	}
+)
+
+var (
+	// ErrListDatacenters is returned when ListDatacenters fails
+	ErrListDatacenters = errors.New("list datacenters")
+	// ErrGetDatacenter is returned when GetDatacenter fails
+	ErrGetDatacenter = errors.New("get datacenter")
+	// ErrCreateDatacenter is returned when CreateDatacenter fails
+	ErrCreateDatacenter = errors.New("create datacenter")
+	// ErrUpdateDatacenter is returned when UpdateDatacenter fails
+	ErrUpdateDatacenter = errors.New("update datacenter")
+	// ErrDeleteDatacenter is returned when DeleteDatacenter fails
+	ErrDeleteDatacenter = errors.New("delete datacenter")
+)
+
+// Validate validates ListDatacentersRequest
+func (r ListDatacentersRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DomainName": validation.Validate(r.DomainName, validation.Required),
+	})
 }
 
-// Datacenter represents a GTM datacenter
-type Datacenter struct {
-	City                          string      `json:"city,omitempty"`
-	CloneOf                       int         `json:"cloneOf,omitempty"`
-	CloudServerHostHeaderOverride bool        `json:"cloudServerHostHeaderOverride"`
-	CloudServerTargeting          bool        `json:"cloudServerTargeting"`
-	Continent                     string      `json:"continent,omitempty"`
-	Country                       string      `json:"country,omitempty"`
-	DefaultLoadObject             *LoadObject `json:"defaultLoadObject,omitempty"`
-	Latitude                      float64     `json:"latitude,omitempty"`
-	Links                         []*Link     `json:"links,omitempty"`
-	Longitude                     float64     `json:"longitude,omitempty"`
-	Nickname                      string      `json:"nickname,omitempty"`
-	PingInterval                  int         `json:"pingInterval,omitempty"`
-	PingPacketSize                int         `json:"pingPacketSize,omitempty"`
-	DatacenterID                  int         `json:"datacenterId,omitempty"`
-	ScorePenalty                  int         `json:"scorePenalty,omitempty"`
-	ServermonitorLivenessCount    int         `json:"servermonitorLivenessCount,omitempty"`
-	ServermonitorLoadCount        int         `json:"servermonitorLoadCount,omitempty"`
-	ServermonitorPool             string      `json:"servermonitorPool,omitempty"`
-	StateOrProvince               string      `json:"stateOrProvince,omitempty"`
-	Virtual                       bool        `json:"virtual"`
+// Validate validates GetDatacenterRequest
+func (r GetDatacenterRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DatacenterID": validation.Validate(r.DatacenterID, validation.Required),
+		"DomainName":   validation.Validate(r.DomainName, validation.Required),
+	})
 }
 
-// DatacenterList contains a list of Datacenters
-type DatacenterList struct {
-	DatacenterItems []*Datacenter `json:"items"`
+// Validate validates CreateDatacenterRequest
+func (r CreateDatacenterRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DomainName": validation.Validate(r.DomainName, validation.Required),
+		"Datacenter": validation.Validate(r.Datacenter, validation.Required),
+	})
 }
 
-func (g *gtm) ListDatacenters(ctx context.Context, domainName string) ([]*Datacenter, error) {
+// Validate validates UpdateDatacenterRequest
+func (r UpdateDatacenterRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DomainName": validation.Validate(r.DomainName, validation.Required),
+		"Datacenter": validation.Validate(r.Datacenter, validation.Required),
+	})
+}
+
+// Validate validates DeleteDatacenterRequest
+func (r DeleteDatacenterRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DomainName":   validation.Validate(r.DomainName, validation.Required),
+		"DatacenterID": validation.Validate(r.DatacenterID, validation.Required),
+	})
+}
+
+// Validate validates Datacenter
+func (d Datacenter) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DatacenterID": validation.Validate(d.DatacenterID),
+	})
+}
+
+func (g *gtm) ListDatacenters(ctx context.Context, params ListDatacentersRequest) ([]Datacenter, error) {
 	logger := g.Log(ctx)
 	logger.Debug("ListDatacenters")
 
-	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters", domainName)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListDatacenters, ErrStructValidation, err)
+	}
+
+	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters", params.DomainName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ListDatacenters request: %w", err)
@@ -91,11 +176,15 @@ func (g *gtm) ListDatacenters(ctx context.Context, domainName string) ([]*Datace
 	return result.DatacenterItems, nil
 }
 
-func (g *gtm) GetDatacenter(ctx context.Context, dcID int, domainName string) (*Datacenter, error) {
+func (g *gtm) GetDatacenter(ctx context.Context, params GetDatacenterRequest) (*Datacenter, error) {
 	logger := g.Log(ctx)
 	logger.Debug("GetDatacenter")
 
-	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", domainName, strconv.Itoa(dcID))
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetDatacenter, ErrStructValidation, err)
+	}
+
+	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", params.DomainName, strconv.Itoa(params.DatacenterID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetDatacenter request: %w", err)
@@ -115,19 +204,23 @@ func (g *gtm) GetDatacenter(ctx context.Context, dcID int, domainName string) (*
 	return &result, nil
 }
 
-func (g *gtm) CreateDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*DatacenterResponse, error) {
+func (g *gtm) CreateDatacenter(ctx context.Context, params CreateDatacenterRequest) (*CreateDatacenterResponse, error) {
 	logger := g.Log(ctx)
 	logger.Debug("CreateDatacenter")
 
-	postURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters", domainName)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateDatacenter, ErrStructValidation, err)
+	}
+
+	postURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters", params.DomainName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Datacenter request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
 
-	var result DatacenterResponse
-	resp, err := g.Exec(req, &result, dc)
+	var result CreateDatacenterResponse
+	resp, err := g.Exec(req, &result, params.Datacenter)
 	if err != nil {
 		return nil, fmt.Errorf("CreateDatacenter request failed: %w", err)
 	}
@@ -173,8 +266,12 @@ func createDefaultDC(ctx context.Context, g *gtm, defaultID int, domainName stri
 	if defaultID != MapDefaultDC && defaultID != Ipv4DefaultDC && defaultID != Ipv6DefaultDC {
 		return nil, fmt.Errorf("invalid default datacenter id provided for creation")
 	}
+
 	// check if already exists
-	dc, err := g.GetDatacenter(ctx, defaultID, domainName)
+	dc, err := g.GetDatacenter(ctx, GetDatacenterRequest{
+		DatacenterID: defaultID,
+		DomainName:   domainName,
+	})
 	if err == nil {
 		return dc, err
 	}
@@ -211,19 +308,23 @@ func createDefaultDC(ctx context.Context, g *gtm, defaultID int, domainName stri
 	return result.Resource, nil
 }
 
-func (g *gtm) UpdateDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*ResponseStatus, error) {
+func (g *gtm) UpdateDatacenter(ctx context.Context, params UpdateDatacenterRequest) (*UpdateDatacenterResponse, error) {
 	logger := g.Log(ctx)
 	logger.Debug("UpdateDatacenter")
 
-	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", domainName, strconv.Itoa(dc.DatacenterID))
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateDatacenter, ErrStructValidation, err)
+	}
+
+	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", params.DomainName, strconv.Itoa(params.Datacenter.DatacenterID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Update Datacenter request: %w", err)
 	}
 
 	setVersionHeader(req, schemaVersion)
-	var result DatacenterResponse
-	resp, err := g.Exec(req, &result, dc)
+	var result UpdateDatacenterResponse
+	resp, err := g.Exec(req, &result, params.Datacenter)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateDatacenter request failed: %w", err)
 	}
@@ -231,21 +332,25 @@ func (g *gtm) UpdateDatacenter(ctx context.Context, dc *Datacenter, domainName s
 		return nil, g.Error(resp)
 	}
 
-	return result.Status, nil
+	return &result, nil
 }
 
-func (g *gtm) DeleteDatacenter(ctx context.Context, dc *Datacenter, domainName string) (*ResponseStatus, error) {
+func (g *gtm) DeleteDatacenter(ctx context.Context, params DeleteDatacenterRequest) (*DeleteDatacenterResponse, error) {
 	logger := g.Log(ctx)
 	logger.Debug("DeleteDatacenter")
 
-	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", domainName, strconv.Itoa(dc.DatacenterID))
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrDeleteDatacenter, ErrStructValidation, err)
+	}
+
+	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/datacenters/%s", params.DomainName, strconv.Itoa(params.DatacenterID))
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, delURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Delete Datacenter request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
 
-	var result DatacenterResponse
+	var result DeleteDatacenterResponse
 	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("DeleteDatacenter request failed: %w", err)
@@ -254,5 +359,5 @@ func (g *gtm) DeleteDatacenter(ctx context.Context, dc *Datacenter, domainName s
 		return nil, g.Error(resp)
 	}
 
-	return result.Status, nil
+	return &result, nil
 }

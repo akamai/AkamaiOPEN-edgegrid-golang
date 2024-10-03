@@ -10,19 +10,6 @@ import (
 )
 
 type (
-	// DeploymentSchedules is a CPS deployment schedules API interface
-	DeploymentSchedules interface {
-		// GetDeploymentSchedule fetches the current deployment schedule settings describing when a change deploys to the network
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-change-deployment-schedule
-		GetDeploymentSchedule(context.Context, GetDeploymentScheduleRequest) (*DeploymentSchedule, error)
-
-		// UpdateDeploymentSchedule updates the current deployment schedule
-		//
-		// See: https://techdocs.akamai.com/cps/reference/put-change-deployment-schedule
-		UpdateDeploymentSchedule(context.Context, UpdateDeploymentScheduleRequest) (*UpdateDeploymentScheduleResponse, error)
-	}
-
 	// GetDeploymentScheduleRequest contains parameters for GetDeploymentSchedule
 	GetDeploymentScheduleRequest struct {
 		ChangeID     int

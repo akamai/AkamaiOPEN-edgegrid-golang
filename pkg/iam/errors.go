@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/errs"
 )
 
 type (
-	// Error is an IAM error interface
+	// Error is an IAM error interface.
 	Error struct {
 		Type          string          `json:"type"`
 		Title         string          `json:"title"`
@@ -26,18 +26,13 @@ type (
 	}
 )
 
-var (
-	// ErrInputValidation is returned when the input parameters failed validation
-	ErrInputValidation = errors.New("input validation error")
-)
-
-// Error parses an error from the response
+// Error parses an error from the response.
 func (i *iam) Error(r *http.Response) error {
 	var e Error
 
 	var body []byte
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		i.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.StatusCode = r.StatusCode
@@ -65,7 +60,7 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("API error: \n%s", msg)
 }
 
-// Is handles error comparisons
+// Is handles error comparisons.
 func (e *Error) Is(target error) bool {
 	var t *Error
 	if !errors.As(target, &t) {

@@ -11,38 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// EdgeHostnames contains operations available on Edge Hostname resource.
-	EdgeHostnames interface {
-		// DeleteEdgeHostname allows deleting a specific edge hostname.
-		// You must have an Admin or Technical role in order to delete an edge hostname.
-		// You can delete any hostname that’s not currently part of an active Property Manager configuration.
-		//
-		// See: https://techdocs.akamai.com/edge-hostnames/reference/delete-edgehostname
-		DeleteEdgeHostname(context.Context, DeleteEdgeHostnameRequest) (*DeleteEdgeHostnameResponse, error)
-
-		// GetEdgeHostname gets a specific edge hostname's details including its product ID, IP version behavior,
-		// and China CDN or Edge IP Binding status.
-		//
-		// See: https://techdocs.akamai.com/edge-hostnames/reference/get-edgehostnameid
-		GetEdgeHostname(context.Context, int) (*GetEdgeHostnameResponse, error)
-
-		// UpdateEdgeHostname allows update ttl (path = "/ttl") or IpVersionBehaviour (path = "/ipVersionBehavior")
-		//
-		// See: https://techdocs.akamai.com/edge-hostnames/reference/patch-edgehostnames
-		UpdateEdgeHostname(context.Context, UpdateEdgeHostnameRequest) (*UpdateEdgeHostnameResponse, error)
-
-		// GetCertificate gets the certificate associated with an enhanced TLS edge hostname
-		//
-		// See: https://techdocs.akamai.com/edge-hostnames/reference/get-edge-hostname-certificate
-		GetCertificate(context.Context, GetCertificateRequest) (*GetCertificateResponse, error)
-	}
-
 	// DeleteEdgeHostnameRequest is used to delete edge hostname
 	DeleteEdgeHostnameRequest struct {
 		DNSZone           string

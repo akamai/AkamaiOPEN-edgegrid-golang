@@ -2,70 +2,154 @@ package gtm
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// GeoMaps contains operations available on a GeoMap resource.
-type GeoMaps interface {
-	// ListGeoMaps retrieves all GeoMaps.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/get-geographic-maps
-	ListGeoMaps(context.Context, string) ([]*GeoMap, error)
-	// GetGeoMap retrieves a GeoMap with the given name.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/get-geographic-map
-	GetGeoMap(context.Context, string, string) (*GeoMap, error)
-	// CreateGeoMap creates the datacenter identified by the receiver argument in the specified domain.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/put-geographic-map
-	CreateGeoMap(context.Context, *GeoMap, string) (*GeoMapResponse, error)
-	// DeleteGeoMap deletes the datacenter identified by the receiver argument from the domain specified.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/delete-geographic-map
-	DeleteGeoMap(context.Context, *GeoMap, string) (*ResponseStatus, error)
-	// UpdateGeoMap updates the datacenter identified in the receiver argument in the provided domain.
-	//
-	// See: https://techdocs.akamai.com/gtm/reference/put-geographic-map
-	UpdateGeoMap(context.Context, *GeoMap, string) (*ResponseStatus, error)
+type (
+	// GeoAssignment represents a GTM Geo assignment element
+	GeoAssignment struct {
+		DatacenterBase
+		Countries []string `json:"countries"`
+	}
+
+	// GeoMap represents a GTM GeoMap
+	GeoMap struct {
+		DefaultDatacenter *DatacenterBase `json:"defaultDatacenter"`
+		Assignments       []GeoAssignment `json:"assignments,omitempty"`
+		Name              string          `json:"name"`
+		Links             []Link          `json:"links,omitempty"`
+	}
+
+	// GeoMapList represents the returned GTM GeoMap List body
+	GeoMapList struct {
+		GeoMapItems []GeoMap `json:"items"`
+	}
+
+	// ListGeoMapsRequest contains request parameters for ListGeoMaps
+	ListGeoMapsRequest struct {
+		DomainName string
+	}
+
+	// GetGeoMapRequest contains request parameters for GetGeoMap
+	GetGeoMapRequest struct {
+		MapName    string
+		DomainName string
+	}
+
+	// GetGeoMapResponse contains the response data from GetGeoMap operation
+	GetGeoMapResponse GeoMap
+
+	// GeoMapRequest contains request parameters
+	GeoMapRequest struct {
+		GeoMap     *GeoMap
+		DomainName string
+	}
+
+	// CreateGeoMapRequest contains request parameters for CreateGeoMap
+	CreateGeoMapRequest GeoMapRequest
+
+	// CreateGeoMapResponse contains the response data from CreateGeoMap operation
+	CreateGeoMapResponse struct {
+		Resource *GeoMap         `json:"resource"`
+		Status   *ResponseStatus `json:"status"`
+	}
+
+	// UpdateGeoMapRequest contains request parameters for UpdateGeoMap
+	UpdateGeoMapRequest GeoMapRequest
+
+	// UpdateGeoMapResponse contains the response data from UpdateGeoMap operation
+	UpdateGeoMapResponse struct {
+		Resource *GeoMap         `json:"resource"`
+		Status   *ResponseStatus `json:"status"`
+	}
+
+	// DeleteGeoMapRequest contains request parameters for DeleteGeoMap
+	DeleteGeoMapRequest struct {
+		MapName    string
+		DomainName string
+	}
+
+	// DeleteGeoMapResponse contains the response data from DeleteGeoMap operation
+	DeleteGeoMapResponse struct {
+		Resource *GeoMap         `json:"resource"`
+		Status   *ResponseStatus `json:"status"`
+	}
+)
+
+var (
+	// ErrListGeoMaps is returned when ListGeoMaps fails
+	ErrListGeoMaps = errors.New("list geomaps")
+	// ErrGetGeoMap is returned when GetGeoMap fails
+	ErrGetGeoMap = errors.New("get geomap")
+	// ErrCreateGeoMap is returned when CreateGeoMap fails
+	ErrCreateGeoMap = errors.New("create geomap")
+	// ErrUpdateGeoMap is returned when UpdateGeoMap fails
+	ErrUpdateGeoMap = errors.New("update geomap")
+	// ErrDeleteGeoMap is returned when DeleteGeoMap fails
+	ErrDeleteGeoMap = errors.New("delete geomap")
+)
+
+// Validate validates ListGeoMapsRequest
+func (r ListGeoMapsRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DomainName": validation.Validate(r.DomainName, validation.Required),
+	})
 }
 
-// GeoAssignment represents a GTM Geo assignment element
-type GeoAssignment struct {
-	DatacenterBase
-	Countries []string `json:"countries"`
+// Validate validates GetGeoMapRequest
+func (r GetGeoMapRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"MapName":    validation.Validate(r.MapName, validation.Required),
+		"DomainName": validation.Validate(r.DomainName, validation.Required),
+	})
 }
 
-// GeoMap represents a GTM GeoMap
-type GeoMap struct {
-	DefaultDatacenter *DatacenterBase  `json:"defaultDatacenter"`
-	Assignments       []*GeoAssignment `json:"assignments,omitempty"`
-	Name              string           `json:"name"`
-	Links             []*Link          `json:"links,omitempty"`
+// Validate validates CreateGeoMapRequest
+func (r CreateGeoMapRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DomainName": validation.Validate(r.DomainName, validation.Required),
+		"GeoMap":     validation.Validate(r.GeoMap, validation.Required),
+	})
 }
 
-// GeoMapList represents the returned GTM GeoMap List body
-type GeoMapList struct {
-	GeoMapItems []*GeoMap `json:"items"`
+// Validate validates UpdateGeoMapRequest
+func (r UpdateGeoMapRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DomainName": validation.Validate(r.DomainName, validation.Required),
+		"GeoMap":     validation.Validate(r.GeoMap, validation.Required),
+	})
+}
+
+// Validate validates DeleteGeoMapRequest
+func (r DeleteGeoMapRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DomainName": validation.Validate(r.DomainName, validation.Required),
+		"MapName":    validation.Validate(r.MapName, validation.Required),
+	})
 }
 
 // Validate validates GeoMap
-func (m *GeoMap) Validate() error {
-	if len(m.Name) < 1 {
-		return fmt.Errorf("GeoMap is missing Name")
-	}
-	if m.DefaultDatacenter == nil {
-		return fmt.Errorf("GeoMap is missing DefaultDatacenter")
-	}
-
-	return nil
+func (g *GeoMap) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Name":              validation.Validate(g.Name, validation.Required),
+		"DefaultDatacenter": validation.Validate(g.DefaultDatacenter, validation.Required),
+	})
 }
 
-func (g *gtm) ListGeoMaps(ctx context.Context, domainName string) ([]*GeoMap, error) {
+func (g *gtm) ListGeoMaps(ctx context.Context, params ListGeoMapsRequest) ([]GeoMap, error) {
 	logger := g.Log(ctx)
 	logger.Debug("ListGeoMaps")
 
-	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/geographic-maps", domainName)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListGeoMaps, ErrStructValidation, err)
+	}
+
+	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/geographic-maps", params.DomainName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ListGeoMaps request: %w", err)
@@ -85,18 +169,22 @@ func (g *gtm) ListGeoMaps(ctx context.Context, domainName string) ([]*GeoMap, er
 	return result.GeoMapItems, nil
 }
 
-func (g *gtm) GetGeoMap(ctx context.Context, mapName, domainName string) (*GeoMap, error) {
+func (g *gtm) GetGeoMap(ctx context.Context, params GetGeoMapRequest) (*GetGeoMapResponse, error) {
 	logger := g.Log(ctx)
 	logger.Debug("GetGeoMap")
 
-	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/geographic-maps/%s", domainName, mapName)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetGeoMap, ErrStructValidation, err)
+	}
+
+	getURL := fmt.Sprintf("/config-gtm/v1/domains/%s/geographic-maps/%s", params.DomainName, params.MapName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetGeoMap request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
 
-	var result GeoMap
+	var result GetGeoMapResponse
 	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetGeoMap request failed: %w", err)
@@ -109,67 +197,78 @@ func (g *gtm) GetGeoMap(ctx context.Context, mapName, domainName string) (*GeoMa
 	return &result, nil
 }
 
-func (g *gtm) CreateGeoMap(ctx context.Context, geo *GeoMap, domainName string) (*GeoMapResponse, error) {
+func (g *gtm) CreateGeoMap(ctx context.Context, params CreateGeoMapRequest) (*CreateGeoMapResponse, error) {
 	logger := g.Log(ctx)
 	logger.Debug("CreateGeoMap")
 
-	return geo.save(ctx, g, domainName)
-}
-
-func (g *gtm) UpdateGeoMap(ctx context.Context, geo *GeoMap, domainName string) (*ResponseStatus, error) {
-	logger := g.Log(ctx)
-	logger.Debug("UpdateGeoMap")
-
-	stat, err := geo.save(ctx, g, domainName)
-	if err != nil {
-		return nil, err
-	}
-	return stat.Status, err
-}
-
-// Save GeoMap in given domain. Common path for Create and Update.
-func (m *GeoMap) save(ctx context.Context, g *gtm, domainName string) (*GeoMapResponse, error) {
-	if err := m.Validate(); err != nil {
-		return nil, fmt.Errorf("GeoMap validation failed. %w", err)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrCreateGeoMap, ErrStructValidation, err)
 	}
 
-	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/geographic-maps/%s", domainName, m.Name)
+	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/geographic-maps/%s", params.DomainName, params.GeoMap.Name)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GeoMap request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
 
-	var result GeoMapResponse
-	resp, err := g.Exec(req, &result, m)
+	var result CreateGeoMapResponse
+	resp, err := g.Exec(req, &result, params.GeoMap)
 	if err != nil {
 		return nil, fmt.Errorf("GeoMap request failed: %w", err)
 	}
 
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+	if resp.StatusCode != http.StatusCreated {
 		return nil, g.Error(resp)
 	}
 
 	return &result, nil
 }
 
-func (g *gtm) DeleteGeoMap(ctx context.Context, geo *GeoMap, domainName string) (*ResponseStatus, error) {
+func (g *gtm) UpdateGeoMap(ctx context.Context, params UpdateGeoMapRequest) (*UpdateGeoMapResponse, error) {
+	logger := g.Log(ctx)
+	logger.Debug("UpdateGeoMap")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateGeoMap, ErrStructValidation, err)
+	}
+
+	putURL := fmt.Sprintf("/config-gtm/v1/domains/%s/geographic-maps/%s", params.DomainName, params.GeoMap.Name)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GeoMap request: %w", err)
+	}
+	setVersionHeader(req, schemaVersion)
+
+	var result UpdateGeoMapResponse
+	resp, err := g.Exec(req, &result, params.GeoMap)
+	if err != nil {
+		return nil, fmt.Errorf("GeoMap request failed: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, g.Error(resp)
+	}
+
+	return &result, nil
+}
+
+func (g *gtm) DeleteGeoMap(ctx context.Context, params DeleteGeoMapRequest) (*DeleteGeoMapResponse, error) {
 	logger := g.Log(ctx)
 	logger.Debug("DeleteGeoMap")
 
-	if err := geo.Validate(); err != nil {
-		logger.Errorf("Resource validation failed. %w", err)
-		return nil, fmt.Errorf("GeoMap validation failed. %w", err)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrDeleteGeoMap, ErrStructValidation, err)
 	}
 
-	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/geographic-maps/%s", domainName, geo.Name)
+	delURL := fmt.Sprintf("/config-gtm/v1/domains/%s/geographic-maps/%s", params.DomainName, params.MapName)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, delURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Delete request: %w", err)
 	}
 	setVersionHeader(req, schemaVersion)
 
-	var result ResponseBody
+	var result DeleteGeoMapResponse
 	resp, err := g.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GeoMap request failed: %w", err)
@@ -179,5 +278,5 @@ func (g *gtm) DeleteGeoMap(ctx context.Context, geo *GeoMap, domainName string) 
 		return nil, g.Error(resp)
 	}
 
-	return result.Status, nil
+	return &result, nil
 }

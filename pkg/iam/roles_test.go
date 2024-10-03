@@ -3,12 +3,13 @@ package iam
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -52,16 +53,16 @@ func TestIAM_CreateRole(t *testing.T) {
         }
     ]
 }`,
-			expectedPath:        "/identity-management/v2/user-admin/roles",
+			expectedPath:        "/identity-management/v3/user-admin/roles",
 			expectedRequestBody: `{"roleName":"Terraform admin","roleDescription":"Admin granted role for tests","grantedRoles":[{"grantedRoleId":12345}]}`,
 			expectedResponse: &Role{
 				RoleID:          123456,
 				RoleName:        "Terraform admin",
 				RoleDescription: "Admin granted role for tests",
 				RoleType:        RoleTypeCustom,
-				CreatedDate:     "2022-04-11T10:52:03.811Z",
+				CreatedDate:     test.NewTimeFromString(t, "2022-04-11T10:52:03.811Z"),
 				CreatedBy:       "jBond",
-				ModifiedDate:    "2022-04-11T10:52:03.811Z",
+				ModifiedDate:    test.NewTimeFromString(t, "2022-04-11T10:52:03.811Z"),
 				ModifiedBy:      "jBond",
 				Actions: &RoleAction{
 					Edit:   true,
@@ -90,7 +91,7 @@ func TestIAM_CreateRole(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles",
+			expectedPath: "/identity-management/v3/user-admin/roles",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -100,30 +101,30 @@ func TestIAM_CreateRole(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateRole(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			result, err := client.CreateRole(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -190,15 +191,15 @@ func TestIAM_GetRole(t *testing.T) {
         }
 	]
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=true&grantedRoles=true&users=true",
+			expectedPath: "/identity-management/v3/user-admin/roles/123456?actions=true&grantedRoles=true&users=true",
 			expectedResponse: &Role{
 				RoleID:          123456,
 				RoleName:        "Terraform admin updated",
 				RoleDescription: "Admin granted role for tests",
 				RoleType:        RoleTypeCustom,
-				CreatedDate:     "2022-04-11T10:52:03.000Z",
+				CreatedDate:     test.NewTimeFromString(t, "2022-04-11T10:52:03.000Z"),
 				CreatedBy:       "jBond",
-				ModifiedDate:    "2022-04-11T10:59:30.000Z",
+				ModifiedDate:    test.NewTimeFromString(t, "2022-04-11T10:59:30.000Z"),
 				ModifiedBy:      "jBond",
 				Actions: &RoleAction{
 					Edit:   true,
@@ -223,7 +224,7 @@ func TestIAM_GetRole(t *testing.T) {
 						LastName:      "Smith",
 						AccountID:     "ACCOUNT1",
 						Email:         "example@akamai.com",
-						LastLoginDate: "2016-02-17T18:46:42.000Z",
+						LastLoginDate: test.NewTimeFromString(t, "2016-02-17T18:46:42.000Z"),
 					},
 					{
 						UIIdentityID:  "USER2",
@@ -231,7 +232,7 @@ func TestIAM_GetRole(t *testing.T) {
 						LastName:      "Smith",
 						AccountID:     "ACCOUNT2",
 						Email:         "example1@akamai.com",
-						LastLoginDate: "2016-02-17T18:46:42.000Z",
+						LastLoginDate: test.NewTimeFromString(t, "2016-02-17T18:46:42.000Z"),
 					},
 				},
 			},
@@ -250,22 +251,22 @@ func TestIAM_GetRole(t *testing.T) {
     "modifiedDate": "2022-04-11T10:59:30.000Z",
     "modifiedBy": "jBond"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
+			expectedPath: "/identity-management/v3/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
 			expectedResponse: &Role{
 				RoleID:          123456,
 				RoleName:        "Terraform admin updated",
 				RoleDescription: "Admin granted role for tests",
 				RoleType:        RoleTypeCustom,
-				CreatedDate:     "2022-04-11T10:52:03.000Z",
+				CreatedDate:     test.NewTimeFromString(t, "2022-04-11T10:52:03.000Z"),
 				CreatedBy:       "jBond",
-				ModifiedDate:    "2022-04-11T10:59:30.000Z",
+				ModifiedDate:    test.NewTimeFromString(t, "2022-04-11T10:59:30.000Z"),
 				ModifiedBy:      "jBond",
 			},
 		},
 		"404 Not found": {
 			params:         GetRoleRequest{ID: 123456},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
+			expectedPath:   "/identity-management/v3/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
 			responseBody: `
 {
     "instance": "",
@@ -293,7 +294,7 @@ func TestIAM_GetRole(t *testing.T) {
 	"detail": "Error making request",
 	"status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
+			expectedPath: "/identity-management/v3/user-admin/roles/123456?actions=false&grantedRoles=false&users=false",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -303,24 +304,24 @@ func TestIAM_GetRole(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetRole(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			result, err := client.GetRole(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -378,16 +379,16 @@ func TestIAM_UpdateRole(t *testing.T) {
         }
     ]
 }`,
-			expectedPath:        "/identity-management/v2/user-admin/roles/123456",
+			expectedPath:        "/identity-management/v3/user-admin/roles/123456",
 			expectedRequestBody: `{"roleName":"Terraform admin updated","grantedRoles":[{"grantedRoleId":54321},{"grantedRoleId":12345}]}`,
 			expectedResponse: &Role{
 				RoleID:          123456,
 				RoleName:        "Terraform admin updated",
 				RoleDescription: "Admin granted role for tests",
 				RoleType:        RoleTypeCustom,
-				CreatedDate:     "2022-04-11T10:52:03.000Z",
+				CreatedDate:     test.NewTimeFromString(t, "2022-04-11T10:52:03.000Z"),
 				CreatedBy:       "jBond",
-				ModifiedDate:    "2022-04-11T10:59:30.000Z",
+				ModifiedDate:    test.NewTimeFromString(t, "2022-04-11T10:59:30.000Z"),
 				ModifiedBy:      "jBond",
 				Actions: &RoleAction{
 					Edit:   true,
@@ -422,7 +423,7 @@ func TestIAM_UpdateRole(t *testing.T) {
 	"detail": "Error making request",
 	"status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456",
+			expectedPath: "/identity-management/v3/user-admin/roles/123456",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -432,30 +433,30 @@ func TestIAM_UpdateRole(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 
-				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+				if len(tc.expectedRequestBody) > 0 {
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateRole(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			result, err := client.UpdateRole(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -471,12 +472,12 @@ func TestIAM_DeleteRole(t *testing.T) {
 		"204 Deleted": {
 			params:         DeleteRoleRequest{ID: 123456},
 			responseStatus: http.StatusNoContent,
-			expectedPath:   "/identity-management/v2/user-admin/roles/123456",
+			expectedPath:   "/identity-management/v3/user-admin/roles/123456",
 		},
 		"404 Not found": {
 			params:         DeleteRoleRequest{ID: 123456},
 			responseStatus: http.StatusNotFound,
-			expectedPath:   "/identity-management/v2/user-admin/roles/123456",
+			expectedPath:   "/identity-management/v3/user-admin/roles/123456",
 			responseBody: `
 {
     "instance": "",
@@ -504,7 +505,7 @@ func TestIAM_DeleteRole(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/123456",
+			expectedPath: "/identity-management/v3/user-admin/roles/123456",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -514,20 +515,20 @@ func TestIAM_DeleteRole(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeleteRole(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			err := client.DeleteRole(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
@@ -566,16 +567,16 @@ func TestIAM_ListRoles(t *testing.T) {
         }
 	}
 ]`,
-			expectedPath: "/identity-management/v2/user-admin/roles?actions=true&ignoreContext=false&users=false",
+			expectedPath: "/identity-management/v3/user-admin/roles?actions=true&ignoreContext=false&users=false",
 			expectedResponse: []Role{
 				{
 					RoleID:          123456,
 					RoleName:        "View Only",
 					RoleDescription: "This role will allow you to view",
 					RoleType:        RoleTypeCustom,
-					CreatedDate:     "2017-07-27T18:11:25.000Z",
+					CreatedDate:     test.NewTimeFromString(t, "2017-07-27T18:11:25.000Z"),
 					CreatedBy:       "john.doe@mycompany.com",
-					ModifiedDate:    "2017-07-27T18:11:25.000Z",
+					ModifiedDate:    test.NewTimeFromString(t, "2017-07-27T18:11:25.000Z"),
 					ModifiedBy:      "john.doe@mycompany.com",
 					Actions: &RoleAction{
 						Edit:   true,
@@ -596,7 +597,7 @@ func TestIAM_ListRoles(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles?actions=true&ignoreContext=false&users=false",
+			expectedPath: "/identity-management/v3/user-admin/roles?actions=true&ignoreContext=false&users=false",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -606,24 +607,24 @@ func TestIAM_ListRoles(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListRoles(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			result, err := client.ListRoles(context.Background(), tc.params)
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -651,7 +652,7 @@ func TestIAM_ListGrantableRoles(t *testing.T) {
         "grantedRoleDescription": "second role description"
     }
 ]`,
-			expectedPath: "/identity-management/v2/user-admin/roles/grantable-roles",
+			expectedPath: "/identity-management/v3/user-admin/roles/grantable-roles",
 			expectedResponse: []RoleGrantedRole{
 				{
 					RoleID:      123456,
@@ -674,7 +675,7 @@ func TestIAM_ListGrantableRoles(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/roles/grantable-roles",
+			expectedPath: "/identity-management/v3/user-admin/roles/grantable-roles",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -684,24 +685,24 @@ func TestIAM_ListGrantableRoles(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListGrantableRoles(context.Background())
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				assert.Contains(t, err.Error(), strconv.FormatInt(int64(test.responseStatus), 10))
+			if tc.withError != nil {
+				assert.True(t, errors.Is(err, tc.withError), "want: %s; got: %s", tc.withError, err)
+				assert.Contains(t, err.Error(), strconv.FormatInt(int64(tc.responseStatus), 10))
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }

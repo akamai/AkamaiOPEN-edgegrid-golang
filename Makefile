@@ -14,6 +14,13 @@ M = $(shell echo ">")
 clean-tools:
 	@rm -rf $(BIN)/go*
 
+# Until v0.25.0 is not fixed, we have to use previous version. To install it, we must enable module aware mode.
+GOIMPORTS = $(BIN)/goimports
+GOIMPORTS_VERSION = v0.24.0
+# Rule to install goimports with version pinning
+$(GOIMPORTS): | $(BIN) ; $(info $(M) Installing goimports $(GOIMPORTS_VERSION)...)
+	$Q env GO111MODULE=on GOBIN=$(BIN) $(GO) install golang.org/x/tools/cmd/goimports@$(GOIMPORTS_VERSION)
+
 $(BIN):
 	@mkdir -p $@
 $(BIN)/%: | $(BIN) ; $(info $(M) Building $(PACKAGE)...)
@@ -33,9 +40,6 @@ $(BIN)/gocov-xml: PACKAGE=github.com/AlekSi/gocov-xml
 
 GOJUNITREPORT = $(BIN)/go-junit-report
 $(BIN)/go-junit-report: PACKAGE=github.com/jstemmer/go-junit-report
-
-GOIMPORTS = $(BIN)/goimports
-$(BIN)/goimports: PACKAGE=golang.org/x/tools/cmd/goimports
 
 GOLANGCILINT = $(BIN)/golangci-lint
 $(BIN)/golangci-lint: ; $(info $(M) Installing golangci-lint...) @

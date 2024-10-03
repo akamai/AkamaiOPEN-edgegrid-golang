@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -68,14 +68,14 @@ func TestLookupProperties(t *testing.T) {
 						PropertyID:        "prp_5678",
 						PropertyName:      "test-property",
 						ProductionVersion: nil,
-						StagingVersion:    tools.Int64Ptr(1),
+						StagingVersion:    ptr.To(int64(1)),
 					},
 					{
 						AccessKeyUID:      1234,
 						Version:           1,
 						PropertyID:        "prp_6789",
 						PropertyName:      "test-property2",
-						ProductionVersion: tools.Int64Ptr(1),
+						ProductionVersion: ptr.To(int64(1)),
 						StagingVersion:    nil,
 					},
 				},
@@ -330,14 +330,14 @@ func TestPerformAsyncPropertiesLookup(t *testing.T) {
 						PropertyID:        "prp_5678",
 						PropertyName:      "test-property",
 						ProductionVersion: nil,
-						StagingVersion:    tools.Int64Ptr(1),
+						StagingVersion:    ptr.To(int64(1)),
 					},
 					{
 						AccessKeyUID:      1234,
 						Version:           1,
 						PropertyID:        "prp_6789",
 						PropertyName:      "test-property2",
-						ProductionVersion: tools.Int64Ptr(1),
+						ProductionVersion: ptr.To(int64(1)),
 						StagingVersion:    nil,
 					},
 				},

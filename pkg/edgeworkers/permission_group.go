@@ -10,19 +10,6 @@ import (
 )
 
 type (
-	// PermissionGroups is an edgeworkers permission groups API interface
-	PermissionGroups interface {
-		// GetPermissionGroup gets details on the capabilities enabled within a specified group
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-group
-		GetPermissionGroup(context.Context, GetPermissionGroupRequest) (*PermissionGroup, error)
-
-		// ListPermissionGroups lists groups and the associated permission capabilities
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-groups
-		ListPermissionGroups(context.Context) (*ListPermissionGroupsResponse, error)
-	}
-
 	// GetPermissionGroupRequest contains parameters used to get a permission group
 	GetPermissionGroupRequest struct {
 		GroupID string

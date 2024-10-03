@@ -2,14 +2,86 @@ package dns
 
 import (
 	"context"
-	"fmt"
-	"net/http"
-
 	"encoding/hex"
+	"errors"
+	"fmt"
 	"net"
+	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
+
+type (
+	// RdataRequest contains request parameters
+	RdataRequest struct {
+		Zone       string
+		Name       string
+		RecordType string
+	}
+
+	// GetRecordRequest contains request parameters for GetRecord
+	GetRecordRequest RdataRequest
+
+	// GetRecordResponse contains the response data from GetRecord operation
+	GetRecordResponse struct {
+		Name       string   `json:"name"`
+		RecordType string   `json:"type"`
+		TTL        int      `json:"ttl"`
+		Active     bool     `json:"active"`
+		Target     []string `json:"rdata"`
+	}
+
+	// GetRecordListRequest contains request parameters for GetRecordList
+	GetRecordListRequest struct {
+		Zone       string
+		RecordType string
+	}
+
+	// GetRecordListResponse contains the response data from GetRecordList operation
+	GetRecordListResponse struct {
+		Metadata   Metadata    `json:"metadata"`
+		RecordSets []RecordSet `json:"recordsets"`
+	}
+
+	// GetRdataRequest contains request parameters for GetRdata
+	GetRdataRequest RdataRequest
+)
+
+var (
+	// ErrGetRecord is returned when GetRecord fails
+	ErrGetRecord = errors.New("get record")
+	// ErrGetRecordList is returned when GetRecordList fails
+	ErrGetRecordList = errors.New("get record list")
+)
+
+// Validate validates GetRecordRequest
+func (r GetRecordRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Zone":       validation.Validate(r.Zone, validation.Required),
+		"Name":       validation.Validate(r.Name, validation.Required),
+		"RecordType": validation.Validate(r.RecordType, validation.Required),
+	})
+}
+
+// Validate validates GetRdataRequest
+func (r GetRdataRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Zone":       validation.Validate(r.Zone, validation.Required),
+		"Name":       validation.Validate(r.Name, validation.Required),
+		"RecordType": validation.Validate(r.RecordType, validation.Required),
+	})
+}
+
+// Validate validates GetRecordListRequest
+func (r GetRecordListRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Zone":       validation.Validate(r.Zone, validation.Required),
+		"RecordType": validation.Validate(r.RecordType, validation.Required),
+	})
+}
 
 func fullIPv6(ip net.IP) string {
 
@@ -46,17 +118,21 @@ func padCoordinates(str string) string {
 	return latd + " " + latm + " " + lats + " " + latDir + " " + longd + " " + longm + " " + longs + " " + longDir + " " + padValue(altitude) + "m " + padValue(size) + "m " + padValue(horizPrecision) + "m " + padValue(vertPrecision) + "m"
 }
 
-func (d *dns) GetRecord(ctx context.Context, zone, name, recordType string) (*RecordBody, error) {
+func (d *dns) GetRecord(ctx context.Context, params GetRecordRequest) (*GetRecordResponse, error) {
 	logger := d.Log(ctx)
 	logger.Debug("GetRecord")
 
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types/%s", zone, name, recordType)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetRecord, ErrStructValidation, err)
+	}
+
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types/%s", params.Zone, params.Name, params.RecordType)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetRecord request: %w", err)
 	}
 
-	var result RecordBody
+	var result GetRecordResponse
 	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRecord request failed: %w", err)
@@ -69,17 +145,21 @@ func (d *dns) GetRecord(ctx context.Context, zone, name, recordType string) (*Re
 	return &result, nil
 }
 
-func (d *dns) GetRecordList(ctx context.Context, zone, _, recordType string) (*RecordSetResponse, error) {
+func (d *dns) GetRecordList(ctx context.Context, params GetRecordListRequest) (*GetRecordListResponse, error) {
 	logger := d.Log(ctx)
 	logger.Debug("GetRecordList")
 
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets?types=%s&showAll=true", zone, recordType)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetRecordList, ErrStructValidation, err)
+	}
+
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/recordsets?types=%s&showAll=true", params.Zone, params.RecordType)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetRecordList request: %w", err)
 	}
 
-	var result RecordSetResponse
+	var result GetRecordListResponse
 	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetRecordList request failed: %w", err)
@@ -92,26 +172,33 @@ func (d *dns) GetRecordList(ctx context.Context, zone, _, recordType string) (*R
 	return &result, nil
 }
 
-func (d *dns) GetRdata(ctx context.Context, zone, name, recordType string) ([]string, error) {
+func (d *dns) GetRdata(ctx context.Context, params GetRdataRequest) ([]string, error) {
 	logger := d.Log(ctx)
 	logger.Debug("GetrData")
 
-	records, err := d.GetRecordList(ctx, zone, name, recordType)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetRecordList, ErrStructValidation, err)
+	}
+
+	records, err := d.GetRecordList(ctx, GetRecordListRequest{
+		Zone:       params.Zone,
+		RecordType: params.RecordType,
+	})
 	if err != nil {
 		return nil, err
 	}
 
 	var rData []string
 	for _, r := range records.RecordSets {
-		if r.Name == name {
+		if r.Name == params.Name {
 			for _, i := range r.Rdata {
 				str := i
 
-				if recordType == "AAAA" {
+				if params.RecordType == "AAAA" {
 					addr := net.ParseIP(str)
 					result := fullIPv6(addr)
 					str = result
-				} else if recordType == "LOC" {
+				} else if params.RecordType == "LOC" {
 					str = padCoordinates(str)
 				}
 				rData = append(rData, str)

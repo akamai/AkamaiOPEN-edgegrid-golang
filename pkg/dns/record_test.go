@@ -13,21 +13,24 @@ import (
 
 func TestDNS_CreateRecord(t *testing.T) {
 	tests := map[string]struct {
-		body           RecordBody
+		params         CreateRecordRequest
 		responseStatus int
 		responseBody   string
 		expectedPath   string
 		withError      error
 	}{
 		"200 OK": {
-			responseStatus: http.StatusCreated,
-			body: RecordBody{
-				Name:       "www.example.com",
-				RecordType: "A",
-				TTL:        300,
-				Target:     []string{"10.0.0.2", "10.0.0.3"},
+			params: CreateRecordRequest{
+				Record: &RecordBody{
+					Name:       "www.example.com",
+					RecordType: "A",
+					TTL:        300,
+					Target:     []string{"10.0.0.2", "10.0.0.3"},
+				},
+				Zone: "example.com",
 			},
-			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
+			responseStatus: http.StatusCreated,
+			expectedPath:   "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
 			responseBody: `
 			{
 				"name": "www.example.com",
@@ -40,11 +43,14 @@ func TestDNS_CreateRecord(t *testing.T) {
 			}`,
 		},
 		"500 internal server error": {
-			body: RecordBody{
-				Name:       "www.example.com",
-				RecordType: "A",
-				TTL:        300,
-				Target:     []string{"10.0.0.2", "10.0.0.3"},
+			params: CreateRecordRequest{
+				Record: &RecordBody{
+					Name:       "www.example.com",
+					RecordType: "A",
+					TTL:        300,
+					Target:     []string{"10.0.0.2", "10.0.0.3"},
+				},
+				Zone: "example.com",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -74,7 +80,7 @@ func TestDNS_CreateRecord(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.CreateRecord(context.Background(), &test.body, "example.com")
+			err := client.CreateRecord(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -87,21 +93,24 @@ func TestDNS_CreateRecord(t *testing.T) {
 
 func TestDNS_UpdateRecord(t *testing.T) {
 	tests := map[string]struct {
-		body           RecordBody
+		params         UpdateRecordRequest
 		responseStatus int
 		responseBody   string
 		expectedPath   string
 		withError      error
 	}{
 		"204 No Content": {
-			responseStatus: http.StatusOK,
-			body: RecordBody{
-				Name:       "www.example.com",
-				RecordType: "A",
-				TTL:        300,
-				Target:     []string{"10.0.0.2", "10.0.0.3"},
+			params: UpdateRecordRequest{
+				Record: &RecordBody{
+					Name:       "www.example.com",
+					RecordType: "A",
+					TTL:        300,
+					Target:     []string{"10.0.0.2", "10.0.0.3"},
+				},
+				Zone: "example.com",
 			},
-			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
+			responseStatus: http.StatusOK,
+			expectedPath:   "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
 			responseBody: `
 			{
 				"name": "www.example.com",
@@ -114,11 +123,14 @@ func TestDNS_UpdateRecord(t *testing.T) {
 			}`,
 		},
 		"500 internal server error": {
-			body: RecordBody{
-				Name:       "www.example.com",
-				RecordType: "A",
-				TTL:        300,
-				Target:     []string{"10.0.0.2", "10.0.0.3"},
+			params: UpdateRecordRequest{
+				Record: &RecordBody{
+					Name:       "www.example.com",
+					RecordType: "A",
+					TTL:        300,
+					Target:     []string{"10.0.0.2", "10.0.0.3"},
+				},
+				Zone: "example.com",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -148,7 +160,7 @@ func TestDNS_UpdateRecord(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.UpdateRecord(context.Background(), &test.body, "example.com")
+			err := client.UpdateRecord(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -161,29 +173,27 @@ func TestDNS_UpdateRecord(t *testing.T) {
 
 func TestDNS_DeleteRecord(t *testing.T) {
 	tests := map[string]struct {
-		body           RecordBody
+		params         DeleteRecordRequest
 		responseStatus int
 		responseBody   string
 		expectedPath   string
 		withError      error
 	}{
 		"204 No Content": {
-			responseStatus: http.StatusNoContent,
-			body: RecordBody{
+			params: DeleteRecordRequest{
 				Name:       "www.example.com",
 				RecordType: "A",
-				TTL:        300,
-				Target:     []string{"10.0.0.2", "10.0.0.3"},
+				Zone:       "example.com",
 			},
-			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
-			responseBody: ``,
+			responseStatus: http.StatusNoContent,
+			expectedPath:   "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
+			responseBody:   ``,
 		},
 		"500 internal server error": {
-			body: RecordBody{
+			params: DeleteRecordRequest{
 				Name:       "www.example.com",
 				RecordType: "A",
-				TTL:        300,
-				Target:     []string{"10.0.0.2", "10.0.0.3"},
+				Zone:       "example.com",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -213,7 +223,7 @@ func TestDNS_DeleteRecord(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.DeleteRecord(context.Background(), &test.body, "example.com")
+			err := client.DeleteRecord(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

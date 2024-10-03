@@ -11,24 +11,6 @@ import (
 )
 
 type (
-	// Reports is an edgeworkers reports API interface
-	Reports interface {
-		// GetSummaryReport gets summary overview for EdgeWorker reports. Report id is  1
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-report
-		GetSummaryReport(context.Context, GetSummaryReportRequest) (*GetSummaryReportResponse, error)
-
-		// GetReport gets details for an EdgeWorker
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-report
-		GetReport(context.Context, GetReportRequest) (*GetReportResponse, error)
-
-		// ListReports lists EdgeWorker reports
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-reports
-		ListReports(context.Context) (*ListReportsResponse, error)
-	}
-
 	// GetSummaryReportRequest contains parameters used to get summary overview for EdgeWorker reports
 	GetSummaryReportRequest struct {
 		Start string

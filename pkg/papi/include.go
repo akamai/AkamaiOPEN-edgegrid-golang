@@ -7,40 +7,12 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// Includes contains operations available on Include resource
-	Includes interface {
-		// ListIncludes lists Includes available for the current contract and group
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-includes
-		ListIncludes(context.Context, ListIncludesRequest) (*ListIncludesResponse, error)
-
-		// ListIncludeParents lists parents of a specific Include
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-include-parents
-		ListIncludeParents(context.Context, ListIncludeParentsRequest) (*ListIncludeParentsResponse, error)
-
-		// GetInclude gets information about a specific Include
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/get-include
-		GetInclude(context.Context, GetIncludeRequest) (*GetIncludeResponse, error)
-
-		// CreateInclude creates a new Include
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/post-includes
-		CreateInclude(context.Context, CreateIncludeRequest) (*CreateIncludeResponse, error)
-
-		// DeleteInclude deletes an Include
-		//
-		// See: https://techdocs.akamai.com/property-mgr/reference/delete-include
-		DeleteInclude(context.Context, DeleteIncludeRequest) (*DeleteIncludeResponse, error)
-	}
-
 	// ListIncludesRequest contains parameters used to list includes
 	ListIncludesRequest struct {
 		ContractID string

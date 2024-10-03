@@ -7,9 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	"github.com/stretchr/testify/require"
-
 	"github.com/tj/assert"
 )
 
@@ -104,6 +103,28 @@ func TestJSONErrorUnmarshalling(t *testing.T) {
 				Session: sess,
 			}
 			assert.Equal(t, test.expected, g.Error(test.input))
+		})
+	}
+}
+
+func TestIs(t *testing.T) {
+	tests := map[string]struct {
+		err      Error
+		target   Error
+		expected bool
+	}{
+		"no datacenter is assigned to map target (all others)": {
+			err: Error{StatusCode: 400, Type: "https://problems.luna.akamaiapis.net/config-gtm/v1/propertyValidationError", Title: "Property Validation Error", Detail: "Invalid configuration for property \"publishprod\": no datacenter is assigned to map target (all others)",
+				Errors: nil},
+			target: Error{StatusCode: 400, Type: "https://problems.luna.akamaiapis.net/config-gtm/v1/propertyValidationError", Title: "Property Validation Error", Detail: "Invalid configuration for property \"publishprod\": no datacenter is assigned to map target (all others)",
+				Errors: nil},
+			expected: true,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, test.err.Is(&test.target), test.expected)
 		})
 	}
 }

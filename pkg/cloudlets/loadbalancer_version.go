@@ -9,35 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// LoadBalancerVersions is a cloudlets LoadBalancer version API interface.
-	LoadBalancerVersions interface {
-		// CreateLoadBalancerVersion creates load balancer version.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-origin-versions
-		CreateLoadBalancerVersion(context.Context, CreateLoadBalancerVersionRequest) (*LoadBalancerVersion, error)
-
-		// GetLoadBalancerVersion gets specific load balancer version by originID and version.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-origin-version
-		GetLoadBalancerVersion(context.Context, GetLoadBalancerVersionRequest) (*LoadBalancerVersion, error)
-
-		// UpdateLoadBalancerVersion updates specific load balancer version by originID and version.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/put-origin-version
-		UpdateLoadBalancerVersion(context.Context, UpdateLoadBalancerVersionRequest) (*LoadBalancerVersion, error)
-
-		// ListLoadBalancerVersions lists all versions of Origin with type APPLICATION_LOAD_BALANCER.
-		//
-		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-origin-versions
-		ListLoadBalancerVersions(context.Context, ListLoadBalancerVersionsRequest) ([]LoadBalancerVersion, error)
-	}
-
 	// DataCenter represents the dataCenter field of load balancer version
 	DataCenter struct {
 		City                          string   `json:"city,omitempty"`

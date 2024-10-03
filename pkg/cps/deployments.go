@@ -10,24 +10,6 @@ import (
 )
 
 type (
-	// Deployments is a CPS deployments API interface
-	Deployments interface {
-		// ListDeployments fetches deployments for given enrollment
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-deployments
-		ListDeployments(context.Context, ListDeploymentsRequest) (*ListDeploymentsResponse, error)
-
-		// GetProductionDeployment fetches production deployment for given enrollment
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-deployments-production
-		GetProductionDeployment(context.Context, GetDeploymentRequest) (*GetProductionDeploymentResponse, error)
-
-		// GetStagingDeployment fetches staging deployment for given enrollment
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-deployment-staging
-		GetStagingDeployment(context.Context, GetDeploymentRequest) (*GetStagingDeploymentResponse, error)
-	}
-
 	// ListDeploymentsRequest contains parameters for ListDeployments
 	ListDeploymentsRequest struct {
 		EnrollmentID int

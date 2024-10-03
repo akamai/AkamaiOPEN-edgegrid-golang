@@ -9,8 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -108,7 +107,7 @@ func TestListPolicyVersions(t *testing.T) {
 				IncludeDeleted:     true,
 				IncludeActivations: true,
 				Offset:             2,
-				PageSize:           tools.IntPtr(3),
+				PageSize:           ptr.To(3),
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -3327,7 +3326,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:                0,
 							Type:               "vpMatchRule",
 							Name:               "rul3",
-							PassThroughPercent: tools.Float64Ptr(-1),
+							PassThroughPercent: ptr.To(float64(-1)),
 							ID:                 0,
 							Matches: []MatchCriteriaVP{
 								{
@@ -3409,7 +3408,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						ID:                 0,
 						MatchURL:           "",
 						Name:               "rul3",
-						PassThroughPercent: tools.Float64Ptr(-1),
+						PassThroughPercent: ptr.To(float64(-1)),
 						Start:              0,
 						Matches: []MatchCriteriaVP{
 							{
@@ -3437,7 +3436,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:                0,
 							Type:               "apMatchRule",
 							Name:               "rul3",
-							PassThroughPercent: tools.Float64Ptr(0),
+							PassThroughPercent: ptr.To(float64(0)),
 							ID:                 0,
 							Matches: []MatchCriteriaAP{
 								{
@@ -3520,7 +3519,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						ID:                 0,
 						MatchURL:           "",
 						Name:               "rul3",
-						PassThroughPercent: tools.Float64Ptr(-1),
+						PassThroughPercent: ptr.To(float64(-1)),
 						Start:              0,
 						Matches: []MatchCriteriaAP{
 							{
@@ -3547,7 +3546,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							End:                0,
 							Type:               "apMatchRule",
 							Name:               "rul3",
-							PassThroughPercent: tools.Float64Ptr(-1),
+							PassThroughPercent: ptr.To(float64(-1)),
 							ID:                 0,
 							Matches: []MatchCriteriaAP{
 								{
@@ -3637,7 +3636,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 						ID:                 0,
 						MatchURL:           "",
 						Name:               "rul3",
-						PassThroughPercent: tools.Float64Ptr(-1),
+						PassThroughPercent: ptr.To(float64(-1)),
 						Start:              0,
 						Matches: []MatchCriteriaAP{
 							{
@@ -3877,7 +3876,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "vpMatchRule",
-							PassThroughPercent: tools.Float64Ptr(50.50),
+							PassThroughPercent: ptr.To(50.50),
 							Name:               "rul3",
 							ID:                 0,
 							Matches: []MatchCriteriaVP{
@@ -3907,7 +3906,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "apMatchRule",
-							PassThroughPercent: tools.Float64Ptr(50.50),
+							PassThroughPercent: ptr.To(50.50),
 							Name:               "rul3",
 							ID:                 0,
 							Matches: []MatchCriteriaAP{
@@ -3990,7 +3989,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "vpMatchRule",
-							PassThroughPercent: tools.Float64Ptr(101),
+							PassThroughPercent: ptr.To(float64(101)),
 							Name:               "rul3",
 							ID:                 0,
 						},
@@ -4009,7 +4008,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 							Start:              0,
 							End:                0,
 							Type:               "apMatchRule",
-							PassThroughPercent: tools.Float64Ptr(101),
+							PassThroughPercent: ptr.To(float64(101)),
 							Name:               "rul3",
 							ID:                 0,
 						},

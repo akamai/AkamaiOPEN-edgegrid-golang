@@ -36,11 +36,12 @@ type (
 
 	// GetSiemSettingsResponse is returned from a call to GetSiemSettings.
 	GetSiemSettingsResponse struct {
-		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
-		EnableSiem              bool     `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
-		SiemDefinitionID        int      `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
+		EnableForAllPolicies    bool        `json:"enableForAllPolicies"`
+		EnableSiem              bool        `json:"enableSiem"`
+		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
+		SiemDefinitionID        int         `json:"siemDefinitionId"`
+		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
+		Exceptions              []Exception `json:"exceptions"`
 	}
 
 	// GetSiemSettingRequest is used to retrieve the SIEM settings for a configuration.
@@ -49,33 +50,42 @@ type (
 		Version  int `json:"-"`
 	}
 
+	// Exception is used to create exceptions list for SIEM events
+	Exception struct {
+		Protection  string   `json:"protection"`
+		ActionTypes []string `json:"actionTypes"`
+	}
+
 	// GetSiemSettingResponse is returned from a call to GetSiemSettings.
 	GetSiemSettingResponse struct {
-		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
-		EnableSiem              bool     `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
-		SiemDefinitionID        int      `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
+		EnableForAllPolicies    bool        `json:"enableForAllPolicies"`
+		EnableSiem              bool        `json:"enableSiem"`
+		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
+		SiemDefinitionID        int         `json:"siemDefinitionId"`
+		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
+		Exceptions              []Exception `json:"exceptions"`
 	}
 
 	// UpdateSiemSettingsRequest is used to modify the SIEM settings for a configuration.
 	UpdateSiemSettingsRequest struct {
-		ConfigID                int      `json:"-"`
-		Version                 int      `json:"-"`
-		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
-		EnableSiem              bool     `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
-		SiemDefinitionID        int      `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
+		ConfigID                int         `json:"-"`
+		Version                 int         `json:"-"`
+		EnableForAllPolicies    bool        `json:"enableForAllPolicies"`
+		EnableSiem              bool        `json:"enableSiem"`
+		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
+		SiemDefinitionID        int         `json:"siemDefinitionId"`
+		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
+		Exceptions              []Exception `json:"exceptions,omitempty"`
 	}
 
 	// UpdateSiemSettingsResponse is returned from a call to UpdateSiemSettings.
 	UpdateSiemSettingsResponse struct {
-		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
-		EnableSiem              bool     `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
-		SiemDefinitionID        int      `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
+		EnableForAllPolicies    bool        `json:"enableForAllPolicies"`
+		EnableSiem              bool        `json:"enableSiem"`
+		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
+		SiemDefinitionID        int         `json:"siemDefinitionId"`
+		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
+		Exceptions              []Exception `json:"exceptions"`
 	}
 
 	// RemoveSiemSettingsRequest is used to remove the SIEM settings for a configuration.
@@ -114,6 +124,16 @@ func (v UpdateSiemSettingsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
+	}.Filter()
+}
+
+// Validate validates an Exception struct.
+func (v Exception) Validate() error {
+	return validation.Errors{
+		"Protection": validation.Validate(v.Protection, validation.Required, validation.In("botmanagement", "ipgeo", "rate", "urlProtection", "slowpost", "customrules", "waf", "apirequestconstraints", "clientrep", "malwareprotection", "aprProtection").
+			Error(fmt.Sprintf("value '%s' is invalid. Must be one of: 'botmanagement', 'ipgeo', 'rate', 'urlProtection', 'slowpost', 'customrules', 'waf', 'apirequestconstraints', 'clientrep', 'malwareprotection', 'aprProtection'", v.Protection))),
+		"ActionTypes": validation.Validate(v.Protection, validation.Required, validation.In("alert", "deny", "all_custom", "abort", "allow", "delay", "ignore", "monitor", "slow", "tarpit").
+			Error(fmt.Sprintf("value '%v' is invalid. Must be one of: 'alert', 'deny', 'all_custom', 'abort', 'allow', 'delay', 'ignore', 'monitor', 'slow', 'tarpit'", v.ActionTypes))),
 	}.Filter()
 }
 

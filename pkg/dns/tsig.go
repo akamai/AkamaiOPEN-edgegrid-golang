@@ -2,48 +2,17 @@ package dns
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
-
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-
 	"reflect"
 	"strings"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// TSIGKeys contains operations available on TSIKeyG resource.
-	TSIGKeys interface {
-		// ListTSIGKeys lists the TSIG keys used by zones that you are allowed to manage.
-		//
-		// See: https://techdocs.akamai.com/edge-dns/reference/get-keys
-		ListTSIGKeys(context.Context, *TSIGQueryString) (*TSIGReportResponse, error)
-		// GetTSIGKeyZones retrieves DNS Zones using TSIG key.
-		//
-		// See: https://techdocs.akamai.com/edge-dns/reference/post-keys-used-by
-		GetTSIGKeyZones(context.Context, *TSIGKey) (*ZoneNameListResponse, error)
-		// GetTSIGKeyAliases retrieves a DNS Zone's aliases.
-		//
-		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-zone-key-used-by
-		GetTSIGKeyAliases(context.Context, string) (*ZoneNameListResponse, error)
-		// TSIGKeyBulkUpdate updates Bulk Zones TSIG key.
-		//
-		// See: https://techdocs.akamai.com/edge-dns/reference/post-keys-bulk-update
-		TSIGKeyBulkUpdate(context.Context, *TSIGKeyBulkPost) error
-		// GetTSIGKey retrieves a TSIG key for zone.
-		//
-		// See: https://techdocs.akamai.com/edge-dns/reference/get-zones-zone-key
-		GetTSIGKey(context.Context, string) (*TSIGKeyResponse, error)
-		// DeleteTSIGKey deletes TSIG key for zone.
-		//
-		// See: https://techdocs.akamai.com/edge-dns/reference/delete-zones-zone-key
-		DeleteTSIGKey(context.Context, string) error
-		// UpdateTSIGKey updates TSIG key for zone.
-		//
-		// See: https://techdocs.akamai.com/edge-dns/reference/put-zones-zone-key
-		UpdateTSIGKey(context.Context, *TSIGKey, string) error
-	}
-
 	// TSIGQueryString contains TSIG query parameters
 	TSIGQueryString struct {
 		ContractIDs []string `json:"contractIds,omitempty"`
@@ -58,6 +27,33 @@ type (
 		Algorithm string `json:"algorithm,omitempty"`
 		Secret    string `json:"secret,omitempty"`
 	}
+
+	// TSIGKeyRequest contains request parameter
+	TSIGKeyRequest struct {
+		Zone string
+	}
+
+	// GetTSIGKeyRequest contains request parameters for GetTSIGKey
+	GetTSIGKeyRequest TSIGKeyRequest
+
+	// GetTSIGKeyResponse contains the response data from GetTSIGKey operation
+	GetTSIGKeyResponse struct {
+		TSIGKey
+		ZoneCount int64 `json:"zonesCount,omitempty"`
+	}
+
+	// DeleteTSIGKeyRequest contains request parameters for DeleteTSIGKey
+	DeleteTSIGKeyRequest TSIGKeyRequest
+
+	// GetTSIGKeyAliasesRequest contains request parameters for GetTSIGKeyAliases
+	GetTSIGKeyAliasesRequest TSIGKeyRequest
+
+	// GetTSIGKeyAliasesResponse contains the response data from GetTSIGKeyAliases operation
+	GetTSIGKeyAliasesResponse struct {
+		Zones   []string `json:"zones"`
+		Aliases []string `json:"aliases"`
+	}
+
 	// TSIGKeyResponse contains TSIG key GET response
 	TSIGKeyResponse struct {
 		TSIGKey
@@ -86,10 +82,103 @@ type (
 
 	// TSIGReportResponse contains response with a list of the TSIG keys used by zones.
 	TSIGReportResponse struct {
-		Metadata *TSIGReportMeta    `json:"metadata"`
-		Keys     []*TSIGKeyResponse `json:"keys,omitempty"`
+		Metadata *TSIGReportMeta   `json:"metadata"`
+		Keys     []TSIGKeyResponse `json:"keys,omitempty"`
+	}
+
+	// UpdateTSIGKeyRequest contains request parameters for UpdateTSIGKey
+	UpdateTSIGKeyRequest struct {
+		TsigKey *TSIGKey
+		Zone    string
+	}
+
+	// UpdateTSIGKeyBulkRequest contains request parameters for UpdateTSIGKeyBulk
+	UpdateTSIGKeyBulkRequest struct {
+		TSIGKeyBulk *TSIGKeyBulkPost
+	}
+
+	// GetTSIGKeyZonesRequest contains request parameters for GetTSIGKeyZones
+	GetTSIGKeyZonesRequest struct {
+		TsigKey *TSIGKey
+	}
+
+	// GetTSIGKeyZonesResponse contains the response data from GetTSIGKeyZones operation
+	GetTSIGKeyZonesResponse struct {
+		Zones   []string `json:"zones"`
+		Aliases []string `json:"aliases"`
+	}
+
+	// ListTSIGKeysRequest contains request parameters for ListTSIGKeys
+	ListTSIGKeysRequest struct {
+		TsigQuery *TSIGQueryString
+	}
+
+	// ListTSIGKeysResponse contains the response data from ListTSIGKeys operation
+	ListTSIGKeysResponse struct {
+		Metadata *TSIGReportMeta   `json:"metadata"`
+		Keys     []TSIGKeyResponse `json:"keys,omitempty"`
 	}
 )
+
+var (
+	// ErrGetTSIGKey is returned when GetTSIGKey fails
+	ErrGetTSIGKey = errors.New("get tsig key")
+	// ErrDeleteTSIGKey is returned when DeleteTSIGKey fails
+	ErrDeleteTSIGKey = errors.New("delete tsig key")
+	// ErrGetTSIGKeyAliases is returned when GetTSIGKeyAliases fails
+	ErrGetTSIGKeyAliases = errors.New("get tsig key aliases")
+	// ErrUpdateTSIGKey is returned when UpdateTSIGKey fails
+	ErrUpdateTSIGKey = errors.New("updated tsig key")
+	// ErrUpdateTSIGKeyBulk is returned when UpdateTSIGKeyBulk fails
+	ErrUpdateTSIGKeyBulk = errors.New("update tsig key for multiple zones")
+	// ErrGetTSIGKeyZones is returned when GetTSIGKeyZones fails
+	ErrGetTSIGKeyZones = errors.New("list zones using tsig key")
+	// ErrListTSIGKeys is returned when ListTSIGKeys fails
+	ErrListTSIGKeys = errors.New("get a list of the tsig keys")
+)
+
+// Validate validates GetTSIGKeyRequest
+func (r GetTSIGKeyRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Zone": validation.Validate(r.Zone, validation.Required),
+	})
+}
+
+// Validate validates DeleteTSIGKeyRequest
+func (r DeleteTSIGKeyRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Zone": validation.Validate(r.Zone, validation.Required),
+	})
+}
+
+// Validate validates GetTSIGKeyAliasesRequest
+func (r GetTSIGKeyAliasesRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Zone": validation.Validate(r.Zone, validation.Required),
+	})
+}
+
+// Validate validates UpdateTSIGKeyRequest
+func (r UpdateTSIGKeyRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Zone":    validation.Validate(r.Zone, validation.Required),
+		"TsigKey": validation.Validate(r.TsigKey),
+	})
+}
+
+// Validate validates UpdateTSIGKeyBulkRequest
+func (r UpdateTSIGKeyBulkRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"TSIGKeyBulk": validation.Validate(r.TSIGKeyBulk, validation.Required),
+	})
+}
+
+// Validate validates GetTSIGKeyZonesRequest
+func (r GetTSIGKeyZonesRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"TsigKey": validation.Validate(r.TsigKey, validation.Required),
+	})
+}
 
 // Validate validates TSIGKey
 func (key *TSIGKey) Validate() error {
@@ -158,17 +247,17 @@ func constructTSIGQueryString(tsigQueryString *TSIGQueryString) string {
 	return ""
 }
 
-func (d *dns) ListTSIGKeys(ctx context.Context, tsigQueryString *TSIGQueryString) (*TSIGReportResponse, error) {
+func (d *dns) ListTSIGKeys(ctx context.Context, params ListTSIGKeysRequest) (*ListTSIGKeysResponse, error) {
 	logger := d.Log(ctx)
 	logger.Debug("ListTSIGKeys")
 
-	getURL := fmt.Sprintf("/config-dns/v2/keys%s", constructTSIGQueryString(tsigQueryString))
+	getURL := fmt.Sprintf("/config-dns/v2/keys%s", constructTSIGQueryString(params.TsigQuery))
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ListTsigKeyss request: %w", err)
 	}
 
-	var result TSIGReportResponse
+	var result ListTSIGKeysResponse
 	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf(" ListTsigKeys request failed: %w", err)
@@ -181,15 +270,15 @@ func (d *dns) ListTSIGKeys(ctx context.Context, tsigQueryString *TSIGQueryString
 	return &result, nil
 }
 
-func (d *dns) GetTSIGKeyZones(ctx context.Context, tsigKey *TSIGKey) (*ZoneNameListResponse, error) {
+func (d *dns) GetTSIGKeyZones(ctx context.Context, params GetTSIGKeyZonesRequest) (*GetTSIGKeyZonesResponse, error) {
 	logger := d.Log(ctx)
 	logger.Debug("GetTSIGKeyZones")
 
-	if err := tsigKey.Validate(); err != nil {
-		return nil, err
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetTSIGKeyZones, ErrStructValidation, err)
 	}
 
-	reqBody, err := convertStructToReqBody(tsigKey)
+	reqBody, err := convertStructToReqBody(params.TsigKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate request body: %w", err)
 	}
@@ -200,7 +289,7 @@ func (d *dns) GetTSIGKeyZones(ctx context.Context, tsigKey *TSIGKey) (*ZoneNameL
 		return nil, fmt.Errorf("failed to create GetTsigKeyZones request: %w", err)
 	}
 
-	var result ZoneNameListResponse
+	var result GetTSIGKeyZonesResponse
 	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetTsigKeyZones request failed: %w", err)
@@ -213,17 +302,21 @@ func (d *dns) GetTSIGKeyZones(ctx context.Context, tsigKey *TSIGKey) (*ZoneNameL
 	return &result, nil
 }
 
-func (d *dns) GetTSIGKeyAliases(ctx context.Context, zone string) (*ZoneNameListResponse, error) {
+func (d *dns) GetTSIGKeyAliases(ctx context.Context, params GetTSIGKeyAliasesRequest) (*GetTSIGKeyAliasesResponse, error) {
 	logger := d.Log(ctx)
 	logger.Debug("GetTSIGKeyAliases")
 
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/key/used-by", zone)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetTSIGKeyAliases, ErrStructValidation, err)
+	}
+
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/key/used-by", params.Zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetTsigKeyAliases request: %w", err)
 	}
 
-	var result ZoneNameListResponse
+	var result GetTSIGKeyAliasesResponse
 	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetTsigKeyAliases request failed: %w", err)
@@ -236,15 +329,15 @@ func (d *dns) GetTSIGKeyAliases(ctx context.Context, zone string) (*ZoneNameList
 	return &result, nil
 }
 
-func (d *dns) TSIGKeyBulkUpdate(ctx context.Context, tsigBulk *TSIGKeyBulkPost) error {
+func (d *dns) UpdateTSIGKeyBulk(ctx context.Context, params UpdateTSIGKeyBulkRequest) error {
 	logger := d.Log(ctx)
 	logger.Debug("TSIGKeyBulkUpdate")
 
-	if err := tsigBulk.Validate(); err != nil {
-		return err
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w: %s", ErrUpdateTSIGKeyBulk, ErrStructValidation, err)
 	}
 
-	reqBody, err := convertStructToReqBody(tsigBulk)
+	reqBody, err := convertStructToReqBody(params.TSIGKeyBulk)
 	if err != nil {
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
@@ -267,17 +360,21 @@ func (d *dns) TSIGKeyBulkUpdate(ctx context.Context, tsigBulk *TSIGKeyBulkPost) 
 	return nil
 }
 
-func (d *dns) GetTSIGKey(ctx context.Context, zone string) (*TSIGKeyResponse, error) {
+func (d *dns) GetTSIGKey(ctx context.Context, params GetTSIGKeyRequest) (*GetTSIGKeyResponse, error) {
 	logger := d.Log(ctx)
 	logger.Debug("GetTSIGKey")
 
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/key", zone)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetTSIGKey, ErrStructValidation, err)
+	}
+
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/key", params.Zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetTsigKey request: %w", err)
 	}
 
-	var result TSIGKeyResponse
+	var result GetTSIGKeyResponse
 	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("GetTsigKey request failed: %w", err)
@@ -290,11 +387,15 @@ func (d *dns) GetTSIGKey(ctx context.Context, zone string) (*TSIGKeyResponse, er
 	return &result, nil
 }
 
-func (d *dns) DeleteTSIGKey(ctx context.Context, zone string) error {
+func (d *dns) DeleteTSIGKey(ctx context.Context, params DeleteTSIGKeyRequest) error {
 	logger := d.Log(ctx)
 	logger.Debug("DeleteTSIGKey")
 
-	delURL := fmt.Sprintf("/config-dns/v2/zones/%s/key", zone)
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w: %s", ErrDeleteTSIGKey, ErrStructValidation, err)
+	}
+
+	delURL := fmt.Sprintf("/config-dns/v2/zones/%s/key", params.Zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, delURL, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create DeleteTsigKey request: %w", err)
@@ -312,20 +413,20 @@ func (d *dns) DeleteTSIGKey(ctx context.Context, zone string) error {
 	return nil
 }
 
-func (d *dns) UpdateTSIGKey(ctx context.Context, tsigKey *TSIGKey, zone string) error {
+func (d *dns) UpdateTSIGKey(ctx context.Context, params UpdateTSIGKeyRequest) error {
 	logger := d.Log(ctx)
 	logger.Debug("UpdateTSIGKey")
 
-	if err := tsigKey.Validate(); err != nil {
-		return err
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w: %s", ErrUpdateTSIGKey, ErrStructValidation, err)
 	}
 
-	reqBody, err := convertStructToReqBody(tsigKey)
+	reqBody, err := convertStructToReqBody(params.TsigKey)
 	if err != nil {
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
-	putURL := fmt.Sprintf("/config-dns/v2/zones/%s/key", zone)
+	putURL := fmt.Sprintf("/config-dns/v2/zones/%s/key", params.Zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, reqBody)
 	if err != nil {
 		return fmt.Errorf("failed to create UpdateTsigKey request: %w", err)

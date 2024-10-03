@@ -1,10 +1,10 @@
-# Akamai OPEN EdgeGrid for GoLang v8
+# Akamai OPEN EdgeGrid for GoLang v9
 
 ![Build Status](https://github.com/akamai/akamaiOPEN-edgegrid-golang/actions/workflows/checks.yml/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/akamai/AkamaiOPEN-edgegrid-golang/v8)](https://goreportcard.com/report/github.com/akamai/AkamaiOPEN-edgegrid-golang/v8)
+[![Go Report Card](https://goreportcard.com/badge/github.com/akamai/AkamaiOPEN-edgegrid-golang/v9)](https://goreportcard.com/report/github.com/akamai/AkamaiOPEN-edgegrid-golang/v9)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/akamai/akamaiOPEN-edgegrid-golang)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GoDoc](https://pkg.go.dev/badge/github.com/akamai/akamaiOPEN-edgegrid-golang?utm_source=godoc)](https://pkg.go.dev/github.com/akamai/AkamaiOPEN-edgegrid-golang/v8)
+[![GoDoc](https://pkg.go.dev/badge/github.com/akamai/akamaiOPEN-edgegrid-golang?utm_source=godoc)](https://pkg.go.dev/github.com/akamai/AkamaiOPEN-edgegrid-golang/v9)
 
 This module is presently in active development and provides Akamai REST API support for the Akamai Terraform Provider.
 
@@ -12,7 +12,7 @@ This module is presently in active development and provides Akamai REST API supp
 
 This module is not backward compatible with the version `v1`.
 
-Originally branch `master` was representing version `v1`. Now it is representing the latest version `v8` and
+Originally branch `master` was representing version `v1`. Now it is representing the latest version `v9` and
 version `v1`
 was moved to dedicated `v1` branch.
 
@@ -23,6 +23,6 @@ The packages of library can be imported alongside the `v1` library versions with
 ```
 import (
 	papiv1 "github.com/akamai/AkamaiOPEN-edgegrid-golang/papi-v1"
-	papi "github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/papi"
+	papi "github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/papi"
 )
 ```

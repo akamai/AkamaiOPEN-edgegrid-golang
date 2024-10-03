@@ -1,4 +1,296 @@
-# EDGEGRID GOLANG RELEASE NOTES
+# RELEASE NOTES
+
+## 9.0.0 (Oct 3, 2024)
+
+#### BREAKING CHANGES:
+
+* General
+  * Consolidated multiple sub-interfaces into a single interface for each sub-provider.
+  * Renamed `NTWRKLISTS` interface to `NetworkList` for `networklists` provider
+  * Removed `tools` package in favour of `ptr` package
+
+* Cloudaccess
+  * Changed naming of request body fields for following structures:
+    * `BodyParams` to `Body` in `CreateAccessKeyVersionRequest`
+    * `CreateAccessKeyVersionBodyParams` to `CreateAccessKeyVersionRequestBody`
+
+* Cloudlets
+  * Changed naming of request body fields for following structures:
+    * `BodyParams` to `Body` in `UpdatePolicyRequest` and `ClonePolicyRequest`
+    * `UpdatePolicyBodyParams` to `UpdatePolicyRequestBody`
+    * `ClonePolicyBodyParams` to `ClonePolicyRequestBody`
+
+* Cloudwrapper
+  * Changed naming of request body fields for following structures:
+    * `CreateConfigurationBody` to `CreateConfigurationRequestBody`
+    * `UpdateConfigurationBody` to `UpdateConfigurationRequestBody`
+
+* DNS
+  * Refactored parameters in following methods:
+    * `GetAuthorities` - from (context.Context, string) into (context.Context, `GetAuthoritiesRequest`)
+    * `GetNameServerRecordList` - from (context.Context, string) into (context.Context, `GetNameServerRecordListRequest`)
+    * `GetRecord` - from (context.Context, string, string, string) into (context.Context, `GetRecordRequest`)
+    * `GetRecordList` - from (context.Context, string, string, string) into (context.Context, `GetRecordListRequest`)
+    * `CreateRecord` - from (context.Context, *RecordBody, string, ...bool) into (context.Context, `CreateRecordRequest`)
+    * `UpdateRecord` - from (context.Context, *RecordBody, string, ...bool) into (context.Context, `UpdateRecordRequest`)
+    * `DeleteRecord` - from (context.Context, *RecordBody, string, ...bool) into (context.Context, `DeleteRecordRequest`)
+    * `GetRecordSets` - from (context.Context, string, ...RecordSetQueryArgs) into (context.Context, `GetRecordSetsRequest`)
+    * `CreateRecordSets` - from (context.Context, *RecordSets, string, ...bool) into (context.Context, `CreateRecordSetsRequest`)
+    * `UpdateRecordSets` - from (context.Context, *RecordSets, string, ...bool) into (context.Context, `UpdateRecordSetsRequest`)
+    * `ListTSIGKeys` - from (context.Context, *TSIGQueryString) into (context.Context, `ListTSIGKeysRequest`)
+    * `GetTSIGKeyZones` - from (context.Context, *TSIGKey) into (context.Context, `GetTSIGKeyZonesRequest`)
+    * `GetTSIGKeyAliases` - from (context.Context, string) into (context.Context, `GetTSIGKeyAliasesRequest`)
+    * `UpdateTSIGKeyBulk` - from (context.Context, *TSIGKeyBulkPost) into (context.Context, `UpdateTSIGKeyBulkRequest`)
+    * `GetTSIGKey` - from (context.Context, string) into (context.Context, `GetTSIGKeyRequest`)
+    * `DeleteTSIGKey` - from (context.Context, string) into (context.Context, `DeleteTSIGKeyRequest`)
+    * `UpdateTSIGKey` - from (context.Context, *TSIGKey, string) into (context.Context, `UpdateTSIGKeyRequest`)
+    * `ListZones` - from (context.Context, ...ZoneListQueryArgs) into (context.Context, `ListZonesRequest`)
+    * `GetZone` - from (context.Context, string) into (context.Context, `GetZoneRequest`)
+    * `GetChangeList` - from (context.Context, string) into (context.Context, `GetChangeListRequest`)
+    * `GetMasterZoneFile` - from (context.Context, string) into (context.Context, `GetMasterZoneFileRequest`)
+    * `PostMasterZoneFile` - from (context.Context, string, string) into (context.Context, `PostMasterZoneFileRequest`)
+    * `CreateZone` - from (context.Context, *ZoneCreate, ZoneQueryString, ...bool) into (context.Context, `CreateZoneRequest`)
+    * `SaveChangeList` - from (context.Context, *ZoneCreate) into (context.Context, `SaveChangeListRequest`)
+    * `SubmitChangeList` - from (context.Context, *ZoneCreate) into (context.Context, `SubmitChangeListRequest`)
+    * `UpdateZone` - from (context.Context, *ZoneCreate) into (context.Context, `UpdateZoneRequest`)
+    * `GetZoneNames` - from (context.Context, string) into (context.Context, `GetZoneNamesRequest`)
+    * `GetZoneNameTypes` - from (context.Context, string, string) into (context.Context, `GetZoneNameTypesRequest`)
+    * `GetBulkZoneCreateStatus` - from (context.Context, string) into (context.Context, `GetBulkZoneCreateStatusRequest`)
+    * `GetBulkZoneDeleteStatus` - from (context.Context, string) into (context.Context, `GetBulkZoneDeleteStatusRequest`)
+    * `GetBulkZoneCreateResult` - from (context.Context, string) into (context.Context, `GetBulkZoneCreateResultRequest`)
+    * `GetBulkZoneDeleteResult` - from (context.Context, string) into (context.Context, `GetBulkZoneDeleteResultRequest`)
+    * `CreateBulkZones` - from (context.Context, *BulkZonesCreate, ZoneQueryString) into (context.Context, `CreateBulkZonesRequest`)
+    * `DeleteBulkZones` - from (context.Context, *ZoneNameListResponse, ...bool) into (context.Context, `DeleteBulkZonesRequest`)
+    * `GetRdata` - from (context.Context, string, string, string) into (context.Context, `GetRdataRequest`)
+  * Refactored response in following methods:
+    * `GetAuthorities` - `*AuthorityResponse` into `*GetAuthoritiesResponse`
+    * `GetRecord` - `*RecordBody` into `*GetRecordResponse`
+    * `GetRecordList` - `*RecordSetResponse` into `*GetRecordListResponse`
+    * `GetRecordSets` - `*RecordSetResponse` into `*GetRecordSetsResponse`
+    * `GetTSIGKey` - `*TSIGKeyResponse` into `*GetTSIGKeyResponse`
+    * `ListTSIGKeys` - `*TSIGReportResponse` into `*ListTSIGKeysResponse`
+    * `GetTSIGKeyZones` - `*ZoneNameListResponse` into `*GetTSIGKeyZonesResponse`
+    * `GetTSIGKeyAliases` - `*ZoneNameListResponse` into `*GetTSIGKeyAliasesResponse`
+    * `GetZone` - `*ZoneResponse` into `*GetZoneResponse`
+    * `GetChangeList` - `*ChangeListResponse` into `*GetChangeListResponse`
+    * `GetZoneNames` - `*ZoneNamesResponse` into `*GetZoneNamesResponse`
+    * `GetZoneNameTypes` - `*ZoneNameTypesResponse` into `*GetZoneNameTypesResponse`
+    * `GetBulkZoneCreateStatus` - `*BulkStatusResponse` into `*GetBulkZoneCreateStatusResponse`
+    * `GetBulkZoneDeleteStatus` - `*BulkStatusResponse` into `*GetBulkZoneDeleteStatusResponse`
+    * `GetBulkZoneCreateResult` - `*BulkCreateResultResponse` into `*GetBulkZoneCreateResultResponse`
+    * `GetBulkZoneDeleteResult` - `*BulkDeleteResultResponse` into `*GetBulkZoneDeleteResultResponse`
+    * `CreateBulkZones` - `*BulkZonesResponse` into `*CreateBulkZonesResponse`
+    * `DeleteBulkZones` - `*BulkZonesResponse` into `*DeleteBulkZonesResponse`
+  * Removed following interfaces:
+    * `Authorities`
+    * `Data`
+    * `Records`
+    * `Recordsets`
+    * `TSIGKeys`
+    * `Zones`
+  * Renamed following methods:
+    * `SaveChangelist` into `SaveChangeList`
+    * `SubmitChangelist` into `SubmitChangeList`
+    * `TSIGKeyBulkUpdate` into `UpdateTSIGKeyBulk`
+
+* EdgeKV
+  * For the `CreateEdgeKVAccessTokenRequest`, removed the `Expiry` field and added the `RestrictToEdgeWorkerIDs` field.
+  * For the `CreateEdgeKVAccessTokenResponse`, removed the `Expiry` and `Value` fields, and added these fields:
+    * `AllowOnProduction`
+    * `AllowOnStaging`
+    * `CPCode`
+    * `IssueDate`
+    * `LatestRefreshDate`
+    * `NamespacePermissions`
+    * `NextScheduledRefreshDate`
+    * `RestrictToEdgeWorkerIDs`
+    * `TokenActivationStatus`
+  * Added these fields to the `EdgeKVAccessToken` method:
+    * `TokenActivationStatus`
+    * `IssueDate`
+    * `LatestRefreshDate`
+    * `NextScheduledRefreshDate`
+
+* Edgeworkers
+  * Changed naming of request body fields for these structures:
+    * `EdgeWorkerIDBodyRequest` to `EdgeWorkerIDRequestBody`
+
+* GTM
+  * Refactored parameters in these methods:
+    * `ListASMaps` - from (context.Context, string) into (context.Context, `ListASMapsRequest`)
+    * `GetASMap` - from (context.Context, string, string) into (context.Context, `GetASMapRequests`)
+    * `CreateASMap` - from (context.Context, *ASMap, string) into (context.Context, `CreateASMapRequest`)
+    * `UpdateASMap` - from (context.Context, *ASMap, string) into (context.Context, `UpdateASMapRequest`)
+    * `DeleteASMap` - from (context.Context, *ASMap, string) into (context.Context, `DeleteASMapRequest`)
+    * `ListCIDRMaps` - from (context.Context, string) into (context.Context, `ListCIDRMapsRequest`)
+    * `GetCIDRMap` - from (context.Context, string, string) into (context.Context, `GetCIDRMapRequest`)
+    * `CreateCIDRMap` - from (context.Context, *CIDRMap, string) into (context.Context, `CreateCIDRMapRequest`)
+    * `UpdateCIDRMap` - from (context.Context, *CIDRMap, string) into (context.Context, `UpdateCIDRMapRequest`)
+    * `DeleteCIDRMap` - from (context.Context, *CIDRMap, string) into (context.Context, `DeleteCIDRMapRequest`)
+    * `ListDatacenters` - from (context.Context, string) into (context.Context, `ListDatacentersRequest`)
+    * `GetDatacenter` - from (context.Context, int, string) into (context.Context, `GetDatacenterRequest`)
+    * `CreateDatacenter` - from (context.Context, *Datacenter, string) into (context.Context, `CreateDatacenterRequest`)
+    * `UpdateDatacenter` - from (context.Context, *Datacenter, string) into (context.Context, `UpdateDatacenterRequest`)
+    * `DeleteDatacenter` - from (context.Context, *Datacenter, string) into (context.Context, `DeleteDatacenterRequest`)
+    * `GetDomainStatus` - from (context.Context, string) into (context.Context, `GetDomainStatusRequest`)
+    * `GetDomain` - from (context.Context, string) into (context.Context, `GetDomainRequest`)
+    * `CreateDomain` - from (context.Context, *Domain, map[string]string) into (context.Context, `CreateDomainRequest`)
+    * `UpdateDomain` - from (context.Context, *Domain, map[string]string) into (context.Context, `UpdateDomainRequest`)
+    * `DeleteDomain` - from (context.Context, *Domain) into (context.Context, `DeleteDomainRequest`)
+    * `ListGeoMaps` - from (context.Context, string) into (context.Context, `ListGeoMapsRequest`)
+    * `GetGeoMap` - from (context.Context, string, string) into (context.Context, `GetGeoMapRequest`)
+    * `CreateGeoMap` - from (context.Context, *GeoMap, string) into (context.Context, `CreateGeoMapRequest`)
+    * `UpdateGeoMap` - from (context.Context, *GeoMap, string) into (context.Context, `UpdateGeoMapRequest`)
+    * `DeleteGeoMap` - from (context.Context, *GeoMap, string) into (context.Context, `DeleteGeoMapRequest`)
+    * `ListProperties` - from (context.Context, string) into (context.Context, `ListPropertiesRequest`)
+    * `GetProperty` - from (context.Context, string, string) into (context.Context, `GetPropertyRequest`)
+    * `CreateProperty` - from (context.Context, *Property, string) into (context.Context, `CreatePropertyRequest`)
+    * `UpdateProperty` - from (context.Context, *Property, string) into (context.Context, `UpdatePropertyRequest`)
+    * `DeleteProperty` - from (context.Context, *Property, string) into (context.Context, `DeletePropertyRequest`)
+    * `ListResources` - from (context.Context, string) into (context.Context, `ListResourcesRequest`)
+    * `GetResource` - from (context.Context, string, string) into (context.Context, `GetResourceRequest`)
+    * `CreateResource` - from (context.Context, *Resource, string) into (context.Context, `CreateResourceRequest`)
+    * `UpdateResource` - from (context.Context, *Resource, string) into (context.Context, `UpdateResourceRequest`)
+    * `DeleteResource` - from (context.Context, *Resource, string) into (context.Context, `DeleteResourceRequest`)
+  * Refactored response in these methods:
+    * `ListASMaps` - `[]*ASMap` into `[]ASMap`
+    * `GetASMap` - `*ASMap` into `*GetASMapResponse`
+    * `CreateASMap` - `*ASMapResponse` into `*CreateASMapResponse`
+    * `UpdateASMap` - `*ResponseStatus` into `*UpdateASMapResponse`
+    * `DeleteASMap` -`*ResponseStatus` into `*DeleteASMapResponse`
+    * `ListCIDRMaps` - `[]*CIDRMap` into `[]CIDRMap`
+    * `GetCIDRMap` - `*CIDRMap` into `*GetCIDRMapResponse`
+    * `CreateCIDRMap` - `*CIDRMapResponse` into `*CreateCIDRMapResponse`
+    * `UpdateCIDRMap` - `*ResponseStatus` into `*UpdateCIDRMapResponse`
+    * `DeleteCIDRMap` - `*ResponseStatus` into `*DeleteCIDRMapResponse`
+    * `ListDatacenters` - `[]*Datacenter` into `[]Datacenter`
+    * `CreateDatacenter` - `*DatacenterResponse` into `*CreateDatacenterResponse`
+    * `UpdateDatacenter` - `*ResponseStatus` into `*UpdateDatacenterResponse`
+    * `DeleteDatacenter` - `*ResponseStatus` into `*DeleteDatacenterResponse`
+    * `ListDomains` - `[]*DomainItem` into `[]DomainItem`
+    * `GetDomain` - `*Domain` into `*GetDomainResponse`
+    * `CreateDomain` - `*DomainResponse` into `*CreateDomainResponse`
+    * `UpdateDomain` - `*ResponseStatus` into `*UpdateDomainResponse`
+    * `DeleteDomain` - `*ResponseStatus` into `*DeleteDomainResponse`
+    * `GetDomainStatus` - `*ResponseStatus` into `*GetDomainStatusResponse`
+    * `ListGeoMaps` - `[]*GeoMap` into `[]GeoMap`
+    * `GetGeoMap` - `*GeoMap` into `*GetGeoMapResponse`
+    * `CreateGeoMap` - `*GeoMapResponse` into `*CreateGeoMapResponse`
+    * `UpdateGeoMap` - `*ResponseStatus` into `*UpdateGeoMapResponse`
+    * `DeleteGeoMap` - `*ResponseStatus` into `*DeleteGeoMapResponse`
+    * `ListProperties` - `[]*Property` into `[]Property`
+    * `GetProperty` - `*Property` into `*GetPropertyResponse`
+    * `CreateProperty` - `*PropertyResponse` into `*CreatePropertyResponse`
+    * `UpdateProperty` - `*ResponseStatus` into `*UpdatePropertyResponse`
+    * `DeleteProperty` - `*ResponseStatus` into `*DeletePropertyResponse`
+    * `ListResources` - `[]*Resource` into `[]Resource`
+    * `GetResource` - `*Resource` into `*GetResourceResponse`
+    * `CreateResource` - `*ResourceResponse` into `*CreateResourceResponse`
+    * `UpdateResource` - `*ResponseStatus` into `*UpdateResourceResponse`
+    * `DeleteResource` - `*ResponseStatus` into `*DeleteResourceResponse`
+  * Extended response for these methods - previously only status was returned, now status and resource are returned:
+    * `UpdateASMap`
+    * `DeleteASMap`
+    * `UpdateCIDRMap`
+    * `DeleteCIDRMap`
+    * `UpdateDatacenter`
+    * `DeleteDatacenter`
+    * `UpdateDomain`
+    * `UpdateGeoMap`
+    * `DeleteGeoMap`
+    * `UpdateProperty`
+    * `DeleteProperty`
+    * `UpdateResource`
+    * `DeleteResource`
+  * Removed these interfaces:
+    * `ASMaps`
+    * `CIDRMaps`
+    * `Datacenters`
+    * `Domains`
+    * `GeoMaps`
+    * `Properties`
+    * `Resources`
+
+* IAM
+  * Migrated V2 endpoints to V3.
+  * Improved date handling to use `time.Time` instead of `string`.
+    * Changed fields in these structures:
+      * `Users`
+        * `LastLoginDate`. Changed the field data type from `string` to `time.Time`
+        * `PasswordExpiryDate`. Changed the field data type from `string` to `time.Time`
+      * `UserListItem`
+        * `LastLoginDate`. Changed the field data type from `string` to `time.Time`
+      * `Role`
+        * `CreatedDate`. Changed the field data type from `string` to `time.Time`
+        * `ModifiedDate`. Changed the field data type from `string` to `time.Time`
+      * `RoleUser`
+        * `LastLoginDate`. Changed the field data type from `string` to `time.Time`
+      * `GroupUser`
+        * `LastLoginDate`. Changed the field data type from `string` to `time.Time`
+  * Changed the `Notifications` field to a pointer type in these structures:
+    * `CreateUserRequest`
+    * `UpdateUserNotificationsRequest`
+  * Added the required `AdditionalAuthentication` field to the `CreateUserRequest` method.
+  * Made the `Notifications` field required in the `UpdateUserNotifications` method.
+
+* PAPI
+  * Removed the `rule_format` and `product_id` fields from the `Property` structure, as this information is populated in the `GetPropertyVersion` method.
+
+#### FEATURES/ENHANCEMENTS:
+
+* APPSEC
+  * Added the `Exceptions` field to these structures:
+    * `GetSiemSettingsResponse`
+    * `GetSiemSettingResponse`
+    * `UpdateSiemSettingsRequest`
+    * `UpdateSiemSettingsResponse`
+  * Added the `Source` field to the `GetExportConfigurationRequest` method and the `TargetProduct` field to the `GetExportConfigurationResponse` method.
+
+* IAM
+  * Updated structures:
+    * `User` with `AdditionalAuthenticationConfigured` and `Actions`
+    * `UserListItem` with `AdditionalAuthenticationConfigured` and `AdditionalAuthentication`
+    * `UserBasicInfo` with `AdditionalAuthentication`
+    * `UserActions` with `CanGenerateBypassCode`
+    * `UserNotificationOptions` with `APIClientCredentialExpiry`
+  * Added new methods:
+    * [UpdateMFA](https://techdocs.akamai.com/iam-api/reference/put-user-profile-additional-authentication)
+    * [ResetMFA](https://techdocs.akamai.com/iam-api/reference/put-ui-identity-reset-additional-authentication)
+  * Added API Client Credentials methods:
+    * [CreateYourCredential](https://techdocs.akamai.com/iam-api/reference/post-self-credentials) and [CreateCredential](https://techdocs.akamai.com/iam-api/reference/post-client-credentials)
+    * [GetYourCredential](https://techdocs.akamai.com/iam-api/reference/get-self-credential) and [GetCredential](https://techdocs.akamai.com/iam-api/reference/get-client-credential)
+    * [UpdateYourCredential](https://techdocs.akamai.com/iam-api/reference/put-self-credential) and [UpdateCredential](https://techdocs.akamai.com/iam-api/reference/put-client-credential)
+    * [DeleteYourCredential](https://techdocs.akamai.com/iam-api/reference/delete-self-credential) and [DeleteCredential](https://techdocs.akamai.com/iam-api/reference/delete-client-credential)
+    * [ListYourCredentials](https://techdocs.akamai.com/iam-api/reference/get-self-credentials) and [ListCredentials](https://techdocs.akamai.com/iam-api/reference/get-client-credentials)
+    * [DeactivateYourCredential](https://techdocs.akamai.com/iam-api/reference/post-self-credential-deactivate) and [DeactivateCredential](https://techdocs.akamai.com/iam-api/reference/post-client-credential-deactivate)
+    * [DeactivateYourCredentials](https://techdocs.akamai.com/iam-api/reference/post-self-credentials-deactivate) and [DeactivateCredentials](https://techdocs.akamai.com/iam-api/reference/post-client-credentials-deactivate)
+  * Added the `UserStatus` and `AccountID` parameters to the `User` structure.
+  * Added the [GetPasswordPolicy](https://techdocs.akamai.com/iam-api/reference/get-common-password-policy) method to get a password policy for an account.
+  * Added Helper APIs
+    * [ListAllowedCPCodes](https://techdocs.akamai.com/iam-api/reference/post-api-clients-users-allowed-cpcodes)
+    * [ListAuthorizedUsers](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users)
+    * [ListAllowedAPIs](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users-allowed-apis)
+    * [ListAccessibleGroups](https://techdocs.akamai.com/iam-api/reference/get-api-clients-users-group-access)
+  * Added new methods:
+    * [ListUsersForProperty](https://techdocs.akamai.com/iam-api/reference/get-property-users)
+    * [BlockUsers](https://techdocs.akamai.com/iam-api/reference/put-property-users-block)
+    * [DisableIPAllowlist](https://techdocs.akamai.com/iam-api/reference/post-allowlist-disable)
+    * [EnableIPAllowlist](https://techdocs.akamai.com/iam-api/reference/post-allowlist-enable)
+    * [GetIPAllowlistStatus](https://techdocs.akamai.com/iam-api/reference/get-allowlist-status)
+    * `ListAccountSwitchKeys` based on [ListAccountSwitchKeys](https://techdocs.akamai.com/iam-api/reference/get-client-account-switch-keys) and [ListYourAccountSwitchKeys](https://techdocs.akamai.com/iam-api/reference/get-self-account-switch-keys)
+    * `LockAPIClient` based on [LockAPIClient](https://techdocs.akamai.com/iam-api/reference/put-lock-api-client) and [LockYourAPIClient](https://techdocs.akamai.com/iam-api/reference/put-lock-api-client-self)
+    * [UnlockAPIClient](https://techdocs.akamai.com/iam-api/reference/put-unlock-api-client)
+    * [ListAPIClients](https://techdocs.akamai.com/iam-api/reference/get-api-clients)
+    * [CreateAPIClient](https://techdocs.akamai.com/iam-api/reference/post-api-clients)
+    * `GetAPIClient` based on [GetAPIClient](https://techdocs.akamai.com/iam-api/reference/get-api-client) and [GetYourAPIClient](https://techdocs.akamai.com/iam-api/reference/get-api-client-self)
+    * `UpdateAPIClient` based on [UpdateAPIClient](https://techdocs.akamai.com/iam-api/reference/put-api-clients) and [UpdateYourAPIClient](https://techdocs.akamai.com/iam-api/reference/put-api-clients-self)
+    * `DeleteAPIClient` based on [DeleteAPIClient](https://techdocs.akamai.com/iam-api/reference/delete-api-client) and [DeleteYourAPIClient](https://techdocs.akamai.com/iam-api/reference/delete-api-client-self)
+    * [ListCIDRBlocks](https://techdocs.akamai.com/iam-api/reference/get-allowlist)
+    * [CreateCIDRBlock](https://techdocs.akamai.com/iam-api/reference/post-allowlist)
+    * [GetCIDRBlock](https://techdocs.akamai.com/iam-api/reference/get-allowlist-cidrblockid)
+    * [UpdateCIDRBlock](https://techdocs.akamai.com/iam-api/reference/put-allowlist-cidrblockid)
+    * [DeleteCIDRBlock](https://techdocs.akamai.com/iam-api/reference/delete-allowlist-cidrblockid)
+    * [ValidateCIDRBlock](https://techdocs.akamai.com/iam-api/reference/get-allowlist-validate)
 
 ## 8.4.0 (Aug 22, 2024)
 
@@ -6,7 +298,7 @@
 
 * APPSEC
   * Added field `ClientLists` to `RuleConditions` and `AttackGroupConditions`
-  * The `RequestBodyInspectionLimitOverride` field has been added in the following structures:
+  * The `RequestBodyInspectionLimitOverride` field has been added in these structures:
     * `GetAdvancedSettingsRequestBodyResponse`,
     * `UpdateAdvancedSettingsRequestBodyRequest`,
     * `UpdateAdvancedSettingsRequestBodyResponse`,
@@ -69,7 +361,7 @@
 
 #### Deprecations
 
-* Deprecated the following functions in the `tools` package. Use `ptr.To` instead.
+* Deprecated these functions in the `tools` package. Use `ptr.To` instead.
   * `BoolPtr`
   * `IntPtr`
   * `Int64Ptr`
@@ -95,7 +387,7 @@
 #### BUG FIXES:
 
 * APPSEC
-  * The `Override` field in the following structs has been updated from a pointer to a value type within the `AdvancedSettingsAttackPayloadLogging` interface:
+  * The `Override` field in these structs has been updated from a pointer to a value type within the `AdvancedSettingsAttackPayloadLogging` interface:
     * `GetAdvancedSettingsAttackPayloadLoggingResponse`,
     * `UpdateAdvancedSettingsAttackPayloadLoggingResponse`,
     * `RemoveAdvancedSettingsAttackPayloadLoggingRequest`,
@@ -127,12 +419,12 @@
   * Split request and response structures for create and update enrollment operations
 
 * DNS
-  * Renamed following structs:
+  * Renamed these structs:
     * `RecordsetQueryArgs` into `RecordSetQueryArgs`
     * `Recordsets` into `RecordSets`
     * `Recordset` into `RecordSet`
     * `MetadataH` into `Metadata`
-  * Renamed following fields:
+  * Renamed these fields:
     * `GroupId` into `GroupID` in `ListGroupRequest`
     * `Recordsets` into `RecordSets` in `RecordSetResponse`
     * `ContractIds` into `ContractIDs` in `TSIGQueryString`
@@ -141,7 +433,7 @@
     * `VersionId` into `VersionID` in `ZoneResponse`
     * `RequestId` into `RequestID` in `BulkZonesResponse`, `BulkStatusResponse`, `BulkCreateResultResponse` and `BulkDeleteResultResponse`
   * Renamed `RecordSets` interface into `Recordsets`
-  * Renamed following methods:
+  * Renamed these methods:
     * `ListTsigKeys` into `ListTSIGKeys`
     * `GetTsigKeyZones` into `GetTSIGKeyZones`
     * `GetTsigKeyAliases` into `GetTSIGKeyAliases`
@@ -152,7 +444,7 @@
     * `GetRecordsets` into `GetRecordSets`
     * `CreateRecordsets` into `CreateRecordSets`
     * `UpdateRecordsets` into `UpdateRecordSets`
-  * Deleted following methods:
+  * Deleted these methods:
     * `NewAuthorityResponse`
     * `NewChangeListResponse`
     * `NewRecordBody`
@@ -163,13 +455,13 @@
     * `NewZoneQueryString`
     * `NewZoneResponse`
     * `RecordToMap`
-  * Unexported following methods:
+  * Unexported these methods:
     * `FullIPv6`
     * `PadCoordinates`
     * `ValidateZone`
 
 * GTM
-  * Renamed following structs:
+  * Renamed these structs:
     * `AsAssignment` into `ASAssignment`
     * `AsMap` into `ASMap`
     * `AsMapList` into `ASMapList`
@@ -179,7 +471,7 @@
     * `CidrMapResponse` into `CIDRMapResponse`
     * `AsMapResponse` into `ASMapResponse`
     * `HttpHeader` into `HTTPHeader`
-  * Renamed following fields:
+  * Renamed these fields:
     * `AsNumbers` into `ASNumbers` in `ASAssignment`
     * `AsMapItems` into `ASMapItems` in `ASMapList`
     * `CidrMapItems` into `CIDRMapItems` in `CIDRMapList`
@@ -200,7 +492,7 @@
     * `Ipv6` into `IPv6` in `Property`
     * `BackupIp` into `BackupIP` in `Property`
   * Renamed `CidrMaps` interface into `CIDRMaps`
-  * Renamed following methods:
+  * Renamed these methods:
     * `ListAsMaps` into `ListASMaps`
     * `GetAsMap` into `GetASMap`
     * `CreateAsMap` into `CreateASMap`
@@ -211,7 +503,7 @@
     * `CreateCidrMap` into `CreateCIDRMap`
     * `DeleteCidrMap` into `DeleteCIDRMap`
     * `UpdateCidrMap` into `UpdateCIDRMap`
-  * Deleted following methods:
+  * Deleted these methods:
     * `NewASAssignment`
     * `NewAsMap`
     * `NewCidrAssignment`
@@ -422,7 +714,7 @@
 ### Deprecations
 
 * Challenge Interceptions Rules has been deprecated
-* Deprecate the following interfaces used to maintain individual policy protections:
+* Deprecate these interfaces used to maintain individual policy protections:
   * `ApiConstraintsProtection`
   * `IPGeoProtection`
   * `MalwareProtection`
@@ -500,7 +792,7 @@
 ### FEATURES/ENHANCEMENTS:
 
 * APPSEC
-  * Added following BotManager fields to GetExportConfigurationResponse
+  * Added these BotManager fields to GetExportConfigurationResponse
     * BotManagement
     * CustomBotCategories
     * CustomDefinedBots
@@ -526,7 +818,7 @@
     * [GetAvailableBehaviors](https://techdocs.akamai.com/property-mgr/reference/get-available-behaviors)
 
 * CPS
-  * Update `Accept` header to the latest schema `application/vnd.akamai.cps.enrollment.v11+json` for the following endpoints:
+  * Update `Accept` header to the latest schema `application/vnd.akamai.cps.enrollment.v11+json` for these endpoints:
     * [ListEnrollments](https://techdocs.akamai.com/cps/reference/get-enrollments)
     * [GetEnrollment](https://techdocs.akamai.com/cps/reference/get-enrollment)
 
@@ -638,7 +930,7 @@
     * MalwarePolicyAction
     * MalwareProtection
   * Add GetRuleRecommendations method to TuningRecommendations interface
-  * Add deprecation notes for the following:
+  * Add deprecation notes for these:
     * methods:
       * GetIPGeoProtections
       * GetNetworkLayerProtections
@@ -874,7 +1166,7 @@
 
 #### BREAKING CHANGES:
 * APPSEC
-  * The following have been removed, togther with their unit tests and test data:
+  * The following have been removed, together with their unit tests and test data:
     * pkg/appsec/attack_group_action.go
     * pkg/appsec/attack_group_condition_exception.go
     * pkg/appsec/eval_rule_action.go
@@ -918,7 +1210,7 @@
 
 ## 2.3.0 (Mar 15, 2021) Network Lists
 
-Add support for the following operations in the Network Lists API v2:
+Add support for the these operations in the Network Lists API v2:
 
 * Create a network list
 * Update an existing network list

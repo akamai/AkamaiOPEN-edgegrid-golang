@@ -13,15 +13,15 @@ import (
 
 func TestDNS_GetAuthorities(t *testing.T) {
 	tests := map[string]struct {
-		contractID       string
+		params           GetAuthoritiesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *AuthorityResponse
-		withError        error
+		expectedResponse *GetAuthoritiesResponse
+		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
-			contractID:     "9-9XXXXX",
+			params:         GetAuthoritiesRequest{ContractIDs: "9-9XXXXX"},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -40,7 +40,7 @@ func TestDNS_GetAuthorities(t *testing.T) {
     ]
 }`,
 			expectedPath: "/config-dns/v2/data/authorities?contractIds=9-9XXXXX",
-			expectedResponse: &AuthorityResponse{
+			expectedResponse: &GetAuthoritiesResponse{
 				Contracts: []Contract{
 					{
 						ContractID: "9-9XXXXX",
@@ -57,14 +57,13 @@ func TestDNS_GetAuthorities(t *testing.T) {
 			},
 		},
 		"Missing arguments": {
-			contractID:     "",
 			responseStatus: http.StatusOK,
-			responseBody:   "",
-			expectedPath:   "/config-dns/v2/data/authorities?contractIds=9-9XXXXX",
-			withError:      ErrBadRequest,
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "get authorities: struct validation: ContractIDs: cannot be blank", err.Error())
+			},
 		},
 		"500 internal server error": {
-			contractID:     "9-9XXXXX",
+			params:         GetAuthoritiesRequest{ContractIDs: "9-9XXXXX"},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -74,11 +73,14 @@ func TestDNS_GetAuthorities(t *testing.T) {
     "status": 500
 }`,
 			expectedPath: "/config-dns/v2/data/authorities?contractIds=9-9XXXXX",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching authorities",
-				StatusCode: http.StatusInternalServerError,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error fetching authorities",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
 	}
@@ -93,9 +95,9 @@ func TestDNS_GetAuthorities(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetAuthorities(context.Background(), test.contractID)
+			result, err := client.GetAuthorities(context.Background(), test.params)
 			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				test.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -106,15 +108,15 @@ func TestDNS_GetAuthorities(t *testing.T) {
 
 func TestDNS_GetNameServerRecordList(t *testing.T) {
 	tests := map[string]struct {
-		contractID       string
+		params           GetNameServerRecordListRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
 		expectedResponse []string
-		withError        error
+		withError        func(*testing.T, error)
 	}{
 		"test with valid arguments": {
-			contractID:     "9-9XXXXX",
+			params:         GetNameServerRecordListRequest{ContractIDs: "9-9XXXXX"},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -136,9 +138,10 @@ func TestDNS_GetNameServerRecordList(t *testing.T) {
 			expectedPath:     "/config-dns/v2/data/authorities?contractIds=9-9XXXXX",
 		},
 		"test with missing arguments": {
-			contractID:   "",
 			expectedPath: "/config-dns/v2/data/authorities?contractIds=9-9XXXXX",
-			withError:    ErrBadRequest,
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "get name server record list: struct validation: ContractIDs: cannot be blank", err.Error())
+			},
 		},
 	}
 
@@ -152,9 +155,9 @@ func TestDNS_GetNameServerRecordList(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetNameServerRecordList(context.Background(), test.contractID)
+			result, err := client.GetNameServerRecordList(context.Background(), test.params)
 			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				test.withError(t, err)
 				return
 			}
 			require.NoError(t, err)

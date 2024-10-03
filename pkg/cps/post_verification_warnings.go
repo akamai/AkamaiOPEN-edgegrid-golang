@@ -8,18 +8,6 @@ import (
 )
 
 type (
-	// PostVerification is a CPS API enabling management of post-verification-warnings
-	PostVerification interface {
-		// GetChangePostVerificationWarnings gets information about post verification warnings
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
-		GetChangePostVerificationWarnings(ctx context.Context, params GetChangeRequest) (*PostVerificationWarnings, error)
-		// AcknowledgePostVerificationWarnings sends acknowledgement request to CPS informing that the warnings should be ignored
-		//
-		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
-		AcknowledgePostVerificationWarnings(context.Context, AcknowledgementRequest) error
-	}
-
 	// PostVerificationWarnings is a response object containing all warnings encountered during enrollment post-verification
 	PostVerificationWarnings struct {
 		Warnings string `json:"warnings"`

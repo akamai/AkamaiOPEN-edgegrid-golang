@@ -10,24 +10,6 @@ import (
 )
 
 type (
-	// History is a CPS interface for History management
-	History interface {
-		// GetDVHistory is a domain name validation history for the enrollment
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-dv-history
-		GetDVHistory(context.Context, GetDVHistoryRequest) (*GetDVHistoryResponse, error)
-
-		// GetCertificateHistory views the certificate history.
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-history-certificates
-		GetCertificateHistory(context.Context, GetCertificateHistoryRequest) (*GetCertificateHistoryResponse, error)
-
-		// GetChangeHistory views the change history for enrollment.
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-history-changes
-		GetChangeHistory(context.Context, GetChangeHistoryRequest) (*GetChangeHistoryResponse, error)
-	}
-
 	// GetDVHistoryRequest represents request for GetDVHistory operation
 	GetDVHistoryRequest struct {
 		EnrollmentID int

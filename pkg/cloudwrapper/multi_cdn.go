@@ -7,24 +7,11 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// MultiCDN is the cloudwrapper Multi-CDN API interface
-	MultiCDN interface {
-		// ListAuthKeys lists the cdnAuthKeys for a specified contractId and cdnCode
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-auth-keys
-		ListAuthKeys(context.Context, ListAuthKeysRequest) (*ListAuthKeysResponse, error)
-
-		// ListCDNProviders lists CDN providers
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-providers
-		ListCDNProviders(context.Context) (*ListCDNProvidersResponse, error)
-	}
-
 	// ListAuthKeysRequest is a request struct
 	ListAuthKeysRequest struct {
 		ContractID string

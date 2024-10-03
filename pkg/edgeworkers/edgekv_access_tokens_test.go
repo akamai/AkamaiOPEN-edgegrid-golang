@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,35 +28,67 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: false,
 				AllowOnStaging:    true,
-				Expiry:            "2022-03-30",
 				Name:              "devexp-token-1",
 				NamespacePermissions: NamespacePermissions{
 					"default":            []Permission{"r", "w", "d"},
 					"devexp-jsmith-test": []Permission{"r", "w"},
 				},
+				RestrictToEdgeWorkerIDs: []string{
+					"1234",
+					"5678",
+				},
 			},
-			expectedRequestBody: `{"allowOnProduction":false,"allowOnStaging":true,"expiry":"2022-03-30","name":"devexp-token-1","namespacePermissions":{"default":["r","w","d"],"devexp-jsmith-test":["r","w"]}}`,
+			expectedRequestBody: `{"allowOnProduction":false,"allowOnStaging":true,"name":"devexp-token-1","namespacePermissions":{"default":["r","w","d"],"devexp-jsmith-test":["r","w"]},"restrictToEdgeWorkerIds":["1234","5678"]}`,
 			responseStatus:      http.StatusOK,
 			responseBody: `
 {
     "name": "devexp-token-1",
     "uuid": "1ab0e94b-c47e-568e-ab3e-1921ffcefe0c",
-    "expiry": "2022-03-30",
-    "value": "eyJ0eXAiOxJKV1QxLCJhbGciOiJSUzI1NiJ9.eyJld2lkcyI6ImFsbCIsInN1YiI6IjUwMCIsIm5hbWVzcGFjZS1kZWZhdWx0IjpbInIiLCJkIiwidyJdLCJjcGMiOiI5NzEwNTIiLCJpc3MiOiJha2FtYWkuY29tL0VkZ2VEQi9QdWxzYXIvdjAuMTEuMCIsIm5hbWVzcGFjZS1kZXZleHAtcm9iZXJ0by10ZXN0IjpbInIiLCJ3Il0sImV4cCI6MTY0ODY4NDc5OSwiZW52IjpbInAiLCJzIl0sImlhdCI6MTY0MDg1ODIzNywianRpIjoiMTBiMGU5NGItYzQ3ZS01NjhlLWFiM2UtMTkyMWZmY2VmZTBjIiwicmVxaWQiOiJha2FtYWkiLCJub2VjbCI6dHJ1ZX0.AZfP-VFqDKNWcu1Or73EFfjG_GBDdJUP81Zs0BnNs_bScc8oyBAEiBjxwEsUxrvRRr7rSu-BxFjiDpxx5DlfbgEwd8H2DFV08cfQFqs7aab4WYLrx4ZweD9Hbg2gGLA-dRAbtSrq_FQKQysOvO2ymPn13E78PvK96t8r4cnN1irXbfyBUOXOE3OVOAKsk-w0Ig7qFDa_4o6YyDMPTpwEQ34T1cVqRYStIVzjSaCwgSfdaQG5qzTzTlFoDzG24tz8YlLgoM5OQf9xgsTsisCOF2jf44VWMu2S0e6MIC5gg7zXx7X2t59Y8TsAd0VqqB37y0AzEXkJblbZUlO9HcGebg"
+	"allowOnProduction": true,
+	"allowOnStaging": false,
+	"cpcode": "1234567",
+	"expiry": "9999-12-31",
+	"issueDate": "2022-04-30",
+	"namespacePermissions": {
+		"default": [
+			"r",
+			"w",
+			"d"
+		],
+		"devexp-jsmith-test": [
+			"r",
+			"w"
+		]
+	},
+	"nextScheduledRefreshDate": "2022-06-30",
+	"restrictToEdgeWorkerIds": [
+		"1234",
+		"5678"
+	],
+	"tokenActivationStatus": "IN_PROGRESS"
 }`,
 			expectedPath: "/edgekv/v1/tokens",
 			expectedResponse: &CreateEdgeKVAccessTokenResponse{
-				Name:   "devexp-token-1",
-				UUID:   "1ab0e94b-c47e-568e-ab3e-1921ffcefe0c",
-				Expiry: "2022-03-30",
-				Value:  "eyJ0eXAiOxJKV1QxLCJhbGciOiJSUzI1NiJ9.eyJld2lkcyI6ImFsbCIsInN1YiI6IjUwMCIsIm5hbWVzcGFjZS1kZWZhdWx0IjpbInIiLCJkIiwidyJdLCJjcGMiOiI5NzEwNTIiLCJpc3MiOiJha2FtYWkuY29tL0VkZ2VEQi9QdWxzYXIvdjAuMTEuMCIsIm5hbWVzcGFjZS1kZXZleHAtcm9iZXJ0by10ZXN0IjpbInIiLCJ3Il0sImV4cCI6MTY0ODY4NDc5OSwiZW52IjpbInAiLCJzIl0sImlhdCI6MTY0MDg1ODIzNywianRpIjoiMTBiMGU5NGItYzQ3ZS01NjhlLWFiM2UtMTkyMWZmY2VmZTBjIiwicmVxaWQiOiJha2FtYWkiLCJub2VjbCI6dHJ1ZX0.AZfP-VFqDKNWcu1Or73EFfjG_GBDdJUP81Zs0BnNs_bScc8oyBAEiBjxwEsUxrvRRr7rSu-BxFjiDpxx5DlfbgEwd8H2DFV08cfQFqs7aab4WYLrx4ZweD9Hbg2gGLA-dRAbtSrq_FQKQysOvO2ymPn13E78PvK96t8r4cnN1irXbfyBUOXOE3OVOAKsk-w0Ig7qFDa_4o6YyDMPTpwEQ34T1cVqRYStIVzjSaCwgSfdaQG5qzTzTlFoDzG24tz8YlLgoM5OQf9xgsTsisCOF2jf44VWMu2S0e6MIC5gg7zXx7X2t59Y8TsAd0VqqB37y0AzEXkJblbZUlO9HcGebg",
+				Name:              "devexp-token-1",
+				UUID:              "1ab0e94b-c47e-568e-ab3e-1921ffcefe0c",
+				Expiry:            "9999-12-31",
+				AllowOnProduction: true,
+				AllowOnStaging:    false,
+				CPCode:            "1234567",
+				IssueDate:         "2022-04-30",
+				NamespacePermissions: NamespacePermissions{
+					"default":            []Permission{"r", "w", "d"},
+					"devexp-jsmith-test": []Permission{"r", "w"},
+				},
+				NextScheduledRefreshDate: "2022-06-30",
+				RestrictToEdgeWorkerIDs:  []string{"1234", "5678"},
+				TokenActivationStatus:    "IN_PROGRESS",
 			},
 		},
 		"at least one allow is required": {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: false,
 				AllowOnStaging:    false,
-				Expiry:            "2022-03-30",
 				Name:              "name",
 				NamespacePermissions: NamespacePermissions{
 					"default":            []Permission{"r", "w", "d"},
@@ -68,20 +101,7 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: true,
 				AllowOnStaging:    true,
-				Expiry:            "2022-03-30",
 				Name:              "",
-				NamespacePermissions: NamespacePermissions{
-					"default":            []Permission{"r", "w", "d"},
-					"devexp-jsmith-test": []Permission{"r", "w"},
-				},
-			}, withError: ErrStructValidation,
-		},
-		"invalid date": {
-			params: CreateEdgeKVAccessTokenRequest{
-				AllowOnProduction: true,
-				AllowOnStaging:    true,
-				Expiry:            "30/09/2021",
-				Name:              "name",
 				NamespacePermissions: NamespacePermissions{
 					"default":            []Permission{"r", "w", "d"},
 					"devexp-jsmith-test": []Permission{"r", "w"},
@@ -92,7 +112,6 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: true,
 				AllowOnStaging:    true,
-				Expiry:            "2022-03-30",
 				Name:              "devexp-token-1",
 				NamespacePermissions: NamespacePermissions{
 					"default": []Permission{"a", "w", "d"},
@@ -103,7 +122,6 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: true,
 				AllowOnStaging:    true,
-				Expiry:            "2022-03-30",
 				Name:              "devexp-token-1",
 				NamespacePermissions: NamespacePermissions{
 					"": []Permission{"r", "w", "d"},
@@ -114,7 +132,6 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: true,
 				AllowOnStaging:    true,
-				Expiry:            "2022-03-30",
 				Name:              "devexp-token-1",
 				NamespacePermissions: NamespacePermissions{
 					"default": []Permission{},
@@ -125,7 +142,6 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: true,
 				AllowOnStaging:    true,
-				Expiry:            "2022-03-30",
 				Name:              "devexp-token-1",
 			}, withError: ErrStructValidation,
 		},
@@ -133,7 +149,6 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: true,
 				AllowOnStaging:    true,
-				Expiry:            "2022-03-30",
 				Name:              "devexp-token-1",
 				NamespacePermissions: NamespacePermissions{
 					"default": []Permission{"r", "w", "d"},
@@ -169,7 +184,6 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: true,
 				AllowOnStaging:    true,
-				Expiry:            "2022-03-30",
 				Name:              "devexp-token-1",
 				NamespacePermissions: NamespacePermissions{
 					"default":            []Permission{"r", "w", "d"},
@@ -208,7 +222,6 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: true,
 				AllowOnStaging:    true,
-				Expiry:            "2022-03-30",
 				Name:              "devexp-token-1",
 				NamespacePermissions: NamespacePermissions{
 					"default":            []Permission{"r", "w", "d"},
@@ -245,7 +258,6 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 			params: CreateEdgeKVAccessTokenRequest{
 				AllowOnProduction: true,
 				AllowOnStaging:    true,
-				Expiry:            "2022-03-30",
 				Name:              "devexp-token-1",
 				NamespacePermissions: NamespacePermissions{
 					"default":            []Permission{"r", "w", "d"},
@@ -325,15 +337,45 @@ func TestGetEdgeKVAccessToken(t *testing.T) {
 {
     "name": "devexp-token-1",
     "uuid": "10b0e94b-c47e-568e-ab3e-1921ffcefe0c",
-    "expiry": "2022-03-30",
-    "value": "eyJ0eXAxOxJKV1QxLCJhbGciOiJSUzI1NiJ9.eyJld2lkcyI6ImFsbCIsInN1YiI6IjUwMCIsIm5hbWVzcGFjZS1kZWZhdWx0IjpbInIiLCJkIiwidyJdLCJjcGMiOiI5NzEwNTIiLCJpc3MiOiJha2FtYWkuY29tL0VkZ2VEQi9QdWxzYXIvdjAuMTEuMCIsIm5hbWVzcGFjZS1kZXZleHAtcm9iZXJ0by10ZXN0IjpbInIiLCJ3Il0sImV4cCI6MTY0ODY4NDc5OSwiZW52IjpbInAiLCJzIl0sImlhdCI6MTY0MDg1ODIzNywianRpIjoiMTBiMGU5NGItYzQ3ZS01NjhlLWFiM2UtMTkyMWZmY2VmZTBjIiwicmVxaWQiOiJha2FtYWkiLCJub2VjbCI6dHJ1ZX0.AZfP-VFqDKNWcu1Or73EFfjG_GBDdJUP81Zs0BnNs_bScc8oyBAEiBjxwEsUxrvRRr7rSu-BxFjiDpxx5DlfbgEwd8H2DFV08cfQFqs7aab4WYLrx4ZweD9Hbg2gGLA-dRAbtSrq_FQKQysOvO2ymPn13E78PvK96t8r4cnN1irXbfyBUOXOE3OVOAKsk-w0Ig7qFDa_4o6YyDMPTpwEQ34T1cVqRYStIVzjSaCwgSfdaQG5qzTzTlFoDzG24tz8YlLgoM5OQf9xgsTsisCOF2jf44VWMu2S0e6MIC5gg7zXx7X2t59Y8TsAd0VqqB37y0AzEXkJblbZUlO9HcGebg"
+	"allowOnProduction": true,
+	"allowOnStaging": false,
+	"cpcode": "1234567",
+	"expiry": "9999-12-31",
+	"issueDate": "2022-04-30",
+	"namespacePermissions": {
+		"default": [
+			"r",
+			"w",
+			"d"
+		],
+		"devexp-jsmith-test": [
+			"r",
+			"w"
+		]
+	},
+	"nextScheduledRefreshDate": "2022-06-30",
+	"restrictToEdgeWorkerIds": [
+		"1234",
+		"5678"
+	],
+	"tokenActivationStatus": "IN_PROGRESS"
 }`,
 			expectedPath: "/edgekv/v1/tokens/devexp-token-1",
 			expectedResponse: &GetEdgeKVAccessTokenResponse{
-				Name:   "devexp-token-1",
-				UUID:   "10b0e94b-c47e-568e-ab3e-1921ffcefe0c",
-				Expiry: "2022-03-30",
-				Value:  "eyJ0eXAxOxJKV1QxLCJhbGciOiJSUzI1NiJ9.eyJld2lkcyI6ImFsbCIsInN1YiI6IjUwMCIsIm5hbWVzcGFjZS1kZWZhdWx0IjpbInIiLCJkIiwidyJdLCJjcGMiOiI5NzEwNTIiLCJpc3MiOiJha2FtYWkuY29tL0VkZ2VEQi9QdWxzYXIvdjAuMTEuMCIsIm5hbWVzcGFjZS1kZXZleHAtcm9iZXJ0by10ZXN0IjpbInIiLCJ3Il0sImV4cCI6MTY0ODY4NDc5OSwiZW52IjpbInAiLCJzIl0sImlhdCI6MTY0MDg1ODIzNywianRpIjoiMTBiMGU5NGItYzQ3ZS01NjhlLWFiM2UtMTkyMWZmY2VmZTBjIiwicmVxaWQiOiJha2FtYWkiLCJub2VjbCI6dHJ1ZX0.AZfP-VFqDKNWcu1Or73EFfjG_GBDdJUP81Zs0BnNs_bScc8oyBAEiBjxwEsUxrvRRr7rSu-BxFjiDpxx5DlfbgEwd8H2DFV08cfQFqs7aab4WYLrx4ZweD9Hbg2gGLA-dRAbtSrq_FQKQysOvO2ymPn13E78PvK96t8r4cnN1irXbfyBUOXOE3OVOAKsk-w0Ig7qFDa_4o6YyDMPTpwEQ34T1cVqRYStIVzjSaCwgSfdaQG5qzTzTlFoDzG24tz8YlLgoM5OQf9xgsTsisCOF2jf44VWMu2S0e6MIC5gg7zXx7X2t59Y8TsAd0VqqB37y0AzEXkJblbZUlO9HcGebg",
+				Name:              "devexp-token-1",
+				UUID:              "10b0e94b-c47e-568e-ab3e-1921ffcefe0c",
+				AllowOnProduction: true,
+				AllowOnStaging:    false,
+				CPCode:            "1234567",
+				Expiry:            "9999-12-31",
+				IssueDate:         "2022-04-30",
+				NamespacePermissions: NamespacePermissions{
+					"default":            []Permission{"r", "w", "d"},
+					"devexp-jsmith-test": []Permission{"r", "w"},
+				},
+				NextScheduledRefreshDate: "2022-06-30",
+				RestrictToEdgeWorkerIDs:  []string{"1234", "5678"},
+				TokenActivationStatus:    "IN_PROGRESS",
 			},
 		},
 		"missing token name": {
@@ -472,47 +514,43 @@ func TestListEdgeKVAccessTokens(t *testing.T) {
         {
             "name": "my_token",
             "uuid": "8301fef4-80e5-5efb-9bfb-8f5869a5df7b",
-            "expiry": "2022-03-30"
+            "expiry": "2022-03-30",
+			"issueDate": "2022-01-30",
+			"latestRefreshDate": "2022-03-30",
+			"nextScheduledRefreshDate": "2022-05-30",
+			"tokenActivationStatus": "COMPLETE"
         },
         {
             "name": "token1",
             "uuid": "5b5d3bfb-8d2e-5fbb-858d-33807edc9554",
-            "expiry": "2022-01-22"
-        },
-        {
-            "name": "token2",
-            "uuid": "62181cfe-268a-5302-8834-67c67ec86efd",
-            "expiry": "2022-01-22"
-        },
-        {
-            "name": "token3",
-            "uuid": "edb02678-ae1c-564c-8f73-c977ffdfe016",
-            "expiry": "2022-01-22"
+            "expiry": "2022-01-22",
+			"issueDate": "2022-04-30",
+			"latestRefreshDate": null,
+			"nextScheduledRefreshDate": "2022-06-30",
+			"tokenActivationStatus": "IN_PROGRESS"
         }
-    ]
+	]
 }`,
 			expectedPath: "/edgekv/v1/tokens",
 			expectedResponse: &ListEdgeKVAccessTokensResponse{
 				[]EdgeKVAccessToken{
 					{
-						Name:   "my_token",
-						UUID:   "8301fef4-80e5-5efb-9bfb-8f5869a5df7b",
-						Expiry: "2022-03-30",
+						Name:                     "my_token",
+						UUID:                     "8301fef4-80e5-5efb-9bfb-8f5869a5df7b",
+						Expiry:                   "2022-03-30",
+						IssueDate:                ptr.To("2022-01-30"),
+						LatestRefreshDate:        ptr.To("2022-03-30"),
+						NextScheduledRefreshDate: ptr.To("2022-05-30"),
+						TokenActivationStatus:    ptr.To("COMPLETE"),
 					},
 					{
-						Name:   "token1",
-						UUID:   "5b5d3bfb-8d2e-5fbb-858d-33807edc9554",
-						Expiry: "2022-01-22",
-					},
-					{
-						Name:   "token2",
-						UUID:   "62181cfe-268a-5302-8834-67c67ec86efd",
-						Expiry: "2022-01-22",
-					},
-					{
-						Name:   "token3",
-						UUID:   "edb02678-ae1c-564c-8f73-c977ffdfe016",
-						Expiry: "2022-01-22",
+						Name:                     "token1",
+						UUID:                     "5b5d3bfb-8d2e-5fbb-858d-33807edc9554",
+						Expiry:                   "2022-01-22",
+						IssueDate:                ptr.To("2022-04-30"),
+						LatestRefreshDate:        nil,
+						NextScheduledRefreshDate: ptr.To("2022-06-30"),
+						TokenActivationStatus:    ptr.To("IN_PROGRESS"),
 					},
 				},
 			},
@@ -528,27 +566,20 @@ func TestListEdgeKVAccessTokens(t *testing.T) {
         {
             "name": "my_token",
             "uuid": "8301fef4-80e5-5efb-9bfb-8f5869a5df7b",
-            "expiry": "2022-03-30"
+            "expiry": "2022-03-30",
+			"issueDate": "2022-01-30",
+			"latestRefreshDate": "2022-03-30",
+			"nextScheduledRefreshDate": "2022-05-30",
+			"tokenActivationStatus": "COMPLETE"
         },
         {
             "name": "token1",
             "uuid": "5b5d3bfb-8d2e-5fbb-858d-33807edc9554",
-            "expiry": "2022-01-22"
-        },
-        {
-            "name": "token2",
-            "uuid": "62181cfe-268a-5302-8834-67c67ec86efd",
-            "expiry": "2022-01-22"
-        },
-        {
-            "name": "token3",
-            "uuid": "edb02678-ae1c-564c-8f73-c977ffdfe016",
-            "expiry": "2022-01-22"
-        },
-        {
-            "name": "preexistingTokenTest",
-            "uuid": "7a14da8c-1709-570b-9535-2cc6e2ee5a8a",
-            "expiry": "2021-12-21"
+            "expiry": "2022-01-22",
+			"issueDate": "2022-04-30",
+			"latestRefreshDate": null,
+			"nextScheduledRefreshDate": "2022-06-30",
+			"tokenActivationStatus": "IN_PROGRESS"
         }
     ]
 }`,
@@ -556,29 +587,22 @@ func TestListEdgeKVAccessTokens(t *testing.T) {
 			expectedResponse: &ListEdgeKVAccessTokensResponse{
 				[]EdgeKVAccessToken{
 					{
-						Name:   "my_token",
-						UUID:   "8301fef4-80e5-5efb-9bfb-8f5869a5df7b",
-						Expiry: "2022-03-30",
+						Name:                     "my_token",
+						UUID:                     "8301fef4-80e5-5efb-9bfb-8f5869a5df7b",
+						Expiry:                   "2022-03-30",
+						IssueDate:                ptr.To("2022-01-30"),
+						LatestRefreshDate:        ptr.To("2022-03-30"),
+						NextScheduledRefreshDate: ptr.To("2022-05-30"),
+						TokenActivationStatus:    ptr.To("COMPLETE"),
 					},
 					{
-						Name:   "token1",
-						UUID:   "5b5d3bfb-8d2e-5fbb-858d-33807edc9554",
-						Expiry: "2022-01-22",
-					},
-					{
-						Name:   "token2",
-						UUID:   "62181cfe-268a-5302-8834-67c67ec86efd",
-						Expiry: "2022-01-22",
-					},
-					{
-						Name:   "token3",
-						UUID:   "edb02678-ae1c-564c-8f73-c977ffdfe016",
-						Expiry: "2022-01-22",
-					},
-					{
-						Name:   "preexistingTokenTest",
-						UUID:   "7a14da8c-1709-570b-9535-2cc6e2ee5a8a",
-						Expiry: "2021-12-21",
+						Name:                     "token1",
+						UUID:                     "5b5d3bfb-8d2e-5fbb-858d-33807edc9554",
+						Expiry:                   "2022-01-22",
+						IssueDate:                ptr.To("2022-04-30"),
+						LatestRefreshDate:        nil,
+						NextScheduledRefreshDate: ptr.To("2022-06-30"),
+						TokenActivationStatus:    ptr.To("IN_PROGRESS"),
 					},
 				},
 			},

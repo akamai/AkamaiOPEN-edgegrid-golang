@@ -7,8 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -1851,7 +1850,7 @@ func TestPapiListReferencedIncludes(t *testing.T) {
 							IncludeType:       IncludeTypeMicroServices,
 							LatestVersion:     1,
 							ProductionVersion: nil,
-							StagingVersion:    tools.IntPtr(1),
+							StagingVersion:    ptr.To(1),
 						},
 					},
 				},

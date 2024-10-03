@@ -8,23 +8,11 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// Properties is a CloudWrapper properties API interface
-	Properties interface {
-		// ListProperties lists unused properties
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-properties
-		ListProperties(context.Context, ListPropertiesRequest) (*ListPropertiesResponse, error)
-		// ListOrigins lists property origins
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-origins
-		ListOrigins(context.Context, ListOriginsRequest) (*ListOriginsResponse, error)
-	}
-
 	// ListPropertiesRequest holds parameters for ListProperties
 	ListPropertiesRequest struct {
 		Unused      bool

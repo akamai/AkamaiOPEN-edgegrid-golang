@@ -8,25 +8,6 @@ import (
 )
 
 type (
-	// ChangeManagementInfo is a CPS API enabling change management
-	ChangeManagementInfo interface {
-		// GetChangeManagementInfo gets information about acknowledgement status,
-		// and may include warnings about potential conflicts that may occur if you proceed with acknowledgement
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
-		GetChangeManagementInfo(ctx context.Context, params GetChangeRequest) (*ChangeManagementInfoResponse, error)
-
-		// GetChangeDeploymentInfo gets deployment currently deployed to the staging network
-		//
-		// See: https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
-		GetChangeDeploymentInfo(ctx context.Context, params GetChangeRequest) (*ChangeDeploymentInfoResponse, error)
-
-		// AcknowledgeChangeManagement sends acknowledgement request to CPS to proceed deploying the certificate to the production network
-		//
-		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
-		AcknowledgeChangeManagement(context.Context, AcknowledgementRequest) error
-	}
-
 	// ChangeManagementInfoResponse contains response from GetChangeManagementInfo
 	ChangeManagementInfoResponse struct {
 		AcknowledgementDeadline *string           `json:"acknowledgementDeadline"`

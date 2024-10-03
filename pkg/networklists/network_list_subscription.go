@@ -7,24 +7,6 @@ import (
 )
 
 type (
-	// The NetworkListSubscription interface supports creating, modifying and removing network list subscriptions.
-	NetworkListSubscription interface {
-		// GetNetworkListSubscription retrieves networklist subscription.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/post-notifications-subscribe
-		GetNetworkListSubscription(ctx context.Context, params GetNetworkListSubscriptionRequest) (*GetNetworkListSubscriptionResponse, error)
-
-		// UpdateNetworkListSubscription updates networklist subscription.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/post-notifications-subscribe
-		UpdateNetworkListSubscription(ctx context.Context, params UpdateNetworkListSubscriptionRequest) (*UpdateNetworkListSubscriptionResponse, error)
-
-		// RemoveNetworkListSubscription unsubscribes networklist.
-		//
-		// See: https://techdocs.akamai.com/network-lists/reference/post-notifications-unsubscribe
-		RemoveNetworkListSubscription(ctx context.Context, params RemoveNetworkListSubscriptionRequest) (*RemoveNetworkListSubscriptionResponse, error)
-	}
-
 	// GetNetworkListSubscriptionRequest contains request parameters for GetNetworkListSubscription
 	GetNetworkListSubscriptionRequest struct {
 		Recipients []string `json:"-"`

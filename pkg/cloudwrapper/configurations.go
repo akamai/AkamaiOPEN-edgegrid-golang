@@ -8,39 +8,11 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// Configurations is a CloudWrapper configurations API interface
-	Configurations interface {
-		// GetConfiguration gets a specific Cloud Wrapper configuration
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-configuration
-		GetConfiguration(context.Context, GetConfigurationRequest) (*Configuration, error)
-		// ListConfigurations lists all Cloud Wrapper configurations on your contract
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/get-configurations
-		ListConfigurations(context.Context) (*ListConfigurationsResponse, error)
-		// CreateConfiguration creates a Cloud Wrapper configuration
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/post-configuration
-		CreateConfiguration(context.Context, CreateConfigurationRequest) (*Configuration, error)
-		// UpdateConfiguration updates a saved or inactive configuration
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/put-configuration
-		UpdateConfiguration(context.Context, UpdateConfigurationRequest) (*Configuration, error)
-		// DeleteConfiguration deletes configuration
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/delete-configuration
-		DeleteConfiguration(context.Context, DeleteConfigurationRequest) error
-		// ActivateConfiguration activates a Cloud Wrapper configuration
-		//
-		// See: https://techdocs.akamai.com/cloud-wrapper/reference/post-configuration-activations
-		ActivateConfiguration(context.Context, ActivateConfigurationRequest) error
-	}
-
 	// GetConfigurationRequest holds parameters for GetConfiguration
 	GetConfigurationRequest struct {
 		ConfigID int64
@@ -49,11 +21,11 @@ type (
 	// CreateConfigurationRequest holds parameters for CreateConfiguration
 	CreateConfigurationRequest struct {
 		Activate bool
-		Body     CreateConfigurationBody
+		Body     CreateConfigurationRequestBody
 	}
 
-	// CreateConfigurationBody holds request body parameters for CreateConfiguration
-	CreateConfigurationBody struct {
+	// CreateConfigurationRequestBody holds request body parameters for CreateConfiguration
+	CreateConfigurationRequestBody struct {
 		CapacityAlertsThreshold *int                `json:"capacityAlertsThreshold,omitempty"`
 		Comments                string              `json:"comments"`
 		ContractID              string              `json:"contractId"`
@@ -69,11 +41,11 @@ type (
 	UpdateConfigurationRequest struct {
 		ConfigID int64
 		Activate bool
-		Body     UpdateConfigurationBody
+		Body     UpdateConfigurationRequestBody
 	}
 
-	// UpdateConfigurationBody holds request body parameters for UpdateConfiguration
-	UpdateConfigurationBody struct {
+	// UpdateConfigurationRequestBody holds request body parameters for UpdateConfiguration
+	UpdateConfigurationRequestBody struct {
 		CapacityAlertsThreshold *int                `json:"capacityAlertsThreshold,omitempty"`
 		Comments                string              `json:"comments"`
 		Locations               []ConfigLocationReq `json:"locations"`
@@ -236,8 +208,8 @@ func (r CreateConfigurationRequest) Validate() error {
 	})
 }
 
-// Validate validates CreateConfigurationBody
-func (b CreateConfigurationBody) Validate() error {
+// Validate validates CreateConfigurationRequestBody
+func (b CreateConfigurationRequestBody) Validate() error {
 	return validation.Errors{
 		"Comments":                validation.Validate(b.Comments, validation.Required),
 		"Locations":               validation.Validate(b.Locations, validation.Required),
@@ -257,8 +229,8 @@ func (r UpdateConfigurationRequest) Validate() error {
 	})
 }
 
-// Validate validates UpdateConfigurationBody
-func (b UpdateConfigurationBody) Validate() error {
+// Validate validates UpdateConfigurationRequestBody
+func (b UpdateConfigurationRequestBody) Validate() error {
 	return validation.Errors{
 		"Comments":                validation.Validate(b.Comments, validation.Required),
 		"Locations":               validation.Validate(b.Locations, validation.Required),

@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -130,7 +130,7 @@ func TestGetConfiguration(t *testing.T) {
 }`,
 			expectedPath: "/cloud-wrapper/v1/configurations/1",
 			expectedResponse: &Configuration{
-				CapacityAlertsThreshold: tools.IntPtr(75),
+				CapacityAlertsThreshold: ptr.To(75),
 				Comments:                "TestComments",
 				ContractID:              "TestContractID",
 				ConfigID:                1,
@@ -195,7 +195,7 @@ func TestGetConfiguration(t *testing.T) {
 					DataStreams: &DataStreams{
 						DataStreamIDs: []int64{11, 22},
 						Enabled:       true,
-						SamplingRate:  tools.IntPtr(999),
+						SamplingRate:  ptr.To(999),
 					},
 					EnableSoftAlerts: true,
 					Origins: []Origin{
@@ -215,8 +215,8 @@ func TestGetConfiguration(t *testing.T) {
 				ConfigName:         "TestConfigName",
 				LastUpdatedBy:      "user",
 				LastUpdatedDate:    "2023-05-10T09:55:37.000Z",
-				LastActivatedBy:    tools.StringPtr("user"),
-				LastActivatedDate:  tools.StringPtr("2023-05-10T10:14:49.379Z"),
+				LastActivatedBy:    ptr.To("user"),
+				LastActivatedDate:  ptr.To("2023-05-10T10:14:49.379Z"),
 				NotificationEmails: []string{"test@akamai.com"},
 				PropertyIDs: []string{
 					"321",
@@ -455,7 +455,7 @@ func TestListConfigurations(t *testing.T) {
 			expectedResponse: &ListConfigurationsResponse{
 				Configurations: []Configuration{
 					{
-						CapacityAlertsThreshold: tools.IntPtr(75),
+						CapacityAlertsThreshold: ptr.To(75),
 						Comments:                "testComments",
 						ContractID:              "testContract",
 						ConfigID:                1,
@@ -474,8 +474,8 @@ func TestListConfigurations(t *testing.T) {
 						ConfigName:         "testcloudwrapper",
 						LastUpdatedBy:      "user",
 						LastUpdatedDate:    "2023-05-10T09:55:37.000Z",
-						LastActivatedBy:    tools.StringPtr("user"),
-						LastActivatedDate:  tools.StringPtr("2023-05-10T10:14:49.379Z"),
+						LastActivatedBy:    ptr.To("user"),
+						LastActivatedDate:  ptr.To("2023-05-10T10:14:49.379Z"),
 						NotificationEmails: []string{"user@akamai.com"},
 						PropertyIDs: []string{
 							"11",
@@ -483,7 +483,7 @@ func TestListConfigurations(t *testing.T) {
 						RetainIdleObjects: false,
 					},
 					{
-						CapacityAlertsThreshold: tools.IntPtr(75),
+						CapacityAlertsThreshold: ptr.To(75),
 						Comments:                "mcdn",
 						ContractID:              "testContract2",
 						ConfigID:                2,
@@ -534,8 +534,8 @@ func TestListConfigurations(t *testing.T) {
 						ConfigName:         "testcloudwrappermcdn",
 						LastUpdatedBy:      "user",
 						LastUpdatedDate:    "2023-05-10T09:55:37.000Z",
-						LastActivatedBy:    tools.StringPtr("user"),
-						LastActivatedDate:  tools.StringPtr("2023-05-10T10:14:49.379Z"),
+						LastActivatedBy:    ptr.To("user"),
+						LastActivatedDate:  ptr.To("2023-05-10T10:14:49.379Z"),
 						NotificationEmails: []string{"user@akamai.com"},
 						PropertyIDs:        []string{"22"},
 						RetainIdleObjects:  false,
@@ -597,7 +597,7 @@ func TestCreateConfiguration(t *testing.T) {
 	}{
 		"200 OK - minimal": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -668,7 +668,7 @@ func TestCreateConfiguration(t *testing.T) {
    "lastActivatedBy":null
 }`,
 			expectedResponse: &Configuration{
-				CapacityAlertsThreshold: tools.IntPtr(50),
+				CapacityAlertsThreshold: ptr.To(50),
 				Comments:                "TestComments",
 				ContractID:              "TestContractID",
 				Locations: []ConfigLocationResp{
@@ -694,7 +694,7 @@ func TestCreateConfiguration(t *testing.T) {
 		"200 OK - minimal with activate query param": {
 			params: CreateConfigurationRequest{
 				Activate: true,
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -765,7 +765,7 @@ func TestCreateConfiguration(t *testing.T) {
    "lastActivatedBy":null
 }`,
 			expectedResponse: &Configuration{
-				CapacityAlertsThreshold: tools.IntPtr(50),
+				CapacityAlertsThreshold: ptr.To(50),
 				Comments:                "TestComments",
 				ContractID:              "TestContractID",
 				Locations: []ConfigLocationResp{
@@ -790,7 +790,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"200 OK - minimal MultiCDNSettings": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1005,8 +1005,8 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"200 OK - full MultiCDNSettings": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
-					CapacityAlertsThreshold: tools.IntPtr(70),
+				Body: CreateConfigurationRequestBody{
+					CapacityAlertsThreshold: ptr.To(70),
 					Comments:                "TestComments",
 					ContractID:              "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1061,7 +1061,7 @@ func TestCreateConfiguration(t *testing.T) {
 						DataStreams: &DataStreams{
 							DataStreamIDs: []int64{1},
 							Enabled:       true,
-							SamplingRate:  tools.IntPtr(10),
+							SamplingRate:  ptr.To(10),
 						},
 						Origins: []Origin{
 							{
@@ -1266,7 +1266,7 @@ func TestCreateConfiguration(t *testing.T) {
    "lastActivatedBy":null
 }`,
 			expectedResponse: &Configuration{
-				CapacityAlertsThreshold: tools.IntPtr(70),
+				CapacityAlertsThreshold: ptr.To(70),
 				Comments:                "TestComments",
 				ContractID:              "TestContractID",
 				Locations: []ConfigLocationResp{
@@ -1322,7 +1322,7 @@ func TestCreateConfiguration(t *testing.T) {
 					DataStreams: &DataStreams{
 						DataStreamIDs: []int64{1},
 						Enabled:       true,
-						SamplingRate:  tools.IntPtr(10),
+						SamplingRate:  ptr.To(10),
 					},
 					Origins: []Origin{
 						{
@@ -1350,7 +1350,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"200 OK - BOCC struct fields default values": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1547,7 +1547,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"200 OK - DataStreams struct fields default values": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1749,7 +1749,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"missing required params - location fields": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1769,7 +1769,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"missing required params - multiCDN fields": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1793,7 +1793,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"missing required params - BOCC struct fields when enabled": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1840,7 +1840,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"missing required params - Origin struct fields": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{Comments: "TestComments",
+				Body: CreateConfigurationRequestBody{Comments: "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
 						{
@@ -1880,7 +1880,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"validation error - at least one CDN must be enabled": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1930,7 +1930,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"validation error - authKeys nor IPACLCIDRs specified": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -1974,8 +1974,8 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"struct fields validations": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
-					CapacityAlertsThreshold: tools.IntPtr(20),
+				Body: CreateConfigurationRequestBody{
+					CapacityAlertsThreshold: ptr.To(20),
 					Comments:                "TestComments",
 					ContractID:              "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -2013,7 +2013,7 @@ func TestCreateConfiguration(t *testing.T) {
 						DataStreams: &DataStreams{
 							DataStreamIDs: []int64{1},
 							Enabled:       true,
-							SamplingRate:  tools.IntPtr(-10),
+							SamplingRate:  ptr.To(-10),
 						},
 						Origins: []Origin{
 							{
@@ -2033,7 +2033,7 @@ func TestCreateConfiguration(t *testing.T) {
 		},
 		"500 internal server error": {
 			params: CreateConfigurationRequest{
-				Body: CreateConfigurationBody{
+				Body: CreateConfigurationRequestBody{
 					Comments:   "TestComments",
 					ContractID: "TestContractID",
 					Locations: []ConfigLocationReq{
@@ -2074,9 +2074,6 @@ func TestCreateConfiguration(t *testing.T) {
 	}
 
 	for name, test := range tests {
-		if name != "200 OK - full MultiCDNSettings" {
-			continue
-		}
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
@@ -2115,7 +2112,7 @@ func TestUpdateConfiguration(t *testing.T) {
 		"200 OK - minimal": {
 			params: UpdateConfigurationRequest{
 				ConfigID: 111,
-				Body: UpdateConfigurationBody{
+				Body: UpdateConfigurationRequestBody{
 					Comments: "TestCommentsUpdated",
 					Locations: []ConfigLocationReq{
 						{
@@ -2185,7 +2182,7 @@ func TestUpdateConfiguration(t *testing.T) {
 }`,
 			expectedResponse: &Configuration{
 				ConfigID:                111,
-				CapacityAlertsThreshold: tools.IntPtr(50),
+				CapacityAlertsThreshold: ptr.To(50),
 				Comments:                "TestCommentsUpdated",
 				ContractID:              "TestContractID",
 				Locations: []ConfigLocationResp{
@@ -2211,7 +2208,7 @@ func TestUpdateConfiguration(t *testing.T) {
 		"200 OK - minimal MultiCDNSettings": {
 			params: UpdateConfigurationRequest{
 				ConfigID: 111,
-				Body: UpdateConfigurationBody{
+				Body: UpdateConfigurationRequestBody{
 					Comments: "TestCommentsUpdated",
 					Locations: []ConfigLocationReq{
 						{
@@ -2405,8 +2402,8 @@ func TestUpdateConfiguration(t *testing.T) {
 		"200 OK - all fields": {
 			params: UpdateConfigurationRequest{
 				ConfigID: 111,
-				Body: UpdateConfigurationBody{
-					CapacityAlertsThreshold: tools.IntPtr(80),
+				Body: UpdateConfigurationRequestBody{
+					CapacityAlertsThreshold: ptr.To(80),
 					Comments:                "TestCommentsUpdated",
 					Locations: []ConfigLocationReq{
 						{
@@ -2447,7 +2444,7 @@ func TestUpdateConfiguration(t *testing.T) {
 						DataStreams: &DataStreams{
 							DataStreamIDs: []int64{1},
 							Enabled:       true,
-							SamplingRate:  tools.IntPtr(10),
+							SamplingRate:  ptr.To(10),
 						},
 						Origins: []Origin{
 							{
@@ -2606,7 +2603,7 @@ func TestUpdateConfiguration(t *testing.T) {
    "lastActivatedBy":null
 }`,
 			expectedResponse: &Configuration{
-				CapacityAlertsThreshold: tools.IntPtr(80),
+				CapacityAlertsThreshold: ptr.To(80),
 				Comments:                "TestCommentsUpdated",
 				ContractID:              "TestContractID",
 				ConfigID:                111,
@@ -2650,7 +2647,7 @@ func TestUpdateConfiguration(t *testing.T) {
 					DataStreams: &DataStreams{
 						DataStreamIDs: []int64{1},
 						Enabled:       true,
-						SamplingRate:  tools.IntPtr(10),
+						SamplingRate:  ptr.To(10),
 					},
 					EnableSoftAlerts: true,
 					Origins: []Origin{
@@ -2681,7 +2678,7 @@ func TestUpdateConfiguration(t *testing.T) {
 		"500 internal server error": {
 			params: UpdateConfigurationRequest{
 				ConfigID: 1,
-				Body: UpdateConfigurationBody{
+				Body: UpdateConfigurationRequestBody{
 					Comments: "TestCommentsUpdated",
 					Locations: []ConfigLocationReq{
 						{

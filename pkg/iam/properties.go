@@ -9,53 +9,45 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// Properties is the IAM properties API interface
-	Properties interface {
-		// ListProperties lists the properties for the current account or other managed accounts using the accountSwitchKey parameter.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-properties
-		ListProperties(context.Context, ListPropertiesRequest) (*ListPropertiesResponse, error)
-
-		// GetProperty lists a property's details.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/get-property
-		GetProperty(context.Context, GetPropertyRequest) (*GetPropertyResponse, error)
-
-		// MoveProperty moves a property from one group to another group.
-		//
-		// See: https://techdocs.akamai.com/iam-api/reference/put-property
-		MoveProperty(context.Context, MovePropertyRequest) error
-
-		// MapPropertyIDToName returns property name for given (IAM) property ID
-		// Mainly to be used to map (IAM) Property ID to (PAPI) Property ID
-		// To finish the mapping, please use papi.MapPropertyNameToID
-		MapPropertyIDToName(context.Context, MapPropertyIDToNameRequest) (*string, error)
-	}
-
-	// ListPropertiesRequest contains the request parameters for the list properties operation.
+	// ListPropertiesRequest contains the request parameters for the ListProperties endpoint.
 	ListPropertiesRequest struct {
 		GroupID int64
 		Actions bool
 	}
 
-	// GetPropertyRequest contains the request parameters for the get property operation.
+	// ListUsersForPropertyRequest contains the request parameters for the ListUsersForProperty endpoint.
+	ListUsersForPropertyRequest struct {
+		PropertyID int64
+		UserType   PropertyUserType
+	}
+
+	// GetPropertyRequest contains the request parameters for the GetProperty endpoint.
 	GetPropertyRequest struct {
 		PropertyID int64
 		GroupID    int64
 	}
 
-	// MapPropertyNameToIDRequest is the argument for MapPropertyNameToID
+	// MapPropertyNameToIDRequest is the argument for MapPropertyNameToID.
 	MapPropertyNameToIDRequest string
 
-	// ListPropertiesResponse holds the response data from ListProperties.
+	// BlockUsersRequest contains the request parameters for the BlockUsers endpoint.
+	BlockUsersRequest struct {
+		PropertyID int64
+		Body       BlockUsersRequestBody
+	}
+
+	// ListPropertiesResponse holds the response data from the ListProperties endpoint.
 	ListPropertiesResponse []Property
 
-	// GetPropertyResponse holds the response data from GetProperty.
+	// ListUsersForPropertyResponse holds the response data from the ListUsersForProperty endpoint.
+	ListUsersForPropertyResponse []UsersForProperty
+
+	// GetPropertyResponse holds the response data from the GetProperty endpoint.
 	GetPropertyResponse struct {
 		ARLConfigFile string    `json:"arlConfigFile"`
 		CreatedBy     string    `json:"createdBy"`
@@ -68,16 +60,27 @@ type (
 		PropertyName  string    `json:"propertyName"`
 	}
 
-	// MovePropertyRequest contains the request parameters for the MoveProperty operation.
+	// BlockUsersResponse holds the response data from the BlockUsers endpoint.
+	BlockUsersResponse []UsersForProperty
+
+	// MovePropertyRequest contains the request parameters for the MoveProperty endpoint.
 	MovePropertyRequest struct {
 		PropertyID int64
-		BodyParams MovePropertyReqBody
+		Body       MovePropertyRequestBody
 	}
 
-	// MovePropertyReqBody contains body parameters for the MoveProperty operation.
-	MovePropertyReqBody struct {
+	// MovePropertyRequestBody contains body parameters for the MoveProperty endpoint.
+	MovePropertyRequestBody struct {
 		DestinationGroupID int64 `json:"destinationGroupId"`
 		SourceGroupID      int64 `json:"sourceGroupId"`
+	}
+
+	// BlockUsersRequestBody hold the request body parameters for the BlockUsers endpoint.
+	BlockUsersRequestBody []BlockUserItem
+
+	// BlockUserItem contains body parameters for the BlockUsers endpoint.
+	BlockUserItem struct {
+		UIIdentityID string `json:"uiIdentityId"`
 	}
 
 	// Property holds the property details.
@@ -95,14 +98,51 @@ type (
 		Move bool `json:"move"`
 	}
 
-	// MapPropertyIDToNameRequest is the argument for MapPropertyIDToName
+	// MapPropertyIDToNameRequest is the argument for MapPropertyIDToName.
 	MapPropertyIDToNameRequest struct {
 		PropertyID int64
 		GroupID    int64
 	}
+
+	// UsersForProperty holds details about the users accessing the property.
+	UsersForProperty struct {
+		FirstName    string `json:"firstName"`
+		IsBlocked    bool   `json:"isBlocked"`
+		LastName     string `json:"lastName"`
+		UIIdentityID string `json:"uiIdentityId"`
+		UIUserName   string `json:"uiUserName"`
+	}
+
+	// PropertyUserType filters property users based on their access to the property.
+	PropertyUserType string
 )
 
-// Validate validates GetPropertyRequest
+const (
+	// PropertyUserTypeAll selects all property users.
+	PropertyUserTypeAll PropertyUserType = "all"
+	// PropertyUserTypeAssigned selects users that have access to the property.
+	PropertyUserTypeAssigned PropertyUserType = "assigned"
+	// PropertyUserTypeBlocked selects users whose access to the property is blocked.
+	PropertyUserTypeBlocked PropertyUserType = "blocked"
+)
+
+// Validate validates PropertyUserType.
+func (p PropertyUserType) Validate() error {
+	return validation.In(PropertyUserTypeAll, PropertyUserTypeAssigned, PropertyUserTypeBlocked).
+		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s' or '%s'",
+			p, PropertyUserTypeAll, PropertyUserTypeAssigned, PropertyUserTypeBlocked)).
+		Validate(p)
+}
+
+// Validate validates ListUsersForPropertyRequest.
+func (r ListUsersForPropertyRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
+		"UserType":   r.UserType.Validate(),
+	})
+}
+
+// Validate validates GetPropertyRequest.
 func (r GetPropertyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
@@ -110,7 +150,7 @@ func (r GetPropertyRequest) Validate() error {
 	})
 }
 
-// Validate validates MapPropertyIDToNameRequest
+// Validate validates MapPropertyIDToNameRequest.
 func (r MapPropertyIDToNameRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
@@ -118,38 +158,57 @@ func (r MapPropertyIDToNameRequest) Validate() error {
 	})
 }
 
-// Validate validates MovePropertyRequest
+// Validate validates MovePropertyRequest.
 func (r MovePropertyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
-		"BodyParams": validation.Validate(r.BodyParams, validation.Required),
+		"Body":       validation.Validate(r.Body, validation.Required),
 	})
 }
 
-// Validate validates MovePropertyReqBody
-func (r MovePropertyReqBody) Validate() error {
-	return edgegriderr.ParseValidationErrors(validation.Errors{
+// Validate validates MovePropertyRequestBody.
+func (r MovePropertyRequestBody) Validate() error {
+	return validation.Errors{
 		"DestinationGroupID": validation.Validate(r.DestinationGroupID, validation.Required),
 		"SourceGroupID":      validation.Validate(r.SourceGroupID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates BlockUsersRequest.
+func (r BlockUsersRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
+		"Body":       validation.Validate(r.Body, validation.Required),
+	})
+}
+
+// Validate validates BlockUserItem.
+func (r BlockUserItem) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"UIIdentityID": validation.Validate(r.UIIdentityID, validation.Required),
 	})
 }
 
 var (
-	// ErrListProperties is returned when ListProperties fails
+	// ErrListProperties is returned when ListProperties fails.
 	ErrListProperties = errors.New("list properties")
-	// ErrGetProperty is returned when GetProperty fails
+	// ErrListUsersForProperty is returned when ListUsersForProperty fails.
+	ErrListUsersForProperty = errors.New("list users for property")
+	// ErrGetProperty is returned when GetProperty fails.
 	ErrGetProperty = errors.New("get property")
-	// ErrMoveProperty is returned when MoveProperty fails
+	// ErrMoveProperty is returned when MoveProperty fails.
 	ErrMoveProperty = errors.New("move property")
-	// ErrMapPropertyIDToName is returned when MapPropertyIDToName fails
+	// ErrMapPropertyIDToName is returned when MapPropertyIDToName fails.
 	ErrMapPropertyIDToName = errors.New("map property by id")
-	// ErrMapPropertyNameToID is returned when MapPropertyNameToID fails
+	// ErrMapPropertyNameToID is returned when MapPropertyNameToID fails.
 	ErrMapPropertyNameToID = errors.New("map property by name")
-	// ErrNoProperty is returned when MapPropertyNameToID did not find given property
+	// ErrNoProperty is returned when MapPropertyNameToID did not find given property.
 	ErrNoProperty = errors.New("no such property")
+	// ErrBlockUsers is returned when BlockUsers fails.
+	ErrBlockUsers = errors.New("block users")
 )
 
-func (i *iam) ListProperties(ctx context.Context, params ListPropertiesRequest) (*ListPropertiesResponse, error) {
+func (i *iam) ListProperties(ctx context.Context, params ListPropertiesRequest) (ListPropertiesResponse, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListProperties")
 
@@ -180,7 +239,44 @@ func (i *iam) ListProperties(ctx context.Context, params ListPropertiesRequest) 
 		return nil, fmt.Errorf("%s: %w", ErrListProperties, i.Error(resp))
 	}
 
-	return &result, nil
+	return result, nil
+}
+
+func (i *iam) ListUsersForProperty(ctx context.Context, params ListUsersForPropertyRequest) (ListUsersForPropertyResponse, error) {
+	logger := i.Log(ctx)
+	logger.Debug("ListUsersForProperty")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w:\n%s", ErrListUsersForProperty, ErrStructValidation, err)
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/properties/%d/users", params.PropertyID))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListUsersForProperty, err)
+	}
+
+	if params.UserType != "" {
+		q := uri.Query()
+		q.Add("userType", string(params.UserType))
+		uri.RawQuery = q.Encode()
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListUsersForProperty, err)
+	}
+
+	var result ListUsersForPropertyResponse
+	resp, err := i.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrListUsersForProperty, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListUsersForProperty, i.Error(resp))
+	}
+
+	return result, nil
 }
 
 func (i *iam) GetProperty(ctx context.Context, params GetPropertyRequest) (*GetPropertyResponse, error) {
@@ -233,7 +329,7 @@ func (i *iam) MoveProperty(ctx context.Context, params MovePropertyRequest) erro
 		return fmt.Errorf("%w: failed to create request: %s", ErrMoveProperty, err)
 	}
 
-	resp, err := i.Exec(req, nil, params.BodyParams)
+	resp, err := i.Exec(req, nil, params.Body)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrMoveProperty, err)
 	}
@@ -279,11 +375,39 @@ func (i *iam) MapPropertyNameToID(ctx context.Context, name MapPropertyNameToIDR
 		return nil, fmt.Errorf("%w: request failed: %s", ErrMapPropertyNameToID, err)
 	}
 
-	for _, property := range *properties {
+	for _, property := range properties {
 		if property.PropertyName == string(name) {
 			return &property.PropertyID, nil
 		}
 	}
 
 	return nil, fmt.Errorf("%w: %s", ErrNoProperty, name)
+}
+
+func (i *iam) BlockUsers(ctx context.Context, params BlockUsersRequest) (*BlockUsersResponse, error) {
+	logger := i.Log(ctx)
+	logger.Debug("BlockUsers")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrBlockUsers, ErrStructValidation, err)
+	}
+
+	uri := fmt.Sprintf("/identity-management/v3/user-admin/properties/%d/users/block", params.PropertyID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrBlockUsers, err)
+	}
+
+	var result BlockUsersResponse
+	resp, err := i.Exec(req, &result, params.Body)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrBlockUsers, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrBlockUsers, i.Error(resp))
+	}
+
+	return &result, nil
 }

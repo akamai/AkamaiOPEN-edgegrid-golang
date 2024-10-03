@@ -7,26 +7,26 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestDNS_GetRecord(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
-		name             string
-		recordType       string
+		params           GetRecordRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *RecordBody
+		expectedResponse *GetRecordResponse
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
-			name:           "www.example.com",
-			recordType:     "A",
+			params: GetRecordRequest{
+				Zone:       "example.com",
+				Name:       "www.example.com",
+				RecordType: "A",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -39,7 +39,7 @@ func TestDNS_GetRecord(t *testing.T) {
 				]
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types/A",
-			expectedResponse: &RecordBody{
+			expectedResponse: &GetRecordResponse{
 				Name:       "www.example.com",
 				RecordType: "A",
 				TTL:        300,
@@ -48,9 +48,11 @@ func TestDNS_GetRecord(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			zone:           "example.com",
-			name:           "www.example.com",
-			recordType:     "A",
+			params: GetRecordRequest{
+				Zone:       "example.com",
+				Name:       "www.example.com",
+				RecordType: "A",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -79,7 +81,7 @@ func TestDNS_GetRecord(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetRecord(context.Background(), test.zone, test.name, test.recordType)
+			result, err := client.GetRecord(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -92,18 +94,18 @@ func TestDNS_GetRecord(t *testing.T) {
 
 func TestDNS_GetRecordList(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
-		name             string
-		recordType       string
+		params           GetRecordListRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *RecordSetResponse
+		expectedResponse *GetRecordListResponse
 		withError        error
 	}{
 		"200 OK": {
-			zone:           "example.com",
-			recordType:     "A",
+			params: GetRecordListRequest{
+				Zone:       "example.com",
+				RecordType: "A",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -129,7 +131,7 @@ func TestDNS_GetRecordList(t *testing.T) {
     ]
 }`,
 			expectedPath: "/config-dns/v2/zones/example.com/recordsets?showAll=true&types=A",
-			expectedResponse: &RecordSetResponse{
+			expectedResponse: &GetRecordListResponse{
 				Metadata: Metadata{
 					LastPage:      0,
 					Page:          1,
@@ -148,8 +150,10 @@ func TestDNS_GetRecordList(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			zone:           "example.com",
-			recordType:     "A",
+			params: GetRecordListRequest{
+				Zone:       "example.com",
+				RecordType: "A",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -178,7 +182,7 @@ func TestDNS_GetRecordList(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetRecordList(context.Background(), test.zone, test.name, test.recordType)
+			result, err := client.GetRecordList(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -191,9 +195,7 @@ func TestDNS_GetRecordList(t *testing.T) {
 
 func TestDNS_GetRdata(t *testing.T) {
 	tests := map[string]struct {
-		zone             string
-		name             string
-		recordType       string
+		params           GetRdataRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -201,9 +203,11 @@ func TestDNS_GetRdata(t *testing.T) {
 		withError        error
 	}{
 		"ipv6 test": {
-			zone:           "example.com",
-			name:           "www.example.com",
-			recordType:     "AAAA",
+			params: GetRdataRequest{
+				Zone:       "example.com",
+				RecordType: "AAAA",
+				Name:       "www.example.com",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -231,9 +235,11 @@ func TestDNS_GetRdata(t *testing.T) {
 			expectedResponse: []string{"2001:0db8:85a3:0000:0000:8a2e:0370:7334"},
 		},
 		"loc test": {
-			zone:           "example.com",
-			name:           "www.example.com",
-			recordType:     "LOC",
+			params: GetRdataRequest{
+				Zone:       "example.com",
+				RecordType: "LOC",
+				Name:       "www.example.com",
+			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -261,8 +267,11 @@ func TestDNS_GetRdata(t *testing.T) {
 			expectedResponse: []string{"52 22 23.000 N 4 53 32.000 E -2.00m 0.00m 10000.00m 10.00m"},
 		},
 		"500 internal server error": {
-			zone:           "example.com",
-			recordType:     "A",
+			params: GetRdataRequest{
+				Zone:       "example.com",
+				RecordType: "A",
+				Name:       "www.example.com",
+			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 {
@@ -291,7 +300,7 @@ func TestDNS_GetRdata(t *testing.T) {
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetRdata(context.Background(), test.zone, test.name, test.recordType)
+			result, err := client.GetRdata(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

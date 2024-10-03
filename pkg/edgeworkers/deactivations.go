@@ -11,24 +11,6 @@ import (
 )
 
 type (
-	// Deactivations is an EdgeWorkers deactivations API interface
-	Deactivations interface {
-		// ListDeactivations lists all deactivations for a given EdgeWorker ID
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-deactivations-1
-		ListDeactivations(context.Context, ListDeactivationsRequest) (*ListDeactivationsResponse, error)
-
-		// GetDeactivation gets details for a specific deactivation
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/get-deactivation-1
-		GetDeactivation(context.Context, GetDeactivationRequest) (*Deactivation, error)
-
-		// DeactivateVersion deactivates an existing EdgeWorker version on the akamai network
-		//
-		// See: https://techdocs.akamai.com/edgeworkers/reference/post-deactivations-1
-		DeactivateVersion(context.Context, DeactivateVersionRequest) (*Deactivation, error)
-	}
-
 	// Deactivation is the response returned by GetDeactivation, DeactivateVersion and ListDeactivation
 	Deactivation struct {
 		EdgeWorkerID     int               `json:"edgeWorkerId"`

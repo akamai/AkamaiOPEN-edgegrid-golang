@@ -8,7 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/tools"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/stretchr/testify/require"
 	"github.com/tj/assert"
 )
@@ -26,17 +27,17 @@ func TestIAM_CreateUser(t *testing.T) {
 		"201 OK": {
 			params: CreateUserRequest{
 				UserBasicInfo: UserBasicInfo{
-					FirstName: "John",
-					LastName:  "Doe",
-					Email:     "john.doe@mycompany.com",
-					Phone:     "(123) 321-1234",
-					Country:   "USA",
-					State:     "CA",
+					FirstName:                "John",
+					LastName:                 "Doe",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					Country:                  "USA",
+					State:                    "CA",
+					AdditionalAuthentication: NoneAuthentication,
 				},
-				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: tools.IntPtr(1)}},
-				Notifications: UserNotifications{},
+				AuthGrants: []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
 			},
-			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","authGrants":[{"groupId":1,"isBlocked":false,"roleId":1}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":null,"upgrade":null}}}`,
+			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","additionalAuthentication":"NONE","authGrants":[{"groupId":1,"isBlocked":false,"roleId":1}]}`,
 			responseStatus: http.StatusCreated,
 			responseBody: `
 {
@@ -46,33 +47,107 @@ func TestIAM_CreateUser(t *testing.T) {
 	"email": "john.doe@mycompany.com",
 	"phone": "(123) 321-1234",
 	"state": "CA",
-	"country": "USA"
+	"country": "USA",
+	"additionalAuthenticationConfigured": false,
+	"additionalAuthentication": "NONE"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities?sendEmail=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities?sendEmail=false",
 			expectedResponse: &User{
 				IdentityID: "A-BC-1234567",
 				UserBasicInfo: UserBasicInfo{
-					FirstName: "John",
-					LastName:  "Doe",
-					Email:     "john.doe@mycompany.com",
-					Phone:     "(123) 321-1234",
-					Country:   "USA",
-					State:     "CA",
+					FirstName:                "John",
+					LastName:                 "Doe",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					Country:                  "USA",
+					State:                    "CA",
+					AdditionalAuthentication: NoneAuthentication,
 				},
+				AdditionalAuthenticationConfigured: false,
+			},
+		},
+		"201 OK - all fields": {
+			params: CreateUserRequest{
+				UserBasicInfo: UserBasicInfo{
+					FirstName:                "John",
+					LastName:                 "Doe",
+					UserName:                 "UserName",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					TimeZone:                 "GMT+2",
+					JobTitle:                 "Title",
+					SecondaryEmail:           "second@email.com",
+					MobilePhone:              "123123123",
+					Address:                  "Address",
+					City:                     "City",
+					State:                    "CA",
+					ZipCode:                  "11-111",
+					Country:                  "USA",
+					ContactType:              "Dev",
+					PreferredLanguage:        "EN",
+					SessionTimeOut:           ptr.To(1),
+					AdditionalAuthentication: MFAAuthentication,
+				},
+				AuthGrants: []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
+				Notifications: &UserNotifications{
+					EnableEmail: false,
+					Options: UserNotificationOptions{
+						NewUser:                   false,
+						PasswordExpiry:            false,
+						Proactive:                 []string{"Test1"},
+						Upgrade:                   []string{"Test2"},
+						APIClientCredentialExpiry: false,
+					},
+				},
+				SendEmail: true,
+			},
+			requestBody:    `{"firstName":"John","lastName":"Doe","uiUserName":"UserName","email":"john.doe@mycompany.com","phone":"(123) 321-1234","timeZone":"GMT+2","jobTitle":"Title","tfaEnabled":false,"secondaryEmail":"second@email.com","mobilePhone":"123123123","address":"Address","city":"City","state":"CA","zipCode":"11-111","country":"USA","contactType":"Dev","preferredLanguage":"EN","sessionTimeOut":1,"additionalAuthentication":"MFA","authGrants":[{"groupId":1,"isBlocked":false,"roleId":1}],"notifications":{"enableEmailNotifications":false,"options":{"newUserNotification":false,"passwordExpiry":false,"proactive":["Test1"],"upgrade":["Test2"],"apiClientCredentialExpiryNotification":false}}}`,
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+	"uiIdentityId": "A-BC-1234567",
+	"firstName": "John",
+	"lastName": "Doe",
+	"email": "john.doe@mycompany.com",
+	"phone": "(123) 321-1234",
+	"state": "CA",
+	"country": "USA",
+	"additionalAuthenticationConfigured": false,
+	"additionalAuthentication": "NONE"
+}`,
+			expectedPath: "/identity-management/v3/user-admin/ui-identities?sendEmail=true",
+			expectedResponse: &User{
+				IdentityID: "A-BC-1234567",
+				UserBasicInfo: UserBasicInfo{
+					FirstName:                "John",
+					LastName:                 "Doe",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					Country:                  "USA",
+					State:                    "CA",
+					AdditionalAuthentication: NoneAuthentication,
+				},
+				AdditionalAuthenticationConfigured: false,
+			},
+		},
+		"validation errors": {
+			params: CreateUserRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create user: struct validation:\nAdditionalAuthentication: cannot be blank\nAuthGrants: cannot be blank\nCountry: cannot be blank\nEmail: cannot be blank\nFirstName: cannot be blank\nLastName: cannot be blank", err.Error())
 			},
 		},
 		"500 internal server error": {
 			params: CreateUserRequest{
 				UserBasicInfo: UserBasicInfo{
-					FirstName: "John",
-					LastName:  "Doe",
-					Email:     "john.doe@mycompany.com",
-					Phone:     "(123) 321-1234",
-					Country:   "USA",
-					State:     "CA",
+					FirstName:                "John",
+					LastName:                 "Doe",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					Country:                  "USA",
+					State:                    "CA",
+					AdditionalAuthentication: TFAAuthentication,
 				},
-				AuthGrants:    []AuthGrantRequest{{GroupID: 1, RoleID: tools.IntPtr(1)}},
-				Notifications: UserNotifications{},
+				AuthGrants: []AuthGrantRequest{{GroupID: 1, RoleID: ptr.To(1)}},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -82,7 +157,7 @@ func TestIAM_CreateUser(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities?sendEmail=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities?sendEmail=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -95,30 +170,30 @@ func TestIAM_CreateUser(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				if test.requestBody != "" {
+				w.WriteHeader(tc.responseStatus)
+				if tc.requestBody != "" {
 					buf := new(bytes.Buffer)
 					_, err := buf.ReadFrom(r.Body)
 					assert.NoError(t, err)
 					req := buf.String()
-					assert.Equal(t, test.requestBody, req)
+					assert.Equal(t, tc.requestBody, req)
 				}
-				_, err := w.Write([]byte(test.responseBody))
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateUser(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.CreateUser(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -145,9 +220,11 @@ func TestIAM_GetUser(t *testing.T) {
 	"email": "john.doe@mycompany.com",
 	"phone": "(123) 321-1234",
 	"state": "CA",
-	"country": "USA"
+	"country": "USA",
+	"accountId": "sampleID",
+	"userStatus": "PENDING"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
 			expectedResponse: &User{
 				IdentityID: "A-BC-1234567",
 				UserBasicInfo: UserBasicInfo{
@@ -158,6 +235,8 @@ func TestIAM_GetUser(t *testing.T) {
 					Country:   "USA",
 					State:     "CA",
 				},
+				UserStatus: "PENDING",
+				AccountID:  "sampleID",
 			},
 		},
 		"500 internal server error": {
@@ -172,7 +251,7 @@ func TestIAM_GetUser(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/A-BC-1234567?actions=false&authGrants=false&notifications=false",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -185,28 +264,28 @@ func TestIAM_GetUser(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetUser(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.GetUser(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
 
-func TestIam_ListUsers(t *testing.T) {
+func TestIAM_ListUsers(t *testing.T) {
 	tests := map[string]struct {
 		params           ListUsersRequest
 		responseStatus   int
@@ -217,12 +296,12 @@ func TestIam_ListUsers(t *testing.T) {
 	}{
 		"200 OK": {
 			params: ListUsersRequest{
-				GroupID:    tools.Int64Ptr(12345),
+				GroupID:    ptr.To(int64(12345)),
 				AuthGrants: true,
 				Actions:    true,
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=true&authGrants=true&groupId=12345",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities?actions=true&authGrants=true&groupId=12345",
 			responseBody: `[
 			  {
 				"uiIdentityId": "A-B-123456",
@@ -231,10 +310,12 @@ func TestIam_ListUsers(t *testing.T) {
 				"uiUserName": "johndoe",
 				"email": "john.doe@mycompany.com",
 				"accountId": "1-123A",
-				"lastLoginDate": "2016-01-13T17:53:57Z",
+				"lastLoginDate": "2016-01-13T17:53:57.000Z",
 				"tfaEnabled": true,
 				"tfaConfigured": true,
 				"isLocked": false,
+				"additionalAuthentication": "TFA",
+				"additionalAuthenticationConfigured": false,
 				"actions": {
 				  "resetPassword": true,
 				  "delete": true,
@@ -243,7 +324,9 @@ func TestIam_ListUsers(t *testing.T) {
 				  "thirdPartyAccess": true,
 				  "isCloneable": true,
 				  "editProfile": true,
-				  "canEditTFA": false
+				  "canEditTFA": true,
+				  "canEditMFA": true,
+				  "canEditNone": true
 				},
 				"authGrants": [
 				  {
@@ -259,16 +342,18 @@ func TestIam_ListUsers(t *testing.T) {
 			]`,
 			expectedResponse: []UserListItem{
 				{
-					IdentityID:    "A-B-123456",
-					FirstName:     "John",
-					LastName:      "Doe",
-					UserName:      "johndoe",
-					Email:         "john.doe@mycompany.com",
-					AccountID:     "1-123A",
-					TFAEnabled:    true,
-					LastLoginDate: "2016-01-13T17:53:57Z",
-					TFAConfigured: true,
-					IsLocked:      false,
+					IdentityID:                         "A-B-123456",
+					FirstName:                          "John",
+					LastName:                           "Doe",
+					UserName:                           "johndoe",
+					Email:                              "john.doe@mycompany.com",
+					AccountID:                          "1-123A",
+					TFAEnabled:                         true,
+					LastLoginDate:                      test.NewTimeFromString(t, "2016-01-13T17:53:57.000Z"),
+					TFAConfigured:                      true,
+					IsLocked:                           false,
+					AdditionalAuthentication:           TFAAuthentication,
+					AdditionalAuthenticationConfigured: false,
 					Actions: &UserActions{
 						APIClient:        true,
 						Delete:           true,
@@ -277,11 +362,14 @@ func TestIam_ListUsers(t *testing.T) {
 						ResetPassword:    true,
 						ThirdPartyAccess: true,
 						EditProfile:      true,
+						CanEditMFA:       true,
+						CanEditNone:      true,
+						CanEditTFA:       true,
 					},
 					AuthGrants: []AuthGrant{
 						{
 							GroupID:         12345,
-							RoleID:          tools.IntPtr(12),
+							RoleID:          ptr.To(12),
 							GroupName:       "mygroup",
 							RoleName:        "admin",
 							RoleDescription: "This is a new role that has been created to",
@@ -292,10 +380,10 @@ func TestIam_ListUsers(t *testing.T) {
 		},
 		"200 OK, no actions nor grants": {
 			params: ListUsersRequest{
-				GroupID: tools.Int64Ptr(12345),
+				GroupID: ptr.To(int64(12345)),
 			},
 			responseStatus: http.StatusOK,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=false&authGrants=false&groupId=12345",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities?actions=false&authGrants=false&groupId=12345",
 			responseBody: `[
 			  {
 				"uiIdentityId": "A-B-123456",
@@ -304,30 +392,34 @@ func TestIam_ListUsers(t *testing.T) {
 				"uiUserName": "johndoe",
 				"email": "john.doe@mycompany.com",
 				"accountId": "1-123A",
-				"lastLoginDate": "2016-01-13T17:53:57Z",
+				"lastLoginDate": "2016-01-13T17:53:57.000Z",
 				"tfaEnabled": true,
 				"tfaConfigured": true,
-				"isLocked": false
+				"isLocked": false,
+				"additionalAuthentication": "MFA",
+				"additionalAuthenticationConfigured": true
 			  }
 			]`,
 			expectedResponse: []UserListItem{
 				{
-					IdentityID:    "A-B-123456",
-					FirstName:     "John",
-					LastName:      "Doe",
-					UserName:      "johndoe",
-					Email:         "john.doe@mycompany.com",
-					AccountID:     "1-123A",
-					TFAEnabled:    true,
-					LastLoginDate: "2016-01-13T17:53:57Z",
-					TFAConfigured: true,
-					IsLocked:      false,
+					IdentityID:                         "A-B-123456",
+					FirstName:                          "John",
+					LastName:                           "Doe",
+					UserName:                           "johndoe",
+					Email:                              "john.doe@mycompany.com",
+					AccountID:                          "1-123A",
+					TFAEnabled:                         true,
+					LastLoginDate:                      test.NewTimeFromString(t, "2016-01-13T17:53:57.000Z"),
+					TFAConfigured:                      true,
+					IsLocked:                           false,
+					AdditionalAuthenticationConfigured: true,
+					AdditionalAuthentication:           MFAAuthentication,
 				},
 			},
 		},
-		"no group id": {
+		"200 OK, no group id": {
 			params:       ListUsersRequest{},
-			expectedPath: "/identity-management/v2/user-admin/ui-identities?actions=false&authGrants=false",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities?actions=false&authGrants=false",
 			responseBody: `[
 			  {
 				"uiIdentityId": "A-B-123456",
@@ -336,36 +428,40 @@ func TestIam_ListUsers(t *testing.T) {
 				"uiUserName": "johndoe",
 				"email": "john.doe@mycompany.com",
 				"accountId": "1-123A",
-				"lastLoginDate": "2016-01-13T17:53:57Z",
+				"lastLoginDate": "2016-01-13T17:53:57.000Z",
 				"tfaEnabled": true,
 				"tfaConfigured": true,
-				"isLocked": false
+				"isLocked": false,
+				"additionalAuthentication": "TFA",
+				"additionalAuthenticationConfigured": true
 			  }
 			]`,
 			expectedResponse: []UserListItem{
 				{
-					IdentityID:    "A-B-123456",
-					FirstName:     "John",
-					LastName:      "Doe",
-					UserName:      "johndoe",
-					Email:         "john.doe@mycompany.com",
-					AccountID:     "1-123A",
-					TFAEnabled:    true,
-					LastLoginDate: "2016-01-13T17:53:57Z",
-					TFAConfigured: true,
-					IsLocked:      false,
+					IdentityID:                         "A-B-123456",
+					FirstName:                          "John",
+					LastName:                           "Doe",
+					UserName:                           "johndoe",
+					Email:                              "john.doe@mycompany.com",
+					AccountID:                          "1-123A",
+					TFAEnabled:                         true,
+					LastLoginDate:                      test.NewTimeFromString(t, "2016-01-13T17:53:57.000Z"),
+					TFAConfigured:                      true,
+					IsLocked:                           false,
+					AdditionalAuthentication:           TFAAuthentication,
+					AdditionalAuthenticationConfigured: true,
 				},
 			},
 			responseStatus: http.StatusOK,
 		},
 		"500 internal server error": {
 			params: ListUsersRequest{
-				GroupID:    tools.Int64Ptr(12345),
+				GroupID:    ptr.To(int64(12345)),
 				AuthGrants: true,
 				Actions:    true,
 			},
 			responseStatus: http.StatusInternalServerError,
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities?actions=true&authGrants=true&groupId=12345",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities?actions=true&authGrants=true&groupId=12345",
 			responseBody: `
 			{
 				"type": "internal_error",
@@ -384,23 +480,23 @@ func TestIam_ListUsers(t *testing.T) {
 			},
 		},
 	}
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			users, err := client.ListUsers(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			users, err := client.ListUsers(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, users)
+			assert.Equal(t, tc.expectedResponse, users)
 		})
 	}
 }
@@ -419,19 +515,20 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 			params: UpdateUserInfoRequest{
 				IdentityID: "1-ABCDE",
 				User: UserBasicInfo{
-					FirstName:         "John",
-					LastName:          "Doe",
-					Email:             "john.doe@mycompany.com",
-					Phone:             "(123) 321-1234",
-					Country:           "USA",
-					State:             "CA",
-					PreferredLanguage: "English",
-					ContactType:       "Billing",
-					SessionTimeOut:    tools.IntPtr(30),
-					TimeZone:          "GMT",
+					FirstName:                "John",
+					LastName:                 "Doe",
+					Email:                    "john.doe@mycompany.com",
+					Phone:                    "(123) 321-1234",
+					Country:                  "USA",
+					State:                    "CA",
+					PreferredLanguage:        "English",
+					ContactType:              "Billing",
+					SessionTimeOut:           ptr.To(30),
+					TimeZone:                 "GMT",
+					AdditionalAuthentication: NoneAuthentication,
 				},
 			},
-			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","timeZone":"GMT","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","contactType":"Billing","preferredLanguage":"English","sessionTimeOut":30}`,
+			requestBody:    `{"firstName":"John","lastName":"Doe","email":"john.doe@mycompany.com","phone":"(123) 321-1234","timeZone":"GMT","jobTitle":"","tfaEnabled":false,"state":"CA","country":"USA","contactType":"Billing","preferredLanguage":"English","sessionTimeOut":30,"additionalAuthentication":"NONE"}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -444,20 +541,22 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 	"preferredLanguage": "English",
 	"contactType": "Billing",
 	"sessionTimeOut": 30,
-	"timeZone": "GMT"
+	"timeZone": "GMT",
+	"additionalAuthentication": "NONE"
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/basic-info",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/basic-info",
 			expectedResponse: &UserBasicInfo{
-				FirstName:         "John",
-				LastName:          "Doe",
-				Email:             "john.doe@mycompany.com",
-				Phone:             "(123) 321-1234",
-				Country:           "USA",
-				State:             "CA",
-				PreferredLanguage: "English",
-				ContactType:       "Billing",
-				SessionTimeOut:    tools.IntPtr(30),
-				TimeZone:          "GMT",
+				FirstName:                "John",
+				LastName:                 "Doe",
+				Email:                    "john.doe@mycompany.com",
+				Phone:                    "(123) 321-1234",
+				Country:                  "USA",
+				State:                    "CA",
+				PreferredLanguage:        "English",
+				ContactType:              "Billing",
+				SessionTimeOut:           ptr.To(30),
+				TimeZone:                 "GMT",
+				AdditionalAuthentication: NoneAuthentication,
 			},
 		},
 		"500 internal server error": {
@@ -472,7 +571,7 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 					State:             "CA",
 					PreferredLanguage: "English",
 					ContactType:       "Billing",
-					SessionTimeOut:    tools.IntPtr(30),
+					SessionTimeOut:    ptr.To(30),
 					TimeZone:          "GMT",
 				},
 			},
@@ -484,7 +583,7 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/basic-info",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/basic-info",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -497,30 +596,30 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				if test.requestBody != "" {
+				if tc.requestBody != "" {
 					buf := new(bytes.Buffer)
 					_, err := buf.ReadFrom(r.Body)
 					assert.NoError(t, err)
 					req := buf.String()
-					assert.Equal(t, test.requestBody, req)
+					assert.Equal(t, tc.requestBody, req)
 				}
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateUserInfo(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.UpdateUserInfo(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -538,17 +637,18 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 		"200 OK": {
 			params: UpdateUserNotificationsRequest{
 				IdentityID: "1-ABCDE",
-				Notifications: UserNotifications{
+				Notifications: &UserNotifications{
 					EnableEmail: true,
 					Options: UserNotificationOptions{
-						Upgrade:        []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
-						Proactive:      []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
-						PasswordExpiry: true,
-						NewUser:        true,
+						Upgrade:                   []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
+						Proactive:                 []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
+						PasswordExpiry:            true,
+						NewUser:                   true,
+						APIClientCredentialExpiry: true,
 					},
 				},
 			},
-			requestBody:    `{"enableEmailNotifications":true,"options":{"newUserNotification":true,"passwordExpiry":true,"proactive":["EdgeScape","EdgeSuite (HTTP Content Delivery)"],"upgrade":["NetStorage","Other Upgrade Notifications (Planned)"]}}`,
+			requestBody:    `{"enableEmailNotifications":true,"options":{"newUserNotification":true,"passwordExpiry":true,"proactive":["EdgeScape","EdgeSuite (HTTP Content Delivery)"],"upgrade":["NetStorage","Other Upgrade Notifications (Planned)"],"apiClientCredentialExpiryNotification":true}}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -563,24 +663,32 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 			"EdgeSuite (HTTP Content Delivery)"
 		],
 		"passwordExpiry": true,
-		"newUserNotification": true
+		"newUserNotification": true,
+		"apiClientCredentialExpiryNotification": true
 	}
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/notifications",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/notifications",
 			expectedResponse: &UserNotifications{
 				EnableEmail: true,
 				Options: UserNotificationOptions{
-					Upgrade:        []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
-					Proactive:      []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
-					PasswordExpiry: true,
-					NewUser:        true,
+					Upgrade:                   []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
+					Proactive:                 []string{"EdgeScape", "EdgeSuite (HTTP Content Delivery)"},
+					PasswordExpiry:            true,
+					NewUser:                   true,
+					APIClientCredentialExpiry: true,
 				},
+			},
+		},
+		"validation errors": {
+			params: UpdateUserNotificationsRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "update user notifications: struct validation:\nIdentityID: cannot be blank\nNotifications: cannot be blank", err.Error())
 			},
 		},
 		"500 internal server error": {
 			params: UpdateUserNotificationsRequest{
 				IdentityID: "1-ABCDE",
-				Notifications: UserNotifications{
+				Notifications: &UserNotifications{
 					EnableEmail: true,
 					Options: UserNotificationOptions{
 						Upgrade:        []string{"NetStorage", "Other Upgrade Notifications (Planned)"},
@@ -598,7 +706,7 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/notifications",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/notifications",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -611,30 +719,30 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				if test.requestBody != "" {
+				if tc.requestBody != "" {
 					buf := new(bytes.Buffer)
 					_, err := buf.ReadFrom(r.Body)
 					assert.NoError(t, err)
 					req := buf.String()
-					assert.Equal(t, test.requestBody, req)
+					assert.Equal(t, tc.requestBody, req)
 				}
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateUserNotifications(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.UpdateUserNotifications(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -654,7 +762,7 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 				AuthGrants: []AuthGrantRequest{
 					{
 						GroupID: 12345,
-						RoleID:  tools.IntPtr(16),
+						RoleID:  ptr.To(16),
 						Subgroups: []AuthGrantRequest{
 							{
 								GroupID: 54321,
@@ -676,11 +784,11 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 		]
 	}
 ]`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/auth-grants",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/auth-grants",
 			expectedResponse: []AuthGrant{
 				{
 					GroupID: 12345,
-					RoleID:  tools.IntPtr(16),
+					RoleID:  ptr.To(16),
 					Subgroups: []AuthGrant{
 						{
 							GroupID: 54321,
@@ -695,7 +803,7 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 				AuthGrants: []AuthGrantRequest{
 					{
 						GroupID: 12345,
-						RoleID:  tools.IntPtr(16),
+						RoleID:  ptr.To(16),
 						Subgroups: []AuthGrantRequest{
 							{
 								GroupID: 54321,
@@ -712,7 +820,7 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE/auth-grants",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/auth-grants",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -725,23 +833,23 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateUserAuthGrants(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.UpdateUserAuthGrants(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -760,7 +868,7 @@ func TestIAM_RemoveUser(t *testing.T) {
 			},
 			responseStatus: http.StatusOK,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE",
 		},
 		"204 No Content": {
 			params: RemoveUserRequest{
@@ -768,7 +876,7 @@ func TestIAM_RemoveUser(t *testing.T) {
 			},
 			responseStatus: http.StatusNoContent,
 			responseBody:   "",
-			expectedPath:   "/identity-management/v2/user-admin/ui-identities/1-ABCDE",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE",
 		},
 		"500 internal server error": {
 			params: RemoveUserRequest{
@@ -782,7 +890,7 @@ func TestIAM_RemoveUser(t *testing.T) {
     "detail": "Error making request",
     "status": 500
 }`,
-			expectedPath: "/identity-management/v2/user-admin/ui-identities/1-ABCDE",
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -795,19 +903,19 @@ func TestIAM_RemoveUser(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.RemoveUser(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.RemoveUser(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
@@ -858,19 +966,143 @@ func TestIAM_UpdateTFA(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-			err := client.UpdateTFA(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			err := client.UpdateTFA(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestIAM_UpdateMFA(t *testing.T) {
+	tests := map[string]struct {
+		params         UpdateMFARequest
+		responseStatus int
+		responseBody   string
+		expectedPath   string
+		withError      func(*testing.T, error)
+	}{
+		"204 No Content": {
+			params: UpdateMFARequest{
+				IdentityID: "1-ABCDE",
+				Value:      MFAAuthentication,
+			},
+			responseStatus: http.StatusNoContent,
+			responseBody:   "",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/additionalAuthentication",
+		},
+		"500 internal server error": {
+			params: UpdateMFARequest{
+				IdentityID: "1-ABCDE",
+				Value:      MFAAuthentication,
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error making request",
+    "status": 500
+}`,
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/additionalAuthentication",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error making request",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, tc.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.UpdateMFA(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestIAM_ResetMFA(t *testing.T) {
+	tests := map[string]struct {
+		params         ResetMFARequest
+		responseStatus int
+		responseBody   string
+		expectedPath   string
+		withError      func(*testing.T, error)
+	}{
+		"204 No Content": {
+			params: ResetMFARequest{
+				IdentityID: "1-ABCDE",
+			},
+			responseStatus: http.StatusNoContent,
+			responseBody:   "",
+			expectedPath:   "/identity-management/v3/user-admin/ui-identities/1-ABCDE/additionalAuthentication/reset",
+		},
+		"500 internal server error": {
+			params: ResetMFARequest{
+				IdentityID: "1-ABCDE",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error making request",
+    "status": 500
+}`,
+			expectedPath: "/identity-management/v3/user-admin/ui-identities/1-ABCDE/additionalAuthentication/reset",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:       "internal_error",
+					Title:      "Internal Server Error",
+					Detail:     "Error making request",
+					StatusCode: http.StatusInternalServerError,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, tc.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.ResetMFA(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)

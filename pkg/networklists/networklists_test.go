@@ -12,13 +12,13 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func mockAPIClient(t *testing.T, mockServer *httptest.Server) NTWRKLISTS {
+func mockAPIClient(t *testing.T, mockServer *httptest.Server) NetworkList {
 	serverURL, err := url.Parse(mockServer.URL)
 	require.NoError(t, err)
 	certPool := x509.NewCertPool()

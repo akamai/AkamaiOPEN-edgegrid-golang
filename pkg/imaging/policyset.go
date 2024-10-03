@@ -7,32 +7,12 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v8/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
-	// PolicySets is an Image and Video Manager API interface for PolicySets
-	//
-	// See: https://techdocs.akamai.com/ivm/reference/api
-	PolicySets interface {
-		// ListPolicySets lists all PolicySets of specified type for the current account
-		ListPolicySets(context.Context, ListPolicySetsRequest) ([]PolicySet, error)
-
-		// GetPolicySet gets specific PolicySet by PolicySetID
-		GetPolicySet(context.Context, GetPolicySetRequest) (*PolicySet, error)
-
-		// CreatePolicySet creates configuration for an PolicySet
-		CreatePolicySet(context.Context, CreatePolicySetRequest) (*PolicySet, error)
-
-		// UpdatePolicySet creates configuration for an PolicySet
-		UpdatePolicySet(context.Context, UpdatePolicySetRequest) (*PolicySet, error)
-
-		// DeletePolicySet deletes configuration for an PolicySet
-		DeletePolicySet(context.Context, DeletePolicySetRequest) error
-	}
-
 	// ListPolicySetsRequest describes the parameters of the ListPolicySets request
 	ListPolicySetsRequest struct {
 		ContractID string

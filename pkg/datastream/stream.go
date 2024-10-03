@@ -12,34 +12,6 @@ import (
 )
 
 type (
-	// Stream is a ds stream operations API interface
-	Stream interface {
-		// CreateStream creates a stream
-		//
-		// See: https://techdocs.akamai.com/datastream2/v2/reference/post-stream
-		CreateStream(context.Context, CreateStreamRequest) (*DetailedStreamVersion, error)
-
-		// GetStream gets stream details
-		//
-		// See: https://techdocs.akamai.com/datastream2/v2/reference/get-stream
-		GetStream(context.Context, GetStreamRequest) (*DetailedStreamVersion, error)
-
-		// UpdateStream updates a stream
-		//
-		// See: https://techdocs.akamai.com/datastream2/v2/reference/put-stream
-		UpdateStream(context.Context, UpdateStreamRequest) (*DetailedStreamVersion, error)
-
-		// DeleteStream deletes a stream
-		//
-		// See: https://techdocs.akamai.com/datastream2/v2/reference/delete-stream
-		DeleteStream(context.Context, DeleteStreamRequest) error
-
-		// ListStreams retrieves list of streams
-		//
-		// See: https://techdocs.akamai.com/datastream2/v2/reference/get-streams
-		ListStreams(context.Context, ListStreamsRequest) ([]StreamDetails, error)
-	}
-
 	// DetailedStreamVersion is returned from GetStream
 	DetailedStreamVersion struct {
 		ContractID            string                `json:"contractId"`

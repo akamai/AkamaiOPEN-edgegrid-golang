@@ -11,19 +11,6 @@ import (
 )
 
 type (
-	// Properties is an interface for listing various DS API properties
-	Properties interface {
-		// GetProperties returns properties that are active on the production and staging network for a specific product type that are available within a group
-		//
-		// See: https://techdocs.akamai.com/datastream2/v2/reference/get-group-properties
-		GetProperties(context.Context, GetPropertiesRequest) (*PropertiesDetails, error)
-
-		// GetDatasetFields returns groups of data set fields available in the template.
-		//
-		// See: https://techdocs.akamai.com/datastream2/v2/reference/get-dataset-fields
-		GetDatasetFields(context.Context, GetDatasetFieldsRequest) (*DataSets, error)
-	}
-
 	// GetPropertiesRequest contains parameters necessary to send a GetProperties request
 	GetPropertiesRequest struct {
 		GroupId int
