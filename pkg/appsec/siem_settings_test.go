@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
@@ -185,6 +186,7 @@ func TestAppSec_UpdateSiemSettings(t *testing.T) {
 		expectedResponse *UpdateSiemSettingsResponse
 		withError        error
 		headers          http.Header
+		errors           *regexp.Regexp
 	}{
 		"200 Success": {
 			params: UpdateSiemSettingsRequest{
@@ -213,6 +215,52 @@ func TestAppSec_UpdateSiemSettings(t *testing.T) {
 			responseBody:     respData,
 			expectedResponse: &result,
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/siem",
+		},
+		"400 Bad Request action types": {
+			params: UpdateSiemSettingsRequest{
+				ConfigID:   43253,
+				Version:    15,
+				EnableSiem: true,
+				Exceptions: []Exception{
+					{
+						ActionTypes: []string{"reject"},
+						Protection:  "botmanagement",
+					},
+					{
+						ActionTypes: []string{"deny"},
+						Protection:  "ipgeo",
+					},
+					{
+						ActionTypes: []string{"alert"},
+						Protection:  "rate",
+					},
+				},
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json;charset=UTF-8"},
+			},
+			responseStatus: http.StatusBadRequest,
+			errors:         regexp.MustCompile(`struct validation: ActionTypes:.+`),
+			expectedPath:   "/appsec/v1/configs/43253/versions/15/siem",
+		},
+		"400 Bad Request protection": {
+			params: UpdateSiemSettingsRequest{
+				ConfigID:   43253,
+				Version:    15,
+				EnableSiem: true,
+				Exceptions: []Exception{
+					{
+						ActionTypes: []string{"tarpit"},
+						Protection:  "bot",
+					},
+				},
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json;charset=UTF-8"},
+			},
+			responseStatus: http.StatusBadRequest,
+			errors:         regexp.MustCompile(`struct validation: Protection:.+`),
+			expectedPath:   "/appsec/v1/configs/43253/versions/15/siem",
 		},
 		"500 internal server error": {
 			params: UpdateSiemSettingsRequest{
@@ -251,6 +299,13 @@ func TestAppSec_UpdateSiemSettings(t *testing.T) {
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)
+
+			if test.errors != nil {
+				require.Error(t, err)
+				assert.Regexp(t, test.errors, err.Error())
+				return
+			}
+
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

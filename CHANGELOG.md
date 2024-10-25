@@ -83,6 +83,15 @@
 
 #### BUG FIXES:
 
+* APPSEC
+  * Fixed SIEM exception validation for `Exceptions` field 
+
+
+
+
+
+
+
 * Cloud Access
   * Added custom error `ErrAccessKeyNotFound` to easier verify if provided access key does not exist.
 

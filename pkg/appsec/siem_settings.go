@@ -130,12 +130,30 @@ func (v UpdateSiemSettingsRequest) Validate() error {
 
 // Validate validates an Exception struct.
 func (v Exception) Validate() error {
+	validActionTypes := []string{"alert", "deny", "all_custom", "abort", "allow", "delay", "ignore", "monitor", "slow", "tarpit", "*"}
 	return validation.Errors{
 		"Protection": validation.Validate(v.Protection, validation.Required, validation.In("botmanagement", "ipgeo", "rate", "urlProtection", "slowpost", "customrules", "waf", "apirequestconstraints", "clientrep", "malwareprotection", "aprProtection").
 			Error(fmt.Sprintf("value '%s' is invalid. Must be one of: 'botmanagement', 'ipgeo', 'rate', 'urlProtection', 'slowpost', 'customrules', 'waf', 'apirequestconstraints', 'clientrep', 'malwareprotection', 'aprProtection'", v.Protection))),
-		"ActionTypes": validation.Validate(v.Protection, validation.Required, validation.In("alert", "deny", "all_custom", "abort", "allow", "delay", "ignore", "monitor", "slow", "tarpit").
-			Error(fmt.Sprintf("value '%v' is invalid. Must be one of: 'alert', 'deny', 'all_custom', 'abort', 'allow', 'delay', 'ignore', 'monitor', 'slow', 'tarpit'", v.ActionTypes))),
+		"ActionTypes": validation.ValidateStruct(&v,
+			validation.Field(&v.ActionTypes, validation.Required, validation.By(func(value interface{}) error {
+				actions, _ := value.([]string)
+				for _, actionType := range actions {
+					if !containsElement(validActionTypes, actionType) {
+						return fmt.Errorf("value '%s' is invalid. Must be one of: %v", actionType, validActionTypes)
+					}
+				}
+				return nil
+			}))),
 	}.Filter()
+}
+
+func containsElement(slice []string, item string) bool {
+	for _, v := range slice {
+		if v == item {
+			return true
+		}
+	}
+	return false
 }
 
 // Validate validates a RemoveSiemSettingsRequest.
@@ -186,6 +204,12 @@ func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettin
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	for _, exception := range params.Exceptions {
+		if err := exception.Validate(); err != nil {
+			return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		}
 	}
 
 	uri := fmt.Sprintf(
