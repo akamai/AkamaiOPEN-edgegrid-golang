@@ -66,7 +66,8 @@
 
 #### BUG FIXES:
 
-
+* Cloud Access
+  * Added custom error `ErrAccessKeyNotFound` to easier verify if provided access key does not exist.
 
 
 
