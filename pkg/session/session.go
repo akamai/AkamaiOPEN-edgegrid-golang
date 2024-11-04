@@ -94,7 +94,7 @@ func New(opts ...Option) (Session, error) {
 	return s, nil
 }
 
-// Must is a helper tthat will result in a panic if an error is returned
+// Must is a helper that will result in a panic if an error is returned
 // ex. sess := Must(New())
 func Must(sess Session, err error) Session {
 	if err != nil {
@@ -108,6 +108,23 @@ func Must(sess Session, err error) Session {
 func WithClient(client *http.Client) Option {
 	return func(s *session) {
 		s.client = client
+	}
+}
+
+// WithRetries configures the HTTP client to automatically retry failed GET requests
+func WithRetries(conf RetryConfig) Option {
+	return func(s *session) {
+		retryClient, err := configureRetryClient(conf, s.Sign, s.log)
+		if err != nil {
+			s.log.Error(err.Error())
+			defaultConfig := NewRetryConfig()
+			retryClient, err = configureRetryClient(defaultConfig, s.Sign, s.log)
+			if err != nil {
+				s.log.Errorf("retry configuration failed, disabling retries: %v", err.Error())
+				return
+			}
+		}
+		s.client = retryClient.StandardClient()
 	}
 }
 

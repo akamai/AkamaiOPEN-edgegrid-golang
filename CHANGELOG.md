@@ -32,8 +32,12 @@
 
 
 
-
-
+* General
+  * Added a configurable `WithRetries` option for creating new sessions with global GET retries. It can be configured with parameters:
+    * `retryMax`  - The maximum number of API request retries.
+    * `retryWaitMin` - The minimum wait time in `time.Duration` between API requests retries.
+    * `retryWaitMax` - The maximum wait time in `time.Duration` between API requests retries.
+    * `excludedEndpoints` - List of path expressions defining endpoints which should be excluded from retry feature
 
 
 
