@@ -67,6 +67,7 @@ func configureRetryClient(conf RetryConfig, signFunc func(r *http.Request) error
 	}
 	retryClient.CheckRetry = overrideRetryPolicy(retryablehttp.DefaultRetryPolicy, conf.ExcludedEndpoints)
 	retryClient.Backoff = overrideBackoff(retryablehttp.DefaultBackoff, log)
+	retryClient.Logger = GetRetryableLogger(log)
 
 	return retryClient, err
 }
