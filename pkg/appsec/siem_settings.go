@@ -61,7 +61,7 @@ type (
 	GetSiemSettingResponse struct {
 		EnableForAllPolicies    bool        `json:"enableForAllPolicies"`
 		EnableSiem              bool        `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
+		EnabledBotmanSiemEvents *bool       `json:"enabledBotmanSiemEvents"`
 		SiemDefinitionID        int         `json:"siemDefinitionId"`
 		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
 		Exceptions              []Exception `json:"exceptions"`
@@ -73,7 +73,7 @@ type (
 		Version                 int         `json:"-"`
 		EnableForAllPolicies    bool        `json:"enableForAllPolicies"`
 		EnableSiem              bool        `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
+		EnabledBotmanSiemEvents *bool       `json:"enabledBotmanSiemEvents,omitempty"`
 		SiemDefinitionID        int         `json:"siemDefinitionId"`
 		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
 		Exceptions              []Exception `json:"exceptions,omitempty"`
@@ -83,7 +83,7 @@ type (
 	UpdateSiemSettingsResponse struct {
 		EnableForAllPolicies    bool        `json:"enableForAllPolicies"`
 		EnableSiem              bool        `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
+		EnabledBotmanSiemEvents *bool       `json:"enabledBotmanSiemEvents"`
 		SiemDefinitionID        int         `json:"siemDefinitionId"`
 		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
 		Exceptions              []Exception `json:"exceptions"`
@@ -96,7 +96,7 @@ type (
 		Version                 int      `json:"-"`
 		EnableForAllPolicies    bool     `json:"-"`
 		EnableSiem              bool     `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool     `json:"-"`
+		EnabledBotmanSiemEvents *bool    `json:"-"`
 		SiemDefinitionID        int      `json:"-"`
 		FirewallPolicyIds       []string `json:"-"`
 	}
@@ -106,7 +106,7 @@ type (
 	RemoveSiemSettingsResponse struct {
 		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
 		EnableSiem              bool     `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
+		EnabledBotmanSiemEvents *bool    `json:"enabledBotmanSiemEvents"`
 		SiemDefinitionID        int      `json:"siemDefinitionId"`
 		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
 	}

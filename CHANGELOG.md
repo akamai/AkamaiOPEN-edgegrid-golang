@@ -33,7 +33,13 @@
     * `ContentProtectionRuleSequence`
     * `ContentProtectionJavaScriptInjectionRules`
 
-
+  * Changed `EnabledBotmanSiemEvents` to `*bool` and omitted from following structs when empty
+    * `GetSiemSettingResponse`
+    * `RemoveSiemSettingsRequest`
+    * `RemoveSiemSettingsResponse`
+    * `UpdateSiemSettingsRequest`
+    * `UpdateSiemSettingsResponse`
+    
 
 
 * General

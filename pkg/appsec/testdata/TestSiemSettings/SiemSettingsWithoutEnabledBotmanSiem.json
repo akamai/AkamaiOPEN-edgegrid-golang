@@ -1,0 +1,24 @@
+{
+    "enableForAllPolicies": true,
+    "enableSiem": true,
+    "siemDefinitionId": 1,
+    "exceptions":[
+      {
+        "actionTypes": [
+            "*"
+        ],
+        "protection": "botmanagement"
+      },
+      {
+          "actionTypes": [
+              "alert"
+          ],
+          "protection": "ipgeo"
+      },
+      {
+          "actionTypes": [
+              "alert"
+          ],
+          "protection": "rate"
+      }]
+}
