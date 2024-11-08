@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -159,6 +160,7 @@ func (g *gtm) ListCIDRMaps(ctx context.Context, params ListCIDRMapsRequest) ([]C
 	if err != nil {
 		return nil, fmt.Errorf("ListCIDRMaps request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -187,6 +189,7 @@ func (g *gtm) GetCIDRMap(ctx context.Context, params GetCIDRMapRequest) (*GetCID
 	if err != nil {
 		return nil, fmt.Errorf("GetCIDRMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -215,6 +218,7 @@ func (g *gtm) CreateCIDRMap(ctx context.Context, params CreateCIDRMapRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("CIDRMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, g.Error(resp)
@@ -243,6 +247,7 @@ func (g *gtm) UpdateCIDRMap(ctx context.Context, params UpdateCIDRMapRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("CIDRMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -271,6 +276,7 @@ func (g *gtm) DeleteCIDRMap(ctx context.Context, params DeleteCIDRMapRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("CIDRMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)

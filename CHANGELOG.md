@@ -45,6 +45,15 @@
 
 
 
+* General
+  * Added logic responsible for closing the response body in each method.
+
+
+
+
+
+
+
 
 
 

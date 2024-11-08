@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -186,6 +187,7 @@ func (i *iam) ListCIDRBlocks(ctx context.Context, params ListCIDRBlocksRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListCIDRBlocks, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListCIDRBlocks, i.Error(resp))
@@ -212,6 +214,7 @@ func (i *iam) CreateCIDRBlock(ctx context.Context, params CreateCIDRBlockRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateCIDRBlock, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateCIDRBlock, i.Error(resp))
@@ -247,6 +250,7 @@ func (i *iam) GetCIDRBlock(ctx context.Context, params GetCIDRBlockRequest) (*Ge
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCIDRBlock, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetCIDRBlock, i.Error(resp))
@@ -273,6 +277,7 @@ func (i *iam) UpdateCIDRBlock(ctx context.Context, params UpdateCIDRBlockRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateCIDRBlock, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateCIDRBlock, i.Error(resp))
@@ -298,6 +303,7 @@ func (i *iam) DeleteCIDRBlock(ctx context.Context, params DeleteCIDRBlockRequest
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeleteCIDRBlock, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDeleteCIDRBlock, i.Error(resp))
@@ -332,6 +338,7 @@ func (i *iam) ValidateCIDRBlock(ctx context.Context, params ValidateCIDRBlockReq
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrValidateCIDRBlock, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrValidateCIDRBlock, i.Error(resp))

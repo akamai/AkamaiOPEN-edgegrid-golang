@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -177,6 +178,7 @@ func (e *edgeworkers) CreateEdgeKVAccessToken(ctx context.Context, params Create
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEdgeKVAccessToken, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrCreateEdgeKVAccessToken, e.Error(resp))
@@ -207,6 +209,7 @@ func (e *edgeworkers) GetEdgeKVAccessToken(ctx context.Context, params GetEdgeKV
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeKVAccessToken, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetEdgeKVAccessToken, e.Error(resp))
@@ -240,6 +243,7 @@ func (e *edgeworkers) ListEdgeKVAccessTokens(ctx context.Context, params ListEdg
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListEdgeKVAccessToken, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListEdgeKVAccessToken, e.Error(resp))
@@ -270,6 +274,7 @@ func (e *edgeworkers) DeleteEdgeKVAccessToken(ctx context.Context, params Delete
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeleteEdgeKVAccessToken, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrDeleteEdgeKVAccessToken, e.Error(resp))

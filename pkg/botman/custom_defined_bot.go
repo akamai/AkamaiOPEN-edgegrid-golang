@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -140,6 +141,7 @@ func (b *botman) GetCustomDefinedBot(ctx context.Context, params GetCustomDefine
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomDefinedBot request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -172,6 +174,7 @@ func (b *botman) GetCustomDefinedBotList(ctx context.Context, params GetCustomDe
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomDefinedBotList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -215,6 +218,7 @@ func (b *botman) UpdateCustomDefinedBot(ctx context.Context, params UpdateCustom
 	if err != nil {
 		return nil, fmt.Errorf("UpdateCustomDefinedBot request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -247,6 +251,7 @@ func (b *botman) CreateCustomDefinedBot(ctx context.Context, params CreateCustom
 	if err != nil {
 		return nil, fmt.Errorf("CreateCustomDefinedBot request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, b.Error(resp)
@@ -278,6 +283,7 @@ func (b *botman) RemoveCustomDefinedBot(ctx context.Context, params RemoveCustom
 	if err != nil {
 		return fmt.Errorf("RemoveCustomDefinedBot request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return b.Error(resp)

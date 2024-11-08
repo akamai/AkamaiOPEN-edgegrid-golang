@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -151,6 +151,7 @@ func (c *cloudlets) ListLoadBalancerActivations(ctx context.Context, params List
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListLoadBalancerActivations, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListLoadBalancerActivations, c.Error(resp))
@@ -187,6 +188,7 @@ func (c *cloudlets) ActivateLoadBalancerVersion(ctx context.Context, params Acti
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateLoadBalancerVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrActivateLoadBalancerVersion, c.Error(resp))

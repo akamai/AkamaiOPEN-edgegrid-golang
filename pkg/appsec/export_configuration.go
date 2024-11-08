@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
-
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -893,6 +893,8 @@ func (p *appsec) GetExportConfiguration(ctx context.Context, params GetExportCon
 	if err != nil {
 		return nil, fmt.Errorf("get export configuration request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -920,6 +922,8 @@ func (p *appsec) GetExportConfigurations(ctx context.Context, params GetExportCo
 	if err != nil {
 		return nil, fmt.Errorf("get export configurations request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

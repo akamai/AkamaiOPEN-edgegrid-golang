@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -303,6 +304,7 @@ func (d *ds) CreateStream(ctx context.Context, params CreateStreamRequest) (*Det
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateStream, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateStream, d.Error(resp))
@@ -342,6 +344,7 @@ func (d *ds) GetStream(ctx context.Context, params GetStreamRequest) (*DetailedS
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetStream, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetStream, d.Error(resp))
@@ -379,6 +382,7 @@ func (d *ds) UpdateStream(ctx context.Context, params UpdateStreamRequest) (*Det
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateStream, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateStream, d.Error(resp))
@@ -412,6 +416,7 @@ func (d *ds) DeleteStream(ctx context.Context, params DeleteStreamRequest) error
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeleteStream, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDeleteStream, d.Error(resp))
@@ -445,6 +450,7 @@ func (d *ds) ListStreams(ctx context.Context, params ListStreamsRequest) ([]Stre
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListStreams, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListStreams, d.Error(resp))

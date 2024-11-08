@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -132,6 +133,7 @@ func (e *edgeworkers) GetEdgeWorkerVersion(ctx context.Context, params GetEdgeWo
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeWorkerVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetEdgeWorkerVersion, e.Error(resp))
@@ -159,6 +161,7 @@ func (e *edgeworkers) ListEdgeWorkerVersions(ctx context.Context, params ListEdg
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListEdgeWorkerVersions, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListEdgeWorkerVersions, e.Error(resp))
@@ -186,6 +189,7 @@ func (e *edgeworkers) GetEdgeWorkerVersionContent(ctx context.Context, params Ge
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeWorkerVersionContent, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	var result Bundle
 	data, err := ioutil.ReadAll(resp.Body)
@@ -222,6 +226,7 @@ func (e *edgeworkers) CreateEdgeWorkerVersion(ctx context.Context, params Create
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEdgeWorkerVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateEdgeWorkerVersion, e.Error(resp))
@@ -247,6 +252,7 @@ func (e *edgeworkers) DeleteEdgeWorkerVersion(ctx context.Context, params Delete
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeleteEdgeWorkerVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDeleteEdgeWorkerVersion, e.Error(resp))

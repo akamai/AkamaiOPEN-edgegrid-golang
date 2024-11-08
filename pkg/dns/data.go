@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -58,6 +60,7 @@ func (d *dns) ListGroups(ctx context.Context, params ListGroupRequest) (*ListGro
 	if err != nil {
 		return nil, fmt.Errorf("ListZoneGroups request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)

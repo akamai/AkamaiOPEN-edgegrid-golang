@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -162,6 +163,7 @@ func (g *gtm) ListASMaps(ctx context.Context, params ListASMapsRequest) ([]ASMap
 	if err != nil {
 		return nil, fmt.Errorf("ListASMaps request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -190,6 +192,7 @@ func (g *gtm) GetASMap(ctx context.Context, params GetASMapRequest) (*GetASMapRe
 	if err != nil {
 		return nil, fmt.Errorf("GetASMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -218,6 +221,7 @@ func (g *gtm) CreateASMap(ctx context.Context, params CreateASMapRequest) (*Crea
 	if err != nil {
 		return nil, fmt.Errorf("ASMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, g.Error(resp)
@@ -246,6 +250,7 @@ func (g *gtm) UpdateASMap(ctx context.Context, params UpdateASMapRequest) (*Upda
 	if err != nil {
 		return nil, fmt.Errorf("ASMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -274,6 +279,7 @@ func (g *gtm) DeleteASMap(ctx context.Context, params DeleteASMapRequest) (*Dele
 	if err != nil {
 		return nil, fmt.Errorf("ASMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)

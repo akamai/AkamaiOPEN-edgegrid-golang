@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -228,6 +229,8 @@ func (p *appsec) GetSecurityPolicies(ctx context.Context, params GetSecurityPoli
 	if err != nil {
 		return nil, fmt.Errorf("get security policies request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -265,6 +268,8 @@ func (p *appsec) GetSecurityPolicy(ctx context.Context, params GetSecurityPolicy
 	if err != nil {
 		return nil, fmt.Errorf("get security policy request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -297,6 +302,8 @@ func (p *appsec) UpdateSecurityPolicy(ctx context.Context, params UpdateSecurity
 	if err != nil {
 		return nil, fmt.Errorf("update security policy request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -327,6 +334,8 @@ func (p *appsec) CreateSecurityPolicy(ctx context.Context, params CreateSecurity
 	if err != nil {
 		return nil, fmt.Errorf("create security policy request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -357,6 +366,8 @@ func (p *appsec) CreateSecurityPolicyWithDefaultProtections(ctx context.Context,
 	if err != nil {
 		return nil, fmt.Errorf("create security policy request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -383,6 +394,8 @@ func (p *appsec) RemoveSecurityPolicy(ctx context.Context, params RemoveSecurity
 	if err != nil {
 		return nil, fmt.Errorf("remove security policy request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

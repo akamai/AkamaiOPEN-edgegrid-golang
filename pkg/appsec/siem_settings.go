@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -170,6 +171,8 @@ func (p *appsec) GetSiemSettings(ctx context.Context, params GetSiemSettingsRequ
 	if err != nil {
 		return nil, fmt.Errorf("get siem settings request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -201,6 +204,8 @@ func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettin
 	if err != nil {
 		return nil, fmt.Errorf("update siem settings request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -233,6 +238,8 @@ func (p *appsec) RemoveSiemSettings(ctx context.Context, params RemoveSiemSettin
 	if err != nil {
 		return nil, fmt.Errorf("remove siem settings request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

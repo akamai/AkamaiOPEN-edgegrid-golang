@@ -9,6 +9,7 @@ import (
 	"unicode"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -221,6 +222,7 @@ func (g *gtm) GetDomainStatus(ctx context.Context, params GetDomainStatusRequest
 	if err != nil {
 		return nil, fmt.Errorf("GetDomain request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -245,6 +247,7 @@ func (g *gtm) ListDomains(ctx context.Context) ([]DomainItem, error) {
 	if err != nil {
 		return nil, fmt.Errorf("ListDomains request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -273,6 +276,7 @@ func (g *gtm) GetDomain(ctx context.Context, params GetDomainRequest) (*GetDomai
 	if err != nil {
 		return nil, fmt.Errorf("GetDomain request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -315,6 +319,7 @@ func (g *gtm) CreateDomain(ctx context.Context, params CreateDomainRequest) (*Cr
 	if err != nil {
 		return nil, fmt.Errorf("domain request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, g.Error(resp)
@@ -357,6 +362,7 @@ func (g *gtm) UpdateDomain(ctx context.Context, params UpdateDomainRequest) (*Up
 	if err != nil {
 		return nil, fmt.Errorf("domain request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -385,6 +391,7 @@ func (g *gtm) DeleteDomain(ctx context.Context, params DeleteDomainRequest) (*De
 	if err != nil {
 		return nil, fmt.Errorf("DeleteDomain request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -436,6 +443,7 @@ func (g *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapSt
 	if err != nil {
 		return nil, fmt.Errorf("GetDomain request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)

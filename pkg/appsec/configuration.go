@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -167,6 +168,7 @@ func (p *appsec) GetConfiguration(ctx context.Context, params GetConfigurationRe
 	if err != nil {
 		return nil, fmt.Errorf("get configuration request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -193,6 +195,7 @@ func (p *appsec) GetConfigurations(ctx context.Context, _ GetConfigurationsReque
 	if err != nil {
 		return nil, fmt.Errorf("get configurations request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -224,6 +227,7 @@ func (p *appsec) UpdateConfiguration(ctx context.Context, params UpdateConfigura
 	if err != nil {
 		return nil, fmt.Errorf("update configuration request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
@@ -249,6 +253,7 @@ func (p *appsec) CreateConfiguration(ctx context.Context, params CreateConfigura
 	if err != nil {
 		return nil, fmt.Errorf("create configuration request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
@@ -276,6 +281,7 @@ func (p *appsec) RemoveConfiguration(ctx context.Context, params RemoveConfigura
 	if err != nil {
 		return nil, fmt.Errorf("remove configuration request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)

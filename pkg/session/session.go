@@ -208,3 +208,8 @@ func WithContextHeaders(h http.Header) ContextOption {
 		o.header = h
 	}
 }
+
+// CloseResponseBody closes response body
+func CloseResponseBody(resp *http.Response) {
+	_ = resp.Body.Close()
+}

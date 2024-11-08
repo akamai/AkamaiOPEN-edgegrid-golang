@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -348,6 +349,8 @@ func (p *appsec) GetReputationProfile(ctx context.Context, params GetReputationP
 	if err != nil {
 		return nil, fmt.Errorf("get reputation profile request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -379,6 +382,8 @@ func (p *appsec) GetReputationProfiles(ctx context.Context, params GetReputation
 	if err != nil {
 		return nil, fmt.Errorf("get reputation profiles request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -422,6 +427,8 @@ func (p *appsec) UpdateReputationProfile(ctx context.Context, params UpdateReput
 	if err != nil {
 		return nil, fmt.Errorf("update reputation profile request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -454,6 +461,8 @@ func (p *appsec) CreateReputationProfile(ctx context.Context, params CreateReput
 	if err != nil {
 		return nil, fmt.Errorf("create reputation profile request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -480,6 +489,8 @@ func (p *appsec) RemoveReputationProfile(ctx context.Context, params RemoveReput
 	if err != nil {
 		return nil, fmt.Errorf("remove reputation profile request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

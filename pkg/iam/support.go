@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -112,6 +113,7 @@ func (i *iam) GetPasswordPolicy(ctx context.Context) (*GetPasswordPolicyResponse
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPasswordPolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPasswordPolicy, i.Error(resp))
@@ -136,6 +138,7 @@ func (i *iam) ListProducts(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListProducts, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListProducts, i.Error(resp))
@@ -164,6 +167,7 @@ func (i *iam) ListStates(ctx context.Context, params ListStatesRequest) ([]strin
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListStates, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListStates, i.Error(resp))
@@ -188,6 +192,7 @@ func (i *iam) ListTimeoutPolicies(ctx context.Context) ([]TimeoutPolicy, error) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListTimeoutPolicies, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListTimeoutPolicies, i.Error(resp))
@@ -225,6 +230,7 @@ func (i *iam) ListAccountSwitchKeys(ctx context.Context, params ListAccountSwitc
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListAccountSwitchKeys, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListAccountSwitchKeys, i.Error(resp))
@@ -249,6 +255,7 @@ func (i *iam) SupportedContactTypes(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrSupportedContactTypes, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrSupportedContactTypes, i.Error(resp))
@@ -273,6 +280,7 @@ func (i *iam) SupportedCountries(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrSupportedCountries, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrSupportedCountries, i.Error(resp))
@@ -297,6 +305,7 @@ func (i *iam) SupportedLanguages(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrSupportedLanguages, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrSupportedLanguages, i.Error(resp))
@@ -321,6 +330,7 @@ func (i *iam) SupportedTimezones(ctx context.Context) ([]Timezone, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrSupportedTimezones, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrSupportedTimezones, i.Error(resp))

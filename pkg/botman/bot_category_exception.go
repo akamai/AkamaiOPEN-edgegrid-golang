@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -79,6 +80,7 @@ func (b *botman) GetBotCategoryException(ctx context.Context, params GetBotCateg
 	if err != nil {
 		return nil, fmt.Errorf("GetBotCategoryException request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -112,6 +114,7 @@ func (b *botman) UpdateBotCategoryException(ctx context.Context, params UpdateBo
 	if err != nil {
 		return nil, fmt.Errorf("UpdateBotCategoryException request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)

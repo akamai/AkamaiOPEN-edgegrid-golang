@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -132,6 +133,8 @@ func (p *appsec) GetReputationProfileAction(ctx context.Context, params GetReput
 	if err != nil {
 		return nil, fmt.Errorf("get reputation profile action request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -163,6 +166,8 @@ func (p *appsec) GetReputationProfileActions(ctx context.Context, params GetRepu
 	if err != nil {
 		return nil, fmt.Errorf("get reputation profile actions request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -206,6 +211,8 @@ func (p *appsec) UpdateReputationProfileAction(ctx context.Context, params Updat
 	if err != nil {
 		return nil, fmt.Errorf("update reputation profile action request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

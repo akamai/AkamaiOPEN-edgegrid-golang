@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -151,6 +152,7 @@ func (e *edgeworkers) GetEdgeWorkerID(ctx context.Context, params GetEdgeWorkerI
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeWorkerID, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetEdgeWorkerID, e.Error(resp))
@@ -186,6 +188,7 @@ func (e *edgeworkers) ListEdgeWorkersID(ctx context.Context, params ListEdgeWork
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListEdgeWorkersID, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListEdgeWorkersID, e.Error(resp))
@@ -217,6 +220,7 @@ func (e *edgeworkers) CreateEdgeWorkerID(ctx context.Context, params CreateEdgeW
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEdgeWorkerID, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateEdgeWorkerID, e.Error(resp))
@@ -248,6 +252,7 @@ func (e *edgeworkers) UpdateEdgeWorkerID(ctx context.Context, params UpdateEdgeW
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEdgeWorkerID, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateEdgeWorkerID, e.Error(resp))
@@ -279,6 +284,7 @@ func (e *edgeworkers) CloneEdgeWorkerID(ctx context.Context, params CloneEdgeWor
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCloneEdgeWorkerID, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrCloneEdgeWorkerID, e.Error(resp))
@@ -308,6 +314,7 @@ func (e *edgeworkers) DeleteEdgeWorkerID(ctx context.Context, params DeleteEdgeW
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeleteEdgeWorkerID, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDeleteEdgeWorkerID, e.Error(resp))

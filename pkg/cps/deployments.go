@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -108,6 +109,7 @@ func (c *cps) ListDeployments(ctx context.Context, params ListDeploymentsRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListDeployments, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListDeployments, c.Error(resp))
@@ -137,6 +139,7 @@ func (c *cps) GetProductionDeployment(ctx context.Context, params GetDeploymentR
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProductionDeployment, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetProductionDeployment, c.Error(resp))
@@ -166,6 +169,7 @@ func (c *cps) GetStagingDeployment(ctx context.Context, params GetDeploymentRequ
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetStagingDeployment, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetStagingDeployment, c.Error(resp))

@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -339,6 +340,7 @@ func (d *dns) ListZones(ctx context.Context, params ListZonesRequest) (*ZoneList
 	if err != nil {
 		return nil, fmt.Errorf("listzones request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -366,6 +368,7 @@ func (d *dns) GetZone(ctx context.Context, params GetZoneRequest) (*GetZoneRespo
 	if err != nil {
 		return nil, fmt.Errorf("GetZone request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -393,6 +396,7 @@ func (d *dns) GetChangeList(ctx context.Context, params GetChangeListRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("GetChangeList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -420,6 +424,7 @@ func (d *dns) GetMasterZoneFile(ctx context.Context, params GetMasterZoneFileReq
 	if err != nil {
 		return "", fmt.Errorf("GetMasterZoneFile request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return "", d.Error(resp)
@@ -455,6 +460,7 @@ func (d *dns) PostMasterZoneFile(ctx context.Context, params PostMasterZoneFileR
 	if err != nil {
 		return fmt.Errorf("Create PostMasterZoneFile failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return d.Error(resp)
@@ -506,6 +512,7 @@ func (d *dns) CreateZone(ctx context.Context, params CreateZoneRequest) error {
 	if err != nil {
 		return fmt.Errorf("Create Zone request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return d.Error(resp)
@@ -557,6 +564,7 @@ func (d *dns) SaveChangeList(ctx context.Context, params SaveChangeListRequest) 
 	if err != nil {
 		return fmt.Errorf("SaveChangeList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return d.Error(resp)
@@ -597,6 +605,7 @@ func (d *dns) SubmitChangeList(ctx context.Context, params SubmitChangeListReque
 	if err != nil {
 		return fmt.Errorf("SubmitChangeList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return d.Error(resp)
@@ -639,6 +648,7 @@ func (d *dns) UpdateZone(ctx context.Context, params UpdateZoneRequest) error {
 	if err != nil {
 		return fmt.Errorf("Zone Update request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return d.Error(resp)
@@ -741,6 +751,7 @@ func (d *dns) GetZoneNames(ctx context.Context, params GetZoneNamesRequest) (*Ge
 	if err != nil {
 		return nil, fmt.Errorf("GetZoneNames request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -768,6 +779,7 @@ func (d *dns) GetZoneNameTypes(ctx context.Context, params GetZoneNameTypesReque
 	if err != nil {
 		return nil, fmt.Errorf("GetZoneNameTypes request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -794,6 +806,7 @@ func (d *dns) GetZonesDNSSecStatus(ctx context.Context, params GetZonesDNSSecSta
 	if err != nil {
 		return nil, fmt.Errorf("GetZonesDNSSecStatus request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -230,6 +231,8 @@ func (p *appsec) GetRule(ctx context.Context, params GetRuleRequest) (*GetRuleRe
 	if err != nil {
 		return nil, fmt.Errorf("get rule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -261,6 +264,8 @@ func (p *appsec) GetRules(ctx context.Context, params GetRulesRequest) (*GetRule
 	if err != nil {
 		return nil, fmt.Errorf("get rules request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -304,6 +309,8 @@ func (p *appsec) UpdateRule(ctx context.Context, params UpdateRuleRequest) (*Upd
 	if err != nil {
 		return nil, fmt.Errorf("update rule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -337,6 +344,8 @@ func (p *appsec) UpdateRuleConditionException(ctx context.Context, params Update
 	if err != nil {
 		return nil, fmt.Errorf("update rule condition exception request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

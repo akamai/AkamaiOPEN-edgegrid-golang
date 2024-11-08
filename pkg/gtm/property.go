@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -273,6 +274,7 @@ func (g *gtm) ListProperties(ctx context.Context, params ListPropertiesRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("ListProperties request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -301,6 +303,7 @@ func (g *gtm) GetProperty(ctx context.Context, params GetPropertyRequest) (*GetP
 	if err != nil {
 		return nil, fmt.Errorf("GetProperty request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -329,6 +332,7 @@ func (g *gtm) CreateProperty(ctx context.Context, params CreatePropertyRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("property request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, g.Error(resp)
@@ -357,6 +361,7 @@ func (g *gtm) UpdateProperty(ctx context.Context, params UpdatePropertyRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("property request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -385,6 +390,7 @@ func (g *gtm) DeleteProperty(ctx context.Context, params DeletePropertyRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("DeleteProperty request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)

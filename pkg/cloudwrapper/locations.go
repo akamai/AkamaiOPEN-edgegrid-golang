@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -46,6 +48,7 @@ func (c *cloudwrapper) ListLocations(ctx context.Context) (*ListLocationResponse
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed:\n%s", ErrListLocations, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListLocations, c.Error(resp))

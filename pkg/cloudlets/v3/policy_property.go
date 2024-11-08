@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -97,6 +98,7 @@ func (c *cloudlets) ListActivePolicyProperties(ctx context.Context, params ListA
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListActivePolicyProperties, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListActivePolicyProperties, c.Error(resp))

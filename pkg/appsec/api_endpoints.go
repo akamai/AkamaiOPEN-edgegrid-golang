@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -87,6 +88,8 @@ func (p *appsec) GetApiEndpoints(ctx context.Context, params GetApiEndpointsRequ
 	if err != nil {
 		return nil, fmt.Errorf("get API endpoints request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

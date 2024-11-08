@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -161,6 +162,7 @@ func (b *botman) GetChallengeAction(ctx context.Context, params GetChallengeActi
 	if err != nil {
 		return nil, fmt.Errorf("GetChallengeAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -193,6 +195,7 @@ func (b *botman) GetChallengeActionList(ctx context.Context, params GetChallenge
 	if err != nil {
 		return nil, fmt.Errorf("GetChallengeActionList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -236,6 +239,7 @@ func (b *botman) UpdateChallengeAction(ctx context.Context, params UpdateChallen
 	if err != nil {
 		return nil, fmt.Errorf("UpdateChallengeAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -268,6 +272,7 @@ func (b *botman) CreateChallengeAction(ctx context.Context, params CreateChallen
 	if err != nil {
 		return nil, fmt.Errorf("CreateChallengeAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, b.Error(resp)
@@ -299,6 +304,7 @@ func (b *botman) RemoveChallengeAction(ctx context.Context, params RemoveChallen
 	if err != nil {
 		return fmt.Errorf("RemoveChallengeAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return b.Error(resp)
@@ -332,6 +338,7 @@ func (b *botman) UpdateGoogleReCaptchaSecretKey(ctx context.Context, params Upda
 	if err != nil {
 		return fmt.Errorf("UpdateGoogleReCaptchaSecretKey request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return b.Error(resp)

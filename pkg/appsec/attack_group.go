@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -218,6 +219,8 @@ func (p *appsec) GetAttackGroup(ctx context.Context, params GetAttackGroupReques
 	if err != nil {
 		return nil, fmt.Errorf("get attack group request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -249,6 +252,8 @@ func (p *appsec) GetAttackGroups(ctx context.Context, params GetAttackGroupsRequ
 	if err != nil {
 		return nil, fmt.Errorf("get attack groups request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -293,6 +298,7 @@ func (p *appsec) UpdateAttackGroup(ctx context.Context, params UpdateAttackGroup
 	if err != nil {
 		return nil, fmt.Errorf("update attack group request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)

@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -81,6 +82,7 @@ func (i *iam) ResetUserPassword(ctx context.Context, params ResetUserPasswordReq
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrResetUserPassword, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if !((!params.SendEmail && resp.StatusCode == http.StatusOK) || (params.SendEmail && resp.StatusCode == http.StatusNoContent)) {
 		return nil, fmt.Errorf("%s: %w", ErrResetUserPassword, i.Error(resp))
@@ -111,6 +113,7 @@ func (i *iam) SetUserPassword(ctx context.Context, params SetUserPasswordRequest
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrSetUserPassword, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrSetUserPassword, i.Error(resp))

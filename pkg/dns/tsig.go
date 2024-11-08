@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -262,6 +263,7 @@ func (d *dns) ListTSIGKeys(ctx context.Context, params ListTSIGKeysRequest) (*Li
 	if err != nil {
 		return nil, fmt.Errorf(" ListTsigKeys request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -294,6 +296,7 @@ func (d *dns) GetTSIGKeyZones(ctx context.Context, params GetTSIGKeyZonesRequest
 	if err != nil {
 		return nil, fmt.Errorf("GetTsigKeyZones request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -321,6 +324,7 @@ func (d *dns) GetTSIGKeyAliases(ctx context.Context, params GetTSIGKeyAliasesReq
 	if err != nil {
 		return nil, fmt.Errorf("GetTsigKeyAliases request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -352,6 +356,7 @@ func (d *dns) UpdateTSIGKeyBulk(ctx context.Context, params UpdateTSIGKeyBulkReq
 	if err != nil {
 		return fmt.Errorf("TsigKeyBulkUpdate request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return d.Error(resp)
@@ -379,6 +384,7 @@ func (d *dns) GetTSIGKey(ctx context.Context, params GetTSIGKeyRequest) (*GetTSI
 	if err != nil {
 		return nil, fmt.Errorf("GetTsigKey request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -405,6 +411,7 @@ func (d *dns) DeleteTSIGKey(ctx context.Context, params DeleteTSIGKeyRequest) er
 	if err != nil {
 		return fmt.Errorf("DeleteTsigKey request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return d.Error(resp)
@@ -436,6 +443,7 @@ func (d *dns) UpdateTSIGKey(ctx context.Context, params UpdateTSIGKeyRequest) er
 	if err != nil {
 		return fmt.Errorf("UpdateTsigKey request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return d.Error(resp)

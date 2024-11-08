@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -109,6 +110,7 @@ func (b *botman) GetCustomBotCategoryAction(ctx context.Context, params GetCusto
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomBotCategoryAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -141,6 +143,7 @@ func (b *botman) GetCustomBotCategoryActionList(ctx context.Context, params GetC
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomBotCategoryActionList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -185,6 +188,7 @@ func (b *botman) UpdateCustomBotCategoryAction(ctx context.Context, params Updat
 	if err != nil {
 		return nil, fmt.Errorf("UpdateCustomBotCategoryAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)

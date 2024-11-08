@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -42,6 +44,8 @@ func (p *appsec) GetEvalPenaltyBoxConditions(ctx context.Context, params GetPena
 	if err != nil {
 		return nil, fmt.Errorf("get eval penalty box conditions request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -74,6 +78,8 @@ func (p *appsec) UpdateEvalPenaltyBoxConditions(ctx context.Context, params Upda
 	if err != nil {
 		return nil, fmt.Errorf("update eval penalty box conditions request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

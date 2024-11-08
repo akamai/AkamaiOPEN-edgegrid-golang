@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -230,6 +231,7 @@ func (c *cps) GetChangeStatus(ctx context.Context, params GetChangeStatusRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetChangeStatus, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetChangeStatus, c.Error(resp))
@@ -267,6 +269,7 @@ func (c *cps) CancelChange(ctx context.Context, params CancelChangeRequest) (*Ca
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCancelChange, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrCancelChange, c.Error(resp))
@@ -306,6 +309,7 @@ func (c *cps) UpdateChange(ctx context.Context, params UpdateChangeRequest) (*Up
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateChange, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateChange, c.Error(resp))

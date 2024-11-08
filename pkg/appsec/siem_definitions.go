@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -46,6 +48,8 @@ func (p *appsec) GetSiemDefinitions(ctx context.Context, params GetSiemDefinitio
 	if err != nil {
 		return nil, fmt.Errorf("get siem definitions request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

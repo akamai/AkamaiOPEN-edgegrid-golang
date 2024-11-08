@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -210,6 +211,7 @@ func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCP
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCPCodes, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetCPCodes, p.Error(resp))
@@ -238,6 +240,7 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCPCode, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetCPCode, p.Error(resp))
@@ -266,6 +269,7 @@ func (p *papi) GetCPCodeDetail(ctx context.Context, ID int) (*CPCodeDetailRespon
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCPCodeDetail, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetCPCodeDetail, p.Error(resp))
@@ -294,6 +298,8 @@ func (p *papi) CreateCPCode(ctx context.Context, r CreateCPCodeRequest) (*Create
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateCPCode, err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateCPCode, p.Error(resp))
 	}
@@ -325,6 +331,7 @@ func (p *papi) UpdateCPCode(ctx context.Context, r UpdateCPCodeRequest) (*CPCode
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateCPCode, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateCPCode, p.Error(resp))

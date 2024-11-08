@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -51,6 +53,8 @@ func (p *appsec) GetEvalGroup(ctx context.Context, params GetAttackGroupRequest)
 	if err != nil {
 		return nil, fmt.Errorf("get eval group request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -82,6 +86,8 @@ func (p *appsec) GetEvalGroups(ctx context.Context, params GetAttackGroupsReques
 	if err != nil {
 		return nil, fmt.Errorf("get eval groups request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -125,6 +131,8 @@ func (p *appsec) UpdateEvalGroup(ctx context.Context, params UpdateAttackGroupRe
 	if err != nil {
 		return nil, fmt.Errorf("update eval group request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

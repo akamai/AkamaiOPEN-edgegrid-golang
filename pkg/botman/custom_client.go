@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -139,6 +140,7 @@ func (b *botman) GetCustomClient(ctx context.Context, params GetCustomClientRequ
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomClient request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -171,6 +173,7 @@ func (b *botman) GetCustomClientList(ctx context.Context, params GetCustomClient
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomClientList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -214,6 +217,7 @@ func (b *botman) UpdateCustomClient(ctx context.Context, params UpdateCustomClie
 	if err != nil {
 		return nil, fmt.Errorf("UpdateCustomClient request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -246,6 +250,7 @@ func (b *botman) CreateCustomClient(ctx context.Context, params CreateCustomClie
 	if err != nil {
 		return nil, fmt.Errorf("CreateCustomClient request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, b.Error(resp)
@@ -277,6 +282,7 @@ func (b *botman) RemoveCustomClient(ctx context.Context, params RemoveCustomClie
 	if err != nil {
 		return fmt.Errorf("RemoveCustomClient request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return b.Error(resp)

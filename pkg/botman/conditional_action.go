@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -140,6 +141,7 @@ func (b *botman) GetConditionalAction(ctx context.Context, params GetConditional
 	if err != nil {
 		return nil, fmt.Errorf("GetConditionalAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -172,6 +174,7 @@ func (b *botman) GetConditionalActionList(ctx context.Context, params GetConditi
 	if err != nil {
 		return nil, fmt.Errorf("GetConditionalActionList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -215,6 +218,7 @@ func (b *botman) UpdateConditionalAction(ctx context.Context, params UpdateCondi
 	if err != nil {
 		return nil, fmt.Errorf("UpdateConditionalAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -247,6 +251,7 @@ func (b *botman) CreateConditionalAction(ctx context.Context, params CreateCondi
 	if err != nil {
 		return nil, fmt.Errorf("CreateConditionalAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, b.Error(resp)
@@ -278,6 +283,7 @@ func (b *botman) RemoveConditionalAction(ctx context.Context, params RemoveCondi
 	if err != nil {
 		return fmt.Errorf("RemoveConditionalAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return b.Error(resp)

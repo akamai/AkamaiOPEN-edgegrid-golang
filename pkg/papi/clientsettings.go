@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -38,6 +40,7 @@ func (p *papi) GetClientSettings(ctx context.Context) (*ClientSettingsBody, erro
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetClientSettings, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetClientSettings, p.Error(resp))
@@ -63,6 +66,7 @@ func (p *papi) UpdateClientSettings(ctx context.Context, params ClientSettingsBo
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateClientSettings, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetClientSettings, p.Error(resp))

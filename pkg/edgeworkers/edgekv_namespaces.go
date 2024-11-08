@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -173,6 +174,7 @@ func (e *edgeworkers) ListEdgeKVNamespaces(ctx context.Context, params ListEdgeK
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListEdgeKVNamespace, err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListEdgeKVNamespace, e.Error(resp))
@@ -200,6 +202,7 @@ func (e *edgeworkers) GetEdgeKVNamespace(ctx context.Context, params GetEdgeKVNa
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeKVNamespace, err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetEdgeKVNamespace, e.Error(resp))
@@ -227,6 +230,7 @@ func (e *edgeworkers) CreateEdgeKVNamespace(ctx context.Context, params CreateEd
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEdgeKVNamespace, err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrCreateEdgeKVNamespace, e.Error(resp))
@@ -254,6 +258,7 @@ func (e *edgeworkers) UpdateEdgeKVNamespace(ctx context.Context, params UpdateEd
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEdgeKVNamespace, err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateEdgeKVNamespace, e.Error(resp))

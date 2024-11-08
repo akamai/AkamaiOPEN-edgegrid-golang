@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -50,6 +52,7 @@ func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetGroups, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetGroups, p.Error(resp))

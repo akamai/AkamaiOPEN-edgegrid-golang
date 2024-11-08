@@ -14,7 +14,7 @@ var (
 
 // ResponseLinkParse parse the link and returns the id
 func ResponseLinkParse(link string) (string, error) {
-	locURL, err := url.Parse(string(link))
+	locURL, err := url.Parse(link)
 	if err != nil {
 		return "", err
 	}

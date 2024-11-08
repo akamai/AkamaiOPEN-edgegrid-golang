@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -118,6 +119,7 @@ func (c *cloudwrapper) ListProperties(ctx context.Context, params ListProperties
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListProperties, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListProperties, c.Error(resp))
@@ -154,6 +156,7 @@ func (c *cloudwrapper) ListOrigins(ctx context.Context, params ListOriginsReques
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListOrigins, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListOrigins, c.Error(resp))

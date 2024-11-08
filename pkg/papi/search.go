@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -88,6 +89,7 @@ func (p *papi) SearchProperties(ctx context.Context, request SearchRequest) (*Se
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrSearchProperties, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrSearchProperties, p.Error(resp))

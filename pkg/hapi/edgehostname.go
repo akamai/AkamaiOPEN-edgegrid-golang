@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -229,6 +229,7 @@ func (h *hapi) DeleteEdgeHostname(ctx context.Context, params DeleteEdgeHostname
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeleteEdgeHostname, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%s: %w", ErrDeleteEdgeHostname, h.Error(resp))
@@ -253,6 +254,7 @@ func (h *hapi) GetEdgeHostname(ctx context.Context, edgeHostnameID int) (*GetEdg
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeHostname, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetEdgeHostname, h.Error(resp))
@@ -299,6 +301,7 @@ func (h *hapi) UpdateEdgeHostname(ctx context.Context, request UpdateEdgeHostnam
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEdgeHostname, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%w: %s", ErrUpdateEdgeHostname, h.Error(resp))
@@ -331,6 +334,7 @@ func (h *hapi) GetCertificate(ctx context.Context, params GetCertificateRequest)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCertificate, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, fmt.Errorf("%s: %s: %w", ErrGetCertificate, ErrNotFound, h.Error(resp))

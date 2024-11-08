@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -102,6 +103,7 @@ func (p *appsec) GetAPIConstraintsProtection(ctx context.Context, params GetAPIC
 	if err != nil {
 		return nil, fmt.Errorf("get API constraints protection request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -135,6 +137,7 @@ func (p *appsec) UpdateAPIConstraintsProtection(ctx context.Context, params Upda
 	if err != nil {
 		return nil, fmt.Errorf("update API constraints protection request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)

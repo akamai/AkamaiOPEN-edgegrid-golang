@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -108,6 +110,7 @@ func (p *networklists) GetNetworkListSubscription(ctx context.Context, _ GetNetw
 	if err != nil {
 		return nil, fmt.Errorf("getnetworklistsubscription  request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -134,6 +137,7 @@ func (p *networklists) UpdateNetworkListSubscription(ctx context.Context, params
 	if err != nil {
 		return nil, fmt.Errorf("remove NetworkListSubscription request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {
 		return nil, p.Error(resp)
@@ -159,6 +163,7 @@ func (p *networklists) RemoveNetworkListSubscription(ctx context.Context, params
 	if err != nil {
 		return nil, fmt.Errorf("remove NetworkListSubscription request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {
 		return nil, p.Error(resp)

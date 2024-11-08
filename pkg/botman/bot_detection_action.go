@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -107,6 +108,7 @@ func (b *botman) GetBotDetectionAction(ctx context.Context, params GetBotDetecti
 	if err != nil {
 		return nil, fmt.Errorf("GetBotDetectionAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -139,6 +141,7 @@ func (b *botman) GetBotDetectionActionList(ctx context.Context, params GetBotDet
 	if err != nil {
 		return nil, fmt.Errorf("GetBotDetectionActionList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -183,6 +186,7 @@ func (b *botman) UpdateBotDetectionAction(ctx context.Context, params UpdateBotD
 	if err != nil {
 		return nil, fmt.Errorf("UpdateBotDetectionAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)

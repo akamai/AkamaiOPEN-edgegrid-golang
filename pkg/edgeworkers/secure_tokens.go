@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -63,6 +64,7 @@ func (e *edgeworkers) CreateSecureToken(ctx context.Context, params CreateSecure
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateSecureToken, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateSecureToken, e.Error(resp))

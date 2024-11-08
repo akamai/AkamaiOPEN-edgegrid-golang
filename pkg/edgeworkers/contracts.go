@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -34,6 +36,7 @@ func (e *edgeworkers) ListContracts(ctx context.Context) (*ListContractsResponse
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListContracts, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListContracts, e.Error(resp))

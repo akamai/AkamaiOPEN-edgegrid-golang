@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -67,6 +68,7 @@ func (i *iam) LockUser(ctx context.Context, params LockUserRequest) error {
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrLockUser, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrLockUser, i.Error(resp))
@@ -97,6 +99,7 @@ func (i *iam) UnlockUser(ctx context.Context, params UnlockUserRequest) error {
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrUnlockUser, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrUnlockUser, i.Error(resp))

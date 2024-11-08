@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -153,6 +154,7 @@ func (e *edgeworkers) ListActivations(ctx context.Context, params ListActivation
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListActivations, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListActivations, e.Error(resp))
@@ -181,6 +183,7 @@ func (e *edgeworkers) GetActivation(ctx context.Context, params GetActivationReq
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetActivation, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetActivation, e.Error(resp))
@@ -210,6 +213,7 @@ func (e *edgeworkers) ActivateVersion(ctx context.Context, params ActivateVersio
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrActivateVersion, e.Error(resp))
@@ -239,6 +243,7 @@ func (e *edgeworkers) CancelPendingActivation(ctx context.Context, params Cancel
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCancelActivation, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrCancelActivation, e.Error(resp))

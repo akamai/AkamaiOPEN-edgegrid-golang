@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -66,6 +67,7 @@ func (p *papi) GetProducts(ctx context.Context, params GetProductsRequest) (*Get
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProducts, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetProducts, p.Error(resp))

@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -84,6 +85,7 @@ func (c *cloudwrapper) ListAuthKeys(ctx context.Context, params ListAuthKeysRequ
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListAuthKeys, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListAuthKeys, c.Error(resp))
@@ -108,6 +110,7 @@ func (c *cloudwrapper) ListCDNProviders(ctx context.Context) (*ListCDNProvidersR
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListCDNProviders, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListCDNProviders, c.Error(resp))

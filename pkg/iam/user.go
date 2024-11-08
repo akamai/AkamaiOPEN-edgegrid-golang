@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
@@ -356,6 +357,7 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateUser, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateUser, i.Error(resp))
@@ -394,6 +396,7 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetUser, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetUser, i.Error(resp))
@@ -429,6 +432,7 @@ func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]UserLis
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed:\n%s", ErrListUsers, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListUsers, i.Error(resp))
@@ -459,6 +463,7 @@ func (i *iam) RemoveUser(ctx context.Context, params RemoveUserRequest) error {
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrRemoveUser, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrRemoveUser, i.Error(resp))
@@ -491,6 +496,7 @@ func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGra
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserAuthGrants, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateUserAuthGrants, i.Error(resp))
@@ -522,6 +528,7 @@ func (i *iam) UpdateUserInfo(ctx context.Context, params UpdateUserInfoRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserInfo, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateUserInfo, i.Error(resp))
@@ -553,6 +560,7 @@ func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNoti
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserNotifications, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateUserNotifications, i.Error(resp))
@@ -587,6 +595,7 @@ func (i *iam) UpdateTFA(ctx context.Context, params UpdateTFARequest) error {
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrUpdateTFA, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrUpdateTFA, i.Error(resp))
@@ -617,6 +626,7 @@ func (i *iam) UpdateMFA(ctx context.Context, params UpdateMFARequest) error {
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrUpdateMFA, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrUpdateMFA, i.Error(resp))
@@ -643,6 +653,7 @@ func (i *iam) ResetMFA(ctx context.Context, params ResetMFARequest) error {
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrResetMFA, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrResetMFA, i.Error(resp))

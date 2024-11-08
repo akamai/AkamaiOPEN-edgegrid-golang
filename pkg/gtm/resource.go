@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -173,6 +174,7 @@ func (g *gtm) ListResources(ctx context.Context, params ListResourcesRequest) ([
 	if err != nil {
 		return nil, fmt.Errorf("ListResources request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -201,6 +203,7 @@ func (g *gtm) GetResource(ctx context.Context, params GetResourceRequest) (*GetR
 	if err != nil {
 		return nil, fmt.Errorf("GetResource request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -229,6 +232,7 @@ func (g *gtm) CreateResource(ctx context.Context, params CreateResourceRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("resource request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, g.Error(resp)
@@ -257,6 +261,7 @@ func (g *gtm) UpdateResource(ctx context.Context, params UpdateResourceRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("resource request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -285,6 +290,7 @@ func (g *gtm) DeleteResource(ctx context.Context, params DeleteResourceRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("DeleteResource request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)

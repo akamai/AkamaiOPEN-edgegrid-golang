@@ -8,7 +8,7 @@ import (
 	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -210,6 +210,7 @@ func (i *imaging) ListPolicySets(ctx context.Context, params ListPolicySetsReque
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListPolicySets, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListPolicySets, i.Error(resp))
@@ -249,6 +250,7 @@ func (i *imaging) GetPolicySet(ctx context.Context, params GetPolicySetRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicySet, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPolicySet, i.Error(resp))
@@ -278,6 +280,7 @@ func (i *imaging) CreatePolicySet(ctx context.Context, params CreatePolicySetReq
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreatePolicySet, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreatePolicySet, i.Error(resp))
@@ -312,6 +315,7 @@ func (i *imaging) UpdatePolicySet(ctx context.Context, params UpdatePolicySetReq
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePolicySet, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdatePolicySet, i.Error(resp))
@@ -344,6 +348,7 @@ func (i *imaging) DeletePolicySet(ctx context.Context, params DeletePolicySetReq
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeletePolicySet, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDeletePolicySet, i.Error(resp))

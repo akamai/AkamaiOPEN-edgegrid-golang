@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -69,6 +71,8 @@ func (p *appsec) GetSelectableHostnames(ctx context.Context, params GetSelectabl
 	if err != nil {
 		return nil, fmt.Errorf("get selectable hostnames request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

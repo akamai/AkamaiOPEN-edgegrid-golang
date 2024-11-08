@@ -11,6 +11,7 @@ import (
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -373,6 +374,7 @@ func (p *papi) ActivateInclude(ctx context.Context, params ActivateIncludeReques
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateInclude, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrActivateInclude, p.Error(resp))
@@ -419,6 +421,7 @@ func (p *papi) DeactivateInclude(ctx context.Context, params DeactivateIncludeRe
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeactivateInclude, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrDeactivateInclude, p.Error(resp))
@@ -461,6 +464,7 @@ func (p *papi) CancelIncludeActivation(ctx context.Context, params CancelInclude
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCancelIncludeActivation, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrCancelIncludeActivation, p.Error(resp))
@@ -489,6 +493,7 @@ func (p *papi) GetIncludeActivation(ctx context.Context, params GetIncludeActiva
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetIncludeActivation, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetIncludeActivation, p.Error(resp))
@@ -539,6 +544,7 @@ func (p *papi) ListIncludeActivations(ctx context.Context, params ListIncludeAct
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListIncludeActivations, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListIncludeActivations, p.Error(resp))

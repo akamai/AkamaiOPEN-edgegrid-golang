@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -173,6 +174,7 @@ func (c *cloudaccess) GetAccessKeyVersionStatus(ctx context.Context, params GetA
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrGetAccessKeyVersionStatus, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetAccessKeyVersionStatus, c.Error(resp))
@@ -201,6 +203,7 @@ func (c *cloudaccess) CreateAccessKeyVersion(ctx context.Context, params CreateA
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrCreateAccessKeyVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%s: %w", ErrCreateAccessKeyVersion, c.Error(resp))
@@ -229,6 +232,7 @@ func (c *cloudaccess) GetAccessKeyVersion(ctx context.Context, params GetAccessK
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrGetAccessKeyVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetAccessKeyVersion, c.Error(resp))
@@ -257,6 +261,7 @@ func (c *cloudaccess) ListAccessKeyVersions(ctx context.Context, params ListAcce
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrListAccessKeyVersions, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListAccessKeyVersions, c.Error(resp))
@@ -285,6 +290,7 @@ func (c *cloudaccess) DeleteAccessKeyVersion(ctx context.Context, params DeleteA
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrDeleteAccessKeyVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%s: %w", ErrDeleteAccessKeyVersion, c.Error(resp))

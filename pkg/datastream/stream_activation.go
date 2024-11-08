@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -87,6 +88,7 @@ func (d *ds) ActivateStream(ctx context.Context, params ActivateStreamRequest) (
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateStream, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrActivateStream, d.Error(resp))
@@ -120,6 +122,7 @@ func (d *ds) DeactivateStream(ctx context.Context, params DeactivateStreamReques
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeactivateStream, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrDeactivateStream, d.Error(resp))
@@ -153,6 +156,7 @@ func (d *ds) GetActivationHistory(ctx context.Context, params GetActivationHisto
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetActivationHistory, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetActivationHistory, d.Error(resp))

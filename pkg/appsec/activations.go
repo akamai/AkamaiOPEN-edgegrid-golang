@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -189,6 +190,7 @@ func (p *appsec) GetActivations(ctx context.Context, params GetActivationsReques
 	if errp != nil {
 		return nil, fmt.Errorf("get activations request failed: %w", errp)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -219,6 +221,7 @@ func (p *appsec) GetActivationHistory(ctx context.Context, params GetActivationH
 	if err != nil {
 		return nil, fmt.Errorf("get activation history request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -243,6 +246,8 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 	if err != nil {
 		return nil, fmt.Errorf("create activations request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -261,6 +266,8 @@ func (p *appsec) CreateActivations(ctx context.Context, params CreateActivations
 	if err != nil {
 		return nil, fmt.Errorf("get activation request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -284,6 +291,8 @@ func (p *appsec) RemoveActivations(ctx context.Context, params RemoveActivations
 	if errp != nil {
 		return nil, fmt.Errorf("remove activations request failed: %w", errp)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

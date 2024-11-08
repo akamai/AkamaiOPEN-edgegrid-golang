@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -70,6 +71,7 @@ func (i *iam) ListBlockedProperties(ctx context.Context, params ListBlockedPrope
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListBlockedProperties, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListBlockedProperties, i.Error(resp))
@@ -98,6 +100,7 @@ func (i *iam) UpdateBlockedProperties(ctx context.Context, params UpdateBlockedP
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateBlockedProperties, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateBlockedProperties, i.Error(resp))

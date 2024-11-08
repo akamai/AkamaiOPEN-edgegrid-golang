@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -88,6 +89,7 @@ func (b *botman) GetCustomBotCategoryItemSequence(ctx context.Context, params Ge
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomBotCategoryItemSequence request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -120,6 +122,7 @@ func (b *botman) UpdateCustomBotCategoryItemSequence(ctx context.Context, params
 	if err != nil {
 		return nil, fmt.Errorf("UpdateCustomBotCategoryItemSequence request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)

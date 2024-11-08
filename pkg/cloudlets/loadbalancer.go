@@ -8,7 +8,7 @@ import (
 	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -136,6 +136,7 @@ func (c *cloudlets) ListOrigins(ctx context.Context, params ListOriginsRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListOrigins, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListOrigins, c.Error(resp))
@@ -163,6 +164,7 @@ func (c *cloudlets) GetOrigin(ctx context.Context, params GetOriginRequest) (*Or
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetOrigin, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetOrigin, c.Error(resp))
@@ -195,6 +197,7 @@ func (c *cloudlets) CreateOrigin(ctx context.Context, params CreateOriginRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateOrigin, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateOrigin, c.Error(resp))
@@ -227,6 +230,7 @@ func (c *cloudlets) UpdateOrigin(ctx context.Context, params UpdateOriginRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateOrigin, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateOrigin, c.Error(resp))

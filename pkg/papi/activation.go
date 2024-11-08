@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/spf13/cast"
 )
@@ -269,6 +270,7 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateActivation, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateActivation, p.Error(resp))
@@ -318,6 +320,7 @@ func (p *papi) GetActivations(ctx context.Context, params GetActivationsRequest)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetActivations, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetActivations, p.Error(resp))
@@ -352,6 +355,7 @@ func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetActivation, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetActivation, p.Error(resp))
@@ -396,6 +400,7 @@ func (p *papi) CancelActivation(ctx context.Context, params CancelActivationRequ
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCancelActivation, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrCancelActivation, p.Error(resp))

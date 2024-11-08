@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -136,6 +137,7 @@ func (p *appsec) GetCustomRuleAction(ctx context.Context, params GetCustomRuleAc
 	if err != nil {
 		return nil, fmt.Errorf("get custom rule action request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -175,6 +177,8 @@ func (p *appsec) GetCustomRuleActions(ctx context.Context, params GetCustomRuleA
 	if err != nil {
 		return nil, fmt.Errorf("get custom rule actions request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -218,6 +222,7 @@ func (p *appsec) UpdateCustomRuleAction(ctx context.Context, params UpdateCustom
 	if err != nil {
 		return nil, fmt.Errorf("update custom rule action request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {
 		return nil, p.Error(resp)
