@@ -1,72 +1,28 @@
 # RELEASE NOTES
 
-## X.X.X (X X, X)
-
-#### BREAKING CHANGES:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## 9.1.0 (Nov 14, 2024)
 
 #### FEATURES/ENHANCEMENTS:
+
+* General
+  * Added a configurable `WithRetries` option for creating new sessions with global GET retries. It can be configured with these parameters:
+    * `retryMax`  - The maximum number of API request retries.
+    * `retryWaitMin` - The minimum wait time in `time.Duration` between API requests retries.
+    * `retryWaitMax` - The maximum wait time in `time.Duration` between API requests retries.
+    * `excludedEndpoints` - The list of path expressions defining endpoints which should be excluded from the retry feature.
+  * Added logic responsible for closing the response body in each method.
+
 * APPSEC
   * Added following content protection fields to `GetExportConfigurationResponse` under `BotManagement` section
     * `ContentProtectionRules`
     * `ContentProtectionRuleSequence`
     * `ContentProtectionJavaScriptInjectionRules`
-
   * Changed `EnabledBotmanSiemEvents` to `*bool` and omitted from following structs when empty
     * `GetSiemSettingResponse`
     * `RemoveSiemSettingsRequest`
     * `RemoveSiemSettingsResponse`
     * `UpdateSiemSettingsRequest`
     * `UpdateSiemSettingsResponse`
-    
-
-
-* General
-  * Added a configurable `WithRetries` option for creating new sessions with global GET retries. It can be configured with parameters:
-    * `retryMax`  - The maximum number of API request retries.
-    * `retryWaitMin` - The minimum wait time in `time.Duration` between API requests retries.
-    * `retryWaitMax` - The maximum wait time in `time.Duration` between API requests retries.
-    * `excludedEndpoints` - List of path expressions defining endpoints which should be excluded from retry feature
-
-
-
-
-
-
-
-* General
-  * Added logic responsible for closing the response body in each method.
-
-
-
-
-
-
-
-
-
-
 
 * DNS
   * Added support for `OutboundZoneTransfer` field in requests and responses for these methods:
@@ -76,65 +32,13 @@
     * `ListZones`
     * `UpdateZone`
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #### BUG FIXES:
 
 * APPSEC
-  * Fixed SIEM exception validation for `Exceptions` field 
-
-
-
-
-
-
+  * Fixed SIEM exception validation for the `Exceptions` field.
 
 * Cloud Access
   * Added custom error `ErrAccessKeyNotFound` to easier verify if provided access key does not exist.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 9.0.0 (Oct 3, 2024)
 
