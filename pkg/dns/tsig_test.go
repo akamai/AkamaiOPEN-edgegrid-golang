@@ -113,7 +113,7 @@ func TestDNS_GetTSIGKeyZones(t *testing.T) {
 				TsigKey: &TSIGKey{
 					Name:      "example.com.akamai.com.",
 					Algorithm: "hmac-sha512",
-					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+					Secret:    "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
 				},
 			},
 			responseStatus: http.StatusOK,
@@ -134,7 +134,7 @@ func TestDNS_GetTSIGKeyZones(t *testing.T) {
 				TsigKey: &TSIGKey{
 					Name:      "example.com.akamai.com.",
 					Algorithm: "hmac-sha512",
-					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+					Secret:    "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
 				},
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -262,7 +262,7 @@ func TestDNS_TSIGKeyBulkUpdate(t *testing.T) {
 					Key: &TSIGKey{
 						Name:      "brook.com.akamai.com.",
 						Algorithm: "hmac-sha512",
-						Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+						Secret:    "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
 					},
 					Zones: []string{"brook.com", "river.com"},
 				},
@@ -279,7 +279,7 @@ func TestDNS_TSIGKeyBulkUpdate(t *testing.T) {
 					Key: &TSIGKey{
 						Name:      "brook.com.akamai.com.",
 						Algorithm: "hmac-sha512",
-						Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+						Secret:    "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
 					},
 					Zones: []string{"brook.com", "river.com"},
 				},
@@ -342,7 +342,7 @@ func TestDNS_GetTSIGKey(t *testing.T) {
 			{
 				"name": "example.com.akamai.com.",
 				"algorithm": "hmac-sha512",
-				"secret": "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+				"secret": "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
 				"zonesCount": 7
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com/key",
@@ -350,7 +350,7 @@ func TestDNS_GetTSIGKey(t *testing.T) {
 				TSIGKey: TSIGKey{
 					Name:      "example.com.akamai.com.",
 					Algorithm: "hmac-sha512",
-					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+					Secret:    "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
 				},
 				ZoneCount: 7,
 			},
@@ -472,7 +472,7 @@ func TestDNS_UpdateTSIGKey(t *testing.T) {
 				TsigKey: &TSIGKey{
 					Name:      "example.com.akamai.com.",
 					Algorithm: "hmac-sha512",
-					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+					Secret:    "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
 				},
 				Zone: "example.com",
 			},
@@ -484,7 +484,7 @@ func TestDNS_UpdateTSIGKey(t *testing.T) {
 				TsigKey: &TSIGKey{
 					Name:      "example.com.akamai.com.",
 					Algorithm: "hmac-sha512",
-					Secret:    "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+					Secret:    "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
 				},
 				Zone: "example.com",
 			},

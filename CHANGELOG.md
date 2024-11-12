@@ -68,8 +68,13 @@
 
 
 
-
-
+* DNS
+  * Added support for `OutboundZoneTransfer` field in requests and responses for these methods:
+    * `CreateBulkZones`
+    * `CreateZone`
+    * `GetZone`
+    * `ListZones`
+    * `UpdateZone`
 
 
 
