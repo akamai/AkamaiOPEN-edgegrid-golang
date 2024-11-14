@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -161,6 +162,7 @@ func (c *cps) GetDVHistory(ctx context.Context, params GetDVHistoryRequest) (*Ge
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetDVHistory, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetDVHistory, c.Error(resp))
@@ -188,6 +190,7 @@ func (c *cps) GetCertificateHistory(ctx context.Context, params GetCertificateHi
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCertificateHistory, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetCertificateHistory, c.Error(resp))
@@ -215,6 +218,7 @@ func (c *cps) GetChangeHistory(ctx context.Context, params GetChangeHistoryReque
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetChangeHistory, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetChangeHistory, c.Error(resp))

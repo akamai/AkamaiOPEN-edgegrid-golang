@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -356,6 +356,7 @@ func (i *imaging) ListPolicies(ctx context.Context, params ListPoliciesRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListPolicies, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListPolicies, i.Error(resp))
@@ -387,6 +388,7 @@ func (i *imaging) GetPolicy(ctx context.Context, params GetPolicyRequest) (Polic
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPolicy, i.Error(resp))
@@ -423,6 +425,7 @@ func (i *imaging) UpsertPolicy(ctx context.Context, params UpsertPolicyRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpsertPolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrUpsertPolicy, i.Error(resp))
@@ -454,6 +457,7 @@ func (i *imaging) DeletePolicy(ctx context.Context, params DeletePolicyRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeletePolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrDeletePolicy, i.Error(resp))
@@ -485,6 +489,7 @@ func (i *imaging) GetPolicyHistory(ctx context.Context, params GetPolicyHistoryR
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicyHistory, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPolicyHistory, i.Error(resp))
@@ -516,6 +521,7 @@ func (i *imaging) RollbackPolicy(ctx context.Context, params RollbackPolicyReque
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrRollbackPolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrRollbackPolicy, i.Error(resp))

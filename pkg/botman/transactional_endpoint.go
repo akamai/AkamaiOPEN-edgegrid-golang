@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -151,6 +152,7 @@ func (b *botman) GetTransactionalEndpoint(ctx context.Context, params GetTransac
 	if err != nil {
 		return nil, fmt.Errorf("GetTransactionalEndpoint request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -184,6 +186,7 @@ func (b *botman) GetTransactionalEndpointList(ctx context.Context, params GetTra
 	if err != nil {
 		return nil, fmt.Errorf("GetTransactionalEndpointList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -228,6 +231,7 @@ func (b *botman) UpdateTransactionalEndpoint(ctx context.Context, params UpdateT
 	if err != nil {
 		return nil, fmt.Errorf("UpdateTransactionalEndpoint request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -261,6 +265,7 @@ func (b *botman) CreateTransactionalEndpoint(ctx context.Context, params CreateT
 	if err != nil {
 		return nil, fmt.Errorf("CreateTransactionalEndpoint request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, b.Error(resp)
@@ -293,6 +298,7 @@ func (b *botman) RemoveTransactionalEndpoint(ctx context.Context, params RemoveT
 	if err != nil {
 		return fmt.Errorf("RemoveTransactionalEndpoint request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return b.Error(resp)

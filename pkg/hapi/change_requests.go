@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -48,6 +50,7 @@ func (h *hapi) GetChangeRequest(ctx context.Context, prop GetChangeRequest) (*Ch
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetChangeRequest, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetChangeRequest, h.Error(resp))

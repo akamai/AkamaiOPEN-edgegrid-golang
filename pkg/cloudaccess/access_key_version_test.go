@@ -308,7 +308,7 @@ func TestGetAccessKeyVersion(t *testing.T) {
 				assert.Equal(t, "get access key version: struct validation: AccessKeyUID: cannot be blank\nVersion: cannot be blank", err.Error())
 			},
 		},
-		"404 error": {
+		"404 error - access key with specific uid not exists": {
 			params: GetAccessKeyVersionRequest{
 				AccessKeyUID: 1,
 				Version:      1,
@@ -334,6 +334,90 @@ func TestGetAccessKeyVersion(t *testing.T) {
 					Status:       http.StatusNotFound,
 				}
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"404 error - wrap into custom error": {
+			params: GetAccessKeyVersionRequest{
+				AccessKeyUID: 1,
+				Version:      1,
+			},
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+		{
+		 "accessKeyUid": 1,
+		 "detail": "Access key with accessKeyUid '1' does not exist.",
+		 "instance": "c111eff1-22ec-4d4e-99c9-55efb5d55f55",
+		 "status": 404,
+		 "title": "Domain Error",
+		 "type": "/cam/error-types/access-key-does-not-exist"
+		}`,
+			expectedPath: "/cam/v1/access-keys/1/versions/1",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					AccessKeyUID: 1,
+					Type:         "/cam/error-types/access-key-does-not-exist",
+					Title:        "Domain Error",
+					Detail:       "Access key with accessKeyUid '1' does not exist.",
+					Instance:     "c111eff1-22ec-4d4e-99c9-55efb5d55f55",
+					Status:       http.StatusNotFound,
+				}
+				assert.True(t, errors.Is(want, ErrAccessKeyNotFound))
+			},
+		},
+		"404 error - access key version for specific access key not exists": {
+			params: GetAccessKeyVersionRequest{
+				AccessKeyUID: 1,
+				Version:      2,
+			},
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+		{
+		 "accessKeyUid": 1,
+		 "detail":  "Version '2' for access key '1' does not exist.",
+		 "instance": "12345-12345-12345-1234-12345678",
+		 "status": 404,
+		 "title": "Domain Error",
+		 "type": "/cam/error-types/access-key-version-does-not-exist"
+		}`,
+			expectedPath: "/cam/v1/access-keys/1/versions/2",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					AccessKeyUID: 1,
+					Type:         "/cam/error-types/access-key-version-does-not-exist",
+					Title:        "Domain Error",
+					Detail:       "Version '2' for access key '1' does not exist.",
+					Instance:     "12345-12345-12345-1234-12345678",
+					Status:       http.StatusNotFound,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"404 error - does not wrap into custom error": {
+			params: GetAccessKeyVersionRequest{
+				AccessKeyUID: 1,
+				Version:      2,
+			},
+			responseStatus: http.StatusNotFound,
+			responseBody: `
+		{
+		 "accessKeyUid": 1,
+		 "detail":  "Version '2' for access key '1' does not exist.",
+		 "instance": "12345-12345-12345-1234-12345678",
+		 "status": 404,
+		 "title": "Domain Error",
+		 "type": "/cam/error-types/access-key-version-does-not-exist"
+		}`,
+			expectedPath: "/cam/v1/access-keys/1/versions/2",
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					AccessKeyUID: 1,
+					Type:         "/cam/error-types/access-key-version-does-not-exist",
+					Title:        "Domain Error",
+					Detail:       "Version '2' for access key '1' does not exist.",
+					Instance:     "12345-12345-12345-1234-12345678",
+					Status:       http.StatusNotFound,
+				}
+				assert.False(t, errors.Is(want, ErrAccessKeyNotFound))
 			},
 		},
 	}

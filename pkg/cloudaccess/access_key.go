@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -171,6 +172,7 @@ func (c *cloudaccess) GetAccessKeyStatus(ctx context.Context, params GetAccessKe
 	if err != nil {
 		return nil, fmt.Errorf("GetAccessKeyStatus request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, c.Error(resp)
@@ -202,6 +204,7 @@ func (c *cloudaccess) CreateAccessKey(ctx context.Context, accessKey CreateAcces
 	if err != nil {
 		return nil, fmt.Errorf("CreateAccessKey request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, c.Error(resp)
@@ -236,6 +239,7 @@ func (c *cloudaccess) GetAccessKey(ctx context.Context, params AccessKeyRequest)
 
 		return nil, fmt.Errorf("GetAccessKey request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, c.Error(resp)
@@ -268,6 +272,7 @@ func (c *cloudaccess) ListAccessKeys(ctx context.Context, params ListAccessKeysR
 	if err != nil {
 		return nil, fmt.Errorf("ListAccessKeys request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, c.Error(resp)
@@ -298,6 +303,7 @@ func (c *cloudaccess) DeleteAccessKey(ctx context.Context, params AccessKeyReque
 	if err != nil {
 		return fmt.Errorf("DeleteAccessKey request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return c.Error(resp)
@@ -332,6 +338,7 @@ func (c *cloudaccess) UpdateAccessKey(ctx context.Context, accessKey UpdateAcces
 	if err != nil {
 		return nil, fmt.Errorf("UpdateAccessKey request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, c.Error(resp)

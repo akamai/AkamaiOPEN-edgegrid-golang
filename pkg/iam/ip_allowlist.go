@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -38,6 +40,7 @@ func (i *iam) DisableIPAllowlist(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDisableIPAllowlist, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDisableIPAllowlist, i.Error(resp))
@@ -61,6 +64,7 @@ func (i *iam) EnableIPAllowlist(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrEnableIPAllowlist, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrEnableIPAllowlist, i.Error(resp))
@@ -85,6 +89,7 @@ func (i *iam) GetIPAllowlistStatus(ctx context.Context) (*GetIPAllowlistStatusRe
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetIPAllowlistStatus, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetIPAllowlistStatus, i.Error(resp))

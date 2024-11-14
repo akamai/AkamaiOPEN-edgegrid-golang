@@ -8,7 +8,7 @@ import (
 	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -90,6 +90,7 @@ func (c *cloudlets) GetPolicyProperties(ctx context.Context, params GetPolicyPro
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicyProperties, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPolicyProperties, c.Error(resp))
@@ -126,6 +127,7 @@ func (c *cloudlets) DeletePolicyProperty(ctx context.Context, params DeletePolic
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeletePolicyProperty, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%w: %d", ErrDeletePolicyProperty, resp.StatusCode)

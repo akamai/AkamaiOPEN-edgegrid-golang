@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -234,6 +235,7 @@ func (i *iam) ListProperties(ctx context.Context, params ListPropertiesRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListProperties, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListProperties, i.Error(resp))
@@ -271,6 +273,7 @@ func (i *iam) ListUsersForProperty(ctx context.Context, params ListUsersForPrope
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListUsersForProperty, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListUsersForProperty, i.Error(resp))
@@ -306,6 +309,7 @@ func (i *iam) GetProperty(ctx context.Context, params GetPropertyRequest) (*GetP
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProperty, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetProperty, i.Error(resp))
@@ -333,6 +337,7 @@ func (i *iam) MoveProperty(ctx context.Context, params MovePropertyRequest) erro
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrMoveProperty, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrMoveProperty, i.Error(resp))
@@ -404,6 +409,7 @@ func (i *iam) BlockUsers(ctx context.Context, params BlockUsersRequest) (*BlockU
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrBlockUsers, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrBlockUsers, i.Error(resp))

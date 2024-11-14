@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -285,6 +286,7 @@ func (p *papi) GetPropertyVersions(ctx context.Context, params GetPropertyVersio
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPropertyVersions, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPropertyVersions, p.Error(resp))
@@ -320,6 +322,7 @@ func (p *papi) GetLatestVersion(ctx context.Context, params GetLatestVersionRequ
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetLatestVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetLatestVersion, p.Error(resp))
@@ -356,6 +359,7 @@ func (p *papi) GetPropertyVersion(ctx context.Context, params GetPropertyVersion
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPropertyVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPropertyVersion, p.Error(resp))
@@ -391,6 +395,7 @@ func (p *papi) CreatePropertyVersion(ctx context.Context, request CreateProperty
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreatePropertyVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreatePropertyVersion, p.Error(resp))
@@ -439,6 +444,7 @@ func (p *papi) GetAvailableBehaviors(ctx context.Context, params GetAvailableBeh
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetAvailableBehaviors, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetAvailableBehaviors, p.Error(resp))
@@ -479,6 +485,7 @@ func (p *papi) GetAvailableCriteria(ctx context.Context, params GetAvailableCrit
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetAvailableCriteria, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetAvailableCriteria, p.Error(resp))
@@ -519,6 +526,7 @@ func (p *papi) ListAvailableIncludes(ctx context.Context, params ListAvailableIn
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListAvailableIncludes, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListAvailableIncludes, p.Error(resp))
@@ -559,6 +567,7 @@ func (p *papi) ListReferencedIncludes(ctx context.Context, params ListReferenced
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListReferencedIncludes, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListReferencedIncludes, p.Error(resp))

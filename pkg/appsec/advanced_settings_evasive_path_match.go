@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -125,6 +126,7 @@ func (p *appsec) GetAdvancedSettingsEvasivePathMatch(ctx context.Context, params
 	if err != nil {
 		return nil, fmt.Errorf("get advanced settings evasive path match request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -166,6 +168,7 @@ func (p *appsec) UpdateAdvancedSettingsEvasivePathMatch(ctx context.Context, par
 	if err != nil {
 		return nil, fmt.Errorf("update advanced settings evasive path match request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)

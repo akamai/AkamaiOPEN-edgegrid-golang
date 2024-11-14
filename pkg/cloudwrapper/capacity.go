@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -89,6 +91,7 @@ func (c *cloudwrapper) ListCapacities(ctx context.Context, params ListCapacities
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListCapacities, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListCapacities, c.Error(resp))

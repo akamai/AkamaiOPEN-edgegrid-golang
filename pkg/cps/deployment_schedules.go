@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -79,6 +80,7 @@ func (c *cps) GetDeploymentSchedule(ctx context.Context, params GetDeploymentSch
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetDeploymentSchedule, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetDeploymentSchedule, c.Error(resp))
@@ -109,6 +111,7 @@ func (c *cps) UpdateDeploymentSchedule(ctx context.Context, params UpdateDeploym
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateDeploymentSchedule, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateDeploymentSchedule, c.Error(resp))

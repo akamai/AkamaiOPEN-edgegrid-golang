@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -87,6 +88,8 @@ func (p *appsec) GetWAPSelectedHostnames(ctx context.Context, params GetWAPSelec
 	if err != nil {
 		return nil, fmt.Errorf("get WAP selected hostnames request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -119,6 +122,8 @@ func (p *appsec) UpdateWAPSelectedHostnames(ctx context.Context, params UpdateWA
 	if err != nil {
 		return nil, fmt.Errorf("update WAP selected hostnames request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

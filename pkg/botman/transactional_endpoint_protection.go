@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -74,6 +75,7 @@ func (b *botman) GetTransactionalEndpointProtection(ctx context.Context, params 
 	if err != nil {
 		return nil, fmt.Errorf("GetTransactionalEndpointProtection request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -106,6 +108,7 @@ func (b *botman) UpdateTransactionalEndpointProtection(ctx context.Context, para
 	if err != nil {
 		return nil, fmt.Errorf("UpdateTransactionalEndpointProtection request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)

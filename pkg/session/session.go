@@ -94,7 +94,7 @@ func New(opts ...Option) (Session, error) {
 	return s, nil
 }
 
-// Must is a helper tthat will result in a panic if an error is returned
+// Must is a helper that will result in a panic if an error is returned
 // ex. sess := Must(New())
 func Must(sess Session, err error) Session {
 	if err != nil {
@@ -108,6 +108,23 @@ func Must(sess Session, err error) Session {
 func WithClient(client *http.Client) Option {
 	return func(s *session) {
 		s.client = client
+	}
+}
+
+// WithRetries configures the HTTP client to automatically retry failed GET requests
+func WithRetries(conf RetryConfig) Option {
+	return func(s *session) {
+		retryClient, err := configureRetryClient(conf, s.Sign, s.log)
+		if err != nil {
+			s.log.Error(err.Error())
+			defaultConfig := NewRetryConfig()
+			retryClient, err = configureRetryClient(defaultConfig, s.Sign, s.log)
+			if err != nil {
+				s.log.Errorf("retry configuration failed, disabling retries: %v", err.Error())
+				return
+			}
+		}
+		s.client = retryClient.StandardClient()
 	}
 }
 
@@ -146,7 +163,7 @@ func WithHTTPTracing(trace bool) Option {
 	}
 }
 
-// Log will return the context logger, or the session log
+// Log returns the context logger, or the session log
 func (s *session) Log(ctx context.Context) log.Interface {
 	if o := ctx.Value(contextOptionKey); o != nil {
 		if ops, ok := o.(*contextOptions); ok && ops.log != nil {
@@ -167,8 +184,8 @@ func (s *session) Client() *http.Client {
 	return s.client
 }
 
-// ContextWithOptions adds request specific options to the context
-// This log will debug the request only using the provided log
+// ContextWithOptions adds request-specific options to the context
+// This log debugs the request using only the provided log
 func ContextWithOptions(ctx context.Context, opts ...ContextOption) context.Context {
 	o := new(contextOptions)
 	for _, opt := range opts {
@@ -190,4 +207,9 @@ func WithContextHeaders(h http.Header) ContextOption {
 	return func(o *contextOptions) {
 		o.header = h
 	}
+}
+
+// CloseResponseBody closes response body
+func CloseResponseBody(resp *http.Response) {
+	_ = resp.Body.Close()
 }

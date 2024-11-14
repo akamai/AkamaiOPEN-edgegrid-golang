@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -51,6 +53,7 @@ func (c *cps) GetChangePreVerificationWarnings(ctx context.Context, params GetCh
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetChangePreVerificationWarnings, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetChangePreVerificationWarnings, c.Error(resp))
@@ -85,6 +88,7 @@ func (c *cps) AcknowledgePreVerificationWarnings(ctx context.Context, params Ack
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrAcknowledgePreVerificationWarnings, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("%s: %w", ErrAcknowledgePreVerificationWarnings, c.Error(resp))

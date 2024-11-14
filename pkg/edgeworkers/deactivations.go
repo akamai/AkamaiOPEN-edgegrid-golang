@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -128,6 +129,7 @@ func (e *edgeworkers) ListDeactivations(ctx context.Context, params ListDeactiva
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListDeactivations, err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListDeactivations, e.Error(resp))
@@ -159,6 +161,7 @@ func (e *edgeworkers) DeactivateVersion(ctx context.Context, params DeactivateVe
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeactivateVersion, err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrDeactivateVersion, e.Error(resp))
@@ -187,6 +190,7 @@ func (e *edgeworkers) GetDeactivation(ctx context.Context, params GetDeactivatio
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetDeactivation, err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetDeactivation, e.Error(resp))

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -146,6 +147,8 @@ func (p *appsec) GetWAPBypassNetworkLists(ctx context.Context, params GetWAPBypa
 	if err != nil {
 		return nil, fmt.Errorf("get WAP bypass network lists request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -178,6 +181,8 @@ func (p *appsec) UpdateWAPBypassNetworkLists(ctx context.Context, params UpdateW
 	if err != nil {
 		return nil, fmt.Errorf("update WAP bypass network lists request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -211,6 +216,8 @@ func (p *appsec) RemoveWAPBypassNetworkLists(ctx context.Context, params RemoveW
 	if err != nil {
 		return nil, fmt.Errorf("remove WAP bypass network lists request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

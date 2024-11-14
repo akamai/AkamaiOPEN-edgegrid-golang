@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -148,6 +149,8 @@ func (p *appsec) GetRatePolicyAction(ctx context.Context, params GetRatePolicyAc
 	if err != nil {
 		return nil, fmt.Errorf("get rate policy action request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -179,6 +182,8 @@ func (p *appsec) GetRatePolicyActions(ctx context.Context, params GetRatePolicyA
 	if err != nil {
 		return nil, fmt.Errorf("get rate policy actions request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -222,6 +227,8 @@ func (p *appsec) UpdateRatePolicyAction(ctx context.Context, params UpdateRatePo
 	if err != nil {
 		return nil, fmt.Errorf("update rate policy action request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

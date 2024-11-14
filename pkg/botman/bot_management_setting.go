@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -79,6 +80,7 @@ func (b *botman) GetBotManagementSetting(ctx context.Context, params GetBotManag
 	if err != nil {
 		return nil, fmt.Errorf("GetBotManagementSetting request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -112,6 +114,7 @@ func (b *botman) UpdateBotManagementSetting(ctx context.Context, params UpdateBo
 	if err != nil {
 		return nil, fmt.Errorf("UpdateBotManagementSetting request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)

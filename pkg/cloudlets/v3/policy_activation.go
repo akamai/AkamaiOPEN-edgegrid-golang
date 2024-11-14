@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -179,6 +180,7 @@ func (c *cloudlets) ListPolicyActivations(ctx context.Context, params ListPolicy
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListPolicyActivations, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListPolicyActivations, c.Error(resp))
@@ -211,6 +213,7 @@ func (c *cloudlets) ActivatePolicy(ctx context.Context, params ActivatePolicyReq
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivatePolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%s: %w", ErrActivatePolicy, c.Error(resp))
@@ -243,6 +246,7 @@ func (c *cloudlets) DeactivatePolicy(ctx context.Context, params DeactivatePolic
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeactivatePolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%s: %w", ErrDeactivatePolicy, c.Error(resp))
@@ -269,6 +273,7 @@ func (c *cloudlets) GetPolicyActivation(ctx context.Context, params GetPolicyAct
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicyActivation, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPolicyActivation, c.Error(resp))

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -265,6 +266,7 @@ func (p *networklists) GetActivations(ctx context.Context, params GetActivations
 	if err != nil {
 		return nil, fmt.Errorf("getactivations request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -296,6 +298,7 @@ func (p *networklists) GetActivation(ctx context.Context, params GetActivationRe
 	if err != nil {
 		return nil, fmt.Errorf("getactivation request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -325,6 +328,7 @@ func (p *networklists) CreateActivations(ctx context.Context, params CreateActiv
 	if err != nil {
 		return nil, fmt.Errorf("create activation request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -375,6 +379,7 @@ func (p *networklists) RemoveActivations(ctx context.Context, params RemoveActiv
 	if err != nil {
 		return nil, fmt.Errorf("remove activation request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)

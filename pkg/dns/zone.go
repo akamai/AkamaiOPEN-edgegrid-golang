@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
@@ -16,6 +17,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -32,36 +34,46 @@ type (
 
 	// ZoneCreate contains zone create request
 	ZoneCreate struct {
-		Zone                  string   `json:"zone"`
-		Type                  string   `json:"type"`
-		Masters               []string `json:"masters,omitempty"`
-		Comment               string   `json:"comment,omitempty"`
-		SignAndServe          bool     `json:"signAndServe"`
-		SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
-		TSIGKey               *TSIGKey `json:"tsigKey,omitempty"`
-		Target                string   `json:"target,omitempty"`
-		EndCustomerID         string   `json:"endCustomerId,omitempty"`
-		ContractID            string   `json:"contractId,omitempty"`
+		Zone                  string                `json:"zone"`
+		Type                  string                `json:"type"`
+		Masters               []string              `json:"masters,omitempty"`
+		Comment               string                `json:"comment,omitempty"`
+		SignAndServe          bool                  `json:"signAndServe"`
+		SignAndServeAlgorithm string                `json:"signAndServeAlgorithm,omitempty"`
+		TSIGKey               *TSIGKey              `json:"tsigKey,omitempty"`
+		Target                string                `json:"target,omitempty"`
+		EndCustomerID         string                `json:"endCustomerId,omitempty"`
+		ContractID            string                `json:"contractId,omitempty"`
+		OutboundZoneTransfer  *OutboundZoneTransfer `json:"outboundZoneTransfer,omitempty"`
+	}
+
+	// OutboundZoneTransfer contains OutboundZoneTransfer request parameters
+	OutboundZoneTransfer struct {
+		ACL           []string `json:"ACL"`
+		Enabled       bool     `json:"enabled"`
+		NotifyTargets []string `json:"notifyTargets"`
+		TSIGKey       *TSIGKey `json:"tsigKey,omitempty"`
 	}
 
 	// ZoneResponse contains zone create response
 	ZoneResponse struct {
-		Zone                  string   `json:"zone,omitempty"`
-		Type                  string   `json:"type,omitempty"`
-		Masters               []string `json:"masters,omitempty"`
-		Comment               string   `json:"comment,omitempty"`
-		SignAndServe          bool     `json:"signAndServe"`
-		SignAndServeAlgorithm string   `json:"signAndServeAlgorithm,omitempty"`
-		TSIGKey               *TSIGKey `json:"tsigKey,omitempty"`
-		Target                string   `json:"target,omitempty"`
-		EndCustomerID         string   `json:"endCustomerId,omitempty"`
-		ContractID            string   `json:"contractId,omitempty"`
-		AliasCount            int64    `json:"aliasCount,omitempty"`
-		ActivationState       string   `json:"activationState,omitempty"`
-		LastActivationDate    string   `json:"lastActivationDate,omitempty"`
-		LastModifiedBy        string   `json:"lastModifiedBy,omitempty"`
-		LastModifiedDate      string   `json:"lastModifiedDate,omitempty"`
-		VersionID             string   `json:"versionId,omitempty"`
+		Zone                  string                `json:"zone,omitempty"`
+		Type                  string                `json:"type,omitempty"`
+		Masters               []string              `json:"masters,omitempty"`
+		Comment               string                `json:"comment,omitempty"`
+		SignAndServe          bool                  `json:"signAndServe"`
+		SignAndServeAlgorithm string                `json:"signAndServeAlgorithm,omitempty"`
+		TSIGKey               *TSIGKey              `json:"tsigKey,omitempty"`
+		Target                string                `json:"target,omitempty"`
+		EndCustomerID         string                `json:"endCustomerId,omitempty"`
+		ContractID            string                `json:"contractId,omitempty"`
+		AliasCount            int64                 `json:"aliasCount,omitempty"`
+		ActivationState       string                `json:"activationState,omitempty"`
+		LastActivationDate    string                `json:"lastActivationDate,omitempty"`
+		LastModifiedBy        string                `json:"lastModifiedBy,omitempty"`
+		LastModifiedDate      string                `json:"lastModifiedDate,omitempty"`
+		VersionID             string                `json:"versionId,omitempty"`
+		OutboundZoneTransfer  *OutboundZoneTransfer `json:"outboundZoneTransfer,omitempty"`
 	}
 
 	// ListMetadata contains metadata for List Zones request
@@ -290,7 +302,8 @@ var zoneStructMap = map[string]string{
 	"TSIGKey":               "tsigKey",
 	"Target":                "target",
 	"EndCustomerID":         "endCustomerId",
-	"ContractId":            "contractId"}
+	"OutboundZoneTransfer":  "outboundZoneTransfer",
+	"ContractID":            "contractId"}
 
 // Util to convert struct to http request body, eg. io.reader
 func convertStructToReqBody(srcStruct interface{}) (io.Reader, error) {
@@ -339,6 +352,7 @@ func (d *dns) ListZones(ctx context.Context, params ListZonesRequest) (*ZoneList
 	if err != nil {
 		return nil, fmt.Errorf("listzones request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -366,6 +380,7 @@ func (d *dns) GetZone(ctx context.Context, params GetZoneRequest) (*GetZoneRespo
 	if err != nil {
 		return nil, fmt.Errorf("GetZone request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -393,6 +408,7 @@ func (d *dns) GetChangeList(ctx context.Context, params GetChangeListRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("GetChangeList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -420,6 +436,7 @@ func (d *dns) GetMasterZoneFile(ctx context.Context, params GetMasterZoneFileReq
 	if err != nil {
 		return "", fmt.Errorf("GetMasterZoneFile request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return "", d.Error(resp)
@@ -455,6 +472,7 @@ func (d *dns) PostMasterZoneFile(ctx context.Context, params PostMasterZoneFileR
 	if err != nil {
 		return fmt.Errorf("Create PostMasterZoneFile failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return d.Error(resp)
@@ -484,28 +502,30 @@ func (d *dns) CreateZone(ctx context.Context, params CreateZoneRequest) error {
 		return err
 	}
 
+	uri, err := url.Parse("/config-dns/v2/zones")
+	if err != nil {
+		return fmt.Errorf("%w: failed to parse uri: %s", ErrCreateZone, err)
+	}
+
+	q := uri.Query()
+	q.Add("contractId", params.ZoneQueryString.Contract)
+	if params.ZoneQueryString.Group != "" {
+		q.Add("gid", params.ZoneQueryString.Group)
+	}
+	uri.RawQuery = q.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	if err != nil {
+		return fmt.Errorf("failed to create zone create request: %w", err)
+	}
+
 	zoneMap := filterZoneCreate(params.CreateZone)
-
 	var zoneResponse ZoneResponse
-	zoneURL := "/config-dns/v2/zones/?contractId=" + params.ZoneQueryString.Contract
-	if len(params.ZoneQueryString.Group) > 0 {
-		zoneURL += "&gid=" + params.ZoneQueryString.Group
-	}
-
-	reqBody, err := convertStructToReqBody(zoneMap)
+	resp, err := d.Exec(req, &zoneResponse, zoneMap)
 	if err != nil {
-		return fmt.Errorf("failed to generate request body: %w", err)
+		return fmt.Errorf("create zone request failed: %w", err)
 	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, zoneURL, reqBody)
-	if err != nil {
-		return fmt.Errorf("failed to create Zone Create request: %w", err)
-	}
-
-	resp, err := d.Exec(req, &zoneResponse)
-	if err != nil {
-		return fmt.Errorf("Create Zone request failed: %w", err)
-	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return d.Error(resp)
@@ -513,9 +533,9 @@ func (d *dns) CreateZone(ctx context.Context, params CreateZoneRequest) error {
 
 	if strings.ToUpper(params.CreateZone.Type) == "PRIMARY" {
 		// Timing issue with Create immediately followed by SaveChangelist
-		for _, clear := range params.ClearConn {
+		for _, shouldClear := range params.ClearConn {
 			// should only be one entry
-			if clear {
+			if shouldClear {
 				logger.Info("Clearing Idle Connections")
 				d.Client().CloseIdleConnections()
 			}
@@ -547,7 +567,7 @@ func (d *dns) SaveChangeList(ctx context.Context, params SaveChangeListRequest) 
 		return fmt.Errorf("failed to generate request body: %w", err)
 	}
 
-	postURL := fmt.Sprintf("/config-dns/v2/changelists/?zone=%s", params.Zone)
+	postURL := fmt.Sprintf("/config-dns/v2/changelists?zone=%s", params.Zone)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, reqBody)
 	if err != nil {
 		return fmt.Errorf("failed to create SaveChangeList request: %w", err)
@@ -557,6 +577,7 @@ func (d *dns) SaveChangeList(ctx context.Context, params SaveChangeListRequest) 
 	if err != nil {
 		return fmt.Errorf("SaveChangeList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return d.Error(resp)
@@ -597,6 +618,7 @@ func (d *dns) SubmitChangeList(ctx context.Context, params SubmitChangeListReque
 	if err != nil {
 		return fmt.Errorf("SubmitChangeList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return d.Error(resp)
@@ -623,22 +645,19 @@ func (d *dns) UpdateZone(ctx context.Context, params UpdateZoneRequest) error {
 	}
 
 	zoneMap := filterZoneCreate(params.CreateZone)
-	reqBody, err := convertStructToReqBody(zoneMap)
-	if err != nil {
-		return fmt.Errorf("failed to generate request body: %w", err)
-	}
 
 	putURL := fmt.Sprintf("/config-dns/v2/zones/%s", params.CreateZone.Zone)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, reqBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create Get Update request: %w", err)
 	}
 
 	var result ZoneResponse
-	resp, err := d.Exec(req, &result)
+	resp, err := d.Exec(req, &result, zoneMap)
 	if err != nil {
-		return fmt.Errorf("Zone Update request failed: %w", err)
+		return fmt.Errorf("zone update request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return d.Error(resp)
@@ -660,7 +679,7 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 			if zoneType == "ALIAS" {
 				filteredZone[varLower] = varValue
 			}
-		case "TsigKey":
+		case "TSIGKey":
 			if zoneType == "SECONDARY" {
 				filteredZone[varLower] = varValue
 			}
@@ -674,6 +693,18 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 			}
 		case "SignAndServeAlgorithm":
 			if zoneType != "ALIAS" {
+				filteredZone[varLower] = varValue
+			}
+		case "OutboundZoneTransfer":
+			// this is workaround for the check if value is not nil to avoid adding empty entry
+			switch v := varValue.(type) {
+			case *OutboundZoneTransfer:
+				{
+					if v != nil {
+						filteredZone[varLower] = varValue
+					}
+				}
+			default:
 				filteredZone[varLower] = varValue
 			}
 		default:
@@ -741,6 +772,7 @@ func (d *dns) GetZoneNames(ctx context.Context, params GetZoneNamesRequest) (*Ge
 	if err != nil {
 		return nil, fmt.Errorf("GetZoneNames request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -768,6 +800,7 @@ func (d *dns) GetZoneNameTypes(ctx context.Context, params GetZoneNameTypesReque
 	if err != nil {
 		return nil, fmt.Errorf("GetZoneNameTypes request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -794,6 +827,7 @@ func (d *dns) GetZonesDNSSecStatus(ctx context.Context, params GetZonesDNSSecSta
 	if err != nil {
 		return nil, fmt.Errorf("GetZonesDNSSecStatus request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)

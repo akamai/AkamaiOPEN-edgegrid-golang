@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -313,6 +314,8 @@ func (p *appsec) GetMatchTarget(ctx context.Context, params GetMatchTargetReques
 	if err != nil {
 		return nil, fmt.Errorf("get match target request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -344,6 +347,8 @@ func (p *appsec) GetMatchTargets(ctx context.Context, params GetMatchTargetsRequ
 	if err != nil {
 		return nil, fmt.Errorf("get match targets request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -392,6 +397,8 @@ func (p *appsec) UpdateMatchTarget(ctx context.Context, params UpdateMatchTarget
 	if err != nil {
 		return nil, fmt.Errorf("update match target request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -424,6 +431,8 @@ func (p *appsec) CreateMatchTarget(ctx context.Context, params CreateMatchTarget
 	if err != nil {
 		return nil, fmt.Errorf("create match target request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -446,10 +455,11 @@ func (p *appsec) RemoveMatchTarget(ctx context.Context, params RemoveMatchTarget
 	}
 
 	var result RemoveMatchTargetResponse
-	resp, errd := p.Exec(req, nil)
-	if errd != nil {
+	resp, err := p.Exec(req, nil)
+	if err != nil {
 		return nil, fmt.Errorf("remove match target request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)

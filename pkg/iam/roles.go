@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -175,6 +176,7 @@ func (i *iam) CreateRole(ctx context.Context, params CreateRoleRequest) (*Role, 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateRole, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateRole, i.Error(resp))
@@ -213,6 +215,7 @@ func (i *iam) GetRole(ctx context.Context, params GetRoleRequest) (*Role, error)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetRole, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetRole, i.Error(resp))
@@ -244,6 +247,7 @@ func (i *iam) UpdateRole(ctx context.Context, params UpdateRoleRequest) (*Role, 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateRole, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateRole, i.Error(resp))
@@ -274,6 +278,7 @@ func (i *iam) DeleteRole(ctx context.Context, params DeleteRoleRequest) error {
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeleteRole, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDeleteRole, i.Error(resp))
@@ -311,6 +316,7 @@ func (i *iam) ListRoles(ctx context.Context, params ListRolesRequest) ([]Role, e
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListRoles, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListRoles, i.Error(resp))
@@ -338,6 +344,7 @@ func (i *iam) ListGrantableRoles(ctx context.Context) ([]RoleGrantedRole, error)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListGrantableRoles, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListGrantableRoles, i.Error(resp))

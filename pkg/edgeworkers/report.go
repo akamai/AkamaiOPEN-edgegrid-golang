@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -256,6 +257,7 @@ func (e *edgeworkers) GetSummaryReport(ctx context.Context, params GetSummaryRep
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetSummaryReport, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetSummaryReport, e.Error(resp))
@@ -303,6 +305,7 @@ func (e *edgeworkers) GetReport(ctx context.Context, params GetReportRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetReport, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetReport, e.Error(resp))
@@ -327,6 +330,7 @@ func (e *edgeworkers) ListReports(ctx context.Context) (*ListReportsResponse, er
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListReports, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListReports, e.Error(resp))

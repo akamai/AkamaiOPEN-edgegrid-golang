@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -190,6 +191,7 @@ func (i *iam) ListAllowedCPCodes(ctx context.Context, params ListAllowedCPCodesR
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListAllowedCPCodes, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListAllowedCPCodes, i.Error(resp))
@@ -212,6 +214,7 @@ func (i *iam) ListAuthorizedUsers(ctx context.Context) (ListAuthorizedUsersRespo
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListAuthorizedUsers, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListAuthorizedUsers, i.Error(resp))
@@ -251,6 +254,7 @@ func (i *iam) ListAllowedAPIs(ctx context.Context, params ListAllowedAPIsRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListAllowedAPIs, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListAllowedAPIs, i.Error(resp))
@@ -279,6 +283,7 @@ func (i *iam) ListAccessibleGroups(ctx context.Context, params ListAccessibleGro
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrAccessibleGroups, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrAccessibleGroups, i.Error(resp))

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -151,6 +152,7 @@ func (b *botman) GetContentProtectionRule(ctx context.Context, params GetContent
 	if err != nil {
 		return nil, fmt.Errorf("GetContentProtectionRule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -184,6 +186,7 @@ func (b *botman) GetContentProtectionRuleList(ctx context.Context, params GetCon
 	if err != nil {
 		return nil, fmt.Errorf("GetContentProtectionRuleList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -228,6 +231,7 @@ func (b *botman) UpdateContentProtectionRule(ctx context.Context, params UpdateC
 	if err != nil {
 		return nil, fmt.Errorf("UpdateContentProtectionRule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -261,6 +265,7 @@ func (b *botman) CreateContentProtectionRule(ctx context.Context, params CreateC
 	if err != nil {
 		return nil, fmt.Errorf("CreateContentProtectionRule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, b.Error(resp)
@@ -293,6 +298,7 @@ func (b *botman) RemoveContentProtectionRule(ctx context.Context, params RemoveC
 	if err != nil {
 		return fmt.Errorf("RemoveContentProtectionRule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return b.Error(resp)

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -286,6 +287,8 @@ func (p *appsec) GetCustomRule(ctx context.Context, params GetCustomRuleRequest)
 	if err != nil {
 		return nil, fmt.Errorf("get custom rule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -316,6 +319,8 @@ func (p *appsec) GetCustomRules(ctx context.Context, params GetCustomRulesReques
 	if err != nil {
 		return nil, fmt.Errorf("get custom rules request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -358,6 +363,8 @@ func (p *appsec) UpdateCustomRule(ctx context.Context, params UpdateCustomRuleRe
 	if err != nil {
 		return nil, fmt.Errorf("update custom rule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -389,6 +396,8 @@ func (p *appsec) CreateCustomRule(ctx context.Context, params CreateCustomRuleRe
 	if err != nil {
 		return nil, fmt.Errorf("create custom rule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -415,6 +424,8 @@ func (p *appsec) RemoveCustomRule(ctx context.Context, params RemoveCustomRuleRe
 	if err != nil {
 		return nil, fmt.Errorf("remove custom rule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
 		return nil, p.Error(resp)
 	}

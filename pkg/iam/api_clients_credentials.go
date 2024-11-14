@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -25,7 +26,7 @@ type (
 		Actions  bool
 	}
 
-	// GetCredentialRequest contains request parameters for the GetCredentials endpoint.
+	// GetCredentialRequest contains request parameters for the GetCredential endpoint.
 	GetCredentialRequest struct {
 		CredentialID int64
 		ClientID     string
@@ -206,6 +207,7 @@ func (i *iam) CreateCredential(ctx context.Context, params CreateCredentialReque
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateCredential, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateCredential, i.Error(resp))
@@ -241,6 +243,7 @@ func (i *iam) ListCredentials(ctx context.Context, params ListCredentialsRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListCredentials, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListCredentials, i.Error(resp))
@@ -280,6 +283,7 @@ func (i *iam) GetCredential(ctx context.Context, params GetCredentialRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCredential, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetCredential, i.Error(resp))
@@ -321,6 +325,7 @@ func (i *iam) UpdateCredential(ctx context.Context, params UpdateCredentialReque
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateCredential, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateCredential, i.Error(resp))
@@ -355,6 +360,7 @@ func (i *iam) DeleteCredential(ctx context.Context, params DeleteCredentialReque
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeleteCredential, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDeleteCredential, i.Error(resp))
@@ -389,6 +395,7 @@ func (i *iam) DeactivateCredential(ctx context.Context, params DeactivateCredent
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeactivateCredential, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDeactivateCredential, i.Error(resp))
@@ -419,6 +426,7 @@ func (i *iam) DeactivateCredentials(ctx context.Context, params DeactivateCreden
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeactivateCredentials, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDeactivateCredentials, i.Error(resp))

@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -220,6 +221,7 @@ func (p *clientlists) GetClientLists(ctx context.Context, params GetClientListsR
 	if err != nil {
 		return nil, fmt.Errorf("getClientLists request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -257,6 +259,7 @@ func (p *clientlists) GetClientList(ctx context.Context, params GetClientListReq
 	if err != nil {
 		return nil, fmt.Errorf("getClientList request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -285,6 +288,7 @@ func (p *clientlists) UpdateClientList(ctx context.Context, params UpdateClientL
 	if err != nil {
 		return nil, fmt.Errorf("updateClientList request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -313,6 +317,7 @@ func (p *clientlists) UpdateClientListItems(ctx context.Context, params UpdateCl
 	if err != nil {
 		return nil, fmt.Errorf("UpdateClientListItems request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -339,6 +344,7 @@ func (p *clientlists) CreateClientList(ctx context.Context, params CreateClientL
 	if err != nil {
 		return nil, fmt.Errorf("createClientList request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
@@ -365,6 +371,7 @@ func (p *clientlists) DeleteClientList(ctx context.Context, params DeleteClientL
 	if err != nil {
 		return fmt.Errorf("deleteClientList request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return p.Error(resp)

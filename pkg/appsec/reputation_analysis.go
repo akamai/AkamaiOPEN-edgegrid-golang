@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -126,6 +127,8 @@ func (p *appsec) GetReputationAnalysis(ctx context.Context, params GetReputation
 	if err != nil {
 		return nil, fmt.Errorf("get reputation analysis request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -158,6 +161,8 @@ func (p *appsec) UpdateReputationAnalysis(ctx context.Context, params UpdateRepu
 	if err != nil {
 		return nil, fmt.Errorf("update reputation analysis request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -186,6 +191,8 @@ func (p *appsec) RemoveReputationAnalysis(ctx context.Context, params RemoveRepu
 	if err != nil {
 		return nil, fmt.Errorf("remove reputation analysis request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -140,6 +141,7 @@ func (b *botman) GetServeAlternateAction(ctx context.Context, params GetServeAlt
 	if err != nil {
 		return nil, fmt.Errorf("GetServeAlternateAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -172,6 +174,7 @@ func (b *botman) GetServeAlternateActionList(ctx context.Context, params GetServ
 	if err != nil {
 		return nil, fmt.Errorf("GetServeAlternateActionList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -215,6 +218,7 @@ func (b *botman) UpdateServeAlternateAction(ctx context.Context, params UpdateSe
 	if err != nil {
 		return nil, fmt.Errorf("UpdateServeAlternateAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -247,6 +251,7 @@ func (b *botman) CreateServeAlternateAction(ctx context.Context, params CreateSe
 	if err != nil {
 		return nil, fmt.Errorf("CreateServeAlternateAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, b.Error(resp)
@@ -278,6 +283,7 @@ func (b *botman) RemoveServeAlternateAction(ctx context.Context, params RemoveSe
 	if err != nil {
 		return fmt.Errorf("RemoveServeAlternateAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return b.Error(resp)

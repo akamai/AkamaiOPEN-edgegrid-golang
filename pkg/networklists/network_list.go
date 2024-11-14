@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -285,6 +286,7 @@ func (p *networklists) GetNetworkList(ctx context.Context, params GetNetworkList
 	if err != nil {
 		return nil, fmt.Errorf("getnetworklist request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -314,6 +316,7 @@ func (p *networklists) GetNetworkLists(ctx context.Context, params GetNetworkLis
 	if err != nil {
 		return nil, fmt.Errorf("getnetworklists request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -356,6 +359,7 @@ func (p *networklists) UpdateNetworkList(ctx context.Context, params UpdateNetwo
 	if err != nil {
 		return nil, fmt.Errorf("update NetworkList request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
@@ -386,6 +390,7 @@ func (p *networklists) CreateNetworkList(ctx context.Context, params CreateNetwo
 	if err != nil {
 		return nil, fmt.Errorf("create networklistrequest failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
@@ -422,6 +427,7 @@ func (p *networklists) RemoveNetworkList(ctx context.Context, params RemoveNetwo
 	if err != nil {
 		return nil, fmt.Errorf("RemoveNetworkList request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)

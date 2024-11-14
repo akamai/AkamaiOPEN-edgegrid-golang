@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -141,6 +142,7 @@ func (e *edgeworkers) ListItems(ctx context.Context, params ListItemsRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListItems, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListItems, e.Error(resp))
@@ -169,6 +171,7 @@ func (e *edgeworkers) GetItem(ctx context.Context, params GetItemRequest) (*Item
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetItem, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetItem, e.Error(resp))
@@ -209,6 +212,7 @@ func (e *edgeworkers) UpsertItem(ctx context.Context, params UpsertItemRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpsertItem, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpsertItem, e.Error(resp))
@@ -243,6 +247,7 @@ func (e *edgeworkers) DeleteItem(ctx context.Context, params DeleteItemRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeleteItem, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrDeleteItem, e.Error(resp))

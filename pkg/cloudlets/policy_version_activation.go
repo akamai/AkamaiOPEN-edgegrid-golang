@@ -9,7 +9,7 @@ import (
 	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -124,13 +124,14 @@ func (c *cloudlets) ListPolicyActivations(ctx context.Context, params ListPolicy
 	}
 
 	var result []PolicyActivation
-	response, err := c.Exec(req, &result)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListPolicyActivations, err)
 	}
+	defer session.CloseResponseBody(resp)
 
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListPolicyActivations, c.Error(response))
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrListPolicyActivations, c.Error(resp))
 	}
 
 	return result, nil
@@ -156,13 +157,14 @@ func (c *cloudlets) ActivatePolicyVersion(ctx context.Context, params ActivatePo
 	}
 
 	var result []PolicyActivation
-	response, err := c.Exec(req, &result, params.PolicyVersionActivation)
+	resp, err := c.Exec(req, &result, params.PolicyVersionActivation)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivatePolicyVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
-	if response.StatusCode >= http.StatusBadRequest {
-		return nil, fmt.Errorf("%w: %s", ErrActivatePolicyVersion, c.Error(response))
+	if resp.StatusCode >= http.StatusBadRequest {
+		return nil, fmt.Errorf("%w: %s", ErrActivatePolicyVersion, c.Error(resp))
 	}
 
 	return result, nil

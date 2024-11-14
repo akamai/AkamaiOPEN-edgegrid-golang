@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -140,6 +141,7 @@ func (b *botman) GetCustomDenyAction(ctx context.Context, params GetCustomDenyAc
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomDenyAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -172,6 +174,7 @@ func (b *botman) GetCustomDenyActionList(ctx context.Context, params GetCustomDe
 	if err != nil {
 		return nil, fmt.Errorf("GetCustomDenyActionList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -215,6 +218,7 @@ func (b *botman) UpdateCustomDenyAction(ctx context.Context, params UpdateCustom
 	if err != nil {
 		return nil, fmt.Errorf("UpdateCustomDenyAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -247,6 +251,7 @@ func (b *botman) CreateCustomDenyAction(ctx context.Context, params CreateCustom
 	if err != nil {
 		return nil, fmt.Errorf("CreateCustomDenyAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, b.Error(resp)
@@ -279,6 +284,7 @@ func (b *botman) RemoveCustomDenyAction(ctx context.Context, params RemoveCustom
 	if err != nil {
 		return fmt.Errorf("RemoveCustomDenyAction request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return b.Error(resp)

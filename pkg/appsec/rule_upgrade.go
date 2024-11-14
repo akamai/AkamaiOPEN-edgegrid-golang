@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -122,6 +123,8 @@ func (p *appsec) GetRuleUpgrade(ctx context.Context, params GetRuleUpgradeReques
 	if err != nil {
 		return nil, fmt.Errorf("get rule upgrade request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -154,6 +157,8 @@ func (p *appsec) UpdateRuleUpgrade(ctx context.Context, params UpdateRuleUpgrade
 	if err != nil {
 		return nil, fmt.Errorf("update rule upgrade request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

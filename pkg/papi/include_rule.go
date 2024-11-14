@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -143,6 +144,7 @@ func (p *papi) GetIncludeRuleTree(ctx context.Context, params GetIncludeRuleTree
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetIncludeRuleTree, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetIncludeRuleTree, p.Error(resp))
@@ -188,6 +190,8 @@ func (p *papi) UpdateIncludeRuleTree(ctx context.Context, params UpdateIncludeRu
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateIncludeRuleTree, err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateIncludeRuleTree, p.Error(resp))
 	}

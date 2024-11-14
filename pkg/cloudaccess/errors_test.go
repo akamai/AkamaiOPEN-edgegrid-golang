@@ -97,7 +97,7 @@ func TestNewError(t *testing.T) {
 				StatusCode: http.StatusNotFound,
 				Body: ioutil.NopCloser(strings.NewReader(
 					`{
-	"type": "access-key-does-not-exists",
+	"type": "/cam/error-types/access-key-does-not-exist",
 	"title": "Domain Error",
 	"detail": "Access key with accessKeyUID '1' does not exist.",
 	"instance": "test-instance-123",
@@ -108,7 +108,7 @@ func TestNewError(t *testing.T) {
 				Request: req,
 			},
 			expected: &Error{
-				Type:         "access-key-does-not-exists",
+				Type:         accessKeyNotFoundType,
 				Title:        "Domain Error",
 				Detail:       "Access key with accessKeyUID '1' does not exist.",
 				Instance:     "test-instance-123",

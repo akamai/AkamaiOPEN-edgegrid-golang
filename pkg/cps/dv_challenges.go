@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -86,6 +88,7 @@ func (c *cps) GetChangeLetsEncryptChallenges(ctx context.Context, params GetChan
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetChangeLetsEncryptChallenges, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetChangeLetsEncryptChallenges, c.Error(resp))
@@ -120,6 +123,7 @@ func (c *cps) AcknowledgeDVChallenges(ctx context.Context, params Acknowledgemen
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrAcknowledgeLetsEncryptChallenges, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("%s: %w", ErrAcknowledgeLetsEncryptChallenges, c.Error(resp))

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -132,6 +133,8 @@ func (p *appsec) GetPenaltyBox(ctx context.Context, params GetPenaltyBoxRequest)
 	if err != nil {
 		return nil, fmt.Errorf("get penalty box request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -165,6 +168,8 @@ func (p *appsec) GetPenaltyBoxes(ctx context.Context, params GetPenaltyBoxesRequ
 	if err != nil {
 		return nil, fmt.Errorf("get penalty boxes request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -197,6 +202,8 @@ func (p *appsec) UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRe
 	if err != nil {
 		return nil, fmt.Errorf("update penalty box request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

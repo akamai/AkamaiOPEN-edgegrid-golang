@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -187,6 +188,7 @@ func (c *cloudlets) ListPolicies(ctx context.Context, params ListPoliciesRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListPolicies, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListPolicies, c.Error(resp))
@@ -215,6 +217,7 @@ func (c *cloudlets) GetPolicy(ctx context.Context, params GetPolicyRequest) (*Po
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPolicy, c.Error(resp))
@@ -247,6 +250,7 @@ func (c *cloudlets) CreatePolicy(ctx context.Context, params CreatePolicyRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreatePolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreatePolicy, c.Error(resp))
@@ -273,6 +277,7 @@ func (c *cloudlets) RemovePolicy(ctx context.Context, params RemovePolicyRequest
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrRemovePolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrRemovePolicy, c.Error(resp))
@@ -308,6 +313,7 @@ func (c *cloudlets) UpdatePolicy(ctx context.Context, params UpdatePolicyRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePolicy, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdatePolicy, c.Error(resp))

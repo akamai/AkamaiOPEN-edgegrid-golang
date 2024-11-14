@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -166,6 +167,7 @@ func (i *iam) CreateGroup(ctx context.Context, params GroupRequest) (*Group, err
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateGroup, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateGroup, i.Error(resp))
@@ -201,6 +203,7 @@ func (i *iam) GetGroup(ctx context.Context, params GetGroupRequest) (*Group, err
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetGroup, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetGroup, i.Error(resp))
@@ -238,6 +241,7 @@ func (i *iam) ListAffectedUsers(ctx context.Context, params ListAffectedUsersReq
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListAffectedUsers, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListAffectedUsers, i.Error(resp))
@@ -269,6 +273,7 @@ func (i *iam) ListGroups(ctx context.Context, params ListGroupsRequest) ([]Group
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListGroups, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListGroups, i.Error(resp))
@@ -299,6 +304,7 @@ func (i *iam) RemoveGroup(ctx context.Context, params RemoveGroupRequest) error 
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrRemoveGroup, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrRemoveGroup, i.Error(resp))
@@ -330,6 +336,7 @@ func (i *iam) UpdateGroupName(ctx context.Context, params GroupRequest) (*Group,
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateGroupName, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateGroupName, i.Error(resp))
@@ -360,6 +367,7 @@ func (i *iam) MoveGroup(ctx context.Context, params MoveGroupRequest) error {
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrMoveGroup, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%w: %s", ErrMoveGroup, i.Error(resp))

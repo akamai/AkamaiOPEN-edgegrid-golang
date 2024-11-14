@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -161,6 +162,7 @@ func (g *gtm) ListGeoMaps(ctx context.Context, params ListGeoMapsRequest) ([]Geo
 	if err != nil {
 		return nil, fmt.Errorf("ListGeoMaps request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -189,6 +191,7 @@ func (g *gtm) GetGeoMap(ctx context.Context, params GetGeoMapRequest) (*GetGeoMa
 	if err != nil {
 		return nil, fmt.Errorf("GetGeoMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -217,6 +220,7 @@ func (g *gtm) CreateGeoMap(ctx context.Context, params CreateGeoMapRequest) (*Cr
 	if err != nil {
 		return nil, fmt.Errorf("GeoMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, g.Error(resp)
@@ -245,6 +249,7 @@ func (g *gtm) UpdateGeoMap(ctx context.Context, params UpdateGeoMapRequest) (*Up
 	if err != nil {
 		return nil, fmt.Errorf("GeoMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -273,6 +278,7 @@ func (g *gtm) DeleteGeoMap(ctx context.Context, params DeleteGeoMapRequest) (*De
 	if err != nil {
 		return nil, fmt.Errorf("GeoMap request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)

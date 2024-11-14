@@ -186,6 +186,16 @@ func TestDNS_CreateBulkZones(t *testing.T) {
 							Type:    "secondary",
 							Comment: "testing bulk operations",
 							Masters: []string{"1.2.3.4", "1.2.3.10"},
+							OutboundZoneTransfer: &OutboundZoneTransfer{
+								ACL:           []string{"192.0.2.156/24"},
+								Enabled:       true,
+								NotifyTargets: []string{"192.0.2.192"},
+								TSIGKey: &TSIGKey{
+									Name:      "other.com.akamai.com3",
+									Algorithm: "hmac-sha1",
+									Secret:    "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+								},
+							},
 						},
 						{
 							Zone:    "two.testbulk.net",

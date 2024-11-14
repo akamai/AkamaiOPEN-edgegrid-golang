@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -205,6 +206,7 @@ func (d *dns) GetBulkZoneCreateStatus(ctx context.Context, params GetBulkZoneCre
 	if err != nil {
 		return nil, fmt.Errorf("GetBulkZoneCreateStatus request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -233,6 +235,7 @@ func (d *dns) GetBulkZoneDeleteStatus(ctx context.Context, params GetBulkZoneDel
 	if err != nil {
 		return nil, fmt.Errorf("GetBulkZoneDeleteStatus request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -261,6 +264,7 @@ func (d *dns) GetBulkZoneCreateResult(ctx context.Context, params GetBulkZoneCre
 	if err != nil {
 		return nil, fmt.Errorf("GetBulkZoneCreateResult request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -289,6 +293,7 @@ func (d *dns) GetBulkZoneDeleteResult(ctx context.Context, params GetBulkZoneDel
 	if err != nil {
 		return nil, fmt.Errorf("GetBulkZoneDeleteResult request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, d.Error(resp)
@@ -320,6 +325,7 @@ func (d *dns) CreateBulkZones(ctx context.Context, params CreateBulkZonesRequest
 	if err != nil {
 		return nil, fmt.Errorf("CreateBulkZones request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, d.Error(resp)
@@ -351,6 +357,7 @@ func (d *dns) DeleteBulkZones(ctx context.Context, params DeleteBulkZonesRequest
 	if err != nil {
 		return nil, fmt.Errorf("DeleteBulkZones request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, d.Error(resp)

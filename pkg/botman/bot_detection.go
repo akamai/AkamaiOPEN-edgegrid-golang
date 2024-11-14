@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -41,6 +43,7 @@ func (b *botman) GetBotDetectionList(ctx context.Context, params GetBotDetection
 	if err != nil {
 		return nil, fmt.Errorf("GetBotDetectionList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)

@@ -6,8 +6,10 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -166,9 +168,14 @@ func TestAppSec_GetSiemSettings(t *testing.T) {
 // Test Update SiemSettings.
 func TestAppSec_UpdateSiemSettings(t *testing.T) {
 	result := UpdateSiemSettingsResponse{}
+	resultWithoutEnabledBotman := UpdateSiemSettingsResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestSiemSettings/SiemSettings.json"))
 	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
+
+	respDataWithoutEnableBotman := compactJSON(loadFixtureBytes("testdata/TestSiemSettings/SiemSettingsWithoutEnabledBotmanSiem.json"))
+	err = json.Unmarshal([]byte(respDataWithoutEnableBotman), &resultWithoutEnabledBotman)
 	require.NoError(t, err)
 
 	req := UpdateSiemSettingsRequest{}
@@ -185,8 +192,38 @@ func TestAppSec_UpdateSiemSettings(t *testing.T) {
 		expectedResponse *UpdateSiemSettingsResponse
 		withError        error
 		headers          http.Header
+		errors           *regexp.Regexp
 	}{
 		"200 Success": {
+			params: UpdateSiemSettingsRequest{
+				ConfigID:                43253,
+				Version:                 15,
+				EnableSiem:              true,
+				EnabledBotmanSiemEvents: ptr.To(false),
+				Exceptions: []Exception{
+					{
+						ActionTypes: []string{"*"},
+						Protection:  "botmanagement",
+					},
+					{
+						ActionTypes: []string{"deny"},
+						Protection:  "ipgeo",
+					},
+					{
+						ActionTypes: []string{"alert"},
+						Protection:  "rate",
+					},
+				},
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusCreated,
+			responseBody:     respData,
+			expectedResponse: &result,
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/siem",
+		},
+		"200 Success without EnabledBotmanSiemEvents": {
 			params: UpdateSiemSettingsRequest{
 				ConfigID:   43253,
 				Version:    15,
@@ -210,9 +247,55 @@ func TestAppSec_UpdateSiemSettings(t *testing.T) {
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
 			responseStatus:   http.StatusCreated,
-			responseBody:     respData,
-			expectedResponse: &result,
+			responseBody:     respDataWithoutEnableBotman,
+			expectedResponse: &resultWithoutEnabledBotman,
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/siem",
+		},
+		"400 Bad Request action types": {
+			params: UpdateSiemSettingsRequest{
+				ConfigID:   43253,
+				Version:    15,
+				EnableSiem: true,
+				Exceptions: []Exception{
+					{
+						ActionTypes: []string{"reject"},
+						Protection:  "botmanagement",
+					},
+					{
+						ActionTypes: []string{"deny"},
+						Protection:  "ipgeo",
+					},
+					{
+						ActionTypes: []string{"alert"},
+						Protection:  "rate",
+					},
+				},
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json;charset=UTF-8"},
+			},
+			responseStatus: http.StatusBadRequest,
+			errors:         regexp.MustCompile(`struct validation: ActionTypes:.+`),
+			expectedPath:   "/appsec/v1/configs/43253/versions/15/siem",
+		},
+		"400 Bad Request protection": {
+			params: UpdateSiemSettingsRequest{
+				ConfigID:   43253,
+				Version:    15,
+				EnableSiem: true,
+				Exceptions: []Exception{
+					{
+						ActionTypes: []string{"tarpit"},
+						Protection:  "bot",
+					},
+				},
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json;charset=UTF-8"},
+			},
+			responseStatus: http.StatusBadRequest,
+			errors:         regexp.MustCompile(`struct validation: Protection:.+`),
+			expectedPath:   "/appsec/v1/configs/43253/versions/15/siem",
 		},
 		"500 internal server error": {
 			params: UpdateSiemSettingsRequest{
@@ -251,6 +334,13 @@ func TestAppSec_UpdateSiemSettings(t *testing.T) {
 				session.ContextWithOptions(
 					context.Background(),
 					session.WithContextHeaders(test.headers)), test.params)
+
+			if test.errors != nil {
+				require.Error(t, err)
+				assert.Regexp(t, test.errors, err.Error())
+				return
+			}
+
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

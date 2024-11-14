@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -137,6 +138,7 @@ func (a *appsec) GetAdvancedSettingsRequestBody(ctx context.Context, params GetA
 	if err != nil {
 		return nil, fmt.Errorf("get advanced settings request body request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, a.Error(resp)
@@ -165,6 +167,7 @@ func (a *appsec) UpdateAdvancedSettingsRequestBody(ctx context.Context, params U
 	if err != nil {
 		return nil, fmt.Errorf("update advanced settings request body request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, a.Error(resp)
@@ -193,6 +196,7 @@ func (a *appsec) RemoveAdvancedSettingsRequestBody(ctx context.Context, params R
 	if err != nil {
 		return nil, fmt.Errorf("remove advanced settings request body request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, a.Error(resp)

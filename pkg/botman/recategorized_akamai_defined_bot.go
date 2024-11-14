@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -146,6 +147,7 @@ func (b *botman) GetRecategorizedAkamaiDefinedBot(ctx context.Context, params Ge
 	if err != nil {
 		return nil, fmt.Errorf("GetRecategorizedAkamaiDefinedBot request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -178,6 +180,7 @@ func (b *botman) GetRecategorizedAkamaiDefinedBotList(ctx context.Context, param
 	if err != nil {
 		return nil, fmt.Errorf("GetRecategorizedAkamaiDefinedBotList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -221,6 +224,7 @@ func (b *botman) UpdateRecategorizedAkamaiDefinedBot(ctx context.Context, params
 	if err != nil {
 		return nil, fmt.Errorf("UpdateRecategorizedAkamaiDefinedBot request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -253,6 +257,7 @@ func (b *botman) CreateRecategorizedAkamaiDefinedBot(ctx context.Context, params
 	if err != nil {
 		return nil, fmt.Errorf("CreateRecategorizedAkamaiDefinedBot request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, b.Error(resp)
@@ -284,6 +289,7 @@ func (b *botman) RemoveRecategorizedAkamaiDefinedBot(ctx context.Context, params
 	if err != nil {
 		return fmt.Errorf("RemoveRecategorizedAkamaiDefinedBot request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return b.Error(resp)

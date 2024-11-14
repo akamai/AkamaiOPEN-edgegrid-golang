@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -385,6 +386,7 @@ func (c *cloudwrapper) GetConfiguration(ctx context.Context, params GetConfigura
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetConfiguration, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetConfiguration, c.Error(resp))
@@ -408,6 +410,7 @@ func (c *cloudwrapper) ListConfigurations(ctx context.Context) (*ListConfigurati
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListConfigurations, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListConfigurations, c.Error(resp))
@@ -443,6 +446,7 @@ func (c *cloudwrapper) CreateConfiguration(ctx context.Context, params CreateCon
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateConfiguration, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateConfiguration, c.Error(resp))
@@ -478,6 +482,7 @@ func (c *cloudwrapper) UpdateConfiguration(ctx context.Context, params UpdateCon
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateConfiguration, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateConfiguration, c.Error(resp))
@@ -505,6 +510,7 @@ func (c *cloudwrapper) DeleteConfiguration(ctx context.Context, params DeleteCon
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeleteConfiguration, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
 		return fmt.Errorf("%s: %w", ErrDeleteConfiguration, c.Error(resp))
@@ -531,6 +537,7 @@ func (c *cloudwrapper) ActivateConfiguration(ctx context.Context, params Activat
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrActivateConfiguration, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrActivateConfiguration, c.Error(resp))

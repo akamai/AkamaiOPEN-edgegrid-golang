@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
-
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -808,12 +808,15 @@ type (
 
 	// BotManagement is returned as part of GetExportConfigurationResponse
 	BotManagement struct {
-		AkamaiBotCategoryActions []map[string]interface{} `json:"akamaiBotCategoryActions,omitempty"`
-		BotDetectionActions      []map[string]interface{} `json:"botDetectionActions,omitempty"`
-		BotManagementSettings    map[string]interface{}   `json:"botManagementSettings,omitempty"`
-		CustomBotCategoryActions []map[string]interface{} `json:"customBotCategoryActions,omitempty"`
-		JavascriptInjectionRules map[string]interface{}   `json:"javascriptInjectionRules,omitempty"`
-		TransactionalEndpoints   *TransactionalEndpoints  `json:"transactionalEndpoints,omitempty"`
+		AkamaiBotCategoryActions                  []map[string]interface{} `json:"akamaiBotCategoryActions,omitempty"`
+		BotDetectionActions                       []map[string]interface{} `json:"botDetectionActions,omitempty"`
+		BotManagementSettings                     map[string]interface{}   `json:"botManagementSettings,omitempty"`
+		CustomBotCategoryActions                  []map[string]interface{} `json:"customBotCategoryActions,omitempty"`
+		JavascriptInjectionRules                  map[string]interface{}   `json:"javascriptInjectionRules,omitempty"`
+		TransactionalEndpoints                    *TransactionalEndpoints  `json:"transactionalEndpoints,omitempty"`
+		ContentProtectionRules                    []map[string]interface{} `json:"contentProtectionRules,omitempty"`
+		ContentProtectionRuleSequence             []string                 `json:"contentProtectionRuleSequence,omitempty"`
+		ContentProtectionJavaScriptInjectionRules []map[string]interface{} `json:"contentProtectionJavaScriptInjectionRules,omitempty"`
 	}
 
 	// TransactionalEndpoints is returned as port of GetExportConfigurationResponse
@@ -893,6 +896,8 @@ func (p *appsec) GetExportConfiguration(ctx context.Context, params GetExportCon
 	if err != nil {
 		return nil, fmt.Errorf("get export configuration request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -920,6 +925,8 @@ func (p *appsec) GetExportConfigurations(ctx context.Context, params GetExportCo
 	if err != nil {
 		return nil, fmt.Errorf("get export configurations request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

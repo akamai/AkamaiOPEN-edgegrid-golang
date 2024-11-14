@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -151,6 +152,7 @@ func (a *appsec) GetAdvancedSettingsAttackPayloadLogging(ctx context.Context, pa
 	if err != nil {
 		return nil, fmt.Errorf("get advanced settings attack payload logging request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, a.Error(resp)
@@ -179,6 +181,7 @@ func (a *appsec) UpdateAdvancedSettingsAttackPayloadLogging(ctx context.Context,
 	if err != nil {
 		return nil, fmt.Errorf("update advanced settings attack payload logging request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, a.Error(resp)
@@ -205,6 +208,7 @@ func (a *appsec) RemoveAdvancedSettingsAttackPayloadLogging(ctx context.Context,
 	if err != nil {
 		return nil, fmt.Errorf("remove advanced settings attack payload logging request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, a.Error(resp)

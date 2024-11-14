@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -146,6 +147,8 @@ func (p *appsec) GetNetworkLayerProtection(ctx context.Context, params GetNetwor
 	if err != nil {
 		return nil, fmt.Errorf("get network layer protection request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -177,6 +180,8 @@ func (p *appsec) GetNetworkLayerProtections(ctx context.Context, params GetNetwo
 	if err != nil {
 		return nil, fmt.Errorf("get network layer protections request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -209,6 +214,8 @@ func (p *appsec) UpdateNetworkLayerProtection(ctx context.Context, params Update
 	if err != nil {
 		return nil, fmt.Errorf("update network layer protection request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -241,6 +248,8 @@ func (p *appsec) RemoveNetworkLayerProtection(ctx context.Context, params Remove
 	if err != nil {
 		return nil, fmt.Errorf("remove network layer protection request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -62,6 +63,7 @@ func (e *edgeworkers) GetPermissionGroup(ctx context.Context, params GetPermissi
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPermissionGroup, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetPermissionGroup, e.Error(resp))
@@ -86,6 +88,7 @@ func (e *edgeworkers) ListPermissionGroups(ctx context.Context) (*ListPermission
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListPermissionGroups, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListPermissionGroups, e.Error(resp))

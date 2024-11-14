@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -334,6 +335,7 @@ func (c *cps) ListEnrollments(ctx context.Context, params ListEnrollmentsRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListEnrollments, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListEnrollments, c.Error(resp))
@@ -364,6 +366,7 @@ func (c *cps) GetEnrollment(ctx context.Context, params GetEnrollmentRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEnrollment, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetEnrollment, c.Error(resp))
@@ -408,6 +411,7 @@ func (c *cps) CreateEnrollment(ctx context.Context, params CreateEnrollmentReque
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEnrollment, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("%s: %w", ErrCreateEnrollment, c.Error(resp))
@@ -467,6 +471,7 @@ func (c *cps) UpdateEnrollment(ctx context.Context, params UpdateEnrollmentReque
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEnrollment, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateEnrollment, c.Error(resp))
@@ -516,6 +521,7 @@ func (c *cps) RemoveEnrollment(ctx context.Context, params RemoveEnrollmentReque
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrRemoveEnrollment, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted && resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrRemoveEnrollment, c.Error(resp))

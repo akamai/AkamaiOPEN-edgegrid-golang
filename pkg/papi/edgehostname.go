@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -197,6 +198,7 @@ func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequ
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeHostnames, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetEdgeHostnames, p.Error(resp))
@@ -233,6 +235,7 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeHostname, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -272,6 +275,8 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameReque
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEdgeHostname, err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateEdgeHostname, p.Error(resp))
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -60,7 +61,7 @@ type (
 	GetSiemSettingResponse struct {
 		EnableForAllPolicies    bool        `json:"enableForAllPolicies"`
 		EnableSiem              bool        `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
+		EnabledBotmanSiemEvents *bool       `json:"enabledBotmanSiemEvents"`
 		SiemDefinitionID        int         `json:"siemDefinitionId"`
 		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
 		Exceptions              []Exception `json:"exceptions"`
@@ -72,7 +73,7 @@ type (
 		Version                 int         `json:"-"`
 		EnableForAllPolicies    bool        `json:"enableForAllPolicies"`
 		EnableSiem              bool        `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
+		EnabledBotmanSiemEvents *bool       `json:"enabledBotmanSiemEvents,omitempty"`
 		SiemDefinitionID        int         `json:"siemDefinitionId"`
 		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
 		Exceptions              []Exception `json:"exceptions,omitempty"`
@@ -82,7 +83,7 @@ type (
 	UpdateSiemSettingsResponse struct {
 		EnableForAllPolicies    bool        `json:"enableForAllPolicies"`
 		EnableSiem              bool        `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
+		EnabledBotmanSiemEvents *bool       `json:"enabledBotmanSiemEvents"`
 		SiemDefinitionID        int         `json:"siemDefinitionId"`
 		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
 		Exceptions              []Exception `json:"exceptions"`
@@ -95,7 +96,7 @@ type (
 		Version                 int      `json:"-"`
 		EnableForAllPolicies    bool     `json:"-"`
 		EnableSiem              bool     `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool     `json:"-"`
+		EnabledBotmanSiemEvents *bool    `json:"-"`
 		SiemDefinitionID        int      `json:"-"`
 		FirewallPolicyIds       []string `json:"-"`
 	}
@@ -105,7 +106,7 @@ type (
 	RemoveSiemSettingsResponse struct {
 		EnableForAllPolicies    bool     `json:"enableForAllPolicies"`
 		EnableSiem              bool     `json:"enableSiem"`
-		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents"`
+		EnabledBotmanSiemEvents *bool    `json:"enabledBotmanSiemEvents"`
 		SiemDefinitionID        int      `json:"siemDefinitionId"`
 		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
 	}
@@ -129,12 +130,30 @@ func (v UpdateSiemSettingsRequest) Validate() error {
 
 // Validate validates an Exception struct.
 func (v Exception) Validate() error {
+	validActionTypes := []string{"alert", "deny", "all_custom", "abort", "allow", "delay", "ignore", "monitor", "slow", "tarpit", "*"}
 	return validation.Errors{
 		"Protection": validation.Validate(v.Protection, validation.Required, validation.In("botmanagement", "ipgeo", "rate", "urlProtection", "slowpost", "customrules", "waf", "apirequestconstraints", "clientrep", "malwareprotection", "aprProtection").
 			Error(fmt.Sprintf("value '%s' is invalid. Must be one of: 'botmanagement', 'ipgeo', 'rate', 'urlProtection', 'slowpost', 'customrules', 'waf', 'apirequestconstraints', 'clientrep', 'malwareprotection', 'aprProtection'", v.Protection))),
-		"ActionTypes": validation.Validate(v.Protection, validation.Required, validation.In("alert", "deny", "all_custom", "abort", "allow", "delay", "ignore", "monitor", "slow", "tarpit").
-			Error(fmt.Sprintf("value '%v' is invalid. Must be one of: 'alert', 'deny', 'all_custom', 'abort', 'allow', 'delay', 'ignore', 'monitor', 'slow', 'tarpit'", v.ActionTypes))),
+		"ActionTypes": validation.ValidateStruct(&v,
+			validation.Field(&v.ActionTypes, validation.Required, validation.By(func(value interface{}) error {
+				actions, _ := value.([]string)
+				for _, actionType := range actions {
+					if !containsElement(validActionTypes, actionType) {
+						return fmt.Errorf("value '%s' is invalid. Must be one of: %v", actionType, validActionTypes)
+					}
+				}
+				return nil
+			}))),
 	}.Filter()
+}
+
+func containsElement(slice []string, item string) bool {
+	for _, v := range slice {
+		if v == item {
+			return true
+		}
+	}
+	return false
 }
 
 // Validate validates a RemoveSiemSettingsRequest.
@@ -170,6 +189,8 @@ func (p *appsec) GetSiemSettings(ctx context.Context, params GetSiemSettingsRequ
 	if err != nil {
 		return nil, fmt.Errorf("get siem settings request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -183,6 +204,12 @@ func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettin
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	for _, exception := range params.Exceptions {
+		if err := exception.Validate(); err != nil {
+			return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+		}
 	}
 
 	uri := fmt.Sprintf(
@@ -201,6 +228,8 @@ func (p *appsec) UpdateSiemSettings(ctx context.Context, params UpdateSiemSettin
 	if err != nil {
 		return nil, fmt.Errorf("update siem settings request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -233,6 +262,8 @@ func (p *appsec) RemoveSiemSettings(ctx context.Context, params RemoveSiemSettin
 	if err != nil {
 		return nil, fmt.Errorf("remove siem settings request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

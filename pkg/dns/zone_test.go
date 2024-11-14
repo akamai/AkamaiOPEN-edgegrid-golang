@@ -1,6 +1,7 @@
 package dns
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"io/ioutil"
@@ -30,7 +31,7 @@ func TestDNS_ListZones(t *testing.T) {
 				ContractIDs: "1-1ACYUM",
 				Search:      "org",
 				SortBy:      "-contractId,zone",
-				Types:       "primary,alias",
+				Types:       "secondary,alias",
 				Page:        1,
 				PageSize:    25,
 			},
@@ -53,18 +54,33 @@ func TestDNS_ListZones(t *testing.T) {
 					{
 						"contractId": "1-2ABCDE",
 						"zone": "example.com",
-						"type": "primary",
+						"type": "secondary",
 						"aliasCount": 1,
 						"signAndServe": false,
 						"versionId": "ae02357c-693d-4ac4-b33d-8352d9b7c786",
 						"lastModifiedDate": "2017-01-03T12:00:00Z",
 						"lastModifiedBy": "user28",
 						"lastActivationDate": "2017-01-03T12:00:00Z",
-						"activationState": "ACTIVE"
+						"activationState": "ACTIVE",
+						"masters": ["1.1.1.1"],
+						"outboundZoneTransfer": {
+							"ACL": [
+								"192.0.2.156/24"
+							],
+							"enabled": true,
+							"notifyTargets": [
+								"192.0.2.192"
+							],
+							"tsigKey": {
+								"algorithm": "hmac-sha1",
+								"name": "other.com.akamai.com3",
+								"secret": "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="
+							}
+						}
 					}
 				]
 			}`,
-			expectedPath: "/config-dns/v2/zones?contractIds=1-1ACYUM&search=org&sortBy=-contractId%2Czone&types=primary%2Calias&page=1&pageSize=25&showAll=false",
+			expectedPath: "/config-dns/v2/zones?contractIds=1-1ACYUM&page=1&pageSize=25&search=org&showAll=false&sortBy=-contractId%2Czone&types=secondary%2Calias",
 			expectedResponse: &ZoneListResponse{
 				Metadata: &ListMetadata{
 					Page:          1,
@@ -77,7 +93,7 @@ func TestDNS_ListZones(t *testing.T) {
 					{
 						ContractID:         "1-2ABCDE",
 						Zone:               "example.com",
-						Type:               "primary",
+						Type:               "secondary",
 						AliasCount:         1,
 						SignAndServe:       false,
 						VersionID:          "ae02357c-693d-4ac4-b33d-8352d9b7c786",
@@ -85,6 +101,17 @@ func TestDNS_ListZones(t *testing.T) {
 						LastModifiedBy:     "user28",
 						LastActivationDate: "2017-01-03T12:00:00Z",
 						ActivationState:    "ACTIVE",
+						Masters:            []string{"1.1.1.1"},
+						OutboundZoneTransfer: &OutboundZoneTransfer{
+							ACL:           []string{"192.0.2.156/24"},
+							Enabled:       true,
+							NotifyTargets: []string{"192.0.2.192"},
+							TSIGKey: &TSIGKey{
+								Name:      "other.com.akamai.com3",
+								Algorithm: "hmac-sha1",
+								Secret:    "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+							},
+						},
 					},
 				},
 			},
@@ -106,7 +133,7 @@ func TestDNS_ListZones(t *testing.T) {
     "detail": "Error fetching authorities",
     "status": 500
 }`,
-			expectedPath: "/config-dns/v2/zones?contractIds=1-1ACYUM&search=org&sortBy=-contractId%2Czone&types=primary%2Calias&page=1&pageSize=25&showAll=false",
+			expectedPath: "/config-dns/v2/zones?contractIds=1-1ACYUM&page=1&pageSize=25&search=org&showAll=false&sortBy=-contractId%2Czone&types=primary%2Calias",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -119,6 +146,7 @@ func TestDNS_ListZones(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
@@ -315,7 +343,7 @@ func TestDNS_GetZone(t *testing.T) {
 			{
 				"contractId": "1-2ABCDE",
 				"zone": "example.com",
-				"type": "primary",
+				"type": "secondary",
 				"aliasCount": 1,
 				"signAndServe": true,
 				"signAndServeAlgorithm": "RSA_SHA256",
@@ -323,13 +351,28 @@ func TestDNS_GetZone(t *testing.T) {
 				"lastModifiedDate": "2017-01-03T12:00:00Z",
 				"lastModifiedBy": "user28",
 				"lastActivationDate": "2017-01-03T12:00:00Z",
-				"activationState": "ACTIVE"
+				"activationState": "ACTIVE",
+				"masters": ["1.1.1.1"],
+				"outboundZoneTransfer": {
+					"ACL": [
+						"192.0.2.156/24"
+					],
+					"enabled": true,
+					"notifyTargets": [
+						"192.0.2.192"
+					],
+					"tsigKey": {
+						"algorithm": "hmac-sha1",
+						"name": "other.com.akamai.com3",
+						"secret": "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="
+					}
+				}
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com",
 			expectedResponse: &GetZoneResponse{
 				ContractID:            "1-2ABCDE",
 				Zone:                  "example.com",
-				Type:                  "primary",
+				Type:                  "secondary",
 				AliasCount:            1,
 				SignAndServe:          true,
 				SignAndServeAlgorithm: "RSA_SHA256",
@@ -338,6 +381,17 @@ func TestDNS_GetZone(t *testing.T) {
 				LastModifiedBy:        "user28",
 				LastActivationDate:    "2017-01-03T12:00:00Z",
 				ActivationState:       "ACTIVE",
+				Masters:               []string{"1.1.1.1"},
+				OutboundZoneTransfer: &OutboundZoneTransfer{
+					ACL:           []string{"192.0.2.156/24"},
+					Enabled:       true,
+					NotifyTargets: []string{"192.0.2.192"},
+					TSIGKey: &TSIGKey{
+						Name:      "other.com.akamai.com3",
+						Algorithm: "hmac-sha1",
+						Secret:    "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+					},
+				},
 			},
 		},
 		"500 internal server error": {
@@ -365,7 +419,7 @@ func TestDNS_GetZone(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
@@ -438,7 +492,7 @@ www.example.com.        300 IN  A   10.0.0.2"`,
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
@@ -511,6 +565,7 @@ www.example.com.        300 IN  A   10.0.0.2"`,
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
@@ -551,7 +606,7 @@ func TestDNS_GetChangeList(t *testing.T) {
 				"lastModifiedDate": "2017-02-01T12:00:12.524Z",
 				"stale": false
 			}`,
-			expectedPath: "/config-dns/v2/zones/example.com",
+			expectedPath: "/config-dns/v2/changelists/example.com",
 			expectedResponse: &GetChangeListResponse{
 				Zone:             "example.com",
 				ChangeTag:        "476754f4-d605-479f-853b-db854d7254fa",
@@ -572,7 +627,7 @@ func TestDNS_GetChangeList(t *testing.T) {
     "detail": "Error fetching authorities",
     "status": 500
 }`,
-			expectedPath: "/config-dns/v2/zones/example.com",
+			expectedPath: "/config-dns/v2/changelists/example.com",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -585,7 +640,7 @@ func TestDNS_GetChangeList(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
@@ -684,19 +739,62 @@ func TestDNS_CreateZone(t *testing.T) {
 	tests := map[string]struct {
 		params         CreateZoneRequest
 		responseStatus int
+		requestBody    string
 		responseBody   string
 		expectedPath   string
 		withError      error
 	}{
-		"201 Created": {
+		"201 Created Primary": {
 			params: CreateZoneRequest{
 				CreateZone: &ZoneCreate{
 					Zone:       "example.com",
 					ContractID: "1-2ABCDE",
 					Type:       "primary",
 				},
+				ZoneQueryString: ZoneQueryString{
+					Contract: "1-2ABCDE",
+				},
 			},
 			responseStatus: http.StatusCreated,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","signAndServe":false,"signAndServeAlgorithm":"","type":"primary","zone":"example.com"}`,
+			responseBody: `
+			{
+				"contractId": "1-2ABCDE",
+				"zone": "other.com",
+				"type": "primary",
+				"aliasCount": 1,
+				"signAndServe": false,
+				"comment": "Initial add",
+				"versionId": "7949b2db-ac43-4773-a3ec-dc93202142fd",
+				"lastModifiedDate": "2016-12-11T03:21:00Z",
+				"lastModifiedBy": "user31",
+				"lastActivationDate": "2017-01-03T12:00:00Z",
+				"activationState": "ERROR",
+				"masters": [
+					"1.2.3.4",
+					"1.2.3.5"
+				]
+			}`,
+			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
+		},
+		"201 Created Secondary": {
+			params: CreateZoneRequest{
+				CreateZone: &ZoneCreate{
+					Zone:       "example.com",
+					ContractID: "1-2ABCDE",
+					Type:       "secondary",
+					TSIGKey: &TSIGKey{
+						Name:      "other.com.akamai.com.",
+						Algorithm: "hmac-sha512",
+						Secret:    "fakeSecretajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo",
+					},
+				},
+				ZoneQueryString: ZoneQueryString{
+					Contract: "1-2ABCDE",
+				},
+			},
+			responseStatus: http.StatusCreated,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","masters":null,"signAndServe":false,"signAndServeAlgorithm":"","tsigKey":{"name":"other.com.akamai.com.","algorithm":"hmac-sha512","secret":"fakeSecretajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo"},"type":"secondary","zone":"example.com"}`,
 			responseBody: `
 			{
 				"contractId": "1-2ABCDE",
@@ -717,7 +815,7 @@ func TestDNS_CreateZone(t *testing.T) {
 				"tsigKey": {
 					"name": "other.com.akamai.com.",
 					"algorithm": "hmac-sha512",
-					"secret": "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="
+					"secret": "fakeSecretajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo"
 				}
 			}`,
 			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
@@ -728,6 +826,9 @@ func TestDNS_CreateZone(t *testing.T) {
 					Zone:       "example.com",
 					ContractID: "1-2ABCDE",
 					Type:       "primary",
+				},
+				ZoneQueryString: ZoneQueryString{
+					Contract: "1-2ABCDE",
 				},
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -751,7 +852,15 @@ func TestDNS_CreateZone(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.requestBody != "" {
+					buf := new(bytes.Buffer)
+					_, err := buf.ReadFrom(r.Body)
+					assert.NoError(t, err)
+					req := buf.String()
+					assert.Equal(t, test.requestBody, req)
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -817,6 +926,7 @@ func TestDNS_SaveChangelist(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
@@ -850,7 +960,7 @@ func TestDNS_SubmitChangelist(t *testing.T) {
 				Type:       "primary",
 			},
 			responseStatus: http.StatusNoContent,
-			expectedPath:   "/config-dns/v2/changelists?zone=example.com",
+			expectedPath:   "/config-dns/v2/changelists/example.com/submit",
 		},
 		"500 internal server error": {
 			params: SubmitChangeListRequest{
@@ -866,7 +976,7 @@ func TestDNS_SubmitChangelist(t *testing.T) {
     "detail": "Error creating zone",
     "status": 500
 }`,
-			expectedPath: "/config-dns/v2/changelists?zone=example.com",
+			expectedPath: "/config-dns/v2/changelists/example.com/submit",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -879,6 +989,7 @@ func TestDNS_SubmitChangelist(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
@@ -901,18 +1012,90 @@ func TestDNS_UpdateZone(t *testing.T) {
 	tests := map[string]struct {
 		params         UpdateZoneRequest
 		responseStatus int
+		requestBody    string
 		responseBody   string
 		expectedPath   string
 		withError      error
 	}{
-		"200 OK": {
+		"200 OK primary": {
 			params: UpdateZoneRequest{
 				CreateZone: &ZoneCreate{
 					Zone:       "example.com",
 					ContractID: "1-2ABCDE",
 					Type:       "primary",
+					OutboundZoneTransfer: &OutboundZoneTransfer{
+						ACL:           []string{"192.0.2.156/24"},
+						Enabled:       true,
+						NotifyTargets: []string{"192.0.2.192"},
+						TSIGKey: &TSIGKey{
+							Name:      "other.com.akamai.com",
+							Algorithm: "hmac-sha1",
+							Secret:    "fakeW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+						},
+					},
 				},
 			},
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com","algorithm":"hmac-sha1","secret":"fakeW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="}},"signAndServe":false,"signAndServeAlgorithm":"","type":"primary","zone":"example.com"}`,
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"contractId": "1-2ABCDE",
+				"zone": "other.com",
+				"type": "primary",
+				"aliasCount": 1,
+				"signAndServe": false,
+				"comment": "Initial add",
+				"versionId": "7949b2db-ac43-4773-a3ec-dc93202142fd",
+				"lastModifiedDate": "2016-12-11T03:21:00Z",
+				"lastModifiedBy": "user31",
+				"lastActivationDate": "2017-01-03T12:00:00Z",
+				"activationState": "ERROR",
+				"masters": [
+					"1.2.3.4",
+					"1.2.3.5"
+				],
+				"outboundZoneTransfer": {
+					"ACL": [
+						"192.0.2.156/24"
+					],
+					"enabled": true,
+					"notifyTargets": [
+						"192.0.2.192"
+					],
+					"tsigKey": {
+						"algorithm": "hmac-sha1",
+						"name": "other.com.akamai.com3",
+						"secret": "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="
+					}
+				}
+			}`,
+			expectedPath: "/config-dns/v2/zones/example.com",
+		},
+		"200 OK secondary": {
+			params: UpdateZoneRequest{
+				CreateZone: &ZoneCreate{
+					Zone:       "example.com",
+					ContractID: "1-2ABCDE",
+					Type:       "secondary",
+					TSIGKey: &TSIGKey{
+						Name:      "other.com.akamai.com.",
+						Algorithm: "hmac-sha512",
+						Secret:    "fakeSecretajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo",
+					},
+					Masters: []string{"1.2.3.4", "1.2.3.5"},
+					OutboundZoneTransfer: &OutboundZoneTransfer{
+						ACL:           []string{"192.0.2.156/24"},
+						Enabled:       true,
+						NotifyTargets: []string{"192.0.2.192"},
+						TSIGKey: &TSIGKey{
+							Name:      "other.com.akamai.com",
+							Algorithm: "hmac-sha1",
+							Secret:    "fakeW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw==",
+						},
+					},
+				},
+			},
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","masters":["1.2.3.4","1.2.3.5"],"outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com","algorithm":"hmac-sha1","secret":"fakeW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="}},"signAndServe":false,"signAndServeAlgorithm":"","tsigKey":{"name":"other.com.akamai.com.","algorithm":"hmac-sha512","secret":"fakeSecretajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo"},"type":"secondary","zone":"example.com"}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -934,10 +1117,24 @@ func TestDNS_UpdateZone(t *testing.T) {
 				"tsigKey": {
 					"name": "other.com.akamai.com.",
 					"algorithm": "hmac-sha512",
-					"secret": "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="
+					"secret": "fakeSecretajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo"
+				},
+				"outboundZoneTransfer": {
+					"ACL": [
+						"192.0.2.156/24"
+					],
+					"enabled": true,
+					"notifyTargets": [
+						"192.0.2.192"
+					],
+					"tsigKey": {
+						"algorithm": "hmac-sha1",
+						"name": "other.com.akamai.com3",
+						"secret": "fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="
+					}
 				}
 			}`,
-			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
+			expectedPath: "/config-dns/v2/zones/example.com",
 		},
 		"500 internal server error": {
 			params: UpdateZoneRequest{
@@ -955,7 +1152,7 @@ func TestDNS_UpdateZone(t *testing.T) {
     "detail": "Error creating zone",
     "status": 500
 }`,
-			expectedPath: "/config-dns/v2/zones?contractId=1-2ABCDE",
+			expectedPath: "/config-dns/v2/zones/example.com",
 			withError: &Error{
 				Type:       "internal_error",
 				Title:      "Internal Server Error",
@@ -968,7 +1165,15 @@ func TestDNS_UpdateZone(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.requestBody != "" {
+					buf := new(bytes.Buffer)
+					_, err := buf.ReadFrom(r.Body)
+					assert.NoError(t, err)
+					req := buf.String()
+					assert.Equal(t, test.requestBody, req)
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -1040,7 +1245,7 @@ func TestDNS_GetZoneNames(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
@@ -1070,7 +1275,7 @@ func TestDNS_GetZoneNameTypes(t *testing.T) {
 		"200 OK": {
 			params: GetZoneNameTypesRequest{
 				Zone:     "example.com",
-				ZoneName: "names",
+				ZoneName: "www.example.com",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -1089,7 +1294,7 @@ func TestDNS_GetZoneNameTypes(t *testing.T) {
 		"500 internal server error": {
 			params: GetZoneNameTypesRequest{
 				Zone:     "example.com",
-				ZoneName: "names",
+				ZoneName: "www.example.com",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -1112,7 +1317,7 @@ func TestDNS_GetZoneNameTypes(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				//assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))

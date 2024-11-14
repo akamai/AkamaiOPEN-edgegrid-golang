@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 type (
@@ -40,6 +42,7 @@ func (b *botman) GetAkamaiBotCategoryList(ctx context.Context, params GetAkamaiB
 	if err != nil {
 		return nil, fmt.Errorf("GetAkamaiBotCategoryList request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)

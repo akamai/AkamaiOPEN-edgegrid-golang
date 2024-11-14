@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -414,6 +415,7 @@ func (i *iam) LockAPIClient(ctx context.Context, params LockAPIClientRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrLockAPIClient, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrLockAPIClient, i.Error(resp))
@@ -445,6 +447,7 @@ func (i *iam) UnlockAPIClient(ctx context.Context, params UnlockAPIClientRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUnlockAPIClient, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUnlockAPIClient, i.Error(resp))
@@ -476,13 +479,13 @@ func (i *iam) ListAPIClients(ctx context.Context, params ListAPIClientsRequest) 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListAPIClients, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListAPIClients, i.Error(resp))
 	}
 
 	return result, nil
-
 }
 
 func (i *iam) GetAPIClient(ctx context.Context, params GetAPIClientRequest) (*GetAPIClientResponse, error) {
@@ -516,6 +519,7 @@ func (i *iam) GetAPIClient(ctx context.Context, params GetAPIClientRequest) (*Ge
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetAPIClient, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetAPIClient, i.Error(resp))
@@ -542,6 +546,7 @@ func (i *iam) CreateAPIClient(ctx context.Context, params CreateAPIClientRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateAPIClient, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateAPIClient, i.Error(resp))
@@ -572,6 +577,7 @@ func (i *iam) UpdateAPIClient(ctx context.Context, params UpdateAPIClientRequest
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateAPIClient, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateAPIClient, i.Error(resp))
@@ -597,6 +603,7 @@ func (i *iam) DeleteAPIClient(ctx context.Context, params DeleteAPIClientRequest
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeleteAPIClient, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return fmt.Errorf("%s: %w", ErrDeleteAPIClient, i.Error(resp))

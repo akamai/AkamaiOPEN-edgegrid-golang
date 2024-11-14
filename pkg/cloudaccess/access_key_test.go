@@ -253,6 +253,24 @@ func TestGetAccessKey(t *testing.T) {
 				assert.Equal(t, "get an access key: struct validation: AccessKeyUID: cannot be blank", err.Error())
 			},
 		},
+		"404 access key not found - custom error check": {
+			params: AccessKeyRequest{
+				AccessKeyUID: 2,
+			},
+			expectedPath:   "/cam/v1/access-keys/2",
+			responseStatus: http.StatusNotFound,
+			responseBody: `{
+				"type": "/cam/error-types/access-key-does-not-exist",
+				"title": "Domain Error",
+				"detail": "Access key with accessKeyUID '2' does not exist.",
+				"instance": "test-instance-123",
+				"status": 404,
+				"accessKeyUid": 2
+			}`,
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrAccessKeyNotFound))
+			},
+		},
 		"500 internal server error": {
 			params: AccessKeyRequest{
 				AccessKeyUID: 1,

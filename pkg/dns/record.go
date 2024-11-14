@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -143,6 +144,7 @@ func (d *dns) CreateRecord(ctx context.Context, params CreateRecordRequest) erro
 	if err != nil {
 		return fmt.Errorf("CreateRecord request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return d.Error(resp)
@@ -187,6 +189,7 @@ func (d *dns) UpdateRecord(ctx context.Context, params UpdateRecordRequest) erro
 	if err != nil {
 		return fmt.Errorf("UpdateRecord request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return d.Error(resp)
@@ -225,6 +228,7 @@ func (d *dns) DeleteRecord(ctx context.Context, params DeleteRecordRequest) erro
 	if err != nil {
 		return fmt.Errorf("DeleteRecord request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
 		return d.Error(resp)

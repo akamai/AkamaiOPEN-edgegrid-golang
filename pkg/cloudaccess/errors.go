@@ -34,6 +34,11 @@ type (
 	}
 )
 
+const accessKeyNotFoundType = "/cam/error-types/access-key-does-not-exist"
+
+// ErrAccessKeyNotFound is returned when access key was not found
+var ErrAccessKeyNotFound = errors.New("access key not found")
+
 // Error parses an error from the response
 func (c *cloudaccess) Error(r *http.Response) error {
 	var e Error
@@ -68,6 +73,10 @@ func (e *Error) Error() string {
 
 // Is handles error comparisons
 func (e *Error) Is(target error) bool {
+	if errors.Is(target, ErrAccessKeyNotFound) {
+		return e.Status == http.StatusNotFound && e.Type == accessKeyNotFoundType
+	}
+
 	var t *Error
 	if !errors.As(target, &t) {
 		return false

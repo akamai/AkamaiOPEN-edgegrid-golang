@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -118,6 +119,8 @@ func (p *appsec) GetRateProtection(ctx context.Context, params GetRateProtection
 	if err != nil {
 		return nil, fmt.Errorf("get rate protection request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -149,6 +152,8 @@ func (p *appsec) GetRateProtections(ctx context.Context, params GetRateProtectio
 	if err != nil {
 		return nil, fmt.Errorf("get rate protections request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -181,6 +186,8 @@ func (p *appsec) UpdateRateProtection(ctx context.Context, params UpdateRateProt
 	if err != nil {
 		return nil, fmt.Errorf("update rate protection request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

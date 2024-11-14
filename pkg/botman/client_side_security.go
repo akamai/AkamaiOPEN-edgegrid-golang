@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -74,6 +75,7 @@ func (b *botman) GetClientSideSecurity(ctx context.Context, params GetClientSide
 	if err != nil {
 		return nil, fmt.Errorf("GetClientSideSecurity request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, b.Error(resp)
@@ -106,6 +108,7 @@ func (b *botman) UpdateClientSideSecurity(ctx context.Context, params UpdateClie
 	if err != nil {
 		return nil, fmt.Errorf("UpdateClientSideSecurity request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusNoContent {
 		return nil, b.Error(resp)

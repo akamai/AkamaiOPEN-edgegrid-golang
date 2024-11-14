@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 )
 
 // EdgeKVInitialize is EdgeKV Initialize API interface
@@ -41,6 +43,7 @@ func (e *edgeworkers) InitializeEdgeKV(ctx context.Context) (*EdgeKVInitializati
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrInitializeEdgeKV, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrInitializeEdgeKV, e.Error(resp))
@@ -64,6 +67,7 @@ func (e *edgeworkers) GetEdgeKVInitializationStatus(ctx context.Context) (*EdgeK
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeKVInitialize, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetEdgeKVInitialize, e.Error(resp))

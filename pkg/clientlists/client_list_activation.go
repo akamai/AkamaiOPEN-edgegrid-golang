@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -147,6 +148,7 @@ func (p *clientlists) CreateActivation(ctx context.Context, params CreateActivat
 	if err != nil {
 		return nil, fmt.Errorf("create activation request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -176,6 +178,7 @@ func (p *clientlists) GetActivationStatus(ctx context.Context, params GetActivat
 	if err != nil {
 		return nil, fmt.Errorf("get activation status request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
@@ -205,6 +208,7 @@ func (p *clientlists) GetActivation(ctx context.Context, params GetActivationReq
 	if err != nil {
 		return nil, fmt.Errorf("get activation request failed: %s", err.Error())
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -77,6 +78,7 @@ func (d *ds) GetProperties(ctx context.Context, params GetPropertiesRequest) (*P
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetProperties, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetProperties, d.Error(resp))
@@ -110,6 +112,7 @@ func (d *ds) GetDatasetFields(ctx context.Context, params GetDatasetFieldsReques
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetDatasetFields, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetDatasetFields, d.Error(resp))

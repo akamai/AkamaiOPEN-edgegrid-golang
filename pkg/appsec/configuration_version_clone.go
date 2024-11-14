@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -150,6 +150,8 @@ func (p *appsec) GetConfigurationVersionClone(ctx context.Context, params GetCon
 	if err != nil {
 		return nil, fmt.Errorf("get configuration version clone request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -177,6 +179,8 @@ func (p *appsec) CreateConfigurationVersionClone(ctx context.Context, params Cre
 	if err != nil {
 		return nil, fmt.Errorf("create configuration version clone request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -203,6 +207,8 @@ func (p *appsec) RemoveConfigurationVersionClone(ctx context.Context, params Rem
 	if err != nil {
 		return nil, fmt.Errorf("remove configuration version clone request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

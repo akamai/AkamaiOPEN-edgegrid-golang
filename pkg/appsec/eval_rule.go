@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -136,6 +137,8 @@ func (p *appsec) GetEvalRule(ctx context.Context, params GetEvalRuleRequest) (*G
 	if err != nil {
 		return nil, fmt.Errorf("get eval rule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -167,6 +170,8 @@ func (p *appsec) GetEvalRules(ctx context.Context, params GetEvalRulesRequest) (
 	if err != nil {
 		return nil, fmt.Errorf("get eval rules request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -211,6 +216,8 @@ func (p *appsec) UpdateEvalRule(ctx context.Context, params UpdateEvalRuleReques
 	if err != nil {
 		return nil, fmt.Errorf("update eval rule request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}

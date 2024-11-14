@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -247,6 +247,7 @@ func (c *cloudlets) CreateLoadBalancerVersion(ctx context.Context, params Create
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateLoadBalancerVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateLoadBalancerVersion, c.Error(resp))
@@ -284,6 +285,7 @@ func (c *cloudlets) GetLoadBalancerVersion(ctx context.Context, params GetLoadBa
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetLoadBalancerVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetLoadBalancerVersion, c.Error(resp))
@@ -321,6 +323,7 @@ func (c *cloudlets) UpdateLoadBalancerVersion(ctx context.Context, params Update
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateLoadBalancerVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrUpdateLoadBalancerVersion, c.Error(resp))
@@ -352,6 +355,7 @@ func (c *cloudlets) ListLoadBalancerVersions(ctx context.Context, params ListLoa
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListLoadBalancerVersions, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListLoadBalancerVersions, c.Error(resp))

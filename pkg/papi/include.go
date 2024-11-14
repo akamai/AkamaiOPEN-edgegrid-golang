@@ -8,7 +8,7 @@ import (
 	"net/url"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -259,6 +259,7 @@ func (p *papi) ListIncludes(ctx context.Context, params ListIncludesRequest) (*L
 	if err != nil {
 		return nil, fmt.Errorf("%s: request failed: %w", ErrListIncludes, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListIncludes, p.Error(resp))
@@ -299,6 +300,7 @@ func (p *papi) ListIncludeParents(ctx context.Context, params ListIncludeParents
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListIncludeParents, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListIncludeParents, p.Error(resp))
@@ -335,6 +337,7 @@ func (p *papi) GetInclude(ctx context.Context, params GetIncludeRequest) (*GetIn
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetInclude, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetInclude, p.Error(resp))
@@ -376,6 +379,7 @@ func (p *papi) CreateInclude(ctx context.Context, params CreateIncludeRequest) (
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateInclude, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateInclude, p.Error(resp))
@@ -425,6 +429,7 @@ func (p *papi) DeleteInclude(ctx context.Context, params DeleteIncludeRequest) (
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeleteInclude, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrDeleteInclude, p.Error(resp))

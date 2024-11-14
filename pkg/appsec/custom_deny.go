@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -222,6 +223,8 @@ func (p *appsec) GetCustomDeny(ctx context.Context, params GetCustomDenyRequest)
 	if err != nil {
 		return nil, fmt.Errorf("get custom deny request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -253,6 +256,8 @@ func (p *appsec) GetCustomDenyList(ctx context.Context, params GetCustomDenyList
 	if err != nil {
 		return nil, fmt.Errorf("get custom deny list request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
@@ -296,6 +301,8 @@ func (p *appsec) UpdateCustomDeny(ctx context.Context, params UpdateCustomDenyRe
 	if err != nil {
 		return nil, fmt.Errorf("update custom deny request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -328,6 +335,8 @@ func (p *appsec) CreateCustomDeny(ctx context.Context, params CreateCustomDenyRe
 	if err != nil {
 		return nil, fmt.Errorf("create custom deny request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return nil, p.Error(resp)
 	}
@@ -354,6 +363,8 @@ func (p *appsec) RemoveCustomDeny(ctx context.Context, params RemoveCustomDenyRe
 	if err != nil {
 		return nil, fmt.Errorf("remove custom deny request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}

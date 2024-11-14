@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -218,6 +219,7 @@ func (p *papi) CreateIncludeVersion(ctx context.Context, params CreateIncludeVer
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateIncludeVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		return nil, fmt.Errorf("%s: %w", ErrCreateIncludeVersion, p.Error(resp))
@@ -263,6 +265,7 @@ func (p *papi) GetIncludeVersion(ctx context.Context, params GetIncludeVersionRe
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetIncludeVersion, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetIncludeVersion, p.Error(resp))
@@ -304,6 +307,7 @@ func (p *papi) ListIncludeVersions(ctx context.Context, params ListIncludeVersio
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListIncludeVersions, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListIncludeVersions, p.Error(resp))
@@ -332,6 +336,7 @@ func (p *papi) ListIncludeVersionAvailableCriteria(ctx context.Context, params L
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListIncludeVersionAvailableCriteria, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListIncludeVersionAvailableCriteria, p.Error(resp))
@@ -360,6 +365,7 @@ func (p *papi) ListIncludeVersionAvailableBehaviors(ctx context.Context, params 
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListIncludeVersionAvailableBehaviors, err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListIncludeVersionAvailableBehaviors, p.Error(resp))

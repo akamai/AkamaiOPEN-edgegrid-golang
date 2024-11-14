@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -168,6 +169,7 @@ func (g *gtm) ListDatacenters(ctx context.Context, params ListDatacentersRequest
 	if err != nil {
 		return nil, fmt.Errorf("ListDatacenters request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -196,6 +198,7 @@ func (g *gtm) GetDatacenter(ctx context.Context, params GetDatacenterRequest) (*
 	if err != nil {
 		return nil, fmt.Errorf("GetDatacenter request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
@@ -224,6 +227,8 @@ func (g *gtm) CreateDatacenter(ctx context.Context, params CreateDatacenterReque
 	if err != nil {
 		return nil, fmt.Errorf("CreateDatacenter request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusCreated {
 		return nil, g.Error(resp)
 	}
@@ -301,6 +306,8 @@ func createDefaultDC(ctx context.Context, g *gtm, defaultID int, domainName stri
 	if err != nil {
 		return nil, fmt.Errorf("DefaultDatacenter request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusCreated {
 		return nil, g.Error(resp)
 	}
@@ -328,6 +335,8 @@ func (g *gtm) UpdateDatacenter(ctx context.Context, params UpdateDatacenterReque
 	if err != nil {
 		return nil, fmt.Errorf("UpdateDatacenter request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
 	}
@@ -355,6 +364,8 @@ func (g *gtm) DeleteDatacenter(ctx context.Context, params DeleteDatacenterReque
 	if err != nil {
 		return nil, fmt.Errorf("DeleteDatacenter request failed: %w", err)
 	}
+	defer session.CloseResponseBody(resp)
+
 	if resp.StatusCode != http.StatusOK {
 		return nil, g.Error(resp)
 	}
