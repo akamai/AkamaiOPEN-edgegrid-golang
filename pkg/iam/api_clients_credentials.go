@@ -26,7 +26,7 @@ type (
 		Actions  bool
 	}
 
-	// GetCredentialRequest contains request parameters for the GetCredentials endpoint.
+	// GetCredentialRequest contains request parameters for the GetCredential endpoint.
 	GetCredentialRequest struct {
 		CredentialID int64
 		ClientID     string

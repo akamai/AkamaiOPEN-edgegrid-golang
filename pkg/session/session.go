@@ -163,7 +163,7 @@ func WithHTTPTracing(trace bool) Option {
 	}
 }
 
-// Log will return the context logger, or the session log
+// Log returns the context logger, or the session log
 func (s *session) Log(ctx context.Context) log.Interface {
 	if o := ctx.Value(contextOptionKey); o != nil {
 		if ops, ok := o.(*contextOptions); ok && ops.log != nil {
@@ -184,8 +184,8 @@ func (s *session) Client() *http.Client {
 	return s.client
 }
 
-// ContextWithOptions adds request specific options to the context
-// This log will debug the request only using the provided log
+// ContextWithOptions adds request-specific options to the context
+// This log debugs the request using only the provided log
 func ContextWithOptions(ctx context.Context, opts ...ContextOption) context.Context {
 	o := new(contextOptions)
 	for _, opt := range opts {

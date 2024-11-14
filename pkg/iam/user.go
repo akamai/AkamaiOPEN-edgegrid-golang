@@ -39,7 +39,7 @@ type (
 		Notifications bool
 	}
 
-	// UpdateUserInfoRequest contains the request parameters for the UpdateUser endpoint.
+	// UpdateUserInfoRequest contains the request parameters for the UpdateUserInfo endpoint.
 	UpdateUserInfoRequest struct {
 		IdentityID string
 		User       UserBasicInfo
