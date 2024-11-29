@@ -9,7 +9,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cast v1.3.1
 	github.com/stretchr/testify v1.8.4
-	github.com/tj/assert v0.0.3
 	go.uber.org/ratelimit v0.2.0
 	golang.org/x/net v0.23.0
 	gopkg.in/ini.v1 v1.51.1

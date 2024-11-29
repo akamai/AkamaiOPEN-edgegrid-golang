@@ -10,7 +10,7 @@ import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
 	"github.com/stretchr/testify/require"
 
-	"github.com/tj/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestJsonErrorUnmarshalling(t *testing.T) {

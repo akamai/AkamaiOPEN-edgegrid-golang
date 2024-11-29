@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/tj/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidationErrorsParsing(t *testing.T) {
