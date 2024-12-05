@@ -39,7 +39,7 @@ func (d *dns) ListGroups(ctx context.Context, params ListGroupRequest) (*ListGro
 	logger := d.Log(ctx)
 	logger.Debug("ListGroups")
 
-	uri, err := url.Parse("/config-dns/v2/data/groups/")
+	uri, err := url.Parse("/config-dns/v2/data/groups")
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListGroups, err)
 	}

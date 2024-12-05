@@ -43,7 +43,7 @@ func TestDNS_ListGroups(t *testing.T) {
     				}
   				]
 			}`,
-			expectedPath: "/config-dns/v2/data/groups/?gid=9012",
+			expectedPath: "/config-dns/v2/data/groups?gid=9012",
 			expectedResponse: &ListGroupResponse{
 				Groups: []Group{
 					{
@@ -95,7 +95,7 @@ func TestDNS_ListGroups(t *testing.T) {
     				}
   				]
 			}`,
-			expectedPath: "/config-dns/v2/data/groups/",
+			expectedPath: "/config-dns/v2/data/groups",
 			expectedResponse: &ListGroupResponse{
 				Groups: []Group{
 					{
@@ -136,7 +136,7 @@ func TestDNS_ListGroups(t *testing.T) {
     				"detail": "Error fetching authorities",
     				"status": 500
 				}`,
-			expectedPath: "/config-dns/v2/data/groups/",
+			expectedPath: "/config-dns/v2/data/groups",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",

@@ -79,6 +79,10 @@
 
 
 
+* DNS
+  * Fixed incorrect URL for `ListGroups` method.
+
+
 
 
 
