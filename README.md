@@ -445,9 +445,66 @@ func main() {
 }
 ```
 
-The `session` package also supports the structured logging interface from `github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log`. Thanks to this, you can create a custom logger in one of these ways:
+The `session` package also supports the structured logging interface from `github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log`. Thanks to this, you can adjust a logger (for example, change the logging level to `Debug`) in one of these ways:
 
-- Apply a logger globally to the session with the `session.WithLog()` method.
+- Apply a logger globally with the `log.SetLogger()` method to use it in all sessions. You can retrieve the logger from `context` using the `log.FromContext()` method.
+
+  > **Note:** This method works also with the [SDK approach](#use-as-an-sdk).
+
+  ```go
+    package main
+
+    import (
+        "fmt"
+        "log/slog"
+        "net/http"
+        "os"
+
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+    )
+
+
+    func main() {
+        edgerc, _ := edgegrid.New(
+            edgegrid.WithFile("~/.edgerc"),
+            edgegrid.WithSection("default"),
+        )
+
+        l := log.NewSlogAdapter(log.NewSlogHandler(os.Stderr, &slog.HandlerOptions{
+          Level: slog.LevelDebug,
+        }))
+  
+        log.SetLogger(l)
+
+        sess, _ := session.New(
+            session.WithSigner(edgerc),
+            session.WithHTTPTracing(true),
+        )
+
+        var userProfile struct {
+            FirstName                string         `json:"firstName"`
+            LastName                 string         `json:"lastName"`
+            UserName                 string         `json:"uiUserName"`
+            TimeZone                 string         `json:"timeZone"`
+            Country                  string         `json:"country"`
+            PreferredLanguage        string         `json:"preferredLanguage"`
+            SessionTimeOut           *int           `json:"sessionTimeOut"`
+        }
+
+        req, _ := http.NewRequest(http.MethodGet, "/identity-management/v3/user-profile", nil)
+
+        result, err := sess.Exec(req, &userProfile)
+        if err != nil {
+            fmt.Println(err)
+            return
+        }
+        fmt.Println(result, userProfile)
+    }
+  ```
+
+- Apply a logger to all operations across a session with the `session.WithLog()` method.
   
   > **Note:** This method works also with the [SDK approach](#use-as-an-sdk).
 
@@ -456,20 +513,15 @@ The `session` package also supports the structured logging interface from `githu
 
     import (
         "fmt"
+        "log/slog"
         "net/http"
+        "os"
 
         "github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log"
         "github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
-        "github.com/apex/log"
     )
 
-    type CustomHandler struct {
-    }
-
-    func (CustomHandler) HandleLog(entry *log.Entry) error {
-        fmt.Printf("#|||### %s ###|||#", entry) // It's a dummy handler. Don't use it in your production code.
-        return nil
-    }
 
     func main() {
         edgerc, _ := edgegrid.New(
@@ -477,13 +529,14 @@ The `session` package also supports the structured logging interface from `githu
             edgegrid.WithSection("default"),
         )
 
-        l := &log.Logger{
-            Handler: CustomHandler{},
-            Level:   log.InfoLevel,
-        }
+        l := log.NewSlogAdapter(log.NewSlogHandler(os.Stderr, &slog.HandlerOptions{
+          Level: slog.LevelDebug,
+        }))
+
         sess, _ := session.New(
             session.WithSigner(edgerc),
             session.WithLog(l),
+            session.WithHTTPTracing(true),
         )
 
         var userProfile struct {
@@ -516,20 +569,15 @@ The `session` package also supports the structured logging interface from `githu
 
     import (
         "fmt"
+        "log/slog"
         "net/http"
+        "os"
 
         "github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log"
         "github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
-        "github.com/apex/log"
     )
 
-    type CustomHandler struct {
-    }
-
-    func (CustomHandler) HandleLog(entry *log.Entry) error {
-        fmt.Printf("#|||### %s ###|||#", entry) // It's a dummy handler. Don't use it in your production code.
-        return nil
-    }
 
     func main() {
         edgerc, _ := edgegrid.New(
@@ -537,12 +585,13 @@ The `session` package also supports the structured logging interface from `githu
             edgegrid.WithSection("default"),
         )
 
-        l := &log.Logger{
-            Handler: CustomHandler{},
-            Level:   log.InfoLevel,
-        }
+        l := log.NewSlogAdapter(log.NewSlogHandler(os.Stderr, &slog.HandlerOptions{
+          Level: slog.LevelDebug,
+        }))
+  
         sess, _ := session.New(
             session.WithSigner(edgerc),
+            session.WithHTTPTracing(true),
         )
 
         var userProfile struct {
@@ -569,6 +618,10 @@ The `session` package also supports the structured logging interface from `githu
   ```
 
 If you don't provide a custom logger, the library will use its default logger included in the `session.New()` method.
+
+You can also create your own custom logger. See the [logger README](pkg/log/README.md) for more details and an example.
+
+You need the `session.WithHTTPTracing` option in all these ways of adding a structured logging interface. This is to log all requests, responses, and its headers. It also requires at least the `Debug` logging level.
 
 ### Custom request headers
 
@@ -707,29 +760,30 @@ To see what methods you can use within a given package, go to the `pkg` director
 - The main `interface` can contain its own methods or other `interfaces` with their own methods.
 - `struct` blocks distributed across the package's files, each containing a list of parameters you can pass in a given method.
 
-| Package                                                                                  | Description                                                                                          |
-|----------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
-| [Application Security](./pkg/appsec/)     | Manage security configurations, security policies, match targets, rate policies, and firewall rules. |
-| [Bot Manager](./pkg/botman/)                 | Identify, track, and respond to bot activity on your domain or in your app.                          |
-| [Certificate Provisioning System](./pkg/cps/)        | Manage the full life cycle of SSL certificates for your ​Akamai​ CDN applications.                   |
-| [Client Lists](./pkg/clientlists/)          | Reduce harmful security attacks by allowing only trusted IP/CIDRs, locations, autonomous system numbers, and TLS fingerprints to access your services and content.|
-| [Cloud Access Manager](./pkg/cloudaccess/)           | Enable cloud origin authentication and securely store and manage your cloud origin credentials as access keys. |
-| [Cloudlets](./pkg/cloudlets/)                | Solve specific business challenges using value-added apps that complement ​Akamai​'s core solutions. |
-| [Cloud Wrapper](./pkg/cloudwrapper/)        | Provide your customers with a more consistent user experience by adding a custom caching layer that improves the connection between your cloud infrastructure and the Akamai platform.|
-| [DataStream](./pkg/datastream/)              | Monitor activity on the ​Akamai​ platform and send live log data to a destination of your choice.    |
-| [Edge DNS](./pkg/dns/)                   | Replace or augment your DNS infrastructure with a cloud-based authoritative DNS solution.            |
+| Package                                       | Description                                                                                          |
+|-----------------------------------------------|------------------------------------------------------------------------------------------------------|
+| [Application Security](./pkg/appsec/)         | Manage security configurations, security policies, match targets, rate policies, and firewall rules. |
+| [Bot Manager](./pkg/botman/)                  | Identify, track, and respond to bot activity on your domain or in your app.                          |
+| [Certificate Provisioning System](./pkg/cps/) | Manage the full life cycle of SSL certificates for your ​Akamai​ CDN applications.                   |
+| [Client Lists](./pkg/clientlists/)            | Reduce harmful security attacks by allowing only trusted IP/CIDRs, locations, autonomous system numbers, and TLS fingerprints to access your services and content.|
+| [Cloud Access Manager](./pkg/cloudaccess/)    | Enable cloud origin authentication and securely store and manage your cloud origin credentials as access keys. |
+| [Cloudlets](./pkg/cloudlets/)                 | Solve specific business challenges using value-added apps that complement ​Akamai​'s core solutions. |
+| [Cloud Wrapper](./pkg/cloudwrapper/)          | Provide your customers with a more consistent user experience by adding a custom caching layer that improves the connection between your cloud infrastructure and the Akamai platform.|
+| [DataStream](./pkg/datastream/)               | Monitor activity on the ​Akamai​ platform and send live log data to a destination of your choice.    |
+| [Edge DNS](./pkg/dns/)                        | Replace or augment your DNS infrastructure with a cloud-based authoritative DNS solution.            |
 | [EdgeGrid](./pkg/edgegrid/)                   | Parse the Akamai `.edgerc` configuration and sign HTTP requests.            |
-| [EdgeGrid Errors](./pkg/edgegriderr/)                   | Parse validation errors to make them more readable.            |
-| [Edge Hostnames](./pkg/hapi/)      | Manage how requests for your site, app, or content map to Akamai edge servers.                                 |
-| [EdgeWorkers](./pkg/edgeworkers/)            | Execute JavaScript functions at the edge to optimize site performance and customize web experiences. |
-|  [Errors](./pkg/errs/)                   | Use utilities for working with errors during JSON data unmarshalling.            |
-| [Global Traffic Management](./pkg/gtm/)      | Use load balancing to manage website and mobile performance demands.                                 |
-| [Identity and Access Management](./pkg/iam/) | Create users and groups, and define policies that manage access to your Akamai applications.         |
-| [Image and Video Manager](./pkg/imaging/)        | Automate image and video delivery optimizations for your website visitors.                           |
-| [Network Lists](./pkg/networklists/)        | Automate the creation, deployment, and management of lists used in ​Akamai​ security products.       |
-| [Pointer Record](./pkg/ptr/)     | Create pointers to values of any type.  |
-| [Property Manager](./pkg/papi/)     | Define rules and behaviors that govern your website delivery based on match criteria.                |
-| [Session](./pkg/session/)     | Manage the base secure HTTP client and requests for Akamai APIs.  |
+| [EdgeGrid Errors](./pkg/edgegriderr/)         | Parse validation errors to make them more readable.            |
+| [Edge Hostnames](./pkg/hapi/)                 | Manage how requests for your site, app, or content map to Akamai edge servers.                                 |
+| [EdgeWorkers](./pkg/edgeworkers/)             | Execute JavaScript functions at the edge to optimize site performance and customize web experiences. |
+| [Errors](./pkg/errs/)                         | Use utilities for working with errors during JSON data unmarshalling.            |
+| [Global Traffic Management](./pkg/gtm/)       | Use load balancing to manage website and mobile performance demands.                                 |
+| [Identity and Access Management](./pkg/iam/)  | Create users and groups, and define policies that manage access to your Akamai applications.         |
+| [Image and Video Manager](./pkg/imaging/)     | Automate image and video delivery optimizations for your website visitors.                           |
+| [Log](./pkg/log/)                             | Add the structured logging interface.                           |
+| [Network Lists](./pkg/networklists/)          | Automate the creation, deployment, and management of lists used in ​Akamai​ security products.       |
+| [Pointer Record](./pkg/ptr/)                  | Create pointers to values of any type.  |
+| [Property Manager](./pkg/papi/)               | Define rules and behaviors that govern your website delivery based on match criteria.                |
+| [Session](./pkg/session/)                     | Manage the base secure HTTP client and requests for Akamai APIs.  |
 
 ### Example
 
