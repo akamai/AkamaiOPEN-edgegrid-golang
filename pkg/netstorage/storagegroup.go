@@ -29,6 +29,7 @@ type (
 		LastModifiedBy      string                        `json:"lastModifiedBy,omitempty"`
 		LastModifiedDate    string                        `json:"lastModifiedDate,omitempty"`
 		CPCodes             []*StorageGroupCPCode         `json:"cpcodes,omitempty"`
+		Zones               []*StorageGroupZone           `json:"zones,omitempty"`
 	}
 
 	// ListStorageGroupsResponse is the get activation response
@@ -109,6 +110,15 @@ type (
 		DirListing               DirListing               `json:"dirListing"`
 		LastModifiedBy           string                   `json:"lastModifiedBy"`
 		LastModifiedDate         string                   `json:"lastModifiedDate"`
+	}
+
+	StorageGroupZone struct {
+		ZoneName         string `json:"zoneName"`
+		NoCapacityAction string `json:"noCapacityAction"`
+		AllowUpload      string `json:"allowUpload"`
+		AllowDownload    string `json:"allowDownload"`
+		LastModifiedBy   string `json:"lastModifiedBy"`
+		LastModifiedDate string `json:"lastModifiedDate"`
 	}
 )
 
