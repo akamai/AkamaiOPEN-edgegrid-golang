@@ -3,6 +3,8 @@ package session
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"runtime"
 	"strings"
@@ -49,7 +51,7 @@ type (
 	}
 
 	// Option defines a client option
-	Option func(*session)
+	Option func(*session) error
 
 	contextKey string
 
@@ -80,7 +82,10 @@ func New(opts ...Option) (Session, error) {
 	}
 
 	for _, opt := range opts {
-		opt(s)
+		err := opt(s)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if s.signer == nil {
@@ -106,60 +111,73 @@ func Must(sess Session, err error) Session {
 
 // WithClient creates a client using the specified http.Client
 func WithClient(client *http.Client) Option {
-	return func(s *session) {
+	return func(s *session) error {
+		if client == nil {
+			return errors.New("client should not be nil")
+		}
 		s.client = client
+		return nil
 	}
 }
 
 // WithRetries configures the HTTP client to automatically retry failed GET requests
 func WithRetries(conf RetryConfig) Option {
-	return func(s *session) {
+	return func(s *session) error {
 		retryClient, err := configureRetryClient(conf, s.Sign, s.log)
 		if err != nil {
-			s.log.Error(err.Error())
-			defaultConfig := NewRetryConfig()
-			retryClient, err = configureRetryClient(defaultConfig, s.Sign, s.log)
-			if err != nil {
-				s.log.Errorf("retry configuration failed, disabling retries: %v", err.Error())
-				return
-			}
+			return fmt.Errorf("retry configuration failed: %w", err)
 		}
 		s.client = retryClient.StandardClient()
+		return nil
 	}
 }
 
 // WithLog sets the log interface for the client
 func WithLog(l log.Interface) Option {
-	return func(s *session) {
+	return func(s *session) error {
+		if l == nil {
+			return errors.New("logger should not be nil")
+		}
 		s.log = l
+		return nil
 	}
 }
 
 // WithUserAgent sets the user agent string for the client
 func WithUserAgent(u string) Option {
-	return func(s *session) {
+	return func(s *session) error {
+		if u == "" {
+			return errors.New("user agent should not be empty")
+		}
 		s.userAgent = u
+		return nil
 	}
 }
 
 // WithSigner sets the request signer for the session
 func WithSigner(signer edgegrid.Signer) Option {
-	return func(s *session) {
+	return func(s *session) error {
+		if signer == nil {
+			return errors.New("signer should not be nil")
+		}
 		s.signer = signer
+		return nil
 	}
 }
 
 // WithRequestLimit sets the maximum number of API calls that the provider will make per second.
 func WithRequestLimit(requestLimit int) Option {
-	return func(s *session) {
+	return func(s *session) error {
 		s.requestLimit = requestLimit
+		return nil
 	}
 }
 
 // WithHTTPTracing sets the request and response dump for debugging
 func WithHTTPTracing(trace bool) Option {
-	return func(s *session) {
+	return func(s *session) error {
 		s.trace = trace
+		return nil
 	}
 }
 
