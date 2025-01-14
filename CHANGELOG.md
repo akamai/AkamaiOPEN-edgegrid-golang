@@ -58,6 +58,7 @@
 
 
 * Updated vulnerable dependencies
+* Improved code by resolving issues reported by linter 1.58.1
 
 
 

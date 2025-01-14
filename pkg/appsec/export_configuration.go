@@ -542,7 +542,7 @@ type (
 		EnableForAllPolicies    bool     `json:"enableForAllPolicies,omitempty"`
 		EnableSiem              bool     `json:"enableSiem"`
 		EnabledBotmanSiemEvents bool     `json:"enabledBotmanSiemEvents,omitempty"`
-		FirewallPolicyIds       []string `json:"firewallPolicyIds,omitempty"`
+		FirewallPolicyIDs       []string `json:"firewallPolicyIds,omitempty"`
 		SiemDefinitionID        int      `json:"siemDefinitionId,omitempty"`
 	}
 
