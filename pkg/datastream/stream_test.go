@@ -1350,7 +1350,7 @@ func TestDs_Destinations(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			request.StreamConfiguration.Destination = test.destination
 
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
 				var destinationMap map[string]interface{}
 				err := json.NewDecoder(r.Body).Decode(&destinationMap)
 				require.NoError(t, err)
@@ -1425,7 +1425,7 @@ func TestDs_setDestinationTypes(t *testing.T) {
 		},
 	}
 
-	mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		_, err := w.Write([]byte("{}"))
 		require.NoError(t, err)

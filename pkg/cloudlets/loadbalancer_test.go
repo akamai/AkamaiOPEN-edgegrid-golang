@@ -406,7 +406,7 @@ func TestCreateOriginValidation(t *testing.T) {
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
 			client := mockAPIClient(t, mockServer)
 			_, err := client.CreateOrigin(context.Background(), test.request)
 			assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
@@ -536,7 +536,7 @@ func TestUpdateOriginValidation(t *testing.T) {
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
 			client := mockAPIClient(t, mockServer)
 			_, err := client.UpdateOrigin(context.Background(), test.request)
 			assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)

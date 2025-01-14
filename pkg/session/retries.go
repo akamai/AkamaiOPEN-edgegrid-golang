@@ -62,7 +62,7 @@ func configureRetryClient(conf RetryConfig, signFunc func(r *http.Request) error
 	retryClient.RetryWaitMax = conf.RetryWaitMax
 
 	retryClient.PrepareRetry = signFunc
-	retryClient.HTTPClient.CheckRedirect = func(r *http.Request, via []*http.Request) error {
+	retryClient.HTTPClient.CheckRedirect = func(r *http.Request, _ []*http.Request) error {
 		return signFunc(r)
 	}
 	retryClient.CheckRetry = overrideRetryPolicy(retryablehttp.DefaultRetryPolicy, conf.ExcludedEndpoints)

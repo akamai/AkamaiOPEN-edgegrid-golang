@@ -60,7 +60,7 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 		r.ContentLength = int64(len(data))
 	}
 
-	s.client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+	s.client.CheckRedirect = func(req *http.Request, _ []*http.Request) error {
 		return s.Sign(req)
 	}
 
