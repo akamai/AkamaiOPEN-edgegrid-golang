@@ -56,14 +56,14 @@ func (p *papi) Error(r *http.Response) error {
 	if err != nil {
 		p.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.StatusCode = r.StatusCode
-		e.Title = fmt.Sprintf("Failed to read error body")
+		e.Title = "Failed to read error body"
 		e.Detail = err.Error()
 		return &e
 	}
 
 	if err := json.Unmarshal(body, &e); err != nil {
 		p.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		e.Title = fmt.Sprintf("Failed to unmarshal error body. PAPI API failed. Check details for more information.")
+		e.Title = "Failed to unmarshal error body. PAPI API failed. Check details for more information."
 		e.Detail = errs.UnescapeContent(string(body))
 	}
 

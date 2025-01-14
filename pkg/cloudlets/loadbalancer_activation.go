@@ -128,7 +128,7 @@ func (c *cloudlets) ListLoadBalancerActivations(ctx context.Context, params List
 
 	q := uri.Query()
 	if params.Network != "" {
-		q.Add("network", fmt.Sprintf("%s", params.Network))
+		q.Add("network", string(params.Network))
 	}
 	if params.PageSize != nil {
 		q.Add("pageSize", fmt.Sprintf("%d", *params.PageSize))
@@ -137,7 +137,7 @@ func (c *cloudlets) ListLoadBalancerActivations(ctx context.Context, params List
 		q.Add("page", fmt.Sprintf("%d", *params.Page))
 	}
 	if params.LatestOnly != false {
-		q.Add("latestOnly", fmt.Sprintf("%s", strconv.FormatBool(params.LatestOnly)))
+		q.Add("latestOnly", strconv.FormatBool(params.LatestOnly))
 	}
 	uri.RawQuery = q.Encode()
 

@@ -65,7 +65,7 @@ func (e *edgeworkers) Error(r *http.Response) error {
 
 	if err := json.Unmarshal(body, &result); err != nil {
 		e.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		result.Title = fmt.Sprintf("Failed to unmarshal error body. Edgeworkers API failed. Check details for more information.")
+		result.Title = "Failed to unmarshal error body. Edgeworkers API failed. Check details for more information."
 		result.Detail = errs.UnescapeContent(string(body))
 		result.Status = r.StatusCode
 	}

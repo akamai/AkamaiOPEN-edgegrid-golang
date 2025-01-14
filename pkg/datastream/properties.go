@@ -98,7 +98,7 @@ func (d *ds) GetDatasetFields(ctx context.Context, params GetDatasetFieldsReques
 
 	q := uri.Query()
 	if params.ProductID != nil {
-		q.Add("productId", fmt.Sprintf("%s", *params.ProductID))
+		q.Add("productId", *params.ProductID)
 	}
 	uri.RawQuery = q.Encode()
 

@@ -304,7 +304,7 @@ var zoneStructMap = map[string]string{
 	"OutboundZoneTransfer":  "outboundZoneTransfer",
 	"ContractID":            "contractId"}
 
-// Util to convert struct to http request body, eg. io.reader
+// Util to convert struct to http request body, e.g. io.reader
 func convertStructToReqBody(srcStruct interface{}) (io.Reader, error) {
 	reqBody, err := json.Marshal(srcStruct)
 	if err != nil {
@@ -317,7 +317,7 @@ func (d *dns) ListZones(ctx context.Context, params ListZonesRequest) (*ZoneList
 	logger := d.Log(ctx)
 	logger.Debug("ListZones")
 
-	getURL := fmt.Sprintf("/config-dns/v2/zones")
+	getURL := "/config-dns/v2/zones"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
