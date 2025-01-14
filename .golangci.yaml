@@ -1,3 +1,19 @@
+linters:
+  disable-all: true
+  enable:
+  - errcheck
+  - gocyclo
+  - gofmt
+  - goimports
+  - govet
+  - ineffassign
+  - misspell
+  - revive
+  - gosimple
+  - staticcheck
+  - unused
+
+
 output:
   sort-results: true
 

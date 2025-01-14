@@ -128,7 +128,7 @@ func overrideRetryPolicy(basePolicy retryablehttp.CheckRetry, excludedEndpoints 
 }
 
 func overrideBackoff(baseBackoff retryablehttp.Backoff, logger log.Interface) retryablehttp.Backoff {
-	return func(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
+	return func(minT, maxT time.Duration, attemptNum int, resp *http.Response) time.Duration {
 		if resp != nil {
 			if resp.StatusCode == http.StatusTooManyRequests {
 				if wait, ok := getXRateLimitBackoff(resp, logger); ok {
@@ -136,7 +136,7 @@ func overrideBackoff(baseBackoff retryablehttp.Backoff, logger log.Interface) re
 				}
 			}
 		}
-		return baseBackoff(min, max, attemptNum, resp)
+		return baseBackoff(minT, maxT, attemptNum, resp)
 	}
 }
 

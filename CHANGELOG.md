@@ -5,8 +5,19 @@
 ### BREAKING CHANGES:
 
 
+* APPSEC
+  * Renamed field `FirewallPolicyIds` to `FirewallPolicyIDs` in the following structures:
+    * `Siemexp`
+    * `RatePolicyAPISelectors`
+    * `GetSiemSettingsResponse`
+    * `UpdateSiemSettingsRequest`
+    * `RemoveSiemSettingsRequest`
 
-
+* Networklists
+  * Renamed field `UniqueIds` to `UniqueIDs` in the following structures:
+    * `GetNetworkListSubscriptionRequest`
+    * `UpdateNetworkListSubscriptionRequest`
+    * `RemoveNetworkListSubscriptionRequest`
 
 
 
@@ -47,18 +58,18 @@
 
 
 
-* Migrated to go 1.22
+* Migrated to go `1.22`.
 
 
 
-* Improved formatting of validation errors
-* Added ability to return an error to `session.Option`
+* Improved formatting of validation errors.
+* Added ability to return an error to `session.Option`.
 * PAPI
   * Added the `OriginalInput` parameter in the `GetRuleTreeRequest` to allow returning upgraded content of rules. When omitted it is equal to true, meaning that returned rules are exactly as sent.
 
 
 * Updated vulnerable dependencies
-* Improved code by resolving issues reported by linter 1.58.1
+* Improved code by resolving issues reported by linter.
 
 
 

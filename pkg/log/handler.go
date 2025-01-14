@@ -64,12 +64,11 @@ func (h *SlogHandler) Handle(_ context.Context, r slog.Record) error {
 	levelString := levels[r.Level]
 
 	if len(buf) > 0 {
-		fmt.Fprintf(h.writer, "%s [%s] %s: %s\n", r.Time.Format(timeFormat), levelString, r.Message, buf)
-		return nil
+		_, err := fmt.Fprintf(h.writer, "%s [%s] %s: %s\n", r.Time.Format(timeFormat), levelString, r.Message, buf)
+		return err
 	}
-	fmt.Fprintf(h.writer, "%s [%s] %s\n", r.Time.Format(timeFormat), levelString, r.Message)
-
-	return nil
+	_, err := fmt.Fprintf(h.writer, "%s [%s] %s\n", r.Time.Format(timeFormat), levelString, r.Message)
+	return err
 }
 
 // WithAttrs returns a new Handler whose attributes consist of
