@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -244,7 +244,7 @@ func TestCreateLoadBalancerVersion(t *testing.T) {
 				assert.Equal(t, http.MethodPost, r.Method)
 
 				// Check if received body is valid json
-				b, err := ioutil.ReadAll(r.Body)
+				b, err := io.ReadAll(r.Body)
 				assert.NoError(t, err)
 				assert.True(t, json.Valid(b))
 
@@ -701,7 +701,7 @@ func TestUpdateLoadBalancerVersion(t *testing.T) {
 				assert.Equal(t, http.MethodPut, r.Method)
 
 				// Check if received body is valid json
-				b, err := ioutil.ReadAll(r.Body)
+				b, err := io.ReadAll(r.Body)
 				assert.NoError(t, err)
 				assert.True(t, json.Valid(b))
 

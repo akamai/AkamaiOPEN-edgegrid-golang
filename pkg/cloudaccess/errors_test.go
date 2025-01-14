@@ -1,7 +1,7 @@
 package cloudaccess
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -29,7 +29,7 @@ func TestNewError(t *testing.T) {
 			response: &http.Response{
 				Status:     "Internal Server Error",
 				StatusCode: http.StatusBadRequest,
-				Body: ioutil.NopCloser(strings.NewReader(
+				Body: io.NopCloser(strings.NewReader(
 					`{
 	"type": "bad-request",
 	"title": "Bad Request",
@@ -50,7 +50,7 @@ func TestNewError(t *testing.T) {
 			response: &http.Response{
 				Status:     "Internal Server Error",
 				StatusCode: http.StatusBadRequest,
-				Body: ioutil.NopCloser(strings.NewReader(
+				Body: io.NopCloser(strings.NewReader(
 					`{
 	"type": "invalid-request",
 	"title": "Invalid Request",
@@ -95,7 +95,7 @@ func TestNewError(t *testing.T) {
 			response: &http.Response{
 				Status:     "Internal Server Error",
 				StatusCode: http.StatusNotFound,
-				Body: ioutil.NopCloser(strings.NewReader(
+				Body: io.NopCloser(strings.NewReader(
 					`{
 	"type": "/cam/error-types/access-key-does-not-exist",
 	"title": "Domain Error",
@@ -120,7 +120,7 @@ func TestNewError(t *testing.T) {
 			response: &http.Response{
 				Status:     "Internal Server Error",
 				StatusCode: http.StatusInternalServerError,
-				Body: ioutil.NopCloser(strings.NewReader(
+				Body: io.NopCloser(strings.NewReader(
 					`test`),
 				),
 				Request: req,

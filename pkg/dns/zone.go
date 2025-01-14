@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -442,7 +441,7 @@ func (d *dns) GetMasterZoneFile(ctx context.Context, params GetMasterZoneFileReq
 		return "", d.Error(resp)
 	}
 
-	masterFile, err := ioutil.ReadAll(resp.Body)
+	masterFile, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("GetMasterZoneFile request failed: %w", err)
 	}

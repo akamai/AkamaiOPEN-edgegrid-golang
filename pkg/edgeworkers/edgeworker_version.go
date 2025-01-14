@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
@@ -192,13 +191,13 @@ func (e *edgeworkers) GetEdgeWorkerVersionContent(ctx context.Context, params Ge
 	defer session.CloseResponseBody(resp)
 
 	var result Bundle
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	result.Reader = bytes.NewBuffer(data)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to read response body: %s", ErrGetEdgeWorkerVersionContent, err)
 	}
 
-	resp.Body = ioutil.NopCloser(bytes.NewBuffer(data))
+	resp.Body = io.NopCloser(bytes.NewBuffer(data))
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrGetEdgeWorkerVersionContent, e.Error(resp))
 	}
@@ -215,7 +214,7 @@ func (e *edgeworkers) CreateEdgeWorkerVersion(ctx context.Context, params Create
 	}
 
 	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/versions", params.EdgeWorkerID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, ioutil.NopCloser(params.ContentBundle))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, io.NopCloser(params.ContentBundle))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateEdgeWorkerVersion, err)
 	}

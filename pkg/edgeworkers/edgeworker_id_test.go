@@ -3,7 +3,7 @@ package edgeworkers
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -518,7 +518,7 @@ func TestCreateEdgeWorkerID(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
@@ -683,7 +683,7 @@ func TestUpdateEdgeWorkerID(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
@@ -847,7 +847,7 @@ func TestCloneEdgeWorkerID(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}

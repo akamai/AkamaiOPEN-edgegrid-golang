@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httputil"
 )
@@ -56,7 +56,7 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 			return nil, fmt.Errorf("%w: %s", ErrMarshaling, err)
 		}
 
-		r.Body = ioutil.NopCloser(bytes.NewBuffer(data))
+		r.Body = io.NopCloser(bytes.NewBuffer(data))
 		r.ContentLength = int64(len(data))
 	}
 
@@ -94,11 +94,11 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 	if out != nil &&
 		resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices &&
 		resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusResetContent {
-		data, err := ioutil.ReadAll(resp.Body)
+		data, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, err
 		}
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer(data))
+		resp.Body = io.NopCloser(bytes.NewBuffer(data))
 
 		if err := json.Unmarshal(data, out); err != nil {
 			return nil, fmt.Errorf("%w: %s", ErrUnmarshaling, err)

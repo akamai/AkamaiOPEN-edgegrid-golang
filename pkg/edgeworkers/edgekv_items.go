@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
@@ -177,7 +177,7 @@ func (e *edgeworkers) GetItem(ctx context.Context, params GetItemRequest) (*Item
 		return nil, fmt.Errorf("%s: %w", ErrGetItem, e.Error(resp))
 	}
 
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to fetch data: %s", ErrGetItem, err)
 	}
@@ -198,7 +198,7 @@ func (e *edgeworkers) UpsertItem(ctx context.Context, params UpsertItemRequest) 
 		params.NamespaceID, params.GroupID, params.ItemID)
 
 	data := []byte(params.ItemData)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, ioutil.NopCloser(bytes.NewBuffer(data)))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, io.NopCloser(bytes.NewBuffer(data)))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpsertItem, err)
 	}
@@ -218,7 +218,7 @@ func (e *edgeworkers) UpsertItem(ctx context.Context, params UpsertItemRequest) 
 		return nil, fmt.Errorf("%s: %w", ErrUpsertItem, e.Error(resp))
 	}
 
-	data, err = ioutil.ReadAll(resp.Body)
+	data, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to fetch data: %s", ErrUpsertItem, err)
 	}
@@ -253,7 +253,7 @@ func (e *edgeworkers) DeleteItem(ctx context.Context, params DeleteItemRequest) 
 		return nil, fmt.Errorf("%s: %w", ErrDeleteItem, e.Error(resp))
 	}
 
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to fetch data: %s", ErrDeleteItem, err)
 	}

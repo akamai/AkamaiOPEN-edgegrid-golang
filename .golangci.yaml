@@ -9,6 +9,7 @@ linters:
   - ineffassign
   - misspell
   - revive
+  - staticcheck
 
 output:
   sort-results: true

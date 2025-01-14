@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -300,7 +300,7 @@ func TestDNS_GetZonesDNSSecStatus(t *testing.T) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}

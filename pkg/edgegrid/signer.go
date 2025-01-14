@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"sort"
 	"strings"
@@ -127,8 +127,8 @@ func createContentHash(r *http.Request, maxBody int) string {
 	)
 
 	if r.Body != nil {
-		bodyBytes, _ = ioutil.ReadAll(r.Body)
-		r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		bodyBytes, _ = io.ReadAll(r.Body)
+		r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 		preparedBody = string(bodyBytes)
 	}
 

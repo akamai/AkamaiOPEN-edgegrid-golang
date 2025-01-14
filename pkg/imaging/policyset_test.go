@@ -3,7 +3,7 @@ package imaging
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -605,7 +605,7 @@ func TestCreatePolicySet(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
@@ -795,7 +795,7 @@ func TestUpdatePolicySet(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
@@ -940,7 +940,7 @@ func TestDeletePolicySet(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}

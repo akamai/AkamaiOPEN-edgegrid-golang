@@ -6,10 +6,10 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
@@ -42,7 +42,7 @@ func dummyOpt() Option {
 }
 
 func loadFixture(path string) string {
-	contents, err := ioutil.ReadFile(path)
+	contents, err := os.ReadFile(path)
 	if err != nil {
 		panic(err)
 	}

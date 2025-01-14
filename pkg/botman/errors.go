@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -26,7 +26,7 @@ func (b *botman) Error(r *http.Response) error {
 	var e Error
 	var body []byte
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		b.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.StatusCode = r.StatusCode

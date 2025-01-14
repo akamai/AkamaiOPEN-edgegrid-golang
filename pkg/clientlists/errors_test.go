@@ -2,7 +2,7 @@ package clientlists
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -28,7 +28,7 @@ func TestJsonErrorsUnmarshalling(t *testing.T) {
 				Request:    req,
 				Status:     "OK",
 				StatusCode: http.StatusServiceUnavailable,
-				Body:       ioutil.NopCloser(strings.NewReader(`<HTML><HEAD>...</HEAD><BODY>...</BODY></HTML>`))},
+				Body:       io.NopCloser(strings.NewReader(`<HTML><HEAD>...</HEAD><BODY>...</BODY></HTML>`))},
 			expected: &Error{
 				Type:       "",
 				Title:      "Failed to unmarshal error body. Client Lists API failed. Check details for more information.",
@@ -41,7 +41,7 @@ func TestJsonErrorsUnmarshalling(t *testing.T) {
 				Request:    req,
 				Status:     "OK",
 				StatusCode: http.StatusServiceUnavailable,
-				Body:       ioutil.NopCloser(strings.NewReader("Your request did not succeed as this operation has reached  the limit for your account. Please try after 2024-01-16T15:20:55.945Z"))},
+				Body:       io.NopCloser(strings.NewReader("Your request did not succeed as this operation has reached  the limit for your account. Please try after 2024-01-16T15:20:55.945Z"))},
 			expected: &Error{
 				Type:       "",
 				Title:      "Failed to unmarshal error body. Client Lists API failed. Check details for more information.",
@@ -54,7 +54,7 @@ func TestJsonErrorsUnmarshalling(t *testing.T) {
 				Request:    req,
 				Status:     "OK",
 				StatusCode: http.StatusServiceUnavailable,
-				Body:       ioutil.NopCloser(strings.NewReader(`<Root><Item id="1" name="Example" /></Root>`))},
+				Body:       io.NopCloser(strings.NewReader(`<Root><Item id="1" name="Example" /></Root>`))},
 			expected: &Error{
 				Type:       "",
 				Title:      "Failed to unmarshal error body. Client Lists API failed. Check details for more information.",
