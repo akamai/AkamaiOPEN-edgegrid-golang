@@ -49,7 +49,7 @@ func (b *botman) Error(r *http.Response) error {
 // Error returns a string formatted using a given title, type, and detail information.
 func (e *Error) Error() string {
 	detail := e.Detail
-	if e.Errors != nil && len(e.Errors) > 0 {
+	if len(e.Errors) > 0 {
 		var childErrorDetails []string
 		for _, err := range e.Errors {
 			childErrorDetails = append(childErrorDetails, err.Detail)

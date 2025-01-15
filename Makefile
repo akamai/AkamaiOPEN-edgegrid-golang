@@ -3,7 +3,7 @@ COMMIT_SHA=$(shell git rev-parse --short HEAD)
 VERSION ?= $(shell git describe --tags --always | grep '^v\d' || \
 			echo $(FILEVERSION)-$(COMMIT_SHA))
 BIN      = $(CURDIR)/bin
-GOLANGCI_LINT_VERSION = v1.58.1
+GOLANGCI_LINT_VERSION = v1.63.4
 GO      = go
 GOMODTIDY = $(GO) mod tidy
 TIMEOUT = 15

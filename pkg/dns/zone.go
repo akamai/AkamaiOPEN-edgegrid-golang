@@ -730,7 +730,7 @@ func ValidateZone(zone *ZoneCreate) error {
 		if len(zone.Target) == 0 {
 			return fmt.Errorf("Target is required for Alias zone type")
 		}
-		if zone.Masters != nil && len(zone.Masters) > 0 {
+		if len(zone.Masters) > 0 {
 			return fmt.Errorf("Masters is invalid for Alias zone type")
 		}
 		if zone.SignAndServe {
@@ -745,7 +745,7 @@ func ValidateZone(zone *ZoneCreate) error {
 	if len(zone.Target) > 0 {
 		return fmt.Errorf("Target is invalid for %s zone type", zType)
 	}
-	if zone.Masters != nil && len(zone.Masters) > 0 && zType == "PRIMARY" {
+	if len(zone.Masters) > 0 && zType == "PRIMARY" {
 		return fmt.Errorf("Masters is invalid for Primary zone type")
 	}
 
