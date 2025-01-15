@@ -7,7 +7,7 @@ import (
 	"regexp"
 )
 
-var whitespaceRegexp = regexp.MustCompile("\\s{2,}")
+var whitespaceRegexp = regexp.MustCompile(`\s{2,}`)
 
 func stringMinifier(in string) string {
 	return whitespaceRegexp.ReplaceAllString(in, " ")

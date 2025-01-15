@@ -120,8 +120,8 @@ const (
 	PolicyActivationStatusFailed PolicyActivationStatus = "failed"
 )
 
-var nameRegexp = regexp.MustCompile("^[a-z_A-Z0-9]+$")
-var propertyNameRegexp = regexp.MustCompile("^[a-z_A-Z0-9.\\-]+$")
+var nameRegexp = regexp.MustCompile(`^[a-z_A-Z0-9]+$`)
+var propertyNameRegexp = regexp.MustCompile(`^[a-z_A-Z0-9.\-]+$`)
 
 // Validate validates CreatePolicyRequest
 func (v CreatePolicyRequest) Validate() error {

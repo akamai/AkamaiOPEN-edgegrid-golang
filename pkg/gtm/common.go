@@ -16,9 +16,6 @@ func setVersionHeader(req *http.Request, version string) {
 	if req.Method != "GET" {
 		req.Header.Set("Content-Type", fmt.Sprintf("application/vnd.config-gtm.v%s+json", version))
 	}
-
-	return
-
 }
 
 // ResponseStatus is returned on Create, Update or Delete operations for all entity types

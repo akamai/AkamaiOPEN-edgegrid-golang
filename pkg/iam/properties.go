@@ -354,10 +354,7 @@ func (i *iam) MapPropertyIDToName(ctx context.Context, params MapPropertyIDToNam
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrMapPropertyIDToName, ErrStructValidation, err)
 	}
 
-	req := GetPropertyRequest{
-		PropertyID: params.PropertyID,
-		GroupID:    params.GroupID,
-	}
+	req := GetPropertyRequest(params)
 
 	property, err := i.GetProperty(ctx, req)
 	if err != nil {

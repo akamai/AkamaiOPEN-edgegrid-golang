@@ -61,8 +61,7 @@ func (d *Mock) GetMasterZoneFile(ctx context.Context, req GetMasterZoneFileReque
 }
 
 func (d *Mock) CreateZone(ctx context.Context, req CreateZoneRequest) error {
-	var args mock.Arguments
-	args = d.Called(ctx, req)
+	args := d.Called(ctx, req)
 
 	return args.Error(0)
 }
@@ -228,30 +227,22 @@ func (d *Mock) GetRecord(ctx context.Context, req GetRecordRequest) (*GetRecordR
 }
 
 func (d *Mock) CreateRecord(ctx context.Context, req CreateRecordRequest) error {
-	var args mock.Arguments
-	args = d.Called(ctx, req)
-
+	args := d.Called(ctx, req)
 	return args.Error(0)
 }
 
 func (d *Mock) DeleteRecord(ctx context.Context, req DeleteRecordRequest) error {
-	var args mock.Arguments
-	args = d.Called(ctx, req)
-
+	args := d.Called(ctx, req)
 	return args.Error(0)
 }
 
 func (d *Mock) UpdateRecord(ctx context.Context, req UpdateRecordRequest) error {
-	var args mock.Arguments
-	args = d.Called(ctx, req)
-
+	args := d.Called(ctx, req)
 	return args.Error(0)
 }
 
 func (d *Mock) GetRecordSets(ctx context.Context, req GetRecordSetsRequest) (*GetRecordSetsResponse, error) {
-	var args mock.Arguments
-	args = d.Called(ctx, req)
-
+	args := d.Called(ctx, req)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
@@ -260,22 +251,17 @@ func (d *Mock) GetRecordSets(ctx context.Context, req GetRecordSetsRequest) (*Ge
 }
 
 func (d *Mock) CreateRecordSets(ctx context.Context, req CreateRecordSetsRequest) error {
-	var args mock.Arguments
-	args = d.Called(ctx, req)
-
+	args := d.Called(ctx, req)
 	return args.Error(0)
 }
 
 func (d *Mock) UpdateRecordSets(ctx context.Context, req UpdateRecordSetsRequest) error {
-	var args mock.Arguments
-	args = d.Called(ctx, req)
-
+	args := d.Called(ctx, req)
 	return args.Error(0)
 }
 
 func (d *Mock) PostMasterZoneFile(ctx context.Context, req PostMasterZoneFileRequest) error {
 	args := d.Called(ctx, req)
-
 	return args.Error(0)
 }
 func (d *Mock) CreateBulkZones(ctx context.Context, req CreateBulkZonesRequest) (*CreateBulkZonesResponse, error) {
@@ -287,8 +273,7 @@ func (d *Mock) CreateBulkZones(ctx context.Context, req CreateBulkZonesRequest) 
 	return args.Get(0).(*CreateBulkZonesResponse), args.Error(1)
 }
 func (d *Mock) DeleteBulkZones(ctx context.Context, req DeleteBulkZonesRequest) (*DeleteBulkZonesResponse, error) {
-	var args mock.Arguments
-	args = d.Called(ctx, req)
+	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)

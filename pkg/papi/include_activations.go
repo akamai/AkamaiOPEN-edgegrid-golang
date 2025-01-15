@@ -200,9 +200,9 @@ func (i ActivateIncludeRequest) Validate() error {
 }
 
 func unitTestedFieldValidationRule(value interface{}) error {
-	switch value.(type) {
+	switch v := value.(type) {
 	case *ComplianceRecordNone:
-		if value.(*ComplianceRecordNone).UnitTested == false {
+		if !v.UnitTested {
 			return errors.New("for PRODUCTION activation network and nonComplianceRecord, UnitTested value has to be set to true, otherwise API will not work correctly")
 		}
 	}

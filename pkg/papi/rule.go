@@ -155,7 +155,7 @@ const (
 	RuleCriteriaMustSatisfyAny RuleCriteriaMustSatisfy = "any"
 )
 
-var validRuleFormat = regexp.MustCompile("^(latest|v\\d{4}-\\d{2}-\\d{2})$")
+var validRuleFormat = regexp.MustCompile(`^(latest|v\d{4}-\d{2}-\d{2})$`)
 
 // Validate validates GetRuleTreeRequest struct
 func (r GetRuleTreeRequest) Validate() error {

@@ -136,7 +136,7 @@ func (c *cloudlets) ListLoadBalancerActivations(ctx context.Context, params List
 	if params.Page != nil {
 		q.Add("page", fmt.Sprintf("%d", *params.Page))
 	}
-	if params.LatestOnly != false {
+	if params.LatestOnly {
 		q.Add("latestOnly", strconv.FormatBool(params.LatestOnly))
 	}
 	uri.RawQuery = q.Encode()

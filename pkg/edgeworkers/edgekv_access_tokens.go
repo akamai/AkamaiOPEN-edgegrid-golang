@@ -120,8 +120,8 @@ func (c CreateEdgeKVAccessTokenRequest) Validate() error {
 	}
 
 	return validation.Errors{
-		"AllowOnProduction":          validation.Validate(c.AllowOnProduction, validation.Required.When(c.AllowOnStaging == false).Error("at least one of AllowOnProduction or AllowOnStaging has to be provided")),
-		"AllowOnStaging":             validation.Validate(c.AllowOnStaging, validation.Required.When(c.AllowOnProduction == false).Error("at least one of AllowOnProduction or AllowOnStaging has to be provided")),
+		"AllowOnProduction":          validation.Validate(c.AllowOnProduction, validation.Required.When(!c.AllowOnStaging).Error("at least one of AllowOnProduction or AllowOnStaging has to be provided")),
+		"AllowOnStaging":             validation.Validate(c.AllowOnStaging, validation.Required.When(!c.AllowOnProduction).Error("at least one of AllowOnProduction or AllowOnStaging has to be provided")),
 		"Name":                       validation.Validate(c.Name, validation.Required, validation.Length(1, 32)),
 		"NamespacePermissions.Names": validation.Validate(namespaces, validation.Required, validation.Each(validation.Required)),
 		"NamespacePermissions": validation.Validate(c.NamespacePermissions,
