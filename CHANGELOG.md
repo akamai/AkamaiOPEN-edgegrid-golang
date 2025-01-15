@@ -40,10 +40,7 @@
 * Improved formatting of validation errors
 * Added ability to return an error to `session.Option`
 
-
-
-
-
+* Updated vulnerable dependencies
 
 
 
