@@ -1,15 +1,11 @@
 package clientlists
 
 import (
-	"bytes"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
@@ -17,25 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-// compactJSON converts a JSON-encoded byte slice to a compact form (so our JSON fixtures can be readable)
-func compactJSON(encoded []byte) string {
-	buf := bytes.Buffer{}
-	if err := json.Compact(&buf, encoded); err != nil {
-		panic(fmt.Sprintf("%s: %s", err, string(encoded)))
-	}
-
-	return buf.String()
-}
-
-// loadFixtureBytes returns the entire contents of the given file as a byte slice
-func loadFixtureBytes(path string) []byte {
-	contents, err := os.ReadFile(path)
-	if err != nil {
-		panic(err)
-	}
-	return contents
-}
 
 func mockAPIClient(t *testing.T, mockServer *httptest.Server) ClientLists {
 	serverURL, err := url.Parse(mockServer.URL)

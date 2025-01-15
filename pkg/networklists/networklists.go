@@ -99,13 +99,12 @@ type (
 
 	networklists struct {
 		session.Session
-		usePrefixes bool
 	}
 
 	// Option defines a networklist option
 	Option func(*networklists)
 
-	// ClientFunc is a networklist client new method, this can used for mocking
+	// ClientFunc is a networklist client new method, this may be used for mocking
 	ClientFunc func(sess session.Session, opts ...Option) NetworkList
 )
 

@@ -1,15 +1,11 @@
 package botman
 
 import (
-	"bytes"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
@@ -39,24 +35,6 @@ func dummyOpt() Option {
 	return func(*botman) {
 
 	}
-}
-
-func loadFixture(path string) string {
-	contents, err := os.ReadFile(path)
-	if err != nil {
-		panic(err)
-	}
-	return compactJSON(contents)
-}
-
-// compactJSON converts a JSON-encoded byte slice to a compact form (so our JSON fixtures can be readable)
-func compactJSON(encoded []byte) string {
-	buf := bytes.Buffer{}
-	if err := json.Compact(&buf, encoded); err != nil {
-		panic(fmt.Sprintf("%s: %s", err, string(encoded)))
-	}
-
-	return buf.String()
 }
 
 func TestClient(t *testing.T) {
