@@ -22,6 +22,7 @@ type (
 		ValidateMode    string
 		ValidateRules   bool
 		RuleFormat      string
+		OriginalInput   *bool
 	}
 
 	// GetRuleTreeResponse contains data returned by performing GET /rules request
@@ -249,6 +250,9 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 	}
 	if !params.ValidateRules {
 		getURL += fmt.Sprintf("&validateRules=%t", params.ValidateRules)
+	}
+	if params.OriginalInput != nil && !*params.OriginalInput {
+		getURL += "&originalInput=false"
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {

@@ -53,6 +53,9 @@
 
 * Improved formatting of validation errors
 * Added ability to return an error to `session.Option`
+* PAPI
+  * Added the `OriginalInput` parameter in the `GetRuleTreeRequest` to allow returning upgraded content of rules. When omitted it is equal to true, meaning that returned rules are exactly as sent.
+
 
 * Updated vulnerable dependencies
 
