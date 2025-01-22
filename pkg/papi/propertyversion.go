@@ -32,6 +32,7 @@ type (
 		ContractID   string               `json:"contractId"`
 		GroupID      string               `json:"groupId"`
 		AssetID      string               `json:"assetId"`
+		PropertyType *string              `json:"propertyType,omitempty"`
 		Versions     PropertyVersionItems `json:"versions"`
 		Version      PropertyVersionGetItem
 	}

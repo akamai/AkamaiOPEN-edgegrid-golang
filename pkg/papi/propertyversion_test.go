@@ -75,6 +75,62 @@ func TestPapiGetPropertyVersions(t *testing.T) {
 						}}},
 			},
 		},
+		"200 OK - response with propertyType": {
+			params: GetPropertyVersionsRequest{
+				PropertyID: "propertyID",
+				ContractID: "contract",
+				GroupID:    "group",
+				Limit:      5,
+				Offset:     6,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "propertyId": "propertyID",
+    "propertyName": "property_name",
+    "accountId": "accountID",
+    "contractId": "contract",
+    "groupId": "group",
+    "assetId": "assetID",
+	"propertyType": "HOSTNAME_BUCKET",
+    "versions": {
+        "items": [
+            {
+                "propertyVersion": 2,
+                "updatedByUser": "user",
+                "updatedDate": "2020-09-14T19:06:13Z",
+                "productionStatus": "INACTIVE",
+                "stagingStatus": "ACTIVE",
+                "etag": "etag",
+                "productId": "productID",
+                "note": "version note"
+            }
+        ]
+    }
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions?contractId=contract&groupId=group&limit=5&offset=6",
+			expectedResponse: &GetPropertyVersionsResponse{
+				PropertyID:   "propertyID",
+				PropertyName: "property_name",
+				AccountID:    "accountID",
+				ContractID:   "contract",
+				GroupID:      "group",
+				AssetID:      "assetID",
+				PropertyType: ptr.To("HOSTNAME_BUCKET"),
+				Versions: PropertyVersionItems{
+					Items: []PropertyVersionGetItem{
+						{
+							Etag:             "etag",
+							Note:             "version note",
+							ProductID:        "productID",
+							ProductionStatus: "INACTIVE",
+							PropertyVersion:  2,
+							StagingStatus:    "ACTIVE",
+							UpdatedByUser:    "user",
+							UpdatedDate:      "2020-09-14T19:06:13Z",
+						}}},
+			},
+		},
 		"500 Internal Server Error": {
 			params: GetPropertyVersionsRequest{
 				PropertyID: "propertyID",
@@ -185,6 +241,72 @@ func TestPapiGetPropertyVersion(t *testing.T) {
 				ContractID:   "contract",
 				GroupID:      "group",
 				AssetID:      "assetID",
+				Versions: PropertyVersionItems{
+					Items: []PropertyVersionGetItem{
+						{
+							Etag:             "etag",
+							Note:             "version note",
+							ProductID:        "productID",
+							ProductionStatus: "INACTIVE",
+							PropertyVersion:  2,
+							StagingStatus:    "ACTIVE",
+							UpdatedByUser:    "user",
+							UpdatedDate:      "2020-09-14T19:06:13Z",
+						}}},
+				Version: PropertyVersionGetItem{
+
+					Etag:             "etag",
+					Note:             "version note",
+					ProductID:        "productID",
+					ProductionStatus: "INACTIVE",
+					PropertyVersion:  2,
+					StagingStatus:    "ACTIVE",
+					UpdatedByUser:    "user",
+					UpdatedDate:      "2020-09-14T19:06:13Z",
+				},
+			},
+		},
+		"200 OK - response with propertyType": {
+			params: GetPropertyVersionRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "propertyId": "propertyID",
+    "propertyName": "property_name",
+    "accountId": "accountID",
+    "contractId": "contract",
+    "groupId": "group",
+    "assetId": "assetID",
+	"propertyType": "HOSTNAME_BUCKET",
+    "versions": {
+        "items": [
+            {
+                "propertyVersion": 2,
+                "updatedByUser": "user",
+                "updatedDate": "2020-09-14T19:06:13Z",
+                "productionStatus": "INACTIVE",
+                "stagingStatus": "ACTIVE",
+                "etag": "etag",
+                "productId": "productID",
+                "note": "version note"
+            }
+        ]
+    }
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2?contractId=contract&groupId=group",
+			expectedResponse: &GetPropertyVersionsResponse{
+				PropertyID:   "propertyID",
+				PropertyName: "property_name",
+				AccountID:    "accountID",
+				ContractID:   "contract",
+				GroupID:      "group",
+				AssetID:      "assetID",
+				PropertyType: ptr.To("HOSTNAME_BUCKET"),
 				Versions: PropertyVersionItems{
 					Items: []PropertyVersionGetItem{
 						{
@@ -506,6 +628,73 @@ func TestPapiGetLatestVersion(t *testing.T) {
 				ContractID:   "contract",
 				GroupID:      "group",
 				AssetID:      "assetID",
+				Versions: PropertyVersionItems{
+					Items: []PropertyVersionGetItem{
+						{
+							Etag:             "etag",
+							Note:             "version note",
+							ProductID:        "productID",
+							ProductionStatus: "INACTIVE",
+							PropertyVersion:  2,
+							StagingStatus:    "ACTIVE",
+							UpdatedByUser:    "user",
+							UpdatedDate:      "2020-09-14T19:06:13Z",
+						},
+					},
+				},
+				Version: PropertyVersionGetItem{
+					Etag:             "etag",
+					Note:             "version note",
+					ProductID:        "productID",
+					ProductionStatus: "INACTIVE",
+					PropertyVersion:  2,
+					StagingStatus:    "ACTIVE",
+					UpdatedByUser:    "user",
+					UpdatedDate:      "2020-09-14T19:06:13Z",
+				},
+			},
+		},
+		"200 OK - response with propertyType": {
+			params: GetLatestVersionRequest{
+				PropertyID:  "propertyID",
+				ActivatedOn: "STAGING",
+				ContractID:  "contract",
+				GroupID:     "group",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/papi/v1/properties/propertyID/versions/latest?activatedOn=STAGING&contractId=contract&groupId=group",
+			responseBody: `
+{
+    "propertyId": "propertyID",
+    "propertyName": "property_name",
+    "accountId": "accountID",
+    "contractId": "contract",
+    "groupId": "group",
+    "assetId": "assetID",
+	"propertyType": "HOSTNAME_BUCKET",
+    "versions": {
+        "items": [
+            {
+                "propertyVersion": 2,
+                "updatedByUser": "user",
+                "updatedDate": "2020-09-14T19:06:13Z",
+                "productionStatus": "INACTIVE",
+                "stagingStatus": "ACTIVE",
+                "etag": "etag",
+                "productId": "productID",
+                "note": "version note"
+            }
+        ]
+    }
+}`,
+			expectedResponse: &GetPropertyVersionsResponse{
+				PropertyID:   "propertyID",
+				PropertyName: "property_name",
+				AccountID:    "accountID",
+				ContractID:   "contract",
+				GroupID:      "group",
+				AssetID:      "assetID",
+				PropertyType: ptr.To("HOSTNAME_BUCKET"),
 				Versions: PropertyVersionItems{
 					Items: []PropertyVersionGetItem{
 						{

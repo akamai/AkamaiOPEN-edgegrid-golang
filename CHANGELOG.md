@@ -39,6 +39,17 @@
 
 
 
+* PAPI
+  * Added `UseHostnameBucket` field to `CreatePropertyRequest`.
+  * Added the `propertyType` attribute to the endpoints listed below, which is returned when the property is of type `HOSTNAME_BUCKET`:
+    * `GetProperties`
+    * `GetProperty`
+    * `GetPropertyVersions`
+    * `GetPropertyVersion`
+    * `GetLatestVersion`
+
+
+
 
 
 

@@ -23,16 +23,17 @@ type (
 
 	// Property contains configuration data to apply to edge content.
 	Property struct {
-		AccountID         string `json:"accountId"`
-		AssetID           string `json:"assetId"`
-		ContractID        string `json:"contractId"`
-		GroupID           string `json:"groupId"`
-		LatestVersion     int    `json:"latestVersion"`
-		Note              string `json:"note"`
-		ProductionVersion *int   `json:"productionVersion,omitempty"`
-		PropertyID        string `json:"propertyId"`
-		PropertyName      string `json:"propertyName"`
-		StagingVersion    *int   `json:"stagingVersion,omitempty"`
+		AccountID         string  `json:"accountId"`
+		AssetID           string  `json:"assetId"`
+		ContractID        string  `json:"contractId"`
+		GroupID           string  `json:"groupId"`
+		LatestVersion     int     `json:"latestVersion"`
+		Note              string  `json:"note"`
+		ProductionVersion *int    `json:"productionVersion,omitempty"`
+		PropertyID        string  `json:"propertyId"`
+		PropertyName      string  `json:"propertyName"`
+		StagingVersion    *int    `json:"stagingVersion,omitempty"`
+		PropertyType      *string `json:"propertyType,omitempty"`
 	}
 
 	// PropertiesItems is an array of properties
@@ -60,10 +61,11 @@ type (
 
 	// PropertyCreate represents a POST /property request body
 	PropertyCreate struct {
-		CloneFrom    *PropertyCloneFrom `json:"cloneFrom,omitempty"`
-		ProductID    string             `json:"productId"`
-		PropertyName string             `json:"propertyName"`
-		RuleFormat   string             `json:"ruleFormat,omitempty"`
+		CloneFrom         *PropertyCloneFrom `json:"cloneFrom,omitempty"`
+		ProductID         string             `json:"productId"`
+		PropertyName      string             `json:"propertyName"`
+		RuleFormat        string             `json:"ruleFormat,omitempty"`
+		UseHostnameBucket bool               `json:"useHostnameBucket,omitempty"`
 	}
 
 	// CreatePropertyResponse is returned by CreateProperty

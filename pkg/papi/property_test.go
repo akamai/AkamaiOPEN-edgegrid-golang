@@ -3,6 +3,7 @@ package papi
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -61,6 +62,52 @@ func TestPapiGetProperties(t *testing.T) {
 						ProductionVersion: nil,
 						AssetID:           "aid_101",
 						Note:              "Notes about example.com",
+					},
+				}},
+			},
+		},
+		"200 OK - response with propertyType": {
+			request: GetPropertiesRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+	"properties": {
+		"items": [
+			{
+				"accountId": "act_1-1TJZFB",
+				"contractId": "ctr_1-1TJZH5",
+				"groupId": "grp_15166",
+				"propertyId": "prp_175780",
+				"propertyName": "example.com",
+				"latestVersion": 2,
+				"stagingVersion": 1,
+				"productId": "prp_175780",
+				"productionVersion": null,
+				"assetId": "aid_101",
+				"note": "Notes about example.com",
+				"propertyType": "HOSTNAME_BUCKET"
+			}
+		]
+	}
+}`,
+			expectedPath: "/papi/v1/properties?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			expectedResponse: &GetPropertiesResponse{
+				Properties: PropertiesItems{Items: []*Property{
+					{
+						AccountID:         "act_1-1TJZFB",
+						ContractID:        "ctr_1-1TJZH5",
+						GroupID:           "grp_15166",
+						PropertyID:        "prp_175780",
+						PropertyName:      "example.com",
+						LatestVersion:     2,
+						StagingVersion:    ptr.To(1),
+						ProductionVersion: nil,
+						AssetID:           "aid_101",
+						Note:              "Notes about example.com",
+						PropertyType:      ptr.To("HOSTNAME_BUCKET"),
 					},
 				}},
 			},
@@ -181,6 +228,65 @@ func TestPapiGetProperty(t *testing.T) {
 					Note:              "Notes about example.com",
 				}},
 		},
+		"200 OK - response with propertyType": {
+			request: GetPropertyRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				PropertyID: "prp_175780",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+	"properties": {
+		"items": [
+			{
+				"accountId": "act_1-1TJZFB",
+				"contractId": "ctr_1-1TJZH5",
+				"groupId": "grp_15166",
+				"propertyId": "prp_175780",
+				"propertyName": "example.com",
+				"latestVersion": 2,
+				"stagingVersion": 1,
+				"productionVersion": null,
+				"assetId": "aid_101",
+				"note": "Notes about example.com",
+				"propertyType": "HOSTNAME_BUCKET"
+			}
+		]
+	}
+}`,
+			expectedPath: "/papi/v1/properties/prp_175780?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			expectedResponse: &GetPropertyResponse{
+				Properties: PropertiesItems{Items: []*Property{
+					{
+						AccountID:         "act_1-1TJZFB",
+						ContractID:        "ctr_1-1TJZH5",
+						GroupID:           "grp_15166",
+						PropertyID:        "prp_175780",
+						PropertyName:      "example.com",
+						LatestVersion:     2,
+						StagingVersion:    ptr.To(1),
+						ProductionVersion: nil,
+						AssetID:           "aid_101",
+						Note:              "Notes about example.com",
+						PropertyType:      ptr.To("HOSTNAME_BUCKET"),
+					},
+				}},
+				Property: &Property{
+
+					AccountID:         "act_1-1TJZFB",
+					ContractID:        "ctr_1-1TJZH5",
+					GroupID:           "grp_15166",
+					PropertyID:        "prp_175780",
+					PropertyName:      "example.com",
+					LatestVersion:     2,
+					StagingVersion:    ptr.To(1),
+					ProductionVersion: nil,
+					AssetID:           "aid_101",
+					Note:              "Notes about example.com",
+					PropertyType:      ptr.To("HOSTNAME_BUCKET"),
+				}},
+		},
 		"Property not found": {
 			request: GetPropertyRequest{
 				ContractID: "ctr_1-1TJZFW",
@@ -252,12 +358,13 @@ func TestPapiGetProperty(t *testing.T) {
 
 func TestPapiCreateProperty(t *testing.T) {
 	tests := map[string]struct {
-		request          CreatePropertyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreatePropertyResponse
-		withError        error
+		request             CreatePropertyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *CreatePropertyResponse
+		withError           error
 	}{
 		"201 created": {
 			request: CreatePropertyRequest{
@@ -277,7 +384,34 @@ func TestPapiCreateProperty(t *testing.T) {
 {
 	"propertyLink": "/papi/v1/properties/prp_173137?contractId=ctr_1-1TJZH5&groupId=grp_15225"
 }`,
-			expectedPath: "/papi/v1/properties?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			expectedPath:        "/papi/v1/properties?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			expectedRequestBody: `{"productId":"prd_Alta","propertyName":"my.new.property.com","cloneFrom":{"propertyId":"prp_1234","version":1}}`,
+			expectedResponse: &CreatePropertyResponse{
+				PropertyID:   "prp_173137",
+				PropertyLink: "/papi/v1/properties/prp_173137?contractId=ctr_1-1TJZH5&groupId=grp_15225",
+			},
+		},
+		"201 created - with useHostnameBucket set to true": {
+			request: CreatePropertyRequest{
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Property: PropertyCreate{
+					ProductID:         "prd_Alta",
+					PropertyName:      "my.new.property.com",
+					UseHostnameBucket: true,
+					CloneFrom: &PropertyCloneFrom{
+						PropertyID: "prp_1234",
+						Version:    1,
+					},
+				},
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `
+{
+	"propertyLink": "/papi/v1/properties/prp_173137?contractId=ctr_1-1TJZH5&groupId=grp_15225"
+}`,
+			expectedPath:        "/papi/v1/properties?contractId=ctr_1-1TJZFW&groupId=grp_15166",
+			expectedRequestBody: `{"productId":"prd_Alta","propertyName":"my.new.property.com","cloneFrom":{"propertyId":"prp_1234","version":1},"useHostnameBucket":true}`,
 			expectedResponse: &CreatePropertyResponse{
 				PropertyID:   "prp_173137",
 				PropertyLink: "/papi/v1/properties/prp_173137?contractId=ctr_1-1TJZH5&groupId=grp_15225",
@@ -328,6 +462,12 @@ func TestPapiCreateProperty(t *testing.T) {
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
+
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateProperty(context.Background(), test.request)
