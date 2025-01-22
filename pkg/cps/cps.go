@@ -46,15 +46,6 @@ type (
 		// See: https://techdocs.akamai.com/cps/reference/delete-enrollment-change
 		CancelChange(context.Context, CancelChangeRequest) (*CancelChangeResponse, error)
 
-		// UpdateChange updates a pending change
-		// Deprecated: this function will be removed in a future release. Use one of:
-		// AcknowledgeChangeManagement(), AcknowledgePostVerificationWarnings(),
-		// AcknowledgePreVerificationWarnings(), UploadThirdPartyCertAndTrustChain()
-		// or AcknowledgeDVChallenges()
-		//
-		// See: https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
-		UpdateChange(context.Context, UpdateChangeRequest) (*UpdateChangeResponse, error)
-
 		// Deployments
 
 		// ListDeployments fetches deployments for given enrollment

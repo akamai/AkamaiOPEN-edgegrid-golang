@@ -169,20 +169,7 @@ func (p *Mock) UpdateGoogleReCaptchaSecretKey(ctx context.Context, params Update
 	args := p.Called(ctx, params)
 	return args.Error(0)
 }
-func (p *Mock) GetChallengeInterceptionRules(ctx context.Context, params GetChallengeInterceptionRulesRequest) (map[string]interface{}, error) {
-	args := p.Called(ctx, params)
-	if args.Error(1) != nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(map[string]interface{}), nil
-}
-func (p *Mock) UpdateChallengeInterceptionRules(ctx context.Context, params UpdateChallengeInterceptionRulesRequest) (map[string]interface{}, error) {
-	args := p.Called(ctx, params)
-	if args.Error(1) != nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(map[string]interface{}), nil
-}
+
 func (p *Mock) GetChallengeInjectionRules(ctx context.Context, params GetChallengeInjectionRulesRequest) (map[string]interface{}, error) {
 	args := p.Called(ctx, params)
 	if args.Error(1) != nil {

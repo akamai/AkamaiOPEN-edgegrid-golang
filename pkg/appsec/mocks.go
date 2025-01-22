@@ -216,14 +216,6 @@ func (m *Mock) UpdatePenaltyBoxConditions(ctx context.Context, req UpdatePenalty
 	return args.Get(0).(*UpdatePenaltyBoxConditionsResponse), args.Error(1)
 }
 
-func (m *Mock) UpdateNetworkLayerProtection(ctx context.Context, req UpdateNetworkLayerProtectionRequest) (*UpdateNetworkLayerProtectionResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*UpdateNetworkLayerProtectionResponse), args.Error(1)
-}
-
 func (m *Mock) UpdateMatchTargetSequence(ctx context.Context, req UpdateMatchTargetSequenceRequest) (*UpdateMatchTargetSequenceResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
@@ -440,22 +432,6 @@ func (m *Mock) RemoveRatePolicy(ctx context.Context, req RemoveRatePolicyRequest
 	return args.Get(0).(*RemoveRatePolicyResponse), args.Error(1)
 }
 
-func (m *Mock) RemovePolicyProtections(ctx context.Context, req UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*PolicyProtectionsResponse), args.Error(1)
-}
-
-func (m *Mock) RemoveNetworkLayerProtection(ctx context.Context, req RemoveNetworkLayerProtectionRequest) (*RemoveNetworkLayerProtectionResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*RemoveNetworkLayerProtectionResponse), args.Error(1)
-}
-
 func (m *Mock) RemoveMatchTarget(ctx context.Context, req RemoveMatchTargetRequest) (*RemoveMatchTargetResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
@@ -576,14 +552,6 @@ func (m *Mock) GetWAFProtection(ctx context.Context, req GetWAFProtectionRequest
 	return args.Get(0).(*GetWAFProtectionResponse), args.Error(1)
 }
 
-func (m *Mock) GetWAFModes(ctx context.Context, req GetWAFModesRequest) (*GetWAFModesResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetWAFModesResponse), args.Error(1)
-}
-
 func (m *Mock) GetWAFMode(ctx context.Context, req GetWAFModeRequest) (*GetWAFModeResponse, error) {
 
 	args := m.Called(ctx, req)
@@ -631,14 +599,6 @@ func (m *Mock) GetSlowPostProtectionSettings(ctx context.Context, req GetSlowPos
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*GetSlowPostProtectionSettingsResponse), args.Error(1)
-}
-
-func (m *Mock) GetSlowPostProtectionSetting(ctx context.Context, req GetSlowPostProtectionSettingRequest) (*GetSlowPostProtectionSettingResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetSlowPostProtectionSettingResponse), args.Error(1)
 }
 
 func (m *Mock) GetSlowPostProtection(ctx context.Context, req GetSlowPostProtectionRequest) (*GetSlowPostProtectionResponse, error) {
@@ -817,14 +777,6 @@ func (m *Mock) GetRatePolicyActions(ctx context.Context, req GetRatePolicyAction
 	return args.Get(0).(*GetRatePolicyActionsResponse), args.Error(1)
 }
 
-func (m *Mock) GetRatePolicyAction(ctx context.Context, req GetRatePolicyActionRequest) (*GetRatePolicyActionResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetRatePolicyActionResponse), args.Error(1)
-}
-
 func (m *Mock) GetRatePolicy(ctx context.Context, req GetRatePolicyRequest) (*GetRatePolicyResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {
@@ -855,14 +807,6 @@ func (m *Mock) GetPolicyProtections(ctx context.Context, req GetPolicyProtection
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*PolicyProtectionsResponse), args.Error(1)
-}
-
-func (m *Mock) GetPenaltyBoxes(ctx context.Context, req GetPenaltyBoxesRequest) (*GetPenaltyBoxesResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetPenaltyBoxesResponse), args.Error(1)
 }
 
 func (m *Mock) GetPenaltyBox(ctx context.Context, req GetPenaltyBoxRequest) (*GetPenaltyBoxResponse, error) {
@@ -919,22 +863,6 @@ func (m *Mock) UpdateEvalPenaltyBoxConditions(ctx context.Context, params Update
 	}
 
 	return args.Get(0).(*UpdatePenaltyBoxConditionsResponse), args.Error(1)
-}
-
-func (m *Mock) GetNetworkLayerProtections(ctx context.Context, req GetNetworkLayerProtectionsRequest) (*GetNetworkLayerProtectionsResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetNetworkLayerProtectionsResponse), args.Error(1)
-}
-
-func (m *Mock) GetNetworkLayerProtection(ctx context.Context, req GetNetworkLayerProtectionRequest) (*GetNetworkLayerProtectionResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetNetworkLayerProtectionResponse), args.Error(1)
 }
 
 func (m *Mock) GetMatchTargets(ctx context.Context, req GetMatchTargetsRequest) (*GetMatchTargetsResponse, error) {
@@ -999,14 +927,6 @@ func (m *Mock) GetExportConfiguration(ctx context.Context, req GetExportConfigur
 		return nil, args.Error(1)
 	}
 	return args.Get(0).(*GetExportConfigurationResponse), args.Error(1)
-}
-
-func (m *Mock) GetExportConfigurations(ctx context.Context, req GetExportConfigurationsRequest) (*GetExportConfigurationsResponse, error) {
-	args := m.Called(ctx, req)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*GetExportConfigurationsResponse), args.Error(1)
 }
 
 func (m *Mock) GetEvals(ctx context.Context, req GetEvalsRequest) (*GetEvalsResponse, error) {

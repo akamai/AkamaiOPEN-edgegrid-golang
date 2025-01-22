@@ -59,7 +59,6 @@ type (
 		MalwareProtection
 		MatchTarget
 		MatchTargetSequence
-		NetworkLayerProtection
 		PenaltyBox
 		PenaltyBoxConditions
 		PolicyProtections

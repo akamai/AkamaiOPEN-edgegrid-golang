@@ -27,7 +27,6 @@ type (
 		BotManagementSetting
 		ChallengeAction
 		ChallengeInjectionRules
-		ChallengeInterceptionRules
 		ClientSideSecurity
 		ConditionalAction
 		ContentProtectionJavaScriptInjectionRule

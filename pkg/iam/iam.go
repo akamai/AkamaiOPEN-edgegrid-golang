@@ -385,12 +385,6 @@ type (
 		// See: https://techdocs.akamai.com/iam-api/reference/put-notifications
 		UpdateUserNotifications(context.Context, UpdateUserNotificationsRequest) (*UserNotifications, error)
 
-		// UpdateTFA updates a user's two-factor authentication setting and can reset tfa.
-		//
-		// See: https://techdocs.akamai.com/iam-user-admin/reference/put-ui-identity-tfa
-		/** @deprecated */
-		UpdateTFA(context.Context, UpdateTFARequest) error
-
 		// UpdateMFA updates a user's profile authentication method.
 		//
 		// See: https://techdocs.akamai.com/iam-api/reference/put-user-profile-additional-authentication

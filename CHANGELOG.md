@@ -13,15 +13,35 @@
     * `UpdateSiemSettingsRequest`
     * `RemoveSiemSettingsRequest`
 
+* APPSEC
+  * Removed the deprecated `NetworkLayerProtection` interface containing these methods:
+    * `GetNetworkLayerProtections`
+    * `GetNetworkLayerProtection`
+    * `UpdateNetworkLayerProtection`
+    * `RemoveNetworkLayerProtection`
+  * Removed these deprecated methods:
+    * `GetExportConfigurations`
+    * `GetPenaltyBoxes`
+    * `GetRatePolicyAction`
+    * `RemovePolicyProtections`
+    * `GetSlowPostProtectionSetting`
+    * `GetWAFModes`
 * Networklists
   * Renamed field `UniqueIds` to `UniqueIDs` in the following structures:
     * `GetNetworkListSubscriptionRequest`
     * `UpdateNetworkListSubscriptionRequest`
     * `RemoveNetworkListSubscriptionRequest`
 
+* BOTMAN
+  * Removed the deprecated `ChallengeInterceptionRules` interface containing these methods:
+    * `GetChallengeInterceptionRules`
+    * `UpdateChallengeInterceptionRules`
 
+* CPS
+  * Removed the deprecated `UpdateChange` method.
 
-
+* IAM
+  * Removed the deprecated `UpdateTFA` method.
 
 * Logging
   * Changed logger from apex to the custom interface
@@ -58,17 +78,20 @@
 
 
 
-* Migrated to go `1.22`.
+* Migrated to Go `1.22`.
 
 
 
 * Improved formatting of validation errors.
-* Added ability to return an error to `session.Option`.
+* Added an ability to return an error for `session.Option`.
+
 * PAPI
   * Added the `OriginalInput` parameter in the `GetRuleTreeRequest` to allow returning upgraded content of rules. When omitted it is equal to true, meaning that returned rules are exactly as sent.
 
+* Improved formatting of validation errors.
 
-* Updated vulnerable dependencies
+
+* Updated vulnerable dependencies.
 * Improved code by resolving issues reported by linter.
 
 
@@ -106,7 +129,7 @@
 
 
 * DNS
-  * Fixed incorrect URL for `ListGroups` method.
+  * Fixed an incorrect URL for the `ListGroups` method.
 
 
 
@@ -148,11 +171,11 @@
   * Added logic responsible for closing the response body in each method.
 
 * APPSEC
-  * Added following content protection fields to `GetExportConfigurationResponse` under `BotManagement` section
+  * Added the following content protection fields to `GetExportConfigurationResponse` under the `BotManagement` section:
     * `ContentProtectionRules`
     * `ContentProtectionRuleSequence`
     * `ContentProtectionJavaScriptInjectionRules`
-  * Changed `EnabledBotmanSiemEvents` to `*bool` and omitted from following structs when empty
+  * Changed `EnabledBotmanSiemEvents` to `*bool` and omitted from the following structures when empty:
     * `GetSiemSettingResponse`
     * `RemoveSiemSettingsRequest`
     * `RemoveSiemSettingsResponse`
@@ -160,7 +183,7 @@
     * `UpdateSiemSettingsResponse`
 
 * DNS
-  * Added support for `OutboundZoneTransfer` field in requests and responses for these methods:
+  * Added support for the `OutboundZoneTransfer` field in requests and responses for these methods:
     * `CreateBulkZones`
     * `CreateZone`
     * `GetZone`
@@ -173,7 +196,7 @@
   * Fixed SIEM exception validation for the `Exceptions` field.
 
 * Cloud Access
-  * Added custom error `ErrAccessKeyNotFound` to easier verify if provided access key does not exist.
+  * Added a custom error `ErrAccessKeyNotFound` to easier verify if the provided access key does not exist.
 
 ## 9.0.0 (Oct 3, 2024)
 

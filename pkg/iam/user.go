@@ -170,15 +170,6 @@ type (
 		APIClientCredentialExpiry bool     `json:"apiClientCredentialExpiryNotification"`
 	}
 
-	// TFAActionType is a type for tfa action constants.
-	TFAActionType string
-
-	// UpdateTFARequest contains the request parameters for the UpdateTFA endpoint.
-	UpdateTFARequest struct {
-		IdentityID string
-		Action     TFAActionType
-	}
-
 	// Authentication is a type of additional authentication.
 	Authentication string
 
@@ -195,12 +186,6 @@ type (
 )
 
 const (
-	// TFAActionEnable is an action value to use to enable tfa.
-	TFAActionEnable TFAActionType = "enable"
-	// TFAActionDisable is an action value to use to disable tfa.
-	TFAActionDisable TFAActionType = "disable"
-	// TFAActionReset is an action value to use to reset tfa.
-	TFAActionReset TFAActionType = "reset"
 	// MFAAuthentication is authentication of type MFA.
 	MFAAuthentication Authentication = "MFA"
 	// TFAAuthentication is authentication of type TFA.
@@ -230,9 +215,6 @@ var (
 
 	// ErrUpdateUserNotifications is returned when UpdateUserNotifications fails.
 	ErrUpdateUserNotifications = errors.New("update user notifications")
-
-	// ErrUpdateTFA is returned when UpdateTFA fails.
-	ErrUpdateTFA = errors.New("update user's two-factor authentication")
 
 	// ErrUpdateMFA is returned when UpdateMFA fails.
 	ErrUpdateMFA = errors.New("update user's authentication method")
@@ -310,15 +292,6 @@ func (r UpdateUserAuthGrantsRequest) Validate() error {
 func (r RemoveUserRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"uiIdentity": validation.Validate(r.IdentityID, validation.Required),
-	})
-}
-
-// Validate validates UpdateTFARequest.
-func (r UpdateTFARequest) Validate() error {
-	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"IdentityID": validation.Validate(r.IdentityID, validation.Required),
-		"Action": validation.Validate(r.Action, validation.Required, validation.In(TFAActionEnable, TFAActionDisable, TFAActionReset).
-			Error(fmt.Sprintf("value '%s' is invalid. Must be one of: 'enable', 'disable' or 'reset'", r.Action))),
 	})
 }
 
@@ -567,41 +540,6 @@ func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNoti
 	}
 
 	return &result, nil
-}
-
-func (i *iam) UpdateTFA(ctx context.Context, params UpdateTFARequest) error {
-	logger := i.Log(ctx)
-	logger.Debug("UpdateTFA")
-
-	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w:\n%s", ErrUpdateTFA, ErrStructValidation, err)
-	}
-
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v2/user-admin/ui-identities/%s/tfa", params.IdentityID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateTFA, err)
-	}
-
-	q := uri.Query()
-	q.Add("action", string(params.Action))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateTFA, err)
-	}
-
-	resp, err := i.Exec(req, nil, nil)
-	if err != nil {
-		return fmt.Errorf("%w: request failed: %s", ErrUpdateTFA, err)
-	}
-	defer session.CloseResponseBody(resp)
-
-	if resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("%s: %w", ErrUpdateTFA, i.Error(resp))
-	}
-
-	return nil
 }
 
 func (i *iam) UpdateMFA(ctx context.Context, params UpdateMFARequest) error {

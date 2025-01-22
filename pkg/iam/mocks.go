@@ -315,12 +315,6 @@ func (m *Mock) ListUsers(ctx context.Context, request ListUsersRequest) ([]UserL
 	return args.Get(0).([]UserListItem), args.Error(1)
 }
 
-func (m *Mock) UpdateTFA(ctx context.Context, request UpdateTFARequest) error {
-	args := m.Called(ctx, request)
-
-	return args.Error(0)
-}
-
 func (m *Mock) UpdateMFA(ctx context.Context, request UpdateMFARequest) error {
 	args := m.Called(ctx, request)
 
