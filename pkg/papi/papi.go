@@ -261,6 +261,18 @@ type (
 		// See: https://techdocs.akamai.com/property-mgr/reference/put-property-version-rules
 		UpdateRuleTree(context.Context, UpdateRulesRequest) (*UpdateRulesResponse, error)
 
+		// ActivePropertyHostnames
+
+		// ListActivePropertyHostnames lists active property hostnames assigned to a specific property.
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-hostnames
+		ListActivePropertyHostnames(context.Context, ListActivePropertyHostnamesRequest) (*ListActivePropertyHostnamesResponse, error)
+
+		// GetActivePropertyHostnamesDiff lists active property hostnames whose details differ between the staging and production networks
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-hostnames-diff
+		GetActivePropertyHostnamesDiff(context.Context, GetActivePropertyHostnamesDiffRequest) (*GetActivePropertyHostnamesDiffResponse, error)
+
 		// PropertyVersionHostnames
 
 		// GetPropertyVersionHostnames lists all the hostnames assigned to a property version

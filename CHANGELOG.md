@@ -21,6 +21,12 @@
 * PAPI
   * Added name format validations and a size limit for the Domain Prefix. 
 
+* PAPI
+* Added support for the following endpoints related to active property hostnames:
+  * [`ListPropertyVersionHostnames`](https://techdocs.akamai.com/property-mgr/reference/get-property-hostnames )- Lists active property hostnames.
+  * [`UpdatePropertyVersionHostnames`](https://techdocs.akamai.com/property-mgr/reference/get-property-hostnames-diff) - Retrieves the property hostnames diff.
+
+
 
 
 
