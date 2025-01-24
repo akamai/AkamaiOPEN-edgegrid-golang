@@ -903,7 +903,7 @@ To report an issue or make a suggestion, create a new [GitHub issue](https://git
 
 ## License
 
-Copyright 2024 Akamai Technologies, Inc. All rights reserved.
+Copyright 2025 Akamai Technologies, Inc. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use these files except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
 
