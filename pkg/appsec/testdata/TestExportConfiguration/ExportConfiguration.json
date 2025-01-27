@@ -42,7 +42,7 @@
 			"averageThreshold": 1,
 			"burstThreshold": 1,
 			"burstWindow": 5,
-			"clientIdentifier": "ip",
+			"clientIdentifiers": ["ip"],
 			"condition": {
 				"atomicConditions": [
 					{
