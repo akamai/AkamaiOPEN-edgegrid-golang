@@ -1,9 +1,8 @@
 # RELEASE NOTES
 
-## X.X.X (X X, X)
+## 10.0.0 (Feb 3, 2025)
 
 ### BREAKING CHANGES:
-
 
 * APPSEC
   * Renamed field `FirewallPolicyIds` to `FirewallPolicyIDs` in the following structures:
@@ -12,8 +11,6 @@
     * `GetSiemSettingsResponse`
     * `UpdateSiemSettingsRequest`
     * `RemoveSiemSettingsRequest`
-
-* APPSEC
   * Removed the deprecated `NetworkLayerProtection` interface containing these methods:
     * `GetNetworkLayerProtections`
     * `GetNetworkLayerProtection`
@@ -26,11 +23,6 @@
     * `RemovePolicyProtections`
     * `GetSlowPostProtectionSetting`
     * `GetWAFModes`
-* Networklists
-  * Renamed field `UniqueIds` to `UniqueIDs` in the following structures:
-    * `GetNetworkListSubscriptionRequest`
-    * `UpdateNetworkListSubscriptionRequest`
-    * `RemoveNetworkListSubscriptionRequest`
 
 * BOTMAN
   * Removed the deprecated `ChallengeInterceptionRules` interface containing these methods:
@@ -58,116 +50,40 @@
   * Log output structure have changed slightly,
     * Time format was adjusted, logger will use 24-hour clock with milliseconds instead of 12-hour clock used previously.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* Networklists
+  * Renamed field `UniqueIds` to `UniqueIDs` in the following structures:
+    * `GetNetworkListSubscriptionRequest`
+    * `UpdateNetworkListSubscriptionRequest`
+    * `RemoveNetworkListSubscriptionRequest`
 
 ### FEATURES/ENHANCEMENTS:
 
+* General
+  * Migrated to Go `1.22`.
+  * Improved formatting of validation errors.
+  * Added an ability to return an error for `session.Option`.
+  * Improved formatting of validation errors.
+  * Updated vulnerable dependencies.
+  * Improved code by resolving issues reported by linter.
 
-
-* Added Rapid Rules API Support
-  * [GetRapidRules](https://techdocs.akamai.com/application-security/reference/get-rapid-rules)
-  * [GetRapidRulesDefaultAction](https://techdocs.akamai.com/application-security/reference/get-rapid-rules-action)
-  * [GetRapidRulesStatus](https://techdocs.akamai.com/application-security/reference/get-rapid-rules-status)
-  * [UpdateRapidRulesStatus](https://techdocs.akamai.com/application-security/reference/put-rapid-rules-status)
-  * [UpdateRapidRulesDefaultAction](https://techdocs.akamai.com/application-security/reference/put-rapid-rules-action)
-  * [UpdateRapidRuleActionLock](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-lock)
-  * [UpdateRapidRuleAction](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-action)
-  * [UpdateRapidRuleException](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-condition-exception)
-
-
-
-* Migrated to Go `1.22`.
-
-
-
-* Improved formatting of validation errors.
-* Added an ability to return an error for `session.Option`.
+* APPSEC
+  * Added Rapid Rules API Support
+    * [GetRapidRules](https://techdocs.akamai.com/application-security/reference/get-rapid-rules)
+    * [GetRapidRulesDefaultAction](https://techdocs.akamai.com/application-security/reference/get-rapid-rules-action)
+    * [GetRapidRulesStatus](https://techdocs.akamai.com/application-security/reference/get-rapid-rules-status)
+    * [UpdateRapidRulesStatus](https://techdocs.akamai.com/application-security/reference/put-rapid-rules-status)
+    * [UpdateRapidRulesDefaultAction](https://techdocs.akamai.com/application-security/reference/put-rapid-rules-action)
+    * [UpdateRapidRuleActionLock](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-lock)
+    * [UpdateRapidRuleAction](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-action)
+    * [UpdateRapidRuleException](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-condition-exception)
 
 * PAPI
   * Added the `OriginalInput` parameter in the `GetRuleTreeRequest` to allow returning upgraded content of rules. When omitted it is equal to true, meaning that returned rules are exactly as sent.
 
-* Improved formatting of validation errors.
-
-
-* Updated vulnerable dependencies.
-* Improved code by resolving issues reported by linter.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### BUG FIXES:
-
-
-
-
-
-
-
-
-
 
 * DNS
   * Fixed an incorrect URL for the `ListGroups` method.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 9.1.0 (Nov 14, 2024)
 
