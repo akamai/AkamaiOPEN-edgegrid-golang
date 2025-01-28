@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/errs"
 )
 
 var (

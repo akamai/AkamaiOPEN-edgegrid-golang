@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/log"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

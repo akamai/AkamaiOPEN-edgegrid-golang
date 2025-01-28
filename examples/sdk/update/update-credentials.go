@@ -25,9 +25,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/iam"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/iam"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 )
 
 func main() {

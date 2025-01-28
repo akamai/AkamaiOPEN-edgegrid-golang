@@ -44,9 +44,9 @@ import (
 	"maps"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/log"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/log"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 )
 
 const (
