@@ -21,7 +21,7 @@
             "averageThreshold": 5,
             "burstThreshold": 10,
             "burstWindow": 1,
-            "clientIdentifiers": ["ip"],
+            "clientIdentifier": "ip",
             "createDate": "2020-10-29T04:00:22Z",
             "description": "AFW Test Extensions",
             "counterType": "per_edge",

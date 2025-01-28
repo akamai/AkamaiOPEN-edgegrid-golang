@@ -49,20 +49,20 @@ type (
 
 	// CreateRatePolicyResponse is returned from a call to CreateRatePolicy.
 	CreateRatePolicyResponse struct {
-		ID                    int      `json:"id"`
-		ConfigID              int      `json:"configId"`
-		ConfigVersion         int      `json:"configVersion"`
-		MatchType             string   `json:"matchType"`
-		Type                  string   `json:"type"`
-		Name                  string   `json:"name"`
-		Description           string   `json:"description"`
-		AverageThreshold      int      `json:"averageThreshold"`
-		BurstThreshold        int      `json:"burstThreshold"`
-		BurstWindow           int      `json:"burstWindow"`
-		ClientIdentifiers     []string `json:"clientIdentifiers"`
-		UseXForwardForHeaders bool     `json:"useXForwardForHeaders"`
-		RequestType           string   `json:"requestType"`
-		SameActionOnIpv6      bool     `json:"sameActionOnIpv6"`
+		ID                    int    `json:"id"`
+		ConfigID              int    `json:"configId"`
+		ConfigVersion         int    `json:"configVersion"`
+		MatchType             string `json:"matchType"`
+		Type                  string `json:"type"`
+		Name                  string `json:"name"`
+		Description           string `json:"description"`
+		AverageThreshold      int    `json:"averageThreshold"`
+		BurstThreshold        int    `json:"burstThreshold"`
+		BurstWindow           int    `json:"burstWindow"`
+		ClientIdentifier      string `json:"clientIdentifier"`
+		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
+		RequestType           string `json:"requestType"`
+		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
 		Path                  struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
@@ -99,20 +99,20 @@ type (
 
 	// UpdateRatePolicyResponse is returned from a call to UpdateRatePolicy.
 	UpdateRatePolicyResponse struct {
-		ID                    int      `json:"id"`
-		ConfigID              int      `json:"configId"`
-		ConfigVersion         int      `json:"configVersion"`
-		MatchType             string   `json:"matchType"`
-		Type                  string   `json:"type"`
-		Name                  string   `json:"name"`
-		Description           string   `json:"description"`
-		AverageThreshold      int      `json:"averageThreshold"`
-		BurstThreshold        int      `json:"burstThreshold"`
-		BurstWindow           int      `json:"burstWindow"`
-		ClientIdentifiers     []string `json:"clientIdentifiers"`
-		UseXForwardForHeaders bool     `json:"useXForwardForHeaders"`
-		RequestType           string   `json:"requestType"`
-		SameActionOnIpv6      bool     `json:"sameActionOnIpv6"`
+		ID                    int    `json:"id"`
+		ConfigID              int    `json:"configId"`
+		ConfigVersion         int    `json:"configVersion"`
+		MatchType             string `json:"matchType"`
+		Type                  string `json:"type"`
+		Name                  string `json:"name"`
+		Description           string `json:"description"`
+		AverageThreshold      int    `json:"averageThreshold"`
+		BurstThreshold        int    `json:"burstThreshold"`
+		BurstWindow           int    `json:"burstWindow"`
+		ClientIdentifier      string `json:"clientIdentifier"`
+		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
+		RequestType           string `json:"requestType"`
+		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
 		Path                  struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
@@ -148,20 +148,20 @@ type (
 
 	// RemoveRatePolicyResponse is returned from a call to RemoveRatePolicy.
 	RemoveRatePolicyResponse struct {
-		ID                    int      `json:"id"`
-		ConfigID              int      `json:"configId"`
-		ConfigVersion         int      `json:"configVersion"`
-		MatchType             string   `json:"matchType"`
-		Type                  string   `json:"type"`
-		Name                  string   `json:"name"`
-		Description           string   `json:"description"`
-		AverageThreshold      int      `json:"averageThreshold"`
-		BurstThreshold        int      `json:"burstThreshold"`
-		BurstWindow           int      `json:"burstWindow"`
-		ClientIdentifiers     []string `json:"clientIdentifiers"`
-		UseXForwardForHeaders bool     `json:"useXForwardForHeaders"`
-		RequestType           string   `json:"requestType"`
-		SameActionOnIpv6      bool     `json:"sameActionOnIpv6"`
+		ID                    int    `json:"id"`
+		ConfigID              int    `json:"configId"`
+		ConfigVersion         int    `json:"configVersion"`
+		MatchType             string `json:"matchType"`
+		Type                  string `json:"type"`
+		Name                  string `json:"name"`
+		Description           string `json:"description"`
+		AverageThreshold      int    `json:"averageThreshold"`
+		BurstThreshold        int    `json:"burstThreshold"`
+		BurstWindow           int    `json:"burstWindow"`
+		ClientIdentifier      string `json:"clientIdentifier"`
+		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
+		RequestType           string `json:"requestType"`
+		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
 		Path                  struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
@@ -208,7 +208,7 @@ type (
 			AverageThreshold       int                        `json:"averageThreshold,omitempty"`
 			BurstThreshold         int                        `json:"burstThreshold,omitempty"`
 			BurstWindow            int                        `json:"burstWindow,omitempty"`
-			ClientIdentifiers      []string                   `json:"clientIdentifiers,omitempty"`
+			ClientIdentifier       string                     `json:"clientIdentifier,omitempty"`
 			UseXForwardForHeaders  bool                       `json:"useXForwardForHeaders"`
 			RequestType            string                     `json:"requestType,omitempty"`
 			SameActionOnIpv6       bool                       `json:"sameActionOnIpv6"`
@@ -250,7 +250,7 @@ type (
 		AverageThreshold       int                        `json:"averageThreshold,omitempty"`
 		BurstThreshold         int                        `json:"burstThreshold,omitempty"`
 		BurstWindow            int                        `json:"burstWindow,omitempty"`
-		ClientIdentifiers      []string                   `json:"clientIdentifiers,omitempty"`
+		ClientIdentifier       string                     `json:"clientIdentifier,omitempty"`
 		UseXForwardForHeaders  bool                       `json:"useXForwardForHeaders"`
 		RequestType            string                     `json:"requestType,omitempty"`
 		SameActionOnIpv6       bool                       `json:"sameActionOnIpv6"`

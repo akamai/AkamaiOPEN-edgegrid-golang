@@ -32,15 +32,6 @@
     * `UpdateNetworkListSubscriptionRequest`
     * `RemoveNetworkListSubscriptionRequest`
 
-* Appsec
-  * Renamed `ClientIdentifier` field to `ClientIdentifiers` and changed field from `string` to `[]string` in following structs
-    * `CreateRatePolicyResponse`
-    * `UpdateRatePolicyResponse`
-    * `RemoveRatePolicyResponse`
-    * `GetRatePoliciesResponse`
-    * `GetRatePolicyResponse`
-    * `GetExportConfigurationResponse`
-    * `GetExportConfigurationsResponse`
 * BOTMAN
   * Removed the deprecated `ChallengeInterceptionRules` interface containing these methods:
     * `GetChallengeInterceptionRules`
