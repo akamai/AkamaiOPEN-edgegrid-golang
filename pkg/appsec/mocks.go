@@ -1452,3 +1452,67 @@ func (m *Mock) UpdateMalwarePolicyActions(ctx context.Context, params UpdateMalw
 
 	return args.Get(0).(*UpdateMalwarePolicyActionsResponse), args.Error(1)
 }
+
+func (m *Mock) GetRapidRules(ctx context.Context, req GetRapidRulesRequest) (*GetRapidRulesResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetRapidRulesResponse), args.Error(1)
+}
+
+func (m *Mock) GetRapidRulesDefaultAction(ctx context.Context, req GetRapidRulesDefaultActionRequest) (*GetRapidRulesDefaultActionResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetRapidRulesDefaultActionResponse), args.Error(1)
+}
+
+func (m *Mock) GetRapidRulesStatus(ctx context.Context, req GetRapidRulesStatusRequest) (*GetRapidRulesStatusResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetRapidRulesStatusResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateRapidRulesStatus(ctx context.Context, req UpdateRapidRulesStatusRequest) (*UpdateRapidRulesStatusResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateRapidRulesStatusResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateRapidRulesDefaultAction(ctx context.Context, req UpdateRapidRulesDefaultActionRequest) (*UpdateRapidRulesDefaultActionResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateRapidRulesDefaultActionResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateRapidRuleActionLock(ctx context.Context, req UpdateRapidRuleActionLockRequest) (*UpdateRapidRuleActionLockResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateRapidRuleActionLockResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateRapidRuleAction(ctx context.Context, req UpdateRapidRuleActionRequest) (*UpdateRapidRuleActionResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateRapidRuleActionResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateRapidRuleException(ctx context.Context, req UpdateRapidRuleExceptionRequest) (*UpdateRapidRuleExceptionResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateRapidRuleExceptionResponse), args.Error(1)
+}

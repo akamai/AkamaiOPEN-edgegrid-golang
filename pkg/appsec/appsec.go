@@ -62,6 +62,7 @@ type (
 		PenaltyBox
 		PenaltyBoxConditions
 		PolicyProtections
+		RapidRule
 		RatePolicy
 		RatePolicyAction
 		RateProtection

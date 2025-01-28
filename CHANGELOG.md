@@ -77,6 +77,17 @@
 
 
 
+* Added Rapid Rules API Support
+  * [GetRapidRules](https://techdocs.akamai.com/application-security/reference/get-rapid-rules)
+  * [GetRapidRulesDefaultAction](https://techdocs.akamai.com/application-security/reference/get-rapid-rules-action)
+  * [GetRapidRulesStatus](https://techdocs.akamai.com/application-security/reference/get-rapid-rules-status)
+  * [UpdateRapidRulesStatus](https://techdocs.akamai.com/application-security/reference/put-rapid-rules-status)
+  * [UpdateRapidRulesDefaultAction](https://techdocs.akamai.com/application-security/reference/put-rapid-rules-action)
+  * [UpdateRapidRuleActionLock](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-lock)
+  * [UpdateRapidRuleAction](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-action)
+  * [UpdateRapidRuleException](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-condition-exception)
+
+
 
 * Migrated to Go `1.22`.
 
