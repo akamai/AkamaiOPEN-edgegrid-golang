@@ -4,7 +4,7 @@ package botman
 import (
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 )
 
 var (
@@ -27,7 +27,6 @@ type (
 		BotManagementSetting
 		ChallengeAction
 		ChallengeInjectionRules
-		ChallengeInterceptionRules
 		ClientSideSecurity
 		ConditionalAction
 		ContentProtectionJavaScriptInjectionRule

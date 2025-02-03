@@ -3,7 +3,7 @@ package cloudlets
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -360,7 +360,7 @@ func TestCreateOrigin(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
@@ -406,7 +406,7 @@ func TestCreateOriginValidation(t *testing.T) {
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
 			client := mockAPIClient(t, mockServer)
 			_, err := client.CreateOrigin(context.Background(), test.request)
 			assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
@@ -490,7 +490,7 @@ func TestUpdateOrigin(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
@@ -536,7 +536,7 @@ func TestUpdateOriginValidation(t *testing.T) {
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
 			client := mockAPIClient(t, mockServer)
 			_, err := client.UpdateOrigin(context.Background(), test.request)
 			assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)

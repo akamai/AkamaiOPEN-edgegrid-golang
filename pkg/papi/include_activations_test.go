@@ -3,7 +3,7 @@ package papi
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -281,7 +281,7 @@ func TestActivateInclude(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
@@ -451,7 +451,7 @@ func TestDeactivateInclude(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}

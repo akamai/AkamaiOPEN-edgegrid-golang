@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/errs"
 )
 
 type (
@@ -26,7 +26,7 @@ func (b *botman) Error(r *http.Response) error {
 	var e Error
 	var body []byte
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		b.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.StatusCode = r.StatusCode
@@ -49,7 +49,7 @@ func (b *botman) Error(r *http.Response) error {
 // Error returns a string formatted using a given title, type, and detail information.
 func (e *Error) Error() string {
 	detail := e.Detail
-	if e.Errors != nil && len(e.Errors) > 0 {
+	if len(e.Errors) > 0 {
 		var childErrorDetails []string
 		for _, err := range e.Errors {
 			childErrorDetails = append(childErrorDetails, err.Detail)

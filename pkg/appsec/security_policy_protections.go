@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -21,12 +21,6 @@ type (
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
 		UpdatePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error)
-
-		// RemovePolicyProtections removes protection settings for a configuration and policy.
-		//
-		// See: https://techdocs.akamai.com/application-security/reference/put-policy-protections
-		// Deprecated: this method will be removed in a future release. Use UpdatePolicyProtections instead.
-		RemovePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error)
 	}
 
 	// GetPolicyProtectionsRequest is used to retrieve the policy protection setting.
@@ -38,22 +32,6 @@ type (
 
 	// UpdatePolicyProtectionsRequest is used to modify the policy protection setting.
 	UpdatePolicyProtectionsRequest struct {
-		ConfigID                      int    `json:"-"`
-		Version                       int    `json:"-"`
-		PolicyID                      string `json:"-"`
-		ApplyAPIConstraints           bool   `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool   `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool   `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool   `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool   `json:"applyRateControls"`
-		ApplyReputationControls       bool   `json:"applyReputationControls"`
-		ApplySlowPostControls         bool   `json:"applySlowPostControls"`
-		ApplyMalwareControls          bool   `json:"applyMalwareControls"`
-	}
-
-	// RemovePolicyProtectionsRequest is used to remove the policy protection setting.
-	// Deprecated: this struct will be removed in a future release.
-	RemovePolicyProtectionsRequest struct {
 		ConfigID                      int    `json:"-"`
 		Version                       int    `json:"-"`
 		PolicyID                      string `json:"-"`
@@ -91,15 +69,6 @@ func (v GetPolicyProtectionsRequest) Validate() error {
 
 // Validate validates an UpdatePolicyProtectionsRequest.
 func (v UpdatePolicyProtectionsRequest) Validate() error {
-	return validation.Errors{
-		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
-		"Version":  validation.Validate(v.Version, validation.Required),
-		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-	}.Filter()
-}
-
-// Validate validates a RemovePolicyProtectionsRequest.
-func (v RemovePolicyProtectionsRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
@@ -164,40 +133,6 @@ func (p *appsec) UpdatePolicyProtections(ctx context.Context, params UpdatePolic
 	resp, err := p.Exec(req, &result, params)
 	if err != nil {
 		return nil, fmt.Errorf("update policy protections request failed: %w", err)
-	}
-	defer session.CloseResponseBody(resp)
-
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
-	}
-
-	return &result, nil
-}
-
-func (p *appsec) RemovePolicyProtections(ctx context.Context, params UpdatePolicyProtectionsRequest) (*PolicyProtectionsResponse, error) {
-	logger := p.Log(ctx)
-	logger.Debug("RemovePolicyProtections")
-
-	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
-	}
-
-	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/protections",
-		params.ConfigID,
-		params.Version,
-		params.PolicyID,
-	)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create RemovePolicyProtections request: %w", err)
-	}
-
-	var result PolicyProtectionsResponse
-	resp, err := p.Exec(req, &result, params)
-	if err != nil {
-		return nil, fmt.Errorf("remove policy protections request failed: %w", err)
 	}
 	defer session.CloseResponseBody(resp)
 

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -184,7 +184,9 @@ func (e *edgeworkers) GetDeactivation(ctx context.Context, params GetDeactivatio
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-
+	if err != nil {
+		return nil, fmt.Errorf("failed to create GetDeactivation request: %w", err)
+	}
 	var result Deactivation
 	resp, err := e.Exec(req, &result)
 	if err != nil {

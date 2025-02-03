@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/errs"
 )
 
 type (
@@ -54,7 +54,7 @@ var (
 func (e *edgeworkers) Error(r *http.Response) error {
 	var result Error
 	var body []byte
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		e.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		result.Status = r.StatusCode
@@ -65,7 +65,7 @@ func (e *edgeworkers) Error(r *http.Response) error {
 
 	if err := json.Unmarshal(body, &result); err != nil {
 		e.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		result.Title = fmt.Sprintf("Failed to unmarshal error body. Edgeworkers API failed. Check details for more information.")
+		result.Title = "Failed to unmarshal error body. Edgeworkers API failed. Check details for more information."
 		result.Detail = errs.UnescapeContent(string(body))
 		result.Status = r.StatusCode
 	}

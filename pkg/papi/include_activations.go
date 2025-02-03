@@ -9,9 +9,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -200,9 +200,9 @@ func (i ActivateIncludeRequest) Validate() error {
 }
 
 func unitTestedFieldValidationRule(value interface{}) error {
-	switch value.(type) {
+	switch v := value.(type) {
 	case *ComplianceRecordNone:
-		if value.(*ComplianceRecordNone).UnitTested == false {
+		if !v.UnitTested {
 			return errors.New("for PRODUCTION activation network and nonComplianceRecord, UnitTested value has to be set to true, otherwise API will not work correctly")
 		}
 	}

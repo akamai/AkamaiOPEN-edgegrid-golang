@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -76,7 +76,7 @@ func (e *edgeworkers) ListPermissionGroups(ctx context.Context) (*ListPermission
 	logger := e.Log(ctx)
 	logger.Debug("ListPermissionGroups")
 
-	uri := fmt.Sprintf("/edgeworkers/v1/groups")
+	uri := "/edgeworkers/v1/groups"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {

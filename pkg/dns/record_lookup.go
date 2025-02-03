@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -235,7 +235,7 @@ func (d *dns) ParseRData(ctx context.Context, rType string, rData []string) map[
 	logger := d.Log(ctx)
 	logger.Debug("ParserData")
 
-	fieldMap := make(map[string]interface{}, 0)
+	fieldMap := make(map[string]interface{})
 	if len(rData) == 0 {
 		return fieldMap
 	}
@@ -324,9 +324,7 @@ func (d *dns) ParseRData(ctx context.Context, rType string, rData []string) map[
 		resolveHTTPSType(rData, fieldMap)
 
 	default:
-		for _, rContent := range rData {
-			newRData = append(newRData, rContent)
-		}
+		newRData = append(newRData, rData...)
 		fieldMap["target"] = newRData
 	}
 
@@ -344,7 +342,8 @@ func resolveAFSDBType(rData, newRData []string, fieldMap map[string]interface{})
 }
 
 func resolveDNSKEYType(rData []string, fieldMap map[string]interface{}) {
-	for _, rContent := range rData {
+	if len(rData) > 0 {
+		rContent := rData[0]
 		parts := strings.Split(rContent, " ")
 		fieldMap["flags"], _ = strconv.Atoi(parts[0])
 		fieldMap["protocol"], _ = strconv.Atoi(parts[1])
@@ -358,28 +357,28 @@ func resolveDNSKEYType(rData []string, fieldMap map[string]interface{}) {
 			}
 		}
 		fieldMap["key"] = key
-		break
 	}
 }
 
 func resolveSVCBType(rData []string, fieldMap map[string]interface{}) {
-	for _, rContent := range rData {
+	if len(rData) > 0 {
+		rContent := rData[0]
 		parts := strings.SplitN(rContent, " ", 3)
 		// has to be at least two fields.
 		if len(parts) < 2 {
-			break
+			return
 		}
 		fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
 		fieldMap["target_name"] = parts[1]
 		if len(parts) > 2 {
 			fieldMap["svc_params"] = parts[2]
 		}
-		break
 	}
 }
 
 func resolveDSType(rData []string, fieldMap map[string]interface{}) {
-	for _, rContent := range rData {
+	if len(rData) > 0 {
+		rContent := rData[0]
 		parts := strings.Split(rContent, " ")
 		fieldMap["keytag"], _ = strconv.Atoi(parts[0])
 		fieldMap["digest_type"], _ = strconv.Atoi(parts[2])
@@ -393,7 +392,6 @@ func resolveDSType(rData []string, fieldMap map[string]interface{}) {
 			}
 		}
 		fieldMap["digest"] = dig
-		break
 	}
 }
 
@@ -453,7 +451,8 @@ func resolveRPType(rData []string, fieldMap map[string]interface{}) {
 }
 
 func resolveRRSIGType(rData []string, fieldMap map[string]interface{}) {
-	for _, rContent := range rData {
+	if len(rData) > 0 {
+		rContent := rData[0]
 		parts := strings.Split(rContent, " ")
 		fieldMap["type_covered"] = parts[0]
 		fieldMap["algorithm"], _ = strconv.Atoi(parts[1])
@@ -472,7 +471,6 @@ func resolveRRSIGType(rData []string, fieldMap map[string]interface{}) {
 			}
 		}
 		fieldMap["signature"] = sig
-		break
 	}
 }
 
@@ -507,9 +505,7 @@ func resolveSRVType(rData, newRData []string, fieldMap map[string]interface{}) {
 		delete(fieldMap, "weight")
 		delete(fieldMap, "port")
 		// populate target
-		for _, rContent := range rData {
-			newRData = append(newRData, rContent)
-		}
+		newRData = append(newRData, rData...)
 	}
 	fieldMap["target"] = newRData
 }
@@ -545,16 +541,12 @@ func resolveAKAMAITLCType(rData []string, fieldMap map[string]interface{}) {
 }
 
 func resolveSPFType(rData, newRData []string, fieldMap map[string]interface{}) {
-	for _, rContent := range rData {
-		newRData = append(newRData, rContent)
-	}
+	newRData = append(newRData, rData...)
 	fieldMap["target"] = newRData
 }
 
 func resolveTXTType(rData, newRData []string, fieldMap map[string]interface{}) {
-	for _, rContent := range rData {
-		newRData = append(newRData, rContent)
-	}
+	newRData = append(newRData, rData...)
 	fieldMap["target"] = newRData
 }
 
@@ -579,7 +571,8 @@ func resolveLOCType(rData, newRData []string, fieldMap map[string]interface{}) {
 }
 
 func resolveCERTType(rData []string, fieldMap map[string]interface{}) {
-	for _, rContent := range rData {
+	if len(rData) > 0 {
+		rContent := rData[0]
 		parts := strings.Split(rContent, " ")
 		val, err := strconv.Atoi(parts[0])
 		if err == nil {
@@ -590,7 +583,6 @@ func resolveCERTType(rData []string, fieldMap map[string]interface{}) {
 		fieldMap["keytag"], _ = strconv.Atoi(parts[1])
 		fieldMap["algorithm"], _ = strconv.Atoi(parts[2])
 		fieldMap["certificate"] = parts[3]
-		break
 	}
 }
 
@@ -606,17 +598,17 @@ func resolveTLSAType(rData []string, fieldMap map[string]interface{}) {
 }
 
 func resolveHTTPSType(rData []string, fieldMap map[string]interface{}) {
-	for _, rContent := range rData {
+	if len(rData) > 0 {
+		rContent := rData[0]
 		parts := strings.SplitN(rContent, " ", 3)
 		// has to be at least two fields.
 		if len(parts) < 2 {
-			break
+			return
 		}
 		fieldMap["svc_priority"], _ = strconv.Atoi(parts[0])
 		fieldMap["target_name"] = parts[1]
 		if len(parts) > 2 {
 			fieldMap["svc_params"] = parts[2]
 		}
-		break
 	}
 }

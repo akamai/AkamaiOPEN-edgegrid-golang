@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -13,12 +13,6 @@ type (
 	// The WAFMode interface supports retrieving and modifying the mode setting that determines how
 	// rule sets are upgraded.
 	WAFMode interface {
-		// GetWAFModes returns which mode your rules are currently set to.
-		//
-		// See: https://techdocs.akamai.com/application-security/reference/get-policy-mode-1
-		// Deprecated: this method will be removed in a future release. Use GetWAFMode instead.
-		GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*GetWAFModesResponse, error)
-
 		// GetWAFMode returns which mode your rules are currently set to.
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/get-policy-mode-1
@@ -28,27 +22,6 @@ type (
 		//
 		// See: https://techdocs.akamai.com/application-security/reference/put-policy-mode-1
 		UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest) (*UpdateWAFModeResponse, error)
-	}
-
-	// GetWAFModesRequest is used to retrieve the setting that determines this mode how rules will be kept up to date.
-	// Deprecated: this struct will be removed in a future release.
-	GetWAFModesRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
-		PolicyID string `json:"-"`
-		Current  string `json:"current"`
-		Mode     string `json:"mode"`
-		Eval     string `json:"eval"`
-	}
-
-	// GetWAFModesResponse is returned from a call to GetWAFModes.
-	// Deprecated: this struct will be removed in a future release.
-	GetWAFModesResponse struct {
-		Current    string `json:"current,omitempty"`
-		Mode       string `json:"mode,omitempty"`
-		Eval       string `json:"eval,omitempty"`
-		Evaluating string `json:"evaluating,omitempty"`
-		Expires    string `json:"expires,omitempty"`
 	}
 
 	// GetWAFModeRequest is used to retrieve the setting that determines this mode how rules will be kept up to date.
@@ -96,16 +69,6 @@ func (v GetWAFModeRequest) Validate() error {
 	}.Filter()
 }
 
-// Validate validates a GetWAFModesRequest.
-// Deprecated: this method will be removed in a future release.
-func (v GetWAFModesRequest) Validate() error {
-	return validation.Errors{
-		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
-		"Version":  validation.Validate(v.Version, validation.Required),
-		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-	}.Filter()
-}
-
 // Validate validates an UpdateWAFModeRequest.
 func (v UpdateWAFModeRequest) Validate() error {
 	return validation.Errors{
@@ -138,40 +101,6 @@ func (p *appsec) GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*Get
 	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("get WAF mode request failed: %w", err)
-	}
-	defer session.CloseResponseBody(resp)
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
-	}
-
-	return &result, nil
-}
-
-// Deprecated: this method will be removed in a future release.
-func (p *appsec) GetWAFModes(ctx context.Context, params GetWAFModesRequest) (*GetWAFModesResponse, error) {
-	logger := p.Log(ctx)
-	logger.Debug("GetWAFModes")
-
-	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
-	}
-
-	uri := fmt.Sprintf(
-		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/mode",
-		params.ConfigID,
-		params.Version,
-		params.PolicyID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create GetWAFModes request: %w", err)
-	}
-
-	var result GetWAFModesResponse
-	resp, err := p.Exec(req, &result)
-	if err != nil {
-		return nil, fmt.Errorf("get WAF modes request failed: %w", err)
 	}
 	defer session.CloseResponseBody(resp)
 

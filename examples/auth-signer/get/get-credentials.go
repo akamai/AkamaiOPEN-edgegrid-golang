@@ -19,7 +19,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegrid"
 )
 
 func main() {

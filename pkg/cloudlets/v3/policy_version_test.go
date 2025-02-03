@@ -9,10 +9,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 )
 
 func TestListPolicyVersions(t *testing.T) {

@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 )
 
 type (
 	// GetNetworkListSubscriptionRequest contains request parameters for GetNetworkListSubscription
 	GetNetworkListSubscriptionRequest struct {
 		Recipients []string `json:"-"`
-		UniqueIds  []string `json:"-"`
+		UniqueIDs  []string `json:"-"`
 	}
 
 	// GetNetworkListSubscriptionResponse contains response from GetNetworkListSubscription
@@ -67,7 +67,7 @@ type (
 	// UpdateNetworkListSubscriptionRequest contains request parameters for UpdateNetworkListSubscription method
 	UpdateNetworkListSubscriptionRequest struct {
 		Recipients []string `json:"recipients"`
-		UniqueIds  []string `json:"uniqueIds"`
+		UniqueIDs  []string `json:"uniqueIds"`
 	}
 
 	// UpdateNetworkListSubscriptionResponse contains response from UpdateNetworkListSubscription method
@@ -83,7 +83,7 @@ type (
 	// RemoveNetworkListSubscriptionRequest contains request parameters for RemoveNetworkListSubscription method
 	RemoveNetworkListSubscriptionRequest struct {
 		Recipients []string `json:"recipients"`
-		UniqueIds  []string `json:"uniqueIds"`
+		UniqueIDs  []string `json:"uniqueIds"`
 	}
 
 	// Recipients contains recipients

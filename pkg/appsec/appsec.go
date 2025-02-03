@@ -4,7 +4,7 @@ package appsec
 import (
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 )
 
 var (
@@ -59,10 +59,10 @@ type (
 		MalwareProtection
 		MatchTarget
 		MatchTargetSequence
-		NetworkLayerProtection
 		PenaltyBox
 		PenaltyBoxConditions
 		PolicyProtections
+		RapidRule
 		RatePolicy
 		RatePolicyAction
 		RateProtection

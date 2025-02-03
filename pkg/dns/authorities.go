@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -95,16 +95,14 @@ func (d *dns) GetNameServerRecordList(ctx context.Context, params GetNameServerR
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetNameServerRecordList, ErrStructValidation, err)
 	}
 
-	NSrecords, err := d.GetAuthorities(ctx, GetAuthoritiesRequest{ContractIDs: params.ContractIDs})
+	NSrecords, err := d.GetAuthorities(ctx, GetAuthoritiesRequest(params))
 	if err != nil {
 		return nil, err
 	}
 
 	var result []string
 	for _, r := range NSrecords.Contracts {
-		for _, n := range r.Authorities {
-			result = append(result, n)
-		}
+		result = append(result, r.Authorities...)
 	}
 
 	return result, nil

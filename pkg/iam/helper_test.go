@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 )
 
 func TestIAM_ListAllowedCPCodes(t *testing.T) {
@@ -148,7 +148,7 @@ func TestIAM_ListAllowedCPCodes(t *testing.T) {
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "list allowed CP codes: struct validation:\nClientType: cannot be blank\nUserName: cannot be blank")
+				assert.Contains(t, err.Error(), "list allowed CP codes: struct validation:\nBody: {\n\tClientType: cannot be blank\n}\nUserName: cannot be blank")
 			},
 		},
 		"group is required for client type SERVICE_ACCOUNT": {
@@ -161,7 +161,7 @@ func TestIAM_ListAllowedCPCodes(t *testing.T) {
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "list allowed CP codes: struct validation:\nGroups: cannot be blank")
+				assert.Contains(t, err.Error(), "list allowed CP codes: struct validation:\nBody: {\n\tGroups: cannot be blank\n}")
 			},
 		},
 	}

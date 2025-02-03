@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -113,6 +113,344 @@ func TestPapiGetRuleTree(t *testing.T) {
     }
 }`,
 			expectedPath: "/papi/v1/properties/propertyID/versions/2/rules?contractId=contract&groupId=group&validateMode=fast&validateRules=false",
+			expectedResponse: &GetRuleTreeResponse{
+				Response: Response{
+					AccountID:  "accountID",
+					ContractID: "contract",
+					GroupID:    "group",
+				},
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				Etag:            "etag",
+				RuleFormat:      "v2020-09-16",
+				Rules: Rules{
+					Behaviors: []RuleBehavior{
+						{
+							Name: "origin",
+							Options: RuleOptionsMap{
+								"httpPort":           float64(80),
+								"enableTrueClientIp": false,
+								"compress":           true,
+								"cacheKeyHostname":   "ORIGIN_HOSTNAME",
+								"forwardHostHeader":  "REQUEST_HOST_HEADER",
+								"hostname":           "origin.test.com",
+								"originType":         "CUSTOMER",
+							},
+						},
+						{
+							Name: "cpCode",
+							Options: RuleOptionsMap{
+								"value": map[string]interface{}{
+									"id":   float64(12345),
+									"name": "my CP code",
+								},
+							},
+						},
+					},
+					Children: []Rules{
+						{
+							Behaviors: []RuleBehavior{
+								{
+									Name: "gzipResponse",
+									Options: RuleOptionsMap{
+										"behavior": "ALWAYS",
+									},
+								},
+							},
+							Criteria: []RuleBehavior{
+								{
+									Locked: false,
+									Name:   "contentType",
+									Options: RuleOptionsMap{
+										"matchOperator":      "IS_ONE_OF",
+										"matchWildcard":      true,
+										"matchCaseSensitive": false,
+										"values":             []interface{}{"text/html*", "text/css*", "application/x-javascript*"},
+									},
+								},
+							},
+							Name: "Compress Text Content",
+						},
+					},
+					Criteria: []RuleBehavior{},
+					Name:     "default",
+					Options:  RuleOptions{IsSecure: false},
+					CustomOverride: &RuleCustomOverride{
+						OverrideID: "cbo_12345",
+						Name:       "mdc",
+					},
+					Variables: []RuleVariable{
+						{
+							Description: ptr.To("This is a sample Property Manager variable."),
+							Hidden:      false,
+							Name:        "VAR_NAME",
+							Sensitive:   false,
+							Value:       ptr.To("default value"),
+						},
+					},
+				},
+			},
+		},
+		"200 OK with originalInput set to true": {
+			params: GetRuleTreeRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+				ValidateMode:    "fast",
+				ValidateRules:   false,
+				OriginalInput:   ptr.To(true),
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "accountId": "accountID",
+    "contractId": "contract",
+    "groupId": "group",
+    "propertyId": "propertyID",
+    "propertyVersion": 2,
+    "etag": "etag",
+    "ruleFormat": "v2020-09-16",
+    "rules": {
+        "name": "default",
+        "criteria": [],
+        "children": [
+            {
+                "name": "Compress Text Content",
+                "criteria": [
+                    {
+                        "name": "contentType",
+                        "options": {
+                            "matchOperator": "IS_ONE_OF",
+                            "matchWildcard": true,
+                            "matchCaseSensitive": false,
+                            "values": [
+                                "text/html*",
+                                "text/css*",
+                                "application/x-javascript*"
+                            ]
+                        }
+                    }
+                ],
+                "behaviors": [
+                    {
+                        "name": "gzipResponse",
+                        "options": { "behavior": "ALWAYS" }
+                    }
+                ]
+            }
+        ],
+        "options": {
+            "is_secure": false
+        },
+        "behaviors": [
+            {
+                "name": "origin",
+                "options": {
+                    "httpPort": 80,
+                    "enableTrueClientIp": false,
+                    "compress": true,
+                    "cacheKeyHostname": "ORIGIN_HOSTNAME",
+                    "forwardHostHeader": "REQUEST_HOST_HEADER",
+                    "hostname": "origin.test.com",
+                    "originType": "CUSTOMER"
+                }
+            },
+            {
+                "name": "cpCode",
+                "options": {
+                    "value": {
+                        "id": 12345,
+                        "name": "my CP code"
+                    }
+                }
+            }
+        ],
+ 		"customOverride": {
+        	"overrideId": "cbo_12345",
+        	"name": "mdc"
+    	},
+		"variables": [
+            {
+                "name": "VAR_NAME",
+                "value": "default value",
+                "description": "This is a sample Property Manager variable.",
+                "hidden": false,
+                "sensitive": false
+            }
+        ]
+    }
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2/rules?contractId=contract&groupId=group&validateMode=fast&validateRules=false",
+			expectedResponse: &GetRuleTreeResponse{
+				Response: Response{
+					AccountID:  "accountID",
+					ContractID: "contract",
+					GroupID:    "group",
+				},
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				Etag:            "etag",
+				RuleFormat:      "v2020-09-16",
+				Rules: Rules{
+					Behaviors: []RuleBehavior{
+						{
+							Name: "origin",
+							Options: RuleOptionsMap{
+								"httpPort":           float64(80),
+								"enableTrueClientIp": false,
+								"compress":           true,
+								"cacheKeyHostname":   "ORIGIN_HOSTNAME",
+								"forwardHostHeader":  "REQUEST_HOST_HEADER",
+								"hostname":           "origin.test.com",
+								"originType":         "CUSTOMER",
+							},
+						},
+						{
+							Name: "cpCode",
+							Options: RuleOptionsMap{
+								"value": map[string]interface{}{
+									"id":   float64(12345),
+									"name": "my CP code",
+								},
+							},
+						},
+					},
+					Children: []Rules{
+						{
+							Behaviors: []RuleBehavior{
+								{
+									Name: "gzipResponse",
+									Options: RuleOptionsMap{
+										"behavior": "ALWAYS",
+									},
+								},
+							},
+							Criteria: []RuleBehavior{
+								{
+									Locked: false,
+									Name:   "contentType",
+									Options: RuleOptionsMap{
+										"matchOperator":      "IS_ONE_OF",
+										"matchWildcard":      true,
+										"matchCaseSensitive": false,
+										"values":             []interface{}{"text/html*", "text/css*", "application/x-javascript*"},
+									},
+								},
+							},
+							Name: "Compress Text Content",
+						},
+					},
+					Criteria: []RuleBehavior{},
+					Name:     "default",
+					Options:  RuleOptions{IsSecure: false},
+					CustomOverride: &RuleCustomOverride{
+						OverrideID: "cbo_12345",
+						Name:       "mdc",
+					},
+					Variables: []RuleVariable{
+						{
+							Description: ptr.To("This is a sample Property Manager variable."),
+							Hidden:      false,
+							Name:        "VAR_NAME",
+							Sensitive:   false,
+							Value:       ptr.To("default value"),
+						},
+					},
+				},
+			},
+		},
+		"200 OK with originalInput set to false": {
+			params: GetRuleTreeRequest{
+				PropertyID:      "propertyID",
+				PropertyVersion: 2,
+				ContractID:      "contract",
+				GroupID:         "group",
+				ValidateMode:    "fast",
+				ValidateRules:   false,
+				OriginalInput:   ptr.To(false),
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "accountId": "accountID",
+    "contractId": "contract",
+    "groupId": "group",
+    "propertyId": "propertyID",
+    "propertyVersion": 2,
+    "etag": "etag",
+    "ruleFormat": "v2020-09-16",
+    "rules": {
+        "name": "default",
+        "criteria": [],
+        "children": [
+            {
+                "name": "Compress Text Content",
+                "criteria": [
+                    {
+                        "name": "contentType",
+                        "options": {
+                            "matchOperator": "IS_ONE_OF",
+                            "matchWildcard": true,
+                            "matchCaseSensitive": false,
+                            "values": [
+                                "text/html*",
+                                "text/css*",
+                                "application/x-javascript*"
+                            ]
+                        }
+                    }
+                ],
+                "behaviors": [
+                    {
+                        "name": "gzipResponse",
+                        "options": { "behavior": "ALWAYS" }
+                    }
+                ]
+            }
+        ],
+        "options": {
+            "is_secure": false
+        },
+        "behaviors": [
+            {
+                "name": "origin",
+                "options": {
+                    "httpPort": 80,
+                    "enableTrueClientIp": false,
+                    "compress": true,
+                    "cacheKeyHostname": "ORIGIN_HOSTNAME",
+                    "forwardHostHeader": "REQUEST_HOST_HEADER",
+                    "hostname": "origin.test.com",
+                    "originType": "CUSTOMER"
+                }
+            },
+            {
+                "name": "cpCode",
+                "options": {
+                    "value": {
+                        "id": 12345,
+                        "name": "my CP code"
+                    }
+                }
+            }
+        ],
+ 		"customOverride": {
+        	"overrideId": "cbo_12345",
+        	"name": "mdc"
+    	},
+		"variables": [
+            {
+                "name": "VAR_NAME",
+                "value": "default value",
+                "description": "This is a sample Property Manager variable.",
+                "hidden": false,
+                "sensitive": false
+            }
+        ]
+    }
+}`,
+			expectedPath: "/papi/v1/properties/propertyID/versions/2/rules?contractId=contract&groupId=group&originalInput=false&validateMode=fast&validateRules=false",
 			expectedResponse: &GetRuleTreeResponse{
 				Response: Response{
 					AccountID:  "accountID",
@@ -1302,7 +1640,7 @@ func TestPapiUpdateRuleTree(t *testing.T) {
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "updating rule tree: struct validation:\nVariables[1]: {\n\tValue: is required\n}")
+				assert.Contains(t, err.Error(), "updating rule tree: struct validation:\nRules: {\n\tRules: {\n\t\tVariables[1]: {\n\t\t\tValue: is required\n\t\t}\n\t}\n}")
 			},
 		},
 		"500 Internal Server Error": {

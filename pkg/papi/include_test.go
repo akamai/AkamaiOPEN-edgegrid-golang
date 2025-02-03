@@ -3,12 +3,12 @@ package papi
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -705,7 +705,7 @@ func TestCreateInclude(t *testing.T) {
 				assert.NoError(t, err)
 
 				if len(test.expectedRequestBody) > 0 {
-					body, err := ioutil.ReadAll(r.Body)
+					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}

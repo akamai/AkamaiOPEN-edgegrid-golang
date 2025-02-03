@@ -11,10 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
-	"github.com/apex/log"
-	"github.com/apex/log/handlers/discard"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/log"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,7 +26,7 @@ func newRequest(t *testing.T, method, url string) *http.Request {
 }
 
 func TestOverrideRetryPolicy(t *testing.T) {
-	basePolicy := func(ctx context.Context, resp *http.Response, err error) (bool, error) {
+	basePolicy := func(_ context.Context, _ *http.Response, _ error) (bool, error) {
 		return false, errors.New("base policy: dummy, not implemented")
 	}
 	policy := overrideRetryPolicy(basePolicy, []string{"/excluded"})
@@ -148,7 +147,7 @@ func stat429ResponseWaiting(wait time.Duration) *http.Response {
 
 func Test_overrideBackoff(t *testing.T) {
 	baseWait := time.Duration(24) * time.Hour
-	baseBackoff := func(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
+	baseBackoff := func(_, _ time.Duration, _ int, _ *http.Response) time.Duration {
 		return baseWait
 	}
 	backoff := overrideBackoff(baseBackoff, nil)
@@ -302,10 +301,9 @@ maximum retry wait time cannot be shorter than minimum retry wait time
 malformed exclude endpoint pattern: syntax error in pattern: [-]`,
 		},
 	}
-	sessionLogger := &log.Logger{
-		Handler: discard.New(),
-		Level:   1,
-	}
+
+	sessionLogger := log.NOPLogger()
+
 	testSession := &session{log: sessionLogger}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {

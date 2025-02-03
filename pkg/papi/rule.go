@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -22,6 +22,7 @@ type (
 		ValidateMode    string
 		ValidateRules   bool
 		RuleFormat      string
+		OriginalInput   *bool
 	}
 
 	// GetRuleTreeResponse contains data returned by performing GET /rules request
@@ -154,7 +155,7 @@ const (
 	RuleCriteriaMustSatisfyAny RuleCriteriaMustSatisfy = "any"
 )
 
-var validRuleFormat = regexp.MustCompile("^(latest|v\\d{4}-\\d{2}-\\d{2})$")
+var validRuleFormat = regexp.MustCompile(`^(latest|v\d{4}-\d{2}-\d{2})$`)
 
 // Validate validates GetRuleTreeRequest struct
 func (r GetRuleTreeRequest) Validate() error {
@@ -249,6 +250,9 @@ func (p *papi) GetRuleTree(ctx context.Context, params GetRuleTreeRequest) (*Get
 	}
 	if !params.ValidateRules {
 		getURL += fmt.Sprintf("&validateRules=%t", params.ValidateRules)
+	}
+	if params.OriginalInput != nil && !*params.OriginalInput {
+		getURL += "&originalInput=false"
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {

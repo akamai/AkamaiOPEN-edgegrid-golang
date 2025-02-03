@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -72,19 +72,6 @@ type (
 		Change string `json:"change"`
 	}
 
-	// UpdateChangeRequest contains params and body required to send UpdateChange request
-	UpdateChangeRequest struct {
-		Certificate
-		EnrollmentID          int
-		ChangeID              int
-		AllowedInputTypeParam AllowedInputType
-	}
-
-	// UpdateChangeResponse is a response object returned from UpdateChange request
-	UpdateChangeResponse struct {
-		Change string `json:"change"`
-	}
-
 	// AcknowledgementRequest contains params and body required to send acknowledgement. It is the same for all acknowledgement types (dv, pre-verification-warnings etc.)
 	AcknowledgementRequest struct {
 		Acknowledgement
@@ -96,22 +83,6 @@ type (
 	Acknowledgement struct {
 		Acknowledgement string `json:"acknowledgement"`
 	}
-
-	// AllowedInputType represents allowedInputTypeParam used for fetching and updating changes
-	AllowedInputType string
-)
-
-const (
-	// AllowedInputTypeChangeManagementACK parameter value
-	AllowedInputTypeChangeManagementACK AllowedInputType = "change-management-ack"
-	// AllowedInputTypeLetsEncryptChallengesCompleted parameter value
-	AllowedInputTypeLetsEncryptChallengesCompleted AllowedInputType = "lets-encrypt-challenges-completed"
-	// AllowedInputTypePostVerificationWarningsACK parameter value
-	AllowedInputTypePostVerificationWarningsACK AllowedInputType = "post-verification-warnings-ack"
-	// AllowedInputTypePreVerificationWarningsACK parameter value
-	AllowedInputTypePreVerificationWarningsACK AllowedInputType = "pre-verification-warnings-ack"
-	// AllowedInputTypeThirdPartyCertAndTrustChain parameter value
-	AllowedInputTypeThirdPartyCertAndTrustChain AllowedInputType = "third-party-cert-and-trust-chain"
 )
 
 const (
@@ -120,15 +91,6 @@ const (
 	// AcknowledgementDeny parameter value
 	AcknowledgementDeny = "deny"
 )
-
-// AllowedInputContentTypeHeader maps content type headers to specific allowed input type params
-var AllowedInputContentTypeHeader = map[AllowedInputType]string{
-	AllowedInputTypeChangeManagementACK:            "application/vnd.akamai.cps.acknowledgement-with-hash.v1+json",
-	AllowedInputTypeLetsEncryptChallengesCompleted: "application/vnd.akamai.cps.acknowledgement.v1+json",
-	AllowedInputTypePostVerificationWarningsACK:    "application/vnd.akamai.cps.acknowledgement.v1+json",
-	AllowedInputTypePreVerificationWarningsACK:     "application/vnd.akamai.cps.acknowledgement.v1+json",
-	AllowedInputTypeThirdPartyCertAndTrustChain:    "application/vnd.akamai.cps.certificate-and-trust-chain.v1+json",
-}
 
 // Validate validates GetChangeRequest
 func (c GetChangeRequest) Validate() error {
@@ -151,22 +113,6 @@ func (c CancelChangeRequest) Validate() error {
 	return validation.Errors{
 		"EnrollmentID": validation.Validate(c.EnrollmentID, validation.Required),
 		"ChangeID":     validation.Validate(c.ChangeID, validation.Required),
-	}.Filter()
-}
-
-// Validate validates UpdateChangeRequest
-func (c UpdateChangeRequest) Validate() error {
-	return validation.Errors{
-		"EnrollmentID": validation.Validate(c.EnrollmentID, validation.Required),
-		"ChangeID":     validation.Validate(c.ChangeID, validation.Required),
-		"AllowedInputTypeParam": validation.Validate(c.AllowedInputTypeParam, validation.In(
-			AllowedInputTypeChangeManagementACK,
-			AllowedInputTypeLetsEncryptChallengesCompleted,
-			AllowedInputTypePostVerificationWarningsACK,
-			AllowedInputTypePreVerificationWarningsACK,
-			AllowedInputTypeThirdPartyCertAndTrustChain,
-		)),
-		"Certificate": validation.Validate(c.Certificate, validation.Required),
 	}.Filter()
 }
 
@@ -198,8 +144,6 @@ var (
 	ErrGetChangeStatus = errors.New("fetching change")
 	// ErrCancelChange is returned when CancelChange fails
 	ErrCancelChange = errors.New("canceling change")
-	// ErrUpdateChange is returned when UpdateChange fails
-	ErrUpdateChange = errors.New("updating change")
 )
 
 func (c *cps) GetChangeStatus(ctx context.Context, params GetChangeStatusRequest) (*Change, error) {
@@ -273,46 +217,6 @@ func (c *cps) CancelChange(ctx context.Context, params CancelChangeRequest) (*Ca
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrCancelChange, c.Error(resp))
-	}
-
-	return &rval, nil
-}
-
-func (c *cps) UpdateChange(ctx context.Context, params UpdateChangeRequest) (*UpdateChangeResponse, error) {
-	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateChange, ErrStructValidation, err)
-	}
-
-	var rval UpdateChangeResponse
-
-	logger := c.Log(ctx)
-	logger.Debug("UpdateChangeLetsEncryptChallenges")
-
-	uri, err := url.Parse(fmt.Sprintf(
-		"/cps/v2/enrollments/%d/changes/%d/input/update/%s",
-		params.EnrollmentID,
-		params.ChangeID,
-		params.AllowedInputTypeParam),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateChange, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateChange, err)
-	}
-	req.Header.Set("Accept", "application/vnd.akamai.cps.change-id.v1+json")
-	req.Header.Set("Content-Type", AllowedInputContentTypeHeader[params.AllowedInputTypeParam])
-
-	resp, err := c.Exec(req, &rval)
-	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateChange, err)
-	}
-	defer session.CloseResponseBody(resp)
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrUpdateChange, c.Error(resp))
 	}
 
 	return &rval, nil

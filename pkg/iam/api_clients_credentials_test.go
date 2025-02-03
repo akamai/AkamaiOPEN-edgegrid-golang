@@ -9,10 +9,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 )
 
 func TestIAM_CreateCredential(t *testing.T) {
@@ -622,7 +622,7 @@ func TestIAM_UpdateCredential(t *testing.T) {
 		"validation errors": {
 			params: UpdateCredentialRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "update credential: struct validation: ExpiresOn: cannot be blank\nStatus: cannot be blank\nCredentialID: cannot be blank", err.Error())
+				assert.Equal(t, "update credential: struct validation: Body: {\n\tExpiresOn: cannot be blank\n\tStatus: cannot be blank\n}\nCredentialID: cannot be blank", err.Error())
 			},
 		},
 		"404 Not Found": {

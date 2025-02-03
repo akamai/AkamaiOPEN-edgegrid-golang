@@ -8,9 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/internal/test"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 )
 
 func TestIAM_LockAPIClient(t *testing.T) {
@@ -1074,13 +1074,13 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 		"validation errors": {
 			params: CreateAPIClientRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create api client: struct validation:\nAPIs: cannot be blank\nAuthorizedUsers: cannot be blank\nClientType: cannot be blank\nGroups: cannot be blank", err.Error())
+				assert.Equal(t, "create api client: struct validation:\nAPIAccess: {\n\tAPIs: cannot be blank\n}\nAuthorizedUsers: cannot be blank\nClientType: cannot be blank\nGroupAccess: {\n\tGroups: cannot be blank\n}", err.Error())
 			},
 		},
 		"validation errors - internal validations": {
 			params: CreateAPIClientRequest{APIAccess: APIAccess{APIs: []API{{}}}, AuthorizedUsers: []string{"user1"}, ClientType: "abc", GroupAccess: GroupAccess{Groups: []ClientGroup{{}}}, PurgeOptions: &PurgeOptions{CPCodeAccess: CPCodeAccess{AllCurrentAndNewCPCodes: false, CPCodes: nil}}},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "create api client: struct validation:\nAPIs[0]: {\n\tAPIID: cannot be blank\n\tAccessLevel: cannot be blank\n}\nClientType: value 'abc' is invalid. Must be one of: 'CLIENT', 'SERVICE_ACCOUNT' or 'USER_CLIENT'\nGroups[0]: {\n\tGroupID: cannot be blank\n\tRoleID: cannot be blank\n}\nCPCodes: is required", err.Error())
+				assert.Equal(t, "create api client: struct validation:\nAPIAccess: {\n\tAPIs[0]: {\n\t\tAPIID: cannot be blank\n\t\tAccessLevel: cannot be blank\n\t}\n}\nClientType: value 'abc' is invalid. Must be one of: 'CLIENT', 'SERVICE_ACCOUNT' or 'USER_CLIENT'\nGroupAccess: {\n\tGroups[0]: {\n\t\tGroupID: cannot be blank\n\t\tRoleID: cannot be blank\n\t}\n}\nPurgeOptions: {\n\tCPCodeAccess: {\n\t\tCPCodes: is required\n\t}\n}", err.Error())
 			},
 		},
 		"500 internal server error": {
@@ -1835,13 +1835,13 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 		"validation errors": {
 			params: UpdateAPIClientRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "update api client: struct validation:\nAPIs: cannot be blank\nAuthorizedUsers: cannot be blank\nClientName: cannot be blank\nClientType: cannot be blank\nGroups: cannot be blank", err.Error())
+				assert.Equal(t, "update api client: struct validation:\nBody: {\n\tAPIAccess: {\n\t\tAPIs: cannot be blank\n\t}\n\tAuthorizedUsers: cannot be blank\n\tClientName: cannot be blank\n\tClientType: cannot be blank\n\tGroupAccess: {\n\t\tGroups: cannot be blank\n\t}\n}", err.Error())
 			},
 		},
 		"validation errors - internal validations": {
 			params: UpdateAPIClientRequest{Body: UpdateAPIClientRequestBody{APIAccess: APIAccess{APIs: []API{{}}}, AuthorizedUsers: []string{"user1"}, ClientType: "abc", GroupAccess: GroupAccess{Groups: []ClientGroup{{}}}, PurgeOptions: &PurgeOptions{CPCodeAccess: CPCodeAccess{AllCurrentAndNewCPCodes: false, CPCodes: nil}}}},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "update api client: struct validation:\nAPIs[0]: {\n\tAPIID: cannot be blank\n\tAccessLevel: cannot be blank\n}\nClientName: cannot be blank\nClientType: value 'abc' is invalid. Must be one of: 'CLIENT', 'SERVICE_ACCOUNT' or 'USER_CLIENT'\nGroups[0]: {\n\tGroupID: cannot be blank\n\tRoleID: cannot be blank\n}\nCPCodes: is required", err.Error())
+				assert.Equal(t, "update api client: struct validation:\nBody: {\n\tAPIAccess: {\n\t\tAPIs[0]: {\n\t\t\tAPIID: cannot be blank\n\t\t\tAccessLevel: cannot be blank\n\t\t}\n\t}\n\tClientName: cannot be blank\n\tClientType: value 'abc' is invalid. Must be one of: 'CLIENT', 'SERVICE_ACCOUNT' or 'USER_CLIENT'\n\tGroupAccess: {\n\t\tGroups[0]: {\n\t\t\tGroupID: cannot be blank\n\t\t\tRoleID: cannot be blank\n\t\t}\n\t}\n\tPurgeOptions: {\n\t\tCPCodeAccess: {\n\t\t\tCPCodes: is required\n\t\t}\n\t}\n}", err.Error())
 			},
 		},
 		"500 internal server error": {

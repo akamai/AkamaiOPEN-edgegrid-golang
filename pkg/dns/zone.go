@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -16,8 +15,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -305,7 +304,7 @@ var zoneStructMap = map[string]string{
 	"OutboundZoneTransfer":  "outboundZoneTransfer",
 	"ContractID":            "contractId"}
 
-// Util to convert struct to http request body, eg. io.reader
+// Util to convert struct to http request body, e.g. io.reader
 func convertStructToReqBody(srcStruct interface{}) (io.Reader, error) {
 	reqBody, err := json.Marshal(srcStruct)
 	if err != nil {
@@ -318,7 +317,7 @@ func (d *dns) ListZones(ctx context.Context, params ListZonesRequest) (*ZoneList
 	logger := d.Log(ctx)
 	logger.Debug("ListZones")
 
-	getURL := fmt.Sprintf("/config-dns/v2/zones")
+	getURL := "/config-dns/v2/zones"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
@@ -442,7 +441,7 @@ func (d *dns) GetMasterZoneFile(ctx context.Context, params GetMasterZoneFileReq
 		return "", d.Error(resp)
 	}
 
-	masterFile, err := ioutil.ReadAll(resp.Body)
+	masterFile, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("GetMasterZoneFile request failed: %w", err)
 	}
@@ -731,7 +730,7 @@ func ValidateZone(zone *ZoneCreate) error {
 		if len(zone.Target) == 0 {
 			return fmt.Errorf("Target is required for Alias zone type")
 		}
-		if zone.Masters != nil && len(zone.Masters) > 0 {
+		if len(zone.Masters) > 0 {
 			return fmt.Errorf("Masters is invalid for Alias zone type")
 		}
 		if zone.SignAndServe {
@@ -746,7 +745,7 @@ func ValidateZone(zone *ZoneCreate) error {
 	if len(zone.Target) > 0 {
 		return fmt.Errorf("Target is invalid for %s zone type", zType)
 	}
-	if zone.Masters != nil && len(zone.Masters) > 0 && zType == "PRIMARY" {
+	if len(zone.Masters) > 0 && zType == "PRIMARY" {
 		return fmt.Errorf("Masters is invalid for Primary zone type")
 	}
 

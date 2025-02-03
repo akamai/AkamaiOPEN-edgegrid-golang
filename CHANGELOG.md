@@ -1,5 +1,90 @@
 # RELEASE NOTES
 
+## 10.0.0 (Feb 3, 2025)
+
+### BREAKING CHANGES:
+
+* APPSEC
+  * Renamed field `FirewallPolicyIds` to `FirewallPolicyIDs` in the following structures:
+    * `Siemexp`
+    * `RatePolicyAPISelectors`
+    * `GetSiemSettingsResponse`
+    * `UpdateSiemSettingsRequest`
+    * `RemoveSiemSettingsRequest`
+  * Removed the deprecated `NetworkLayerProtection` interface containing these methods:
+    * `GetNetworkLayerProtections`
+    * `GetNetworkLayerProtection`
+    * `UpdateNetworkLayerProtection`
+    * `RemoveNetworkLayerProtection`
+  * Removed these deprecated methods:
+    * `GetExportConfigurations`
+    * `GetPenaltyBoxes`
+    * `GetRatePolicyAction`
+    * `RemovePolicyProtections`
+    * `GetSlowPostProtectionSetting`
+    * `GetWAFModes`
+
+* BOTMAN
+  * Removed the deprecated `ChallengeInterceptionRules` interface containing these methods:
+    * `GetChallengeInterceptionRules`
+    * `UpdateChallengeInterceptionRules`
+
+* CPS
+  * Removed the deprecated `UpdateChange` method.
+
+* IAM
+  * Removed the deprecated `UpdateTFA` method.
+
+* Logging
+  * Changed logger from apex to the custom interface
+    * Logger method differences:
+      *  A new method `With` has been added that condenses the apex methods (`WithError`, `WithField`, `WithFields`, `WithDuration`) into one.
+          * `WithError`, `WithField`, `WithFields`, `WithDuration` methods are not included in the new logger.
+          * The `Entry` ([documentation](https://pkg.go.dev/github.com/apex/log#Entry)) type no longer exists in the new logger, `With` instead of `Entry` returns a new logger instance with new fields.
+      * Logging methods (`Fatal`, `Error`, `Warn`, `Info`, `Debug`) can accept key-value pairs in addition to a message,
+          * The attribute arguments are processed as follows: If an argument is a string and this is not the last argument, the following argument is treated as the value and the two are combined into an key - value pair. Otherwise, the argument is treated as a value with key "!BADKEY".
+          * formatted logging methods (`Fatalf`, `Errorf`, `Warnf`, `Infof`, `Debugf`) remain unchanged.
+  * By default `slog` with custom handler is used.
+  * `log.Interface` allows users to define default logger with `SetLogger` method and provides option to use different logger backend.
+    * Instructions on using different logger backends can be found in `pkg/log/README.md` file
+  * Log output structure have changed slightly,
+    * Time format was adjusted, logger will use 24-hour clock with milliseconds instead of 12-hour clock used previously.
+
+* Networklists
+  * Renamed field `UniqueIds` to `UniqueIDs` in the following structures:
+    * `GetNetworkListSubscriptionRequest`
+    * `UpdateNetworkListSubscriptionRequest`
+    * `RemoveNetworkListSubscriptionRequest`
+
+### FEATURES/ENHANCEMENTS:
+
+* General
+  * Migrated to Go `1.22`.
+  * Improved formatting of validation errors.
+  * Added an ability to return an error for `session.Option`.
+  * Improved formatting of validation errors.
+  * Updated vulnerable dependencies.
+  * Improved code by resolving issues reported by linter.
+
+* APPSEC
+  * Added Rapid Rules API Support
+    * [GetRapidRules](https://techdocs.akamai.com/application-security/reference/get-rapid-rules)
+    * [GetRapidRulesDefaultAction](https://techdocs.akamai.com/application-security/reference/get-rapid-rules-action)
+    * [GetRapidRulesStatus](https://techdocs.akamai.com/application-security/reference/get-rapid-rules-status)
+    * [UpdateRapidRulesStatus](https://techdocs.akamai.com/application-security/reference/put-rapid-rules-status)
+    * [UpdateRapidRulesDefaultAction](https://techdocs.akamai.com/application-security/reference/put-rapid-rules-action)
+    * [UpdateRapidRuleActionLock](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-lock)
+    * [UpdateRapidRuleAction](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-action)
+    * [UpdateRapidRuleException](https://techdocs.akamai.com/application-security/reference/put-rapid-rule-condition-exception)
+
+* PAPI
+  * Added the `OriginalInput` parameter in the `GetRuleTreeRequest` to allow returning upgraded content of rules. When omitted it is equal to true, meaning that returned rules are exactly as sent.
+
+### BUG FIXES:
+
+* DNS
+  * Fixed an incorrect URL for the `ListGroups` method.
+
 ## 9.1.0 (Nov 14, 2024)
 
 ### FEATURES/ENHANCEMENTS:
@@ -13,11 +98,11 @@
   * Added logic responsible for closing the response body in each method.
 
 * APPSEC
-  * Added following content protection fields to `GetExportConfigurationResponse` under `BotManagement` section
+  * Added the following content protection fields to `GetExportConfigurationResponse` under the `BotManagement` section:
     * `ContentProtectionRules`
     * `ContentProtectionRuleSequence`
     * `ContentProtectionJavaScriptInjectionRules`
-  * Changed `EnabledBotmanSiemEvents` to `*bool` and omitted from following structs when empty
+  * Changed `EnabledBotmanSiemEvents` to `*bool` and omitted from the following structures when empty:
     * `GetSiemSettingResponse`
     * `RemoveSiemSettingsRequest`
     * `RemoveSiemSettingsResponse`
@@ -25,7 +110,7 @@
     * `UpdateSiemSettingsResponse`
 
 * DNS
-  * Added support for `OutboundZoneTransfer` field in requests and responses for these methods:
+  * Added support for the `OutboundZoneTransfer` field in requests and responses for these methods:
     * `CreateBulkZones`
     * `CreateZone`
     * `GetZone`
@@ -38,7 +123,7 @@
   * Fixed SIEM exception validation for the `Exceptions` field.
 
 * Cloud Access
-  * Added custom error `ErrAccessKeyNotFound` to easier verify if provided access key does not exist.
+  * Added a custom error `ErrAccessKeyNotFound` to easier verify if the provided access key does not exist.
 
 ## 9.0.0 (Oct 3, 2024)
 

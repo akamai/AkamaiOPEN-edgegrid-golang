@@ -10,7 +10,7 @@
 //
 // 3. Edit the `expiresOn` date to today's date. The date cannot be more than two years out or it will return a 400. Optionally, you can change the `description` value.
 //
-// **Important:** Don't use your actual credentials when inactivating them. Otherwise, you'll block your access to the Akamai APIs.
+// **Important:** Don't use the credentials you're actively using when inactivating a set of credentials. Otherwise, you'll block your access to the Akamai APIs.
 //
 // 4. Open a Terminal or shell instance and run "go run examples/auth-signer/update/update-credentials.go".
 //
@@ -26,7 +26,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegrid"
 )
 
 func main() {

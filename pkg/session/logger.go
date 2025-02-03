@@ -1,7 +1,7 @@
 package session
 
 import (
-	"github.com/apex/log"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/log"
 	"github.com/hashicorp/go-retryablehttp"
 )
 

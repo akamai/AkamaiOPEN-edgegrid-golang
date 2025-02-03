@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -577,7 +577,7 @@ func TestUpdateAccessKey(t *testing.T) {
 }
 
 func loadTestData(name string) ([]byte, error) {
-	data, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s", name))
+	data, err := os.ReadFile(fmt.Sprintf("./testdata/%s", name))
 	if err != nil {
 		return nil, err
 	}

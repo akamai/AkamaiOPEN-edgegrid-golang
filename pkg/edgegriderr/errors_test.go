@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/tj/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidationErrorsParsing(t *testing.T) {
@@ -54,7 +54,19 @@ Error[0]: {
 						"NestedError1": fmt.Errorf("oops"),
 					},
 					"1": validation.Errors{
-						"NestedError1": fmt.Errorf("oops"),
+						"Error1": validation.Errors{
+							"Error1-1": validation.Errors{
+								"0": validation.Errors{
+									"NestedError1": fmt.Errorf("oops"),
+								},
+								"1": validation.Errors{
+									"NestedError1": fmt.Errorf("oops"),
+								},
+							},
+							"Error1-2": validation.Errors{
+								"NestedError1": fmt.Errorf("oops"),
+							},
+						},
 					},
 				},
 			},
@@ -63,7 +75,17 @@ Error[0]: {
 	NestedError1: oops
 }
 Error[1]: {
-	NestedError1: oops
+	Error1: {
+		Error1-1[0]: {
+			NestedError1: oops
+		}
+		Error1-1[1]: {
+			NestedError1: oops
+		}
+		Error1-2: {
+			NestedError1: oops
+		}
+	}
 }`,
 		},
 		"errors on multiple levels": {

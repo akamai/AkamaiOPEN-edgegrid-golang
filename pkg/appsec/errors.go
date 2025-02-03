@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/errs"
 )
 
 var (
@@ -33,7 +33,7 @@ func (p *appsec) Error(r *http.Response) error {
 
 	var body []byte
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		p.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.StatusCode = r.StatusCode

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -318,7 +318,7 @@ func (e *edgeworkers) ListReports(ctx context.Context) (*ListReportsResponse, er
 	logger := e.Log(ctx)
 	logger.Debug("ListReports")
 
-	uri := fmt.Sprintf("/edgeworkers/v1/reports")
+	uri := "/edgeworkers/v1/reports"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {

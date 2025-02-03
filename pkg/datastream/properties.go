@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -98,7 +98,7 @@ func (d *ds) GetDatasetFields(ctx context.Context, params GetDatasetFieldsReques
 
 	q := uri.Query()
 	if params.ProductID != nil {
-		q.Add("productId", fmt.Sprintf("%s", *params.ProductID))
+		q.Add("productId", *params.ProductID)
 	}
 	uri.RawQuery = q.Encode()
 

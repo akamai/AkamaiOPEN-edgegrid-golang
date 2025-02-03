@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -85,78 +85,6 @@ func TestAppSec_ListRatePolicyActions(t *testing.T) {
 					session.WithContextHeaders(test.headers),
 				),
 				test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
-		})
-	}
-}
-
-// Test RatePolicyAction
-func TestAppSec_GetRatePolicyAction(t *testing.T) {
-
-	result := GetRatePolicyActionResponse{}
-
-	respData := compactJSON(loadFixtureBytes("testdata/TestRatePolicyAction/RatePolicyActions.json"))
-	err := json.Unmarshal([]byte(respData), &result)
-	require.NoError(t, err)
-
-	tests := map[string]struct {
-		params           GetRatePolicyActionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *GetRatePolicyActionResponse
-		withError        error
-	}{
-		"200 OK": {
-			params: GetRatePolicyActionRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
-			},
-			responseStatus:   http.StatusOK,
-			responseBody:     respData,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rate-policies",
-			expectedResponse: &result,
-		},
-		"500 internal server error": {
-			params: GetRatePolicyActionRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
-			},
-			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-			{
-				"type": "internal_error",
-				"title": "Internal Server Error",
-				"detail": "Error fetching match target"
-			}`,
-			expectedPath: "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/rate-policies",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching match target",
-				StatusCode: http.StatusInternalServerError,
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			client := mockAPIClient(t, mockServer)
-			result, err := client.GetRatePolicyAction(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

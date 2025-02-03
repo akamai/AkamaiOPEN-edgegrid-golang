@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/errs"
 )
 
 var (
@@ -34,18 +34,18 @@ func (d *dns) Error(r *http.Response) error {
 
 	var body []byte
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		d.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.StatusCode = r.StatusCode
-		e.Title = fmt.Sprintf("Failed to read error body")
+		e.Title = "Failed to read error body"
 		e.Detail = err.Error()
 		return &e
 	}
 
 	if err := json.Unmarshal(body, &e); err != nil {
 		d.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
-		e.Title = fmt.Sprintf("Failed to unmarshal error body. DNS API failed. Check details for more information.")
+		e.Title = "Failed to unmarshal error body. DNS API failed. Check details for more information."
 		e.Detail = errs.UnescapeContent(string(body))
 	}
 

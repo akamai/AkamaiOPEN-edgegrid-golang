@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -51,7 +51,7 @@ func (e *edgeworkers) ValidateBundle(ctx context.Context, params ValidateBundleR
 	}
 
 	uri := "/edgeworkers/v1/validations"
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, ioutil.NopCloser(params.Bundle))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, io.NopCloser(params.Bundle))
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrValidateBundle, err)
 	}

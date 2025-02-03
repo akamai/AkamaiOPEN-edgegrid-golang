@@ -33,12 +33,9 @@ func ParseValidationErrors(e validation.Errors) error {
 // Returned function takes validation.Errors, field to be indexed (empty at the beginning) and index size at start as parameters
 func validationErrorsParser() func(validation.Errors, string, int) string {
 	var parser func(validation.Errors, string, int) string
+
 	parser = func(validationErrors validation.Errors, indexedFieldName string, indentSize int) string {
-		keys := make([]string, 0, len(validationErrors))
-		for k := range validationErrors {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
+		keys := getSortedKeys(validationErrors)
 
 		var s strings.Builder
 		for _, key := range keys {
@@ -46,19 +43,47 @@ func validationErrorsParser() func(validation.Errors, string, int) string {
 				continue
 			}
 			errs, ok := validationErrors[key].(validation.Errors)
-
 			if !ok {
-				fmt.Fprintf(&s, "%s%s: %s\n", strings.Repeat("\t", indentSize), key, validationErrors[key].Error())
-			}
-			if _, err := strconv.Atoi(key); err != nil {
-				fmt.Fprintf(&s, "%s", parser(errs, key, indentSize))
+				fmt.Fprintf(&s, "%s%s: %s\n", indent(indentSize), key, validationErrors[key].Error())
 				continue
 			}
-			fmt.Fprintf(&s, "%s%s[%s]: {\n%s%s}\n", strings.Repeat("\t", indentSize), indexedFieldName, key, parser(errs, "", indentSize+1), strings.Repeat("\t", indentSize))
+
+			if _, err := strconv.Atoi(key); err != nil {
+				if hasNumericKeys(errs) {
+					fmt.Fprintf(&s, "%s", parser(errs, key, indentSize))
+				} else {
+					fmt.Fprintf(&s, "%s%s: {\n%s%s}\n", indent(indentSize), key, parser(errs, key, indentSize+1), indent(indentSize))
+				}
+				continue
+			}
+
+			fmt.Fprintf(&s, "%s%s[%s]: {\n%s%s}\n", indent(indentSize), indexedFieldName, key, parser(errs, "", indentSize+1), indent(indentSize))
 		}
 
 		return s.String()
 	}
 
 	return parser
+}
+
+func getSortedKeys(errs validation.Errors) []string {
+	keys := make([]string, 0, len(errs))
+	for k := range errs {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
+func indent(size int) string {
+	return strings.Repeat("\t", size)
+}
+
+func hasNumericKeys(errs validation.Errors) bool {
+	for key := range errs {
+		if _, err := strconv.Atoi(key); err != nil {
+			return false
+		}
+	}
+	return true
 }

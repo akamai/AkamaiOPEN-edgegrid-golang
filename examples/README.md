@@ -9,7 +9,7 @@ To run any of the files:
 1. Specify the location of your `.edgerc` file and the section header for the set of credentials you'd like to use. The default is `default`.
 2. For update and delete operations, replace the dummy `credentialId` with your valid `credentialId`.
    
-   >**Important:** Don't use your actual credentials for the update (inactivation) and delete operations. Otherwise, you'll block your access to the Akamai APIs.
+   >**Important:** Don't use the credentials you're actively using when running the update (inactivation) and delete operations. Otherwise, you'll block your access to the Akamai APIs.
 
 3. Open a Terminal or shell instance and run the .go file.
 

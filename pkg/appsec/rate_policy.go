@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -273,7 +273,7 @@ type (
 	RatePolicyAPISelectors []struct {
 		APIDefinitionID    int   `json:"apiDefinitionId,omitempty"`
 		DefinedResources   *bool `json:"definedResources,omitempty"`
-		ResourceIds        []int `json:"resourceIds"`
+		ResourceIDs        []int `json:"resourceIds"`
 		UndefinedResources *bool `json:"undefinedResources,omitempty"`
 	}
 

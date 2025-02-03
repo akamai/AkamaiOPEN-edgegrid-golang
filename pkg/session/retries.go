@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/apex/log"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/log"
 	"github.com/hashicorp/go-retryablehttp"
 )
 
@@ -62,7 +62,7 @@ func configureRetryClient(conf RetryConfig, signFunc func(r *http.Request) error
 	retryClient.RetryWaitMax = conf.RetryWaitMax
 
 	retryClient.PrepareRetry = signFunc
-	retryClient.HTTPClient.CheckRedirect = func(r *http.Request, via []*http.Request) error {
+	retryClient.HTTPClient.CheckRedirect = func(r *http.Request, _ []*http.Request) error {
 		return signFunc(r)
 	}
 	retryClient.CheckRetry = overrideRetryPolicy(retryablehttp.DefaultRetryPolicy, conf.ExcludedEndpoints)
@@ -128,7 +128,7 @@ func overrideRetryPolicy(basePolicy retryablehttp.CheckRetry, excludedEndpoints 
 }
 
 func overrideBackoff(baseBackoff retryablehttp.Backoff, logger log.Interface) retryablehttp.Backoff {
-	return func(min, max time.Duration, attemptNum int, resp *http.Response) time.Duration {
+	return func(minT, maxT time.Duration, attemptNum int, resp *http.Response) time.Duration {
 		if resp != nil {
 			if resp.StatusCode == http.StatusTooManyRequests {
 				if wait, ok := getXRateLimitBackoff(resp, logger); ok {
@@ -136,7 +136,7 @@ func overrideBackoff(baseBackoff retryablehttp.Backoff, logger log.Interface) re
 				}
 			}
 		}
-		return baseBackoff(min, max, attemptNum, resp)
+		return baseBackoff(minT, maxT, attemptNum, resp)
 	}
 }
 
@@ -153,7 +153,7 @@ func getXRateLimitBackoff(resp *http.Response, logger log.Interface) (time.Durat
 	next, err := time.Parse(time.RFC3339Nano, nextHeader)
 	if err != nil {
 		if logger != nil {
-			logger.WithError(err).Error("Could not parse X-RateLimit-Next header")
+			logger.Error("Could not parse X-RateLimit-Next header", "error", err)
 		}
 		return 0, false
 	}
@@ -168,7 +168,7 @@ func getXRateLimitBackoff(resp *http.Response, logger log.Interface) (time.Durat
 	date, err := time.Parse(time.RFC1123, dateHeader)
 	if err != nil {
 		if logger != nil {
-			logger.WithError(err).Error("Could not parse Date header")
+			logger.Error("Could not parse Date header", "error", err)
 		}
 		return 0, false
 	}

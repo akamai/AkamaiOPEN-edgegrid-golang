@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -41,7 +41,7 @@ type (
 		EnableSiem              bool        `json:"enableSiem"`
 		EnabledBotmanSiemEvents bool        `json:"enabledBotmanSiemEvents"`
 		SiemDefinitionID        int         `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
+		FirewallPolicyIDs       []string    `json:"firewallPolicyIds"`
 		Exceptions              []Exception `json:"exceptions"`
 	}
 
@@ -63,7 +63,7 @@ type (
 		EnableSiem              bool        `json:"enableSiem"`
 		EnabledBotmanSiemEvents *bool       `json:"enabledBotmanSiemEvents"`
 		SiemDefinitionID        int         `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
+		FirewallPolicyIDs       []string    `json:"firewallPolicyIds"`
 		Exceptions              []Exception `json:"exceptions"`
 	}
 
@@ -75,7 +75,7 @@ type (
 		EnableSiem              bool        `json:"enableSiem"`
 		EnabledBotmanSiemEvents *bool       `json:"enabledBotmanSiemEvents,omitempty"`
 		SiemDefinitionID        int         `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
+		FirewallPolicyIDs       []string    `json:"firewallPolicyIds"`
 		Exceptions              []Exception `json:"exceptions,omitempty"`
 	}
 
@@ -85,7 +85,7 @@ type (
 		EnableSiem              bool        `json:"enableSiem"`
 		EnabledBotmanSiemEvents *bool       `json:"enabledBotmanSiemEvents"`
 		SiemDefinitionID        int         `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string    `json:"firewallPolicyIds"`
+		FirewallPolicyIDs       []string    `json:"firewallPolicyIds"`
 		Exceptions              []Exception `json:"exceptions"`
 	}
 
@@ -98,7 +98,7 @@ type (
 		EnableSiem              bool     `json:"enableSiem"`
 		EnabledBotmanSiemEvents *bool    `json:"-"`
 		SiemDefinitionID        int      `json:"-"`
-		FirewallPolicyIds       []string `json:"-"`
+		FirewallPolicyIDs       []string `json:"-"`
 	}
 
 	// RemoveSiemSettingsResponse is returned from a call to RemoveSiemSettings.
@@ -108,7 +108,7 @@ type (
 		EnableSiem              bool     `json:"enableSiem"`
 		EnabledBotmanSiemEvents *bool    `json:"enabledBotmanSiemEvents"`
 		SiemDefinitionID        int      `json:"siemDefinitionId"`
-		FirewallPolicyIds       []string `json:"firewallPolicyIds"`
+		FirewallPolicyIDs       []string `json:"firewallPolicyIds"`
 	}
 )
 

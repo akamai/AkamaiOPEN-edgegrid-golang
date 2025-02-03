@@ -4,14 +4,14 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -40,7 +40,7 @@ func dummyOpt() Option {
 }
 
 func loadTestData(name string) ([]byte, error) {
-	data, err := ioutil.ReadFile(fmt.Sprintf("./testdata/%s", name))
+	data, err := os.ReadFile(fmt.Sprintf("./testdata/%s", name))
 	if err != nil {
 		return nil, err
 	}

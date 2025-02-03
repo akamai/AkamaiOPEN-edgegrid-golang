@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/tj/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCloudwrapper_ListLocations(t *testing.T) {

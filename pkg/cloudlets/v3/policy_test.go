@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -1446,7 +1446,7 @@ func TestUpdatePolicy(t *testing.T) {
 		"validation errors - missing required params": {
 			params: UpdatePolicyRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "update shared policy: struct validation: GroupID: cannot be blank\nPolicyID: cannot be blank", err.Error())
+				assert.Equal(t, "update shared policy: struct validation: Body: {\n\tGroupID: cannot be blank\n}\nPolicyID: cannot be blank", err.Error())
 			},
 		},
 		"validation errors - description too long": {
@@ -1458,7 +1458,7 @@ func TestUpdatePolicy(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "update shared policy: struct validation: Description: the length must be no more than 255", err.Error())
+				assert.Equal(t, "update shared policy: struct validation: Body: {\n\tDescription: the length must be no more than 255\n}", err.Error())
 			},
 		},
 	}
@@ -1779,7 +1779,7 @@ func TestClonePolicy(t *testing.T) {
 		"validation errors - missing required params": {
 			params: ClonePolicyRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "clone policy: struct validation: NewName: cannot be blank\nPolicyID: cannot be blank", err.Error())
+				assert.Equal(t, "clone policy: struct validation: Body: {\n\tNewName: cannot be blank\n}\nPolicyID: cannot be blank", err.Error())
 			},
 		},
 		"validation errors - newName too long": {
@@ -1791,7 +1791,7 @@ func TestClonePolicy(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "clone policy: struct validation: NewName: the length must be no more than 64", err.Error())
+				assert.Equal(t, "clone policy: struct validation: Body: {\n\tNewName: the length must be no more than 64\n}", err.Error())
 			},
 		},
 	}

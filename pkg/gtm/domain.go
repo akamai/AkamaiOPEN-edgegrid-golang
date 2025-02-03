@@ -8,8 +8,8 @@ import (
 	"reflect"
 	"unicode"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -235,7 +235,7 @@ func (g *gtm) ListDomains(ctx context.Context) ([]DomainItem, error) {
 	logger := g.Log(ctx)
 	logger.Debug("ListDomains")
 
-	getURL := fmt.Sprintf("/config-gtm/v1/domains")
+	getURL := "/config-gtm/v1/domains"
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ListDomains request: %w", err)
@@ -293,7 +293,7 @@ func (g *gtm) CreateDomain(ctx context.Context, params CreateDomainRequest) (*Cr
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateDomain, ErrStructValidation, err)
 	}
 
-	postURL := fmt.Sprintf("/config-gtm/v1/domains")
+	postURL := "/config-gtm/v1/domains"
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, postURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create CreateDomain request: %w", err)

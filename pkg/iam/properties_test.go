@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -388,7 +388,7 @@ func TestIAM_MoveProperty(t *testing.T) {
 		"validation errors": {
 			params: MovePropertyRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "move property: struct validation: DestinationGroupID: cannot be blank\nSourceGroupID: cannot be blank\nPropertyID: cannot be blank", err.Error())
+				assert.Equal(t, "move property: struct validation: Body: {\n\tDestinationGroupID: cannot be blank\n\tSourceGroupID: cannot be blank\n}\nPropertyID: cannot be blank", err.Error())
 			},
 		},
 		"400 not allowed": {

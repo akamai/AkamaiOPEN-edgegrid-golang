@@ -361,7 +361,7 @@ func TestGetAccessKeyVersion(t *testing.T) {
 					Instance:     "c111eff1-22ec-4d4e-99c9-55efb5d55f55",
 					Status:       http.StatusNotFound,
 				}
-				assert.True(t, errors.Is(want, ErrAccessKeyNotFound))
+				assert.ErrorIs(t, want, err)
 			},
 		},
 		"404 error - access key version for specific access key not exists": {
@@ -417,7 +417,7 @@ func TestGetAccessKeyVersion(t *testing.T) {
 					Instance:     "12345-12345-12345-1234-12345678",
 					Status:       http.StatusNotFound,
 				}
-				assert.False(t, errors.Is(want, ErrAccessKeyNotFound))
+				assert.ErrorIs(t, want, err)
 			},
 		},
 	}

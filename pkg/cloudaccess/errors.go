@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/errs"
 )
 
 type (
@@ -47,7 +47,7 @@ func (c *cloudaccess) Error(r *http.Response) error {
 	if err != nil {
 		c.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.Status = int64(r.StatusCode)
-		e.Title = fmt.Sprintf("Failed to read error body")
+		e.Title = "Failed to read error body"
 		e.Detail = err.Error()
 		return &e
 	}

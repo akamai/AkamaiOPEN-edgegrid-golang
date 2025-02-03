@@ -8,7 +8,7 @@
 //
 // 2. Add the `CredentialID` from the update example to the path. You can only delete inactive credentials. Sending the request on an active set will return a 400. Use the update credentials example for deactivation.
 //
-// **Important:** Don't use your actual credentials for this operation. Otherwise, you'll block your access to the Akamai APIs.
+// **Important:** Don't use the credentials you're actively using when deleting a set of credentials. Otherwise, you'll block your access to the Akamai APIs.
 //
 // 3. Open a Terminal or shell instance and run "go run examples/sdk/delete/delete-credentials.go".
 //
@@ -22,9 +22,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/iam"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/iam"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 )
 
 func main() {

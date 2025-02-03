@@ -3,14 +3,14 @@ package cloudlets
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 )
 
 func TestNewError(t *testing.T) {
@@ -31,7 +31,7 @@ func TestNewError(t *testing.T) {
 			response: &http.Response{
 				Status:     "Internal Server Error",
 				StatusCode: http.StatusInternalServerError,
-				Body: ioutil.NopCloser(strings.NewReader(
+				Body: io.NopCloser(strings.NewReader(
 					`{"type":"a","title":"b","detail":"c"}`),
 				),
 				Request: req,
@@ -47,7 +47,7 @@ func TestNewError(t *testing.T) {
 			response: &http.Response{
 				Status:     "Internal Server Error",
 				StatusCode: http.StatusInternalServerError,
-				Body: ioutil.NopCloser(strings.NewReader(
+				Body: io.NopCloser(strings.NewReader(
 					`test`),
 				),
 				Request: req,
@@ -119,7 +119,7 @@ func TestJsonErrorUnmarshalling(t *testing.T) {
 				Request:    req,
 				Status:     "OK",
 				StatusCode: http.StatusServiceUnavailable,
-				Body:       ioutil.NopCloser(strings.NewReader(`<HTML><HEAD>...</HEAD><BODY>...</BODY></HTML>`))},
+				Body:       io.NopCloser(strings.NewReader(`<HTML><HEAD>...</HEAD><BODY>...</BODY></HTML>`))},
 			expected: &Error{
 				Type:       "",
 				Title:      "Failed to unmarshal error body. Cloudlets API failed. Check details for more information.",
@@ -132,7 +132,7 @@ func TestJsonErrorUnmarshalling(t *testing.T) {
 				Request:    req,
 				Status:     "OK",
 				StatusCode: http.StatusServiceUnavailable,
-				Body:       ioutil.NopCloser(strings.NewReader("Your request did not succeed as this operation has reached  the limit for your account. Please try after 2024-01-16T15:20:55.945Z"))},
+				Body:       io.NopCloser(strings.NewReader("Your request did not succeed as this operation has reached  the limit for your account. Please try after 2024-01-16T15:20:55.945Z"))},
 			expected: &Error{
 				Type:       "",
 				Title:      "Failed to unmarshal error body. Cloudlets API failed. Check details for more information.",
@@ -145,7 +145,7 @@ func TestJsonErrorUnmarshalling(t *testing.T) {
 				Request:    req,
 				Status:     "OK",
 				StatusCode: http.StatusServiceUnavailable,
-				Body:       ioutil.NopCloser(strings.NewReader(`<Root><Item id="1" name="Example" /></Root>`))},
+				Body:       io.NopCloser(strings.NewReader(`<Root><Item id="1" name="Example" /></Root>`))},
 			expected: &Error{
 				Type:       "",
 				Title:      "Failed to unmarshal error body. Cloudlets API failed. Check details for more information.",

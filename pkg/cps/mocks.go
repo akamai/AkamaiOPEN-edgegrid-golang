@@ -84,16 +84,6 @@ func (m *Mock) CancelChange(ctx context.Context, r CancelChangeRequest) (*Cancel
 	return args.Get(0).(*CancelChangeResponse), args.Error(1)
 }
 
-func (m *Mock) UpdateChange(ctx context.Context, r UpdateChangeRequest) (*UpdateChangeResponse, error) {
-	args := m.Called(ctx, r)
-
-	if args.Error(1) != nil {
-		return nil, args.Error(1)
-	}
-
-	return args.Get(0).(*UpdateChangeResponse), args.Error(1)
-}
-
 func (m *Mock) GetChangeLetsEncryptChallenges(ctx context.Context, r GetChangeRequest) (*DVArray, error) {
 	args := m.Called(ctx, r)
 

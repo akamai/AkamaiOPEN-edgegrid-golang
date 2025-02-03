@@ -4,16 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v9/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tj/assert"
 )
 
 func TestCreateLoadBalancerVersion(t *testing.T) {
@@ -245,7 +244,7 @@ func TestCreateLoadBalancerVersion(t *testing.T) {
 				assert.Equal(t, http.MethodPost, r.Method)
 
 				// Check if received body is valid json
-				b, err := ioutil.ReadAll(r.Body)
+				b, err := io.ReadAll(r.Body)
 				assert.NoError(t, err)
 				assert.True(t, json.Valid(b))
 
@@ -702,7 +701,7 @@ func TestUpdateLoadBalancerVersion(t *testing.T) {
 				assert.Equal(t, http.MethodPut, r.Method)
 
 				// Check if received body is valid json
-				b, err := ioutil.ReadAll(r.Body)
+				b, err := io.ReadAll(r.Body)
 				assert.NoError(t, err)
 				assert.True(t, json.Valid(b))
 
