@@ -719,3 +719,47 @@ func (p *Mock) MapPropertyNameToID(ctx context.Context, r MapPropertyNameToIDReq
 
 	return args.Get(0).(*string), args.Error(1)
 }
+
+// CancelPropertyHostnameActivation implements PAPI.
+func (p *Mock) CancelPropertyHostnameActivation(ctx context.Context, r CancelPropertyHostnameActivationRequest) (*CancelPropertyHostnameActivationResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*CancelPropertyHostnameActivationResponse), args.Error(1)
+}
+
+// GetPropertyHostnameActivation implements PAPI.
+func (p *Mock) GetPropertyHostnameActivation(ctx context.Context, r GetPropertyHostnameActivationRequest) (*GetPropertyHostnameActivationResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetPropertyHostnameActivationResponse), args.Error(1)
+}
+
+// ListPropertyHostnameActivations implements PAPI.
+func (p *Mock) ListPropertyHostnameActivations(ctx context.Context, r ListPropertyHostnameActivationsRequest) (*ListPropertyHostnameActivationsResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListPropertyHostnameActivationsResponse), args.Error(1)
+}
+
+// PatchPropertyHostnameBucket implements PAPI.
+func (p *Mock) PatchPropertyHostnameBucket(ctx context.Context, r PatchPropertyHostnameBucketRequest) (*PatchPropertyHostnameBucketResponse, error) {
+	args := p.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*PatchPropertyHostnameBucketResponse), args.Error(1)
+}

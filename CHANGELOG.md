@@ -53,6 +53,12 @@
 
 
 
+* PAPI
+  * Added support for the following endpoints related to active property hostnames:
+    * [ListPropertyHostnameActivations](https://techdocs.akamai.com/property-mgr/reference/get-property-hostname-activations) - List property hostname activations.
+    * [GetPropertyHostnameActivation](https://techdocs.akamai.com/property-mgr/reference/get-property-hostname-activation) - Get a property hostname activation.
+    * [CancelPropertyHostnameActivation](https://techdocs.akamai.com/property-mgr/reference/delete-property-hostname-activations) - Cancel a pending property hostname activation.
+    * [PatchPropertyHostnameBucket](https://techdocs.akamai.com/property-mgr/reference/patch-property-hostnames) - Add or remove hostnames for a property's hostname bucket.
 
 
 
