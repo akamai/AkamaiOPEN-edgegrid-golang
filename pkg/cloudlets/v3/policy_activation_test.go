@@ -251,7 +251,6 @@ func TestListPolicyActivations(t *testing.T) {
 	}
 
 	for name, tc := range tests {
-		name, tc := name, tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -394,7 +393,6 @@ func TestActivatePolicy(t *testing.T) {
 	}
 
 	for name, tc := range tests {
-		name, tc := name, tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -544,7 +542,6 @@ func TestDeactivatePolicy(t *testing.T) {
 	}
 
 	for name, tc := range tests {
-		name, tc := name, tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -709,7 +706,6 @@ func TestGetPolicyActivation(t *testing.T) {
 	}
 
 	for name, tc := range tests {
-		name, tc := name, tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
