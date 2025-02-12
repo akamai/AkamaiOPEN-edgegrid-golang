@@ -4,9 +4,7 @@
 
 ### FEATURES/ENHANCEMENTS:
 
-
-
-
+* Adopted toolchain Go `1.23.6` and a semver-compliant Go directive.
 
 
 
