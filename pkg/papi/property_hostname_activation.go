@@ -62,8 +62,8 @@ type (
 	// HostnameActivationsList contains returned hostname activations
 	HostnameActivationsList struct {
 		Items            []HostnameActivationListItem `json:"items"`
-		TotalItems       *int                         `json:"totalItems"`
-		CurrentItemCount *int                         `json:"currentItemCount"`
+		TotalItems       int                          `json:"totalItems"`
+		CurrentItemCount int                          `json:"currentItemCount"`
 		NextLink         *string                      `json:"nextLink"`
 		PreviousLink     *string                      `json:"previousLink"`
 	}
