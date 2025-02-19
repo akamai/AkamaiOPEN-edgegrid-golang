@@ -176,10 +176,30 @@ func TestPapiGetPropertyHostnameActivation(t *testing.T) {
 		"validation error": {
 			params: GetPropertyHostnameActivationRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Contains(t, err.Error(), "GroupID: cannot be blank")
-				assert.Contains(t, err.Error(), "ContractID: cannot be blank")
 				assert.Contains(t, err.Error(), "PropertyID: cannot be blank")
 				assert.Contains(t, err.Error(), "HostnameActivationID: cannot be blank")
+			},
+		},
+		"validation error - GroupID provided, ContractID missing": {
+			params: GetPropertyHostnameActivationRequest{
+				PropertyID:           "property_id",
+				GroupID:              "group_id",
+				HostnameActivationID: "hostname_activation_id",
+			},
+			expected: &GetPropertyHostnameActivationResponse{},
+			withError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "ContractID: cannot be blank when GroupID is provided")
+			},
+		},
+		"validation error - ContractID provided, GroupID missing": {
+			params: GetPropertyHostnameActivationRequest{
+				PropertyID:           "property_id",
+				ContractID:           "contract_id",
+				HostnameActivationID: "hostname_activation_id",
+			},
+			expected: &GetPropertyHostnameActivationResponse{},
+			withError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "GroupID: cannot be blank when ContractID is provided")
 			},
 		},
 		"500 Internal error": {
