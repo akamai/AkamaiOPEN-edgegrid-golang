@@ -14,11 +14,11 @@ type (
 	// The BotDetectionAction interface supports retrieving and updating the actions for bot detections of a configuration.
 	//
 	BotDetectionAction interface {
-		// GetBotDetectionActionList todo: add link
+		// GetBotDetectionActionList https://techdocs.akamai.com/bot-manager/reference/get-bot-detection-actions
 		GetBotDetectionActionList(ctx context.Context, params GetBotDetectionActionListRequest) (*GetBotDetectionActionListResponse, error)
-		// GetBotDetectionAction todo: add link
+		// GetBotDetectionAction https://techdocs.akamai.com/bot-manager/reference/get-bot-detection-action
 		GetBotDetectionAction(ctx context.Context, params GetBotDetectionActionRequest) (map[string]interface{}, error)
-		// UpdateBotDetectionAction todo: add link
+		// UpdateBotDetectionAction https://techdocs.akamai.com/bot-manager/reference/put-bot-detection-action
 		UpdateBotDetectionAction(ctx context.Context, params UpdateBotDetectionActionRequest) (map[string]interface{}, error)
 	}
 
