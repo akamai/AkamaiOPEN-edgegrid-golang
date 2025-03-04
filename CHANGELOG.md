@@ -6,6 +6,13 @@
 
 * Adopted toolchain Go `1.23.6` and a semver-compliant Go directive.
 
+* Cloudlets
+  * Added new methods:
+    * [GetPolicyVersionRule](https://techdocs.akamai.com/cloudlets/v2/reference/get-policy-version-rule)
+    * [CreatePolicyVersionRule](https://techdocs.akamai.com/cloudlets/v2/reference/post-policy-version-rules)
+    * [UpdatePolicyVersionRule](https://techdocs.akamai.com/cloudlets/v2/reference/put-policy-version-rule)
+  * Added fields for V2
+    * `akaRuleId` and `location` for all the types of match rules
 
 
 

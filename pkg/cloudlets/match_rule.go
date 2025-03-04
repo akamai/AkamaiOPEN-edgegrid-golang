@@ -33,6 +33,8 @@ type (
 		MatchesAlways   bool               `json:"matchesAlways"`
 		ForwardSettings ForwardSettingsALB `json:"forwardSettings"`
 		Disabled        bool               `json:"disabled,omitempty"`
+		AkaRuleID       string             `json:"akaRuleId,omitempty"`
+		Location        string             `json:"location,omitempty"`
 	}
 
 	// ForwardSettingsALB represents forward settings for an Application Load Balancer (ALB)
@@ -51,6 +53,8 @@ type (
 		MatchURL           string            `json:"matchURL,omitempty"`
 		PassThroughPercent *float64          `json:"passThroughPercent"`
 		Disabled           bool              `json:"disabled,omitempty"`
+		AkaRuleID          string            `json:"akaRuleId,omitempty"`
+		Location           string            `json:"location,omitempty"`
 	}
 
 	// MatchRuleAS represents an Application Segmentation (AS) match rule resource for create or update resource
@@ -64,6 +68,8 @@ type (
 		MatchURL        string            `json:"matchURL,omitempty"`
 		ForwardSettings ForwardSettingsAS `json:"forwardSettings"`
 		Disabled        bool              `json:"disabled,omitempty"`
+		AkaRuleID       string            `json:"akaRuleId,omitempty"`
+		Location        string            `json:"location,omitempty"`
 	}
 
 	// ForwardSettingsAS represents forward settings for an Application Segmentation (AS)
@@ -85,6 +91,8 @@ type (
 		ForwardSettings ForwardSettingsPR `json:"forwardSettings"`
 		Disabled        bool              `json:"disabled,omitempty"`
 		MatchesAlways   bool              `json:"matchesAlways,omitempty"`
+		AkaRuleID       string            `json:"akaRuleId,omitempty"`
+		Location        string            `json:"location,omitempty"`
 	}
 
 	// ForwardSettingsPR represents forward settings for a Phased Release (PR aka CD)
@@ -109,6 +117,8 @@ type (
 		UseIncomingQueryString   bool              `json:"useIncomingQueryString"`
 		UseIncomingSchemeAndHost bool              `json:"useIncomingSchemeAndHost"`
 		Disabled                 bool              `json:"disabled,omitempty"`
+		AkaRuleID                string            `json:"akaRuleId,omitempty"`
+		Location                 string            `json:"location,omitempty"`
 	}
 
 	// MatchRuleFR represents a Forward Rewrite (FR) match rule resource for create or update resource
@@ -122,6 +132,8 @@ type (
 		MatchURL        string            `json:"matchURL,omitempty"`
 		ForwardSettings ForwardSettingsFR `json:"forwardSettings"`
 		Disabled        bool              `json:"disabled,omitempty"`
+		AkaRuleID       string            `json:"akaRuleId,omitempty"`
+		Location        string            `json:"location,omitempty"`
 	}
 
 	// ForwardSettingsFR represents forward settings for a Forward Rewrite (FR)
@@ -142,6 +154,8 @@ type (
 		MatchesAlways bool              `json:"matchesAlways,omitempty"`
 		AllowDeny     AllowDeny         `json:"allowDeny"`
 		Disabled      bool              `json:"disabled,omitempty"`
+		AkaRuleID     string            `json:"akaRuleId,omitempty"`
+		Location      string            `json:"location,omitempty"`
 	}
 
 	// MatchRuleVP represents a Visitor Prioritization (VP) match rule resource for create or update resource
@@ -155,6 +169,8 @@ type (
 		MatchURL           string            `json:"matchURL,omitempty"`
 		PassThroughPercent *float64          `json:"passThroughPercent"`
 		Disabled           bool              `json:"disabled,omitempty"`
+		AkaRuleID          string            `json:"akaRuleId,omitempty"`
+		Location           string            `json:"location,omitempty"`
 	}
 
 	// MatchCriteria represents a match criteria resource for match rule for cloudlet
@@ -741,38 +757,61 @@ func (m MatchRuleVP) cloudletType() string {
 	return "vpMatchRule"
 }
 
-// UnmarshalJSON helps to un-marshall items of MatchRules array as proper instances of *MatchRuleALB or *MatchRuleER
+// UnmarshalJSON helps to un-marshall items of MatchRules array as proper instances of *MatchRuleALB or *MatchRuleER etc.
 func (m *MatchRules) UnmarshalJSON(b []byte) error {
 	data := make([]map[string]interface{}, 0)
 	if err := json.Unmarshal(b, &data); err != nil {
 		return fmt.Errorf("%w: %s", ErrUnmarshallMatchRules, err)
 	}
 	for _, matchRule := range data {
-		cloudletType, ok := matchRule["type"]
-		if !ok {
-			return fmt.Errorf("%w: match rule entry should contain 'type' field", ErrUnmarshallMatchRules)
-		}
-		cloudletTypeName, ok := cloudletType.(string)
-		if !ok {
-			return fmt.Errorf("%w: 'type' field on match rule entry should be a string", ErrUnmarshallMatchRules)
-		}
-		byteArr, err := json.Marshal(matchRule)
+		dst, err := unmarshalRule(matchRule)
 		if err != nil {
-			return fmt.Errorf("%w: %s", ErrUnmarshallMatchRules, err)
-		}
-
-		matchRuleType, ok := matchRuleHandlers[cloudletTypeName]
-		if !ok {
-			return fmt.Errorf("%w: unsupported match rule type: %s", ErrUnmarshallMatchRules, cloudletTypeName)
-		}
-		dst := matchRuleType()
-		err = json.Unmarshal(byteArr, dst)
-		if err != nil {
-			return fmt.Errorf("%w: %s", ErrUnmarshallMatchRules, err)
+			return err
 		}
 		*m = append(*m, dst)
 	}
 	return nil
+}
+
+// UnmarshalJSON helps to un-marshall items of PolicyMatchRule object as proper instances of *MatchRuleALB or *MatchRuleER etc.
+func (m *policyMatchRule) UnmarshalJSON(b []byte) error {
+	matchRule := make(map[string]interface{}, 0)
+	if err := json.Unmarshal(b, &matchRule); err != nil {
+		return fmt.Errorf("%w: %s", ErrUnmarshallMatchRules, err)
+	}
+	dst, err := unmarshalRule(matchRule)
+	if err != nil {
+		return err
+	}
+	m.MatchRule = dst
+
+	return nil
+}
+
+func unmarshalRule(matchRule map[string]interface{}) (MatchRule, error) {
+	cloudletType, ok := matchRule["type"]
+	if !ok {
+		return nil, fmt.Errorf("%w: match rule entry should contain 'type' field", ErrUnmarshallMatchRules)
+	}
+	cloudletTypeName, ok := cloudletType.(string)
+	if !ok {
+		return nil, fmt.Errorf("%w: 'type' field on match rule entry should be a string", ErrUnmarshallMatchRules)
+	}
+	byteArr, err := json.Marshal(matchRule)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrUnmarshallMatchRules, err)
+	}
+
+	matchRuleType, ok := matchRuleHandlers[cloudletTypeName]
+	if !ok {
+		return nil, fmt.Errorf("%w: unsupported match rule type: %s", ErrUnmarshallMatchRules, cloudletTypeName)
+	}
+	dst := matchRuleType()
+	err = json.Unmarshal(byteArr, dst)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrUnmarshallMatchRules, err)
+	}
+	return dst, nil
 }
 
 // UnmarshalJSON helps to un-marshall field ObjectMatchValue of MatchCriteriaALB as proper instance of *ObjectMatchValueObject, *ObjectMatchValueSimple or *ObjectMatchValueRange

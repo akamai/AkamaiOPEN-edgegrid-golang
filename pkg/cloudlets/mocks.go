@@ -196,3 +196,27 @@ func (m *Mock) ListLoadBalancerVersions(ctx context.Context, req ListLoadBalance
 	}
 	return args.Get(0).([]LoadBalancerVersion), args.Error(1)
 }
+
+func (m *Mock) GetPolicyVersionRule(ctx context.Context, req GetPolicyVersionRuleRequest) (MatchRule, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(MatchRule), args.Error(1)
+}
+
+func (m *Mock) CreatePolicyVersionRule(ctx context.Context, req CreatePolicyVersionRuleRequest) (MatchRule, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(MatchRule), args.Error(1)
+}
+
+func (m *Mock) UpdatePolicyVersionRule(ctx context.Context, req UpdatePolicyVersionRuleRequest) (MatchRule, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(MatchRule), args.Error(1)
+}
