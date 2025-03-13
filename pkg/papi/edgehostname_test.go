@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -382,7 +383,7 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 				Options:    []string{"opt1", "opt2"},
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
-					DomainPrefix:      "example.com",
+					DomainPrefix:      "example-com",
 					DomainSuffix:      "akamaized.net",
 					Secure:            true,
 					SecureNetwork:     "SHARED_CERT",
@@ -535,6 +536,120 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 				want := ErrStructValidation
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 				assert.Contains(t, err.Error(), "DomainSuffix")
+			},
+		},
+		"invalid edge hostname domain prefix for the akamaized.net domain suffix - The character '#' isn't allowed in the domain prefix.": {
+			params: CreateEdgeHostnameRequest{
+				ContractID: "contract",
+				GroupID:    "group",
+				EdgeHostname: EdgeHostnameCreate{
+					ProductID:         "product",
+					DomainPrefix:      "tes#t",
+					DomainSuffix:      "akamaized.net",
+					Secure:            true,
+					IPVersionBehavior: "IPV4",
+					UseCases:          nil,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := "A prefix for the edge hostname with the \"akamaized.net\" suffix must begin with a letter, end with a letter or digit, and contain only letters, digits, and hyphens, for example, abc-def, or abc-123"
+				assert.True(t, err != nil && strings.Contains(err.Error(), want), "Expected error containing %q, got %v", want, err)
+			},
+		},
+		"invalid edge hostname domain prefix for the `akamaized.net` domain suffix. The domain prefix contains non-UTF-8 characters ('t中esãt').": {
+			params: CreateEdgeHostnameRequest{
+				ContractID: "contract",
+				GroupID:    "group",
+				EdgeHostname: EdgeHostnameCreate{
+					ProductID:         "product",
+					DomainPrefix:      "t中esãt",
+					DomainSuffix:      "akamaized.net",
+					Secure:            true,
+					IPVersionBehavior: "IPV4",
+					UseCases:          nil,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := "A prefix for the edge hostname with the \"akamaized.net\" suffix must begin with a letter, end with a letter or digit, and contain only letters, digits, and hyphens, for example, abc-def, or abc-123"
+				assert.True(t, err != nil && strings.Contains(err.Error(), want), "Expected error containing %q, got %v", want, err)
+			},
+		},
+		"invalid edge hostname domain prefix for `akamaized.net`. The domain prefix can't end with a hyphen": {
+			params: CreateEdgeHostnameRequest{
+				ContractID: "contract",
+				GroupID:    "group",
+				EdgeHostname: EdgeHostnameCreate{
+					ProductID:         "product",
+					DomainPrefix:      "test-",
+					DomainSuffix:      "akamaized.net",
+					Secure:            true,
+					IPVersionBehavior: "IPV4",
+					UseCases:          nil,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := "A prefix for the edge hostname with the \"akamaized.net\" suffix must begin with a letter, end with a letter or digit, and contain only letters, digits, and hyphens, for example, abc-def, or abc-123"
+				assert.True(t, err != nil && strings.Contains(err.Error(), want), "expected error containing %q, got %v", want, err)
+			},
+		},
+		"invalid edge hostname domain prefix for `edgesuite.net`. The domain prefix can't end with two consecutive dots": {
+			params: CreateEdgeHostnameRequest{
+				ContractID: "contract",
+				GroupID:    "group",
+				EdgeHostname: EdgeHostnameCreate{
+					ProductID:         "product",
+					DomainPrefix:      "test..",
+					DomainSuffix:      "edgesuite.net",
+					Secure:            true,
+					IPVersionBehavior: "IPV4",
+					UseCases:          nil,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := "A prefix for the edge hostname with the \"edgesuite.net\" suffix must begin with a letter, end with a letter, digit or dot, and contain only letters, digits, dots, and hyphens, for example, abc-def.123.456., or abc.123-def"
+				assert.True(t, err != nil && strings.Contains(err.Error(), want), "Expected error containing %q, got %v", want, err)
+			},
+		},
+		"invalid edge hostname domain prefix. The domain prefix exceeds the maximum allowed length of 63 characters": {
+			params: CreateEdgeHostnameRequest{
+				ContractID: "contract",
+				GroupID:    "group",
+				EdgeHostname: EdgeHostnameCreate{
+					ProductID:         "product",
+					DomainPrefix:      "testABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567",
+					DomainSuffix:      "akamaized.net",
+					Secure:            true,
+					IPVersionBehavior: "IPV4",
+					UseCases:          nil,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := "The edge hostname prefix must be 63 characters or less; you provided 64 characters"
+				assert.True(t, err != nil && strings.Contains(err.Error(), want), "Expected error containing %q, got %v", want, err)
+			},
+		},
+		"valid edge hostname with hyphen in domain prefix name for akamaized.net, create edge hostname": {
+			params: CreateEdgeHostnameRequest{
+				ContractID: "contract",
+				GroupID:    "group",
+				EdgeHostname: EdgeHostnameCreate{
+					ProductID:         "product",
+					DomainPrefix:      "test-1",
+					DomainSuffix:      "akamaized.net",
+					Secure:            true,
+					IPVersionBehavior: "IPV4",
+					UseCases:          nil,
+				},
+			},
+			responseStatus: http.StatusCreated,
+			responseBody: `
+			{
+    			"edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
+			}`,
+			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group",
+			expectedResponse: &CreateEdgeHostnameResponse{
+				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
+				EdgeHostnameID:   "ehID",
 			},
 		},
 		"empty product id": {
