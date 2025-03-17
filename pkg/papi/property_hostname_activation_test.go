@@ -655,13 +655,33 @@ func TestPapiCancelPropertyHostnameActivation(t *testing.T) {
 				assert.Equal(t, "canceling hostname activation: activation already aborted", err.Error())
 			},
 		},
-		"validation error": {
+		"validation errors": {
 			params: CancelPropertyHostnameActivationRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Contains(t, err.Error(), "GroupID: cannot be blank")
-				assert.Contains(t, err.Error(), "ContractID: cannot be blank")
 				assert.Contains(t, err.Error(), "PropertyID: cannot be blank")
 				assert.Contains(t, err.Error(), "HostnameActivationID: cannot be blank")
+			},
+		},
+		"validation errors - missing groupID": {
+			params: CancelPropertyHostnameActivationRequest{
+				PropertyID:           "property_id",
+				HostnameActivationID: "hostname_activation_id",
+				ContractID:           "contract_id",
+				GroupID:              "",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "GroupID: cannot be blank when ContractID is provided")
+			},
+		},
+		"validation errors - missing contractID": {
+			params: CancelPropertyHostnameActivationRequest{
+				PropertyID:           "property_id",
+				HostnameActivationID: "hostname_activation_id",
+				ContractID:           "",
+				GroupID:              "group_id",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "ContractID: cannot be blank when GroupID is provided")
 			},
 		},
 		"500 Internal error": {

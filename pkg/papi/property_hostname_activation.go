@@ -188,8 +188,8 @@ func (r ListPropertyHostnameActivationsRequest) Validate() error {
 func (r CancelPropertyHostnameActivationRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID":           validation.Validate(r.PropertyID, validation.Required),
-		"ContractID":           validation.Validate(r.ContractID, validation.Required),
-		"GroupID":              validation.Validate(r.GroupID, validation.Required),
+		"ContractID":           validation.Validate(r.ContractID, validation.Required.When(r.GroupID != "").Error("cannot be blank when GroupID is provided")),
+		"GroupID":              validation.Validate(r.GroupID, validation.Required.When(r.ContractID != "").Error("cannot be blank when ContractID is provided")),
 		"HostnameActivationID": validation.Validate(r.PropertyID, validation.Required),
 	})
 }

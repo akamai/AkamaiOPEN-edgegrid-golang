@@ -25,6 +25,12 @@ var (
 
 	// ErrMissingComplianceRecord is returned when compliance record is required and is not provided
 	ErrMissingComplianceRecord = errors.New("compliance record must be specified")
+
+	// ErrActivationTooFar is returned when hostname bucket activation reaches a state from which it cannot be cancelled
+	ErrActivationTooFar = errors.New("error activation is too far")
+
+	// ErrActivationAlreadyActive is returned when hostname bucket activation cannot be cancelled because it's not pending
+	ErrActivationAlreadyActive = errors.New("error canceling activation, as activation is not pending")
 )
 
 type (

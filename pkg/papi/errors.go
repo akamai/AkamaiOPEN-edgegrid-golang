@@ -99,6 +99,12 @@ func (e *Error) Is(target error) bool {
 	if errors.Is(target, ErrNotFound) {
 		return e.isErrNotFound()
 	}
+	if errors.Is(target, ErrActivationTooFar) {
+		return e.isActivationTooFar()
+	}
+	if errors.Is(target, ErrActivationAlreadyActive) {
+		return e.isActivationAlreadyActive()
+	}
 
 	var t *Error
 	if !errors.As(target, &t) {
@@ -148,4 +154,12 @@ func (e *Error) isErrDefaultCertLimitReached() bool {
 
 func (e *Error) isErrNotFound() bool {
 	return e.StatusCode == http.StatusNotFound
+}
+
+func (e *Error) isActivationTooFar() bool {
+	return e.StatusCode == http.StatusBadRequest && e.Title == "Error canceling Activation" && e.Detail == "cancellation_failed.error.activation.toofar"
+}
+
+func (e *Error) isActivationAlreadyActive() bool {
+	return e.StatusCode == http.StatusUnprocessableEntity && e.Title == "Activation Unprocessable"
 }
