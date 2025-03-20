@@ -1,6 +1,6 @@
 module github.com/akamai/AkamaiOPEN-edgegrid-golang/v10
 
-go 1.22.0
+go 1.23.0
 
 toolchain go1.23.6
 
@@ -11,7 +11,7 @@ require (
 	github.com/spf13/cast v1.7.0
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/ratelimit v0.3.1
-	golang.org/x/net v0.34.0
+	golang.org/x/net v0.37.0
 	gopkg.in/ini.v1 v1.67.0
 )
 

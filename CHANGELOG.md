@@ -4,6 +4,8 @@
 
 ### FEATURES/ENHANCEMENTS:
 
+* Migrated to Go `1.23`.
+* Updated various dependencies.
 * Adopted toolchain Go `1.23.6` and a semver-compliant Go directive.
 
 * Cloudlets
