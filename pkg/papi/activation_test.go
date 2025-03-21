@@ -293,6 +293,30 @@ func TestPapiCreateActivation(t *testing.T) {
 				assert.Contains(t, err.Error(), "OtherNoncomplianceReason: cannot be blank")
 			},
 		},
+		"validation error - not valid Network": {
+			request: CreateActivationRequest{
+				PropertyID: "prp_175780",
+				ContractID: "ctr_1-1TJZFW",
+				GroupID:    "grp_15166",
+				Activation: Activation{
+					PropertyVersion: 1,
+					Network:         "wrong network",
+					UseFastFallback: false,
+					ComplianceRecord: &ComplianceRecordEmergency{
+						TicketID: "123",
+					},
+					NotifyEmails: []string{
+						"you@example.com",
+						"them@example.com",
+					},
+					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
+				},
+			},
+			withError: ErrStructValidation,
+			assertError: func(t *testing.T, err error) {
+				assert.Contains(t, err.Error(), "Activation.Network: value 'wrong network' is invalid. Must be one of: 'STAGING' or 'PRODUCTION'.")
+			},
+		},
 	}
 
 	for name, test := range tests {

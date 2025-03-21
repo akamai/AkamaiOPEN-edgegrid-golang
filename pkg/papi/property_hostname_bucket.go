@@ -13,35 +13,39 @@ import (
 )
 
 type (
-	// PatchPropertyHostnameBucketRequest contains path, query and body params used for adding or removing hostnames to and from property's hostname bucket
+	// PatchPropertyHostnameBucketRequest contains path, query and body params used for adding or removing hostnames to and from property's hostname bucket.
 	PatchPropertyHostnameBucketRequest struct {
 		PropertyID string
 		ContractID string
 		GroupID    string
 		Body       PatchPropertyHostnameBucketBody
 	}
-	// PatchPropertyHostnameBucketResponse contains PATCH response returned when patching property hostname bucket
+
+	// PatchPropertyHostnameBucketResponse contains PATCH response returned when patching property hostname bucket.
 	PatchPropertyHostnameBucketResponse struct {
 		ActivationLink string              `json:"activationLink"`
 		ActivationID   string              `json:"activationId"`
 		Hostnames      []PatchHostnameItem `json:"hostnames"`
 	}
-	// PatchPropertyHostnameBucketBody contains body params for PatchPropertyHostnameBucket
+
+	// PatchPropertyHostnameBucketBody contains body params for PatchPropertyHostnameBucket.
 	PatchPropertyHostnameBucketBody struct {
 		Add          []PatchPropertyHostnameBucketAdd `json:"add,omitempty"`
 		Remove       []string                         `json:"remove,omitempty"`
-		Network      string                           `json:"network"`
+		Network      ActivationNetwork                `json:"network"`
 		NotifyEmails []string                         `json:"notifyEmails,omitempty"`
 		Note         string                           `json:"note,omitempty"`
 	}
-	// PatchPropertyHostnameBucketAdd contains params for adding property hostname to a bucket
+
+	// PatchPropertyHostnameBucketAdd contains params for adding property hostname to a bucket.
 	PatchPropertyHostnameBucketAdd struct {
 		EdgeHostnameID       string            `json:"edgeHostnameId"`
 		CertProvisioningType CertType          `json:"certProvisioningType"`
 		CnameType            HostnameCnameType `json:"cnameType"`
 		CnameFrom            string            `json:"cnameFrom"`
 	}
-	// PatchHostnameItem contains hostname details returned after PATCH operation
+
+	// PatchHostnameItem contains hostname details returned after PATCH operation.
 	PatchHostnameItem struct {
 		CertProvisioningType CertType          `json:"certProvisioningType"`
 		CnameFrom            string            `json:"cnameFrom"`
@@ -53,7 +57,7 @@ type (
 	}
 )
 
-// Validate validates PatchPropertyHostnameBucketRequest
+// Validate validates PatchPropertyHostnameBucketRequest.
 func (r PatchPropertyHostnameBucketRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
@@ -61,10 +65,10 @@ func (r PatchPropertyHostnameBucketRequest) Validate() error {
 	})
 }
 
-// Validate validates PatchPropertyHostnameBucketBody
+// Validate validates PatchPropertyHostnameBucketBody.
 func (b PatchPropertyHostnameBucketBody) Validate() error {
 	return validation.Errors{
-		"Network": validation.Validate(b.Network, validation.Required),
+		"Network": validation.Validate(b.Network, validation.Required, b.Network.Validate()),
 		"Add":     validation.Validate(b.Add),
 		"": validation.Validate(nil,
 			validation.By(func(interface{}) error {
@@ -76,18 +80,18 @@ func (b PatchPropertyHostnameBucketBody) Validate() error {
 	}.Filter()
 }
 
-// Validate validates PatchPropertyHostnameBucketBody
+// Validate validates PatchPropertyHostnameBucketAdd.
 func (b PatchPropertyHostnameBucketAdd) Validate() error {
 	return validation.Errors{
 		"EdgeHostnameID":       validation.Validate(b.EdgeHostnameID, validation.Required),
-		"CertProvisioningType": validation.Validate(b.CertProvisioningType, validation.Required),
-		"CnameType":            validation.Validate(b.CnameType, validation.Required),
-		"CnameFrom":            validation.Validate(b.CnameType, validation.Required),
+		"CertProvisioningType": validation.Validate(b.CertProvisioningType, validation.Required, b.CertProvisioningType.Validate()),
+		"CnameType":            validation.Validate(b.CnameType, validation.Required, b.CnameType.Validate()),
+		"CnameFrom":            validation.Validate(b.CnameFrom, validation.Required),
 	}.Filter()
 }
 
 var (
-	// ErrPatchPropertyHostnameBucket represents error when patching property hostname bucket fails
+	// ErrPatchPropertyHostnameBucket represents error when patching property hostname bucket fails.
 	ErrPatchPropertyHostnameBucket = errors.New("patching property hostname bucket")
 )
 

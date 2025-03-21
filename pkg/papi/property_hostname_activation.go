@@ -15,7 +15,7 @@ import (
 )
 
 type (
-	// GetPropertyHostnameActivationRequest contains parameters required to get a property hostname activation
+	// GetPropertyHostnameActivationRequest contains parameters required to get a property hostname activation.
 	GetPropertyHostnameActivationRequest struct {
 		PropertyID           string
 		HostnameActivationID string
@@ -23,14 +23,16 @@ type (
 		GroupID              string
 		IncludeHostnames     bool
 	}
-	// GetPropertyHostnameActivationResponse contains GET response returned while fetching property hostname activation
+
+	// GetPropertyHostnameActivationResponse contains GET response returned while fetching property hostname activation.
 	GetPropertyHostnameActivationResponse struct {
 		AccountID          string                    `json:"accountId"`
 		ContractID         string                    `json:"contractId"`
 		GroupID            string                    `json:"groupId"`
 		HostnameActivation HostnameActivationGetItem `json:"hostnameActivation"`
 	}
-	// ListPropertyHostnameActivationsRequest contains path and query params used for listing property hostname activations
+
+	// ListPropertyHostnameActivationsRequest contains path and query params used for listing property hostname activations.
 	ListPropertyHostnameActivationsRequest struct {
 		PropertyID string
 		Offset     int
@@ -38,28 +40,32 @@ type (
 		ContractID string
 		GroupID    string
 	}
-	// ListPropertyHostnameActivationsResponse contains GET response returned while fetching property hostname activations
+
+	// ListPropertyHostnameActivationsResponse contains GET response returned while fetching property hostname activations.
 	ListPropertyHostnameActivationsResponse struct {
 		AccountID           string                  `json:"accountId"`
 		ContractID          string                  `json:"contractId"`
 		GroupID             string                  `json:"groupId"`
 		HostnameActivations HostnameActivationsList `json:"hostnameActivations"`
 	}
-	// CancelPropertyHostnameActivationRequest contains path and query params used for canceling hostname activation
+
+	// CancelPropertyHostnameActivationRequest contains path and query params used for canceling hostname activation.
 	CancelPropertyHostnameActivationRequest struct {
 		PropertyID           string
 		HostnameActivationID string
 		ContractID           string
 		GroupID              string
 	}
-	// CancelPropertyHostnameActivationResponse contains DELETE response returned when canceling property hostname activation
+
+	// CancelPropertyHostnameActivationResponse contains DELETE response returned when canceling property hostname activation.
 	CancelPropertyHostnameActivationResponse struct {
 		AccountID          string                       `json:"accountId"`
 		ContractID         string                       `json:"contractId"`
 		GroupID            string                       `json:"groupId"`
 		HostnameActivation HostnameActivationCancelItem `json:"hostnameActivation"`
 	}
-	// HostnameActivationsList contains returned hostname activations
+
+	// HostnameActivationsList contains returned hostname activations.
 	HostnameActivationsList struct {
 		Items            []HostnameActivationListItem `json:"items"`
 		TotalItems       int                          `json:"totalItems"`
@@ -67,13 +73,14 @@ type (
 		NextLink         *string                      `json:"nextLink"`
 		PreviousLink     *string                      `json:"previousLink"`
 	}
-	// HostnameActivationGetItem contains property hostname activation details
+
+	// HostnameActivationGetItem contains property hostname activation details.
 	HostnameActivationGetItem struct {
 		ActivationType       string                 `json:"activationType"`
 		HostnameActivationID string                 `json:"hostnameActivationId"`
 		PropertyName         string                 `json:"propertyName"`
 		PropertyID           string                 `json:"propertyId"`
-		Network              string                 `json:"network"`
+		Network              ActivationNetwork      `json:"network"`
 		Status               string                 `json:"status"`
 		SubmitDate           time.Time              `json:"submitDate,omitempty"`
 		UpdateDate           time.Time              `json:"updateDate,omitempty"`
@@ -81,69 +88,78 @@ type (
 		NotifyEmails         []string               `json:"notifyEmails,omitempty"`
 		Hostnames            []PropertyHostnameItem `json:"hostnames,omitempty"`
 	}
-	// HostnameActivationListItem contains property hostname activation details
+
+	// HostnameActivationListItem contains property hostname activation details.
 	HostnameActivationListItem struct {
-		ActivationType       string    `json:"activationType"`
-		HostnameActivationID string    `json:"hostnameActivationId"`
-		PropertyName         string    `json:"propertyName"`
-		PropertyID           string    `json:"propertyId"`
-		Network              string    `json:"network"`
-		Status               string    `json:"status"`
-		SubmitDate           time.Time `json:"submitDate,omitempty"`
-		UpdateDate           time.Time `json:"updateDate,omitempty"`
-		Note                 string    `json:"note,omitempty"`
-		NotifyEmails         []string  `json:"notifyEmails,omitempty"`
+		ActivationType       string            `json:"activationType"`
+		HostnameActivationID string            `json:"hostnameActivationId"`
+		PropertyName         string            `json:"propertyName"`
+		PropertyID           string            `json:"propertyId"`
+		Network              ActivationNetwork `json:"network"`
+		Status               string            `json:"status"`
+		SubmitDate           time.Time         `json:"submitDate,omitempty"`
+		UpdateDate           time.Time         `json:"updateDate,omitempty"`
+		Note                 string            `json:"note,omitempty"`
+		NotifyEmails         []string          `json:"notifyEmails,omitempty"`
 	}
-	// HostnameActivationCancelItem contains property hostname activation details
+
+	// HostnameActivationCancelItem contains property hostname activation details.
 	HostnameActivationCancelItem struct {
-		ActivationType       string    `json:"activationType"`
-		HostnameActivationID string    `json:"hostnameActivationId"`
-		PropertyName         string    `json:"propertyName"`
-		PropertyID           string    `json:"propertyId"`
-		Network              string    `json:"network"`
-		Status               string    `json:"status"`
-		SubmitDate           time.Time `json:"submitDate,omitempty"`
-		UpdateDate           time.Time `json:"updateDate,omitempty"`
-		Note                 string    `json:"note,omitempty"`
-		NotifyEmails         []string  `json:"notifyEmails,omitempty"`
-		PropertyVersion      int       `json:"propertyVersion,omitempty"`
+		ActivationType       string            `json:"activationType"`
+		HostnameActivationID string            `json:"hostnameActivationId"`
+		PropertyName         string            `json:"propertyName"`
+		PropertyID           string            `json:"propertyId"`
+		Network              ActivationNetwork `json:"network"`
+		Status               string            `json:"status"`
+		SubmitDate           time.Time         `json:"submitDate,omitempty"`
+		UpdateDate           time.Time         `json:"updateDate,omitempty"`
+		Note                 string            `json:"note,omitempty"`
+		NotifyEmails         []string          `json:"notifyEmails,omitempty"`
+		PropertyVersion      int               `json:"propertyVersion,omitempty"`
 	}
-	// propertyHostnamesHelper is used to unwrap property hostnames returned by API
-	propertyHostnamesHelper struct {
-		HostnameActivationGetItem
-		Hostnames propertyHostnameItems `json:"hostnames,omitempty"`
-	}
-	propertyHostnameItems struct {
-		Items []PropertyHostnameItem `json:"items"`
-	}
-	// PropertyHostnameItem contains hostname details returned after GET operation
+
+	// PropertyHostnameItem contains hostname details returned after GET operation.
 	PropertyHostnameItem struct {
-		CertProvisioningType string         `json:"certProvisioningType"`
+		CertProvisioningType CertType       `json:"certProvisioningType"`
 		CnameFrom            string         `json:"cnameFrom"`
 		CnameTo              string         `json:"cnameTo"`
 		EdgeHostnameID       string         `json:"edgeHostnameId"`
 		CertStatus           CertStatusItem `json:"certStatus"`
 		Action               string         `json:"action"`
 	}
-	// hostnameActivationGetHelper is used to unwrap single element list of hostname activations returned by API
+
+	// propertyHostnamesHelper is used to unwrap property hostnames returned by API
+	propertyHostnamesHelper struct {
+		HostnameActivationGetItem
+		Hostnames propertyHostnameItems `json:"hostnames,omitempty"`
+	}
+
+	propertyHostnameItems struct {
+		Items []PropertyHostnameItem `json:"items"`
+	}
+
+	// hostnameActivationGetHelper is used to unwrap single element list of hostname activations returned by API.
 	hostnameActivationGetHelper struct {
 		GetPropertyHostnameActivationResponse
 		HostnameActivations hostnameActivationGetItems `json:"hostnameActivations"`
 	}
+
 	hostnameActivationGetItems struct {
 		Items []propertyHostnamesHelper `json:"items"`
 	}
-	//hostnameActivationCancelHelper is used to unwrap single element list of hostname activations returned by API
+
+	// hostnameActivationCancelHelper is used to unwrap single element list of hostname activations returned by API.
 	hostnameActivationCancelHelper struct {
 		CancelPropertyHostnameActivationResponse
 		HostnameActivations hostnameActivationsCancelItems `json:"hostnameActivations"`
 	}
+
 	hostnameActivationsCancelItems struct {
 		Items []HostnameActivationCancelItem `json:"items"`
 	}
 )
 
-// unwrapSingleElement extracts hostname activation from single element list
+// unwrapSingleElement extracts hostname activation from single element list.
 func (h hostnameActivationGetHelper) unwrapSingleElement() *GetPropertyHostnameActivationResponse {
 	response := h.GetPropertyHostnameActivationResponse
 	if len(h.HostnameActivations.Items) > 0 {
@@ -154,7 +170,7 @@ func (h hostnameActivationGetHelper) unwrapSingleElement() *GetPropertyHostnameA
 	return &response
 }
 
-// unwrapSingleElement extracts hostname activation from single element list
+// unwrapSingleElement extracts hostname activation from single element list.
 func (h hostnameActivationCancelHelper) unwrapSingleElement() *CancelPropertyHostnameActivationResponse {
 	response := h.CancelPropertyHostnameActivationResponse
 	if len(h.HostnameActivations.Items) > 0 {
@@ -163,7 +179,7 @@ func (h hostnameActivationCancelHelper) unwrapSingleElement() *CancelPropertyHos
 	return &response
 }
 
-// Validate validates GetPropertyHostnameActivationRequest
+// Validate validates GetPropertyHostnameActivationRequest.
 func (r GetPropertyHostnameActivationRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID":           validation.Validate(r.PropertyID, validation.Required),
@@ -173,14 +189,14 @@ func (r GetPropertyHostnameActivationRequest) Validate() error {
 	})
 }
 
-// Validate validates ListPropertyHostnameActivationsRequest
+// Validate validates ListPropertyHostnameActivationsRequest.
 func (r ListPropertyHostnameActivationsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
 		"ContractID": validation.Validate(r.ContractID, validation.Required.When(r.GroupID != "").Error("cannot be blank when GroupID is provided")),
 		"GroupID":    validation.Validate(r.GroupID, validation.Required.When(r.ContractID != "").Error("cannot be blank when ContractID is provided")),
 		"Offset":     validation.Validate(r.Offset, validation.Min(0)),
-		"Limit":      validation.Validate(r.Limit, validation.Min(1)),
+		"Limit":      validation.Validate(r.Limit, validation.Min(1), validation.Max(maxHostnamesPerPage)),
 	})
 }
 
@@ -195,13 +211,13 @@ func (r CancelPropertyHostnameActivationRequest) Validate() error {
 }
 
 var (
-	// ErrGetPropertyHostnameActivation represents error when fetching hostname activation fails
+	// ErrGetPropertyHostnameActivation represents error when fetching hostname activation fails.
 	ErrGetPropertyHostnameActivation = errors.New("fetching hostname activation")
-	// ErrListPropertyHostnameActivations represents error when fetching hostname activations fails
+	// ErrListPropertyHostnameActivations represents error when fetching hostname activations fails.
 	ErrListPropertyHostnameActivations = errors.New("fetching hostname activations")
-	//ErrCancelPropertyHostnameActivation represents error when canceling hostname activation fails
+	//ErrCancelPropertyHostnameActivation represents error when canceling hostname activation fails.
 	ErrCancelPropertyHostnameActivation = errors.New("canceling hostname activation")
-	// ErrCancelPropertyHostnameActivationAlreadyAborted represents error when canceling aborted hostname activation
+	// ErrCancelPropertyHostnameActivationAlreadyAborted represents error when canceling aborted hostname activation.
 	ErrCancelPropertyHostnameActivationAlreadyAborted = errors.New("activation already aborted")
 )
 
@@ -253,10 +269,10 @@ func (p *papi) GetPropertyHostnameActivation(ctx context.Context, params GetProp
 
 func (p *papi) ListPropertyHostnameActivations(ctx context.Context, params ListPropertyHostnameActivationsRequest) (*ListPropertyHostnameActivationsResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("ListPropertyHostnameActivation")
+	logger.Debug("ListPropertyHostnameActivations")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetPropertyHostnameActivation, ErrStructValidation, err)
+		return nil, fmt.Errorf("%s: %w: %s", ErrListPropertyHostnameActivations, ErrStructValidation, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
@@ -264,7 +280,7 @@ func (p *papi) ListPropertyHostnameActivations(ctx context.Context, params ListP
 		params.PropertyID),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPropertyHostnameActivation, err)
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPropertyHostnameActivations, err)
 	}
 	q := uri.Query()
 	if params.ContractID != "" {
@@ -285,7 +301,7 @@ func (p *papi) ListPropertyHostnameActivations(ctx context.Context, params ListP
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPropertyHostnameActivation, err)
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPropertyHostnameActivations, err)
 	}
 
 	resp, err := p.Exec(req, &result)
@@ -303,7 +319,7 @@ func (p *papi) ListPropertyHostnameActivations(ctx context.Context, params ListP
 
 func (p *papi) CancelPropertyHostnameActivation(ctx context.Context, params CancelPropertyHostnameActivationRequest) (*CancelPropertyHostnameActivationResponse, error) {
 	logger := p.Log(ctx)
-	logger.Debug("DeletePropertyHostnameActivation")
+	logger.Debug("CancelPropertyHostnameActivation")
 
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrCancelPropertyHostnameActivation, ErrStructValidation, err)

@@ -274,7 +274,7 @@ type (
 		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-hostnames
 		ListActivePropertyHostnames(context.Context, ListActivePropertyHostnamesRequest) (*ListActivePropertyHostnamesResponse, error)
 
-		// GetActivePropertyHostnamesDiff lists active property hostnames whose details differ between the staging and production networks
+		// GetActivePropertyHostnamesDiff lists active property hostnames whose details differ between the staging and production networks.
 		//
 		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-hostnames-diff
 		GetActivePropertyHostnamesDiff(context.Context, GetActivePropertyHostnamesDiffRequest) (*GetActivePropertyHostnamesDiffResponse, error)
@@ -347,22 +347,24 @@ type (
 		// See: https://techdocs.akamai.com/property-mgr/reference/post-search-find-by-value
 		SearchProperties(context.Context, SearchRequest) (*SearchResponse, error)
 
-		// GetPropertyHostnameActivation fetches a specific property hostname activation
+		// Hostname buckets
+
+		// GetPropertyHostnameActivation fetches a specific property hostname activation.
 		//
 		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-hostname-activation
 		GetPropertyHostnameActivation(context.Context, GetPropertyHostnameActivationRequest) (*GetPropertyHostnameActivationResponse, error)
 
-		// ListPropertyHostnameActivations fetches a list of property hostname activations
+		// ListPropertyHostnameActivations fetches a list of property hostname activations.
 		//
 		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-hostname-activations
 		ListPropertyHostnameActivations(context.Context, ListPropertyHostnameActivationsRequest) (*ListPropertyHostnameActivationsResponse, error)
 
-		// CancelPropertyHostnameActivation cancels a pending property hostname activation
+		// CancelPropertyHostnameActivation cancels a pending property hostname activation.
 		//
 		// See: https://techdocs.akamai.com/property-mgr/reference/delete-property-hostname-activations
 		CancelPropertyHostnameActivation(context.Context, CancelPropertyHostnameActivationRequest) (*CancelPropertyHostnameActivationResponse, error)
 
-		// PatchPropertyHostnameBucket adds or removes hostnames from a property hostname bucket
+		// PatchPropertyHostnameBucket adds or removes hostnames from a property hostname bucket.
 		//
 		// See: https://techdocs.akamai.com/property-mgr/reference/patch-property-hostnames
 		PatchPropertyHostnameBucket(context.Context, PatchPropertyHostnameBucketRequest) (*PatchPropertyHostnameBucketResponse, error)

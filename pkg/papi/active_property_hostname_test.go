@@ -7,11 +7,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapiGetPropertyHostnames(t *testing.T) {
+func TestPapiListActivePropertyHostnames(t *testing.T) {
 	tests := map[string]struct {
 		params           ListActivePropertyHostnamesRequest
 		responseStatus   int
@@ -41,13 +42,13 @@ func TestPapiGetPropertyHostnames(t *testing.T) {
         		"cnameType": "EDGE_HOSTNAME",
         		"productionCertType": "DEFAULT",
         		"productionCnameTo": "example.com.edgekey.net",
-        		"productionEdgeHostnameId": "ehn_895822"
+        		"productionEdgeHostnameID": "ehn_895822"
             },
             {
                 "cnameFrom": "m-example.com",
         		"cnameType": "EDGE_HOSTNAME",
         		"stagingCertType": "DEFAULT",
-        		"stagingEdgeHostnameId": "ehn_293412",
+        		"stagingEdgeHostnameID": "ehn_293412",
 				"stagingCnameTo": "m-example.com.edgekey.net"
             }
         ]
@@ -67,16 +68,16 @@ func TestPapiGetPropertyHostnames(t *testing.T) {
 					Items: []HostnameItem{
 						{
 							CnameFrom:                "example.com",
-							CnameType:                "EDGE_HOSTNAME",
-							ProductionCertType:       "DEFAULT",
+							CnameType:                HostnameCnameTypeEdgeHostname,
+							ProductionCertType:       CertTypeDefault,
 							ProductionCnameTo:        "example.com.edgekey.net",
-							ProductionEdgeHostnameId: "ehn_895822",
+							ProductionEdgeHostnameID: "ehn_895822",
 						},
 						{
 							CnameFrom:             "m-example.com",
-							CnameType:             "EDGE_HOSTNAME",
-							StagingCertType:       "DEFAULT",
-							StagingEdgeHostnameId: "ehn_293412",
+							CnameType:             HostnameCnameTypeEdgeHostname,
+							StagingCertType:       CertTypeDefault,
+							StagingEdgeHostnameID: "ehn_293412",
 							StagingCnameTo:        "m-example.com.edgekey.net",
 						},
 					},
@@ -94,7 +95,7 @@ func TestPapiGetPropertyHostnames(t *testing.T) {
 				Sort:              "hostname:a",
 				Hostname:          "example.com",
 				CnameTo:           "example.com",
-				Network:           "PRODUCTION",
+				Network:           ActivationNetworkProduction,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -113,16 +114,18 @@ func TestPapiGetPropertyHostnames(t *testing.T) {
         		"cnameType": "EDGE_HOSTNAME",
         		"productionCertType": "DEFAULT",
         		"productionCnameTo": "example.com.edgekey.net",
-        		"productionEdgeHostnameId": "ehn_895822"
+        		"productionEdgeHostnameID": "ehn_895822"
             },
             {
                 "cnameFrom": "m-example.com",
         		"cnameType": "EDGE_HOSTNAME",
         		"stagingCertType": "DEFAULT",
-        		"stagingEdgeHostnameId": "ehn_293412",
+        		"stagingEdgeHostnameID": "ehn_293412",
 				"stagingCnameTo": "m-example.com.edgekey.net"
             }
-        ]
+        ],
+		"previousLink": "previous link",
+		"nextLink": "next link"
     }
 }
 `,
@@ -139,19 +142,21 @@ func TestPapiGetPropertyHostnames(t *testing.T) {
 					Items: []HostnameItem{
 						{
 							CnameFrom:                "example.com",
-							CnameType:                "EDGE_HOSTNAME",
-							ProductionCertType:       "DEFAULT",
+							CnameType:                HostnameCnameTypeEdgeHostname,
+							ProductionCertType:       CertTypeDefault,
 							ProductionCnameTo:        "example.com.edgekey.net",
-							ProductionEdgeHostnameId: "ehn_895822",
+							ProductionEdgeHostnameID: "ehn_895822",
 						},
 						{
 							CnameFrom:             "m-example.com",
-							CnameType:             "EDGE_HOSTNAME",
-							StagingCertType:       "DEFAULT",
-							StagingEdgeHostnameId: "ehn_293412",
+							CnameType:             HostnameCnameTypeEdgeHostname,
+							StagingCertType:       CertTypeDefault,
+							StagingEdgeHostnameID: "ehn_293412",
 							StagingCnameTo:        "m-example.com.edgekey.net",
 						},
 					},
+					PreviousLink: ptr.To("previous link"),
+					NextLink:     ptr.To("next link"),
 				},
 			},
 		},
@@ -261,7 +266,7 @@ func TestPapiGetPropertyHostnames(t *testing.T) {
 	}
 }
 
-func TestPapiGetPropertyHostnamesDiff(t *testing.T) {
+func TestPapiGetActivePropertyHostnamesDiff(t *testing.T) {
 	tests := map[string]struct {
 		params           GetActivePropertyHostnamesDiffRequest
 		responseStatus   int
@@ -288,14 +293,14 @@ func TestPapiGetPropertyHostnamesDiff(t *testing.T) {
                 "cnameFrom": "example.com",
         	    "ProductionCnameType": "EDGE_HOSTNAME",
         		"productionCnameTo": "example.com.edgekey.net",
-        		"productionEdgeHostnameId": "ehn_895822",
+        		"productionEdgeHostnameID": "ehn_895822",
 				"productionCertProvisioningType": "CPS_MANAGED"
             },
             {
                 "cnameFrom": "m-example.com",
         		"stagingCnameType":	"EDGE_HOSTNAME",
 				"stagingCnameTo": "m-example.com.edgekey.net",
-        		"stagingEdgeHostnameId": "ehn_293412",
+        		"stagingEdgeHostnameID": "ehn_293412",
 				"stagingCertProvisioningType": "CPS_MANAGED"
             }
         ]
@@ -314,16 +319,16 @@ func TestPapiGetPropertyHostnamesDiff(t *testing.T) {
 						{
 							CnameFrom:                      "example.com",
 							ProductionCnameTo:              "example.com.edgekey.net",
-							ProductionCnameType:            "EDGE_HOSTNAME",
-							ProductionEdgeHostnameId:       "ehn_895822",
-							ProductionCertProvisioningType: "CPS_MANAGED",
+							ProductionCnameType:            HostnameCnameTypeEdgeHostname,
+							ProductionEdgeHostnameID:       "ehn_895822",
+							ProductionCertProvisioningType: CertTypeCPSManaged,
 						},
 						{
 							CnameFrom:                   "m-example.com",
 							StagingCnameTo:              "m-example.com.edgekey.net",
-							StagingCnameType:            "EDGE_HOSTNAME",
-							StagingEdgeHostnameId:       "ehn_293412",
-							StagingCertProvisioningType: "CPS_MANAGED",
+							StagingCnameType:            HostnameCnameTypeEdgeHostname,
+							StagingEdgeHostnameID:       "ehn_293412",
+							StagingCertProvisioningType: CertTypeCPSManaged,
 						},
 					},
 				},
@@ -351,17 +356,19 @@ func TestPapiGetPropertyHostnamesDiff(t *testing.T) {
                 "cnameFrom": "example.com",
         	    "ProductionCnameType": "EDGE_HOSTNAME",
         		"productionCnameTo": "example.com.edgekey.net",
-        		"productionEdgeHostnameId": "ehn_895822",
+        		"productionEdgeHostnameID": "ehn_895822",
 				"productionCertProvisioningType": "CPS_MANAGED"
             },
             {
                 "cnameFrom": "m-example.com",
         		"stagingCnameType":	"EDGE_HOSTNAME",
 				"stagingCnameTo": "m-example.com.edgekey.net",
-        		"stagingEdgeHostnameId": "ehn_293412",
+        		"stagingEdgeHostnameID": "ehn_293412",
 				"stagingCertProvisioningType": "CPS_MANAGED"
             }
-        ]
+        ],
+		"previousLink": "previous link",
+		"nextLink": "next link"
     }
 }
 `,
@@ -377,18 +384,20 @@ func TestPapiGetPropertyHostnamesDiff(t *testing.T) {
 						{
 							CnameFrom:                      "example.com",
 							ProductionCnameTo:              "example.com.edgekey.net",
-							ProductionCnameType:            "EDGE_HOSTNAME",
-							ProductionEdgeHostnameId:       "ehn_895822",
-							ProductionCertProvisioningType: "CPS_MANAGED",
+							ProductionCnameType:            HostnameCnameTypeEdgeHostname,
+							ProductionEdgeHostnameID:       "ehn_895822",
+							ProductionCertProvisioningType: CertTypeCPSManaged,
 						},
 						{
 							CnameFrom:                   "m-example.com",
 							StagingCnameTo:              "m-example.com.edgekey.net",
-							StagingCnameType:            "EDGE_HOSTNAME",
-							StagingEdgeHostnameId:       "ehn_293412",
-							StagingCertProvisioningType: "CPS_MANAGED",
+							StagingCnameType:            HostnameCnameTypeEdgeHostname,
+							StagingEdgeHostnameID:       "ehn_293412",
+							StagingCertProvisioningType: CertTypeCPSManaged,
 						},
 					},
+					PreviousLink: ptr.To("previous link"),
+					NextLink:     ptr.To("next link"),
 				},
 			},
 		},

@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestPapiPatchPropertyHostnameActivation(t *testing.T) {
+func TestPapiPatchPropertyHostnameBucket(t *testing.T) {
 	tests := map[string]struct {
 		params         PatchPropertyHostnameBucketRequest
 		expected       *PatchPropertyHostnameBucketResponse
@@ -29,8 +29,8 @@ func TestPapiPatchPropertyHostnameActivation(t *testing.T) {
 					Add: []PatchPropertyHostnameBucketAdd{
 						{
 							EdgeHostnameID:       "edge_hostname_id",
-							CertProvisioningType: "DEFAULT",
-							CnameType:            "EDGE_HOSTNAME",
+							CertProvisioningType: CertTypeDefault,
+							CnameType:            HostnameCnameTypeEdgeHostname,
 							CnameFrom:            "cname.from",
 						},
 					},
@@ -44,10 +44,10 @@ func TestPapiPatchPropertyHostnameActivation(t *testing.T) {
 				ActivationLink: "/papi/v1/properties/property_id/hostname-activations/activation_id?groupId=group_id&contractId=contract_id",
 				ActivationID:   "activation_id",
 				Hostnames: []PatchHostnameItem{{
-					CertProvisioningType: "DEFAULT",
+					CertProvisioningType: CertTypeDefault,
 					CnameFrom:            "cname.from",
 					CnameTo:              "cname.to",
-					CnameType:            "EDGE_HOSTNAME",
+					CnameType:            HostnameCnameTypeEdgeHostname,
 					EdgeHostnameID:       "edge_hostname_id",
 					CertStatus: CertStatusItem{
 						ValidationCname: ValidationCname{
@@ -109,8 +109,8 @@ func TestPapiPatchPropertyHostnameActivation(t *testing.T) {
 					Add: []PatchPropertyHostnameBucketAdd{
 						{
 							EdgeHostnameID:       "edge_hostname_id",
-							CertProvisioningType: "DEFAULT",
-							CnameType:            "EDGE_HOSTNAME",
+							CertProvisioningType: CertTypeDefault,
+							CnameType:            HostnameCnameTypeEdgeHostname,
 							CnameFrom:            "cname.from",
 						},
 					},
@@ -124,10 +124,10 @@ func TestPapiPatchPropertyHostnameActivation(t *testing.T) {
 				ActivationLink: "/papi/v1/properties/property_id/hostname-activations/activation_id?groupId=group_id&contractId=contract_id",
 				ActivationID:   "activation_id",
 				Hostnames: []PatchHostnameItem{{
-					CertProvisioningType: "DEFAULT",
+					CertProvisioningType: CertTypeDefault,
 					CnameFrom:            "cname.from",
 					CnameTo:              "cname.to",
-					CnameType:            "EDGE_HOSTNAME",
+					CnameType:            HostnameCnameTypeEdgeHostname,
 					EdgeHostnameID:       "edge_hostname_id",
 					CertStatus: CertStatusItem{
 						ValidationCname: ValidationCname{
@@ -192,10 +192,10 @@ func TestPapiPatchPropertyHostnameActivation(t *testing.T) {
 				ActivationLink: "/papi/v1/properties/property_id/hostname-activations/activation_id?groupId=group_id&contractId=contract_id",
 				ActivationID:   "activation_id",
 				Hostnames: []PatchHostnameItem{{
-					CertProvisioningType: "DEFAULT",
+					CertProvisioningType: CertTypeDefault,
 					CnameFrom:            "cname.from",
 					CnameTo:              "cname.to",
-					CnameType:            "EDGE_HOSTNAME",
+					CnameType:            HostnameCnameTypeEdgeHostname,
 					EdgeHostnameID:       "edge_hostname_id",
 					CertStatus: CertStatusItem{
 						ValidationCname: ValidationCname{
@@ -287,6 +287,59 @@ func TestPapiPatchPropertyHostnameActivation(t *testing.T) {
 			},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "patching property hostname bucket: struct validation: Body: {\n\tAdd[0]: {\n\t\tCertProvisioningType: cannot be blank\n\t\tCnameFrom: cannot be blank\n\t\tCnameType: cannot be blank\n\t\tEdgeHostnameID: cannot be blank\n\t}\n\tAdd[1]: {\n\t\tCertProvisioningType: cannot be blank\n\t\tCnameFrom: cannot be blank\n\t\tCnameType: cannot be blank\n\t\tEdgeHostnameID: cannot be blank\n\t}\n\tNetwork: cannot be blank\n}\nPropertyID: cannot be blank",
+					err.Error())
+			},
+		},
+		"validation error - wrong network type": {
+			params: PatchPropertyHostnameBucketRequest{
+				PropertyID: "property_id",
+				Body: PatchPropertyHostnameBucketBody{
+					Remove:  []string{"www.example.com"},
+					Network: "wrong network",
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "patching property hostname bucket: struct validation: Body: {\n\tNetwork: value 'wrong network' is invalid. Must be one of: 'STAGING' or 'PRODUCTION'\n}",
+					err.Error())
+			},
+		},
+		"validation error - wrong cert provisioning type": {
+			params: PatchPropertyHostnameBucketRequest{
+				PropertyID: "property_id",
+				Body: PatchPropertyHostnameBucketBody{
+					Add: []PatchPropertyHostnameBucketAdd{
+						{
+							EdgeHostnameID:       "ehn_123",
+							CertProvisioningType: "wrong cert type",
+							CnameType:            HostnameCnameTypeEdgeHostname,
+							CnameFrom:            "cname_from",
+						},
+					},
+					Network: "STAGING",
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "patching property hostname bucket: struct validation: Body: {\n\tAdd[0]: {\n\t\tCertProvisioningType: value 'wrong cert type' is invalid. Must be one of: 'CPS_MANAGED' or 'DEFAULT'\n\t}\n}",
+					err.Error())
+			},
+		},
+		"validation error - wrong cname type": {
+			params: PatchPropertyHostnameBucketRequest{
+				PropertyID: "property_id",
+				Body: PatchPropertyHostnameBucketBody{
+					Add: []PatchPropertyHostnameBucketAdd{
+						{
+							EdgeHostnameID:       "ehn_123",
+							CertProvisioningType: CertTypeDefault,
+							CnameType:            "wrong cname type",
+							CnameFrom:            "cname_from",
+						},
+					},
+					Network: "STAGING",
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "patching property hostname bucket: struct validation: Body: {\n\tAdd[0]: {\n\t\tCnameType: value 'wrong cname type' is invalid. There is only one supported value of: EDGE_HOSTNAME\n\t}\n}",
 					err.Error())
 			},
 		},

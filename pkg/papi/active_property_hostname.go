@@ -12,19 +12,13 @@ import (
 )
 
 type (
-	// SortOrder represents SortOrder enum
+	// SortOrder represents SortOrder enum.
 	SortOrder string
 
-	// NetworkType represents NetworkType enum
-	NetworkType string
-
-	//CertType represents CertType enum
+	// CertType represents CertType enum.
 	CertType string
 
-	//CnameType represents CnameType enum
-	CnameType string
-
-	// ListActivePropertyHostnamesRequest contains parameters required to list active property hostnames
+	// ListActivePropertyHostnamesRequest contains parameters required to list active property hostnames.
 	ListActivePropertyHostnamesRequest struct {
 		PropertyID        string
 		Offset            int
@@ -32,13 +26,13 @@ type (
 		Sort              SortOrder
 		Hostname          string
 		CnameTo           string
-		Network           NetworkType
+		Network           ActivationNetwork
 		ContractID        string
 		GroupID           string
 		IncludeCertStatus bool
 	}
 
-	// GetActivePropertyHostnamesDiffRequest contains parameters required to list active property hostnames diff
+	// GetActivePropertyHostnamesDiffRequest contains parameters required to list active property hostnames diff.
 	GetActivePropertyHostnamesDiffRequest struct {
 		PropertyID string
 		Offset     int
@@ -47,7 +41,7 @@ type (
 		GroupID    string
 	}
 
-	// ListActivePropertyHostnamesResponse contains information about each of the active property hostnames request
+	// ListActivePropertyHostnamesResponse contains information about each of the active property hostnames.
 	ListActivePropertyHostnamesResponse struct {
 		AccountID     string                 `json:"accountId"`
 		AvailableSort []SortOrder            `json:"availableSort"`
@@ -60,7 +54,7 @@ type (
 		Hostnames     HostnamesResponseItems `json:"hostnames"`
 	}
 
-	// GetActivePropertyHostnamesDiffResponse contains information about each of the active property hostnames diff request
+	// GetActivePropertyHostnamesDiffResponse contains information about each of the active property hostnames diff.
 	GetActivePropertyHostnamesDiffResponse struct {
 		AccountID  string                     `json:"accountId"`
 		ContractID string                     `json:"contractId"`
@@ -69,48 +63,48 @@ type (
 		Hostnames  HostnamesDiffResponseItems `json:"hostnames"`
 	}
 
-	// HostnamesResponseItems contains the response body for ListActivePropertyHostnamesResponse
+	// HostnamesResponseItems contains the response body for ListActivePropertyHostnamesResponse.
 	HostnamesResponseItems struct {
 		Items            []HostnameItem `json:"items"`
 		CurrentItemCount int            `json:"currentItemCount"`
-		NextLink         string         `json:"nextLink"`
-		PreviousLink     string         `json:"previousLink"`
+		NextLink         *string        `json:"nextLink"`
+		PreviousLink     *string        `json:"previousLink"`
 		TotalItems       int            `json:"totalItems"`
 	}
 
-	// HostnamesDiffResponseItems contains the response body for GetActivePropertyHostnamesDiffResponse
+	// HostnamesDiffResponseItems contains the response body for GetActivePropertyHostnamesDiffResponse.
 	HostnamesDiffResponseItems struct {
 		Items            []HostnameDiffItem `json:"items"`
 		CurrentItemCount int                `json:"currentItemCount"`
-		NextLink         string             `json:"nextLink"`
-		PreviousLink     string             `json:"previousLink"`
+		NextLink         *string            `json:"nextLink"`
+		PreviousLink     *string            `json:"previousLink"`
 		TotalItems       int                `json:"totalItems"`
 	}
 
-	// HostnameItem contains information about each of the HostnamesResponseItems
+	// HostnameItem contains information about each of the HostnamesResponseItems.
 	HostnameItem struct {
 		CertStatus               *CertStatusItem   `json:"certStatus"`
 		CnameFrom                string            `json:"cnameFrom"`
 		CnameType                HostnameCnameType `json:"cnameType"`
 		ProductionCertType       CertType          `json:"productionCertType"`
 		ProductionCnameTo        string            `json:"productionCnameTo"`
-		ProductionEdgeHostnameId string            `json:"productionEdgeHostnameId"`
+		ProductionEdgeHostnameID string            `json:"productionEdgeHostnameId"`
 		StagingCertType          CertType          `json:"stagingCertType"`
 		StagingCnameTo           string            `json:"StagingCnameTo"`
-		StagingEdgeHostnameId    string            `json:"stagingEdgeHostnameId"`
+		StagingEdgeHostnameID    string            `json:"stagingEdgeHostnameId"`
 	}
 
-	// HostnameDiffItem contains information about each of the HostnamesDiffResponseItems
+	// HostnameDiffItem contains information about each of the HostnamesDiffResponseItems.
 	HostnameDiffItem struct {
-		CnameFrom                      string    `json:"cnameFrom"`
-		ProductionCertProvisioningType string    `json:"productionCertProvisioningType"`
-		ProductionCnameTo              string    `json:"productionCnameTo"`
-		ProductionCnameType            CnameType `json:"productionCnameType"`
-		ProductionEdgeHostnameId       string    `json:"productionEdgeHostnameId"`
-		StagingCertProvisioningType    string    `json:"stagingCertProvisioningType"`
-		StagingCnameTo                 string    `json:"stagingCnameTo"`
-		StagingCnameType               CnameType `json:"stagingCnameType"`
-		StagingEdgeHostnameId          string    `json:"stagingEdgeHostnameId"`
+		CnameFrom                      string            `json:"cnameFrom"`
+		ProductionCertProvisioningType CertType          `json:"productionCertProvisioningType"`
+		ProductionCnameTo              string            `json:"productionCnameTo"`
+		ProductionCnameType            HostnameCnameType `json:"productionCnameType"`
+		ProductionEdgeHostnameID       string            `json:"productionEdgeHostnameId"`
+		StagingCertProvisioningType    CertType          `json:"stagingCertProvisioningType"`
+		StagingCnameTo                 string            `json:"stagingCnameTo"`
+		StagingCnameType               HostnameCnameType `json:"stagingCnameType"`
+		StagingEdgeHostnameID          string            `json:"stagingEdgeHostnameId"`
 	}
 )
 
@@ -119,45 +113,53 @@ const (
 	SortAscending SortOrder = "hostname:a"
 	// SortDescending represents descending sorting by hostname.
 	SortDescending SortOrder = "hostname:d"
-	// NetworkStaging represents the staging network for an activated hostname.
-	NetworkStaging NetworkType = "STAGING"
-	// NetworkProduction represents the production network for an activated hostname.
-	NetworkProduction NetworkType = "PRODUCTION"
 	// CertTypeCPSManaged indicates that the certificate is provisioned using the Certificate Provisioning System (CPS).
 	CertTypeCPSManaged CertType = "CPS_MANAGED"
 	// CertTypeDefault indicates that the certificate is a Default Domain Validation (DV) certificate.
 	CertTypeDefault CertType = "DEFAULT"
-	// CnameTypeEdgeHostname represents the CNAME type for an edge hostname.
-	CnameTypeEdgeHostname CnameType = "EDGE_HOSTNAME"
-	// CnameTypeCustom represents the CNAME type for a custom hostname.
-	CnameTypeCustom CnameType = "CUSTOM"
+	// maxHostnamesPerPage indicates the maximum possible value for 'limit' parameter for Get and List active property hostnames.
+	maxHostnamesPerPage int = 999
 )
 
 var (
-	// ErrListActivePropertyHostnames represents error when fetching active property hostnames fails
+	// ErrListActivePropertyHostnames represents error when fetching active property hostnames fails.
 	ErrListActivePropertyHostnames = errors.New("fetching active property hostnames")
 
-	// ErrGetActivePropertyHostnamesDiff represents error when fetching active property hostnames diff fails
+	// ErrGetActivePropertyHostnamesDiff represents error when fetching active property hostnames diff fails.
 	ErrGetActivePropertyHostnamesDiff = errors.New("fetching active property hostnames diff")
 )
 
-// Validate validates ListActivePropertyHostnamesRequest
-func (ch ListActivePropertyHostnamesRequest) Validate() error {
+// Validate validates SortOrder.
+func (o SortOrder) Validate() validation.InRule {
+	return validation.In(SortAscending, SortDescending).
+		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'",
+			o, SortAscending, SortDescending))
+}
+
+// Validate validates CertType.
+func (t CertType) Validate() validation.InRule {
+	return validation.In(CertTypeCPSManaged, CertTypeDefault).
+		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'",
+			t, CertTypeCPSManaged, CertTypeDefault))
+}
+
+// Validate validates ListActivePropertyHostnamesRequest.
+func (r ListActivePropertyHostnamesRequest) Validate() error {
 	return validation.Errors{
-		"PropertyID": validation.Validate(ch.PropertyID, validation.Required),
-		"Network":    validation.Validate(ch.Network, validation.In(NetworkStaging, NetworkProduction)),
-		"Sort":       validation.Validate(ch.Sort, validation.In(SortAscending, SortDescending)),
-		"Offset":     validation.Validate(ch.Offset, validation.Min(0)),
-		"Limit":      validation.Validate(ch.Limit, validation.Min(1)),
+		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
+		"Network":    validation.Validate(r.Network, r.Network.Validate()),
+		"Sort":       validation.Validate(r.Sort, r.Sort.Validate()),
+		"Offset":     validation.Validate(r.Offset, validation.Min(0)),
+		"Limit":      validation.Validate(r.Limit, validation.Min(1), validation.Max(maxHostnamesPerPage)),
 	}.Filter()
 }
 
-// Validate validates GetActivePropertyHostnamesDiffRequest
-func (ch GetActivePropertyHostnamesDiffRequest) Validate() error {
+// Validate validates GetActivePropertyHostnamesDiffRequest.
+func (r GetActivePropertyHostnamesDiffRequest) Validate() error {
 	return validation.Errors{
-		"PropertyID": validation.Validate(ch.PropertyID, validation.Required),
-		"Offset":     validation.Validate(ch.Offset, validation.Min(0)),
-		"Limit":      validation.Validate(ch.Limit, validation.Min(1)),
+		"PropertyID": validation.Validate(r.PropertyID, validation.Required),
+		"Offset":     validation.Validate(r.Offset, validation.Min(0)),
+		"Limit":      validation.Validate(r.Limit, validation.Min(1), validation.Max(maxHostnamesPerPage)),
 	}.Filter()
 }
 
@@ -241,7 +243,6 @@ func (p *papi) GetActivePropertyHostnamesDiff(ctx context.Context, params GetAct
 		return nil, fmt.Errorf("%w: failed to parse base URL: %s", ErrGetActivePropertyHostnamesDiff, err)
 	}
 
-	// Add query parameters
 	query := parsedURL.Query()
 	if params.ContractID != "" {
 		query.Set("contractId", params.ContractID)
