@@ -624,7 +624,43 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				want := "The edge hostname prefix must be 63 characters or less; you provided 64 characters"
+				want := `The edge hostname prefix must be at least 4 character(s) and no more than 63 characters for "akamaized.net" suffix; you provided 64 character(s)`
+				assert.True(t, err != nil && strings.Contains(err.Error(), want), "Expected error containing %q, got %v", want, err)
+			},
+		},
+		"invalid edge hostname domain prefix. The domain prefix less the minimum required length of 4 characters": {
+			params: CreateEdgeHostnameRequest{
+				ContractID: "contract",
+				GroupID:    "group",
+				EdgeHostname: EdgeHostnameCreate{
+					ProductID:         "product",
+					DomainPrefix:      "nm1",
+					DomainSuffix:      "akamaized.net",
+					Secure:            true,
+					IPVersionBehavior: "IPV4",
+					UseCases:          nil,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := `The edge hostname prefix must be at least 4 character(s) and no more than 63 characters for "akamaized.net" suffix; you provided 3 character(s)`
+				assert.True(t, err != nil && strings.Contains(err.Error(), want), "Expected error containing %q, got %v", want, err)
+			},
+		},
+		"invalid edge hostname domain prefix. The domain prefix less the minimum required length of 1 character": {
+			params: CreateEdgeHostnameRequest{
+				ContractID: "contract",
+				GroupID:    "group",
+				EdgeHostname: EdgeHostnameCreate{
+					ProductID:         "product",
+					DomainPrefix:      "",
+					DomainSuffix:      ".edgesuite.net",
+					Secure:            true,
+					IPVersionBehavior: "IPV4",
+					UseCases:          nil,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := `DomainPrefix: cannot be blank`
 				assert.True(t, err != nil && strings.Contains(err.Error(), want), "Expected error containing %q, got %v", want, err)
 			},
 		},

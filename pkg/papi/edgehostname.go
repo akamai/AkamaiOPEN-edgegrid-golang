@@ -116,6 +116,9 @@ const (
 
 	// UseCaseGlobal constant
 	UseCaseGlobal = "GLOBAL"
+
+	minDomainPrefixLength          = 1
+	minDomainPrefixLengthAkamaized = 4
 )
 
 // Validate validates CreateEdgeHostnameRequest
@@ -302,8 +305,14 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameReque
 }
 
 func validateDomainPrefix(domainPrefix, domainSuffix string) error {
-	if len(domainPrefix) > 63 {
-		return fmt.Errorf("The edge hostname prefix must be 63 characters or less; you provided %d characters", len(domainPrefix))
+	domainPrefixLen := len(domainPrefix)
+	minLen := minDomainPrefixLength
+	if domainSuffix == "akamaized.net" {
+		minLen = minDomainPrefixLengthAkamaized
+	}
+
+	if domainPrefixLen < minLen || domainPrefixLen > 63 {
+		return fmt.Errorf(`The edge hostname prefix must be at least %d character(s) and no more than 63 characters for "%s" suffix; you provided %d character(s)`, minLen, domainSuffix, domainPrefixLen)
 	}
 
 	pattern, exists := domainPrefixPatterns[domainSuffix]
