@@ -150,6 +150,21 @@ type (
 		//
 		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-policy-version-activations
 		ActivatePolicyVersion(context.Context, ActivatePolicyVersionRequest) ([]PolicyActivation, error)
+
+		// GetPolicyVersionRule returns information for a specific rule within a policy version.
+		//
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/get-policy-version-rule
+		GetPolicyVersionRule(context.Context, GetPolicyVersionRuleRequest) (MatchRule, error)
+
+		// CreatePolicyVersionRule adds a new rule to an existing policy version. You can only add one rule at a time.
+		//
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/post-policy-version-rules
+		CreatePolicyVersionRule(context.Context, CreatePolicyVersionRuleRequest) (MatchRule, error)
+
+		// UpdatePolicyVersionRule updates attributes of an existing rule within a policy version. When updating a rule, set disabled to true to prevent the rule from being evaluated against incoming requests.
+		//
+		// See: https://techdocs.akamai.com/cloudlets/v2/reference/put-policy-version-rule
+		UpdatePolicyVersionRule(context.Context, UpdatePolicyVersionRuleRequest) (MatchRule, error)
 	}
 
 	cloudlets struct {

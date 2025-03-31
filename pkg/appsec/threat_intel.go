@@ -14,12 +14,12 @@ type (
 	ThreatIntel interface {
 		// GetThreatIntel retrieves the current threat intel settings.
 		//
-		// See: https://techdocs.akamai.com/application-security/reference/get-rules-threat-intel-1
+		// See: https://techdocs.akamai.com/application-security/reference/get-rules-threat-intel
 		GetThreatIntel(ctx context.Context, params GetThreatIntelRequest) (*GetThreatIntelResponse, error)
 
 		// UpdateThreatIntel modifies the current threat intel settings.
 		//
-		// See: https://techdocs.akamai.com/application-security/reference/put-rules-threat-intel-1
+		// See: https://techdocs.akamai.com/application-security/reference/put-rules-threat-intel
 		UpdateThreatIntel(ctx context.Context, params UpdateThreatIntelRequest) (*UpdateThreatIntelResponse, error)
 	}
 

@@ -174,6 +174,13 @@ const (
 	ActivationNetworkProduction ActivationNetwork = "PRODUCTION"
 )
 
+// Validate validates ActivationNetwork.
+func (n ActivationNetwork) Validate() validation.InRule {
+	return validation.In(ActivationNetworkStaging, ActivationNetworkProduction).
+		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'",
+			n, ActivationNetworkStaging, ActivationNetworkProduction))
+}
+
 // Validate validates CreateActivationRequest
 func (v CreateActivationRequest) Validate() error {
 	return validation.Errors{
@@ -183,7 +190,7 @@ func (v CreateActivationRequest) Validate() error {
 		"Activation.FallbackInfo":       validation.Validate(v.Activation.FallbackInfo, validation.Nil),
 		"Activation.FMAActivationState": validation.Validate(v.Activation.FMAActivationState, validation.Empty),
 		"Activation.GroupID":            validation.Validate(v.Activation.GroupID, validation.Empty),
-		"Activation.Network":            validation.Validate(v.Activation.Network, validation.In(ActivationNetworkStaging, ActivationNetworkProduction)),
+		"Activation.Network":            validation.Validate(v.Activation.Network, v.Activation.Network.Validate()),
 		"Activation.NotifyEmails":       validation.Validate(v.Activation.NotifyEmails, validation.Length(1, 0)),
 		"Activation.PropertyID":         validation.Validate(v.Activation.PropertyID, validation.Empty),
 		"Activation.PropertyName":       validation.Validate(v.Activation.PropertyName, validation.Empty),

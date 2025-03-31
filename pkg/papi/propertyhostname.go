@@ -96,6 +96,13 @@ const (
 	HostnameCnameTypeEdgeHostname HostnameCnameType = "EDGE_HOSTNAME"
 )
 
+// Validate validates HostnameCnameType.
+func (t HostnameCnameType) Validate() validation.InRule {
+	return validation.In(HostnameCnameTypeEdgeHostname).
+		Error(fmt.Sprintf("value '%s' is invalid. There is only one supported value of: %s",
+			t, HostnameCnameTypeEdgeHostname))
+}
+
 // Validate validates GetPropertyVersionHostnamesRequest
 func (ph GetPropertyVersionHostnamesRequest) Validate() error {
 	return validation.Errors{

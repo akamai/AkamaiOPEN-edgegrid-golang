@@ -25,6 +25,12 @@ var (
 
 	// ErrMissingComplianceRecord is returned when compliance record is required and is not provided
 	ErrMissingComplianceRecord = errors.New("compliance record must be specified")
+
+	// ErrActivationTooFar is returned when hostname bucket activation reaches a state from which it cannot be cancelled
+	ErrActivationTooFar = errors.New("error activation is too far")
+
+	// ErrActivationAlreadyActive is returned when hostname bucket activation cannot be cancelled because it's not pending
+	ErrActivationAlreadyActive = errors.New("error canceling activation, as activation is not pending")
 )
 
 type (
@@ -261,6 +267,18 @@ type (
 		// See: https://techdocs.akamai.com/property-mgr/reference/put-property-version-rules
 		UpdateRuleTree(context.Context, UpdateRulesRequest) (*UpdateRulesResponse, error)
 
+		// ActivePropertyHostnames
+
+		// ListActivePropertyHostnames lists active property hostnames assigned to a specific property.
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-hostnames
+		ListActivePropertyHostnames(context.Context, ListActivePropertyHostnamesRequest) (*ListActivePropertyHostnamesResponse, error)
+
+		// GetActivePropertyHostnamesDiff lists active property hostnames whose details differ between the staging and production networks.
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-hostnames-diff
+		GetActivePropertyHostnamesDiff(context.Context, GetActivePropertyHostnamesDiffRequest) (*GetActivePropertyHostnamesDiffResponse, error)
+
 		// PropertyVersionHostnames
 
 		// GetPropertyVersionHostnames lists all the hostnames assigned to a property version
@@ -328,6 +346,28 @@ type (
 		//
 		// See: https://techdocs.akamai.com/property-mgr/reference/post-search-find-by-value
 		SearchProperties(context.Context, SearchRequest) (*SearchResponse, error)
+
+		// Hostname buckets
+
+		// GetPropertyHostnameActivation fetches a specific property hostname activation.
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-hostname-activation
+		GetPropertyHostnameActivation(context.Context, GetPropertyHostnameActivationRequest) (*GetPropertyHostnameActivationResponse, error)
+
+		// ListPropertyHostnameActivations fetches a list of property hostname activations.
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/get-property-hostname-activations
+		ListPropertyHostnameActivations(context.Context, ListPropertyHostnameActivationsRequest) (*ListPropertyHostnameActivationsResponse, error)
+
+		// CancelPropertyHostnameActivation cancels a pending property hostname activation.
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/delete-property-hostname-activations
+		CancelPropertyHostnameActivation(context.Context, CancelPropertyHostnameActivationRequest) (*CancelPropertyHostnameActivationResponse, error)
+
+		// PatchPropertyHostnameBucket adds or removes hostnames from a property hostname bucket.
+		//
+		// See: https://techdocs.akamai.com/property-mgr/reference/patch-property-hostnames
+		PatchPropertyHostnameBucket(context.Context, PatchPropertyHostnameBucketRequest) (*PatchPropertyHostnameBucketResponse, error)
 	}
 
 	papi struct {

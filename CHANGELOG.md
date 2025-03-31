@@ -1,5 +1,39 @@
 # RELEASE NOTES
 
+## 10.1.0 (Mar 31, 2025)
+
+### FEATURES/ENHANCEMENTS:
+
+* General
+  * Migrated to Go `1.23`.
+  * Updated various dependencies.
+  * Adopted toolchain Go `1.23.6` and a semver-compliant Go directive.
+
+* Cloudlets
+  * Added new methods:
+    * [GetPolicyVersionRule](https://techdocs.akamai.com/cloudlets/v2/reference/get-policy-version-rule)
+    * [CreatePolicyVersionRule](https://techdocs.akamai.com/cloudlets/v2/reference/post-policy-version-rules)
+    * [UpdatePolicyVersionRule](https://techdocs.akamai.com/cloudlets/v2/reference/put-policy-version-rule)
+  * Added new fields for V2, including `AkaRuleID` and `Location` for all the types of match rules.
+
+* PAPI
+  * Added name format validations and a size limit for the domain prefix.
+  * Added support for the hostname bucket feature. This includes:
+    * New endpoints:
+      * [ListActivePropertyHostnames](https://techdocs.akamai.com/property-mgr/reference/get-property-hostnames) - Lists active property hostnames.
+      * [GetActivePropertyHostnamesDiff](https://techdocs.akamai.com/property-mgr/reference/get-property-hostnames-diff) - Retrieves the property hostnames diff.
+      * [ListPropertyHostnameActivations](https://techdocs.akamai.com/property-mgr/reference/get-property-hostname-activations) - Lists property hostname activations.
+      * [GetPropertyHostnameActivation](https://techdocs.akamai.com/property-mgr/reference/get-property-hostname-activation) - Gets a property hostname activation.
+      * [CancelPropertyHostnameActivation](https://techdocs.akamai.com/property-mgr/reference/delete-property-hostname-activations) - Cancels a pending property hostname activation.
+      * [PatchPropertyHostnameBucket](https://techdocs.akamai.com/property-mgr/reference/patch-property-hostnames) - Adds or removes hostnames for a property's hostname bucket.
+    * A new `UseHostnameBucket` field in the `CreatePropertyRequest` structure.
+    * A new `PropertyType` attribute which is returned when the property is of the `HOSTNAME_BUCKET` type in these endpoints:
+      * `GetProperties`
+      * `GetProperty`
+      * `GetPropertyVersions`
+      * `GetPropertyVersion`
+      * `GetLatestVersion`
+
 ## 10.0.0 (Feb 3, 2025)
 
 ### BREAKING CHANGES:

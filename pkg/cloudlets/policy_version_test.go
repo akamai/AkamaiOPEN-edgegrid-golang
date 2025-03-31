@@ -362,7 +362,7 @@ func TestGetPolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "asMatchRule",
-            "akaRuleId": "f58014ee0cc17ce",
+            "akaRuleId": "abc123",
             "end": 0,
             "forwardSettings": {
                 "originId": "originremote2",
@@ -370,7 +370,7 @@ func TestGetPolicyVersion(t *testing.T) {
                 "useIncomingQueryString": true
             },
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/355557/versions/2/rules/f58014ee0cc17ce",
+            "location": "/cloudlets/api/v2/policies/355557/versions/2/rules/abc123",
             "matches": [
                 {
                     "caseSensitive": false,
@@ -429,8 +429,10 @@ func TestGetPolicyVersion(t *testing.T) {
 								},
 							},
 						},
-						Name:  "Q1Sales",
-						Start: 0,
+						Name:      "Q1Sales",
+						Start:     0,
+						AkaRuleID: "abc123",
+						Location:  "/cloudlets/api/v2/policies/355557/versions/2/rules/abc123",
 					},
 				},
 				PolicyID:    355557,
@@ -458,14 +460,14 @@ func TestGetPolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "cdMatchRule",
-            "akaRuleId": "b151ca68e51f5a61",
+            "akaRuleId": "abc123",
             "end": 0,
             "forwardSettings": {
                 "originId": "fr_test_krk_dc2",
                 "percent": 11
             },
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/325401/versions/3/rules/b151ca68e51f5a61",
+            "location": "/cloudlets/api/v2/policies/325401/versions/3/rules/abc123",
             "matches": [
                 {
                     "caseSensitive": false,
@@ -522,8 +524,10 @@ func TestGetPolicyVersion(t *testing.T) {
 								},
 							},
 						},
-						Name:  "rule 1",
-						Start: 0,
+						Name:      "rule 1",
+						Start:     0,
+						AkaRuleID: "abc123",
+						Location:  "/cloudlets/api/v2/policies/325401/versions/3/rules/abc123",
 					},
 				},
 				PolicyID:    325401,
@@ -1446,6 +1450,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 									},
 								},
 							},
+							AkaRuleID: "abc123",
 						},
 					},
 				},
@@ -1465,7 +1470,7 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "asMatchRule",
-            "akaRuleId": "f58014ee0cc17ce",
+            "akaRuleId": "abc123",
             "end": 0,
             "forwardSettings": {
                 "originId": "originremote2",
@@ -1473,7 +1478,7 @@ func TestCreatePolicyVersion(t *testing.T) {
                 "useIncomingQueryString": true
             },
             "id": 0,
-            "location": "/cloudlets/api/v2/policies/355557/versions/2/rules/f58014ee0cc17ce",
+            "location": "/cloudlets/api/v2/policies/355557/versions/2/rules/abc123",
             "matches": [
 				{
                     "caseSensitive": false,
@@ -1588,8 +1593,10 @@ func TestCreatePolicyVersion(t *testing.T) {
 								},
 							},
 						},
-						Name:  "Q1Sales",
-						Start: 0,
+						Name:      "Q1Sales",
+						Start:     0,
+						AkaRuleID: "abc123",
+						Location:  "/cloudlets/api/v2/policies/355557/versions/2/rules/abc123",
 					},
 				},
 				PolicyID:    355557,
@@ -2909,7 +2916,7 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "frMatchRule",
-            "akaRuleId": "893947a3d5a85c1b",
+            "akaRuleId": "abc12345",
             "end": 0,
             "forwardSettings": {
                 "pathAndQS": "/test_images/otherimage.jpg",
@@ -2947,7 +2954,7 @@ func TestCreatePolicyVersion(t *testing.T) {
         },
         {
             "type": "frMatchRule",
-            "akaRuleId": "aa379d230efcded0",
+            "akaRuleId": "abc1234",
             "end": 0,
             "forwardSettings": {
                 "pathAndQS": "/test_images/simpleimg.jpg",
@@ -2962,7 +2969,7 @@ func TestCreatePolicyVersion(t *testing.T) {
         },
         {
             "type": "frMatchRule",
-            "akaRuleId": "1afe03d843996766",
+            "akaRuleId": "abc123",
             "end": 0,
             "forwardSettings": {
                 "pathAndQS": "/test_images/otherimage.jpg",
@@ -3032,6 +3039,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 							UseIncomingQueryString: true,
 							OriginID:               "1234",
 						},
+						AkaRuleID: "abc12345",
+						Location:  "/cloudlets/api/v2/policies/276858/versions/1/rules/893947a3d5a85c1b",
 					},
 					&MatchRuleFR{
 						Name:     "rule 1",
@@ -3045,6 +3054,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 							UseIncomingQueryString: true,
 							OriginID:               "1234",
 						},
+						AkaRuleID: "abc1234",
+						Location:  "/cloudlets/api/v2/policies/276858/versions/1/rules/aa379d230efcded0",
 					},
 					&MatchRuleFR{
 						Name:     "rule 2",
@@ -3058,6 +3069,8 @@ func TestCreatePolicyVersion(t *testing.T) {
 							UseIncomingQueryString: true,
 							OriginID:               "1234",
 						},
+						AkaRuleID: "abc123",
+						Location:  "/cloudlets/api/v2/policies/276858/versions/1/rules/1afe03d843996766",
 					},
 				},
 			},
@@ -3115,7 +3128,7 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "frMatchRule",
-            "akaRuleId": "f2168e71692e6d9f",
+            "akaRuleId": "abc123",
             "end": 0,
             "forwardSettings": {},
             "id": 0,
@@ -3182,11 +3195,12 @@ func TestCreatePolicyVersion(t *testing.T) {
 								},
 							},
 						},
-						Start: 0,
-						End:   0,
-						Type:  "frMatchRule",
-						Name:  "rul3",
-						ID:    0,
+						Start:     0,
+						End:       0,
+						Type:      "frMatchRule",
+						Name:      "rul3",
+						ID:        0,
+						AkaRuleID: "abc123",
 					},
 				},
 				PolicyID:    139743,
@@ -3243,7 +3257,7 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "frMatchRule",
-            "akaRuleId": "f2168e71692e6d9f",
+            "akaRuleId": "abc123",
             "end": 0,
             "forwardSettings": {
                 "pathAndQS": "/test_images/otherimage.jpg",
@@ -3303,11 +3317,12 @@ func TestCreatePolicyVersion(t *testing.T) {
 								},
 							},
 						},
-						Start: 0,
-						End:   0,
-						Type:  "frMatchRule",
-						Name:  "rul3",
-						ID:    0,
+						Start:     0,
+						End:       0,
+						Type:      "frMatchRule",
+						Name:      "rul3",
+						ID:        0,
+						AkaRuleID: "abc123",
 					},
 				},
 				PolicyID:    139743,

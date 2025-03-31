@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegriderr"
@@ -90,6 +91,14 @@ type (
 	}
 )
 
+var (
+	// domainPrefixPatterns maps domain suffixes to their respective regex patterns for validating domain prefixes
+	domainPrefixPatterns = map[string]*regexp.Regexp{
+		"akamaized.net": regexp.MustCompile(`^[A-Za-z]([A-Za-z0-9-]*[A-Za-z0-9])?$`),
+		"default":       regexp.MustCompile(`^[A-Za-z]([A-Za-z0-9.-]*[A-Za-z0-9])?(\.)?$`),
+	}
+)
+
 const (
 	// EHSecureNetworkStandardTLS constant
 	EHSecureNetworkStandardTLS = "STANDARD_TLS"
@@ -107,6 +116,9 @@ const (
 
 	// UseCaseGlobal constant
 	UseCaseGlobal = "GLOBAL"
+
+	minDomainPrefixLength          = 1
+	minDomainPrefixLengthAkamaized = 4
 )
 
 // Validate validates CreateEdgeHostnameRequest
@@ -254,6 +266,10 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameReque
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateEdgeHostname, ErrStructValidation, err)
 	}
 
+	if err := validateDomainPrefix(r.EdgeHostname.DomainPrefix, r.EdgeHostname.DomainSuffix); err != nil {
+		return nil, err
+	}
+
 	logger := p.Log(ctx)
 	logger.Debug("CreateEdgeHostname")
 
@@ -286,4 +302,29 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, r CreateEdgeHostnameReque
 	}
 	createResponse.EdgeHostnameID = id
 	return &createResponse, nil
+}
+
+func validateDomainPrefix(domainPrefix, domainSuffix string) error {
+	domainPrefixLen := len(domainPrefix)
+	minLen := minDomainPrefixLength
+	if domainSuffix == "akamaized.net" {
+		minLen = minDomainPrefixLengthAkamaized
+	}
+
+	if domainPrefixLen < minLen || domainPrefixLen > 63 {
+		return fmt.Errorf(`The edge hostname prefix must be at least %d character(s) and no more than 63 characters for "%s" suffix; you provided %d character(s)`, minLen, domainSuffix, domainPrefixLen)
+	}
+
+	pattern, exists := domainPrefixPatterns[domainSuffix]
+	if !exists {
+		pattern = domainPrefixPatterns["default"]
+	}
+
+	if !pattern.MatchString(domainPrefix) {
+		if domainSuffix == "akamaized.net" {
+			return fmt.Errorf("A prefix for the edge hostname with the \"akamaized.net\" suffix must begin with a letter, end with a letter or digit, and contain only letters, digits, and hyphens, for example, abc-def, or abc-123")
+		}
+		return fmt.Errorf("A prefix for the edge hostname with the \"%s\" suffix must begin with a letter, end with a letter, digit or dot, and contain only letters, digits, dots, and hyphens, for example, abc-def.123.456., or abc.123-def", domainSuffix)
+	}
+	return nil
 }

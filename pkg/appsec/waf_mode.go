@@ -15,12 +15,12 @@ type (
 	WAFMode interface {
 		// GetWAFMode returns which mode your rules are currently set to.
 		//
-		// See: https://techdocs.akamai.com/application-security/reference/get-policy-mode-1
+		// See: https://techdocs.akamai.com/application-security/reference/get-policy-mode
 		GetWAFMode(ctx context.Context, params GetWAFModeRequest) (*GetWAFModeResponse, error)
 
 		// UpdateWAFMode updated mode your rules are set to.
 		//
-		// See: https://techdocs.akamai.com/application-security/reference/put-policy-mode-1
+		// See: https://techdocs.akamai.com/application-security/reference/put-policy-mode
 		UpdateWAFMode(ctx context.Context, params UpdateWAFModeRequest) (*UpdateWAFModeResponse, error)
 	}
 

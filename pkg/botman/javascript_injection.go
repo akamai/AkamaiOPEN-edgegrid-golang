@@ -14,9 +14,9 @@ type (
 	// The JavascriptInjection interface supports retrieving and updating the javascript injection settings for a
 	// configuration
 	JavascriptInjection interface {
-		// GetJavascriptInjection https://techdocs.akamai.com/bot-manager/reference/get-javascript-injection
+		// GetJavascriptInjection https://techdocs.akamai.com/bot-manager/reference/get-javascript-injection-rules
 		GetJavascriptInjection(ctx context.Context, params GetJavascriptInjectionRequest) (map[string]interface{}, error)
-		// UpdateJavascriptInjection https://techdocs.akamai.com/bot-manager/reference/put-javascript-injection
+		// UpdateJavascriptInjection https://techdocs.akamai.com/bot-manager/reference/put-javascript-injection-rules
 		UpdateJavascriptInjection(ctx context.Context, params UpdateJavascriptInjectionRequest) (map[string]interface{}, error)
 	}
 

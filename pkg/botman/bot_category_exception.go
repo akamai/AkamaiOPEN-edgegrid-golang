@@ -13,10 +13,10 @@ import (
 type (
 	// The BotCategoryException interface supports retrieving bot category exceptions
 	BotCategoryException interface {
-		// GetBotCategoryException https://techdocs.akamai.com/bot-manager/reference/get-bot-category-exception
+		// GetBotCategoryException https://techdocs.akamai.com/bot-manager/reference/get-bot-category-exceptions
 		GetBotCategoryException(ctx context.Context, params GetBotCategoryExceptionRequest) (map[string]interface{}, error)
 
-		// UpdateBotCategoryException https://techdocs.akamai.com/bot-manager/reference/put-bot-category-exception
+		// UpdateBotCategoryException https://techdocs.akamai.com/bot-manager/reference/put-bot-category-exceptions
 		UpdateBotCategoryException(ctx context.Context, params UpdateBotCategoryExceptionRequest) (map[string]interface{}, error)
 	}
 

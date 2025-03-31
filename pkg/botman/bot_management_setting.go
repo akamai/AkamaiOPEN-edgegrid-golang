@@ -14,10 +14,10 @@ type (
 	// The BotManagementSetting interface supports retrieving and updating bot management settings
 	BotManagementSetting interface {
 
-		// GetBotManagementSetting todo: add link
+		// GetBotManagementSetting https://techdocs.akamai.com/bot-manager/reference/get-bot-management-settings
 		GetBotManagementSetting(ctx context.Context, params GetBotManagementSettingRequest) (map[string]interface{}, error)
 
-		// UpdateBotManagementSetting todo: add link
+		// UpdateBotManagementSetting https://techdocs.akamai.com/bot-manager/reference/put-bot-management-settings
 		UpdateBotManagementSetting(ctx context.Context, params UpdateBotManagementSettingRequest) (map[string]interface{}, error)
 	}
 
