@@ -56,7 +56,10 @@
 
 
 
-
+* IAM
+  * Fixed the `CreateAPIClientResponse` and `GetAPIClientResponse` structs to be better aligned with API responses.
+  * Renamed field `EditIPAcl` to `EditIPACL` in the `APIClientActions` struct.
+  * Added `READ`, `CREDENTIAL-READ-ONLY` and `CREDENTIAL-READ-WRITE` values for `API.AccessLevel`. 
 
 
 

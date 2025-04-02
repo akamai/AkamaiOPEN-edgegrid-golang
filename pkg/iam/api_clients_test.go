@@ -747,7 +747,7 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCPCode:   false,
 					CanPurgeByCacheTag: false,
 					CPCodeAccess: CPCodeAccess{
@@ -765,7 +765,7 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            true,
 					DeactivateAll:     false,
 				},
@@ -1029,7 +1029,7 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCacheTag: true,
 					CanPurgeByCPCode:   true,
 					CPCodeAccess: CPCodeAccess{
@@ -1065,7 +1065,7 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            true,
 					DeactivateAll:     false,
 				},
@@ -1305,7 +1305,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCPCode:   false,
 					CanPurgeByCacheTag: false,
 					CPCodeAccess: CPCodeAccess{
@@ -1323,7 +1323,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            true,
 					DeactivateAll:     false,
 				},
@@ -1509,7 +1509,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCPCode:   false,
 					CanPurgeByCacheTag: false,
 					CPCodeAccess: CPCodeAccess{
@@ -1527,7 +1527,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            true,
 					DeactivateAll:     false,
 				},
@@ -1791,7 +1791,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCacheTag: true,
 					CanPurgeByCPCode:   true,
 					CPCodeAccess: CPCodeAccess{
@@ -1826,7 +1826,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            true,
 					DeactivateAll:     false,
 				},
@@ -2190,7 +2190,7 @@ func TestIAM_GetAPIClient(t *testing.T) {
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCPCode:   false,
 					CanPurgeByCacheTag: false,
 					CPCodeAccess: CPCodeAccess{
@@ -2254,7 +2254,7 @@ func TestIAM_GetAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            false,
 					DeactivateAll:     true,
 				},

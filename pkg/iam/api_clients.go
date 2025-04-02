@@ -114,10 +114,10 @@ type (
 		CreatedDate             time.Time                   `json:"createdDate"`
 		Credentials             []CreateAPIClientCredential `json:"credentials"`
 		GroupAccess             GroupAccess                 `json:"groupAccess"`
-		IPACL                   IPACL                       `json:"ipAcl"`
+		IPACL                   *IPACL                      `json:"ipAcl"`
 		IsLocked                bool                        `json:"isLocked"`
 		NotificationEmails      []string                    `json:"notificationEmails"`
-		PurgeOptions            PurgeOptions                `json:"purgeOptions"`
+		PurgeOptions            *PurgeOptions               `json:"purgeOptions"`
 		ServiceProviderID       int64                       `json:"serviceProviderId"`
 	}
 
@@ -139,10 +139,10 @@ type (
 		CreatedDate             time.Time             `json:"createdDate"`
 		Credentials             []APIClientCredential `json:"credentials"`
 		GroupAccess             GroupAccess           `json:"groupAccess"`
-		IPACL                   IPACL                 `json:"ipAcl"`
+		IPACL                   *IPACL                `json:"ipAcl"`
 		IsLocked                bool                  `json:"isLocked"`
 		NotificationEmails      []string              `json:"notificationEmails"`
-		PurgeOptions            PurgeOptions          `json:"purgeOptions"`
+		PurgeOptions            *PurgeOptions         `json:"purgeOptions"`
 		ServiceProviderID       int64                 `json:"serviceProviderId"`
 	}
 
@@ -154,7 +154,7 @@ type (
 		EditAPIs          bool `json:"editApis"`
 		EditAuth          bool `json:"editAuth"`
 		EditGroups        bool `json:"editGroups"`
-		EditIPAcl         bool `json:"editIpAcl"`
+		EditIPACL         bool `json:"editIpAcl"`
 		EditSwitchAccount bool `json:"editSwitchAccount"`
 		Lock              bool `json:"lock"`
 		Transfer          bool `json:"transfer"`
@@ -291,6 +291,12 @@ const (
 	ReadWriteLevel AccessLevel = "READ-WRITE"
 	// ReadOnlyLevel is the `READ-ONLY` access level.
 	ReadOnlyLevel AccessLevel = "READ-ONLY"
+	// ReadLevel is the `READ` access level.
+	ReadLevel AccessLevel = "READ"
+	// CredentialReadOnlyLevel is the `CREDENTIAL-READ-ONLY` access level.
+	CredentialReadOnlyLevel AccessLevel = "CREDENTIAL-READ-ONLY"
+	// CredentialReadWriteLevel is the `CREDENTIAL-READ-WRITE` access level.
+	CredentialReadWriteLevel AccessLevel = "CREDENTIAL-READ-WRITE"
 )
 
 // Validate validates UnlockAPIClientRequest.
@@ -321,8 +327,9 @@ func (a APIAccess) Validate() error {
 // Validate validates API.
 func (a API) Validate() error {
 	return validation.Errors{
-		"AccessLevel": validation.Validate(a.AccessLevel, validation.Required, validation.In(ReadOnlyLevel, ReadWriteLevel).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'READ-ONLY' or 'READ-WRITE'", a.AccessLevel))),
+		"AccessLevel": validation.Validate(a.AccessLevel, validation.Required,
+			validation.In(ReadOnlyLevel, ReadWriteLevel, ReadLevel, CredentialReadOnlyLevel, CredentialReadWriteLevel).Error(
+				fmt.Sprintf("value '%s' is invalid. Must be one of: 'READ-ONLY', 'READ-WRITE', 'READ', 'CREDENTIAL-READ-ONLY' or 'CREDENTIAL-READ-WRITE'", a.AccessLevel))),
 		"APIID": validation.Validate(a.APIID, validation.Required),
 	}.Filter()
 }
