@@ -103,6 +103,7 @@ type (
 		SamplingRate        int                        `json:"samplingRate,omitempty"`
 		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
 		Operation           string                     `json:"operation,omitempty"`
+		StagingOnly         bool                       `json:"stagingOnly"`
 	}
 
 	// CustomRuleEffectivePeriod defines the period during which a custom rule is active as well as its current status.
@@ -147,6 +148,7 @@ type (
 		SamplingRate        int                        `json:"samplingRate,omitempty"`
 		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
 		Operation           string                     `json:"operation,omitempty"`
+		StagingOnly         bool                       `json:"stagingOnly"`
 	}
 
 	// UpdateCustomRuleRequest is used to modify an existing custom rule.

@@ -70,6 +70,11 @@
 
 ### BUG FIXES:
 
+* APPSEC
+  * Added `StagingOnly` field in the following structs:
+    * `CustomRuleResponse`
+    * `CreateCustomRuleResponse`
+
 
 
 
