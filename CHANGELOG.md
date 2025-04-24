@@ -47,6 +47,16 @@
 
 
 
+* mTLS Keystore
+  * Added support for the Mutual TLS Edge Keystore API.
+    * [CreateClientCertificate](https://techdocs.akamai.com/mtls-origin-keystore/reference/post-client-cert)
+    * [ListClientCertificates](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-certs)
+    * [GetClientCertificate](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-cert)
+    * [PatchClientCertificate](https://techdocs.akamai.com/mtls-origin-keystore/reference/patch-client-cert)
+
+
+
+
 
 
 

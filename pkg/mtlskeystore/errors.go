@@ -28,19 +28,19 @@ type (
 )
 
 // Error parses an error from the mTLS Keystore API response.
-func (c *mtlskeystore) Error(r *http.Response) error {
+func (m *mtlskeystore) Error(r *http.Response) error {
 	var e Error
 	var body []byte
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		c.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
+		m.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
 		e.Status = int64(r.StatusCode)
 		e.Title = "Failed to read error body"
 		e.Detail = err.Error()
 		return &e
 	}
 	if err := json.Unmarshal(body, &e); err != nil {
-		c.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
+		m.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
 		e.Title = "Failed to unmarshal error body. mTLS Keystore API failed. Check details for more information."
 		e.Detail = errs.UnescapeContent(string(body))
 	}
