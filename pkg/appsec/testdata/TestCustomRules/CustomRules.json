@@ -19,7 +19,8 @@
                 "link": "/appsec/v1/configs/43253/custom-rules/60038316",
                 "name": "Fat Rule 1",
                 "status": "unused",
-                "version": 1
+                "version": 1,
+                "stagingOnly": true
             },
             {
                 "id": 60036362,

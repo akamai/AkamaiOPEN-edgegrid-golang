@@ -74,6 +74,7 @@
   * Added `StagingOnly` field in the following structs:
     * `CustomRuleResponse`
     * `CreateCustomRuleResponse`
+    * `GetCustomRulesResponse`
 
 
 
