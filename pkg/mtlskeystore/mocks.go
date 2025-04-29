@@ -54,3 +54,38 @@ func (m *Mock) PatchClientCertificate(ctx context.Context, params PatchClientCer
 
 	return args.Error(1)
 }
+
+func (m *Mock) GetClientCertificateVersions(ctx context.Context, params GetClientCertificateVersionsRequest) (*GetClientCertificateVersionsResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetClientCertificateVersionsResponse), args.Error(1)
+}
+
+func (m *Mock) RotateClientCertificateVersion(ctx context.Context, params RotateClientCertificateVersionRequest) (*RotateClientCertificateVersionResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*RotateClientCertificateVersionResponse), args.Error(1)
+}
+
+func (m *Mock) DeleteClientCertificateVersion(ctx context.Context, params DeleteClientCertificateVersionRequest) (*DeleteClientCertificateVersionResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*DeleteClientCertificateVersionResponse), args.Error(1)
+}
+
+func (m *Mock) UploadSignedClientCertificate(ctx context.Context, params UploadSignedClientCertificateRequest) error {
+	args := m.Called(ctx, params)
+	return args.Error(0)
+}

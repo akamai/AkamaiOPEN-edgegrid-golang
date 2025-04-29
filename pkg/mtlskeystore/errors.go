@@ -48,6 +48,18 @@ func (m *mtlskeystore) Error(r *http.Response) error {
 	return &e
 }
 
+const resourceNotFoundType = "resource-not-found"
+const badRequestType = "bad-request"
+
+// ErrClientCertificateNotFound is returned when the requested client certificate could not be found on the server.
+var ErrClientCertificateNotFound = errors.New("the requested resource could not be found on the serve")
+
+// ErrInvalidClientCertificate is returned when the client certificate is either invalid or cannot not be accepted.
+var ErrInvalidClientCertificate = errors.New("certificate is either invalid or cannot not be accepted")
+
+// ErrDuplicateClientCertificate is returned when certificate with same name already exists.
+var ErrDuplicateClientCertificate = errors.New("certificate with same name already exists")
+
 // Error returns the string representation of the error.
 func (e *Error) Error() string {
 	msg, err := json.MarshalIndent(e, "", "\t")
@@ -59,16 +71,23 @@ func (e *Error) Error() string {
 
 // Is handles error comparisons.
 func (e *Error) Is(target error) bool {
+	if errors.Is(target, ErrClientCertificateNotFound) {
+		return e.Status == http.StatusNotFound && e.Type == resourceNotFoundType
+	}
+
+	if errors.Is(target, ErrInvalidClientCertificate) || errors.Is(target, ErrDuplicateClientCertificate) {
+		return e.Status == http.StatusBadRequest && e.Type == badRequestType
+	}
+
 	var t *Error
 	if !errors.As(target, &t) {
 		return false
 	}
+	if e == t {
+		return true
+	}
 	if e.Status != t.Status {
 		return false
 	}
-	if e.Error() == t.Error() {
-		return true
-	}
-
-	return false
+	return e.Error() == t.Error()
 }

@@ -37,6 +37,26 @@ type (
 		//
 		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/patch-client-cert
 		PatchClientCertificate(ctx context.Context, params PatchClientCertificateRequest) error
+
+		// RotateClientCertificateVersion creates a new version in the client certificate.
+		//
+		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/post-client-cert-version
+		RotateClientCertificateVersion(ctx context.Context, params RotateClientCertificateVersionRequest) (*RotateClientCertificateVersionResponse, error)
+
+		// GetClientCertificateVersions lists versions of the client certificate specified by certificateID.
+		//
+		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-cert-versions
+		GetClientCertificateVersions(ctx context.Context, params GetClientCertificateVersionsRequest) (*GetClientCertificateVersionsResponse, error)
+
+		// DeleteClientCertificateVersion deletes a client certificate version with the provided certificateID and version.
+		//
+		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/delete-client-certificate
+		DeleteClientCertificateVersion(ctx context.Context, params DeleteClientCertificateVersionRequest) (*DeleteClientCertificateVersionResponse, error)
+
+		// UploadSignedClientCertificate uploads a signed THIRD_PARTY client certificate.
+		//
+		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/post-cert-block
+		UploadSignedClientCertificate(ctx context.Context, params UploadSignedClientCertificateRequest) error
 	}
 
 	mtlskeystore struct {
