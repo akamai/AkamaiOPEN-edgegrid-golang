@@ -72,6 +72,24 @@
 
 
 
+
+
+* mTLS Keystore
+  * Added support for the Mutual TLS Edge Keystore API.
+    * [ListAccountCACertificates](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-ca-certs)
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### BUG FIXES:
 
 

@@ -89,3 +89,13 @@ func (m *Mock) UploadSignedClientCertificate(ctx context.Context, params UploadS
 	args := m.Called(ctx, params)
 	return args.Error(0)
 }
+
+func (m *Mock) ListAccountCACertificates(ctx context.Context, params ListAccountCACertificatesRequest) (*ListAccountCACertificatesResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListAccountCACertificatesResponse), args.Error(1)
+}

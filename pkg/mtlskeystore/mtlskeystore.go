@@ -57,6 +57,11 @@ type (
 		//
 		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/post-cert-block
 		UploadSignedClientCertificate(ctx context.Context, params UploadSignedClientCertificateRequest) error
+
+		// ListAccountCACertificates lists CA certificates under the account.
+		//
+		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/get-ca-certs
+		ListAccountCACertificates(ctx context.Context, params ListAccountCACertificatesRequest) (*ListAccountCACertificatesResponse, error)
 	}
 
 	mtlskeystore struct {
