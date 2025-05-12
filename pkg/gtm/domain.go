@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"reflect"
+	"strconv"
 	"unicode"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegriderr"
@@ -13,8 +15,8 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// The Domain data structure represents a GTM domain
 type (
+	// The Domain data structure represents a GTM domain.
 	Domain struct {
 		Name                         string          `json:"name"`
 		Type                         string          `json:"type"`
@@ -61,18 +63,18 @@ type (
 		SignAndServeAlgorithm        *string         `json:"signAndServeAlgorithm"`
 	}
 
-	// DomainQueryArgs contains query parameters for domain request
+	// DomainQueryArgs contains query parameters for domain request.
 	DomainQueryArgs struct {
 		ContractID string
 		GroupID    string
 	}
 
-	// DomainsList contains a list of domain items
+	// DomainsList contains a list of domain items.
 	DomainsList struct {
 		DomainItems []DomainItem `json:"items"`
 	}
 
-	// DomainItem is a DomainsList item
+	// DomainItem is a DomainsList item.
 	DomainItem struct {
 		AcgID                 string `json:"acgId"`
 		LastModified          string `json:"lastModified"`
@@ -87,51 +89,53 @@ type (
 		SignAndServeAlgorithm string `json:"signAndServeAlgorithm"`
 		DeleteRequestID       string `json:"deleteRequestId"`
 	}
-	// GetDomainStatusRequest contains request parameters for GetDomainStatus
+	// GetDomainStatusRequest contains request parameters for GetDomainStatus.
 	GetDomainStatusRequest struct {
 		DomainName string
 	}
-	// GetDomainStatusResponse contains the response data from GetDomainStatus operation
+	// GetDomainStatusResponse contains the response data from GetDomainStatus operation.
 	GetDomainStatusResponse ResponseStatus
 
-	// DomainRequest contains request parameters
+	// DomainRequest contains request parameters.
 	DomainRequest struct {
 		Domain    *Domain
 		QueryArgs *DomainQueryArgs
 	}
 
-	// GetDomainRequest contains request parameters for GetDomain
+	// GetDomainRequest contains request parameters for GetDomain.
 	GetDomainRequest struct {
 		DomainName string
 	}
 
-	// GetDomainResponse contains the response data from GetDomain operation
+	// GetDomainResponse contains the response data from GetDomain operation.
 	GetDomainResponse Domain
 
-	// CreateDomainRequest contains request parameters for CreateDomain
+	// CreateDomainRequest contains request parameters for CreateDomain.
 	CreateDomainRequest DomainRequest
 
-	// CreateDomainResponse contains the response data from CreateDomain operation
+	// CreateDomainResponse contains the response data from CreateDomain operation.
 	CreateDomainResponse struct {
 		Resource *Domain         `json:"resource"`
 		Status   *ResponseStatus `json:"status"`
 	}
 
-	// UpdateDomainRequest contains request parameters for UpdateDomain
+	// UpdateDomainRequest contains request parameters for UpdateDomain.
 	UpdateDomainRequest DomainRequest
 
-	// UpdateDomainResponse contains the response data from UpdateDomain operation
+	// UpdateDomainResponse contains the response data from UpdateDomain operation.
 	UpdateDomainResponse struct {
 		Resource *Domain         `json:"resource"`
 		Status   *ResponseStatus `json:"status"`
 	}
 
 	// DeleteDomainRequest contains request parameters for DeleteDomain
+	// Deprecated: DeleteDomainRequest is deprecated and may be removed in future versions.
 	DeleteDomainRequest struct {
 		DomainName string
 	}
 
 	// DeleteDomainResponse contains request parameters for DeleteDomain
+	// Deprecated: DeleteDomainResponse is deprecated and may be removed in future versions.
 	DeleteDomainResponse struct {
 		ChangeID              string `json:"changeId,omitempty"`
 		Links                 []Link `json:"links,omitempty"`
@@ -140,57 +144,135 @@ type (
 		PropagationStatus     string `json:"propagationStatus,omitempty"`
 		PropagationStatusDate string `json:"propagationStatusDate,omitempty"`
 	}
+
+	// DeleteDomainsRequest contains the parameters required to initiate a delete domains operation.
+	DeleteDomainsRequest struct {
+		// BypassSafetyChecks allows to disable the delegation checks and deletes the domains as soon as possible.
+		BypassSafetyChecks *bool
+		// Body contains the list of domain names to be deleted.
+		Body DeleteDomainsRequestBody
+	}
+
+	// DeleteDomainsRequestBody represents a request body for DeleteDomainsRequest.
+	DeleteDomainsRequestBody struct {
+		// DomainNames represents a list of domain names.
+		DomainNames []string `json:"domains"`
+	}
+
+	// DeleteDomainsResponse contains response data from DeleteDomains request.
+	DeleteDomainsResponse struct {
+		// ExpirationDate represents ISO 8601 timestamp, up to which you can query information about this request.
+		ExpirationDate string `json:"expirationDate"`
+		// RequestID represents the ID of the request.
+		RequestID string `json:"requestId"`
+	}
+
+	// DeleteDomainsStatusRequest represents request parameters to retrieve the current status of the delete domains request.
+	DeleteDomainsStatusRequest struct {
+		// RequestID represents the ID of the request.
+		RequestID string `json:"requestId"`
+	}
+
+	// DeleteDomainsStatusResponse represents the response data from the GetDeleteDomainsStatus request.
+	DeleteDomainsStatusResponse struct {
+		// DomainsSubmitted represents the number of domains that were included in the request.
+		DomainsSubmitted int `json:"domainsSubmitted"`
+		// ExpirationDate represents ISO 8601 timestamp, up to which you can query information about this request.
+		ExpirationDate string `json:"expirationDate"`
+		// FailureCount represents the number of domains that could not be processed.
+		FailureCount int `json:"failureCount"`
+		// IsComplete represents if the offline task has finished processing and the result object can be retrieved.
+		IsComplete bool `json:"isComplete"`
+		// RequestID represents the ID of the request.
+		RequestID string `json:"requestId"`
+		// SuccessCount represents the number of domains that were successfully processed.
+		SuccessCount int `json:"successCount"`
+	}
 )
 
+// NullFieldMapStruct returns null Objects structure.
+type NullFieldMapStruct struct {
+	Domain      NullPerObjectAttributeStruct            // entry is domain
+	Properties  map[string]NullPerObjectAttributeStruct // entries are properties
+	Datacenters map[string]NullPerObjectAttributeStruct // entries are datacenters
+	Resources   map[string]NullPerObjectAttributeStruct // entries are resources
+	CidrMaps    map[string]NullPerObjectAttributeStruct // entries are cidrmaps
+	GeoMaps     map[string]NullPerObjectAttributeStruct // entries are geomaps
+	AsMaps      map[string]NullPerObjectAttributeStruct // entries are asmaps
+}
+
+// ObjectMap represents ObjectMap datatype.
+type ObjectMap map[string]interface{}
+
 var (
-	// ErrGetDomainStatus is returned when GetDomainStatus fails
+	// ErrGetDomainStatus is returned when GetDomainStatus fails.
 	ErrGetDomainStatus = errors.New("get domain status")
-	// ErrGetDomain is returned when GetDomain fails
+	// ErrGetDomain is returned when GetDomain fails.
 	ErrGetDomain = errors.New("get domain")
-	// ErrCreateDomain is returned when CreateDomain fails
+	// ErrCreateDomain is returned when CreateDomain fails.
 	ErrCreateDomain = errors.New("create domain")
-	// ErrUpdateDomain is returned when UpdateDomain fails
+	// ErrUpdateDomain is returned when UpdateDomain fails.
 	ErrUpdateDomain = errors.New("update domain")
 	// ErrDeleteDomain is returned when DeleteDomain fails
+	// Deprecated: ErrDeleteDomain is deprecated and may be removed in future versions.
 	ErrDeleteDomain = errors.New("delete domain")
+	// ErrDeleteDomains is returned when DeleteDomain fails.
+	ErrDeleteDomains = errors.New("delete domains")
+	// ErrGetDeleteDomainsStatus is returned when GetDeleteDomainsStatus fails.
+	ErrGetDeleteDomainsStatus = errors.New("get delete domains status")
 )
 
 // Validate validates DeleteDomainRequest
+// Deprecated: Validate is deprecated and may be removed in future versions.
 func (r DeleteDomainRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"DomainName": validation.Validate(r.DomainName, validation.Required),
 	})
 }
 
-// Validate validates UpdateDomainRequest
+// Validate validates DeleteDomainsRequest.
+func (r DeleteDomainsRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"DomainNames": validation.Validate(r.Body.DomainNames, validation.Required, validation.Each(validation.Required)),
+	})
+}
+
+// Validate validates DeleteDomainsStatusRequest.
+func (r DeleteDomainsStatusRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"RequestID": validation.Validate(r.RequestID, validation.Required),
+	})
+}
+
+// Validate validates UpdateDomainRequest.
 func (r UpdateDomainRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"Domain": validation.Validate(r.Domain, validation.Required),
 	})
 }
 
-// Validate validates CreateDomainRequest
+// Validate validates CreateDomainRequest.
 func (r CreateDomainRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"Domain": validation.Validate(r.Domain, validation.Required),
 	})
 }
 
-// Validate validates GetDomainStatusRequest
+// Validate validates GetDomainStatusRequest.
 func (r GetDomainStatusRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"DomainName": validation.Validate(r.DomainName, validation.Required),
 	})
 }
 
-// Validate validates GetDomainRequest
+// Validate validates GetDomainRequest.
 func (r GetDomainRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"DomainName": validation.Validate(r.DomainName, validation.Required),
 	})
 }
 
-// Validate validates Domain
+// Validate validates Domain.
 func (d *Domain) Validate() error {
 	if len(d.Name) < 1 {
 		return fmt.Errorf("Domain is missing Name")
@@ -371,6 +453,7 @@ func (g *gtm) UpdateDomain(ctx context.Context, params UpdateDomainRequest) (*Up
 	return &result, nil
 }
 
+// Deprecated: DeleteDomain is deprecated and may be removed in future versions.
 func (g *gtm) DeleteDomain(ctx context.Context, params DeleteDomainRequest) (*DeleteDomainResponse, error) {
 	logger := g.Log(ctx)
 	logger.Debug("DeleteDomain")
@@ -400,25 +483,88 @@ func (g *gtm) DeleteDomain(ctx context.Context, params DeleteDomainRequest) (*De
 	return &result, nil
 }
 
-// NullPerObjectAttributeStruct represents core and child null object attributes
+func (g *gtm) DeleteDomains(ctx context.Context, params DeleteDomainsRequest) (*DeleteDomainsResponse, error) {
+	logger := g.Log(ctx)
+	logger.Debug("DeleteDomains")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrDeleteDomains, ErrStructValidation, err)
+	}
+
+	query := url.Values{}
+	if params.BypassSafetyChecks != nil {
+		query.Set("bypassSafetyChecks", strconv.FormatBool(*params.BypassSafetyChecks))
+	}
+
+	uri, err := url.Parse("/config-gtm/v1/domains/delete-requests")
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrDeleteDomains, err)
+	}
+
+	uri.RawQuery = query.Encode()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create HTTP request: %s", ErrDeleteDomains, err)
+	}
+
+	// set schema version
+	setVersionHeader(req, schemaVersion)
+
+	var result DeleteDomainsResponse
+	resp, err := g.Exec(req, &result, params.Body)
+	if err != nil {
+		return nil, fmt.Errorf("DeleteDomain request failed: %w", err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, g.Error(resp)
+	}
+
+	return &result, nil
+}
+
+func (g *gtm) GetDeleteDomainsStatus(ctx context.Context, params DeleteDomainsStatusRequest) (*DeleteDomainsStatusResponse, error) {
+	logger := g.Log(ctx)
+	logger.Debug("GetDeleteDomainsStatus")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: validation failed: %s", ErrGetDeleteDomainsStatus, err)
+	}
+
+	uri, err := url.Parse(fmt.Sprintf(
+		"/config-gtm/v1/domains/delete-requests/%s",
+		params.RequestID),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrGetDeleteDomainsStatus, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create HTTP request: %s", ErrGetDeleteDomainsStatus, err)
+	}
+
+	var result DeleteDomainsStatusResponse
+	resp, err := g.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request execution failed: %s", ErrGetDeleteDomainsStatus, err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, g.Error(resp)
+	}
+
+	return &result, nil
+}
+
+// NullPerObjectAttributeStruct represents core and child null object attributes.
 type NullPerObjectAttributeStruct struct {
 	CoreObjectFields  map[string]string
 	ChildObjectFields map[string]interface{} // NullObjectAttributeStruct
 }
-
-// NullFieldMapStruct returned null Objects structure
-type NullFieldMapStruct struct {
-	Domain      NullPerObjectAttributeStruct            // entry is domain
-	Properties  map[string]NullPerObjectAttributeStruct // entries are properties
-	Datacenters map[string]NullPerObjectAttributeStruct // entries are datacenters
-	Resources   map[string]NullPerObjectAttributeStruct // entries are resources
-	CidrMaps    map[string]NullPerObjectAttributeStruct // entries are cidrmaps
-	GeoMaps     map[string]NullPerObjectAttributeStruct // entries are geomaps
-	AsMaps      map[string]NullPerObjectAttributeStruct // entries are asmaps
-}
-
-// ObjectMap represents ObjectMap datatype
-type ObjectMap map[string]interface{}
 
 func (g *gtm) NullFieldMap(ctx context.Context, domain *Domain) (*NullFieldMapStruct, error) {
 	logger := g.Log(ctx)

@@ -6,10 +6,12 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -504,6 +506,224 @@ func TestGTM_UpdateDomain(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestGTM_DeleteDomains(t *testing.T) {
+	tests := map[string]struct {
+		request             DeleteDomainsRequest
+		expectedRequestBody string
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *DeleteDomainsResponse
+		withError           func(*testing.T, error)
+	}{
+		"200 Successfully submitted the delete request for domains": {
+			request: DeleteDomainsRequest{
+				Body: DeleteDomainsRequestBody{
+					DomainNames: []string{
+						"example.akadns.net",
+						"demo.akadns.net",
+					},
+				},
+			},
+			expectedRequestBody: `{"domains":["example.akadns.net","demo.akadns.net"]}`,
+			responseStatus:      http.StatusOK,
+			expectedPath:        "/config-gtm/v1/domains/delete-requests",
+			responseBody: `{
+						"requestId": "e585a640-0849-4b87-8dd9-91afdaf8851c",
+						"expirationDate": "2021-01-03T12:00:00Z"
+			}`,
+			expectedResponse: &DeleteDomainsResponse{
+				RequestID:      "e585a640-0849-4b87-8dd9-91afdaf8851c",
+				ExpirationDate: "2021-01-03T12:00:00Z",
+			},
+		},
+		"200 Successfully submitted the delete request for domains - with BypassSafetyChecks query param": {
+			request: DeleteDomainsRequest{
+				BypassSafetyChecks: ptr.To(true),
+				Body: DeleteDomainsRequestBody{
+					DomainNames: []string{
+						"example.akadns.net",
+						"demo.akadns.net",
+					},
+				},
+			},
+			expectedRequestBody: `{"domains":["example.akadns.net","demo.akadns.net"]}`,
+			responseStatus:      http.StatusOK,
+			expectedPath:        "/config-gtm/v1/domains/delete-requests?bypassSafetyChecks=true",
+			responseBody: `{
+						"requestId": "e585a640-0849-4b87-8dd9-91afdaf8851c",
+						"expirationDate": "2021-01-03T12:00:00Z"
+			}`,
+			expectedResponse: &DeleteDomainsResponse{
+				RequestID:      "e585a640-0849-4b87-8dd9-91afdaf8851c",
+				ExpirationDate: "2021-01-03T12:00:00Z",
+			},
+		},
+		"Validation error - missing domainNames in the request": {
+			request: DeleteDomainsRequest{
+				Body: DeleteDomainsRequestBody{
+					DomainNames: []string{},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "delete domains: struct validation: DomainNames: cannot be blank", err.Error())
+			},
+		},
+		"Validation error - empty domainNames in the request": {
+			request: DeleteDomainsRequest{
+				Body: DeleteDomainsRequestBody{
+					DomainNames: []string{"example.akadns.net", ""},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "delete domains: struct validation: 1: cannot be blank", err.Error())
+			},
+		},
+		"400 Bad Request": {
+			request: DeleteDomainsRequest{
+				Body: DeleteDomainsRequestBody{
+					DomainNames: []string{
+						"example.akadns.net",
+						"demo.akadns.net",
+						"devexpautomatedtest_0muwrj",
+					},
+				},
+			},
+			expectedRequestBody: `{"domains":["example.akadns.net","demo.akadns.net","devexpautomatedtest_0muwrj"]}`,
+			responseStatus:      http.StatusBadRequest,
+			expectedPath:        "/config-gtm/v1/domains/delete-requests",
+			responseBody: `{
+						"type": "https://problems.luna.akamaiapis.net/config-gtm/v1/badRequest",
+    					"title": "Bad Request",
+    					"instance": "https://akaa-ouijhfns55qwgfuc-knsod5nrjl2w2gmt.luna-dev.akamaiapis.net/config-gtm-api/v1/domains/delete-requests?bypassSafetyChecks=false#724a2c56-a67a-4ea0-81df-50148d335a86",
+    					"status": 400,
+    					"detail": "some of the listed domains could not be found",
+    					"problemId": "724a2c56-a67a-4ea0-81df-50148d335a86",
+						"missingZones": [
+        					"devexpautomatedtest_0muwrj"
+    					]
+			}`,
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrDomainNotFound))
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPost, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
+			}))
+			defer mockServer.Close()
+
+			client := mockAPIClient(t, mockServer)
+			result, err := client.DeleteDomains(context.Background(), test.request)
+
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+
+			require.NoError(t, err)
+
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestGTM_GetDeleteDomainsStatus(t *testing.T) {
+	tests := map[string]struct {
+		request          DeleteDomainsStatusRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *DeleteDomainsStatusResponse
+		withError        func(*testing.T, error)
+	}{
+		"200 Successfully gets the delete domain request status": {
+			request: DeleteDomainsStatusRequest{
+				RequestID: "e585a640-0849-4b87-8dd9-91afdaf8851c",
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/config-gtm/v1/domains/delete-requests/e585a640-0849-4b87-8dd9-91afdaf8851c",
+			responseBody: `{
+							"requestId": "e585a640-0849-4b87-8dd9-91afdaf8851c",
+							"domainsSubmitted": 3,
+							"successCount": 2,
+							"failureCount": 1,
+							"isComplete": true,
+							"expirationDate": "2021-01-03T12:00:00Z"
+			}`,
+			expectedResponse: &DeleteDomainsStatusResponse{
+				RequestID:        "e585a640-0849-4b87-8dd9-91afdaf8851c",
+				DomainsSubmitted: 3,
+				SuccessCount:     2,
+				FailureCount:     1,
+				IsComplete:       true,
+				ExpirationDate:   "2021-01-03T12:00:00Z",
+			},
+		},
+		"Validation error - missing or empty RequestID in the request": {
+			request: DeleteDomainsStatusRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "get delete domains status: validation failed: RequestID: cannot be blank", err.Error())
+			},
+		},
+		"404 Request ID not found": {
+			request: DeleteDomainsStatusRequest{
+				RequestID: "e585a640-0849-4b87-8dd9-91afdaf8851c",
+			},
+			responseStatus: http.StatusNotFound,
+			expectedPath:   "/config-gtm/v1/domains/delete-requests/e585a640-0849-4b87-8dd9-91afdaf8851c",
+			responseBody: `{
+    					"type": "https://problems.luna.akamaiapis.net/config-gtm/v1/notfound",
+    					"title": "Resource not found.",
+    					"instance": "https://akaa-ouijhfns55qwgfuc-knsod5nrjl2w2gmt.luna-dev.akamaiapis.net/config-gtm-api/v1/domains/delete-requests/e585a640-0849-4b87-8dd9-91afdaf8851c#9037df98-5e58-49a9-a74f-ec247ec920f7",
+    					"status": 404,
+    					"detail": "Resource not found.",
+    					"problemId": "9037df98-5e58-49a9-a74f-ec247ec920f7"
+			}`,
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrNotFound))
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			defer mockServer.Close()
+
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetDeleteDomainsStatus(context.Background(), test.request)
+
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+
+			require.NoError(t, err)
+
 			assert.Equal(t, test.expectedResponse, result)
 		})
 	}

@@ -4,12 +4,14 @@
 
 ### FEATURES/ENHANCEMENTS:
 
-
-
-
-
-
-
+* GTM
+  * Added support for domain deletion, enabling users to submit requests to delete one or more GTM domains.
+  * New endpoints:
+    * [DeleteDomains]() - Submits a request to delete specified domain(s).
+    * [DeleteDomainsStatus]() - Retrieves the status of a submitted domain deletion request.
+  * Deprecated:
+    * `DeleteDomain` – This method is now deprecated and may be removed in a future release.
+  
 
 
 
