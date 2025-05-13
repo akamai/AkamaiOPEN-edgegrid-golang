@@ -2,6 +2,18 @@
 
 ## X.X.X (X X, X)
 
+
+### BREAKING CHANGES:
+* Appsec
+  * Renamed `ClientIdentifier` field to `ClientIdentifiers` and changed its type from `string` to array of strings in following structs
+    * `CreateRatePolicyResponse`
+    * `UpdateRatePolicyResponse`
+    * `RemoveRatePolicyResponse`
+    * `GetRatePoliciesResponse`
+    * `GetRatePolicyResponse`
+    * `GetExportConfigurationResponse`
+
+
 ### FEATURES/ENHANCEMENTS:
 
 * GTM

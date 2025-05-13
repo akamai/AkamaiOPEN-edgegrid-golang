@@ -74,7 +74,7 @@ type (
 			AverageThreshold      int                          `json:"averageThreshold"`
 			BurstThreshold        int                          `json:"burstThreshold"`
 			BurstWindow           *int                         `json:"burstWindow,omitempty"`
-			ClientIdentifier      string                       `json:"clientIdentifier,omitempty"`
+			ClientIdentifiers     []string                     `json:"clientIdentifiers,omitempty"`
 			Condition             *RatePolicyCondition         `json:"condition,omitempty"`
 			CreateDate            time.Time                    `json:"-"`
 			Description           string                       `json:"description,omitempty"`
