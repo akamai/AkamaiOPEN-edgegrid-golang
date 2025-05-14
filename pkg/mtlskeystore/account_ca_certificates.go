@@ -49,8 +49,8 @@ type (
 		KeyAlgorithm CryptographicAlgorithm `json:"keyAlgorithm"`
 		// KeySizeInBytes is the private key length of the CA certificate.
 		KeySizeInBytes int64 `json:"keySizeInBytes"`
-		// QalificationDate is the timestamp indicating when the CA certificate's status moved from `QUALIFYING` to `CURRENT`.
-		QualificationDate time.Time `json:"qualificationDate"`
+		// QualificationDate is the timestamp indicating when the CA certificate's status moved from `QUALIFYING` to `CURRENT`.
+		QualificationDate *time.Time `json:"qualificationDate,omitempty"`
 		// SignatureAlgorithm specifies the algorithm that secures the data exchange between the edge server and origin.
 		SignatureAlgorithm string `json:"signatureAlgorithm"`
 		// Status is the status of the CA certificate. Either `QUALIFYING`, `CURRENT`, `PREVIOUS`, or `EXPIRED`.
@@ -101,8 +101,8 @@ func statusRule(value any) error {
 				status, s, CertificateStatusCurrent, CertificateStatusExpired, CertificateStatusPrevious, CertificateStatusQualifying)
 		}
 	}
-	return nil
 
+	return nil
 }
 
 func (m *mtlskeystore) ListAccountCACertificates(ctx context.Context, params ListAccountCACertificatesRequest) (*ListAccountCACertificatesResponse, error) {

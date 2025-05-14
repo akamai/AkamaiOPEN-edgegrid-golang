@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -58,6 +59,23 @@ func TestMTLS_Keystore_ListAccountCACertificates(t *testing.T) {
             "expiryDate": "2028-03-24T15:46:06Z",
             "createdBy": "Test User",
             "createdDate": "2025-03-24T15:43:50Z"
+        },
+		{
+            "id": 3,
+            "version": 3,
+            "accountId": "test_account",
+            "subject": "/C=Test Country/O=Test Organization, Inc./OU=Test Organization Unit/CN=Test Common Name/",
+            "commonName": "Test Common Name",
+            "keyAlgorithm": "RSA",
+            "keySizeInBytes": 4096,
+			"qualificationDate": "2025-03-25T15:46:06Z",
+            "signatureAlgorithm": "SHA256_WITH_RSA",
+            "certificate": "-----BEGIN CERTIFICATE-----\nCERTIFICATE CONTENT\n-----END CERTIFICATE-----\n",
+            "status": "CURRENT",
+            "issuedDate": "2025-03-24T15:46:06Z",
+            "expiryDate": "2028-03-24T15:46:06Z",
+            "createdBy": "Test User",
+            "createdDate": "2025-03-24T15:43:50Z"
         }
     ]
 }`,
@@ -96,6 +114,23 @@ func TestMTLS_Keystore_ListAccountCACertificates(t *testing.T) {
 						CreatedBy:          "Test User",
 						CreatedDate:        test.NewTimeFromString(t, "2025-03-24T15:43:50Z"),
 					},
+					{
+						ID:                 3,
+						Version:            3,
+						AccountID:          "test_account",
+						Subject:            "/C=Test Country/O=Test Organization, Inc./OU=Test Organization Unit/CN=Test Common Name/",
+						CommonName:         "Test Common Name",
+						KeyAlgorithm:       "RSA",
+						KeySizeInBytes:     4096,
+						QualificationDate:  ptr.To(test.NewTimeFromString(t, "2025-03-25T15:46:06Z")),
+						SignatureAlgorithm: "SHA256_WITH_RSA",
+						Certificate:        "-----BEGIN CERTIFICATE-----\nCERTIFICATE CONTENT\n-----END CERTIFICATE-----\n",
+						Status:             "CURRENT",
+						IssuedDate:         test.NewTimeFromString(t, "2025-03-24T15:46:06Z"),
+						ExpiryDate:         test.NewTimeFromString(t, "2028-03-24T15:46:06Z"),
+						CreatedBy:          "Test User",
+						CreatedDate:        test.NewTimeFromString(t, "2025-03-24T15:43:50Z"),
+					},
 				},
 			},
 		},
@@ -122,6 +157,23 @@ func TestMTLS_Keystore_ListAccountCACertificates(t *testing.T) {
             "expiryDate": "2028-03-24T15:46:06Z",
             "createdBy": "Test User",
             "createdDate": "2025-03-24T15:43:50Z"
+        },
+		{
+            "id": 3,
+            "version": 3,
+            "accountId": "test_account",
+            "subject": "/C=Test Country/O=Test Organization, Inc./OU=Test Organization Unit/CN=Test Common Name/",
+            "commonName": "Test Common Name",
+            "keyAlgorithm": "RSA",
+            "keySizeInBytes": 4096,
+			"qualificationDate": "2025-03-25T15:46:06Z",
+            "signatureAlgorithm": "SHA256_WITH_RSA",
+            "certificate": "-----BEGIN CERTIFICATE-----\nCERTIFICATE CONTENT\n-----END CERTIFICATE-----\n",
+            "status": "CURRENT",
+            "issuedDate": "2025-03-24T15:46:06Z",
+            "expiryDate": "2028-03-24T15:46:06Z",
+            "createdBy": "Test User",
+            "createdDate": "2025-03-24T15:43:50Z"
         }
     ]
 }`,
@@ -136,6 +188,23 @@ func TestMTLS_Keystore_ListAccountCACertificates(t *testing.T) {
 						CommonName:         "Test Common Name",
 						KeyAlgorithm:       "RSA",
 						KeySizeInBytes:     4096,
+						SignatureAlgorithm: "SHA256_WITH_RSA",
+						Certificate:        "-----BEGIN CERTIFICATE-----\nCERTIFICATE CONTENT\n-----END CERTIFICATE-----\n",
+						Status:             "CURRENT",
+						IssuedDate:         test.NewTimeFromString(t, "2025-03-24T15:46:06Z"),
+						ExpiryDate:         test.NewTimeFromString(t, "2028-03-24T15:46:06Z"),
+						CreatedBy:          "Test User",
+						CreatedDate:        test.NewTimeFromString(t, "2025-03-24T15:43:50Z"),
+					},
+					{
+						ID:                 3,
+						Version:            3,
+						AccountID:          "test_account",
+						Subject:            "/C=Test Country/O=Test Organization, Inc./OU=Test Organization Unit/CN=Test Common Name/",
+						CommonName:         "Test Common Name",
+						KeyAlgorithm:       "RSA",
+						KeySizeInBytes:     4096,
+						QualificationDate:  ptr.To(test.NewTimeFromString(t, "2025-03-25T15:46:06Z")),
 						SignatureAlgorithm: "SHA256_WITH_RSA",
 						Certificate:        "-----BEGIN CERTIFICATE-----\nCERTIFICATE CONTENT\n-----END CERTIFICATE-----\n",
 						Status:             "CURRENT",
