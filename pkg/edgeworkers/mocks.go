@@ -204,6 +204,14 @@ func (m *Mock) UpdateEdgeKVNamespace(ctx context.Context, req UpdateEdgeKVNamesp
 	return args.Get(0).(*Namespace), args.Error(1)
 }
 
+func (m *Mock) DeleteEdgeKVNamespace(ctx context.Context, req DeleteEdgeKVNamespaceRequest) (*DeleteEdgeKVNamespacesResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*DeleteEdgeKVNamespacesResponse), args.Error(1)
+}
+
 // EdgeWorkerID
 
 func (m *Mock) GetEdgeWorkerID(ctx context.Context, req GetEdgeWorkerIDRequest) (*EdgeWorkerID, error) {

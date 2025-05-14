@@ -18,7 +18,8 @@
 
 
 
-
+* EdgeKV
+  * Added a new method [DeleteEdgeKVNamespace](https://techdocs.akamai.com/edgekv/reference/delete-namespace).
 
 
 

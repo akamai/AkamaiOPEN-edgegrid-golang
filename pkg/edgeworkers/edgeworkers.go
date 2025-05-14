@@ -140,6 +140,11 @@ type (
 		// See: https://techdocs.akamai.com/edgekv/reference/put-namespace
 		UpdateEdgeKVNamespace(context.Context, UpdateEdgeKVNamespaceRequest) (*Namespace, error)
 
+		// DeleteEdgeKVNamespace deletes a namespace and all of its contents.
+		//
+		// See: https://techdocs.akamai.com/edgekv/reference/delete-namespace
+		DeleteEdgeKVNamespace(context.Context, DeleteEdgeKVNamespaceRequest) (*DeleteEdgeKVNamespacesResponse, error)
+
 		// EdgeWorkerIDs
 
 		// GetEdgeWorkerID gets details for a specific EdgeWorkerID
@@ -203,7 +208,7 @@ type (
 
 		// ListGroupsWithinNamespace lists group identifiers created when writing items to a namespace
 		//
-		// See: https://techdocs.akamai.com/edgekv/reference/get-groups
+		// See: https://techdocs.akamai.com/edgekv/reference/get-namespace-groups
 		ListGroupsWithinNamespace(context.Context, ListGroupsWithinNamespaceRequest) ([]string, error)
 
 		// PermissionGroups

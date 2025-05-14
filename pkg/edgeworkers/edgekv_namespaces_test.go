@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/internal/test"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -710,6 +711,133 @@ func TestUpdateNamespace(t *testing.T) {
 			client := mockAPIClient(t, mockServer)
 
 			result, err := client.UpdateEdgeKVNamespace(context.Background(), test.params)
+			if test.withError != nil {
+				test.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResult, result)
+		})
+	}
+}
+
+func TestDeleteNamespace(t *testing.T) {
+	tests := map[string]struct {
+		params         DeleteEdgeKVNamespaceRequest
+		withError      func(*testing.T, error)
+		expectedPath   string
+		responseStatus int
+		responseBody   string
+		expectedResult *DeleteEdgeKVNamespacesResponse
+	}{
+		"202 Accepted for async deletion": {
+			params: DeleteEdgeKVNamespaceRequest{
+				Network: NamespaceProductionNetwork,
+				Name:    "testNs",
+			},
+			expectedPath:   "/edgekv/v1/networks/production/namespaces/testNs",
+			responseStatus: http.StatusAccepted,
+			responseBody: `{
+				"scheduledDeleteTime": "2025-05-08T14:16:05.350Z"
+			}`,
+			expectedResult: &DeleteEdgeKVNamespacesResponse{
+				ScheduledDeleteTime: ptr.To(test.NewTimeFromString(t, "2025-05-08T14:16:05.350Z")),
+			},
+		},
+		"200 OK for sync deletion": {
+			params: DeleteEdgeKVNamespaceRequest{
+				Network: NamespaceProductionNetwork,
+				Name:    "testNs",
+				Sync:    true,
+			},
+			expectedPath:   "/edgekv/v1/networks/production/namespaces/testNs?sync=true",
+			responseStatus: http.StatusOK,
+			// Yes, the API returns different response format for sync deletion
+			responseBody: `{
+				"operationPerformed": "DELETED",
+				"description": "Namespace 'testNs' was successfully deleted.",
+				"id": "1234567"
+			}`,
+			expectedResult: &DeleteEdgeKVNamespacesResponse{
+				ScheduledDeleteTime: nil,
+			},
+		},
+		"400 namespace does not exist": {
+			params: DeleteEdgeKVNamespaceRequest{
+				Network: NamespaceProductionNetwork,
+				Name:    "testNs",
+			},
+			withError: func(t *testing.T, err error) {
+				expected := &Error{
+					Detail:    "That resource does not exist or you are missing the 'DELETE_NAMESPACE' permission for it.",
+					Instance:  "/edgekv/error-instances/12345678-abcd-abcd-abcd-1234567890ab",
+					Status:    http.StatusBadRequest,
+					Title:     "Bad Request",
+					Type:      "/edgekv/error-types/edgekv-bad-request",
+					ErrorCode: "EKV_1002",
+					AdditionalDetail: Additional{
+						RequestID: "1234567890abcdef",
+					},
+				}
+				assert.True(t, errors.Is(err, expected), "want: %s; got: %s", expected, err)
+			},
+			expectedPath:   "/edgekv/v1/networks/production/namespaces/testNs",
+			responseStatus: http.StatusBadRequest,
+			responseBody: `{
+				"detail": "That resource does not exist or you are missing the 'DELETE_NAMESPACE' permission for it.",
+				"errorCode": "EKV_1002",
+				"instance": "/edgekv/error-instances/12345678-abcd-abcd-abcd-1234567890ab",
+				"status": 400,
+				"title": "Bad Request",
+				"type": "/edgekv/error-types/edgekv-bad-request",
+				"additionalDetail": {
+					"requestId": "1234567890abcdef"
+				}
+			}`,
+		},
+		"missing required parameters": {
+			params: DeleteEdgeKVNamespaceRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Network: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.Containsf(t, err.Error(), "Name: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
+		"namespace name too long": {
+			params: DeleteEdgeKVNamespaceRequest{
+				Network: NamespaceStagingNetwork,
+				Name:    "namespaceNameThatHasMoreThan32Letters",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Name: the length must be between 1 and 32", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
+		"bad network name": {
+			params: DeleteEdgeKVNamespaceRequest{
+				Network: NamespaceNetwork("foo"),
+				Name:    "testNs",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Network: value 'foo' is invalid. Must be one of: "+
+					"'staging' or 'production'", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+
+			result, err := client.DeleteEdgeKVNamespace(context.Background(), test.params)
 			if test.withError != nil {
 				test.withError(t, err)
 				return
