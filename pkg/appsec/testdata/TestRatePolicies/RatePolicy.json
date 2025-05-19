@@ -66,6 +66,7 @@
 	"updateDate": "2020-10-29T04:00:22Z",
 	"useXForwardForHeaders": true,
 	"used": false,
+	"penaltyBoxDuration": "TEN_MINUTES",
 	"condition": {
 		"atomicConditions": [
 			{

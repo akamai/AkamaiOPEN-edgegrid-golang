@@ -77,6 +77,7 @@ type (
 			ClientIdentifiers     []string                     `json:"clientIdentifiers,omitempty"`
 			Condition             *RatePolicyCondition         `json:"condition,omitempty"`
 			CreateDate            time.Time                    `json:"-"`
+			CounterType           string                       `json:"counterType"`
 			Description           string                       `json:"description,omitempty"`
 			FileExtensions        *RatePolicyFileExtensions    `json:"fileExtensions,omitempty"`
 			Hosts                 *RatePoliciesHosts           `json:"hosts,omitempty"`
@@ -87,6 +88,7 @@ type (
 			Path                  *RatePoliciesPath            `json:"path,omitempty"`
 			PathMatchType         string                       `json:"pathMatchType,omitempty"`
 			PathURIPositiveMatch  bool                         `json:"pathUriPositiveMatch"`
+			PenaltyBoxDuration    string                       `json:"penaltyBoxDuration"`
 			QueryParameters       *RatePoliciesQueryParameters `json:"queryParameters,omitempty"`
 			RequestType           string                       `json:"requestType"`
 			SameActionOnIpv6      bool                         `json:"sameActionOnIpv6"`

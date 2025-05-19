@@ -136,7 +136,8 @@
                         "value": 7
                     }
                 ]
-            }
+            },
+            "penaltyBoxDuration": "TEN_MINUTES"
         }
     ]
 }

@@ -25,7 +25,15 @@
     * `DeleteDomain` – This method is now deprecated and may be removed in a future release.
   
 
-
+* Appsec
+  * Added `PenaltyBoxDuration` field to the following structures:
+    * `GetRatePoliciesResponse`
+    * `GetRatePolicyResponse`
+    * `CreateRatePolicyResponse`
+    * `UpdateRatePolicyResponse`
+    * `RemoveRatePolicyResponse`
+    * `GetExportConfigurationResponse`
+  * Added `CounterType` field to `GetExportConfigurationResponse` structure.
 
 
 

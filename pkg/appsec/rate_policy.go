@@ -83,10 +83,11 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate  string          `json:"-"`
-		UpdateDate  string          `json:"-"`
-		Used        json.RawMessage `json:"used"`
-		CounterType string          `json:"counterType"`
+		CreateDate         string          `json:"-"`
+		UpdateDate         string          `json:"-"`
+		Used               json.RawMessage `json:"used"`
+		CounterType        string          `json:"counterType"`
+		PenaltyBoxDuration string          `json:"penaltyBoxDuration"`
 	}
 
 	// UpdateRatePolicyRequest is used to modify an existing rate policy.
@@ -133,10 +134,11 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate  string          `json:"-"`
-		UpdateDate  string          `json:"-"`
-		Used        json.RawMessage `json:"used"`
-		CounterType string          `json:"counterType"`
+		CreateDate         string          `json:"-"`
+		UpdateDate         string          `json:"-"`
+		Used               json.RawMessage `json:"used"`
+		CounterType        string          `json:"counterType"`
+		PenaltyBoxDuration string          `json:"penaltyBoxDuration"`
 	}
 
 	// RemoveRatePolicyRequest is used to remove a rate policy.
@@ -182,10 +184,11 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate  string          `json:"-"`
-		UpdateDate  string          `json:"-"`
-		Used        json.RawMessage `json:"used"`
-		CounterType string          `json:"counterType"`
+		CreateDate         string          `json:"-"`
+		UpdateDate         string          `json:"-"`
+		Used               json.RawMessage `json:"used"`
+		CounterType        string          `json:"counterType"`
+		PenaltyBoxDuration string          `json:"penaltyBoxDuration"`
 	}
 
 	// GetRatePoliciesRequest is used to retrieve the rate policies for a configuration.
@@ -228,6 +231,7 @@ type (
 			APISelectors           *RatePolicyAPISelectors    `json:"apiSelectors,omitempty"`
 			BodyParameters         *RatePolicyBodyParameters  `json:"bodyParameters,omitempty"`
 			CounterType            string                     `json:"counterType"`
+			PenaltyBoxDuration     string                     `json:"penaltyBoxDuration"`
 		} `json:"ratePolicies,omitempty"`
 	}
 
@@ -267,6 +271,7 @@ type (
 		UpdateDate             string                     `json:"-"`
 		Used                   bool                       `json:"-"`
 		CounterType            string                     `json:"counterType"`
+		PenaltyBoxDuration     string                     `json:"penaltyBoxDuration"`
 	}
 
 	// RatePolicyAPISelectors is used as part of a rate policy description.
