@@ -24,6 +24,26 @@
 
 
 
+* IAM
+  * Removed `ServiceProviderID` from the `CreateAPIClientResponse`, `GetAPIClientResponse` and `UpdateAPIClientResponse` structures.
+  * Removed the following fields from the `CreateAPIClientRequest` and `UpdateAPIClientRequest` structures:
+    * From the `APIAccess` structure:
+      * `APIName`
+      * `Description`
+      * `DocumentationURL`
+      * `Endpoint`
+    * From the `GroupAccess` structure:
+      * `GroupName`
+      * `IsBlocked`
+      * `ParentGroupID`
+      * `RoleDescription`
+      * `RoleName`
+  * Changed the `AccessLevel` field type to `string` in the `API` structure.
+  * Changed type in `CreateAPIClientRequest` and `UpdateAPIClientRequest` structures:
+    * From `APIAccess` to `APIAccessRequest`.
+    * From `GroupAccess` to `GroupAccessRequest`.
+
+
 
 
 

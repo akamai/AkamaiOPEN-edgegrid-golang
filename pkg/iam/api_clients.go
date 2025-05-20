@@ -118,7 +118,6 @@ type (
 		IsLocked                bool                        `json:"isLocked"`
 		NotificationEmails      []string                    `json:"notificationEmails"`
 		PurgeOptions            *PurgeOptions               `json:"purgeOptions"`
-		ServiceProviderID       int64                       `json:"serviceProviderId"`
 	}
 
 	// GetAPIClientResponse describes the response of the GetAPIClient endpoint.
@@ -143,7 +142,6 @@ type (
 		IsLocked                bool                  `json:"isLocked"`
 		NotificationEmails      []string              `json:"notificationEmails"`
 		PurgeOptions            *PurgeOptions         `json:"purgeOptions"`
-		ServiceProviderID       int64                 `json:"serviceProviderId"`
 	}
 
 	// APIClientActions specifies activities available for the API client.
@@ -169,12 +167,24 @@ type (
 
 	// API represents single Application Programming Interface (API).
 	API struct {
-		AccessLevel      AccessLevel `json:"accessLevel"`
-		APIID            int64       `json:"apiId"`
-		APIName          string      `json:"apiName"`
-		Description      string      `json:"description"`
-		DocumentationURL string      `json:"documentationUrl"`
-		Endpoint         string      `json:"endPoint"`
+		AccessLevel      string `json:"accessLevel"`
+		APIID            int64  `json:"apiId"`
+		APIName          string `json:"apiName"`
+		Description      string `json:"description"`
+		DocumentationURL string `json:"documentationUrl"`
+		Endpoint         string `json:"endPoint"`
+	}
+
+	// APIAccessRequest represents the APIs the API client can access.
+	APIAccessRequest struct {
+		AllAccessibleAPIs bool             `json:"allAccessibleApis"`
+		APIs              []APIRequestItem `json:"apis"`
+	}
+
+	// APIRequestItem represents single Application Programming Interface (API).
+	APIRequestItem struct {
+		APIID       int64       `json:"apiId"`
+		AccessLevel AccessLevel `json:"accessLevel"`
 	}
 
 	// APIClientCredential represents single Credential returned by APIClient interfaces.
@@ -218,6 +228,19 @@ type (
 		Subgroups       []ClientGroup `json:"subgroups"`
 	}
 
+	// GroupAccessRequest specifies the API client's group access.
+	GroupAccessRequest struct {
+		CloneAuthorizedUserGroups bool                     `json:"cloneAuthorizedUserGroups"`
+		Groups                    []ClientGroupRequestItem `json:"groups"`
+	}
+
+	// ClientGroupRequestItem represents a group the API client can access.
+	ClientGroupRequestItem struct {
+		GroupID   int64                    `json:"groupId"`
+		RoleID    int64                    `json:"roleId"`
+		Subgroups []ClientGroupRequestItem `json:"subgroups"`
+	}
+
 	// IPACL specifies the API client's IP list restriction.
 	IPACL struct {
 		CIDR   []string `json:"cidr"`
@@ -239,18 +262,18 @@ type (
 
 	// CreateAPIClientRequest contains the request parameters for the CreateAPIClient endpoint.
 	CreateAPIClientRequest struct {
-		AllowAccountSwitch      bool          `json:"allowAccountSwitch"`
-		APIAccess               APIAccess     `json:"apiAccess"`
-		AuthorizedUsers         []string      `json:"authorizedUsers"`
-		CanAutoCreateCredential bool          `json:"canAutoCreateCredential"`
-		ClientDescription       string        `json:"clientDescription"`
-		ClientName              string        `json:"clientName"`
-		ClientType              ClientType    `json:"clientType"`
-		CreateCredential        bool          `json:"createCredential"`
-		GroupAccess             GroupAccess   `json:"groupAccess"`
-		IPACL                   *IPACL        `json:"ipAcl,omitempty"`
-		NotificationEmails      []string      `json:"notificationEmails"`
-		PurgeOptions            *PurgeOptions `json:"purgeOptions,omitempty"`
+		AllowAccountSwitch      bool               `json:"allowAccountSwitch"`
+		APIAccess               APIAccessRequest   `json:"apiAccess"`
+		AuthorizedUsers         []string           `json:"authorizedUsers"`
+		CanAutoCreateCredential bool               `json:"canAutoCreateCredential"`
+		ClientDescription       string             `json:"clientDescription"`
+		ClientName              string             `json:"clientName"`
+		ClientType              ClientType         `json:"clientType"`
+		CreateCredential        bool               `json:"createCredential"`
+		GroupAccess             GroupAccessRequest `json:"groupAccess"`
+		IPACL                   *IPACL             `json:"ipAcl,omitempty"`
+		NotificationEmails      []string           `json:"notificationEmails"`
+		PurgeOptions            *PurgeOptions      `json:"purgeOptions,omitempty"`
 	}
 
 	// UpdateAPIClientRequest contains the request parameters for the UpdateAPIClient endpoint.
@@ -261,17 +284,17 @@ type (
 
 	// UpdateAPIClientRequestBody represents body params for the UpdateAPIClient endpoint.
 	UpdateAPIClientRequestBody struct {
-		AllowAccountSwitch      bool          `json:"allowAccountSwitch"`
-		APIAccess               APIAccess     `json:"apiAccess"`
-		AuthorizedUsers         []string      `json:"authorizedUsers"`
-		CanAutoCreateCredential bool          `json:"canAutoCreateCredential"`
-		ClientDescription       string        `json:"clientDescription"`
-		ClientName              string        `json:"clientName"`
-		ClientType              ClientType    `json:"clientType"`
-		GroupAccess             GroupAccess   `json:"groupAccess"`
-		IPACL                   *IPACL        `json:"ipAcl,omitempty"`
-		NotificationEmails      []string      `json:"notificationEmails"`
-		PurgeOptions            *PurgeOptions `json:"purgeOptions,omitempty"`
+		AllowAccountSwitch      bool               `json:"allowAccountSwitch"`
+		APIAccess               APIAccessRequest   `json:"apiAccess"`
+		AuthorizedUsers         []string           `json:"authorizedUsers"`
+		CanAutoCreateCredential bool               `json:"canAutoCreateCredential"`
+		ClientDescription       string             `json:"clientDescription"`
+		ClientName              string             `json:"clientName"`
+		ClientType              ClientType         `json:"clientType"`
+		GroupAccess             GroupAccessRequest `json:"groupAccess"`
+		IPACL                   *IPACL             `json:"ipAcl,omitempty"`
+		NotificationEmails      []string           `json:"notificationEmails"`
+		PurgeOptions            *PurgeOptions      `json:"purgeOptions,omitempty"`
 	}
 
 	// UpdateAPIClientResponse describes the response from the UpdateAPIClient endpoint.
@@ -317,15 +340,15 @@ func (r CreateAPIClientRequest) Validate() error {
 	})
 }
 
-// Validate validates APIAccess.
-func (a APIAccess) Validate() error {
+// Validate validates APIAccessRequest.
+func (a APIAccessRequest) Validate() error {
 	return validation.Errors{
 		"APIs": validation.Validate(a.APIs, validation.When(!a.AllAccessibleAPIs, validation.Required)),
 	}.Filter()
 }
 
-// Validate validates API.
-func (a API) Validate() error {
+// Validate validates APIRequest.
+func (a APIRequestItem) Validate() error {
 	return validation.Errors{
 		"AccessLevel": validation.Validate(a.AccessLevel, validation.Required,
 			validation.In(ReadOnlyLevel, ReadWriteLevel, ReadLevel, CredentialReadOnlyLevel, CredentialReadWriteLevel).Error(
@@ -334,15 +357,15 @@ func (a API) Validate() error {
 	}.Filter()
 }
 
-// Validate validates GroupAccess.
-func (ga GroupAccess) Validate() error {
+// Validate validates GroupAccessRequest.
+func (ga GroupAccessRequest) Validate() error {
 	return validation.Errors{
 		"Groups": validation.Validate(ga.Groups, validation.When(!ga.CloneAuthorizedUserGroups, validation.Required)),
 	}.Filter()
 }
 
-// Validate validates ClientGroup.
-func (cg ClientGroup) Validate() error {
+// Validate validates ClientGroupRequest.
+func (cg ClientGroupRequestItem) Validate() error {
 	return validation.Errors{
 		"GroupID": validation.Validate(cg.GroupID, validation.Required),
 		"RoleID":  validation.Validate(cg.RoleID, validation.Required),
