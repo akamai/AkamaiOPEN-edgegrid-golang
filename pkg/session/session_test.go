@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/log"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -26,7 +26,7 @@ func TestNew(t *testing.T) {
 				signer:    &edgegrid.Config{},
 				log:       log.Default(),
 				trace:     false,
-				userAgent: "Akamai-Open-Edgegrid-golang/10.0.0 golang/" + strings.TrimPrefix(runtime.Version(), "go"),
+				userAgent: "Akamai-Open-Edgegrid-golang/11.0.0 golang/" + strings.TrimPrefix(runtime.Version(), "go"),
 			},
 		},
 		"nil client provided, return error": {
