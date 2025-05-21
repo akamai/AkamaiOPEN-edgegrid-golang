@@ -1,51 +1,21 @@
 # RELEASE NOTES
 
-## X.X.X (X X, X)
-
+## 11.0.0 (May 26, 2025)
 
 ### BREAKING CHANGES:
 * Appsec
-  * Renamed `ClientIdentifier` field to `ClientIdentifiers` and changed its type from `string` to array of strings in following structs
+  * Renamed the `ClientIdentifier` field to `ClientIdentifiers` and changed its type from a string to an array of strings in the following structures:
     * `CreateRatePolicyResponse`
     * `UpdateRatePolicyResponse`
     * `RemoveRatePolicyResponse`
     * `GetRatePoliciesResponse`
     * `GetRatePolicyResponse`
     * `GetExportConfigurationResponse`
-
-
-### FEATURES/ENHANCEMENTS:
-
-* GTM
-  * Added support for domain deletion, enabling users to submit requests to delete one or more GTM domains.
-  * New endpoints:
-    * [DeleteDomains]() - Submits a request to delete specified domain(s).
-    * [DeleteDomainsStatus]() - Retrieves the status of a submitted domain deletion request.
-  * Deprecated:
-    * `DeleteDomain` – This method is now deprecated and may be removed in a future release.
-  
-
-* Appsec
-  * Added `PenaltyBoxDuration` field to the following structures:
-    * `GetRatePoliciesResponse`
-    * `GetRatePolicyResponse`
-    * `CreateRatePolicyResponse`
-    * `UpdateRatePolicyResponse`
-    * `RemoveRatePolicyResponse`
-    * `GetExportConfigurationResponse`
-  * Added `CounterType` field to `GetExportConfigurationResponse` structure.
-
-
-
-
-* EdgeKV
-  * Added a new method [DeleteEdgeKVNamespace](https://techdocs.akamai.com/edgekv/reference/delete-namespace).
-
-
-
 
 * IAM
-  * Removed `ServiceProviderID` from the `CreateAPIClientResponse`, `GetAPIClientResponse` and `UpdateAPIClientResponse` structures.
+  * Renamed the `EditIPAcl` field to `EditIPACL` in the `APIClientActions` structure.
+  * Changed the `IPACL` and `PurgeOptions` fields from value types to pointer types, `*IPACL` and `*PurgeOptions`, in the `CreateAPIClientResponse`, `GetAPIClientResponse` and `UpdateAPIClientResponse` structures.
+  * Removed the `ServiceProviderID` field from the `CreateAPIClientResponse`, `GetAPIClientResponse` and `UpdateAPIClientResponse` structures.
   * Removed the following fields from the `CreateAPIClientRequest` and `UpdateAPIClientRequest` structures:
     * From the `APIAccess` structure:
       * `APIName`
@@ -58,91 +28,40 @@
       * `ParentGroupID`
       * `RoleDescription`
       * `RoleName`
-  * Changed the `AccessLevel` field type to `string` in the `API` structure.
-  * Changed type in `CreateAPIClientRequest` and `UpdateAPIClientRequest` structures:
+  * Changed the `AccessLevel` field type to a string in the `API` structure.
+  * Changed the structure type in the `CreateAPIClientRequest` and `UpdateAPIClientRequest` structures:
     * From `APIAccess` to `APIAccessRequest`.
     * From `GroupAccess` to `GroupAccessRequest`.
 
+### FEATURES/ENHANCEMENTS:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### BUG FIXES:
-
-* APPSEC
-  * Added `StagingOnly` field in the following structs:
+* Appsec
+  * Added the `PenaltyBoxDuration` field to the following structures:
+    * `GetRatePoliciesResponse`
+    * `GetRatePolicyResponse`
+    * `CreateRatePolicyResponse`
+    * `UpdateRatePolicyResponse`
+    * `RemoveRatePolicyResponse`
+    * `GetExportConfigurationResponse`
+  * Added the `CounterType` field to the `GetExportConfigurationResponse` structure.
+  * Added the `StagingOnly` field in the following structures:
     * `CustomRuleResponse`
     * `CreateCustomRuleResponse`
     * `GetCustomRulesResponse`
 
+* EdgeKV
+  * Added a new method [DeleteEdgeKVNamespace](https://techdocs.akamai.com/edgekv/reference/delete-namespace).
 
+* GTM
+  * Added support for domain deletion, enabling users to submit requests to delete one or more GTM domains.
+  * New endpoints:
+    * `DeleteDomains` - submits a request to delete specified domain(s).
+    * `GetDeleteDomainsStatus` - retrieves the status of a submitted domain deletion request.
+  * Deprecated:
+    * `DeleteDomain` – this method is now deprecated and may be removed in a future release.
 
-
-
-
-
-* IAM
-  * Fixed the `CreateAPIClientResponse` and `GetAPIClientResponse` structs to be better aligned with API responses.
-  * Renamed field `EditIPAcl` to `EditIPACL` in the `APIClientActions` struct.
-  * Added `READ`, `CREDENTIAL-READ-ONLY` and `CREDENTIAL-READ-WRITE` values for `API.AccessLevel`. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* IAM  
+  * Added the `READ`, `CREDENTIAL-READ-ONLY` and `CREDENTIAL-READ-WRITE` values for the `API.AccessLevel` field.
 
 ## 10.1.0 (Mar 31, 2025)
 
