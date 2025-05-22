@@ -24,6 +24,9 @@ type (
 	GetClientCertificateVersionsRequest struct {
 		// CertificateID is a unique identifier representing the client certificate.
 		CertificateID int64
+
+		// IncludeAssociatedProperties specifies whether to include associated properties in the response.
+		IncludeAssociatedProperties bool
 	}
 
 	// DeleteClientCertificateVersionRequest is used to delete a client certificate version with the provided certificateID and version.
@@ -132,6 +135,9 @@ type (
 
 		// Validation checks the versions when uploading THIRD_PARTY signed client certificates to Mutual TLS Origin Keystore.
 		Validation ValidationResult `json:"validation"`
+
+		// AssociatedProperties represents the properties associated with the client certificate version.
+		AssociatedProperties []AssociatedProperty `json:"properties,omitempty"`
 	}
 
 	// CertificateBlock represents the  Certificate Signing Request (CSR) block for THIRD_PARTY client certificates.
@@ -180,6 +186,21 @@ type (
 	DeleteClientCertificateVersionResponse struct {
 		// Message indicates the client certificate version's scheduled deletion date, and specifies its reuse.
 		Message string `json:"message"`
+	}
+
+	// AssociatedProperty represents the property associated with the client certificate version.
+	AssociatedProperty struct {
+		// AssetID is the unique identifier of the property.
+		AssetID int64 `json:"assetId"`
+
+		// GroupID is the unique identifier of the property group.
+		GroupID int64 `json:"groupId"`
+
+		// PropertyName is the name of the property.
+		PropertyName string `json:"propertyName"`
+
+		// PropertyVersion is the version of the property.
+		PropertyVersion int64 `json:"propertyVersion"`
 	}
 )
 
@@ -306,8 +327,15 @@ func (m *mtlskeystore) GetClientCertificateVersions(ctx context.Context, params 
 		"/mtls-origin-keystore/v1/client-certificates/%d/versions",
 		params.CertificateID),
 	)
+
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrGetClientCertificateVersions, err)
+	}
+
+	if params.IncludeAssociatedProperties {
+		query := url.Values{}
+		query.Set("includeAssociatedProperties", strconv.FormatBool(params.IncludeAssociatedProperties))
+		uri.RawQuery = query.Encode()
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)

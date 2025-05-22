@@ -140,7 +140,7 @@ func TestGetClientCertificateVersions(t *testing.T) {
 		expectedResponse *GetClientCertificateVersionsResponse
 		withError        func(*testing.T, error)
 	}{
-		"200- Successful get client certificate versions": {
+		"200 - Successful get client certificate versions": {
 			request: GetClientCertificateVersionsRequest{
 				CertificateID: 123,
 			},
@@ -196,6 +196,84 @@ func TestGetClientCertificateVersions(t *testing.T) {
 						Validation: ValidationResult{
 							Errors:   []ValidationDetail{},
 							Warnings: []ValidationDetail{},
+						},
+					},
+				},
+			},
+		},
+		"200 - Successful get client certificate versions with associated properties": {
+			request: GetClientCertificateVersionsRequest{
+				CertificateID:               123,
+				IncludeAssociatedProperties: true,
+			},
+			responseStatus: http.StatusOK,
+			expectedPath:   "/mtls-origin-keystore/v1/client-certificates/123/versions?includeAssociatedProperties=true",
+			responseBody: `{
+			  "versions": [
+				{
+				  "certificateBlock": {
+					"certificate": "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
+					"keyAlgorithm": "RSA",
+					"trustChain": "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----"
+				  },
+				  "createdBy": "jperez",
+				  "createdDate": "2024-05-21T04:35:20Z",
+				  "expiryDate": "2024-08-21T04:35:21Z",
+				  "issuedDate": "2024-05-21T04:35:21Z",
+				  "issuer": "1360 Account CA G366",
+				  "keyAlgorithm": "RSA",
+				  "keySizeInBytes": "2048",
+				  "signatureAlgorithm": "SHA256_WITH_RSA",
+				  "status": "DEPLOYMENT_PENDING",
+				  "subject": "/C=US/O=Akamai Technologies/OU=KMI/CN=/",
+				  "validation": {
+					"errors": [],
+					"warnings": []
+				  },
+				  "version": 4,
+				  "versionGuid": "13d16e57-22fa-4475-af0a-b2b745115128",
+				  "properties": [
+					{
+					  "assetId": 111111,
+					  "groupId": 222222,
+					  "propertyName": "propertyName",
+					  "propertyVersion": 3
+					}
+				  ]
+				}
+			  ]
+			}`,
+			expectedResponse: &GetClientCertificateVersionsResponse{
+				Versions: []ClientCertificateVersion{
+					{
+						Version:     4,
+						VersionGUID: "13d16e57-22fa-4475-af0a-b2b745115128",
+						CertificateBlock: &CertificateBlock{
+							Certificate:  "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
+							KeyAlgorithm: "RSA",
+							TrustChain:   "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
+						},
+						CreatedBy:          "jperez",
+						CreatedDate:        "2024-05-21T04:35:20Z",
+						ExpiryDate:         "2024-08-21T04:35:21Z",
+						IssuedDate:         "2024-05-21T04:35:21Z",
+						Issuer:             "1360 Account CA G366",
+						KeyAlgorithm:       "RSA",
+						KeySizeInBytes:     "2048",
+						SignatureAlgorithm: "SHA256_WITH_RSA",
+						Status:             "DEPLOYMENT_PENDING",
+						Subject:            "/C=US/O=Akamai Technologies/OU=KMI/CN=/",
+						Validation: ValidationResult{
+							Errors:   []ValidationDetail{},
+							Warnings: []ValidationDetail{},
+						},
+						AssociatedProperties: []AssociatedProperty{
+							{
+								AssetID:         111111,
+								GroupID:         222222,
+								PropertyName:    "propertyName",
+								PropertyVersion: 3,
+							},
 						},
 					},
 				},
