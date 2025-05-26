@@ -71,9 +71,10 @@ func TestIAM_ListAllowedCPCodes(t *testing.T) {
 				UserName: "jsmith",
 				Body: ListAllowedCPCodesRequestBody{
 					ClientType: ServiceAccountClientType,
-					Groups: []AllowedCPCodesGroup{
+					Groups: []ClientGroupRequestItem{
 						{
 							GroupID: 1,
+							RoleID:  2,
 						},
 					},
 				},

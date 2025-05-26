@@ -32,6 +32,7 @@
   * Changed the structure type in the `CreateAPIClientRequest` and `UpdateAPIClientRequest` structures:
     * From `APIAccess` to `APIAccessRequest`.
     * From `GroupAccess` to `GroupAccessRequest`.
+  * Changed the structure type in the `ListAllowedCPCodesRequestBody` of `Groups` from `[]AllowedCPCodesGroup` to `[]ClientGroupRequestItem`.
 
 ### FEATURES/ENHANCEMENTS:
 

@@ -34,8 +34,8 @@ type (
 
 	// ListAllowedCPCodesRequestBody contains the filtering parameters for the ListAllowedCPCodes endpoint.
 	ListAllowedCPCodesRequestBody struct {
-		ClientType ClientType            `json:"clientType"`
-		Groups     []AllowedCPCodesGroup `json:"groups"`
+		ClientType ClientType               `json:"clientType"`
+		Groups     []ClientGroupRequestItem `json:"groups"`
 	}
 
 	// AllowedCPCodesGroup contains the group parameters for the ListAllowedCPCodes endpoint.
