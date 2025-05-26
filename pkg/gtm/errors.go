@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/errs"
 )
 
 var (
@@ -17,6 +17,9 @@ var (
 
 	// ErrNoDatacenterAssignedToMap occurs when no datacenter is assigned to the map target during the creation of a geographic property.
 	ErrNoDatacenterAssignedToMap = errors.New("no datacenter is assigned to map target (all others)")
+
+	// ErrDomainNotFound occurs when the domain is not found.
+	ErrDomainNotFound = errors.New("domain not found")
 )
 
 type (
@@ -70,12 +73,16 @@ func (e *Error) Error() string {
 // Is handles error comparisons
 func (e *Error) Is(target error) bool {
 
-	if errors.Is(target, ErrNotFound) && e.StatusCode == http.StatusNotFound {
-		return true
+	if errors.Is(target, ErrNotFound) {
+		return e.StatusCode == http.StatusNotFound
 	}
 
-	if errors.Is(target, ErrNoDatacenterAssignedToMap) && strings.Contains(e.Detail, "no datacenter is assigned to map target (all others)") {
-		return true
+	if errors.Is(target, ErrNoDatacenterAssignedToMap) {
+		return strings.Contains(e.Detail, "no datacenter is assigned to map target (all others)")
+	}
+
+	if errors.Is(target, ErrDomainNotFound) {
+		return e.StatusCode == http.StatusBadRequest && strings.Contains(e.Detail, "domains could not be found")
 	}
 
 	var t *Error

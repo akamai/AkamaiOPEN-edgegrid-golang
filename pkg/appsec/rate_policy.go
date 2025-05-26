@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -49,20 +49,20 @@ type (
 
 	// CreateRatePolicyResponse is returned from a call to CreateRatePolicy.
 	CreateRatePolicyResponse struct {
-		ID                    int    `json:"id"`
-		ConfigID              int    `json:"configId"`
-		ConfigVersion         int    `json:"configVersion"`
-		MatchType             string `json:"matchType"`
-		Type                  string `json:"type"`
-		Name                  string `json:"name"`
-		Description           string `json:"description"`
-		AverageThreshold      int    `json:"averageThreshold"`
-		BurstThreshold        int    `json:"burstThreshold"`
-		BurstWindow           int    `json:"burstWindow"`
-		ClientIdentifier      string `json:"clientIdentifier"`
-		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
-		RequestType           string `json:"requestType"`
-		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
+		ID                    int      `json:"id"`
+		ConfigID              int      `json:"configId"`
+		ConfigVersion         int      `json:"configVersion"`
+		MatchType             string   `json:"matchType"`
+		Type                  string   `json:"type"`
+		Name                  string   `json:"name"`
+		Description           string   `json:"description"`
+		AverageThreshold      int      `json:"averageThreshold"`
+		BurstThreshold        int      `json:"burstThreshold"`
+		BurstWindow           int      `json:"burstWindow"`
+		ClientIdentifiers     []string `json:"clientIdentifiers"`
+		UseXForwardForHeaders bool     `json:"useXForwardForHeaders"`
+		RequestType           string   `json:"requestType"`
+		SameActionOnIpv6      bool     `json:"sameActionOnIpv6"`
 		Path                  struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
@@ -83,10 +83,11 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate  string          `json:"-"`
-		UpdateDate  string          `json:"-"`
-		Used        json.RawMessage `json:"used"`
-		CounterType string          `json:"counterType"`
+		CreateDate         string          `json:"-"`
+		UpdateDate         string          `json:"-"`
+		Used               json.RawMessage `json:"used"`
+		CounterType        string          `json:"counterType"`
+		PenaltyBoxDuration string          `json:"penaltyBoxDuration"`
 	}
 
 	// UpdateRatePolicyRequest is used to modify an existing rate policy.
@@ -99,20 +100,20 @@ type (
 
 	// UpdateRatePolicyResponse is returned from a call to UpdateRatePolicy.
 	UpdateRatePolicyResponse struct {
-		ID                    int    `json:"id"`
-		ConfigID              int    `json:"configId"`
-		ConfigVersion         int    `json:"configVersion"`
-		MatchType             string `json:"matchType"`
-		Type                  string `json:"type"`
-		Name                  string `json:"name"`
-		Description           string `json:"description"`
-		AverageThreshold      int    `json:"averageThreshold"`
-		BurstThreshold        int    `json:"burstThreshold"`
-		BurstWindow           int    `json:"burstWindow"`
-		ClientIdentifier      string `json:"clientIdentifier"`
-		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
-		RequestType           string `json:"requestType"`
-		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
+		ID                    int      `json:"id"`
+		ConfigID              int      `json:"configId"`
+		ConfigVersion         int      `json:"configVersion"`
+		MatchType             string   `json:"matchType"`
+		Type                  string   `json:"type"`
+		Name                  string   `json:"name"`
+		Description           string   `json:"description"`
+		AverageThreshold      int      `json:"averageThreshold"`
+		BurstThreshold        int      `json:"burstThreshold"`
+		BurstWindow           int      `json:"burstWindow"`
+		ClientIdentifiers     []string `json:"clientIdentifiers"`
+		UseXForwardForHeaders bool     `json:"useXForwardForHeaders"`
+		RequestType           string   `json:"requestType"`
+		SameActionOnIpv6      bool     `json:"sameActionOnIpv6"`
 		Path                  struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
@@ -133,10 +134,11 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate  string          `json:"-"`
-		UpdateDate  string          `json:"-"`
-		Used        json.RawMessage `json:"used"`
-		CounterType string          `json:"counterType"`
+		CreateDate         string          `json:"-"`
+		UpdateDate         string          `json:"-"`
+		Used               json.RawMessage `json:"used"`
+		CounterType        string          `json:"counterType"`
+		PenaltyBoxDuration string          `json:"penaltyBoxDuration"`
 	}
 
 	// RemoveRatePolicyRequest is used to remove a rate policy.
@@ -148,20 +150,20 @@ type (
 
 	// RemoveRatePolicyResponse is returned from a call to RemoveRatePolicy.
 	RemoveRatePolicyResponse struct {
-		ID                    int    `json:"id"`
-		ConfigID              int    `json:"configId"`
-		ConfigVersion         int    `json:"configVersion"`
-		MatchType             string `json:"matchType"`
-		Type                  string `json:"type"`
-		Name                  string `json:"name"`
-		Description           string `json:"description"`
-		AverageThreshold      int    `json:"averageThreshold"`
-		BurstThreshold        int    `json:"burstThreshold"`
-		BurstWindow           int    `json:"burstWindow"`
-		ClientIdentifier      string `json:"clientIdentifier"`
-		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
-		RequestType           string `json:"requestType"`
-		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
+		ID                    int      `json:"id"`
+		ConfigID              int      `json:"configId"`
+		ConfigVersion         int      `json:"configVersion"`
+		MatchType             string   `json:"matchType"`
+		Type                  string   `json:"type"`
+		Name                  string   `json:"name"`
+		Description           string   `json:"description"`
+		AverageThreshold      int      `json:"averageThreshold"`
+		BurstThreshold        int      `json:"burstThreshold"`
+		BurstWindow           int      `json:"burstWindow"`
+		ClientIdentifiers     []string `json:"clientIdentifiers"`
+		UseXForwardForHeaders bool     `json:"useXForwardForHeaders"`
+		RequestType           string   `json:"requestType"`
+		SameActionOnIpv6      bool     `json:"sameActionOnIpv6"`
 		Path                  struct {
 			PositiveMatch bool     `json:"positiveMatch"`
 			Values        []string `json:"values"`
@@ -182,10 +184,11 @@ type (
 			PositiveMatch bool     `json:"positiveMatch"`
 			ValueInRange  bool     `json:"valueInRange"`
 		} `json:"queryParameters"`
-		CreateDate  string          `json:"-"`
-		UpdateDate  string          `json:"-"`
-		Used        json.RawMessage `json:"used"`
-		CounterType string          `json:"counterType"`
+		CreateDate         string          `json:"-"`
+		UpdateDate         string          `json:"-"`
+		Used               json.RawMessage `json:"used"`
+		CounterType        string          `json:"counterType"`
+		PenaltyBoxDuration string          `json:"penaltyBoxDuration"`
 	}
 
 	// GetRatePoliciesRequest is used to retrieve the rate policies for a configuration.
@@ -208,7 +211,7 @@ type (
 			AverageThreshold       int                        `json:"averageThreshold,omitempty"`
 			BurstThreshold         int                        `json:"burstThreshold,omitempty"`
 			BurstWindow            int                        `json:"burstWindow,omitempty"`
-			ClientIdentifier       string                     `json:"clientIdentifier,omitempty"`
+			ClientIdentifiers      []string                   `json:"clientIdentifiers,omitempty"`
 			UseXForwardForHeaders  bool                       `json:"useXForwardForHeaders"`
 			RequestType            string                     `json:"requestType,omitempty"`
 			SameActionOnIpv6       bool                       `json:"sameActionOnIpv6"`
@@ -228,6 +231,7 @@ type (
 			APISelectors           *RatePolicyAPISelectors    `json:"apiSelectors,omitempty"`
 			BodyParameters         *RatePolicyBodyParameters  `json:"bodyParameters,omitempty"`
 			CounterType            string                     `json:"counterType"`
+			PenaltyBoxDuration     string                     `json:"penaltyBoxDuration"`
 		} `json:"ratePolicies,omitempty"`
 	}
 
@@ -250,7 +254,7 @@ type (
 		AverageThreshold       int                        `json:"averageThreshold,omitempty"`
 		BurstThreshold         int                        `json:"burstThreshold,omitempty"`
 		BurstWindow            int                        `json:"burstWindow,omitempty"`
-		ClientIdentifier       string                     `json:"clientIdentifier,omitempty"`
+		ClientIdentifiers      []string                   `json:"clientIdentifiers,omitempty"`
 		UseXForwardForHeaders  bool                       `json:"useXForwardForHeaders"`
 		RequestType            string                     `json:"requestType,omitempty"`
 		SameActionOnIpv6       bool                       `json:"sameActionOnIpv6"`
@@ -267,6 +271,7 @@ type (
 		UpdateDate             string                     `json:"-"`
 		Used                   bool                       `json:"-"`
 		CounterType            string                     `json:"counterType"`
+		PenaltyBoxDuration     string                     `json:"penaltyBoxDuration"`
 	}
 
 	// RatePolicyAPISelectors is used as part of a rate policy description.

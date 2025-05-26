@@ -18,9 +18,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/iam"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/iam"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/session"
 )
 
 func main() {

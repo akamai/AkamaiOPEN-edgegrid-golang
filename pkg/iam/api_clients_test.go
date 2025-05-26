@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/internal/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -571,14 +571,14 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 	}{
 		"201 Created with allAPI, cpCodes and clone group": {
 			params: CreateAPIClientRequest{
-				APIAccess: APIAccess{
+				APIAccess: APIAccessRequest{
 					AllAccessibleAPIs: true,
 				},
 				AuthorizedUsers:   []string{"user1"},
 				ClientDescription: "test_user_1 description",
 				ClientName:        "test_user_1",
 				ClientType:        ClientClientType,
-				GroupAccess: GroupAccess{
+				GroupAccess: GroupAccessRequest{
 					CloneAuthorizedUserGroups: true,
 				},
 				NotificationEmails: []string{"user1@example.com"},
@@ -735,7 +735,7 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 							Description:      "API Client Administration",
 							Endpoint:         "/identity-management",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadOnlyLevel,
+							AccessLevel:      "READ-ONLY",
 						},
 						{
 							APIID:            2,
@@ -743,11 +743,11 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 							Description:      "Content control utility APIs",
 							Endpoint:         "/ccu",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadWriteLevel,
+							AccessLevel:      "READ-WRITE",
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCPCode:   false,
 					CanPurgeByCacheTag: false,
 					CPCodeAccess: CPCodeAccess{
@@ -765,7 +765,7 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            true,
 					DeactivateAll:     false,
 				},
@@ -774,9 +774,9 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 		"201 Created with all fields and custom API and group": {
 			params: CreateAPIClientRequest{
 				AllowAccountSwitch: true,
-				APIAccess: APIAccess{
+				APIAccess: APIAccessRequest{
 					AllAccessibleAPIs: false,
-					APIs: []API{
+					APIs: []APIRequestItem{
 						{
 							AccessLevel: ReadOnlyLevel,
 							APIID:       1,
@@ -793,9 +793,9 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 				ClientName:              "test_user_1",
 				ClientType:              ClientClientType,
 				CreateCredential:        true,
-				GroupAccess: GroupAccess{
+				GroupAccess: GroupAccessRequest{
 					CloneAuthorizedUserGroups: false,
-					Groups: []ClientGroup{
+					Groups: []ClientGroupRequestItem{
 						{
 							GroupID: 123,
 							RoleID:  1,
@@ -921,19 +921,11 @@ func TestIAM_CreateAPIClient(t *testing.T) {
     "apis": [
       {
         "accessLevel": "READ-ONLY",
-        "apiId": 1,
-        "apiName": "",
-        "description": "",
-        "documentationUrl": "",
-        "endPoint": ""
+        "apiId": 1
       },
       {
         "accessLevel": "READ-WRITE",
-        "apiId": 2,
-        "apiName": "",
-        "description": "",
-        "documentationUrl": "",
-        "endPoint": ""
+        "apiId": 2
       }
     ]
   },
@@ -950,12 +942,7 @@ func TestIAM_CreateAPIClient(t *testing.T) {
     "groups": [
       {
         "groupId": 123,
-        "groupName": "",
-        "isBlocked": false,
-        "parentGroupId": 0,
-        "roleDescription": "",
         "roleId": 1,
-        "roleName": "",
         "subgroups": null
       }
     ]
@@ -1017,7 +1004,7 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 							Description:      "API Client Administration",
 							Endpoint:         "/identity-management",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadOnlyLevel,
+							AccessLevel:      "READ-ONLY",
 						},
 						{
 							APIID:            2,
@@ -1025,11 +1012,11 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 							Description:      "Content control utility APIs",
 							Endpoint:         "/ccu",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadWriteLevel,
+							AccessLevel:      "READ-WRITE",
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCacheTag: true,
 					CanPurgeByCPCode:   true,
 					CPCodeAccess: CPCodeAccess{
@@ -1065,7 +1052,7 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            true,
 					DeactivateAll:     false,
 				},
@@ -1078,21 +1065,21 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 			},
 		},
 		"validation errors - internal validations": {
-			params: CreateAPIClientRequest{APIAccess: APIAccess{APIs: []API{{}}}, AuthorizedUsers: []string{"user1"}, ClientType: "abc", GroupAccess: GroupAccess{Groups: []ClientGroup{{}}}, PurgeOptions: &PurgeOptions{CPCodeAccess: CPCodeAccess{AllCurrentAndNewCPCodes: false, CPCodes: nil}}},
+			params: CreateAPIClientRequest{APIAccess: APIAccessRequest{APIs: []APIRequestItem{{}}}, AuthorizedUsers: []string{"user1"}, ClientType: "abc", GroupAccess: GroupAccessRequest{Groups: []ClientGroupRequestItem{{}}}, PurgeOptions: &PurgeOptions{CPCodeAccess: CPCodeAccess{AllCurrentAndNewCPCodes: false, CPCodes: nil}}},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "create api client: struct validation:\nAPIAccess: {\n\tAPIs[0]: {\n\t\tAPIID: cannot be blank\n\t\tAccessLevel: cannot be blank\n\t}\n}\nClientType: value 'abc' is invalid. Must be one of: 'CLIENT', 'SERVICE_ACCOUNT' or 'USER_CLIENT'\nGroupAccess: {\n\tGroups[0]: {\n\t\tGroupID: cannot be blank\n\t\tRoleID: cannot be blank\n\t}\n}\nPurgeOptions: {\n\tCPCodeAccess: {\n\t\tCPCodes: is required\n\t}\n}", err.Error())
 			},
 		},
 		"500 internal server error": {
 			params: CreateAPIClientRequest{
-				APIAccess: APIAccess{
+				APIAccess: APIAccessRequest{
 					AllAccessibleAPIs: true,
 				},
 				AuthorizedUsers:   []string{"user1"},
 				ClientDescription: "test_user_1 description",
 				ClientName:        "test_user_1",
 				ClientType:        ClientClientType,
-				GroupAccess: GroupAccess{
+				GroupAccess: GroupAccessRequest{
 					CloneAuthorizedUserGroups: true,
 				},
 				NotificationEmails: []string{"user1@example.com"},
@@ -1160,14 +1147,14 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 		"200 Updated self": {
 			params: UpdateAPIClientRequest{
 				Body: UpdateAPIClientRequestBody{
-					APIAccess: APIAccess{
+					APIAccess: APIAccessRequest{
 						AllAccessibleAPIs: true,
 					},
 					AuthorizedUsers:   []string{"user1"},
 					ClientDescription: "test_user_1 description",
 					ClientName:        "test_user_1",
 					ClientType:        ClientClientType,
-					GroupAccess: GroupAccess{
+					GroupAccess: GroupAccessRequest{
 						CloneAuthorizedUserGroups: true,
 					},
 					NotificationEmails: []string{"user1@example.com"},
@@ -1293,7 +1280,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 							Description:      "API Client Administration",
 							Endpoint:         "/identity-management",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadOnlyLevel,
+							AccessLevel:      "READ-ONLY",
 						},
 						{
 							APIID:            2,
@@ -1301,11 +1288,11 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 							Description:      "Content control utility APIs",
 							Endpoint:         "/ccu",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadWriteLevel,
+							AccessLevel:      "READ-WRITE",
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCPCode:   false,
 					CanPurgeByCacheTag: false,
 					CPCodeAccess: CPCodeAccess{
@@ -1323,7 +1310,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            true,
 					DeactivateAll:     false,
 				},
@@ -1333,14 +1320,14 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 			params: UpdateAPIClientRequest{
 				ClientID: "abcdefgh12345678",
 				Body: UpdateAPIClientRequestBody{
-					APIAccess: APIAccess{
+					APIAccess: APIAccessRequest{
 						AllAccessibleAPIs: true,
 					},
 					AuthorizedUsers:   []string{"user1"},
 					ClientDescription: "test_user_1 description",
 					ClientName:        "test_user_1",
 					ClientType:        ClientClientType,
-					GroupAccess: GroupAccess{
+					GroupAccess: GroupAccessRequest{
 						CloneAuthorizedUserGroups: true,
 					},
 					NotificationEmails: []string{"user1@example.com"},
@@ -1497,7 +1484,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 							Description:      "API Client Administration",
 							Endpoint:         "/identity-management",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadOnlyLevel,
+							AccessLevel:      "READ-ONLY",
 						},
 						{
 							APIID:            2,
@@ -1505,11 +1492,11 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 							Description:      "Content control utility APIs",
 							Endpoint:         "/ccu",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadWriteLevel,
+							AccessLevel:      "READ-WRITE",
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCPCode:   false,
 					CanPurgeByCacheTag: false,
 					CPCodeAccess: CPCodeAccess{
@@ -1527,7 +1514,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            true,
 					DeactivateAll:     false,
 				},
@@ -1538,9 +1525,9 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 				ClientID: "abcdefgh12345678",
 				Body: UpdateAPIClientRequestBody{
 					AllowAccountSwitch: true,
-					APIAccess: APIAccess{
+					APIAccess: APIAccessRequest{
 						AllAccessibleAPIs: false,
-						APIs: []API{
+						APIs: []APIRequestItem{
 							{
 								AccessLevel: ReadOnlyLevel,
 								APIID:       1,
@@ -1556,9 +1543,9 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 					ClientDescription:       "test_user_1 description",
 					ClientName:              "test_user_1",
 					ClientType:              ClientClientType,
-					GroupAccess: GroupAccess{
+					GroupAccess: GroupAccessRequest{
 						CloneAuthorizedUserGroups: false,
-						Groups: []ClientGroup{
+						Groups: []ClientGroupRequestItem{
 							{
 								GroupID: 123,
 								RoleID:  1,
@@ -1684,19 +1671,11 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
     "apis": [
       {
         "accessLevel": "READ-ONLY",
-        "apiId": 1,
-        "apiName": "",
-        "description": "",
-        "documentationUrl": "",
-        "endPoint": ""
+        "apiId": 1
       },
       {
         "accessLevel": "READ-WRITE",
-        "apiId": 2,
-        "apiName": "",
-        "description": "",
-        "documentationUrl": "",
-        "endPoint": ""
+        "apiId": 2
       }
     ]
   },
@@ -1712,12 +1691,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
     "groups": [
       {
         "groupId": 123,
-        "groupName": "",
-        "isBlocked": false,
-        "parentGroupId": 0,
-        "roleDescription": "",
         "roleId": 1,
-        "roleName": "",
         "subgroups": null
       }
     ]
@@ -1779,7 +1753,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 							Description:      "API Client Administration",
 							Endpoint:         "/identity-management",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadOnlyLevel,
+							AccessLevel:      "READ-ONLY",
 						},
 						{
 							APIID:            2,
@@ -1787,11 +1761,11 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 							Description:      "Content control utility APIs",
 							Endpoint:         "/ccu",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadWriteLevel,
+							AccessLevel:      "READ-WRITE",
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCacheTag: true,
 					CanPurgeByCPCode:   true,
 					CPCodeAccess: CPCodeAccess{
@@ -1826,7 +1800,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            true,
 					DeactivateAll:     false,
 				},
@@ -1839,7 +1813,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 			},
 		},
 		"validation errors - internal validations": {
-			params: UpdateAPIClientRequest{Body: UpdateAPIClientRequestBody{APIAccess: APIAccess{APIs: []API{{}}}, AuthorizedUsers: []string{"user1"}, ClientType: "abc", GroupAccess: GroupAccess{Groups: []ClientGroup{{}}}, PurgeOptions: &PurgeOptions{CPCodeAccess: CPCodeAccess{AllCurrentAndNewCPCodes: false, CPCodes: nil}}}},
+			params: UpdateAPIClientRequest{Body: UpdateAPIClientRequestBody{APIAccess: APIAccessRequest{APIs: []APIRequestItem{{}}}, AuthorizedUsers: []string{"user1"}, ClientType: "abc", GroupAccess: GroupAccessRequest{Groups: []ClientGroupRequestItem{{}}}, PurgeOptions: &PurgeOptions{CPCodeAccess: CPCodeAccess{AllCurrentAndNewCPCodes: false, CPCodes: nil}}}},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "update api client: struct validation:\nBody: {\n\tAPIAccess: {\n\t\tAPIs[0]: {\n\t\t\tAPIID: cannot be blank\n\t\t\tAccessLevel: cannot be blank\n\t\t}\n\t}\n\tClientName: cannot be blank\n\tClientType: value 'abc' is invalid. Must be one of: 'CLIENT', 'SERVICE_ACCOUNT' or 'USER_CLIENT'\n\tGroupAccess: {\n\t\tGroups[0]: {\n\t\t\tGroupID: cannot be blank\n\t\t\tRoleID: cannot be blank\n\t\t}\n\t}\n\tPurgeOptions: {\n\t\tCPCodeAccess: {\n\t\t\tCPCodes: is required\n\t\t}\n\t}\n}", err.Error())
 			},
@@ -1847,14 +1821,14 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 		"500 internal server error": {
 			params: UpdateAPIClientRequest{
 				Body: UpdateAPIClientRequestBody{
-					APIAccess: APIAccess{
+					APIAccess: APIAccessRequest{
 						AllAccessibleAPIs: true,
 					},
 					AuthorizedUsers:   []string{"user1"},
 					ClientDescription: "test_user_1 description",
 					ClientName:        "test_user_1",
 					ClientType:        ClientClientType,
-					GroupAccess: GroupAccess{
+					GroupAccess: GroupAccessRequest{
 						CloneAuthorizedUserGroups: true,
 					},
 					NotificationEmails: []string{"user1@example.com"},
@@ -2178,7 +2152,7 @@ func TestIAM_GetAPIClient(t *testing.T) {
 							Description:      "API Client Administration",
 							Endpoint:         "/identity-management",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadOnlyLevel,
+							AccessLevel:      "READ-ONLY",
 						},
 						{
 							APIID:            2,
@@ -2186,11 +2160,11 @@ func TestIAM_GetAPIClient(t *testing.T) {
 							Description:      "Content control utility APIs",
 							Endpoint:         "/ccu",
 							DocumentationURL: "https://developer.akamai.com",
-							AccessLevel:      ReadWriteLevel,
+							AccessLevel:      "READ-WRITE",
 						},
 					},
 				},
-				PurgeOptions: PurgeOptions{
+				PurgeOptions: &PurgeOptions{
 					CanPurgeByCPCode:   false,
 					CanPurgeByCacheTag: false,
 					CPCodeAccess: CPCodeAccess{
@@ -2254,7 +2228,7 @@ func TestIAM_GetAPIClient(t *testing.T) {
 					Edit:              true,
 					EditSwitchAccount: false,
 					Transfer:          true,
-					EditIPAcl:         true,
+					EditIPACL:         true,
 					Delete:            false,
 					DeactivateAll:     true,
 				},

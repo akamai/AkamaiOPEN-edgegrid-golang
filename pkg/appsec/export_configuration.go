@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -74,9 +74,10 @@ type (
 			AverageThreshold      int                          `json:"averageThreshold"`
 			BurstThreshold        int                          `json:"burstThreshold"`
 			BurstWindow           *int                         `json:"burstWindow,omitempty"`
-			ClientIdentifier      string                       `json:"clientIdentifier,omitempty"`
+			ClientIdentifiers     []string                     `json:"clientIdentifiers,omitempty"`
 			Condition             *RatePolicyCondition         `json:"condition,omitempty"`
 			CreateDate            time.Time                    `json:"-"`
+			CounterType           string                       `json:"counterType"`
 			Description           string                       `json:"description,omitempty"`
 			FileExtensions        *RatePolicyFileExtensions    `json:"fileExtensions,omitempty"`
 			Hosts                 *RatePoliciesHosts           `json:"hosts,omitempty"`
@@ -87,6 +88,7 @@ type (
 			Path                  *RatePoliciesPath            `json:"path,omitempty"`
 			PathMatchType         string                       `json:"pathMatchType,omitempty"`
 			PathURIPositiveMatch  bool                         `json:"pathUriPositiveMatch"`
+			PenaltyBoxDuration    string                       `json:"penaltyBoxDuration"`
 			QueryParameters       *RatePoliciesQueryParameters `json:"queryParameters,omitempty"`
 			RequestType           string                       `json:"requestType"`
 			SameActionOnIpv6      bool                         `json:"sameActionOnIpv6"`

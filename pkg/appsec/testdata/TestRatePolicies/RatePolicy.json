@@ -19,7 +19,7 @@
 	"averageThreshold": 5,
 	"burstThreshold": 10,
 	"burstWindow": 1,
-	"clientIdentifiers": "ip",
+	"clientIdentifiers": ["ip"],
 	"createDate": "2020-10-29T04:00:22Z",
 	"description": "AFW Test Extensions",
 	"counterType": "per_edge",
@@ -66,6 +66,7 @@
 	"updateDate": "2020-10-29T04:00:22Z",
 	"useXForwardForHeaders": true,
 	"used": false,
+	"penaltyBoxDuration": "TEN_MINUTES",
 	"condition": {
 		"atomicConditions": [
 			{

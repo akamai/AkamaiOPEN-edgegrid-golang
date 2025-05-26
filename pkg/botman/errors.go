@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/errs"
 )
 
 type (

@@ -64,6 +64,7 @@ func (p *Mock) CreateDomain(ctx context.Context, req CreateDomainRequest) (*Crea
 	return args.Get(0).(*CreateDomainResponse), args.Error(1)
 }
 
+// Deprecated: DeleteDomain is deprecated and may be removed in future versions.
 func (p *Mock) DeleteDomain(ctx context.Context, req DeleteDomainRequest) (*DeleteDomainResponse, error) {
 	args := p.Called(ctx, req)
 
@@ -72,6 +73,26 @@ func (p *Mock) DeleteDomain(ctx context.Context, req DeleteDomainRequest) (*Dele
 	}
 
 	return args.Get(0).(*DeleteDomainResponse), args.Error(1)
+}
+
+func (p *Mock) DeleteDomains(ctx context.Context, req DeleteDomainsRequest) (*DeleteDomainsResponse, error) {
+	args := p.Called(ctx, req)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*DeleteDomainsResponse), args.Error(1)
+}
+
+func (p *Mock) GetDeleteDomainsStatus(ctx context.Context, req DeleteDomainsStatusRequest) (*DeleteDomainsStatusResponse, error) {
+	args := p.Called(ctx, req)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*DeleteDomainsStatusResponse), args.Error(1)
 }
 
 func (p *Mock) UpdateDomain(ctx context.Context, req UpdateDomainRequest) (*UpdateDomainResponse, error) {

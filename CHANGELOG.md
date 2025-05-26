@@ -1,5 +1,69 @@
 # RELEASE NOTES
 
+## 11.0.0 (May 26, 2025)
+
+### BREAKING CHANGES:
+* Appsec
+  * Renamed the `ClientIdentifier` field to `ClientIdentifiers` and changed its type from a string to an array of strings in the following structures:
+    * `CreateRatePolicyResponse`
+    * `UpdateRatePolicyResponse`
+    * `RemoveRatePolicyResponse`
+    * `GetRatePoliciesResponse`
+    * `GetRatePolicyResponse`
+    * `GetExportConfigurationResponse`
+
+* IAM
+  * Renamed the `EditIPAcl` field to `EditIPACL` in the `APIClientActions` structure.
+  * Changed the `IPACL` and `PurgeOptions` fields from value types to pointer types, `*IPACL` and `*PurgeOptions`, in the `CreateAPIClientResponse`, `GetAPIClientResponse` and `UpdateAPIClientResponse` structures.
+  * Removed the `ServiceProviderID` field from the `CreateAPIClientResponse`, `GetAPIClientResponse` and `UpdateAPIClientResponse` structures.
+  * Removed the following fields from the `CreateAPIClientRequest` and `UpdateAPIClientRequest` structures:
+    * From the `APIAccess` structure:
+      * `APIName`
+      * `Description`
+      * `DocumentationURL`
+      * `Endpoint`
+    * From the `GroupAccess` structure:
+      * `GroupName`
+      * `IsBlocked`
+      * `ParentGroupID`
+      * `RoleDescription`
+      * `RoleName`
+  * Changed the `AccessLevel` field type to a string in the `API` structure.
+  * Changed the structure type in the `CreateAPIClientRequest` and `UpdateAPIClientRequest` structures:
+    * From `APIAccess` to `APIAccessRequest`.
+    * From `GroupAccess` to `GroupAccessRequest`.
+  * Changed the structure type in the `ListAllowedCPCodesRequestBody` of `Groups` from `[]AllowedCPCodesGroup` to `[]ClientGroupRequestItem`.
+
+### FEATURES/ENHANCEMENTS:
+
+* Appsec
+  * Added the `PenaltyBoxDuration` field to the following structures:
+    * `GetRatePoliciesResponse`
+    * `GetRatePolicyResponse`
+    * `CreateRatePolicyResponse`
+    * `UpdateRatePolicyResponse`
+    * `RemoveRatePolicyResponse`
+    * `GetExportConfigurationResponse`
+  * Added the `CounterType` field to the `GetExportConfigurationResponse` structure.
+  * Added the `StagingOnly` field in the following structures:
+    * `CustomRuleResponse`
+    * `CreateCustomRuleResponse`
+    * `GetCustomRulesResponse`
+
+* EdgeKV
+  * Added a new method [DeleteEdgeKVNamespace](https://techdocs.akamai.com/edgekv/reference/delete-namespace).
+
+* GTM
+  * Added support for domain deletion, enabling users to submit requests to delete one or more GTM domains.
+  * New endpoints:
+    * `DeleteDomains` - submits a request to delete specified domain(s).
+    * `GetDeleteDomainsStatus` - retrieves the status of a submitted domain deletion request.
+  * Deprecated:
+    * `DeleteDomain` – this method is now deprecated and may be removed in a future release.
+
+* IAM  
+  * Added the `READ`, `CREDENTIAL-READ-ONLY` and `CREDENTIAL-READ-WRITE` values for the `API.AccessLevel` field.
+
 ## 10.1.0 (Mar 31, 2025)
 
 ### FEATURES/ENHANCEMENTS:

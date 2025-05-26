@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -63,6 +63,7 @@ type (
 			Version             int                        `json:"version"`
 			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
 			SamplingRate        *int                       `json:"samplingRate,omitempty"`
+			StagingOnly         *bool                      `json:"stagingOnly,omitempty"`
 		} `json:"customRules"`
 	}
 
@@ -103,6 +104,7 @@ type (
 		SamplingRate        int                        `json:"samplingRate,omitempty"`
 		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
 		Operation           string                     `json:"operation,omitempty"`
+		StagingOnly         *bool                      `json:"stagingOnly,omitempty"`
 	}
 
 	// CustomRuleEffectivePeriod defines the period during which a custom rule is active as well as its current status.
@@ -147,6 +149,7 @@ type (
 		SamplingRate        int                        `json:"samplingRate,omitempty"`
 		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
 		Operation           string                     `json:"operation,omitempty"`
+		StagingOnly         *bool                      `json:"stagingOnly,omitempty"`
 	}
 
 	// UpdateCustomRuleRequest is used to modify an existing custom rule.

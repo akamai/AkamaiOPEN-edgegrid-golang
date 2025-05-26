@@ -8,7 +8,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v10/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/session"
 )
 
 var (
@@ -44,10 +44,21 @@ type (
 		// See: https://techdocs.akamai.com/gtm/reference/post-domain
 		CreateDomain(context.Context, CreateDomainRequest) (*CreateDomainResponse, error)
 
+		// Deprecated: DeleteDomain is deprecated and may be removed in future versions.
 		// DeleteDomain is a method applied to a domain object resulting in removal.
 		//
 		// See: ** Not Supported by API **
 		DeleteDomain(context.Context, DeleteDomainRequest) (*DeleteDomainResponse, error)
+
+		// DeleteDomains submits a request to delete one or more new domains.
+		//
+		// See: ** API documentation (to be published in Akamai TechDocs). **
+		DeleteDomains(context.Context, DeleteDomainsRequest) (*DeleteDomainsResponse, error)
+
+		// GetDeleteDomainsStatus retrieves the current status of delete domains request.
+		//
+		// See: ** API documentation (to be published in Akamai TechDocs). **
+		GetDeleteDomainsStatus(ctx context.Context, params DeleteDomainsStatusRequest) (*DeleteDomainsStatusResponse, error)
 
 		// UpdateDomain is a method applied to a domain object resulting in an update.
 		//
