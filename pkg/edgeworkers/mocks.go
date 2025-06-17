@@ -212,6 +212,27 @@ func (m *Mock) DeleteEdgeKVNamespace(ctx context.Context, req DeleteEdgeKVNamesp
 	return args.Get(0).(*DeleteEdgeKVNamespacesResponse), args.Error(1)
 }
 
+func (m *Mock) GetNamespaceScheduledDeleteTime(ctx context.Context, req GetScheduledDeleteTimeRequest) (*ScheduledDeleteTimeResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*ScheduledDeleteTimeResponse), args.Error(1)
+}
+
+func (m *Mock) RescheduleNamespaceDelete(ctx context.Context, req RescheduleNamespaceDeleteRequest) (*RescheduleNamespaceDeleteResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*RescheduleNamespaceDeleteResponse), args.Error(1)
+}
+
+func (m *Mock) CancelScheduledNamespaceDelete(ctx context.Context, req CancelScheduledNamespaceDeleteRequest) error {
+	args := m.Called(ctx, req)
+	return args.Error(0)
+}
+
 // EdgeWorkerID
 
 func (m *Mock) GetEdgeWorkerID(ctx context.Context, req GetEdgeWorkerIDRequest) (*EdgeWorkerID, error) {

@@ -4,7 +4,11 @@
 
 ### FEATURES/ENHANCEMENTS:
 
-
+* EdgeKV
+  * Added new methods:
+    * [GetNamespaceScheduledDeleteTime](https://techdocs.akamai.com/edgekv/reference/get-scheduled-delete)
+    * [RescheduleNamespaceDelete](https://techdocs.akamai.com/edgekv/reference/put-scheduled-delete)
+    * [CancelScheduledNamespaceDelete](https://techdocs.akamai.com/edgekv/reference/delete-scheduled-delete)
 
 
 
