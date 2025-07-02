@@ -20,8 +20,8 @@ type (
 		CertificateID int64
 	}
 
-	// GetClientCertificateVersionsRequest is used to request the client certificate versions.
-	GetClientCertificateVersionsRequest struct {
+	// ListClientCertificateVersionsRequest is used to request the client certificate versions.
+	ListClientCertificateVersionsRequest struct {
 		// CertificateID is a unique identifier representing the client certificate.
 		CertificateID int64
 
@@ -61,18 +61,13 @@ type (
 		TrustChain *string `json:"trustChain,omitempty"`
 	}
 
-	// GetClientCertificateVersionsResponse represents a list of client certificate versions.
-	GetClientCertificateVersionsResponse struct {
+	// ListClientCertificateVersionsResponse represents a list of client certificate versions.
+	ListClientCertificateVersionsResponse struct {
 		Versions []ClientCertificateVersion `json:"versions"`
 	}
 
 	// RotateClientCertificateVersionResponse represents the new client certificate version created.
 	RotateClientCertificateVersionResponse struct {
-		ClientCertificateVersion
-	}
-
-	// ClientCertificateVersion represents a version of a client certificate.
-	ClientCertificateVersion struct {
 		// Version identifies each client certificate version.
 		Version int64 `json:"version"`
 
@@ -80,13 +75,13 @@ type (
 		VersionGUID string `json:"versionGuid"`
 
 		// CertificateBlock creates a Certificate Signing Request (CSR) for new THIRD_PARTY client certificates as the signer.
-		CertificateBlock *CertificateBlock `json:"certificateBlock,omitempty"`
+		CertificateBlock *CertificateBlock `json:"certificateBlock"`
 
 		// CertificateSubmittedBy represents the user who uploaded the THIRD_PARTY client certificate version.
-		CertificateSubmittedBy *string `json:"certificateSubmittedBy,omitempty"`
+		CertificateSubmittedBy *string `json:"certificateSubmittedBy"`
 
 		// CertificateSubmittedDate is an ISO 8601 timestamp indicating when the THIRD_PARTY signer client certificate version was upload.
-		CertificateSubmittedDate *string `json:"certificateSubmittedDate,omitempty"`
+		CertificateSubmittedDate *string `json:"certificateSubmittedDate"`
 
 		// CreatedBy represents the user who created the client certificate version.
 		CreatedBy string `json:"createdBy"`
@@ -98,10 +93,10 @@ type (
 		CSRBlock *CSRBlock `json:"csrBlock,omitempty"`
 
 		// DeleteRequestedDate is an ISO 8601 timestamp indicating the client certificate version's deletion request. Appears as null if not specified.
-		DeleteRequestedDate *string `json:"deleteRequestedDate,omitempty"`
+		DeleteRequestedDate *string `json:"deleteRequestedDate"`
 
 		// DeployedDate is an ISO 8601 timestamp indicating the client certificate version's activation. Appears as null if not specified.
-		DeployedDate *string `json:"deployedDate,omitempty"`
+		DeployedDate *string `json:"deployedDate"`
 
 		// ExpiryDate is an ISO 8601 timestamp indicating when the client certificate version expires.
 		ExpiryDate string `json:"expiryDate"`
@@ -122,7 +117,7 @@ type (
 		KeySizeInBytes string `json:"keySizeInBytes"`
 
 		// ScheduledDeleteDate is an ISO 8601 timestamp indicating client certificate version's deletion. Appears as null if not specified.
-		ScheduledDeleteDate *string `json:"scheduledDeleteDate,omitempty"`
+		ScheduledDeleteDate *string `json:"scheduledDeleteDate"`
 
 		// SignatureAlgorithm specifies the algorithm that secures the data exchange between the origin server and origin.
 		SignatureAlgorithm string `json:"signatureAlgorithm"`
@@ -137,7 +132,79 @@ type (
 		Validation ValidationResult `json:"validation"`
 
 		// AssociatedProperties represents the properties associated with the client certificate version.
-		AssociatedProperties []AssociatedProperty `json:"properties,omitempty"`
+		AssociatedProperties []AssociatedProperty `json:"properties"`
+	}
+
+	// ClientCertificateVersion represents a version of a client certificate.
+	ClientCertificateVersion struct {
+		// Version identifies each client certificate version.
+		Version int64 `json:"version"`
+
+		// VersionGUID is a unique identifier for the client certificate version.
+		VersionGUID string `json:"versionGuid"`
+
+		// VersionAlias is an alias for the client certificate version, can be either `CURRENT` or `PREVIOUS`.
+		VersionAlias *string `json:"versionAlias"`
+
+		// CertificateBlock creates a Certificate Signing Request (CSR) for new THIRD_PARTY client certificates as the signer.
+		CertificateBlock *CertificateBlock `json:"certificateBlock"`
+
+		// CertificateSubmittedBy represents the user who uploaded the THIRD_PARTY client certificate version.
+		CertificateSubmittedBy *string `json:"certificateSubmittedBy"`
+
+		// CertificateSubmittedDate is an ISO 8601 timestamp indicating when the THIRD_PARTY signer client certificate version was upload.
+		CertificateSubmittedDate *string `json:"certificateSubmittedDate"`
+
+		// CreatedBy represents the user who created the client certificate version.
+		CreatedBy string `json:"createdBy"`
+
+		// CreatedDate is an ISO 8601 timestamp indicating the client certificate's creation.
+		CreatedDate string `json:"createdDate"`
+
+		// CSRBlock creates a Certificate Signing Request (CSR) for new THIRD_PARTY client certificates as the signer.
+		CSRBlock *CSRBlock `json:"csrBlock"`
+
+		// DeleteRequestedDate is an ISO 8601 timestamp indicating the client certificate version's deletion request. Appears as null if not specified.
+		DeleteRequestedDate *string `json:"deleteRequestedDate"`
+
+		// DeployedDate is an ISO 8601 timestamp indicating the client certificate version's activation. Appears as null if not specified.
+		DeployedDate *string `json:"deployedDate"`
+
+		// ExpiryDate is an ISO 8601 timestamp indicating when the client certificate version expires.
+		ExpiryDate string `json:"expiryDate"`
+
+		// IssuedDate is an ISO 8601 timestamp indicating the client certificate version's availability.
+		IssuedDate string `json:"issuedDate"`
+
+		// Issuer represents the signing entity of the client certificate version.
+		Issuer string `json:"issuer"`
+
+		// KeyAlgorithm identifies the client certificate version's encryption algorithm. Supported values are RSA and ECDSA.
+		KeyAlgorithm CryptographicAlgorithm `json:"keyAlgorithm"`
+
+		// KeyEllipticCurve specifies the key elliptic curve when key algorithm ECDSA is used.
+		KeyEllipticCurve string `json:"keyEllipticCurve"`
+
+		// KeySizeInBytes represents the private key length of the client certificate version when key algorithm RSA is used.
+		KeySizeInBytes string `json:"keySizeInBytes"`
+
+		// ScheduledDeleteDate is an ISO 8601 timestamp indicating client certificate version's deletion. Appears as null if not specified.
+		ScheduledDeleteDate *string `json:"scheduledDeleteDate"`
+
+		// SignatureAlgorithm specifies the algorithm that secures the data exchange between the origin server and origin.
+		SignatureAlgorithm string `json:"signatureAlgorithm"`
+
+		// Status is the client certificate version status.
+		Status CertificateVersionStatus `json:"status"`
+
+		// Subject represents the public key's entity stored in the client certificate version's subject public key field.
+		Subject string `json:"subject"`
+
+		// Validation checks the versions when uploading THIRD_PARTY signed client certificates to Mutual TLS Origin Keystore.
+		Validation ValidationResult `json:"validation"`
+
+		// AssociatedProperties represents the properties associated with the client certificate version.
+		AssociatedProperties []AssociatedProperty `json:"properties"`
 	}
 
 	// CertificateBlock represents the  Certificate Signing Request (CSR) block for THIRD_PARTY client certificates.
@@ -202,10 +269,10 @@ type (
 		// PropertyVersion is the version of the property.
 		PropertyVersion int64 `json:"propertyVersion"`
 	}
-)
 
-// CertificateVersionStatus represents the state of client certificate version.
-type CertificateVersionStatus string
+	// CertificateVersionStatus represents the state of client certificate version.
+	CertificateVersionStatus string
+)
 
 const (
 	// AwaitingSigned represents client certificate versions that are waiting to be signed.
@@ -225,8 +292,8 @@ var (
 	// ErrRotateClientCertificateVersion represents error when rotating a client certificate version fails.
 	ErrRotateClientCertificateVersion = errors.New("rotating client certificate version")
 
-	// ErrGetClientCertificateVersions represents error when fetching a client certificate versions fails.
-	ErrGetClientCertificateVersions = errors.New("fetching client certificate versions")
+	// ErrListClientCertificateVersions represents error when fetching a client certificate versions fails.
+	ErrListClientCertificateVersions = errors.New("fetching client certificate versions")
 
 	// ErrDeleteClientCertificateVersion represents error when deleting a client certificate version fails.
 	ErrDeleteClientCertificateVersion = errors.New("deleting client certificate version")
@@ -251,8 +318,8 @@ func (v RotateClientCertificateVersionRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(errs)
 }
 
-// Validate validates a GetClientCertificateVersionsRequest.
-func (v GetClientCertificateVersionsRequest) Validate() error {
+// Validate validates a ListClientCertificateVersionsRequest.
+func (v ListClientCertificateVersionsRequest) Validate() error {
 	errs := validation.Errors{
 		"CertificateID": validateCertificateID(v.CertificateID),
 	}
@@ -315,12 +382,12 @@ func (m *mtlskeystore) RotateClientCertificateVersion(ctx context.Context, param
 	return &result, nil
 }
 
-func (m *mtlskeystore) GetClientCertificateVersions(ctx context.Context, params GetClientCertificateVersionsRequest) (*GetClientCertificateVersionsResponse, error) {
+func (m *mtlskeystore) ListClientCertificateVersions(ctx context.Context, params ListClientCertificateVersionsRequest) (*ListClientCertificateVersionsResponse, error) {
 	logger := m.Log(ctx)
 	logger.Debug("Fetching client certificate versions")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: validation failed: %s", ErrGetClientCertificateVersions, err)
+		return nil, fmt.Errorf("%w: validation failed: %s", ErrListClientCertificateVersions, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
@@ -329,7 +396,7 @@ func (m *mtlskeystore) GetClientCertificateVersions(ctx context.Context, params 
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrGetClientCertificateVersions, err)
+		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrListClientCertificateVersions, err)
 	}
 
 	if params.IncludeAssociatedProperties {
@@ -340,13 +407,13 @@ func (m *mtlskeystore) GetClientCertificateVersions(ctx context.Context, params 
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create HTTP request: %s", ErrGetClientCertificateVersions, err)
+		return nil, fmt.Errorf("%w: failed to create HTTP request: %s", ErrListClientCertificateVersions, err)
 	}
 
-	var result GetClientCertificateVersionsResponse
+	var result ListClientCertificateVersionsResponse
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request execution failed: %s", ErrGetClientCertificateVersions, err)
+		return nil, fmt.Errorf("%w: request execution failed: %s", ErrListClientCertificateVersions, err)
 	}
 	defer session.CloseResponseBody(resp)
 

@@ -37,7 +37,7 @@
   * Added support for the Mutual TLS Origin Keystore V1 API.
     * [RotateClientCertificateVersion](https://techdocs.akamai.com/mtls-origin-keystore/reference/post-client-cert-version) - Create a new version in the client certificate.
     * [UploadSignedClientCertificate](https://techdocs.akamai.com/mtls-origin-keystore/reference/post-cert-block) - Upload a signed THIRD_PARTY client certificate.
-    * [GetClientCertificateVersions](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-cert-versions) - Lists versions of the client certificate specified by certificateId.
+    * [ListClientCertificateVersions](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-cert-versions) - Lists versions of the client certificate specified by certificateId.
     * [DeleteClientCertificateVersion](https://techdocs.akamai.com/mtls-origin-keystore/reference/delete-client-certificate) - Delete a client certificate version with the provided certificateId and version.
       
   

@@ -50,7 +50,7 @@ type (
 		// KeySizeInBytes is the private key length of the CA certificate.
 		KeySizeInBytes int64 `json:"keySizeInBytes"`
 		// QualificationDate is the timestamp indicating when the CA certificate's status moved from `QUALIFYING` to `CURRENT`.
-		QualificationDate *time.Time `json:"qualificationDate,omitempty"`
+		QualificationDate *time.Time `json:"qualificationDate"`
 		// SignatureAlgorithm specifies the algorithm that secures the data exchange between the edge server and origin.
 		SignatureAlgorithm string `json:"signatureAlgorithm"`
 		// Status is the status of the CA certificate. Either `QUALIFYING`, `CURRENT`, `PREVIOUS`, or `EXPIRED`.

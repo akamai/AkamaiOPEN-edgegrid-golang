@@ -52,28 +52,26 @@ func TestRotateClientCertificateVersion(t *testing.T) {
 				  "versionGuid": "13d16e57-22fa-4475-af0a-b2b745115128"
 			}`,
 			expectedResponse: &RotateClientCertificateVersionResponse{
-				ClientCertificateVersion: ClientCertificateVersion{
-					Version:     4,
-					VersionGUID: "13d16e57-22fa-4475-af0a-b2b745115128",
-					CertificateBlock: &CertificateBlock{
-						Certificate:  "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
-						KeyAlgorithm: "RSA",
-						TrustChain:   "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
-					},
-					CreatedBy:          "jperez",
-					CreatedDate:        "2024-05-21T04:35:20Z",
-					ExpiryDate:         "2024-08-21T04:35:21Z",
-					IssuedDate:         "2024-05-21T04:35:21Z",
-					Issuer:             "1360 Account CA G366",
-					KeyAlgorithm:       "RSA",
-					KeySizeInBytes:     "2048",
-					SignatureAlgorithm: "SHA256_WITH_RSA",
-					Status:             "DEPLOYMENT_PENDING",
-					Subject:            "/C=US/O=Akamai Technologies/OU=KMI/CN=/",
-					Validation: ValidationResult{
-						Errors:   []ValidationDetail{},
-						Warnings: []ValidationDetail{},
-					},
+				Version:     4,
+				VersionGUID: "13d16e57-22fa-4475-af0a-b2b745115128",
+				CertificateBlock: &CertificateBlock{
+					Certificate:  "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
+					KeyAlgorithm: "RSA",
+					TrustChain:   "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
+				},
+				CreatedBy:          "jperez",
+				CreatedDate:        "2024-05-21T04:35:20Z",
+				ExpiryDate:         "2024-08-21T04:35:21Z",
+				IssuedDate:         "2024-05-21T04:35:21Z",
+				Issuer:             "1360 Account CA G366",
+				KeyAlgorithm:       "RSA",
+				KeySizeInBytes:     "2048",
+				SignatureAlgorithm: "SHA256_WITH_RSA",
+				Status:             "DEPLOYMENT_PENDING",
+				Subject:            "/C=US/O=Akamai Technologies/OU=KMI/CN=/",
+				Validation: ValidationResult{
+					Errors:   []ValidationDetail{},
+					Warnings: []ValidationDetail{},
 				},
 			},
 		},
@@ -133,15 +131,15 @@ func TestRotateClientCertificateVersion(t *testing.T) {
 
 func TestGetClientCertificateVersions(t *testing.T) {
 	tests := map[string]struct {
-		request          GetClientCertificateVersionsRequest
+		request          ListClientCertificateVersionsRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
-		expectedResponse *GetClientCertificateVersionsResponse
+		expectedResponse *ListClientCertificateVersionsResponse
 		withError        func(*testing.T, error)
 	}{
 		"200 - Successful get client certificate versions": {
-			request: GetClientCertificateVersionsRequest{
+			request: ListClientCertificateVersionsRequest{
 				CertificateID: 123,
 			},
 			responseStatus: http.StatusOK,
@@ -173,7 +171,7 @@ func TestGetClientCertificateVersions(t *testing.T) {
 				}
 			  ]
 			}`,
-			expectedResponse: &GetClientCertificateVersionsResponse{
+			expectedResponse: &ListClientCertificateVersionsResponse{
 				Versions: []ClientCertificateVersion{
 					{
 						Version:     4,
@@ -202,7 +200,7 @@ func TestGetClientCertificateVersions(t *testing.T) {
 			},
 		},
 		"200 - Successful get client certificate versions with associated properties": {
-			request: GetClientCertificateVersionsRequest{
+			request: ListClientCertificateVersionsRequest{
 				CertificateID:               123,
 				IncludeAssociatedProperties: true,
 			},
@@ -243,7 +241,7 @@ func TestGetClientCertificateVersions(t *testing.T) {
 				}
 			  ]
 			}`,
-			expectedResponse: &GetClientCertificateVersionsResponse{
+			expectedResponse: &ListClientCertificateVersionsResponse{
 				Versions: []ClientCertificateVersion{
 					{
 						Version:     4,
@@ -280,13 +278,13 @@ func TestGetClientCertificateVersions(t *testing.T) {
 			},
 		},
 		"Validation error - missing CertificateID": {
-			request: GetClientCertificateVersionsRequest{},
+			request: ListClientCertificateVersionsRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "fetching client certificate versions: validation failed: CertificateID: cannot be blank", err.Error())
 			},
 		},
 		"Error Response 404 - Client Certificate not found": {
-			request: GetClientCertificateVersionsRequest{
+			request: ListClientCertificateVersionsRequest{
 				CertificateID: 123,
 			},
 			responseStatus: http.StatusNotFound,
@@ -320,7 +318,7 @@ func TestGetClientCertificateVersions(t *testing.T) {
 			defer mockServer.Close()
 
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetClientCertificateVersions(context.Background(), test.request)
+			result, err := client.ListClientCertificateVersions(context.Background(), test.request)
 
 			if test.withError != nil {
 				test.withError(t, err)

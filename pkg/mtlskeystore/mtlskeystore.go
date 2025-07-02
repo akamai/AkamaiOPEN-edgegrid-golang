@@ -43,10 +43,10 @@ type (
 		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/post-client-cert-version
 		RotateClientCertificateVersion(ctx context.Context, params RotateClientCertificateVersionRequest) (*RotateClientCertificateVersionResponse, error)
 
-		// GetClientCertificateVersions lists versions of the client certificate specified by certificateID.
+		// ListClientCertificateVersions lists versions of the client certificate specified by certificateID.
 		//
 		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-cert-versions
-		GetClientCertificateVersions(ctx context.Context, params GetClientCertificateVersionsRequest) (*GetClientCertificateVersionsResponse, error)
+		ListClientCertificateVersions(ctx context.Context, params ListClientCertificateVersionsRequest) (*ListClientCertificateVersionsResponse, error)
 
 		// DeleteClientCertificateVersion deletes a client certificate version with the provided certificateID and version.
 		//

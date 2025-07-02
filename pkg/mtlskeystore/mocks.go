@@ -47,22 +47,17 @@ func (m *Mock) CreateClientCertificate(ctx context.Context, params CreateClientC
 
 func (m *Mock) PatchClientCertificate(ctx context.Context, params PatchClientCertificateRequest) error {
 	args := m.Called(ctx, params)
-
-	if args.Get(0) == nil {
-		return args.Error(1)
-	}
-
-	return args.Error(1)
+	return args.Error(0)
 }
 
-func (m *Mock) GetClientCertificateVersions(ctx context.Context, params GetClientCertificateVersionsRequest) (*GetClientCertificateVersionsResponse, error) {
+func (m *Mock) ListClientCertificateVersions(ctx context.Context, params ListClientCertificateVersionsRequest) (*ListClientCertificateVersionsResponse, error) {
 	args := m.Called(ctx, params)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
 
-	return args.Get(0).(*GetClientCertificateVersionsResponse), args.Error(1)
+	return args.Get(0).(*ListClientCertificateVersionsResponse), args.Error(1)
 }
 
 func (m *Mock) RotateClientCertificateVersion(ctx context.Context, params RotateClientCertificateVersionRequest) (*RotateClientCertificateVersionResponse, error) {
