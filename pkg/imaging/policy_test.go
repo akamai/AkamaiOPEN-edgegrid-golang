@@ -252,7 +252,7 @@ func TestListPolicies(t *testing.T) {
     ],
     "totalItems": 8
 }`,
-			expectedPath: "/imaging/v2/network/staging/policies/",
+			expectedPath: "/imaging/v2/network/staging/policies",
 			expectedHeaders: map[string][]string{
 				"Contract":   {"3-WNKXX1"},
 				"Policy-Set": {"570f9090-5dbe-11ec-8a0a-71665789c1d8"},
@@ -724,7 +724,7 @@ func TestListPolicies(t *testing.T) {
     ],
     "totalItems": 8
 }`,
-			expectedPath: "/imaging/v2/network/staging/policies/",
+			expectedPath: "/imaging/v2/network/staging/policies",
 			expectedResponse: &ListPoliciesResponse{
 				ItemKind: "POLICY",
 				Items: PolicyOutputs{
@@ -1041,7 +1041,7 @@ func TestListPolicies(t *testing.T) {
 "detail": "A contract must be specified using the Contract header.",
 "problemId": "52a21f40-9861-4d35-95d0-a603c85cb2ad"
 }`,
-			expectedPath: "/imaging/v2/network/staging/policies/",
+			expectedPath: "/imaging/v2/network/staging/policies",
 			withError: &Error{
 				Type:      "https://problems.luna.akamaiapis.net/image-policy-manager/IVM_1004",
 				Title:     "Bad Request",
@@ -1070,7 +1070,7 @@ func TestListPolicies(t *testing.T) {
 "requestId": "124cc33c",
 "requestTime": "2022-01-12T16:53:44Z"
 }`,
-			expectedPath: "/imaging/v2/network/staging/policies/",
+			expectedPath: "/imaging/v2/network/staging/policies",
 			withError: &Error{
 				Type:        "https://problems.luna-dev.akamaiapis.net/-/pep-authn/deny",
 				Title:       "Not authorized",
@@ -1099,7 +1099,7 @@ func TestListPolicies(t *testing.T) {
 				"detail": "User does not have authorization to perform this action.",
 				"problemId": "7d633d60-b120-4f28-a0de-ad86aeaf3c68"
 			}`,
-			expectedPath: "/imaging/v2/network/staging/policies/",
+			expectedPath: "/imaging/v2/network/staging/policies",
 			withError: &Error{
 				Type:      "https://problems.luna.akamaiapis.net/image-policy-manager/IVM_1002",
 				Title:     "Forbidden",

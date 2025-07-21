@@ -44,6 +44,11 @@
 
 
 
+* IVM
+  * Removed `/` at the end of the `ListPolicies`, `ListPolicySets` and `CreatePolicySet` methods URLs ([I#660](https://github.com/akamai/terraform-provider-akamai/issues/660)).
+
+
+
 
 
 

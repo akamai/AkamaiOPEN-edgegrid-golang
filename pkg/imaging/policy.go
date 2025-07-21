@@ -341,7 +341,7 @@ func (i *imaging) ListPolicies(ctx context.Context, params ListPoliciesRequest) 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListPolicies, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/imaging/v2/network/%s/policies/", params.Network)
+	uri := fmt.Sprintf("/imaging/v2/network/%s/policies", params.Network)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {

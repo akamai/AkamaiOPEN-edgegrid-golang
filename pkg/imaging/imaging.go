@@ -18,40 +18,61 @@ type (
 	Imaging interface {
 		// Policies
 
-		// ListPolicies lists all Policies for the given network and an account
+		// ListPolicies lists all Policies for the given network and an account.
+		//
 		// See: https://techdocs.akamai.com/ivm/reference/get-policies
 		ListPolicies(context.Context, ListPoliciesRequest) (*ListPoliciesResponse, error)
 
-		// GetPolicy gets specific policy by PolicyID
+		// GetPolicy gets specific policy by PolicyID.
+		//
+		// See: https://techdocs.akamai.com/ivm/reference/get-policy
 		GetPolicy(context.Context, GetPolicyRequest) (PolicyOutput, error)
 
-		// UpsertPolicy creates or updates the configuration for a policy
+		// UpsertPolicy creates or updates the configuration for a policy.
+		//
+		// See: https://techdocs.akamai.com/ivm/reference/put-policy
 		UpsertPolicy(context.Context, UpsertPolicyRequest) (*PolicyResponse, error)
 
-		// DeletePolicy deletes a policy
+		// DeletePolicy deletes a policy.
+		//
+		// See: https://techdocs.akamai.com/ivm/reference/delete-policy
 		DeletePolicy(context.Context, DeletePolicyRequest) (*PolicyResponse, error)
 
-		// GetPolicyHistory retrieves history of changes for a policy
+		// GetPolicyHistory retrieves history of changes for a policy.
+		//
+		// See: https://techdocs.akamai.com/ivm/reference/get-policy-history
 		GetPolicyHistory(context.Context, GetPolicyHistoryRequest) (*GetPolicyHistoryResponse, error)
 
-		// RollbackPolicy reverts a policy to its previous version and deploys it to the network
+		// RollbackPolicy reverts a policy to its previous version and deploys it to the network.
+		//
+		// See: https://techdocs.akamai.com/ivm/reference/put-rollback-policy
 		RollbackPolicy(ctx context.Context, request RollbackPolicyRequest) (*PolicyResponse, error)
 
 		// PolicySets
 
-		// ListPolicySets lists all PolicySets of specified type for the current account
+		// ListPolicySets lists all PolicySets of specified type for the current account.
+		//
+		// See: https://techdocs.akamai.com/ivm/reference/get-policysets
 		ListPolicySets(context.Context, ListPolicySetsRequest) ([]PolicySet, error)
 
-		// GetPolicySet gets specific PolicySet by PolicySetID
+		// GetPolicySet gets specific PolicySet by PolicySetID.
+		//
+		// See: https://techdocs.akamai.com/ivm/reference/get-policyset
 		GetPolicySet(context.Context, GetPolicySetRequest) (*PolicySet, error)
 
-		// CreatePolicySet creates configuration for an PolicySet
+		// CreatePolicySet creates configuration for an PolicySet.
+		//
+		// See: https://techdocs.akamai.com/ivm/reference/post-policyset
 		CreatePolicySet(context.Context, CreatePolicySetRequest) (*PolicySet, error)
 
-		// UpdatePolicySet creates configuration for an PolicySet
+		// UpdatePolicySet creates configuration for an PolicySet.
+		//
+		// See: https://techdocs.akamai.com/ivm/reference/put-policyset
 		UpdatePolicySet(context.Context, UpdatePolicySetRequest) (*PolicySet, error)
 
-		// DeletePolicySet deletes configuration for an PolicySet
+		// DeletePolicySet deletes configuration for an PolicySet.
+		//
+		// See: https://techdocs.akamai.com/ivm/reference/delete-policyset
 		DeletePolicySet(context.Context, DeletePolicySetRequest) error
 	}
 

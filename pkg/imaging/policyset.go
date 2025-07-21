@@ -190,9 +190,9 @@ func (i *imaging) ListPolicySets(ctx context.Context, params ListPolicySetsReque
 	var uri *url.URL
 	var err error
 	if params.Network != NetworkBoth {
-		uri, err = url.Parse(fmt.Sprintf("/imaging/v2/network/%s/policysets/", params.Network))
+		uri, err = url.Parse(fmt.Sprintf("/imaging/v2/network/%s/policysets", params.Network))
 	} else {
-		uri, err = url.Parse("/imaging/v2/policysets/")
+		uri, err = url.Parse("/imaging/v2/policysets")
 	}
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPolicySets, err)
@@ -267,7 +267,7 @@ func (i *imaging) CreatePolicySet(ctx context.Context, params CreatePolicySetReq
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreatePolicySet, ErrStructValidation, err)
 	}
 
-	uri := "/imaging/v2/policysets/"
+	uri := "/imaging/v2/policysets"
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreatePolicySet, err)
