@@ -10,6 +10,23 @@
     * [RescheduleNamespaceDelete](https://techdocs.akamai.com/edgekv/reference/put-scheduled-delete)
     * [CancelScheduledNamespaceDelete](https://techdocs.akamai.com/edgekv/reference/delete-scheduled-delete)
 
+  * ClientLists
+    * Added support for deactivation per network:
+      * Added a new method [CreateDeactivation](https://techdocs.akamai.com/client-lists/reference/post-activate-list-1).
+      * Added the `DEACTIVATE` value for the `clientlists.ActivationAction` enum.
+      * Added the `PENDING_DEACTIVATION`, `DEACTIVATED` value for the `clientlists.ActivationStatus` enum.
+    * Updated documentation links for methods:
+      * [GetActivation](https://techdocs.akamai.com/client-lists/reference/get-retrieve-activation-status-1)
+      * [GetActivationStatus](https://techdocs.akamai.com/client-lists/reference/get-activation-status-1)
+      * [CreateActivation](https://techdocs.akamai.com/client-lists/reference/post-activate-list-1)
+      * [GetClientLists](https://techdocs.akamai.com/client-lists/reference/get-lists-1)
+      * [GetClientList](https://techdocs.akamai.com/client-lists/reference/get-list-1)
+      * [CreateClientList](https://techdocs.akamai.com/client-lists/reference/post-create-list-1)
+      * [UpdateClientList](https://techdocs.akamai.com/client-lists/reference/put-update-list-1)
+      * [UpdateClientListItems](https://techdocs.akamai.com/client-lists/reference/post-update-items-1)
+      * [DeleteClientList](https://techdocs.akamai.com/client-lists/reference/delete-list-1)
+
+
 
 
 

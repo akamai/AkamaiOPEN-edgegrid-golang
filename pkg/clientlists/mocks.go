@@ -100,3 +100,13 @@ func (p *Mock) CreateActivation(ctx context.Context, params CreateActivationRequ
 
 	return args.Get(0).(*CreateActivationResponse), args.Error(1)
 }
+
+func (p *Mock) CreateDeactivation(ctx context.Context, params CreateDeactivationRequest) (*CreateDeactivationResponse, error) {
+	args := p.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*CreateDeactivationResponse), args.Error(1)
+}
