@@ -36,22 +36,31 @@ type (
 	Certificate struct {
 		// CertificateID is the unique ID of the client certificate.
 		CertificateID int64 `json:"certificateId"`
+
 		// CertificateName is the name of the client certificate.
 		CertificateName string `json:"certificateName"`
+
 		// CreatedBy is the user who created the client certificate.
 		CreatedBy string `json:"createdBy"`
+
 		// CreatedDate is the creation timestamp in ISO-8601 format.
 		CreatedDate time.Time `json:"createdDate"`
+
 		// Geography is the type of network to deploy the client certificate. Either `CORE`, `RUSSIA_AND_CORE`, or `CHINA_AND_CORE`.
-		Geography Geography `json:"geography"`
+		Geography string `json:"geography"`
+
 		// KeyAlgorithm is the cryptographic algorithm used for key generation, either `RSA` or `ECDSA`.
-		KeyAlgorithm CryptographicAlgorithm `json:"keyAlgorithm"`
+		KeyAlgorithm string `json:"keyAlgorithm"`
+
 		// NotificationEmails is the list of email addresses to notify for client certificate related issues.
 		NotificationEmails []string `json:"notificationEmails"`
+
 		// SecureNetwork is the indicator of the network deployment type. Either `STANDARD_TLS` or `ENHANCED_TLS`.
-		SecureNetwork SecureNetwork `json:"secureNetwork"`
+		SecureNetwork string `json:"secureNetwork"`
+
 		// Signer is the signing entity of the client certificate. Either `AKAMAI` or `THIRD_PARTY`.
-		Signer Signer `json:"signer"`
+		Signer string `json:"signer"`
+
 		// Subject of the client certificate.
 		Subject string `json:"subject"`
 	}
@@ -59,7 +68,7 @@ type (
 	// GetClientCertificateRequest is the request to get a client certificate.
 	GetClientCertificateRequest struct {
 		// CertificateID is the unique ID of the client certificate.
-		CertificateID int64 `json:"certificateId"`
+		CertificateID int64
 	}
 
 	// GetClientCertificateResponse is the response from the GetClientCertificate API.
@@ -69,23 +78,32 @@ type (
 	CreateClientCertificateRequest struct {
 		// CertificateName is the name of the client certificate.
 		CertificateName string `json:"certificateName"`
+
 		// ContractID is the contract ID assigned to the client certificate.
 		ContractID string `json:"contractId"`
+
 		// Geography is the type of network to deploy the client certificate. Either `CORE`, `RUSSIA_AND_CORE`, or `CHINA_AND_CORE`.
 		Geography Geography `json:"geography"`
+
 		// GroupID is the group ID assigned to the client certificate.
 		GroupID int64 `json:"groupId"`
+
 		// KeyAlgorithm is the cryptographic algorithm used for key generation, either `RSA` or `ECDSA`. If not provided, the API returns 'RSA' by default. Optional.
 		KeyAlgorithm *CryptographicAlgorithm `json:"keyAlgorithm,omitempty"`
+
 		// NotificationEmails is the list of email addresses to notify client certificate related issues.
 		NotificationEmails []string `json:"notificationEmails"`
+
 		// PreferredCA is the common name of the account CA certificate selected to sign the client certificate.
-		// This field could be `nil` if you want to add this later.
+		// Can be set only when Signer is `AKAMAI`.
 		PreferredCA *string `json:"preferredCa,omitempty"`
+
 		// SecureNetwork is the indicator of the network deployment type. Either `STANDARD_TLS` or `ENHANCED_TLS`.
 		SecureNetwork SecureNetwork `json:"secureNetwork"`
+
 		// Signer is the signing entity of the client certificate. Either `AKAMAI` or `THIRD_PARTY`.
 		Signer Signer `json:"signer"`
+
 		// Subject of the certificate.
 		// When null, the subject is constructed with this format: /C=US/O=Akamai Technologies, Inc./OU={vcdId} {contractId} {groupId}/CN={certificateName}/.
 		Subject *string `json:"subject,omitempty"`
@@ -97,38 +115,48 @@ type (
 	// PatchClientCertificateRequest is the request to update the client certificate's name or notification emails.
 	PatchClientCertificateRequest struct {
 		// CertificateID is the unique ID of the client certificate.
-		CertificateID int64 `json:"certificateId"`
-		Body          PatchClientCertificateRequestBody
+		CertificateID int64
+
+		Body PatchClientCertificateRequestBody
 	}
 
 	// PatchClientCertificateRequestBody is the body of the request to update the client certificate's name or notification emails.
 	PatchClientCertificateRequestBody struct {
 		// CertificateName is the name of the client certificate.
 		// This field could be `nil` if you want to add this later.
-		CertificateName *string `json:"certificateName"`
+		CertificateName *string `json:"certificateName,omitempty"`
+
 		// NotificationEmails is the list of email addresses to notify client certificate related issues.
 		// This field could be `nil` if you want to add this later.
-		NotificationEmails []string `json:"notificationEmails"`
+		NotificationEmails []string `json:"notificationEmails,omitempty"`
 	}
 )
 
 const (
 	// GeographyCore represents the core geography.
 	GeographyCore Geography = "CORE"
+
 	// GeographyRussiaAndCore represents the Russia and core geography.
 	GeographyRussiaAndCore Geography = "RUSSIA_AND_CORE"
+
 	// GeographyChinaAndCore represents the China and core geography.
 	GeographyChinaAndCore Geography = "CHINA_AND_CORE"
+
 	// KeyAlgorithmRSA represents the RSA key algorithm.
 	KeyAlgorithmRSA CryptographicAlgorithm = "RSA"
+
 	// KeyAlgorithmECDSA represents the ECDSA key algorithm.
 	KeyAlgorithmECDSA CryptographicAlgorithm = "ECDSA"
+
 	// SecureNetworkStandardTLS represents the standard TLS secure network.
 	SecureNetworkStandardTLS SecureNetwork = "STANDARD_TLS"
+
 	// SecureNetworkEnhancedTLS represents the enhanced TLS secure network.
 	SecureNetworkEnhancedTLS SecureNetwork = "ENHANCED_TLS"
+
 	// SignerAkamai represents the Akamai signer.
 	SignerAkamai Signer = "AKAMAI"
+
 	// SignerThirdParty represents the third-party signer.
 	SignerThirdParty Signer = "THIRD_PARTY"
 )
@@ -136,10 +164,13 @@ const (
 var (
 	// ErrListClientCertificates is the error returned when the ListClientCertificates API fails.
 	ErrListClientCertificates = errors.New("list client certificates")
+
 	// ErrGetClientCertificate is the error returned when the GetClientCertificate API fails.
 	ErrGetClientCertificate = errors.New("get client certificate")
+
 	// ErrCreateClientCertificate is the error returned when the CreateClientCertificate API fails.
 	ErrCreateClientCertificate = errors.New("create client certificate")
+
 	// ErrPatchClientCertificate is the error returned when the PatchClientCertificate API fails.
 	ErrPatchClientCertificate = errors.New("patch client certificate")
 )
@@ -168,7 +199,7 @@ func (s Signer) Validate() validation.InRule {
 // Validate validates the GetClientCertificateRequest.
 func (r GetClientCertificateRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"CertificateID": validation.Validate(r.CertificateID, validation.Required),
+		"CertificateID": validateCertificateID(r.CertificateID),
 	})
 }
 
@@ -189,7 +220,7 @@ func (r CreateClientCertificateRequest) Validate() error {
 // Validate validates the PatchClientCertificateRequest.
 func (r PatchClientCertificateRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"CertificateID": validation.Validate(r.CertificateID, validation.Required),
+		"CertificateID": validateCertificateID(r.CertificateID),
 		"Body":          validation.Validate(r.Body, validation.Required),
 	})
 }

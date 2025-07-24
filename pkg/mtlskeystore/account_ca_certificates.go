@@ -31,32 +31,46 @@ type (
 	AccountCACertificate struct {
 		// AccountID is the account the CA certificate is under.
 		AccountID string `json:"accountId"`
+
 		// Certificate is the certificate block of the CA certificate.
 		Certificate string `json:"certificate"`
+
 		// CommonName is the common name of the CA certificate.
 		CommonName string `json:"commonName"`
+
 		// CreatedBy is the user who created the CA certificate.
 		CreatedBy string `json:"createdBy"`
+
 		// CreatedDate is the timestamp indicating the CA certificate's creation.
 		CreatedDate time.Time `json:"createdDate"`
+
 		// ExpiryDate is the timestamp indicating when the CA certificate expires.
 		ExpiryDate time.Time `json:"expiryDate"`
+
 		// ID is the unique identifier of the CA certificate.
 		ID int64 `json:"id"`
+
 		// IssuedDate is the timestamp indicating the CA certificate's availability.
 		IssuedDate time.Time `json:"issuedDate"`
+
 		// KeyAlgorithm identifies the CA certificate's encryption algorithm. The only currently supported value is `RSA`.
-		KeyAlgorithm CryptographicAlgorithm `json:"keyAlgorithm"`
+		KeyAlgorithm string `json:"keyAlgorithm"`
+
 		// KeySizeInBytes is the private key length of the CA certificate.
 		KeySizeInBytes int64 `json:"keySizeInBytes"`
+
 		// QualificationDate is the timestamp indicating when the CA certificate's status moved from `QUALIFYING` to `CURRENT`.
 		QualificationDate *time.Time `json:"qualificationDate"`
+
 		// SignatureAlgorithm specifies the algorithm that secures the data exchange between the edge server and origin.
 		SignatureAlgorithm string `json:"signatureAlgorithm"`
+
 		// Status is the status of the CA certificate. Either `QUALIFYING`, `CURRENT`, `PREVIOUS`, or `EXPIRED`.
-		Status CertificateStatus `json:"status"`
+		Status string `json:"status"`
+
 		// Subject is the public key's entity stored in the CA certificate's subject public key field.
 		Subject string `json:"subject"`
+
 		// Version is the version of the CA certificate.
 		Version int64 `json:"version"`
 	}
@@ -68,10 +82,13 @@ type (
 const (
 	// CertificateStatusCurrent represents the certificate status "CURRENT".
 	CertificateStatusCurrent CertificateStatus = "CURRENT"
+
 	// CertificateStatusExpired represents the certificate status "EXPIRED".
 	CertificateStatusExpired CertificateStatus = "EXPIRED"
+
 	// CertificateStatusPrevious represents the certificate status "PREVIOUS".
 	CertificateStatusPrevious CertificateStatus = "PREVIOUS"
+
 	// CertificateStatusQualifying represents the certificate status "QUALIFYING".
 	CertificateStatusQualifying CertificateStatus = "QUALIFYING"
 )

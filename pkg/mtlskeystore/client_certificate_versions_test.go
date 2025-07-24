@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/internal/test"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -60,15 +61,15 @@ func TestRotateClientCertificateVersion(t *testing.T) {
 					TrustChain:   "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
 				},
 				CreatedBy:          "jperez",
-				CreatedDate:        "2024-05-21T04:35:20Z",
-				ExpiryDate:         "2024-08-21T04:35:21Z",
-				IssuedDate:         "2024-05-21T04:35:21Z",
-				Issuer:             "1360 Account CA G366",
+				CreatedDate:        test.NewTimeFromString(t, "2024-05-21T04:35:20Z"),
+				ExpiryDate:         ptr.To(test.NewTimeFromString(t, "2024-08-21T04:35:21Z")),
+				IssuedDate:         ptr.To(test.NewTimeFromString(t, "2024-05-21T04:35:21Z")),
+				Issuer:             ptr.To("1360 Account CA G366"),
 				KeyAlgorithm:       "RSA",
-				KeySizeInBytes:     "2048",
-				SignatureAlgorithm: "SHA256_WITH_RSA",
+				KeySizeInBytes:     ptr.To("2048"),
+				SignatureAlgorithm: ptr.To("SHA256_WITH_RSA"),
 				Status:             "DEPLOYMENT_PENDING",
-				Subject:            "/C=US/O=Akamai Technologies/OU=KMI/CN=/",
+				Subject:            ptr.To("/C=US/O=Akamai Technologies/OU=KMI/CN=/"),
 				Validation: ValidationResult{
 					Errors:   []ValidationDetail{},
 					Warnings: []ValidationDetail{},
@@ -104,27 +105,27 @@ func TestRotateClientCertificateVersion(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			defer mockServer.Close()
 
 			client := mockAPIClient(t, mockServer)
-			result, err := client.RotateClientCertificateVersion(context.Background(), test.request)
+			result, err := client.RotateClientCertificateVersion(context.Background(), tc.request)
 
-			if test.withError != nil {
-				test.withError(t, err)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -182,15 +183,15 @@ func TestGetClientCertificateVersions(t *testing.T) {
 							TrustChain:   "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
 						},
 						CreatedBy:          "jperez",
-						CreatedDate:        "2024-05-21T04:35:20Z",
-						ExpiryDate:         "2024-08-21T04:35:21Z",
-						IssuedDate:         "2024-05-21T04:35:21Z",
-						Issuer:             "1360 Account CA G366",
+						CreatedDate:        test.NewTimeFromString(t, "2024-05-21T04:35:20Z"),
+						ExpiryDate:         ptr.To(test.NewTimeFromString(t, "2024-08-21T04:35:21Z")),
+						IssuedDate:         ptr.To(test.NewTimeFromString(t, "2024-05-21T04:35:21Z")),
+						Issuer:             ptr.To("1360 Account CA G366"),
 						KeyAlgorithm:       "RSA",
-						KeySizeInBytes:     "2048",
-						SignatureAlgorithm: "SHA256_WITH_RSA",
+						KeySizeInBytes:     ptr.To("2048"),
+						SignatureAlgorithm: ptr.To("SHA256_WITH_RSA"),
 						Status:             "DEPLOYMENT_PENDING",
-						Subject:            "/C=US/O=Akamai Technologies/OU=KMI/CN=/",
+						Subject:            ptr.To("/C=US/O=Akamai Technologies/OU=KMI/CN=/"),
 						Validation: ValidationResult{
 							Errors:   []ValidationDetail{},
 							Warnings: []ValidationDetail{},
@@ -252,15 +253,15 @@ func TestGetClientCertificateVersions(t *testing.T) {
 							TrustChain:   "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
 						},
 						CreatedBy:          "jperez",
-						CreatedDate:        "2024-05-21T04:35:20Z",
-						ExpiryDate:         "2024-08-21T04:35:21Z",
-						IssuedDate:         "2024-05-21T04:35:21Z",
-						Issuer:             "1360 Account CA G366",
+						CreatedDate:        test.NewTimeFromString(t, "2024-05-21T04:35:20Z"),
+						ExpiryDate:         ptr.To(test.NewTimeFromString(t, "2024-08-21T04:35:21Z")),
+						IssuedDate:         ptr.To(test.NewTimeFromString(t, "2024-05-21T04:35:21Z")),
+						Issuer:             ptr.To("1360 Account CA G366"),
 						KeyAlgorithm:       "RSA",
-						KeySizeInBytes:     "2048",
-						SignatureAlgorithm: "SHA256_WITH_RSA",
+						KeySizeInBytes:     ptr.To("2048"),
+						SignatureAlgorithm: ptr.To("SHA256_WITH_RSA"),
 						Status:             "DEPLOYMENT_PENDING",
-						Subject:            "/C=US/O=Akamai Technologies/OU=KMI/CN=/",
+						Subject:            ptr.To("/C=US/O=Akamai Technologies/OU=KMI/CN=/"),
 						Validation: ValidationResult{
 							Errors:   []ValidationDetail{},
 							Warnings: []ValidationDetail{},
@@ -306,27 +307,27 @@ func TestGetClientCertificateVersions(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			defer mockServer.Close()
 
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListClientCertificateVersions(context.Background(), test.request)
+			result, err := client.ListClientCertificateVersions(context.Background(), tc.request)
 
-			if test.withError != nil {
-				test.withError(t, err)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -403,27 +404,27 @@ func TestDeleteClientCertificateVersion(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			defer mockServer.Close()
 
 			client := mockAPIClient(t, mockServer)
-			result, err := client.DeleteClientCertificateVersion(context.Background(), test.request)
+			result, err := client.DeleteClientCertificateVersion(context.Background(), tc.request)
 
-			if test.withError != nil {
-				test.withError(t, err)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
@@ -467,7 +468,7 @@ func TestUploadClientCertificateVersion(t *testing.T) {
 				CertificateID: 123,
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "uploading client certificate version: validation failed: Certificate: cannot be blank\nVersion: cannot be blank", err.Error())
+				assert.Equal(t, "uploading client certificate version: validation failed: Body: {\n\tCertificate: cannot be blank\n}\nVersion: cannot be blank", err.Error())
 			},
 		},
 		"Validation error - missing Certificate": {
@@ -476,7 +477,7 @@ func TestUploadClientCertificateVersion(t *testing.T) {
 				Version:       1,
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "uploading client certificate version: validation failed: Certificate: cannot be blank", err.Error())
+				assert.Equal(t, "uploading client certificate version: validation failed: Body: {\n\tCertificate: cannot be blank\n}", err.Error())
 			},
 		},
 		"Validation error - Certificate is empty": {
@@ -488,7 +489,7 @@ func TestUploadClientCertificateVersion(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "uploading client certificate version: validation failed: Certificate: cannot be blank", err.Error())
+				assert.Equal(t, "uploading client certificate version: validation failed: Body: {\n\tCertificate: cannot be blank\n}", err.Error())
 			},
 		},
 		"Validation error - TrustChain provided is empty": {
@@ -501,7 +502,7 @@ func TestUploadClientCertificateVersion(t *testing.T) {
 				},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "uploading client certificate version: validation failed: TrustChain: cannot be blank", err.Error())
+				assert.Equal(t, "uploading client certificate version: validation failed: Body: {\n\tTrustChain: cannot be blank\n}", err.Error())
 			},
 		},
 		"Error Response 404 - Client Certificate not found": {
@@ -608,27 +609,27 @@ func TestUploadClientCertificateVersion(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
-				if test.expectedRequestBody != "" {
+				if tc.expectedRequestBody != "" {
 					body, err := io.ReadAll(r.Body)
 					assert.NoError(t, err)
-					assert.JSONEq(t, test.expectedRequestBody, string(body))
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 			}))
 			defer mockServer.Close()
 
 			client := mockAPIClient(t, mockServer)
-			err := client.UploadSignedClientCertificate(context.Background(), test.request)
+			err := client.UploadSignedClientCertificate(context.Background(), tc.request)
 
-			if test.withError != nil {
-				test.withError(t, err)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 

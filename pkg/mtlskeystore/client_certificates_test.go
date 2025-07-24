@@ -28,7 +28,7 @@ func TestMTLS_Keystore_CreateClientCertificate(t *testing.T) {
 			request: CreateClientCertificateRequest{
 				CertificateName: "test-certificate1",
 				ContractID:      "test-contract",
-				Geography:       GeographyCore,
+				Geography:       "CORE",
 				GroupID:         12345,
 				KeyAlgorithm:    ptr.To(KeyAlgorithmRSA),
 				NotificationEmails: []string{
@@ -79,14 +79,14 @@ func TestMTLS_Keystore_CreateClientCertificate(t *testing.T) {
 				CertificateName: "test-certificate1",
 				CreatedBy:       "jsmith",
 				CreatedDate:     test.NewTimeFromString(t, "2023-01-01T00:00:00Z"),
-				Geography:       GeographyCore,
-				KeyAlgorithm:    KeyAlgorithmRSA,
+				Geography:       "CORE",
+				KeyAlgorithm:    "RSA",
 				NotificationEmails: []string{
 					"jsmith@akamai.com",
 					"jkowalski@akamai.com",
 				},
-				SecureNetwork: SecureNetworkStandardTLS,
-				Signer:        SignerAkamai,
+				SecureNetwork: "STANDARD_TLS",
+				Signer:        "AKAMAI",
 				Subject:       "/C=US/O=Akamai Technologies, Inc./OU=123 test-contract 12345/CN=test-certificate1",
 			},
 		},
@@ -139,14 +139,14 @@ func TestMTLS_Keystore_CreateClientCertificate(t *testing.T) {
 				CertificateName: "test-certificate1",
 				CreatedBy:       "jsmith",
 				CreatedDate:     test.NewTimeFromString(t, "2023-01-01T00:00:00Z"),
-				Geography:       GeographyChinaAndCore,
-				KeyAlgorithm:    KeyAlgorithmRSA,
+				Geography:       "CHINA_AND_CORE",
+				KeyAlgorithm:    "RSA",
 				NotificationEmails: []string{
 					"jsmith@akamai.com",
 					"jkowalski@akamai.com",
 				},
-				SecureNetwork: SecureNetworkEnhancedTLS,
-				Signer:        SignerThirdParty,
+				SecureNetwork: "ENHANCED_TLS",
+				Signer:        "THIRD_PARTY",
 				Subject:       "/C=US/O=Akamai Technologies, Inc./OU=123 test-contract 12345/CN=test-certificate1",
 			},
 		},
@@ -328,8 +328,7 @@ func TestMTLS_Keystore_PatchClientCertificate(t *testing.T) {
 			expectedPath:   "/mtls-origin-keystore/v1/client-certificates/1234",
 			expectedRequestBody: `
 {
-	"certificateName": "test-certificate1",
-	"notificationEmails": null
+	"certificateName": "test-certificate1"
 }`,
 		},
 		"200 OK - only notificationEmails provided": {
@@ -346,7 +345,6 @@ func TestMTLS_Keystore_PatchClientCertificate(t *testing.T) {
 			expectedPath:   "/mtls-origin-keystore/v1/client-certificates/1234",
 			expectedRequestBody: `
 {
-	"certificateName": null,
 	"notificationEmails": [
 			"jsmith@akamai.com"
 	]
