@@ -83,12 +83,6 @@ type (
 		// CertificateBlock creates a Certificate Signing Request (CSR) for new THIRD_PARTY client certificates as the signer.
 		CertificateBlock *CertificateBlock `json:"certificateBlock"`
 
-		// CertificateSubmittedBy represents the user who uploaded the THIRD_PARTY client certificate version.
-		CertificateSubmittedBy *string `json:"certificateSubmittedBy"`
-
-		// CertificateSubmittedDate is an ISO 8601 timestamp indicating when the THIRD_PARTY signer client certificate version was upload.
-		CertificateSubmittedDate *time.Time `json:"certificateSubmittedDate"`
-
 		// CreatedBy represents the user who created the client certificate version.
 		CreatedBy string `json:"createdBy"`
 
@@ -97,12 +91,6 @@ type (
 
 		// CSRBlock creates a Certificate Signing Request (CSR) for new THIRD_PARTY client certificates as the signer.
 		CSRBlock *CSRBlock `json:"csrBlock"`
-
-		// DeleteRequestedDate is an ISO 8601 timestamp indicating the client certificate version's deletion request. Appears as null if not specified.
-		DeleteRequestedDate *time.Time `json:"deleteRequestedDate"`
-
-		// DeployedDate is an ISO 8601 timestamp indicating the client certificate version's activation. Appears as null if not specified.
-		DeployedDate *time.Time `json:"deployedDate"`
 
 		// ExpiryDate is an ISO 8601 timestamp indicating when the client certificate version expires.
 		ExpiryDate *time.Time `json:"expiryDate"`
@@ -122,9 +110,6 @@ type (
 		// KeySizeInBytes represents the private key length of the client certificate version when key algorithm RSA is used.
 		KeySizeInBytes *string `json:"keySizeInBytes"`
 
-		// ScheduledDeleteDate is an ISO 8601 timestamp indicating client certificate version's deletion. Appears as null if not specified.
-		ScheduledDeleteDate *time.Time `json:"scheduledDeleteDate"`
-
 		// SignatureAlgorithm specifies the algorithm that secures the data exchange between the origin server and origin.
 		SignatureAlgorithm *string `json:"signatureAlgorithm"`
 
@@ -133,9 +118,6 @@ type (
 
 		// Subject represents the public key's entity stored in the client certificate version's subject public key field.
 		Subject *string `json:"subject"`
-
-		// Validation checks the versions when uploading THIRD_PARTY signed client certificates to Mutual TLS Origin Keystore.
-		Validation ValidationResult `json:"validation"`
 	}
 
 	// ClientCertificateVersion represents a version of a client certificate.
@@ -169,9 +151,6 @@ type (
 
 		// DeleteRequestedDate is an ISO 8601 timestamp indicating the client certificate version's deletion request. Appears as null if not specified.
 		DeleteRequestedDate *time.Time `json:"deleteRequestedDate"`
-
-		// DeployedDate is an ISO 8601 timestamp indicating the client certificate version's activation. Appears as null if not specified.
-		DeployedDate *time.Time `json:"deployedDate"`
 
 		// ExpiryDate is an ISO 8601 timestamp indicating when the client certificate version expires.
 		ExpiryDate *time.Time `json:"expiryDate"`
@@ -250,12 +229,6 @@ type (
 
 		// Type specifies the error or warning category.
 		Type string `json:"type"`
-	}
-
-	// DeleteClientCertificateVersionResponse represents the response of delete client certificate version request.
-	DeleteClientCertificateVersionResponse struct {
-		// Message indicates the client certificate version's scheduled deletion date, and specifies its reuse.
-		Message string `json:"message"`
 	}
 
 	// AssociatedProperty represents the property associated with the client certificate version.
@@ -430,13 +403,13 @@ func (m *mtlskeystore) ListClientCertificateVersions(ctx context.Context, params
 	return &result, nil
 }
 
-func (m *mtlskeystore) DeleteClientCertificateVersion(ctx context.Context, params DeleteClientCertificateVersionRequest) (*DeleteClientCertificateVersionResponse, error) {
+func (m *mtlskeystore) DeleteClientCertificateVersion(ctx context.Context, params DeleteClientCertificateVersionRequest) error {
 	logger := m.Log(ctx)
 	logger.Debug("Deleting client certificate version")
 
 	err := params.Validate()
 	if err != nil {
-		return nil, fmt.Errorf("%w: validation failed: %s", ErrDeleteClientCertificateVersion, err)
+		return fmt.Errorf("%w: validation failed: %s", ErrDeleteClientCertificateVersion, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
@@ -444,30 +417,25 @@ func (m *mtlskeystore) DeleteClientCertificateVersion(ctx context.Context, param
 		params.CertificateID,
 		params.Version))
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrDeleteClientCertificateVersion, err)
+		return fmt.Errorf("%w: failed to parse URL: %s", ErrDeleteClientCertificateVersion, err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create HTTP request: %s", ErrDeleteClientCertificateVersion, err)
+		return fmt.Errorf("%w: failed to create HTTP request: %s", ErrDeleteClientCertificateVersion, err)
 	}
 
-	var result DeleteClientCertificateVersionResponse
-	resp, err := m.Exec(req, &result)
+	resp, err := m.Exec(req, nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request execution failed: %s", ErrDeleteClientCertificateVersion, err)
+		return fmt.Errorf("%w: request execution failed: %s", ErrDeleteClientCertificateVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 
-	if resp.StatusCode == http.StatusNoContent {
-		return nil, nil
+	if resp.StatusCode != http.StatusNoContent {
+		return m.Error(resp)
 	}
 
-	if resp.StatusCode != http.StatusAccepted {
-		return nil, m.Error(resp)
-	}
-
-	return &result, nil
+	return nil
 }
 
 func (m *mtlskeystore) UploadSignedClientCertificate(ctx context.Context, params UploadSignedClientCertificateRequest) error {

@@ -70,10 +70,6 @@ func TestRotateClientCertificateVersion(t *testing.T) {
 				SignatureAlgorithm: ptr.To("SHA256_WITH_RSA"),
 				Status:             "DEPLOYMENT_PENDING",
 				Subject:            ptr.To("/C=US/O=Akamai Technologies/OU=KMI/CN=/"),
-				Validation: ValidationResult{
-					Errors:   []ValidationDetail{},
-					Warnings: []ValidationDetail{},
-				},
 			},
 		},
 		"Validation error - missing CertificateID": {
@@ -334,35 +330,19 @@ func TestGetClientCertificateVersions(t *testing.T) {
 
 func TestDeleteClientCertificateVersion(t *testing.T) {
 	tests := map[string]struct {
-		request          DeleteClientCertificateVersionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *DeleteClientCertificateVersionResponse
-		withError        func(*testing.T, error)
+		request        DeleteClientCertificateVersionRequest
+		responseStatus int
+		responseBody   string
+		expectedPath   string
+		withError      func(*testing.T, error)
 	}{
-		"202- Successful submitted deletion request for client certificate version": {
-			request: DeleteClientCertificateVersionRequest{
-				CertificateID: 123,
-				Version:       1,
-			},
-			responseStatus: http.StatusAccepted,
-			expectedPath:   "/mtls-origin-keystore/v1/client-certificates/123/versions/1",
-			responseBody: `{
-			  "message": "It's being scheduled to delete on 2024-05-10T00:00:00Z. The delete request will be cancelled automatically if it is used again in any delivery configuration."
-			}`,
-			expectedResponse: &DeleteClientCertificateVersionResponse{
-				Message: "It's being scheduled to delete on 2024-05-10T00:00:00Z. The delete request will be cancelled automatically if it is used again in any delivery configuration.",
-			},
-		},
 		"204- Successful submitted deletion request for client certificate version": {
 			request: DeleteClientCertificateVersionRequest{
 				CertificateID: 123,
 				Version:       1,
 			},
-			responseStatus:   http.StatusNoContent,
-			expectedPath:     "/mtls-origin-keystore/v1/client-certificates/123/versions/1",
-			expectedResponse: nil,
+			responseStatus: http.StatusNoContent,
+			expectedPath:   "/mtls-origin-keystore/v1/client-certificates/123/versions/1",
 		},
 		"Validation error - missing CertificateID": {
 			request: DeleteClientCertificateVersionRequest{
@@ -416,7 +396,7 @@ func TestDeleteClientCertificateVersion(t *testing.T) {
 			defer mockServer.Close()
 
 			client := mockAPIClient(t, mockServer)
-			result, err := client.DeleteClientCertificateVersion(context.Background(), tc.request)
+			err := client.DeleteClientCertificateVersion(context.Background(), tc.request)
 
 			if tc.withError != nil {
 				tc.withError(t, err)
@@ -424,7 +404,6 @@ func TestDeleteClientCertificateVersion(t *testing.T) {
 			}
 
 			require.NoError(t, err)
-			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }

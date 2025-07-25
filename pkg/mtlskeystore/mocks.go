@@ -70,14 +70,10 @@ func (m *Mock) RotateClientCertificateVersion(ctx context.Context, params Rotate
 	return args.Get(0).(*RotateClientCertificateVersionResponse), args.Error(1)
 }
 
-func (m *Mock) DeleteClientCertificateVersion(ctx context.Context, params DeleteClientCertificateVersionRequest) (*DeleteClientCertificateVersionResponse, error) {
+func (m *Mock) DeleteClientCertificateVersion(ctx context.Context, params DeleteClientCertificateVersionRequest) error {
 	args := m.Called(ctx, params)
 
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-
-	return args.Get(0).(*DeleteClientCertificateVersionResponse), args.Error(1)
+	return args.Error(0)
 }
 
 func (m *Mock) UploadSignedClientCertificate(ctx context.Context, params UploadSignedClientCertificateRequest) error {
