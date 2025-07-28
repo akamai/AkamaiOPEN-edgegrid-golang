@@ -223,6 +223,23 @@ func TestMTLS_Keystore_CreateClientCertificate(t *testing.T) {
 				assert.Equal(t, "create client certificate: struct validation: Signer: value 'test-signer' is invalid. Must be one of: 'AKAMAI', 'THIRD_PARTY'", err.Error())
 			},
 		},
+		"validation error - preferredCA in THIRD_PARTY": {
+			request: CreateClientCertificateRequest{
+				CertificateName: "test-certificate1",
+				ContractID:      "test-contract",
+				Geography:       GeographyChinaAndCore,
+				GroupID:         12345,
+				NotificationEmails: []string{
+					"jsmith@akamai.com",
+				},
+				SecureNetwork: SecureNetworkStandardTLS,
+				Signer:        SignerThirdParty,
+				PreferredCA:   ptr.To("some preferred CA"),
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create client certificate: struct validation: PreferredCA: preferredCA can only be set when Signer is 'AKAMAI', but got 'THIRD_PARTY'", err.Error())
+			},
+		},
 		"500 internal server error": {
 			request: CreateClientCertificateRequest{
 				CertificateName: "test-certificate1",

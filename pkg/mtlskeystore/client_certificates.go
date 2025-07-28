@@ -214,6 +214,7 @@ func (r CreateClientCertificateRequest) Validate() error {
 		"NotificationEmails": validation.Validate(r.NotificationEmails, validation.Required),
 		"SecureNetwork":      validation.Validate(r.SecureNetwork, validation.Required, r.SecureNetwork.Validate()),
 		"Signer":             validation.Validate(r.Signer, validation.Required, r.Signer.Validate()),
+		"PreferredCA":        validation.Validate(r.PreferredCA, validation.By(preferredCAValidate(r))),
 	})
 }
 
@@ -254,6 +255,19 @@ func keyAlgorithmValidate(value interface{}) error {
 		return nil
 	default:
 		return fmt.Errorf("value '%s' is invalid. Must be one of: 'RSA', 'ECDSA'", *v)
+	}
+}
+
+func preferredCAValidate(r CreateClientCertificateRequest) func(any) error {
+	return func(preferredCA any) error {
+		value := preferredCA.(*string)
+		if value == nil {
+			return nil
+		}
+		if r.Signer != SignerAkamai {
+			return fmt.Errorf("preferredCA can only be set when Signer is 'AKAMAI', but got '%s'", r.Signer)
+		}
+		return nil
 	}
 }
 
