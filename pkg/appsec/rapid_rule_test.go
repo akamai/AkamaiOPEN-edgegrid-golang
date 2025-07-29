@@ -15,10 +15,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAppSec_ListRapidRule(t *testing.T) {
+func TestAppSec_GetRapidRules(t *testing.T) {
 	result := GetRapidRulesResponse{}
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestRapidRule/RapidRules.json"))
+	respDataExpiry := compactJSON(loadFixtureBytes("testdata/TestRapidRule/RapidRulesExpiryData.json"))
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
@@ -122,6 +123,21 @@ func TestAppSec_ListRapidRule(t *testing.T) {
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "struct validation: ConfigID: cannot be blank\nPolicyID: cannot be blank\nVersion: cannot be blank", err.Error())
 			},
+		},
+		"includeExpiryDetails - true": {
+			params: GetRapidRulesRequest{
+				ConfigID:             111,
+				Version:              1,
+				PolicyID:             "abc",
+				IncludeExpiryDetails: true,
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     respDataExpiry,
+			expectedPath:     "/appsec/v1/configs/111/versions/1/security-policies/abc/rapid-rules?includeExpiryDetails=true",
+			expectedResponse: &result,
 		},
 	}
 

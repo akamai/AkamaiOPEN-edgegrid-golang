@@ -27,6 +27,11 @@
       * [DeleteClientList](https://techdocs.akamai.com/client-lists/reference/delete-list-1)
 
 
+* Appsec
+  * Added `IncludeExpiryDetails` field to struct `GetRapidRulesRequest`.
+  * Added `Expired` and `ExpireInDays` fields to the following structures
+    *`PolicyRapidRule`
+    *`RapidRuleDetails`
 
 
 
@@ -63,10 +68,6 @@
 
 * IVM
   * Removed `/` at the end of the `ListPolicies`, `ListPolicySets` and `CreatePolicySet` methods URLs ([I#660](https://github.com/akamai/terraform-provider-akamai/issues/660)).
-
-
-
-
 
 
 
