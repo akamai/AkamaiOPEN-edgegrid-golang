@@ -231,6 +231,12 @@ type (
 		Type string `json:"type"`
 	}
 
+	// DeleteClientCertificateVersionResponse represents the response of delete client certificate version request.
+	DeleteClientCertificateVersionResponse struct {
+		// Message indicates the client certificate version's scheduled deletion date, and specifies its reuse.
+		Message string `json:"message"`
+	}
+
 	// AssociatedProperty represents the property associated with the client certificate version.
 	AssociatedProperty struct {
 		// AssetID is the unique identifier of the property.
@@ -403,13 +409,13 @@ func (m *mtlskeystore) ListClientCertificateVersions(ctx context.Context, params
 	return &result, nil
 }
 
-func (m *mtlskeystore) DeleteClientCertificateVersion(ctx context.Context, params DeleteClientCertificateVersionRequest) error {
+func (m *mtlskeystore) DeleteClientCertificateVersion(ctx context.Context, params DeleteClientCertificateVersionRequest) (*DeleteClientCertificateVersionResponse, error) {
 	logger := m.Log(ctx)
 	logger.Debug("Deleting client certificate version")
 
 	err := params.Validate()
 	if err != nil {
-		return fmt.Errorf("%w: validation failed: %s", ErrDeleteClientCertificateVersion, err)
+		return nil, fmt.Errorf("%w: validation failed: %s", ErrDeleteClientCertificateVersion, err)
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
@@ -417,25 +423,30 @@ func (m *mtlskeystore) DeleteClientCertificateVersion(ctx context.Context, param
 		params.CertificateID,
 		params.Version))
 	if err != nil {
-		return fmt.Errorf("%w: failed to parse URL: %s", ErrDeleteClientCertificateVersion, err)
+		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrDeleteClientCertificateVersion, err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
 	if err != nil {
-		return fmt.Errorf("%w: failed to create HTTP request: %s", ErrDeleteClientCertificateVersion, err)
+		return nil, fmt.Errorf("%w: failed to create HTTP request: %s", ErrDeleteClientCertificateVersion, err)
 	}
 
-	resp, err := m.Exec(req, nil)
+	var result DeleteClientCertificateVersionResponse
+	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return fmt.Errorf("%w: request execution failed: %s", ErrDeleteClientCertificateVersion, err)
+		return nil, fmt.Errorf("%w: request execution failed: %s", ErrDeleteClientCertificateVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 
-	if resp.StatusCode != http.StatusNoContent {
-		return m.Error(resp)
+	if resp.StatusCode == http.StatusNoContent {
+		return nil, nil
 	}
 
-	return nil
+	if resp.StatusCode != http.StatusAccepted {
+		return nil, m.Error(resp)
+	}
+
+	return &result, nil
 }
 
 func (m *mtlskeystore) UploadSignedClientCertificate(ctx context.Context, params UploadSignedClientCertificateRequest) error {

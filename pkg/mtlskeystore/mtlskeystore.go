@@ -51,7 +51,7 @@ type (
 		// DeleteClientCertificateVersion deletes a client certificate version with the provided certificateID and version.
 		//
 		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/delete-client-certificate
-		DeleteClientCertificateVersion(ctx context.Context, params DeleteClientCertificateVersionRequest) error
+		DeleteClientCertificateVersion(ctx context.Context, params DeleteClientCertificateVersionRequest) (*DeleteClientCertificateVersionResponse, error)
 
 		// UploadSignedClientCertificate uploads a signed THIRD_PARTY client certificate.
 		//
