@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/session"
@@ -61,11 +59,10 @@ type (
 	// GetRapidRulesRequest is used to retrieve the rapid rules for a configuration and policy,
 	// together with their actions, actions lock and condition and exception information.
 	GetRapidRulesRequest struct {
-		ConfigID             int64
-		Version              int
-		PolicyID             string
-		RuleID               *int64
-		IncludeExpiryDetails bool
+		ConfigID int64
+		Version  int
+		PolicyID string
+		RuleID   *int64
 	}
 
 	// GetRapidRulesResponse is returned from a call to GetRapidRules.
@@ -82,8 +79,6 @@ type (
 		Version            int                     `json:"version"`
 		RiskScoreGroups    []string                `json:"riskScoreGroups"`
 		ConditionException *RuleConditionException `json:"conditionException"`
-		Expired            *bool                   `json:"expired"`
-		ExpireInDays       *int64                  `json:"expireInDays"`
 	}
 
 	// GetRapidRulesDefaultActionRequest is used to retrieve the rapid rules default action.
@@ -193,8 +188,6 @@ type (
 		AttackGroup          string                         `json:"attack_group,omitempty"`
 		AttackGroupException *AttackGroupConditionException `json:"attack_group_exception,omitempty"`
 		ConditionException   *RuleConditionException        `json:"condition_exception,omitempty"`
-		Expired              *bool                          `json:"expired,omitempty"`
-		ExpireInDays         *int64                         `json:"expire_in_days,omitempty"`
 	}
 
 	// RuleDefinition represents a rule configuration with an ID, action, action lock and optional condition exception.
@@ -315,23 +308,13 @@ func (p *appsec) GetRapidRules(ctx context.Context, params GetRapidRulesRequest)
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
+	uri := fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rapid-rules",
 		params.ConfigID,
 		params.Version,
-		params.PolicyID))
+		params.PolicyID)
 
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse rapid-rule URL: %s", err)
-	}
-
-	if params.IncludeExpiryDetails {
-		q := uri.Query()
-		q.Add("includeExpiryDetails", strconv.FormatBool(true))
-		uri.RawQuery = q.Encode()
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetRapidRules request: %w", err)
 	}
