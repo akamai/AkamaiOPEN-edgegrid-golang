@@ -35,6 +35,11 @@ type (
 		// See: https://techdocs.akamai.com/client-lists/reference/post-activate-list
 		CreateActivation(ctx context.Context, params CreateActivationRequest) (*CreateActivationResponse, error)
 
+		// CreateDeactivation deactivates a client list
+		//
+		// See: https://techdocs.akamai.com/client-lists/reference/post-activate-list
+		CreateDeactivation(ctx context.Context, params CreateDeactivationRequest) (*CreateDeactivationResponse, error)
+
 		// Lists
 
 		// GetClientLists lists all client lists accessible for an authenticated user

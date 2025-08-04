@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/internal/test"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v11/pkg/ptr"
@@ -158,24 +159,23 @@ func TestListNamespaces(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-
-			result, err := client.ListEdgeKVNamespaces(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.ListEdgeKVNamespaces(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResult, result)
+			assert.Equal(t, tc.expectedResult, result)
 		})
 	}
 }
@@ -282,24 +282,23 @@ func TestGetNamespace(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-
-			result, err := client.GetEdgeKVNamespace(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.GetEdgeKVNamespace(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResult, result)
+			assert.Equal(t, tc.expectedResult, result)
 		})
 	}
 }
@@ -543,24 +542,23 @@ func TestCreateNamespace(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-
-			result, err := client.CreateEdgeKVNamespace(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.CreateEdgeKVNamespace(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResult, result)
+			assert.Equal(t, tc.expectedResult, result)
 		})
 	}
 }
@@ -699,24 +697,23 @@ func TestUpdateNamespace(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-
-			result, err := client.UpdateEdgeKVNamespace(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.UpdateEdgeKVNamespace(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResult, result)
+			assert.Equal(t, tc.expectedResult, result)
 		})
 	}
 }
@@ -826,24 +823,330 @@ func TestDeleteNamespace(t *testing.T) {
 		},
 	}
 
-	for name, test := range tests {
+	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
 			client := mockAPIClient(t, mockServer)
-
-			result, err := client.DeleteEdgeKVNamespace(context.Background(), test.params)
-			if test.withError != nil {
-				test.withError(t, err)
+			result, err := client.DeleteEdgeKVNamespace(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expectedResult, result)
+			assert.Equal(t, tc.expectedResult, result)
+		})
+	}
+}
+
+func TestGetScheduledDeleteTime(t *testing.T) {
+	tests := map[string]struct {
+		params           GetScheduledDeleteTimeRequest
+		withError        func(*testing.T, error)
+		expectedPath     string
+		responseStatus   int
+		responseBody     string
+		expectedResult   *ScheduledDeleteTimeResponse
+		retryAfterHeader string
+	}{
+		"200 OK": {
+			params: GetScheduledDeleteTimeRequest{
+				Network: NamespaceStagingNetwork,
+				Name:    "testNs",
+			},
+			expectedPath:   "/edgekv/v1/networks/staging/namespaces/testNs/status/scheduled-delete",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"scheduledDeleteTime": "2025-06-05T09:58:37.565Z"
+			}`,
+			retryAfterHeader: "209278",
+			expectedResult: &ScheduledDeleteTimeResponse{
+				ScheduledDeleteTime: time.Date(2025, time.June, 5, 9, 58, 37, 565000000, time.UTC),
+				RetryAfterHeader:    "209278",
+			},
+		},
+		"400 bad request - namespace does not exist": {
+			params: GetScheduledDeleteTimeRequest{
+				Network: NamespaceStagingNetwork,
+				Name:    "testNs_not_exist",
+			},
+			withError: func(t *testing.T, err error) {
+				expected := &Error{
+					Detail:    "That resource does not exist or you are missing the 'DELETE_STAGING_NAMESPACE' permission for it.",
+					Instance:  "/edgekv/error-instances/b36d638f-41d4-4582-8e10-ae8d43bc3722",
+					Status:    http.StatusBadRequest,
+					Title:     "Bad Request",
+					Type:      "/edgekv/error-types/edgekv-bad-request",
+					ErrorCode: "EKV_1002",
+					AdditionalDetail: Additional{
+						RequestID: "776a0d334ac1e2d9",
+					},
+				}
+				assert.True(t, errors.Is(err, expected), "want: %s; got: %s", expected, err)
+			},
+			expectedPath:   "/edgekv/v1/networks/staging/namespaces/testNs_not_exist/status/scheduled-delete",
+			responseStatus: http.StatusBadRequest,
+			responseBody: `{
+				"detail": "That resource does not exist or you are missing the 'DELETE_STAGING_NAMESPACE' permission for it.",
+				"errorCode": "EKV_1002",
+				"instance": "/edgekv/error-instances/b36d638f-41d4-4582-8e10-ae8d43bc3722",
+				"status": 400,
+				"title": "Bad Request",
+				"type": "/edgekv/error-types/edgekv-bad-request",
+				"additionalDetail": {
+					"requestId": "776a0d334ac1e2d9"
+				}
+			}`,
+		},
+		"missing required parameters": {
+			params: GetScheduledDeleteTimeRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Network: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.Containsf(t, err.Error(), "Name: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
+		"namespace name too long": {
+			params: GetScheduledDeleteTimeRequest{
+				Network: NamespaceStagingNetwork,
+				Name:    "namespaceNameThatHasMoreThan32Letters",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Name: the length must be between 1 and 32", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, tc.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				if len(tc.retryAfterHeader) > 0 {
+					w.Header().Set("Retry-After", tc.retryAfterHeader)
+				}
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetNamespaceScheduledDeleteTime(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedResult, result)
+		})
+	}
+}
+
+func TestRescheduleNamespaceDelete(t *testing.T) {
+	tests := map[string]struct {
+		params           RescheduleNamespaceDeleteRequest
+		withError        func(*testing.T, error)
+		expectedPath     string
+		responseStatus   int
+		responseBody     string
+		expectedResult   *RescheduleNamespaceDeleteResponse
+		retryAfterHeader string
+	}{
+		"200 reschedule namespace delete": {
+			params: RescheduleNamespaceDeleteRequest{
+				Network: NamespaceStagingNetwork,
+				Name:    "testNs",
+				Body: &ScheduledDeleteTimeRequest{
+					test.NewTimeFromString(t, "2025-06-05T19:58:37.565Z"),
+				},
+			},
+			expectedPath:     "/edgekv/v1/networks/staging/namespaces/testNs/status/scheduled-delete",
+			responseStatus:   http.StatusOK,
+			retryAfterHeader: "209278",
+			responseBody: `{
+				"scheduledDeleteTime": "2025-06-05T19:58:37.565Z"
+			}`,
+			expectedResult: &RescheduleNamespaceDeleteResponse{
+				ScheduledDeleteTime: ScheduledDeleteTimeResponse{
+					ScheduledDeleteTime: test.NewTimeFromString(t, "2025-06-05T19:58:37.565Z"),
+				},
+				RetryAfterHeader: "209278",
+			},
+		},
+		"400 bad request - namespace does not exist": {
+			params: RescheduleNamespaceDeleteRequest{
+				Network: NamespaceStagingNetwork,
+				Name:    "testNs_not_exist",
+				Body: &ScheduledDeleteTimeRequest{
+					test.NewTimeFromString(t, "2025-06-05T19:58:37.565Z"),
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				expected := &Error{
+					Detail:    "That resource does not exist or you are missing the 'DELETE_STAGING_NAMESPACE' permission for it.",
+					Instance:  "/edgekv/error-instances/f5756eb4-b670-44bc-88d7-d7bc7ab45402",
+					Status:    http.StatusBadRequest,
+					Title:     "Bad Request",
+					Type:      "/edgekv/error-types/edgekv-bad-request",
+					ErrorCode: "EKV_1002",
+					AdditionalDetail: Additional{
+						RequestID: "830d86d914fe7e0b",
+					},
+				}
+				assert.True(t, errors.Is(err, expected), "want: %s; got: %s", expected, err)
+			},
+			expectedPath:   "/edgekv/v1/networks/staging/namespaces/testNs_not_exist/status/scheduled-delete",
+			responseStatus: http.StatusBadRequest,
+			responseBody: `{
+				"detail": "That resource does not exist or you are missing the 'DELETE_STAGING_NAMESPACE' permission for it.",
+				"errorCode": "EKV_1002",
+				"instance": "/edgekv/error-instances/f5756eb4-b670-44bc-88d7-d7bc7ab45402",
+				"status": 400,
+				"title": "Bad Request",
+				"type": "/edgekv/error-types/edgekv-bad-request",
+				"additionalDetail": {
+					"requestId": "830d86d914fe7e0b"
+				}
+			}`,
+		},
+		"missing required parameters": {
+			params: RescheduleNamespaceDeleteRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Network: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.Containsf(t, err.Error(), "Name: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.Containsf(t, err.Error(), "Body: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
+		"namespace name too long": {
+			params: RescheduleNamespaceDeleteRequest{
+				Network: NamespaceStagingNetwork,
+				Name:    "namespaceNameThatHasMoreThan32Letters",
+				Body: &ScheduledDeleteTimeRequest{
+					test.NewTimeFromString(t, "2025-06-05T19:58:37.565Z"),
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Name: the length must be between 1 and 32", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, tc.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodPut, r.Method)
+				if len(tc.retryAfterHeader) > 0 {
+					w.Header().Set("Retry-After", tc.retryAfterHeader)
+				}
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.RescheduleNamespaceDelete(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedResult, result)
+		})
+	}
+}
+
+func TestCancelScheduledNamespaceDelete(t *testing.T) {
+	tests := map[string]struct {
+		params         CancelScheduledNamespaceDeleteRequest
+		withError      func(*testing.T, error)
+		expectedPath   string
+		responseStatus int
+		responseBody   string
+	}{
+		"204 cancel scheduled namespace delete": {
+			params: CancelScheduledNamespaceDeleteRequest{
+				Network: NamespaceStagingNetwork,
+				Name:    "testNs",
+			},
+			expectedPath:   "/edgekv/v1/networks/staging/namespaces/testNs/status/scheduled-delete",
+			responseStatus: http.StatusNoContent,
+		},
+		"400 namespace does not exist": {
+			params: CancelScheduledNamespaceDeleteRequest{
+				Network: NamespaceStagingNetwork,
+				Name:    "testNs_not_exist",
+			},
+			withError: func(t *testing.T, err error) {
+				expected := &Error{
+					Detail:    "That resource does not exist or you are missing the 'DELETE_STAGING_NAMESPACE' permission for it.",
+					Instance:  "/edgekv/error-instances/cce5131b-a821-406a-b864-7aa680ba55bc",
+					Status:    http.StatusBadRequest,
+					Title:     "Bad Request",
+					Type:      "/edgekv/error-types/edgekv-bad-request",
+					ErrorCode: "EKV_1002",
+					AdditionalDetail: Additional{
+						RequestID: "f0da6846b5f903e6",
+					},
+				}
+				assert.True(t, errors.Is(err, expected), "want: %s; got: %s", expected, err)
+			},
+			expectedPath:   "/edgekv/v1/networks/staging/namespaces/testNs_not_exist/status/scheduled-delete",
+			responseStatus: http.StatusBadRequest,
+			responseBody: `{
+				"detail": "That resource does not exist or you are missing the 'DELETE_STAGING_NAMESPACE' permission for it.",
+				"errorCode": "EKV_1002",
+				"instance": "/edgekv/error-instances/cce5131b-a821-406a-b864-7aa680ba55bc",
+				"status": 400,
+				"title": "Bad Request",
+				"type": "/edgekv/error-types/edgekv-bad-request",
+				"additionalDetail": {
+					"requestId": "f0da6846b5f903e6"
+				}
+			}`,
+		},
+		"missing required parameters": {
+			params: CancelScheduledNamespaceDeleteRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Network: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.Containsf(t, err.Error(), "Name: cannot be blank", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
+		"namespace name too long": {
+			params: CancelScheduledNamespaceDeleteRequest{
+				Network: NamespaceStagingNetwork,
+				Name:    "namespaceNameThatHasMoreThan32Letters",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Containsf(t, err.Error(), "Name: the length must be between 1 and 32", "want: %s; got: %s", ErrStructValidation, err)
+				assert.True(t, errors.Is(err, ErrStructValidation), "want: %s; got: %s", ErrStructValidation, err)
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, tc.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			err := client.CancelScheduledNamespaceDelete(context.Background(), tc.params)
+			if tc.withError != nil {
+				tc.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }

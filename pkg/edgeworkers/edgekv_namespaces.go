@@ -78,6 +78,60 @@ type (
 		// For synchronous deletion, it will be nil.
 		ScheduledDeleteTime *time.Time `json:"scheduledDeleteTime"`
 	}
+
+	// GetScheduledDeleteTimeRequest represents the request parameters for fetching the scheduled delete time.
+	GetScheduledDeleteTimeRequest struct {
+		// Network specifies the network environment to execute the API request on.
+		Network NamespaceNetwork
+
+		// Name is a unique identifier for each namespace.
+		Name string
+	}
+
+	// ScheduledDeleteTimeResponse represents the response containing the scheduled delete time.
+	ScheduledDeleteTimeResponse struct {
+		// ScheduledDeleteTime is the time when the namespace will be deleted for asynchronous deletion.
+		ScheduledDeleteTime time.Time `json:"scheduledDeleteTime"`
+
+		// RetryAfterHeader is a number of seconds remaining before a namespace delete.
+		RetryAfterHeader string
+	}
+
+	// ScheduledDeleteTimeRequest represents the request containing the scheduled delete time.
+	ScheduledDeleteTimeRequest struct {
+		// ScheduledDeleteTime is the time when the namespace will be deleted.
+		ScheduledDeleteTime time.Time `json:"scheduledDeleteTime"`
+	}
+
+	// RescheduleNamespaceDeleteRequest represents the request parameters for fetching the scheduled delete time.
+	RescheduleNamespaceDeleteRequest struct {
+		// Network specifies the network environment to execute the API request on.
+		Network NamespaceNetwork
+
+		// Name is a unique identifier for each namespace.
+		Name string
+
+		// Body is the time when a namespace will be deleted.
+		Body *ScheduledDeleteTimeRequest
+	}
+
+	// RescheduleNamespaceDeleteResponse represents the response containing the rescheduled delete time.
+	RescheduleNamespaceDeleteResponse struct {
+		// ScheduledDeleteTime is the time when the namespace will be deleted for asynchronous deletion.
+		ScheduledDeleteTime ScheduledDeleteTimeResponse
+
+		// RetryAfterHeader is a number of seconds remaining before a namespace delete.
+		RetryAfterHeader string
+	}
+
+	// CancelScheduledNamespaceDeleteRequest represents the request parameters for deleting the scheduled time for a namespace delete.
+	CancelScheduledNamespaceDeleteRequest struct {
+		// Network specifies the network environment to execute the API request on.
+		Network NamespaceNetwork
+
+		// Name is a unique identifier for each namespace.
+		Name string
+	}
 )
 
 const (
@@ -90,26 +144,23 @@ const (
 // Validate validates ListEdgeKVNamespacesRequest
 func (r ListEdgeKVNamespacesRequest) Validate() error {
 	return validation.Errors{
-		"Network": validation.Validate(r.Network, validation.Required, validation.In(NamespaceStagingNetwork, NamespaceProductionNetwork).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'", r.Network, NamespaceStagingNetwork, NamespaceProductionNetwork))),
+		"Network": validateNetwork(r.Network),
 	}.Filter()
 }
 
 // Validate validates GetEdgeKVNamespaceRequest
 func (r GetEdgeKVNamespaceRequest) Validate() error {
 	return validation.Errors{
-		"Network": validation.Validate(r.Network, validation.Required, validation.In(NamespaceStagingNetwork, NamespaceProductionNetwork).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'", r.Network, NamespaceStagingNetwork, NamespaceProductionNetwork))),
-		"Name": validation.Validate(r.Name, validation.Required, validation.Length(1, 32)),
+		"Network": validateNetwork(r.Network),
+		"Name":    validateName(r.Name),
 	}.Filter()
 }
 
 // Validate validates CreateEdgeKVNamespaceRequest
 func (r CreateEdgeKVNamespaceRequest) Validate() error {
 	return validation.Errors{
-		"Network": validation.Validate(r.Network, validation.Required, validation.In(NamespaceStagingNetwork, NamespaceProductionNetwork).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'", r.Network, NamespaceStagingNetwork, NamespaceProductionNetwork))),
-		"Name":      validation.Validate(r.Name, validation.Required, validation.Length(1, 32)),
+		"Network":   validateNetwork(r.Network),
+		"Name":      validateName(r.Name),
 		"Retention": validation.Validate(r.Retention, validation.By(validateRetention)),
 		"GroupID":   validation.Validate(r.GroupID, validation.By(validateGroupID)),
 	}.Filter()
@@ -118,9 +169,8 @@ func (r CreateEdgeKVNamespaceRequest) Validate() error {
 // Validate validates UpdateEdgeKVNamespaceRequest
 func (r UpdateEdgeKVNamespaceRequest) Validate() error {
 	return validation.Errors{
-		"Network": validation.Validate(r.Network, validation.Required, validation.In(NamespaceStagingNetwork, NamespaceProductionNetwork).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'", r.Network, NamespaceStagingNetwork, NamespaceProductionNetwork))),
-		"Name":      validation.Validate(r.Name, validation.Required, validation.Length(1, 32)),
+		"Network":   validateNetwork(r.Network),
+		"Name":      validateName(r.Name),
 		"Retention": validation.Validate(r.Retention, validation.By(validateRetention)),
 		"GroupID":   validation.Validate(r.GroupID, validation.By(validateGroupID)),
 	}.Filter()
@@ -129,9 +179,33 @@ func (r UpdateEdgeKVNamespaceRequest) Validate() error {
 // Validate validates DeleteEdgeKVNamespaceRequest
 func (r DeleteEdgeKVNamespaceRequest) Validate() error {
 	return validation.Errors{
-		"Network": validation.Validate(r.Network, validation.Required, validation.In(NamespaceStagingNetwork, NamespaceProductionNetwork).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'", r.Network, NamespaceStagingNetwork, NamespaceProductionNetwork))),
-		"Name": validation.Validate(r.Name, validation.Required, validation.Length(1, 32)),
+		"Network": validateNetwork(r.Network),
+		"Name":    validateName(r.Name),
+	}.Filter()
+}
+
+// Validate validates GetScheduledDeleteTimeRequest
+func (r GetScheduledDeleteTimeRequest) Validate() error {
+	return validation.Errors{
+		"Network": validateNetwork(r.Network),
+		"Name":    validateName(r.Name),
+	}.Filter()
+}
+
+// Validate validates RescheduleNamespaceDeleteRequest
+func (r RescheduleNamespaceDeleteRequest) Validate() error {
+	return validation.Errors{
+		"Network": validateNetwork(r.Network),
+		"Name":    validateName(r.Name),
+		"Body":    validation.Validate(r.Body, validation.Required),
+	}.Filter()
+}
+
+// Validate validates CancelScheduledNamespaceDeleteRequest
+func (r CancelScheduledNamespaceDeleteRequest) Validate() error {
+	return validation.Errors{
+		"Network": validateNetwork(r.Network),
+		"Name":    validateName(r.Name),
 	}.Filter()
 }
 
@@ -163,6 +237,24 @@ func validateGroupID(value interface{}) error {
 	return nil
 }
 
+func validateNetwork(network NamespaceNetwork) error {
+	return validation.Validate(
+		network,
+		validation.Required,
+		validation.In(NamespaceStagingNetwork, NamespaceProductionNetwork).Error(
+			fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'", network, NamespaceStagingNetwork, NamespaceProductionNetwork),
+		),
+	)
+}
+
+func validateName(name string) error {
+	return validation.Validate(
+		name,
+		validation.Required,
+		validation.Length(1, 32),
+	)
+}
+
 var (
 	// ErrListEdgeKVNamespace is returned when ListEdgeKVNamespaces fails
 	ErrListEdgeKVNamespace = errors.New("list EdgeKV namespaces")
@@ -174,6 +266,12 @@ var (
 	ErrUpdateEdgeKVNamespace = errors.New("update an EdgeKV namespace")
 	// ErrDeleteEdgeKVNamespace is returned when DeleteEdgeKVNamespace fails
 	ErrDeleteEdgeKVNamespace = errors.New("delete an EdgeKV namespace")
+	// ErrGetScheduledDeleteTime is returned when GetNamespaceScheduledDeleteTime fails
+	ErrGetScheduledDeleteTime = errors.New("get scheduled delete time for an EdgeKV namespace")
+	// ErrRescheduleNamespaceDelete is returned when RescheduleNamespaceDelete fails
+	ErrRescheduleNamespaceDelete = errors.New("change the scheduled time of an EdgeKV namespace delete")
+	// ErrCancelScheduledNamespaceDelete is returned when CancelScheduledNamespaceDelete fails
+	ErrCancelScheduledNamespaceDelete = errors.New("cancel the scheduled namespace delete")
 )
 
 func (e *edgeworkers) ListEdgeKVNamespaces(ctx context.Context, params ListEdgeKVNamespacesRequest) (*ListEdgeKVNamespacesResponse, error) {
@@ -341,4 +439,101 @@ func (e *edgeworkers) DeleteEdgeKVNamespace(ctx context.Context, params DeleteEd
 	}
 
 	return &result, nil
+}
+
+func (e *edgeworkers) GetNamespaceScheduledDeleteTime(ctx context.Context, params GetScheduledDeleteTimeRequest) (*ScheduledDeleteTimeResponse, error) {
+	logger := e.Log(ctx)
+	logger.Debug("GetNamespaceScheduledDeleteTime")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrGetScheduledDeleteTime, ErrStructValidation, err.Error())
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/status/scheduled-delete", params.Network, params.Name))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetScheduledDeleteTime, err.Error())
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetScheduledDeleteTime, err.Error())
+	}
+
+	var result ScheduledDeleteTimeResponse
+	resp, err := e.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrGetScheduledDeleteTime, err.Error())
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrGetScheduledDeleteTime, e.Error(resp))
+	}
+
+	result.RetryAfterHeader = resp.Header.Get("Retry-After")
+	return &result, nil
+}
+
+func (e *edgeworkers) RescheduleNamespaceDelete(ctx context.Context, params RescheduleNamespaceDeleteRequest) (*RescheduleNamespaceDeleteResponse, error) {
+	logger := e.Log(ctx)
+	logger.Debug("RescheduleNamespaceDelete")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrRescheduleNamespaceDelete, ErrStructValidation, err.Error())
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/status/scheduled-delete", params.Network, params.Name))
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrRescheduleNamespaceDelete, err.Error())
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrRescheduleNamespaceDelete, err.Error())
+	}
+
+	var result RescheduleNamespaceDeleteResponse
+	resp, err := e.Exec(req, &result.ScheduledDeleteTime, params.Body)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %s", ErrRescheduleNamespaceDelete, err.Error())
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%s: %w", ErrRescheduleNamespaceDelete, e.Error(resp))
+	}
+
+	result.RetryAfterHeader = resp.Header.Get("Retry-After")
+	return &result, nil
+}
+
+func (e *edgeworkers) CancelScheduledNamespaceDelete(ctx context.Context, params CancelScheduledNamespaceDeleteRequest) error {
+	logger := e.Log(ctx)
+	logger.Debug("CancelScheduledNamespaceDelete")
+
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w: %s", ErrCancelScheduledNamespaceDelete, ErrStructValidation, err.Error())
+	}
+
+	uri, err := url.Parse(fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/status/scheduled-delete", params.Network, params.Name))
+	if err != nil {
+		return fmt.Errorf("%w: failed to parse url: %s", ErrCancelScheduledNamespaceDelete, err.Error())
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	if err != nil {
+		return fmt.Errorf("%w: failed to create request: %s", ErrCancelScheduledNamespaceDelete, err.Error())
+	}
+
+	resp, err := e.Exec(req, nil)
+	if err != nil {
+		return fmt.Errorf("%w: request failed: %s", ErrCancelScheduledNamespaceDelete, err.Error())
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusNoContent {
+		return fmt.Errorf("%s: %w", ErrCancelScheduledNamespaceDelete, e.Error(resp))
+	}
+
+	return nil
 }

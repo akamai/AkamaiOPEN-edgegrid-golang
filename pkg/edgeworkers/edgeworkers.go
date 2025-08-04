@@ -145,6 +145,21 @@ type (
 		// See: https://techdocs.akamai.com/edgekv/reference/delete-namespace
 		DeleteEdgeKVNamespace(context.Context, DeleteEdgeKVNamespaceRequest) (*DeleteEdgeKVNamespacesResponse, error)
 
+		// GetNamespaceScheduledDeleteTime gets the scheduled time for a namespace delete.
+		//
+		// See: https://techdocs.akamai.com/edgekv/reference/get-scheduled-delete
+		GetNamespaceScheduledDeleteTime(context.Context, GetScheduledDeleteTimeRequest) (*ScheduledDeleteTimeResponse, error)
+
+		// RescheduleNamespaceDelete changes the scheduled time of a namespace delete.
+		//
+		// See: https://techdocs.akamai.com/edgekv/reference/put-scheduled-delete
+		RescheduleNamespaceDelete(context.Context, RescheduleNamespaceDeleteRequest) (*RescheduleNamespaceDeleteResponse, error)
+
+		// CancelScheduledNamespaceDelete deletes the scheduled time for a namespace delete, effectively canceling the deletion.
+		//
+		// See: https://techdocs.akamai.com/edgekv/reference/delete-scheduled-delete
+		CancelScheduledNamespaceDelete(context.Context, CancelScheduledNamespaceDeleteRequest) error
+
 		// EdgeWorkerIDs
 
 		// GetEdgeWorkerID gets details for a specific EdgeWorkerID

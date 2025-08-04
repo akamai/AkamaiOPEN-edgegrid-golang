@@ -44,8 +44,14 @@ type (
 		ActivationParams
 	}
 
+	// CreateDeactivationRequest contains deactivation request parameters for CreateDeactivation method
+	CreateDeactivationRequest CreateActivationRequest
+
 	// CreateActivationResponse contains activation response
 	CreateActivationResponse GetActivationStatusResponse
+
+	// CreateDeactivationResponse contains deactivation response
+	CreateDeactivationResponse CreateActivationResponse
 
 	// GetActivationStatusRequest contains request params for GetActivationStatus
 	GetActivationStatusRequest struct {
@@ -90,6 +96,8 @@ const (
 	PendingActivation ActivationStatus = "PENDING_ACTIVATION"
 	// Active activation status value ACTIVE
 	Active ActivationStatus = "ACTIVE"
+	// Deactivated activation status value DEACTIVATED
+	Deactivated ActivationStatus = "DEACTIVATED"
 	// Modified activation status value MODIFIED
 	Modified ActivationStatus = "MODIFIED"
 	// PendingDeactivation activation status value PENDING_DEACTIVATION
@@ -99,6 +107,8 @@ const (
 
 	// Activate action value ACTIVATE
 	Activate ActivationAction = "ACTIVATE"
+	// Deactivate action value DEACTIVATE
+	Deactivate ActivationAction = "DEACTIVATE"
 )
 
 func (v GetActivationRequest) validate() error {
@@ -109,22 +119,28 @@ func (v GetActivationRequest) validate() error {
 
 func (v GetActivationStatusRequest) validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"ListID": validation.Validate(v.ListID, validation.Required),
-		"Network": validation.Validate(v.Network,
-			validation.Required,
-			validation.In(Staging, Production),
-		),
+		"ListID":  validation.Validate(v.ListID, validation.Required),
+		"Network": validation.Validate(v.Network, validation.Required),
 	})
 }
 
 func (v CreateActivationRequest) validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"ListID": validation.Validate(v.ListID, validation.Required),
-		"Network": validation.Validate(v.Network,
-			validation.Required,
-			validation.In(Staging, Production),
-		),
+		"ListID":  validation.Validate(v.ListID, validation.Required),
+		"Network": validation.Validate(v.Network, validation.Required),
 	})
+}
+
+func (v CreateDeactivationRequest) validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"ListID":  validation.Validate(v.ListID, validation.Required),
+		"Network": validation.Validate(v.Network, validation.Required),
+	})
+}
+
+// Validate validates ActivationNetwork
+func (v ActivationNetwork) Validate() error {
+	return validation.In(Staging, Production).Validate(v)
 }
 
 func (p *clientlists) CreateActivation(ctx context.Context, params CreateActivationRequest) (*CreateActivationResponse, error) {
@@ -147,6 +163,36 @@ func (p *clientlists) CreateActivation(ctx context.Context, params CreateActivat
 	resp, err := p.Exec(req, &rval, params.ActivationParams)
 	if err != nil {
 		return nil, fmt.Errorf("create activation request failed: %s", err.Error())
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, p.Error(resp)
+	}
+
+	return &rval, nil
+}
+
+func (p *clientlists) CreateDeactivation(ctx context.Context, params CreateDeactivationRequest) (*CreateDeactivationResponse, error) {
+	logger := p.Log(ctx)
+	logger.Debug("Create Deactivation")
+
+	if err := params.validate(); err != nil {
+		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
+	}
+
+	uri := fmt.Sprintf("/client-list/v1/lists/%s/activations", params.ListID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("create 'create deactivation' request failed: %s", err.Error())
+	}
+
+	var rval CreateDeactivationResponse
+
+	resp, err := p.Exec(req, &rval, params.ActivationParams)
+	if err != nil {
+		return nil, fmt.Errorf("create deactivation request failed: %s", err.Error())
 	}
 	defer session.CloseResponseBody(resp)
 

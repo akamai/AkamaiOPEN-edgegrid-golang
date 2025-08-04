@@ -1,5 +1,48 @@
 # RELEASE NOTES
 
+## 11.1.0 (Aug 4, 2025)
+
+### FEATURES/ENHANCEMENTS:
+
+* ClientLists
+  * Added support for deactivation per network:
+    * [CreateDeactivation](https://techdocs.akamai.com/client-lists/reference/post-activate-list-1) - Deactivates a client list on the staging or production network.
+    * Added the `DEACTIVATE` value to the `clientlists.ActivationAction` enum.
+    * Added the `PENDING_DEACTIVATION` and `DEACTIVATED` values to the `clientlists.ActivationStatus` enum.
+  * Updated documentation links for these methods:
+    * [GetActivation](https://techdocs.akamai.com/client-lists/reference/get-retrieve-activation-status)
+    * [GetActivationStatus](https://techdocs.akamai.com/client-lists/reference/get-activation-status)
+    * [CreateActivation](https://techdocs.akamai.com/client-lists/reference/post-activate-list)
+    * [GetClientLists](https://techdocs.akamai.com/client-lists/reference/get-lists)
+    * [GetClientList](https://techdocs.akamai.com/client-lists/reference/get-list)
+    * [CreateClientList](https://techdocs.akamai.com/client-lists/reference/post-create-list)
+    * [UpdateClientList](https://techdocs.akamai.com/client-lists/reference/put-update-list)
+    * [UpdateClientListItems](https://techdocs.akamai.com/client-lists/reference/post-update-items)
+    * [DeleteClientList](https://techdocs.akamai.com/client-lists/reference/delete-list)
+
+* EdgeKV
+  * Added new methods:
+    * [GetNamespaceScheduledDeleteTime](https://techdocs.akamai.com/edgekv/reference/get-scheduled-delete) - Displays the scheduled deletion time for the namespace.
+    * [RescheduleNamespaceDelete](https://techdocs.akamai.com/edgekv/reference/put-scheduled-delete) - Reschedules the namespace deletion time.
+    * [CancelScheduledNamespaceDelete](https://techdocs.akamai.com/edgekv/reference/delete-scheduled-delete) - Cancels the scheduled namespace deletion by removing the pending delete operation, effectively aborting the deletion process.
+
+* mTLS Keystore
+  * Added support for the Mutual TLS Origin Keystore API.
+    * [CreateClientCertificate](https://techdocs.akamai.com/mtls-origin-keystore/reference/post-client-cert) - Creates a client certificate with the provided name.
+    * [GetClientCertificate](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-cert) - Gets details of a client certificate.
+    * [PatchClientCertificate](https://techdocs.akamai.com/mtls-origin-keystore/reference/patch-client-cert) - Updates the client certificate's name or notification emails.
+    * [DeleteClientCertificateVersion](https://techdocs.akamai.com/mtls-origin-keystore/reference/delete-client-certificate) - Deletes a client certificate version with the provided certificateId and version.
+    * [ListClientCertificates](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-certs) - Lists client certificates under the account.
+    * [ListAccountCACertificates](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-ca-certs) - Lists CA certificates under the account.
+    * [UploadSignedClientCertificate](https://techdocs.akamai.com/mtls-origin-keystore/reference/post-cert-block) - Uploads a signed `THIRD_PARTY` client certificate.
+    * [RotateClientCertificateVersion](https://techdocs.akamai.com/mtls-origin-keystore/reference/post-client-cert-version) - Creates a new version for the client certificate.
+    * [ListClientCertificateVersions](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-cert-versions) - Lists versions of the client certificate for a specified `certificateID`.
+
+### BUG FIXES:
+
+* IVM
+  * Removed `/` at the end of the `ListPolicies`, `ListPolicySets`, and `CreatePolicySet` method URLs ([#660](https://github.com/akamai/terraform-provider-akamai/issues/660)).
+
 ## 11.0.0 (May 26, 2025)
 
 ### BREAKING CHANGES:

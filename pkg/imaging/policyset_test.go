@@ -60,7 +60,7 @@ func TestListPolicySets(t *testing.T) {
         "lastModified": "2021-12-15 15:51:54+0000"
     }
 ]`,
-			expectedPath: "/imaging/v2/policysets/",
+			expectedPath: "/imaging/v2/policysets",
 			expectedResponse: []PolicySet{
 				{
 					Name:         "terraform_beta_v2",
@@ -122,7 +122,7 @@ func TestListPolicySets(t *testing.T) {
         "lastModified": "2021-12-15 15:51:54+0000"
     }
 ]`,
-			expectedPath: "/imaging/v2/network/staging/policysets/",
+			expectedPath: "/imaging/v2/network/staging/policysets",
 			expectedResponse: []PolicySet{
 				{
 					Name:         "terraform_beta_v2",
@@ -157,7 +157,7 @@ func TestListPolicySets(t *testing.T) {
 "detail": "A contract must be specified using the ContractID header.",
 "problemId": "52a21f40-9861-4d35-95d0-a603c85cb2ad"
 }`,
-			expectedPath: "/imaging/v2/policysets/",
+			expectedPath: "/imaging/v2/policysets",
 			withError: &Error{
 				Type:      "https://problems.luna.akamaiapis.net/image-policy-manager/IVM_1004",
 				Title:     "Bad Request",
@@ -184,7 +184,7 @@ func TestListPolicySets(t *testing.T) {
 "requestId": "124cc33c",
 "requestTime": "2022-01-12T16:53:44Z"
 }`,
-			expectedPath: "/imaging/v2/policysets/",
+			expectedPath: "/imaging/v2/policysets",
 			withError: &Error{
 				Type:        "https://problems.luna-dev.akamaiapis.net/-/pep-authn/deny",
 				Title:       "Not authorized",
@@ -216,7 +216,7 @@ func TestListPolicySets(t *testing.T) {
     "requestId": "1254027a",
     "requestTime": "2022-01-12T16:56:56Z"
 }`,
-			expectedPath: "/imaging/v2/policysets/",
+			expectedPath: "/imaging/v2/policysets",
 			withError: &Error{
 				Type:        "https://problems.luna-dev.akamaiapis.net/-/pep-authz/deny",
 				Title:       "Forbidden",
@@ -443,7 +443,7 @@ func TestCreatePolicySet(t *testing.T) {
 				"user": "ftzgvvigljhoq5ia",
 				"lastModified": "2022-01-14 09:34:25+0000"
 			}`,
-			expectedPath: "/imaging/v2/policysets/",
+			expectedPath: "/imaging/v2/policysets",
 			expectedResponse: &PolicySet{
 				Name:         "my_example_token",
 				ID:           "29467ef0-751d-11ec-7a0a-71665789c1d8",
@@ -481,7 +481,7 @@ func TestCreatePolicySet(t *testing.T) {
 				"user": "ftzgvvigljhoq5ia",
 				"lastModified": "2022-01-14 09:34:25+0000"
 			}`,
-			expectedPath: "/imaging/v2/policysets/",
+			expectedPath: "/imaging/v2/policysets",
 			expectedResponse: &PolicySet{
 				Name:         "my_example_token",
 				ID:           "29467ef0-751d-11ec-7a0a-71665789c1d8",
@@ -511,7 +511,7 @@ func TestCreatePolicySet(t *testing.T) {
 					"detail": "A contract must be specified using the ContractID header.",
 					"problemId": "5ea0274b-2322-4a0a-92ee-fabaa5a84d41"
 				}`,
-			expectedPath: "/imaging/v2/policysets/",
+			expectedPath: "/imaging/v2/policysets",
 			withError: &Error{
 				Type:      "https://problems.luna.akamaiapis.net/image-policy-manager/IVM_1004",
 				Title:     "Bad Request",
