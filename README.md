@@ -780,6 +780,7 @@ To see what methods you can use within a given package, go to the `pkg` director
 | [Identity and Access Management](./pkg/iam/)  | Create users and groups, and define policies that manage access to your Akamai applications.         |
 | [Image and Video Manager](./pkg/imaging/)     | Automate image and video delivery optimizations for your website visitors.                           |
 | [Log](./pkg/log/)                             | Add the structured logging interface.                           |
+| [mTLS Origin Keystore](./pkg/mtlskeystore/)   | Securely manage client certificates to establish a mutual authentication (mTLS) session between Akamai edge servers and the origin.                           |
 | [Network Lists](./pkg/networklists/)          | Automate the creation, deployment, and management of lists used in ​Akamai​ security products.       |
 | [Pointer Record](./pkg/ptr/)                  | Create pointers to values of any type.  |
 | [Property Manager](./pkg/papi/)               | Define rules and behaviors that govern your website delivery based on match criteria.                |
