@@ -1,0 +1,118 @@
+@Library('devprod-cloudbees-shared-libraries') _
+
+pipeline {
+    agent any
+    environment {
+        BIN = "/go/bin"
+        GO  = 'go-proxy'
+        V   = '1'
+    }
+    stages {
+        stage('Workspace Cleanup') {
+            steps {
+                sh '''
+                    set -e
+                    rm -rf proxy
+                    git clean -fdx
+                '''
+            }
+        }
+        stage('Certificate Setup') {
+            steps {
+                sh '''
+                    set -e
+                    mkdir -p certs
+                    cat ${DEVPROD_SSL_CERT_ARTIFACTORY_DIR}/devprod_ro.crt > certs/crt.pem
+                    cat ${DEVPROD_SSL_CERT_ARTIFACTORY_DIR}/devprod_ro.key > certs/key.pem
+                    cat ${DEVPROD_SSL_CERT_ARTIFACTORY_DIR}/devprod_ro.ca > certs/ca.pem
+                '''
+            }
+        }
+        stage('Tooling Source Checkout') {
+            steps {
+                sh 'git clone https://git.source.akamai.com/scm/devexp/proxy.git'
+            }
+        }
+        stage('CI Image Build') {
+            steps {
+                sh 'docker build -t akamaiopen-edgegrid-golang/base .'
+            }
+        }
+        stage('Code Quality Checks') {
+            agent {
+                docker {
+                    image 'akamaiopen-edgegrid-golang/base'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    set -e
+                    make tidy
+                    make fmt-check
+                    make lint
+                '''
+            }
+        }
+        stage('Tests and Coverage') {
+            agent {
+                docker {
+                    image 'akamaiopen-edgegrid-golang/base'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    set -e
+                    make test-verbose
+                    make create-junit-report
+                    make create-coverage-files
+                '''
+                recordCoverage(
+                    tools: [[
+                                parser : 'COBERTURA',
+                                pattern: 'test/coverage/coverage.xml'
+                            ]],
+                    sourceDirectories: [[path: '.']]
+                )
+            }
+        }
+        // stage('Sonar Analysis') {
+        //     steps {
+        //         script {
+        //             runStaticCodeAnalysis(
+        //                 languagesUsed: 'go',
+        //                 sonarPropertiesFilePath: '.config/sonarqube/sonar-project.properties'
+        //             )
+        //         }
+        //     }
+        // }
+        stage('Black Duck Scan') {
+            steps {
+                script {
+                    runOsvScan(
+                        projectName: 'akamaiopen-edgegrid-golang',
+                        projectVersion: '12.3.0',
+                        tokenCredsId: 'devexp_manual_vuln_scan_token',
+                        blackDuckUrl: 'https://manual.vuln.akamai.com',
+                        configFilePath: '.config/blackduck/blackduck.properties'
+                    )
+                }
+            }
+        }
+    }
+    post {
+        always {
+            junit testResults: 'test/tests.xml',
+                allowEmptyResults: false,
+                healthScaleFactor: 1.0
+            archiveArtifacts artifacts: 'test/**',
+                allowEmptyArchive: true,
+                fingerprint: true
+            script {
+                emailNotify()
+            }
+            deleteDir()
+        }
+    }
+}

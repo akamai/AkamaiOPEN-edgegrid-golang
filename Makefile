@@ -2,11 +2,11 @@ MODULE   = $(shell $(GO) list -m)
 COMMIT_SHA=$(shell git rev-parse --short HEAD)
 VERSION ?= $(shell git describe --tags --always | grep '^v\d' || \
 			echo $(FILEVERSION)-$(COMMIT_SHA))
-BIN      = $(CURDIR)/bin
-GO      = go
+BIN     ?= $(CURDIR)/bin
+GO      ?= go
 GOMODTIDY = $(GO) mod tidy
 TIMEOUT = 15
-V = 0
+V ?= 0
 Q = $(if $(filter 1,$V),,@)
 M = $(shell echo ">")
 
@@ -79,11 +79,11 @@ create-coverage-files: $(CURDIR)/test/coverage/profile.out | $(GOCOVER_COBERTURA
 
 .PHONY: lint
 lint: | $(GOLANGCILINT) ; $(info $(M) Running golangci-lint...) @
-	$Q $(BIN)/golangci-lint run
+	$Q $(BIN)/golangci-lint run --timeout=10m
 
 .PHONY: tidy
 tidy: ; $(info $(M) Running go mod tidy...) @
-	@$(GOMODTIDY)
+	$Q $(GOMODTIDY)
 
 .PHONY: fmt
 fmt:  | $(GOIMPORTS); $(info $(M) Running goimports...) @ ## Run goimports on all source files
