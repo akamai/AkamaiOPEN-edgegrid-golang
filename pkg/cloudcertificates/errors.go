@@ -52,7 +52,7 @@ var (
 )
 
 type (
-	// Error is a CloudCertificates error interface.
+	// Error represents an error returned by the Cloud Certificates API.
 	Error struct {
 		Type     string `json:"type"`
 		Title    string `json:"title"`
