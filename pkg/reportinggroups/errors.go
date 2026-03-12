@@ -1,3 +1,4 @@
+// Package reportinggroups provides access to the Reporting Groups API.
 package reportinggroups
 
 import (
@@ -14,6 +15,18 @@ import (
 var (
 	// ErrStructValidation is returned when given struct validation failed.
 	ErrStructValidation = errors.New("struct validation")
+
+	// ErrCreateReportingGroup is returned when there is an error creating a reporting group.
+	ErrCreateReportingGroup = errors.New("create reporting group")
+
+	// ErrGetReportingGroup is returned when there is an error getting a reporting group.
+	ErrGetReportingGroup = errors.New("get reporting group")
+
+	// ErrUpdateReportingGroup is returned when there is an error updating a reporting group.
+	ErrUpdateReportingGroup = errors.New("update reporting group")
+
+	// ErrDeleteReportingGroup is returned when there is an error deleting a reporting group.
+	ErrDeleteReportingGroup = errors.New("delete reporting group")
 )
 
 type (

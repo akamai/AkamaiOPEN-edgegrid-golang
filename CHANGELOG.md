@@ -28,6 +28,12 @@
   * Relaxed validation of the `UpdatePenaltyBoxRequest` to allow `deny_custom_{custom_deny_id}` value.
   * Added `ApplyAccountProtectionControls` field to the `UpdatePolicyProtectionsRequest` structure.
 
+* Reporting Groups
+    * Added support for the Reporting Groups API (Beta):
+        * [CreateReportingGroup](https://techdocs.akamai.com/cp-codes/reference/post-reporting-groups) - Creates a new reporting group.
+        * [GetReportingGroup](https://techdocs.akamai.com/cp-codes/reference/get-reporting-group) - Gets details of a specific reporting group.
+        * [UpdateReportingGroup](https://techdocs.akamai.com/cp-codes/reference/put-reporting-group) - Updates an existing reporting group.
+        * [DeleteReportingGroup](https://techdocs.akamai.com/cp-codes/reference/delete-reporting-group) - Deletes a reporting group.
 
 
 * Edgeworkers

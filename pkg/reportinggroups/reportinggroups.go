@@ -2,12 +2,33 @@
 package reportinggroups
 
 import (
+	"context"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 )
 
 type (
 	// ReportingGroups is the interface for the Reporting Groups API.
 	ReportingGroups interface {
+		// CreateReportingGroup creates a new reporting group.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/post-reporting-groups
+		CreateReportingGroup(ctx context.Context, params CreateReportingGroupRequest) (*CreateReportingGroupResponse, error)
+
+		// GetReportingGroup retrieves a reporting group by its ID.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/get-reporting-group
+		GetReportingGroup(ctx context.Context, params GetReportingGroupsRequest) (*GetReportingGroupResponse, error)
+
+		// UpdateReportingGroup updates an existing reporting group.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/put-reporting-group
+		UpdateReportingGroup(ctx context.Context, params UpdateReportingGroupRequest) (*UpdateReportingGroupResponse, error)
+
+		// DeleteReportingGroup deletes a reporting group by its ID.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/delete-reporting-group
+		DeleteReportingGroup(ctx context.Context, params DeleteReportingGroupRequest) error
 	}
 
 	reportinggroups struct {
