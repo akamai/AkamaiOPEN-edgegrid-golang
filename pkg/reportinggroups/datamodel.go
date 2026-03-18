@@ -62,17 +62,8 @@ type (
 
 	// CreateReportingGroupResponse is the response body for creating a reporting group.
 	CreateReportingGroupResponse struct {
-		// A group that controls access to specific CP codes.
-		AccessGroup AccessGroupModel `json:"accessGroup"`
-
-		// A collection of contracts and CP codes assigned to the reporting group.
-		Contracts []ContractModel `json:"contracts"`
-
-		// Identifies the reporting group.
-		ReportingGroupID int64 `json:"reportingGroupId"`
-
-		// The descriptive label for the reporting group.
-		ReportingGroupName string `json:"reportingGroupName"`
+		// ReportingGroupItem contains detailed information about the created reporting group.
+		ReportingGroupItem
 
 		// ResourceLimits contains information about reporting groups limits.
 		ResourceLimits ResourceLimitsMetadata
@@ -94,19 +85,7 @@ type (
 	}
 
 	// GetReportingGroupResponse is the response body for getting a reporting group.
-	GetReportingGroupResponse struct {
-		// A group that controls access to specific CP codes.
-		AccessGroup AccessGroupModel `json:"accessGroup"`
-
-		// A collection of contracts and CP codes assigned to the reporting group.
-		Contracts []ContractModel `json:"contracts"`
-
-		// Identifies the reporting group.
-		ReportingGroupID int64 `json:"reportingGroupId"`
-
-		// The descriptive label for the reporting group.
-		ReportingGroupName string `json:"reportingGroupName"`
-	}
+	GetReportingGroupResponse ReportingGroupItem
 
 	// UpdateReportingGroupRequest is the request body for updating a reporting group.
 	UpdateReportingGroupRequest struct {
@@ -121,7 +100,37 @@ type (
 	}
 
 	// UpdateReportingGroupResponse is the response body for updating a reporting group.
-	UpdateReportingGroupResponse struct {
+	UpdateReportingGroupResponse ReportingGroupItem
+
+	// DeleteReportingGroupRequest is the request body for deleting a reporting group.
+	DeleteReportingGroupRequest struct {
+		// The identifier for the reporting group.
+		ReportingGroupID int64 `json:"reportingGroupId"`
+	}
+
+	// ListReportingGroupsRequest is the request for listing reporting groups.
+	ListReportingGroupsRequest struct {
+		// Identifies the contract to filter data by.
+		ContractID string `json:"contractId,omitempty"`
+
+		// Identifies the access group to filter data by.
+		GroupID int64 `json:"groupId,omitempty"`
+
+		// The name of the reporting group to filter data by.
+		ReportingGroupName string `json:"reportingGroupName,omitempty"`
+
+		// Identifies the CP code to filter data by.
+		CpCodeID string `json:"cpcodeId,omitempty"`
+	}
+
+	// ListReportingGroupsResponse is the response body for listing reporting groups.
+	ListReportingGroupsResponse struct {
+		// A set of reporting groups available for your contract.
+		Groups []ReportingGroupItem `json:"groups"`
+	}
+
+	// ReportingGroupItem is the model for a reporting group item in the list response.
+	ReportingGroupItem struct {
 		// A group that controls access to specific CP codes.
 		AccessGroup AccessGroupModel `json:"accessGroup"`
 
@@ -135,10 +144,25 @@ type (
 		ReportingGroupName string `json:"reportingGroupName"`
 	}
 
-	// DeleteReportingGroupRequest is the request body for deleting a reporting group.
-	DeleteReportingGroupRequest struct {
+	// ListProductsRequest is the request for listing products within a reporting group.
+	ListProductsRequest struct {
 		// The identifier for the reporting group.
 		ReportingGroupID int64 `json:"reportingGroupId"`
+	}
+
+	// ListProductsResponse is the response body for listing products within a reporting group.
+	ListProductsResponse struct {
+		// A collection of products and services assigned to the reporting group.
+		Products []Product `json:"products"`
+	}
+
+	// Product is the model for a product or service assigned to a reporting group.
+	Product struct {
+		// Identifies a product or service.
+		ProductID string `json:"productId"`
+
+		// The descriptive label for a product or service.
+		ProductName string `json:"productName"`
 	}
 )
 
@@ -169,6 +193,13 @@ func (r UpdateReportingGroupRequest) Validate() error {
 
 // Validate validates DeleteReportingGroupRequest.
 func (r DeleteReportingGroupRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"ReportingGroupID": validation.Validate(r.ReportingGroupID, validation.Required),
+	})
+}
+
+// Validate validates ListProductsRequest.
+func (r ListProductsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"ReportingGroupID": validation.Validate(r.ReportingGroupID, validation.Required),
 	})

@@ -20,6 +20,12 @@ type (
 		// See: https://techdocs.akamai.com/cp-codes/reference/get-reporting-group
 		GetReportingGroup(ctx context.Context, params GetReportingGroupsRequest) (*GetReportingGroupResponse, error)
 
+		// ListReportingGroups lists detailed information about reporting groups available for your account and contract.
+		// Optionally filtered by ContractID, GroupID, ReportingGroupName, or CPCodeID.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/get-reporting-groups
+		ListReportingGroups(ctx context.Context, params ListReportingGroupsRequest) (*ListReportingGroupsResponse, error)
+
 		// UpdateReportingGroup updates an existing reporting group.
 		//
 		// See: https://techdocs.akamai.com/cp-codes/reference/put-reporting-group
@@ -29,6 +35,11 @@ type (
 		//
 		// See: https://techdocs.akamai.com/cp-codes/reference/delete-reporting-group
 		DeleteReportingGroup(ctx context.Context, params DeleteReportingGroupRequest) error
+
+		// ListProducts lists products and services assigned to a specific reporting group.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/get-reporting-group-products
+		ListProducts(ctx context.Context, params ListProductsRequest) (*ListProductsResponse, error)
 	}
 
 	reportinggroups struct {

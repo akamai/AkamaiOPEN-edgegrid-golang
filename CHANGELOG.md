@@ -32,6 +32,8 @@
     * Added support for the Reporting Groups API (Beta):
         * [CreateReportingGroup](https://techdocs.akamai.com/cp-codes/reference/post-reporting-groups) - Creates a new reporting group.
         * [GetReportingGroup](https://techdocs.akamai.com/cp-codes/reference/get-reporting-group) - Gets details of a specific reporting group.
+        * [ListReportingGroups](https://techdocs.akamai.com/cp-codes/reference/get-reporting-groups) - Lists all reporting groups.
+        * [ListProducts](https://techdocs.akamai.com/cp-codes/reference/get-reporting-group-products) - Lists products and services assigned to a specific reporting group.
         * [UpdateReportingGroup](https://techdocs.akamai.com/cp-codes/reference/put-reporting-group) - Updates an existing reporting group.
         * [DeleteReportingGroup](https://techdocs.akamai.com/cp-codes/reference/delete-reporting-group) - Deletes a reporting group.
 

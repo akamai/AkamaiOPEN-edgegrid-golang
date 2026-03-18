@@ -67,6 +67,34 @@ func (r *reportinggroups) GetReportingGroup(ctx context.Context, params GetRepor
 	return &result, nil
 }
 
+func (r *reportinggroups) ListReportingGroups(ctx context.Context, params ListReportingGroupsRequest) (*ListReportingGroupsResponse, error) {
+	logger := r.Log(ctx)
+	logger.Debug("ListReportingGroups")
+
+	req, err := request.NewGet(ctx, "/cprg/v1/reporting-groups").
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		AddQueryParamIf("groupId", strconv.FormatInt(params.GroupID, 10), params.GroupID != 0).
+		AddQueryParamIf("reportingGroupName", params.ReportingGroupName, params.ReportingGroupName != "").
+		AddQueryParamIf("cpcodeId", params.CpCodeID, params.CpCodeID != "").
+		Build()
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListReportingGroups, err)
+	}
+
+	var result ListReportingGroupsResponse
+	resp, err := r.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListReportingGroups, err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %w", ErrListReportingGroups, r.Error(resp))
+	}
+
+	return &result, nil
+}
+
 func (r *reportinggroups) UpdateReportingGroup(ctx context.Context, params UpdateReportingGroupRequest) (*UpdateReportingGroupResponse, error) {
 	logger := r.Log(ctx)
 	logger.Debug("UpdateReportingGroup")
@@ -118,6 +146,33 @@ func (r *reportinggroups) DeleteReportingGroup(ctx context.Context, params Delet
 	}
 
 	return nil
+}
+
+func (r *reportinggroups) ListProducts(ctx context.Context, params ListProductsRequest) (*ListProductsResponse, error) {
+	logger := r.Log(ctx)
+	logger.Debug("ListProducts")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %w: %w", ErrListProducts, ErrStructValidation, err)
+	}
+
+	req, err := request.NewGet(ctx, "/cprg/v1/reporting-groups/%d/products", params.ReportingGroupID).Build()
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListProducts, err)
+	}
+
+	var result ListProductsResponse
+	resp, err := r.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListProducts, err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %w", ErrListProducts, r.Error(resp))
+	}
+
+	return &result, nil
 }
 
 func extractReportingGroupLimitHeaders(resp *http.Response, logger log.Interface) ResourceLimitsMetadata {

@@ -22,11 +22,17 @@ var (
 	// ErrGetReportingGroup is returned when there is an error getting a reporting group.
 	ErrGetReportingGroup = errors.New("get reporting group")
 
+	// ErrListReportingGroups is returned when there is an error listing reporting groups.
+	ErrListReportingGroups = errors.New("list reporting groups")
+
 	// ErrUpdateReportingGroup is returned when there is an error updating a reporting group.
 	ErrUpdateReportingGroup = errors.New("update reporting group")
 
 	// ErrDeleteReportingGroup is returned when there is an error deleting a reporting group.
 	ErrDeleteReportingGroup = errors.New("delete reporting group")
+
+	// ErrListProducts is returned when there is an error listing products within a reporting group.
+	ErrListProducts = errors.New("list products")
 )
 
 type (
@@ -47,16 +53,16 @@ type (
 )
 
 // Error parses an error from the Reporting Groups API response.
-func (m *reportinggroups) Error(r *http.Response) error {
+func (r *reportinggroups) Error(resp *http.Response) error {
 	var e Error
-	body, err := io.ReadAll(r.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		m.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
-		e.Code = r.Status
+		r.Log(resp.Request.Context()).Errorf("reading error response body: %s", err)
+		e.Code = resp.Status
 		e.Title = "Failed to read error body"
 		e.Details = []SecondaryError{
 			{
-				Code:    r.Status,
+				Code:    resp.Status,
 				Message: err.Error(),
 			},
 		}
@@ -64,14 +70,14 @@ func (m *reportinggroups) Error(r *http.Response) error {
 	}
 
 	if err := json.Unmarshal(body, &e); err != nil {
-		m.Log(r.Request.Context()).Errorf("could not unmarshal API error: %s", err)
+		r.Log(resp.Request.Context()).Errorf("could not unmarshal API error: %s", err)
 		e.Title = "Failed to unmarshal error body. Reporting Groups API failed. Check details for more information."
 		e.Details = []SecondaryError{
 			{Message: errs.UnescapeContent(string(body))},
 		}
 	}
 
-	e.HTTPStatus = r.StatusCode
+	e.HTTPStatus = resp.StatusCode
 
 	return &e
 }

@@ -48,23 +48,25 @@ func TestCreateReportingGroup(t *testing.T) {
 				"X-Limit-Max-Reporting-Groups-Remaining": "99",
 			},
 			expectedResponse: &CreateReportingGroupResponse{
-				AccessGroup: AccessGroupModel{
-					ContractID: "C-0N7RAC7",
-					GroupID:    ptr.To(int64(456)),
-				},
-				Contracts: []ContractModel{
-					{
+				ReportingGroupItem: ReportingGroupItem{
+					AccessGroup: AccessGroupModel{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeModel{
-							{
-								CpCodeID:   12345,
-								CpCodeName: "Test CP Code",
+						GroupID:    ptr.To(int64(456)),
+					},
+					Contracts: []ContractModel{
+						{
+							ContractID: "C-0N7RAC7",
+							CpCodes: []CpCodeModel{
+								{
+									CpCodeID:   12345,
+									CpCodeName: "Test CP Code",
+								},
 							},
 						},
 					},
+					ReportingGroupID:   789,
+					ReportingGroupName: "Test Reporting Group",
 				},
-				ReportingGroupID:   789,
-				ReportingGroupName: "Test Reporting Group",
 				ResourceLimits: ResourceLimitsMetadata{
 					ReportingGroupsLimitTotal:     ptr.To(int64(100)),
 					ReportingGroupsLimitRemaining: ptr.To(int64(99)),
@@ -119,27 +121,29 @@ func TestCreateReportingGroup(t *testing.T) {
 				"X-Limit-Max-Reporting-Groups-Remaining": "99",
 			},
 			expectedResponse: &CreateReportingGroupResponse{
-				AccessGroup: AccessGroupModel{
-					ContractID: "C-0N7RAC7",
-					GroupID:    ptr.To(int64(456)),
-				},
-				Contracts: []ContractModel{
-					{
+				ReportingGroupItem: ReportingGroupItem{
+					AccessGroup: AccessGroupModel{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeModel{
-							{
-								CpCodeID:   12345,
-								CpCodeName: "CP Code 1",
-							},
-							{
-								CpCodeID:   654321,
-								CpCodeName: "CP Code 2",
+						GroupID:    ptr.To(int64(456)),
+					},
+					Contracts: []ContractModel{
+						{
+							ContractID: "C-0N7RAC7",
+							CpCodes: []CpCodeModel{
+								{
+									CpCodeID:   12345,
+									CpCodeName: "CP Code 1",
+								},
+								{
+									CpCodeID:   654321,
+									CpCodeName: "CP Code 2",
+								},
 							},
 						},
 					},
+					ReportingGroupID:   790,
+					ReportingGroupName: "Multi Contract Group",
 				},
-				ReportingGroupID:   790,
-				ReportingGroupName: "Multi Contract Group",
 				ResourceLimits: ResourceLimitsMetadata{
 					ReportingGroupsLimitTotal:     ptr.To(int64(100)),
 					ReportingGroupsLimitRemaining: ptr.To(int64(99)),
@@ -678,6 +682,438 @@ func TestUpdateReportingGroup(t *testing.T) {
 	}
 }
 
+func TestListReportingGroups(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		params           ListReportingGroupsRequest
+		expectedResponse *ListReportingGroupsResponse
+		expectedPath     string
+		responseStatus   int
+		responseBody     string
+		withError        func(*testing.T, error)
+	}{
+		"200 OK - no filters": {
+			params: ListReportingGroupsRequest{},
+			expectedResponse: &ListReportingGroupsResponse{
+				Groups: []ReportingGroupItem{
+					{
+						AccessGroup: AccessGroupModel{
+							ContractID: "C-0N7RAC7",
+							GroupID:    ptr.To(int64(456)),
+						},
+						Contracts: []ContractModel{
+							{
+								ContractID: "C-0N7RAC7",
+								CpCodes: []CpCodeModel{
+									{
+										CpCodeID:   12345,
+										CpCodeName: "Test CP Code 12345",
+									},
+								},
+							},
+						},
+						ReportingGroupID:   789,
+						ReportingGroupName: "Test Reporting Group 1",
+					},
+					{
+						AccessGroup: AccessGroupModel{
+							ContractID: "C-0N7RAC7",
+							GroupID:    nil,
+						},
+						Contracts: []ContractModel{
+							{
+								ContractID: "C-0N7RAC7",
+								CpCodes: []CpCodeModel{
+									{
+										CpCodeID:   22222,
+										CpCodeName: "Test CP Code 22222",
+									},
+									{
+										CpCodeID:   33333,
+										CpCodeName: "Test CP Code 33333",
+									},
+								},
+							},
+						},
+						ReportingGroupID:   790,
+						ReportingGroupName: "Multi-Group Reporting Group",
+					},
+					{
+						AccessGroup: AccessGroupModel{
+							ContractID: "C-1234XYZ",
+							GroupID:    ptr.To(int64(123)),
+						},
+						Contracts: []ContractModel{
+							{
+								ContractID: "C-1234XYZ",
+								CpCodes: []CpCodeModel{
+									{
+										CpCodeID:   33333,
+										CpCodeName: "Test CP Code 33333",
+									},
+									{
+										CpCodeID:   44444,
+										CpCodeName: "Test CP Code 44444",
+									},
+								},
+							},
+						},
+						ReportingGroupID:   791,
+						ReportingGroupName: "Test Reporting Group 2",
+					},
+				},
+			},
+			responseStatus: 200,
+			responseBody: `
+			{
+				"groups": [
+					{
+						"accessGroup": {
+							"contractId": "C-0N7RAC7",
+							"groupId": 456
+						},
+						"contracts": [
+							{
+								"contractId": "C-0N7RAC7",
+								"cpcodes": [
+									{
+										"cpcodeId": 12345,
+										"cpcodeName": "Test CP Code 12345"
+									}
+								]
+							}
+						],
+						"reportingGroupId": 789,
+						"reportingGroupName": "Test Reporting Group 1"
+					},
+					{
+						"accessGroup": {
+							"contractId": "C-0N7RAC7",
+							"groupId": null
+						},
+						"contracts": [
+							{
+								"contractId": "C-0N7RAC7",
+								"cpcodes": [
+									{
+										"cpcodeId":   22222,
+										"cpcodeName": "Test CP Code 22222"
+									},
+									{
+										"cpcodeId":   33333,
+										"cpcodeName": "Test CP Code 33333"
+									}
+								]
+							}
+						],
+						"reportingGroupId": 790,
+						"reportingGroupName": "Multi-Group Reporting Group"
+					},
+					{
+						"accessGroup": {
+							"contractId": "C-1234XYZ",
+							"groupId": 123
+						},
+						"contracts": [
+							{
+								"contractId": "C-1234XYZ",
+								"cpcodes": [
+									{
+										"cpcodeId": 33333,
+										"cpcodeName": "Test CP Code 33333"
+									},
+									{
+										"cpcodeId": 44444,
+										"cpcodeName": "Test CP Code 44444"
+									}
+								]
+							}
+						],
+						"reportingGroupId": 791,
+						"reportingGroupName": "Test Reporting Group 2"
+					}
+				]
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups",
+		},
+		"200 OK - with contractId filter": {
+			params: ListReportingGroupsRequest{
+				ContractID: "C-0N7RAC7",
+			},
+			expectedResponse: &ListReportingGroupsResponse{
+				Groups: []ReportingGroupItem{
+					{
+						AccessGroup: AccessGroupModel{
+							ContractID: "C-0N7RAC7",
+							GroupID:    ptr.To(int64(456)),
+						},
+						Contracts: []ContractModel{
+							{
+								ContractID: "C-0N7RAC7",
+								CpCodes: []CpCodeModel{
+									{
+										CpCodeID:   12345,
+										CpCodeName: "Test CP Code 12345",
+									},
+								},
+							},
+						},
+						ReportingGroupID:   789,
+						ReportingGroupName: "Test Reporting Group 1",
+					},
+					{
+						AccessGroup: AccessGroupModel{
+							ContractID: "C-0N7RAC7",
+							GroupID:    nil,
+						},
+						Contracts: []ContractModel{
+							{
+								ContractID: "C-0N7RAC7",
+								CpCodes: []CpCodeModel{
+									{
+										CpCodeID:   22222,
+										CpCodeName: "Test CP Code 22222",
+									},
+									{
+										CpCodeID:   33333,
+										CpCodeName: "Test CP Code 33333",
+									},
+								},
+							},
+						},
+						ReportingGroupID:   790,
+						ReportingGroupName: "Multi-Group Reporting Group",
+					},
+				},
+			},
+			responseStatus: 200,
+			responseBody: `
+			{
+				"groups": [
+					{
+						"accessGroup": {
+							"contractId": "C-0N7RAC7",
+							"groupId": 456
+						},
+						"contracts": [
+							{
+								"contractId": "C-0N7RAC7",
+								"cpcodes": [
+									{
+										"cpcodeId": 12345,
+										"cpcodeName": "Test CP Code 12345"
+									}
+								]
+							}
+						],
+						"reportingGroupId": 789,
+						"reportingGroupName": "Test Reporting Group 1"
+					},
+					{
+						"accessGroup": {
+							"contractId": "C-0N7RAC7",
+							"groupId": null
+						},
+						"contracts": [
+							{
+								"contractId": "C-0N7RAC7",
+								"cpcodes": [
+									{
+										"cpcodeId":   22222,
+										"cpcodeName": "Test CP Code 22222"
+									},
+									{
+										"cpcodeId":   33333,
+										"cpcodeName": "Test CP Code 33333"
+									}
+								]
+							}
+						],
+						"reportingGroupId": 790,
+						"reportingGroupName": "Multi-Group Reporting Group"
+					}
+				]
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups?contractId=C-0N7RAC7",
+		},
+		"200 OK - with all filters": {
+			params: ListReportingGroupsRequest{
+				ContractID:         "C-0N7RAC7",
+				GroupID:            456,
+				ReportingGroupName: "Test Reporting Group 1",
+				CpCodeID:           "12345",
+			},
+			expectedResponse: &ListReportingGroupsResponse{
+				Groups: []ReportingGroupItem{
+					{
+						AccessGroup: AccessGroupModel{
+							ContractID: "C-0N7RAC7",
+							GroupID:    ptr.To(int64(456)),
+						},
+						Contracts: []ContractModel{
+							{
+								ContractID: "C-0N7RAC7",
+								CpCodes: []CpCodeModel{
+									{
+										CpCodeID:   12345,
+										CpCodeName: "Test CP Code 12345",
+									},
+								},
+							},
+						},
+						ReportingGroupID:   789,
+						ReportingGroupName: "Test Reporting Group 1",
+					},
+				},
+			},
+			responseStatus: 200,
+			responseBody: `
+			{
+				"groups": [
+					{
+						"accessGroup": {
+							"contractId": "C-0N7RAC7",
+							"groupId": 456
+						},
+						"contracts": [
+							{
+								"contractId": "C-0N7RAC7",
+								"cpcodes": [
+									{
+										"cpcodeId": 12345,
+										"cpcodeName": "Test CP Code 12345"
+									}
+								]
+							}
+						],
+						"reportingGroupId": 789,
+						"reportingGroupName": "Test Reporting Group 1"
+					}
+				]
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups?contractId=C-0N7RAC7&cpcodeId=12345&groupId=456&reportingGroupName=Test+Reporting+Group+1",
+		},
+		"200 OK - with groupId filter": {
+			params: ListReportingGroupsRequest{
+				GroupID: 123,
+			},
+			expectedResponse: &ListReportingGroupsResponse{
+				Groups: []ReportingGroupItem{
+					{
+						AccessGroup: AccessGroupModel{
+							ContractID: "C-1234XYZ",
+							GroupID:    ptr.To(int64(123)),
+						},
+						Contracts: []ContractModel{
+							{
+								ContractID: "C-1234XYZ",
+								CpCodes: []CpCodeModel{
+									{
+										CpCodeID:   33333,
+										CpCodeName: "Test CP Code 33333",
+									},
+									{
+										CpCodeID:   44444,
+										CpCodeName: "Test CP Code 44444",
+									},
+								},
+							},
+						},
+						ReportingGroupID:   791,
+						ReportingGroupName: "Test Reporting Group 2",
+					},
+				},
+			},
+			responseStatus: 200,
+			responseBody: `
+			{
+				"groups": [
+					{
+						"accessGroup": {
+							"contractId": "C-1234XYZ",
+							"groupId": 123
+						},
+						"contracts": [
+							{
+								"contractId": "C-1234XYZ",
+								"cpcodes": [
+									{
+										"cpcodeId": 33333,
+										"cpcodeName": "Test CP Code 33333"
+									},
+									{
+										"cpcodeId": 44444,
+										"cpcodeName": "Test CP Code 44444"
+									}
+								]
+							}
+						],
+						"reportingGroupId": 791,
+						"reportingGroupName": "Test Reporting Group 2"
+					}
+				]
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups?groupId=123",
+		},
+		"200 OK - empty groups": {
+			params: ListReportingGroupsRequest{},
+			expectedResponse: &ListReportingGroupsResponse{
+				Groups: []ReportingGroupItem{},
+			},
+			responseStatus: 200,
+			responseBody: `
+			{
+				"groups": []
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups",
+		},
+		"500 internal server error": {
+			params:         ListReportingGroupsRequest{},
+			responseStatus: 500,
+			responseBody: `
+			{
+				"code": "internal.server.error",
+				"title": "Internal Server Error",
+				"incidentID": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups",
+			withError: func(t *testing.T, err error) {
+				want := fmt.Errorf("%w: %w", ErrListReportingGroups, &Error{
+					Code:       "internal.server.error",
+					Title:      "Internal Server Error",
+					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
+					Details:    nil,
+				})
+				assert.EqualError(t, err, want.Error())
+				assert.ErrorIs(t, err, ErrListReportingGroups)
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, tc.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListReportingGroups(context.Background(), tc.params)
+
+			if tc.withError != nil {
+				tc.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedResponse, result)
+		})
+	}
+}
+
 func TestDeleteReportingGroup(t *testing.T) {
 	t.Parallel()
 
@@ -745,6 +1181,142 @@ func TestDeleteReportingGroup(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
+		})
+	}
+}
+
+func TestListProducts(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		params           ListProductsRequest
+		expectedResponse *ListProductsResponse
+		expectedPath     string
+		responseStatus   int
+		responseBody     string
+		withError        func(*testing.T, error)
+	}{
+		"200 OK - multiple products": {
+			params: ListProductsRequest{
+				ReportingGroupID: 789,
+			},
+			expectedResponse: &ListProductsResponse{
+				Products: []Product{
+					{
+						ProductID:   "Test::Product1",
+						ProductName: "Test Product 1",
+					},
+					{
+						ProductID:   "Test::Product2",
+						ProductName: "Test Product 2",
+					},
+				},
+			},
+			responseStatus: 200,
+			responseBody: `
+			{
+				"products": [
+					{
+						"productId": "Test::Product1",
+						"productName": "Test Product 1"
+					},
+					{
+						"productId": "Test::Product2",
+						"productName": "Test Product 2"
+					}
+				]
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups/789/products",
+		},
+		"200 OK - single product": {
+			params: ListProductsRequest{
+				ReportingGroupID: 790,
+			},
+			expectedResponse: &ListProductsResponse{
+				Products: []Product{
+					{
+						ProductID:   "Test::Product3",
+						ProductName: "Test Product 3",
+					},
+				},
+			},
+			responseStatus: 200,
+			responseBody: `
+			{
+				"products": [
+					{
+						"productId": "Test::Product3",
+						"productName": "Test Product 3"
+					}
+				]
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups/790/products",
+		},
+		"200 OK - empty products": {
+			params: ListProductsRequest{
+				ReportingGroupID: 791,
+			},
+			expectedResponse: &ListProductsResponse{
+				Products: []Product{},
+			},
+			responseStatus: 200,
+			responseBody: `
+			{
+				"products": []
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups/791/products",
+		},
+		"validation error - missing reporting group ID": {
+			params: ListProductsRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.ErrorIs(t, err, ErrStructValidation)
+				assert.Contains(t, err.Error(), "ReportingGroupID")
+			},
+		},
+		"500 internal server error": {
+			params: ListProductsRequest{
+				ReportingGroupID: 789,
+			},
+			responseStatus: 500,
+			responseBody: `
+			{
+				"code": "internal.server.error",
+				"title": "Internal Server Error",
+				"incidentID": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups/789/products",
+			withError: func(t *testing.T, err error) {
+				want := fmt.Errorf("%w: %w", ErrListProducts, &Error{
+					Code:       "internal.server.error",
+					Title:      "Internal Server Error",
+					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
+					Details:    nil,
+				})
+				assert.EqualError(t, err, want.Error())
+				assert.ErrorIs(t, err, ErrListProducts)
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, tc.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListProducts(context.Background(), tc.params)
+
+			if tc.withError != nil {
+				tc.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedResponse, result)
 		})
 	}
 }
