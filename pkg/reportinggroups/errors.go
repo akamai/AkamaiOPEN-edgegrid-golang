@@ -33,6 +33,15 @@ var (
 
 	// ErrListProducts is returned when there is an error listing products within a reporting group.
 	ErrListProducts = errors.New("list products")
+
+	// ErrGetReportingGroupsWaterMarkLimits is returned when there is an error getting reporting groups water-mark limits.
+	ErrGetReportingGroupsWaterMarkLimits = errors.New("get reporting groups water-mark limits")
+
+	// ErrListCPCodes is returned when there is an error listing CP codes.
+	ErrListCPCodes = errors.New("list CP codes")
+
+	// ErrGetCPCodesWaterMarkLimits is returned when there is an error getting CP codes water-mark limits.
+	ErrGetCPCodesWaterMarkLimits = errors.New("get CP codes water-mark limits")
 )
 
 type (

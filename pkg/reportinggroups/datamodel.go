@@ -5,6 +5,16 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+var (
+	_ validation.Validatable = &CreateReportingGroupRequest{}
+	_ validation.Validatable = &GetReportingGroupsRequest{}
+	_ validation.Validatable = &UpdateReportingGroupRequest{}
+	_ validation.Validatable = &DeleteReportingGroupRequest{}
+	_ validation.Validatable = &ListProductsRequest{}
+	_ validation.Validatable = &GetReportingGroupsWaterMarkLimitsRequest{}
+	_ validation.Validatable = &GetCPCodesWaterMarkLimitsRequest{}
+)
+
 type (
 	// CreateReportingGroupRequest is the request body for creating a reporting group.
 	CreateReportingGroupRequest struct {
@@ -164,6 +174,108 @@ type (
 		// The descriptive label for a product or service.
 		ProductName string `json:"productName"`
 	}
+
+	// CPCodeContract contains contract data for a CP code.
+	CPCodeContract struct {
+		ContractID string `json:"contractId"`
+		Status     string `json:"status"`
+	}
+
+	// CPCodeTimeZone contains time zone data for a CP code.
+	CPCodeTimeZone struct {
+		TimeZoneID    string `json:"timezoneId"`
+		TimeZoneValue string `json:"timezoneValue"`
+	}
+
+	// ListCPCodesRequest contains the optional query parameters for listing CP codes.
+	ListCPCodesRequest struct {
+		// ContractID identifies the contract to filter data by.
+		ContractID string
+
+		// GroupID identifies the access group to filter data by.
+		GroupID string
+
+		// ProductID identifies the product or service to filter data by.
+		ProductID string
+
+		// CPCodeName is the name of the CP code to filter data by.
+		CPCodeName string
+	}
+
+	// ListCPCodesResponse is the response for listing CP codes.
+	ListCPCodesResponse struct {
+		// CPCodes is a collection of CP codes details available for your contract.
+		CPCodes []CPCodeDetails `json:"cpcodes"`
+	}
+
+	// CPCodeDetails contains detailed information about a single CP code in the list response.
+	CPCodeDetails struct {
+		// AccessGroup is the group that controls access to specific CP codes.
+		AccessGroup AccessGroupModel `json:"accessGroup"`
+
+		// AccountID identifies an account assigned to the CP code.
+		AccountID string `json:"accountId"`
+
+		// Contracts provides detailed information about the contracts assigned to the CP code.
+		Contracts []CPCodeContract `json:"contracts"`
+
+		// CPCodeID identifies the CP code.
+		CPCodeID int64 `json:"cpcodeId"`
+
+		// CPCodeName is the descriptive label for the CP code.
+		CPCodeName string `json:"cpcodeName"`
+
+		// DefaultTimeZone is the default GMT time zone assigned to the CP code.
+		DefaultTimeZone *string `json:"defaultTimezone"`
+
+		// OverrideTimeZone is the GMT time zone that overrides the default time zone.
+		OverrideTimeZone CPCodeTimeZone `json:"overrideTimezone"`
+
+		// Products is a collection of products and services assigned to the CP code.
+		Products []Product `json:"products"`
+
+		// Purgeable indicates whether you can purge the content cached by the CP code.
+		Purgeable bool `json:"purgeable"`
+
+		// Type indicates whether the CP code supports serving traffic from 'China', or 'Regular' traffic elsewhere.
+		Type string `json:"type"`
+	}
+
+	// GetReportingGroupsWaterMarkLimitsRequest is the request body for getting reporting groups water-mark limits.
+	GetReportingGroupsWaterMarkLimitsRequest struct {
+		// ContractID is the identifier for the contract for which you want to check water-mark limits.
+		ContractID string
+	}
+
+	// GetReportingGroupsWaterMarkLimitsResponse is the response body for getting reporting groups water-mark limits.
+	GetReportingGroupsWaterMarkLimitsResponse struct {
+		// CurrentCapacity is the current number of reporting groups.
+		CurrentCapacity int `json:"currentCapacity"`
+
+		// Limit is the number of allowed reporting groups.
+		Limit int `json:"limit"`
+
+		// LimitType identifies whether the limit is global or applies to an account or a contract.
+		LimitType string `json:"limitType"`
+	}
+
+	// GetCPCodesWaterMarkLimitsRequest contains the parameters for getting CP codes water-mark limits.
+	GetCPCodesWaterMarkLimitsRequest struct {
+		// ContractID is the identifier for the contract for which you want to check water-mark limits.
+		ContractID string
+	}
+
+	// GetCPCodesWaterMarkLimitsResponse is the response for getting CP codes water-mark limits.
+	GetCPCodesWaterMarkLimitsResponse struct {
+		// CurrentCapacity is the current number of CP codes.
+		CurrentCapacity int `json:"currentCapacity"`
+
+		// Limit is the number of allowed CP codes.
+		Limit int `json:"limit"`
+
+		// LimitType identifies whether the limit is global or applies to an account or a contract.
+		LimitType string `json:"limitType"`
+	}
 )
 
 // Validate validates CreateReportingGroupRequest.
@@ -202,5 +314,19 @@ func (r DeleteReportingGroupRequest) Validate() error {
 func (r ListProductsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"ReportingGroupID": validation.Validate(r.ReportingGroupID, validation.Required),
+	})
+}
+
+// Validate validates GetReportingGroupsWaterMarkLimitsRequest.
+func (r GetReportingGroupsWaterMarkLimitsRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"ContractID": validation.Validate(r.ContractID, validation.Required),
+	})
+}
+
+// Validate validates GetCPCodesWaterMarkLimitsRequest.
+func (r GetCPCodesWaterMarkLimitsRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"ContractID": validation.Validate(r.ContractID, validation.Required),
 	})
 }

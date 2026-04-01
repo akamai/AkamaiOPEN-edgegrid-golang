@@ -28,8 +28,8 @@
   * Relaxed validation of the `UpdatePenaltyBoxRequest` to allow `deny_custom_{custom_deny_id}` value.
   * Added `ApplyAccountProtectionControls` field to the `UpdatePolicyProtectionsRequest` structure.
 
-* Reporting Groups
-    * Added support for the Reporting Groups API (Beta):
+* Reporting Groups (Beta)
+    * Added support for the Reporting Groups API:
         * [CreateReportingGroup](https://techdocs.akamai.com/cp-codes/reference/post-reporting-groups) - Creates a new reporting group.
         * [GetReportingGroup](https://techdocs.akamai.com/cp-codes/reference/get-reporting-group) - Gets details of a specific reporting group.
         * [ListReportingGroups](https://techdocs.akamai.com/cp-codes/reference/get-reporting-groups) - Lists all reporting groups.
@@ -47,6 +47,20 @@
 
 
 
+
+
+
+
+* PAPI
+    * Added the `AccessGroup` field to the `CPCodeDetailResponse` structure, returned by the following methods:
+        * `GetCPCodeDetail`
+        * `UpdateCPCode`
+
+* Reporting Groups (Beta)
+    * Added support for the Reporting Groups API:
+        * [GetReportingGroupsWaterMarkLimits](https://techdocs.akamai.com/cp-codes/reference/get-reporting-groups-watermark-limits) - Gets water-mark limits for reporting groups.
+        * [GetCPCodesWaterMarkLimits](https://techdocs.akamai.com/cp-codes/reference/get-cpcodes-watermark-limits) - Gets water-mark limits for CP codes.
+        * [ListCPCodes](https://techdocs.akamai.com/cp-codes/reference/get-cpcodes) - Lists CP codes.
 
 
 

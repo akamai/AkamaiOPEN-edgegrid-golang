@@ -40,6 +40,23 @@ type (
 		//
 		// See: https://techdocs.akamai.com/cp-codes/reference/get-reporting-group-products
 		ListProducts(ctx context.Context, params ListProductsRequest) (*ListProductsResponse, error)
+
+		// GetReportingGroupsWaterMarkLimits gets the water-mark limits for Reporting Groups for the account associated with a specific contract.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/get-reporting-groups-watermark-limits
+		GetReportingGroupsWaterMarkLimits(ctx context.Context, params GetReportingGroupsWaterMarkLimitsRequest) (*GetReportingGroupsWaterMarkLimitsResponse, error)
+
+		// CPCodes
+
+		// ListCPCodes lists detailed information about CP codes available within your account and contract.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/get-cpcodes
+		ListCPCodes(ctx context.Context, params ListCPCodesRequest) (*ListCPCodesResponse, error)
+
+		// GetCPCodesWaterMarkLimits gets the water-mark limits for CP codes for the account associated with a specific contract.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/get-cpcodes-watermark-limits
+		GetCPCodesWaterMarkLimits(ctx context.Context, params GetCPCodesWaterMarkLimitsRequest) (*GetCPCodesWaterMarkLimitsResponse, error)
 	}
 
 	reportinggroups struct {

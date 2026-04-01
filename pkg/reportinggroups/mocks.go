@@ -69,3 +69,33 @@ func (m *Mock) ListProducts(ctx context.Context, req ListProductsRequest) (*List
 
 	return args.Get(0).(*ListProductsResponse), args.Error(1)
 }
+
+func (m *Mock) GetReportingGroupsWaterMarkLimits(ctx context.Context, req GetReportingGroupsWaterMarkLimitsRequest) (*GetReportingGroupsWaterMarkLimitsResponse, error) {
+	args := m.Called(ctx, req)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetReportingGroupsWaterMarkLimitsResponse), args.Error(1)
+}
+
+func (m *Mock) ListCPCodes(ctx context.Context, req ListCPCodesRequest) (*ListCPCodesResponse, error) {
+	args := m.Called(ctx, req)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListCPCodesResponse), args.Error(1)
+}
+
+func (m *Mock) GetCPCodesWaterMarkLimits(ctx context.Context, req GetCPCodesWaterMarkLimitsRequest) (*GetCPCodesWaterMarkLimitsResponse, error) {
+	args := m.Called(ctx, req)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetCPCodesWaterMarkLimitsResponse), args.Error(1)
+}

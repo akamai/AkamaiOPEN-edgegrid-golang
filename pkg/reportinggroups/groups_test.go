@@ -305,7 +305,7 @@ func TestCreateReportingGroup(t *testing.T) {
 			{
 				"code": "internal.server.error",
 				"title": "Internal Server Error",
-				"incidentID": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
+				"incidentId": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups",
 			withError: func(t *testing.T, err error) {
@@ -422,7 +422,7 @@ func TestGetReportingGroup(t *testing.T) {
 			{
 				"code": "internal.server.error",
 				"title": "Internal Server Error",
-				"incidentID": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
+				"incidentId": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups/789",
 			withError: func(t *testing.T, err error) {
@@ -643,7 +643,7 @@ func TestUpdateReportingGroup(t *testing.T) {
 			{
 				"code": "internal.server.error",
 				"title": "Internal Server Error",
-				"incidentID": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
+				"incidentId": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups/789",
 			withError: func(t *testing.T, err error) {
@@ -1075,7 +1075,7 @@ func TestListReportingGroups(t *testing.T) {
 			{
 				"code": "internal.server.error",
 				"title": "Internal Server Error",
-				"incidentID": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
+				"incidentId": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups",
 			withError: func(t *testing.T, err error) {
@@ -1147,7 +1147,7 @@ func TestDeleteReportingGroup(t *testing.T) {
 			{
 				"code": "internal.server.error",
 				"title": "Internal Server Error",
-				"incidentID": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
+				"incidentId": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups/789",
 			withError: func(t *testing.T, err error) {
@@ -1282,7 +1282,7 @@ func TestListProducts(t *testing.T) {
 			{
 				"code": "internal.server.error",
 				"title": "Internal Server Error",
-				"incidentID": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
+				"incidentId": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups/789/products",
 			withError: func(t *testing.T, err error) {
@@ -1310,6 +1310,124 @@ func TestListProducts(t *testing.T) {
 			}))
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListProducts(context.Background(), tc.params)
+
+			if tc.withError != nil {
+				tc.withError(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tc.expectedResponse, result)
+		})
+	}
+}
+
+func TestGetReportingGroupsWaterMarkLimits(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		params           GetReportingGroupsWaterMarkLimitsRequest
+		expectedResponse *GetReportingGroupsWaterMarkLimitsResponse
+		expectedPath     string
+		responseStatus   int
+		responseBody     string
+		withError        func(*testing.T, error)
+	}{
+		"200 OK": {
+			params: GetReportingGroupsWaterMarkLimitsRequest{
+				ContractID: "C-0N7RAC7",
+			},
+			expectedResponse: &GetReportingGroupsWaterMarkLimitsResponse{
+				CurrentCapacity: 5,
+				Limit:           100,
+				LimitType:       "global",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"currentCapacity": 5,
+				"limit": 100,
+				"limitType": "global"
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups/contracts/C-0N7RAC7/watermark-limits",
+		},
+		"validation error - missing contract ID": {
+			params: GetReportingGroupsWaterMarkLimitsRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.ErrorIs(t, err, ErrStructValidation)
+				assert.Contains(t, err.Error(), "ContractID")
+			},
+		},
+		"400 bad request - invalid contract ID": {
+			params: GetReportingGroupsWaterMarkLimitsRequest{
+				ContractID: "INVALID_CONTRACT_ID",
+			},
+			responseStatus: http.StatusBadRequest,
+			responseBody: `
+			{
+				"code": "bad.request",
+				"title": "Bad Request",
+				"incidentId": "aaaa111-bb22-cc33-dd44-dfeeggda5566",
+				"details": [
+					{
+						"code": "invalid.data",
+						"message": "Invalid contract id:INVALID_CONTRACT_ID"
+					}
+				]
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups/contracts/INVALID_CONTRACT_ID/watermark-limits",
+			withError: func(t *testing.T, err error) {
+				want := fmt.Errorf("%w: %w", ErrGetReportingGroupsWaterMarkLimits, &Error{
+					Code:       "bad.request",
+					Title:      "Bad Request",
+					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
+					Details: []SecondaryError{
+						{
+							Code:    "invalid.data",
+							Message: "Invalid contract id:INVALID_CONTRACT_ID",
+						},
+					},
+				})
+				assert.EqualError(t, err, want.Error())
+				assert.ErrorIs(t, err, ErrGetReportingGroupsWaterMarkLimits)
+			},
+		},
+		"500 internal server error": {
+			params: GetReportingGroupsWaterMarkLimitsRequest{
+				ContractID: "C-0N7RAC7",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+			{
+				"code": "internal.server.error",
+				"title": "Internal Server Error",
+				"incidentId": "aaaa111-bb22-cc33-dd44-dfeeggda5566"
+			}`,
+			expectedPath: "/cprg/v1/reporting-groups/contracts/C-0N7RAC7/watermark-limits",
+			withError: func(t *testing.T, err error) {
+				want := fmt.Errorf("%w: %w", ErrGetReportingGroupsWaterMarkLimits, &Error{
+					Code:       "internal.server.error",
+					Title:      "Internal Server Error",
+					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
+					Details:    nil,
+				})
+				assert.EqualError(t, err, want.Error())
+				assert.ErrorIs(t, err, ErrGetReportingGroupsWaterMarkLimits)
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, tc.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetReportingGroupsWaterMarkLimits(context.Background(), tc.params)
 
 			if tc.withError != nil {
 				tc.withError(t, err)

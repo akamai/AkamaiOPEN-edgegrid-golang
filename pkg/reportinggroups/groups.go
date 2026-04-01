@@ -194,3 +194,30 @@ func extractReportingGroupLimitHeaders(resp *http.Response, logger log.Interface
 
 	return reportingGroupsLimits
 }
+
+func (r *reportinggroups) GetReportingGroupsWaterMarkLimits(ctx context.Context, params GetReportingGroupsWaterMarkLimitsRequest) (*GetReportingGroupsWaterMarkLimitsResponse, error) {
+	logger := r.Log(ctx)
+	logger.Debug("GetReportingGroupsWaterMarkLimits")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetReportingGroupsWaterMarkLimits, ErrStructValidation, err)
+	}
+
+	req, err := request.NewGet(ctx, "/cprg/v1/reporting-groups/contracts/%s/watermark-limits", params.ContractID).Build()
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetReportingGroupsWaterMarkLimits, err)
+	}
+
+	var result GetReportingGroupsWaterMarkLimitsResponse
+	resp, err := r.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetReportingGroupsWaterMarkLimits, err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %w", ErrGetReportingGroupsWaterMarkLimits, r.Error(resp))
+	}
+
+	return &result, nil
+}

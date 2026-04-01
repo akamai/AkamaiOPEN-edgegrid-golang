@@ -1,6 +1,7 @@
 package papi
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"net/http"
@@ -343,8 +344,8 @@ func TestGetCPCodeDetail(t *testing.T) {
         }
     ],
     "accessGroup": {
-        "groupId": null,
-        "contractId": "test-contract-id"
+        "contractId": "test-contract-id",
+		"groupId": 12345
     }
 }`,
 			expectedPath: "/cprg/v1/cpcodes/123",
@@ -370,6 +371,72 @@ func TestGetCPCodeDetail(t *testing.T) {
 						ProductID:   "test-product-id",
 						ProductName: "test-product-name",
 					},
+				},
+				AccessGroup: AccessGroup{
+					ContractID: "test-contract-id",
+					GroupID:    ptr.To(int64(12345)),
+				},
+			},
+		},
+		"200 OK - null groupID in AccessGroup": {
+			id:             123,
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "cpcodeId": 123,
+    "cpcodeName": "test-cp-code",
+    "purgeable": true,
+    "accountId": "test-account-id",
+    "defaultTimezone": "GMT 0 (Greenwich Mean Time)",
+    "overrideTimezone": {
+        "timezoneId": "0",
+        "timezoneValue": "GMT 0 (Greenwich Mean Time)"
+    },
+    "type": "Regular",
+    "contracts": [
+        {
+            "contractId": "test-contract-id",
+            "status": "ongoing"
+        }
+    ],
+    "products": [
+        {
+            "productId": "test-product-id",
+            "productName": "test-product-name"
+        }
+    ],
+    "accessGroup": {
+        "contractId": "test-contract-id",
+        "groupId": null
+    }
+}`,
+			expectedPath: "/cprg/v1/cpcodes/123",
+			expectedResponse: &CPCodeDetailResponse{
+				ID:              123,
+				Name:            "test-cp-code",
+				Purgeable:       true,
+				AccountID:       "test-account-id",
+				DefaultTimeZone: "GMT 0 (Greenwich Mean Time)",
+				OverrideTimeZone: CPCodeTimeZone{
+					TimeZoneID:    "0",
+					TimeZoneValue: "GMT 0 (Greenwich Mean Time)",
+				},
+				Type: "Regular",
+				Contracts: []CPCodeContract{
+					{
+						ContractID: "test-contract-id",
+						Status:     "ongoing",
+					},
+				},
+				Products: []CPCodeProduct{
+					{
+						ProductID:   "test-product-id",
+						ProductName: "test-product-name",
+					},
+				},
+				AccessGroup: AccessGroup{
+					ContractID: "test-contract-id",
+					GroupID:    nil,
 				},
 			},
 		},
@@ -419,12 +486,13 @@ func TestGetCPCodeDetail(t *testing.T) {
 
 func TestPapiCreateCPCode(t *testing.T) {
 	tests := map[string]struct {
-		params         CreateCPCodeRequest
-		responseStatus int
-		responseBody   string
-		expectedPath   string
-		expected       *CreateCPCodeResponse
-		withError      func(*testing.T, error)
+		params              CreateCPCodeRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *CreateCPCodeResponse
+		withError           func(*testing.T, error)
 	}{
 		"201 Created": {
 			params: CreateCPCodeRequest{
@@ -435,13 +503,14 @@ func TestPapiCreateCPCode(t *testing.T) {
 					CPCodeName: "cpcodeName",
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"productId":"productID","cpcodeName":"cpcodeName"}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
     "cpcodeLink": "/papi/v1/cpcodes/123?contractId=contract-1TJZFW&groupId=group"
 }`,
 			expectedPath: "/papi/v1/cpcodes?contractId=contract&groupId=group",
-			expected: &CreateCPCodeResponse{
+			expectedResponse: &CreateCPCodeResponse{
 				CPCodeLink: "/papi/v1/cpcodes/123?contractId=contract-1TJZFW&groupId=group",
 				CPCodeID:   "123",
 			},
@@ -455,7 +524,8 @@ func TestPapiCreateCPCode(t *testing.T) {
 					CPCodeName: "cpcodeName",
 				},
 			},
-			responseStatus: http.StatusInternalServerError,
+			expectedRequestBody: `{"productId":"productID","cpcodeName":"cpcodeName"}`,
+			responseStatus:      http.StatusInternalServerError,
 			responseBody: `
 {
 	"type": "internal_error",
@@ -551,7 +621,8 @@ func TestPapiCreateCPCode(t *testing.T) {
 					CPCodeName: "cpcodeName",
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"productId":"productID","cpcodeName":"cpcodeName"}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
     "cpcodeLink": ":"
@@ -569,6 +640,12 @@ func TestPapiCreateCPCode(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					buf := new(bytes.Buffer)
+					_, err := buf.ReadFrom(r.Body)
+					assert.NoError(t, err)
+					assert.Equal(t, test.expectedRequestBody, buf.String())
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
@@ -580,19 +657,20 @@ func TestPapiCreateCPCode(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, test.expected, result)
+			assert.Equal(t, test.expectedResponse, result)
 		})
 	}
 }
 
 func TestUpdateCPCode(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateCPCodeRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CPCodeDetailResponse
-		withError        func(*testing.T, error)
+		params              UpdateCPCodeRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *CPCodeDetailResponse
+		withError           func(*testing.T, error)
 	}{
 		"200 OK Update name": {
 			params: UpdateCPCodeRequest{
@@ -611,7 +689,8 @@ func TestUpdateCPCode(t *testing.T) {
 					},
 				},
 			},
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"cpcodeId":123,"cpcodeName":"test-cp-code-updated","contracts":[{"contractId":"test-contract-id","status":"ongoing"}],"products":[{"productId":"test-product-id","productName":"test-product-name"}]}`,
+			responseStatus:      http.StatusOK,
 			responseBody: `
 {
     "cpcodeId": 123,
@@ -637,8 +716,8 @@ func TestUpdateCPCode(t *testing.T) {
         }
     ],
     "accessGroup": {
-        "groupId": null,
-        "contractId": "test-contract-id"
+		"contractId": "test-contract-id",
+        "groupId": 12345
     }
 }`,
 			expectedPath: "/cprg/v1/cpcodes/123",
@@ -665,6 +744,10 @@ func TestUpdateCPCode(t *testing.T) {
 						ProductName: "test-product-name",
 					},
 				},
+				AccessGroup: AccessGroup{
+					ContractID: "test-contract-id",
+					GroupID:    ptr.To(int64(12345)),
+				},
 			},
 		},
 		"200 OK Update time zone": {
@@ -688,7 +771,8 @@ func TestUpdateCPCode(t *testing.T) {
 					},
 				},
 			},
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"cpcodeId":123,"cpcodeName":"test-cp-code","overrideTimezone":{"timezoneId":"1","timezoneValue":"GMT + 1"},"contracts":[{"contractId":"test-contract-id","status":"ongoing"}],"products":[{"productId":"test-product-id","productName":"test-product-name"}]}`,
+			responseStatus:      http.StatusOK,
 			responseBody: `
 {
     "cpcodeId": 123,
@@ -714,8 +798,8 @@ func TestUpdateCPCode(t *testing.T) {
         }
     ],
     "accessGroup": {
-        "groupId": null,
-        "contractId": "test-contract-id"
+		"contractId": "test-contract-id",
+        "groupId": 12345
     }
 }`,
 			expectedPath: "/cprg/v1/cpcodes/123",
@@ -742,6 +826,10 @@ func TestUpdateCPCode(t *testing.T) {
 						ProductName: "test-product-name",
 					},
 				},
+				AccessGroup: AccessGroup{
+					ContractID: "test-contract-id",
+					GroupID:    ptr.To(int64(12345)),
+				},
 			},
 		},
 		"200 OK Update purgeable": {
@@ -762,7 +850,8 @@ func TestUpdateCPCode(t *testing.T) {
 					},
 				},
 			},
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"cpcodeId":123,"cpcodeName":"test-cp-code","purgeable":false,"contracts":[{"contractId":"test-contract-id","status":"ongoing"}],"products":[{"productId":"test-product-id","productName":"test-product-name"}]}`,
+			responseStatus:      http.StatusOK,
 			responseBody: `
 {
     "cpcodeId": 123,
@@ -788,8 +877,8 @@ func TestUpdateCPCode(t *testing.T) {
         }
     ],
     "accessGroup": {
-        "groupId": null,
-        "contractId": "test-contract-id"
+		"contractId": "test-contract-id",
+        "groupId": 12345
     }
 }`,
 			expectedPath: "/cprg/v1/cpcodes/123",
@@ -816,6 +905,10 @@ func TestUpdateCPCode(t *testing.T) {
 						ProductName: "test-product-name",
 					},
 				},
+				AccessGroup: AccessGroup{
+					ContractID: "test-contract-id",
+					GroupID:    ptr.To(int64(12345)),
+				},
 			},
 		},
 		"500 internal server error": {
@@ -835,7 +928,8 @@ func TestUpdateCPCode(t *testing.T) {
 					},
 				},
 			},
-			responseStatus: http.StatusInternalServerError,
+			expectedRequestBody: `{"cpcodeId":123,"cpcodeName":"test-cp-code-updated","contracts":[{"contractId":"test-contract-id","status":"ongoing"}],"products":[{"productId":"test-product-id","productName":"test-product-name"}]}`,
+			responseStatus:      http.StatusInternalServerError,
 			responseBody: `
 {
 	"type": "internal_error",
@@ -1009,6 +1103,12 @@ func TestUpdateCPCode(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					buf := new(bytes.Buffer)
+					_, err := buf.ReadFrom(r.Body)
+					assert.NoError(t, err)
+					assert.Equal(t, test.expectedRequestBody, buf.String())
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

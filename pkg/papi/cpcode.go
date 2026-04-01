@@ -26,6 +26,15 @@ type (
 		Status     string `json:"status,omitempty"`
 	}
 
+	// AccessGroup contains the access group information for a CP code details.
+	AccessGroup struct {
+		// ContractID identifies the contract assigned to the access control group.
+		ContractID string `json:"contractId"`
+
+		// GroupID identifies the access control group.
+		GroupID *int64 `json:"groupId"`
+	}
+
 	// CPCodeDetailResponse is a response returned while fetching CP code details using CPRG API call
 	CPCodeDetailResponse struct {
 		ID               int              `json:"cpcodeId"`
@@ -37,6 +46,7 @@ type (
 		Type             string           `json:"type"`
 		Contracts        []CPCodeContract `json:"contracts"`
 		Products         []CPCodeProduct  `json:"products"`
+		AccessGroup      AccessGroup      `json:"accessGroup"`
 	}
 
 	// CPCodeItems contains a list of CPCode items
