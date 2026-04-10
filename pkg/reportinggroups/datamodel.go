@@ -6,13 +6,18 @@ import (
 )
 
 var (
-	_ validation.Validatable = &CreateReportingGroupRequest{}
-	_ validation.Validatable = &GetReportingGroupsRequest{}
-	_ validation.Validatable = &UpdateReportingGroupRequest{}
-	_ validation.Validatable = &DeleteReportingGroupRequest{}
-	_ validation.Validatable = &ListProductsRequest{}
-	_ validation.Validatable = &GetReportingGroupsWaterMarkLimitsRequest{}
-	_ validation.Validatable = &GetCPCodesWaterMarkLimitsRequest{}
+	_ validation.Validatable = CreateReportingGroupRequest{}
+	_ validation.Validatable = GetReportingGroupsRequest{}
+	_ validation.Validatable = UpdateReportingGroupRequest{}
+	_ validation.Validatable = DeleteReportingGroupRequest{}
+	_ validation.Validatable = ListProductsRequest{}
+	_ validation.Validatable = GetReportingGroupsWaterMarkLimitsRequest{}
+	_ validation.Validatable = GetCPCodesWaterMarkLimitsRequest{}
+	_ validation.Validatable = GetCPCodeRequest{}
+	_ validation.Validatable = UpdateCPCodeRequest{}
+	_ validation.Validatable = CPCodeContract{}
+	_ validation.Validatable = Product{}
+	_ validation.Validatable = CPCodeTimeZone{}
 )
 
 type (
@@ -177,13 +182,19 @@ type (
 
 	// CPCodeContract contains contract data for a CP code.
 	CPCodeContract struct {
+		// ContractID identifies the contract assigned to the CP code.
 		ContractID string `json:"contractId"`
-		Status     string `json:"status"`
+
+		// Status is the status of the contract assigned to the CP code.
+		Status string `json:"status,omitempty"`
 	}
 
 	// CPCodeTimeZone contains time zone data for a CP code.
 	CPCodeTimeZone struct {
-		TimeZoneID    string `json:"timezoneId"`
+		// TimeZoneID identifies the time zone.
+		TimeZoneID string `json:"timezoneId"`
+
+		// TimeZoneValue is the GMT time zone value.
 		TimeZoneValue string `json:"timezoneValue"`
 	}
 
@@ -226,7 +237,7 @@ type (
 		CPCodeName string `json:"cpcodeName"`
 
 		// DefaultTimeZone is the default GMT time zone assigned to the CP code.
-		DefaultTimeZone *string `json:"defaultTimezone"`
+		DefaultTimeZone string `json:"defaultTimezone"`
 
 		// OverrideTimeZone is the GMT time zone that overrides the default time zone.
 		OverrideTimeZone CPCodeTimeZone `json:"overrideTimezone"`
@@ -264,6 +275,39 @@ type (
 		// ContractID is the identifier for the contract for which you want to check water-mark limits.
 		ContractID string
 	}
+
+	// GetCPCodeRequest contains the parameters for fetching a single CP code's details.
+	GetCPCodeRequest struct {
+		// CPCodeID identifies the CP code.
+		CPCodeID int64
+	}
+
+	// GetCPCodeResponse is an alias for CPCodeDetails, returned by GetCPCode.
+	GetCPCodeResponse = CPCodeDetails
+
+	// UpdateCPCodeRequest contains the parameters for updating a specific CP code.
+	UpdateCPCodeRequest struct {
+		// CPCodeID identifies the CP code. Used as path parameter and included in the request body.
+		CPCodeID int64 `json:"cpcodeId"`
+
+		// CPCodeName is the descriptive label for the CP code.
+		CPCodeName string `json:"cpcodeName"`
+
+		// Purgeable indicates whether you can purge the content cached by the CP code.
+		Purgeable *bool `json:"purgeable,omitempty"`
+
+		// OverrideTimeZone is the GMT time zone that overrides the default time zone.
+		OverrideTimeZone *CPCodeTimeZone `json:"overrideTimezone,omitempty"`
+
+		// Contracts provides contract status information (required by API, pass through from GET response).
+		Contracts []CPCodeContract `json:"contracts"`
+
+		// Products is a collection of products and services assigned to the CP code (required by API, pass through from GET response).
+		Products []Product `json:"products"`
+	}
+
+	// UpdateCPCodeResponse is an alias for CPCodeDetails, returned by UpdateCPCode.
+	UpdateCPCodeResponse = CPCodeDetails
 
 	// GetCPCodesWaterMarkLimitsResponse is the response for getting CP codes water-mark limits.
 	GetCPCodesWaterMarkLimitsResponse struct {
@@ -329,4 +373,43 @@ func (r GetCPCodesWaterMarkLimitsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"ContractID": validation.Validate(r.ContractID, validation.Required),
 	})
+}
+
+// Validate validates GetCPCodeRequest.
+func (r GetCPCodeRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"CPCodeID": validation.Validate(r.CPCodeID, validation.Required),
+	})
+}
+
+// Validate validates UpdateCPCodeRequest.
+func (r UpdateCPCodeRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"CPCodeID":         validation.Validate(r.CPCodeID, validation.Required),
+		"CPCodeName":       validation.Validate(r.CPCodeName, validation.Required),
+		"Contracts":        validation.Validate(r.Contracts, validation.Required),
+		"Products":         validation.Validate(r.Products, validation.Required),
+		"OverrideTimeZone": validation.Validate(r.OverrideTimeZone),
+	})
+}
+
+// Validate validates CPCodeContract.
+func (c CPCodeContract) Validate() error {
+	return validation.Errors{
+		"ContractID": validation.Validate(c.ContractID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates Product.
+func (p Product) Validate() error {
+	return validation.Errors{
+		"ProductID": validation.Validate(p.ProductID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates CPCodeTimeZone.
+func (tz CPCodeTimeZone) Validate() error {
+	return validation.Errors{
+		"TimeZoneID": validation.Validate(tz.TimeZoneID, validation.Required),
+	}.Filter()
 }

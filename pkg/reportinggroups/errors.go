@@ -42,6 +42,12 @@ var (
 
 	// ErrGetCPCodesWaterMarkLimits is returned when there is an error getting CP codes water-mark limits.
 	ErrGetCPCodesWaterMarkLimits = errors.New("get CP codes water-mark limits")
+
+	// ErrGetCPCode is returned when there is an error fetching CP code details.
+	ErrGetCPCode = errors.New("get CP code detail")
+
+	// ErrUpdateCPCode is returned when there is an error updating a CP code.
+	ErrUpdateCPCode = errors.New("update CP code")
 )
 
 type (

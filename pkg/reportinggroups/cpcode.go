@@ -63,3 +63,57 @@ func (r *reportinggroups) GetCPCodesWaterMarkLimits(ctx context.Context, params 
 
 	return &result, nil
 }
+
+func (r *reportinggroups) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCodeResponse, error) {
+	logger := r.Log(ctx)
+	logger.Debug("GetCPCode")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetCPCode, ErrStructValidation, err)
+	}
+
+	req, err := request.NewGet(ctx, "/cprg/v1/cpcodes/%d", params.CPCodeID).Build()
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetCPCode, err)
+	}
+
+	var result GetCPCodeResponse
+	resp, err := r.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetCPCode, err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %w", ErrGetCPCode, r.Error(resp))
+	}
+
+	return &result, nil
+}
+
+func (r *reportinggroups) UpdateCPCode(ctx context.Context, params UpdateCPCodeRequest) (*UpdateCPCodeResponse, error) {
+	logger := r.Log(ctx)
+	logger.Debug("UpdateCPCode")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %w: %w", ErrUpdateCPCode, ErrStructValidation, err)
+	}
+
+	req, err := request.NewPut(ctx, "/cprg/v1/cpcodes/%d", params.CPCodeID).Build()
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrUpdateCPCode, err)
+	}
+
+	var result UpdateCPCodeResponse
+	resp, err := r.Exec(req, &result, params)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %w", ErrUpdateCPCode, err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("%w: %w", ErrUpdateCPCode, r.Error(resp))
+	}
+
+	return &result, nil
+}

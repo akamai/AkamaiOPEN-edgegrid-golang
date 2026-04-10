@@ -309,14 +309,16 @@ func TestCreateReportingGroup(t *testing.T) {
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups",
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrCreateReportingGroup, &Error{
+				want := &Error{
 					Code:       "internal.server.error",
 					Title:      "Internal Server Error",
 					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
 					Details:    nil,
-				})
-				assert.EqualError(t, err, want.Error())
+					HTTPStatus: 500,
+				}
+				assert.ErrorIs(t, err, want)
 				assert.ErrorIs(t, err, ErrCreateReportingGroup)
+				assert.EqualError(t, err, fmt.Errorf("%w: %w", ErrCreateReportingGroup, want).Error())
 			},
 		},
 	}
@@ -426,14 +428,16 @@ func TestGetReportingGroup(t *testing.T) {
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups/789",
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrGetReportingGroup, &Error{
+				want := &Error{
 					Code:       "internal.server.error",
 					Title:      "Internal Server Error",
 					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
 					Details:    nil,
-				})
-				assert.EqualError(t, err, want.Error())
+					HTTPStatus: 500,
+				}
+				assert.ErrorIs(t, err, want)
 				assert.ErrorIs(t, err, ErrGetReportingGroup)
+				assert.EqualError(t, err, fmt.Errorf("%w: %w", ErrGetReportingGroup, want).Error())
 			},
 		},
 	}
@@ -647,14 +651,16 @@ func TestUpdateReportingGroup(t *testing.T) {
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups/789",
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrUpdateReportingGroup, &Error{
+				want := &Error{
 					Code:       "internal.server.error",
 					Title:      "Internal Server Error",
 					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
 					Details:    nil,
-				})
-				assert.EqualError(t, err, want.Error())
+					HTTPStatus: 500,
+				}
+				assert.ErrorIs(t, err, want)
 				assert.ErrorIs(t, err, ErrUpdateReportingGroup)
+				assert.EqualError(t, err, fmt.Errorf("%w: %w", ErrUpdateReportingGroup, want).Error())
 			},
 		},
 	}
@@ -1079,14 +1085,16 @@ func TestListReportingGroups(t *testing.T) {
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups",
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrListReportingGroups, &Error{
+				want := &Error{
 					Code:       "internal.server.error",
 					Title:      "Internal Server Error",
 					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
 					Details:    nil,
-				})
-				assert.EqualError(t, err, want.Error())
+					HTTPStatus: 500,
+				}
+				assert.ErrorIs(t, err, want)
 				assert.ErrorIs(t, err, ErrListReportingGroups)
+				assert.EqualError(t, err, fmt.Errorf("%w: %w", ErrListReportingGroups, want).Error())
 			},
 		},
 	}
@@ -1151,14 +1159,16 @@ func TestDeleteReportingGroup(t *testing.T) {
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups/789",
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrDeleteReportingGroup, &Error{
+				want := &Error{
 					Code:       "internal.server.error",
 					Title:      "Internal Server Error",
 					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
 					Details:    nil,
-				})
-				assert.EqualError(t, err, want.Error())
+					HTTPStatus: 500,
+				}
+				assert.ErrorIs(t, err, want)
 				assert.ErrorIs(t, err, ErrDeleteReportingGroup)
+				assert.EqualError(t, err, fmt.Errorf("%w: %w", ErrDeleteReportingGroup, want).Error())
 			},
 		},
 	}
@@ -1286,14 +1296,16 @@ func TestListProducts(t *testing.T) {
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups/789/products",
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrListProducts, &Error{
+				want := &Error{
 					Code:       "internal.server.error",
 					Title:      "Internal Server Error",
 					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
 					Details:    nil,
-				})
-				assert.EqualError(t, err, want.Error())
+					HTTPStatus: 500,
+				}
+				assert.ErrorIs(t, err, want)
 				assert.ErrorIs(t, err, ErrListProducts)
+				assert.EqualError(t, err, fmt.Errorf("%w: %w", ErrListProducts, want).Error())
 			},
 		},
 	}
@@ -1376,7 +1388,7 @@ func TestGetReportingGroupsWaterMarkLimits(t *testing.T) {
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups/contracts/INVALID_CONTRACT_ID/watermark-limits",
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrGetReportingGroupsWaterMarkLimits, &Error{
+				want := &Error{
 					Code:       "bad.request",
 					Title:      "Bad Request",
 					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
@@ -1386,9 +1398,11 @@ func TestGetReportingGroupsWaterMarkLimits(t *testing.T) {
 							Message: "Invalid contract id:INVALID_CONTRACT_ID",
 						},
 					},
-				})
-				assert.EqualError(t, err, want.Error())
+					HTTPStatus: 400,
+				}
+				assert.ErrorIs(t, err, want)
 				assert.ErrorIs(t, err, ErrGetReportingGroupsWaterMarkLimits)
+				assert.EqualError(t, err, fmt.Errorf("%w: %w", ErrGetReportingGroupsWaterMarkLimits, want).Error())
 			},
 		},
 		"500 internal server error": {
@@ -1404,14 +1418,16 @@ func TestGetReportingGroupsWaterMarkLimits(t *testing.T) {
 			}`,
 			expectedPath: "/cprg/v1/reporting-groups/contracts/C-0N7RAC7/watermark-limits",
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrGetReportingGroupsWaterMarkLimits, &Error{
+				want := &Error{
 					Code:       "internal.server.error",
 					Title:      "Internal Server Error",
 					IncidentID: "aaaa111-bb22-cc33-dd44-dfeeggda5566",
 					Details:    nil,
-				})
-				assert.EqualError(t, err, want.Error())
+					HTTPStatus: 500,
+				}
+				assert.ErrorIs(t, err, want)
 				assert.ErrorIs(t, err, ErrGetReportingGroupsWaterMarkLimits)
+				assert.EqualError(t, err, fmt.Errorf("%w: %w", ErrGetReportingGroupsWaterMarkLimits, want).Error())
 			},
 		},
 	}

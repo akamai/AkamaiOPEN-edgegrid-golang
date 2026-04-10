@@ -274,6 +274,8 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 }
 
 // GetCPCodeDetail is used to fetch CP code detail with provided ID using CPRG API
+//
+// Deprecated: Use reportinggroups.GetCPCode instead.
 func (p *papi) GetCPCodeDetail(ctx context.Context, ID int) (*CPCodeDetailResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("GetCPCodeDetail")
@@ -337,6 +339,8 @@ func (p *papi) CreateCPCode(ctx context.Context, params CreateCPCodeRequest) (*C
 }
 
 // UpdateCPCode is used to update CP code using CPRG API
+//
+// Deprecated: Use reportinggroups.UpdateCPCode instead.
 func (p *papi) UpdateCPCode(ctx context.Context, r UpdateCPCodeRequest) (*CPCodeDetailResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("UpdateCPCode")

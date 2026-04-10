@@ -53,6 +53,16 @@ type (
 		// See: https://techdocs.akamai.com/cp-codes/reference/get-cpcodes
 		ListCPCodes(ctx context.Context, params ListCPCodesRequest) (*ListCPCodesResponse, error)
 
+		// GetCPCode retrieves details of a specific CP code.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/get-cpcode
+		GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCodeResponse, error)
+
+		// UpdateCPCode modifies a specific CP code. Only cpcodeName, overrideTimezone, and purgeable can be changed.
+		//
+		// See: https://techdocs.akamai.com/cp-codes/reference/put-cpcode
+		UpdateCPCode(ctx context.Context, params UpdateCPCodeRequest) (*UpdateCPCodeResponse, error)
+
 		// GetCPCodesWaterMarkLimits gets the water-mark limits for CP codes for the account associated with a specific contract.
 		//
 		// See: https://techdocs.akamai.com/cp-codes/reference/get-cpcodes-watermark-limits

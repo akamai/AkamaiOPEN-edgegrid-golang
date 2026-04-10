@@ -60,11 +60,18 @@
     * Added support for the Reporting Groups API:
         * [GetReportingGroupsWaterMarkLimits](https://techdocs.akamai.com/cp-codes/reference/get-reporting-groups-watermark-limits) - Gets water-mark limits for reporting groups.
         * [GetCPCodesWaterMarkLimits](https://techdocs.akamai.com/cp-codes/reference/get-cpcodes-watermark-limits) - Gets water-mark limits for CP codes.
+    * Added support for the CP Codes API:
         * [ListCPCodes](https://techdocs.akamai.com/cp-codes/reference/get-cpcodes) - Lists CP codes.
+        * [GetCPCode](https://techdocs.akamai.com/cp-codes/reference/get-cpcode) - Gets details of a specific CP code.
+        * [UpdateCPCode](https://techdocs.akamai.com/cp-codes/reference/put-cpcode) - Updates a specific CP code.
 
 
 
+### Deprecations:
 
+* PAPI
+    * Deprecated `GetCPCodeDetail` - use `reportinggroups.GetCPCode` instead.
+    * Deprecated `UpdateCPCode` - use `reportinggroups.UpdateCPCode` instead.
 
 
 

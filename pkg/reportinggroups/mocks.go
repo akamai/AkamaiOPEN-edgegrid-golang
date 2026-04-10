@@ -99,3 +99,23 @@ func (m *Mock) GetCPCodesWaterMarkLimits(ctx context.Context, req GetCPCodesWate
 
 	return args.Get(0).(*GetCPCodesWaterMarkLimitsResponse), args.Error(1)
 }
+
+func (m *Mock) GetCPCode(ctx context.Context, req GetCPCodeRequest) (*GetCPCodeResponse, error) {
+	args := m.Called(ctx, req)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*GetCPCodeResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateCPCode(ctx context.Context, req UpdateCPCodeRequest) (*UpdateCPCodeResponse, error) {
+	args := m.Called(ctx, req)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*UpdateCPCodeResponse), args.Error(1)
+}

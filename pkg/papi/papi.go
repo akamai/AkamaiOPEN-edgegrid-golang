@@ -91,6 +91,8 @@ type (
 
 		// GetCPCodeDetail lists detailed information about a specific CP code
 		//
+		// Deprecated: Use reportinggroups.GetCPCode instead.
+		//
 		// See: https://techdocs.akamai.com/cp-codes/reference/get-cpcode
 		GetCPCodeDetail(context.Context, int) (*CPCodeDetailResponse, error)
 
@@ -100,6 +102,8 @@ type (
 		CreateCPCode(context.Context, CreateCPCodeRequest) (*CreateCPCodeResponse, error)
 
 		// UpdateCPCode modifies a specific CP code. You should only modify a CP code's name, time zone, and purgeable member
+		//
+		// Deprecated: Use reportinggroups.UpdateCPCode instead.
 		//
 		// See: https://techdocs.akamai.com/cp-codes/reference/put-cpcode
 		UpdateCPCode(context.Context, UpdateCPCodeRequest) (*CPCodeDetailResponse, error)
