@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -70,8 +71,7 @@ func (v UpdatePenaltyBoxRequest) Validate() error {
 		"ConfigID": validation.Validate(v.ConfigID, validation.Required),
 		"Version":  validation.Validate(v.Version, validation.Required),
 		"PolicyID": validation.Validate(v.PolicyID, validation.Required),
-		"Action": validation.Validate(v.Action, validation.Required, validation.In(string(ActionTypeAlert), string(ActionTypeDeny), string(ActionTypeNone)).Error(
-			fmt.Sprintf("value '%s' is invalid. Must be one of: 'alert', 'deny' or 'none'", v.Action))),
+		"Action":   validation.Validate(v.Action, validation.Required, validateActions),
 	}.Filter()
 }
 
@@ -141,3 +141,20 @@ func (p *appsec) UpdatePenaltyBox(ctx context.Context, params UpdatePenaltyBoxRe
 
 	return &result, nil
 }
+
+// validateActions ensures actions are correct for API call.
+// Allowed values: alert, deny, deny_custom_{custom_deny_id}, none.
+var validateActions = validation.By(func(value interface{}) error {
+	v, ok := value.(string)
+	if !ok {
+		return fmt.Errorf("value must be a string")
+	}
+	allowed := map[string]bool{"alert": true, "deny": true, "none": true}
+	if allowed[v] {
+		return nil
+	}
+	if !strings.HasPrefix(v, "deny_custom_") || strings.TrimPrefix(v, "deny_custom_") == "" {
+		return fmt.Errorf("value '%s' is invalid. Must be one of: alert, deny, deny_custom_{custom_deny_id}, none", v)
+	}
+	return nil
+})

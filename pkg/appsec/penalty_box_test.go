@@ -173,3 +173,107 @@ func TestAppSec_UpdatePenaltyBox(t *testing.T) {
 		})
 	}
 }
+
+func TestGetPenaltyBoxRequest_Validate(t *testing.T) {
+	tests := map[string]struct {
+		req       GetPenaltyBoxRequest
+		withError string
+	}{
+		"valid request - all fields populated": {
+			req: GetPenaltyBoxRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
+			},
+		},
+		"missing all required fields": {
+			req:       GetPenaltyBoxRequest{},
+			withError: "ConfigID: cannot be blank; PolicyID: cannot be blank; Version: cannot be blank.",
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			err := test.req.Validate()
+			if test.withError != "" {
+				assert.EqualError(t, err, test.withError)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestUpdatePenaltyBoxRequest_Validate(t *testing.T) {
+	tests := map[string]struct {
+		req       UpdatePenaltyBoxRequest
+		withError string
+	}{
+		"valid request - all fields populated": {
+			req: UpdatePenaltyBoxRequest{
+				ConfigID:             43253,
+				Version:              15,
+				PolicyID:             "AAAA_81230",
+				Action:               string(ActionTypeDeny),
+				PenaltyBoxProtection: true,
+			},
+		},
+		"valid request - action alert": {
+			req: UpdatePenaltyBoxRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
+				Action:   string(ActionTypeAlert),
+			},
+		},
+		"valid request - action none": {
+			req: UpdatePenaltyBoxRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
+				Action:   string(ActionTypeNone),
+			},
+		},
+		"valid request - deny_custom_ ": {
+			req: UpdatePenaltyBoxRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
+				Action:   "deny_custom_1012254",
+			},
+		},
+		"invalid action": {
+			req: UpdatePenaltyBoxRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
+				Action:   "invalid_action",
+			},
+			withError: "Action: value 'invalid_action' is invalid. Must be one of: alert, deny, deny_custom_{custom_deny_id}, none.",
+		},
+		"invalid action - deny_custom_ with blank id": {
+			req: UpdatePenaltyBoxRequest{
+				ConfigID: 43253,
+				Version:  15,
+				PolicyID: "AAAA_81230",
+				Action:   "deny_custom_",
+			},
+			withError: "Action: value 'deny_custom_' is invalid. Must be one of: alert, deny, deny_custom_{custom_deny_id}, none.",
+		},
+		"missing all required fields": {
+			req:       UpdatePenaltyBoxRequest{},
+			withError: "Action: cannot be blank; ConfigID: cannot be blank; PolicyID: cannot be blank; Version: cannot be blank.",
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			err := test.req.Validate()
+			if test.withError != "" {
+				assert.EqualError(t, err, test.withError)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}

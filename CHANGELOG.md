@@ -24,7 +24,8 @@
 ### FEATURES/ENHANCEMENTS:
 
 
-
+* Appsec
+  * Relaxed validation of the `UpdatePenaltyBoxRequest` to allow `deny_custom_{custom_deny_id}` value.
 
 
 
