@@ -26,6 +26,7 @@
 
 * Appsec
   * Relaxed validation of the `UpdatePenaltyBoxRequest` to allow `deny_custom_{custom_deny_id}` value.
+  * Added `ApplyAccountProtectionControls` field to the `UpdatePolicyProtectionsRequest` structure.
 
 
 
@@ -68,7 +69,8 @@
 
 ### BUG FIXES:
 
-
+* Appsec
+  * Removed the incorrectly allowed `StatusCreated` response status from the `UpdatePolicyProtections` method.
 
 
 

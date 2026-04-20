@@ -93,12 +93,6 @@ func TestAppSec_UpdatePolicyProtections(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := UpdatePolicyProtectionsRequest{}
-
-	reqData := compactJSON(loadFixtureBytes("testdata/TestPolicyProtections/PolicyProtections.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
-
 	tests := map[string]struct {
 		params           UpdatePolicyProtectionsRequest
 		responseStatus   int
@@ -110,14 +104,24 @@ func TestAppSec_UpdatePolicyProtections(t *testing.T) {
 	}{
 		"200 Success": {
 			params: UpdatePolicyProtectionsRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "AAAA_81230",
+				ConfigID:                       43253,
+				Version:                        15,
+				PolicyID:                       "AAAA_81230",
+				ApplyAPIConstraints:            true,
+				ApplyAccountProtectionControls: true,
+				ApplyApplicationLayerControls:  true,
+				ApplyBotmanControls:            true,
+				ApplyNetworkLayerControls:      true,
+				ApplyRateControls:              true,
+				ApplyReputationControls:        true,
+				ApplySlowPostControls:          true,
+				ApplyMalwareControls:           true,
+				ApplyURLProtectionControls:     true,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusCreated,
+			responseStatus:   http.StatusOK,
 			responseBody:     respData,
 			expectedResponse: &result,
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/protections",

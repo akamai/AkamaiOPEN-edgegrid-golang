@@ -32,18 +32,19 @@ type (
 
 	// UpdatePolicyProtectionsRequest is used to modify the policy protection setting.
 	UpdatePolicyProtectionsRequest struct {
-		ConfigID                      int    `json:"-"`
-		Version                       int    `json:"-"`
-		PolicyID                      string `json:"-"`
-		ApplyAPIConstraints           bool   `json:"applyApiConstraints"`
-		ApplyApplicationLayerControls bool   `json:"applyApplicationLayerControls"`
-		ApplyBotmanControls           bool   `json:"applyBotmanControls"`
-		ApplyNetworkLayerControls     bool   `json:"applyNetworkLayerControls"`
-		ApplyRateControls             bool   `json:"applyRateControls"`
-		ApplyReputationControls       bool   `json:"applyReputationControls"`
-		ApplySlowPostControls         bool   `json:"applySlowPostControls"`
-		ApplyURLProtectionControls    bool   `json:"applyUrlProtectionControls"`
-		ApplyMalwareControls          bool   `json:"applyMalwareControls"`
+		ConfigID                       int    `json:"-"`
+		Version                        int    `json:"-"`
+		PolicyID                       string `json:"-"`
+		ApplyAPIConstraints            bool   `json:"applyApiConstraints"`
+		ApplyAccountProtectionControls bool   `json:"applyAccountProtectionControls"`
+		ApplyApplicationLayerControls  bool   `json:"applyApplicationLayerControls"`
+		ApplyBotmanControls            bool   `json:"applyBotmanControls"`
+		ApplyNetworkLayerControls      bool   `json:"applyNetworkLayerControls"`
+		ApplyRateControls              bool   `json:"applyRateControls"`
+		ApplyReputationControls        bool   `json:"applyReputationControls"`
+		ApplySlowPostControls          bool   `json:"applySlowPostControls"`
+		ApplyURLProtectionControls     bool   `json:"applyUrlProtectionControls"`
+		ApplyMalwareControls           bool   `json:"applyMalwareControls"`
 	}
 
 	// PolicyProtectionsResponse is returned from GetPolicyProtections, UpdatePolicyProtections, and RemovePolicyProtections.
@@ -139,7 +140,7 @@ func (p *appsec) UpdatePolicyProtections(ctx context.Context, params UpdatePolic
 	}
 	defer session.CloseResponseBody(resp)
 
-	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+	if resp.StatusCode != http.StatusOK {
 		return nil, p.Error(resp)
 	}
 
