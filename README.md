@@ -789,6 +789,7 @@ To see what methods you can use within a given package, go to the `pkg` director
 | [Network Lists](./pkg/networklists/)           | Automate the creation, deployment, and management of lists used in ​Akamai​ security products.                                                                                         |
 | [Pointer Record](./pkg/ptr/)                   | Create pointers to values of any type.                                                                                                                                                 |
 | [Property Manager](./pkg/papi/)                | Define rules and behaviors that govern your website delivery based on match criteria.                                                                                                  |
+| [Reporting Groups](./pkg/reportinggroups/)                | Break down your invoices and reports on your site's traffic by reporting groups rather than by contracts or products only.                                                                                                  |
 | [Session](./pkg/session/)                      | Manage the base secure HTTP client and requests for Akamai APIs.                                                                                                                       |
 
 ### Example
