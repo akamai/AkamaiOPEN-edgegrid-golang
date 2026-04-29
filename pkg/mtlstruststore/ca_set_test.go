@@ -582,6 +582,212 @@ func TestListCASets(t *testing.T) {
 				CASets: []CASetResponse{},
 			},
 		},
+		"200 OK with empty CASetStatuses - defaults to NOT_DELETED": {
+			request: ListCASetsRequest{
+				CASetStatuses: []string{},
+			},
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"caSets": [
+					{
+						"accountId": "A-CCOUNT",
+						"caSetId": "199",
+						"caSetLink": "/mtls-edge-truststore/v2/ca-sets/199",
+						"caSetName": "test",
+						"caSetStatus": "NOT_DELETED",
+						"createdBy": "jdoe",
+						"createdDate": "2025-04-01T15:33:48.464941Z",
+						"deletedBy": null,
+						"deletedDate": null,
+						"description": "",
+						"latestVersion": null,
+						"latestVersionLink": null,
+						"productionVersion": null,
+						"productionVersionLink": null,
+						"stagingVersion": null,
+						"stagingVersionLink": null,
+						"versionsLink": "/mtls-edge-truststore/v2/ca-sets/199/versions/"
+					}
+				]
+			}`,
+			expectedResponse: &ListCASetsResponse{
+				CASets: []CASetResponse{
+					{
+						AccountID:             "A-CCOUNT",
+						CASetID:               "199",
+						CASetLink:             "/mtls-edge-truststore/v2/ca-sets/199",
+						CASetName:             "test",
+						CASetStatus:           "NOT_DELETED",
+						CreatedBy:             "jdoe",
+						CreatedDate:           test.NewTimeFromString(t, "2025-04-01T15:33:48.464941Z"),
+						DeletedBy:             nil,
+						DeletedDate:           nil,
+						Description:           ptr.To(""),
+						LatestVersion:         nil,
+						LatestVersionLink:     nil,
+						ProductionVersion:     nil,
+						ProductionVersionLink: nil,
+						StagingVersion:        nil,
+						StagingVersionLink:    nil,
+						VersionsLink:          "/mtls-edge-truststore/v2/ca-sets/199/versions/",
+					},
+				},
+			},
+		},
+		"200 OK with single CASetStatuses filter": {
+			request: ListCASetsRequest{
+				CASetStatuses: []string{CASetStatusDeleted},
+			},
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets?caSetStatus=DELETED",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"caSets": [
+					{
+						"accountId": "A-CCOUNT",
+						"caSetId": "75201",
+						"caSetLink": "/mtls-edge-truststore/v2/ca-sets/75201",
+						"caSetName": "test",
+						"caSetStatus": "DELETED",
+						"createdBy": "migration_run",
+						"createdDate": "2023-10-17T23:04:52.884782Z",
+						"deletedBy": "migration_run",
+						"deletedDate": "2025-06-04T12:19:33.095023Z",
+						"description": "Imported from Techpreview TCM",
+						"latestVersion": 3,
+						"latestVersionLink": "/mtls-edge-truststore/v2/ca-sets/75201/versions/3",
+						"productionVersion": null,
+						"productionVersionLink": null,
+						"stagingVersion": null,
+						"stagingVersionLink": null,
+						"versionsLink": "/mtls-edge-truststore/v2/ca-sets/75201/versions/"
+					}
+				]
+			}`,
+			expectedResponse: &ListCASetsResponse{
+				CASets: []CASetResponse{
+					{
+						AccountID:             "A-CCOUNT",
+						CASetID:               "75201",
+						CASetLink:             "/mtls-edge-truststore/v2/ca-sets/75201",
+						CASetName:             "test",
+						CASetStatus:           "DELETED",
+						CreatedBy:             "migration_run",
+						CreatedDate:           test.NewTimeFromString(t, "2023-10-17T23:04:52.884782Z"),
+						DeletedBy:             ptr.To("migration_run"),
+						DeletedDate:           ptr.To(test.NewTimeFromString(t, "2025-06-04T12:19:33.095023Z")),
+						Description:           ptr.To("Imported from Techpreview TCM"),
+						LatestVersion:         ptr.To(int64(3)),
+						LatestVersionLink:     ptr.To("/mtls-edge-truststore/v2/ca-sets/75201/versions/3"),
+						ProductionVersion:     nil,
+						ProductionVersionLink: nil,
+						StagingVersion:        nil,
+						StagingVersionLink:    nil,
+						VersionsLink:          "/mtls-edge-truststore/v2/ca-sets/75201/versions/",
+					},
+				},
+			},
+		},
+		"200 OK with multiple CASetStatuses filter": {
+			request: ListCASetsRequest{
+				CASetStatuses: []string{CASetStatusDeleted, CASetStatusNotDeleted},
+			},
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets?caSetStatus=DELETED%2CNOT_DELETED",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"caSets": [
+					{
+						"accountId": "A-CCOUNT",
+						"caSetId": "199",
+						"caSetLink": "/mtls-edge-truststore/v2/ca-sets/199",
+						"caSetName": "test",
+						"caSetStatus": "NOT_DELETED",
+						"createdBy": "jdoe",
+						"createdDate": "2025-04-01T15:33:48.464941Z",
+						"deletedBy": null,
+						"deletedDate": null,
+						"description": "",
+						"latestVersion": null,
+						"latestVersionLink": null,
+						"productionVersion": null,
+						"productionVersionLink": null,
+						"stagingVersion": null,
+						"stagingVersionLink": null,
+						"versionsLink": "/mtls-edge-truststore/v2/ca-sets/199/versions/"
+					},
+					{
+						"accountId": "A-CCOUNT",
+						"caSetId": "75201",
+						"caSetLink": "/mtls-edge-truststore/v2/ca-sets/75201",
+						"caSetName": "test2",
+						"caSetStatus": "DELETED",
+						"createdBy": "migration_run",
+						"createdDate": "2023-10-17T23:04:52.884782Z",
+						"deletedBy": "migration_run",
+						"deletedDate": "2025-06-04T12:19:33.095023Z",
+						"description": "Imported from Techpreview TCM",
+						"latestVersion": 3,
+						"latestVersionLink": "/mtls-edge-truststore/v2/ca-sets/75201/versions/3",
+						"productionVersion": null,
+						"productionVersionLink": null,
+						"stagingVersion": null,
+						"stagingVersionLink": null,
+						"versionsLink": "/mtls-edge-truststore/v2/ca-sets/75201/versions/"
+					}
+				]
+			}`,
+			expectedResponse: &ListCASetsResponse{
+				CASets: []CASetResponse{
+					{
+						AccountID:             "A-CCOUNT",
+						CASetID:               "199",
+						CASetLink:             "/mtls-edge-truststore/v2/ca-sets/199",
+						CASetName:             "test",
+						CASetStatus:           "NOT_DELETED",
+						CreatedBy:             "jdoe",
+						CreatedDate:           test.NewTimeFromString(t, "2025-04-01T15:33:48.464941Z"),
+						DeletedBy:             nil,
+						DeletedDate:           nil,
+						Description:           ptr.To(""),
+						LatestVersion:         nil,
+						LatestVersionLink:     nil,
+						ProductionVersion:     nil,
+						ProductionVersionLink: nil,
+						StagingVersion:        nil,
+						StagingVersionLink:    nil,
+						VersionsLink:          "/mtls-edge-truststore/v2/ca-sets/199/versions/",
+					},
+					{
+						AccountID:             "A-CCOUNT",
+						CASetID:               "75201",
+						CASetLink:             "/mtls-edge-truststore/v2/ca-sets/75201",
+						CASetName:             "test2",
+						CASetStatus:           "DELETED",
+						CreatedBy:             "migration_run",
+						CreatedDate:           test.NewTimeFromString(t, "2023-10-17T23:04:52.884782Z"),
+						DeletedBy:             ptr.To("migration_run"),
+						DeletedDate:           ptr.To(test.NewTimeFromString(t, "2025-06-04T12:19:33.095023Z")),
+						Description:           ptr.To("Imported from Techpreview TCM"),
+						LatestVersion:         ptr.To(int64(3)),
+						LatestVersionLink:     ptr.To("/mtls-edge-truststore/v2/ca-sets/75201/versions/3"),
+						ProductionVersion:     nil,
+						ProductionVersionLink: nil,
+						StagingVersion:        nil,
+						StagingVersionLink:    nil,
+						VersionsLink:          "/mtls-edge-truststore/v2/ca-sets/75201/versions/",
+					},
+				},
+			},
+		},
+		"invalid CASetStatuses - validation error": {
+			request: ListCASetsRequest{
+				CASetStatuses: []string{"INVALID"},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "list ca sets failed: struct validation: CASetStatuses: list element 'INVALID' is invalid. "+
+					"Each element must be one of: 'NOT_DELETED', 'DELETED', 'DELETING'", err.Error())
+			},
+		},
 		"invalid network - validation error": {
 			request: ListCASetsRequest{
 				ActivatedOn: "PROD",

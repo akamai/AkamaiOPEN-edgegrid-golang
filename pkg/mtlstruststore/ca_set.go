@@ -7,10 +7,12 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/texts"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -98,6 +100,9 @@ type (
 		// The values that could be provided are `INACTIVE`, `STAGING`, `PRODUCTION`, `STAGING+PRODUCTION`, `PRODUCTION+STAGING`, `STAGING,PRODUCTION`, `PRODUCTION,STAGING`.
 		// A CA set will not be included if it was created but none of its versions was ever activated.
 		ActivatedOn Network
+
+		// CASetStatuses filters CA sets by status values. Allowed values: `NOT_DELETED`, `DELETING`, `DELETED`. Defaults to `NOT_DELETED`.
+		CASetStatuses []string
 	}
 
 	// ListCASetsResponse contains response from ListCASets.
@@ -436,8 +441,31 @@ func (r ListCASetsRequest) Validate() error {
 			validation.Length(0, 64),
 			validation.Match(CASetNameRegex).Error(CASetNameDescription),
 			validateCASetName()),
-		"ActivatedOn": validation.Validate(r.ActivatedOn, r.ActivatedOn.Validate()),
+		"ActivatedOn":   validation.Validate(r.ActivatedOn, r.ActivatedOn.Validate()),
+		"CASetStatuses": validation.Validate(r.CASetStatuses, validation.By(caSetStatusRule)),
 	})
+}
+
+// AllCASetStatuses returns list of all allowed CA set status values.
+func AllCASetStatuses() []string {
+	return []string{CASetStatusNotDeleted, CASetStatusDeleted, CASetStatusDeleting}
+}
+
+func caSetStatusRule(value any) error {
+	statuses, ok := value.([]string)
+	if !ok {
+		return fmt.Errorf("expected []string, got %T", value)
+	}
+
+	allCASetStatuses := AllCASetStatuses()
+	for _, s := range statuses {
+		if !slices.Contains(allCASetStatuses, s) {
+			return fmt.Errorf("list element '%s' is invalid. Each element must be one of: %s",
+				s, "'"+strings.Join(allCASetStatuses, "', '")+"'")
+		}
+	}
+
+	return nil
 }
 
 // Validate validates DeleteCASetsRequest.
@@ -587,6 +615,9 @@ func (m *mtlstruststore) ListCASets(ctx context.Context, params ListCASetsReques
 	}
 	if params.ActivatedOn != "" {
 		q.Add("activatedOn", string(params.ActivatedOn))
+	}
+	if len(params.CASetStatuses) > 0 {
+		q.Add("caSetStatus", texts.JoinStringBased(params.CASetStatuses, ","))
 	}
 	uri.RawQuery = q.Encode()
 

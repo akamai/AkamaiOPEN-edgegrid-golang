@@ -57,6 +57,13 @@
 
 
 
+* mTLS Truststore
+  * Added the `CASetStatuses` field to the `ListCASetsRequest` that allows filtering CA sets by their status - `NOT_DELETED`, `DELETING`, and `DELETED`.
+
+
+
+
+
 
 
 
