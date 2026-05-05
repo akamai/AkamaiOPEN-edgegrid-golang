@@ -82,6 +82,9 @@ type (
 
 		// DeletedBy is the user who deleted the CA set if the CA set has been deleted, `nil` otherwise.
 		DeletedBy *string `json:"deletedBy"`
+
+		// RemovalDate is the time when the CA set will be permanently deleted from the system. The value is null when the CA set is not scheduled for deletion.
+		RemovalDate *time.Time `json:"removalDate"`
 	}
 
 	// CreateCASetResponse contains response from CreateCASet.
@@ -269,6 +272,9 @@ type (
 		// Usually 300 seconds after the deletion request was made.
 		// This header value is returned only if the CA set deletion status is "IN_PROGRESS".
 		RetryAfter time.Time
+
+		// RemovalDate is the time when the CA set will be permanently deleted from the system. The value is null when the CA set is not scheduled for deletion.
+		RemovalDate *time.Time `json:"removalDate"`
 	}
 
 	// CASetNetworkDeleteStatus holds information about one network for GetCASetDeleteStatus response.
@@ -330,7 +336,7 @@ type (
 
 	// CASetActivity holds one activity entry from ListCASetActivities response.
 	CASetActivity struct {
-		// Type is activity. Could be one of: "CREATE_CA_SET", "CREATE_CA_SET_VERSION", "ACTIVATE_CA_SET_VERSION", "DEACTIVATE_CA_SET_VERSION", "DELETE_CA_SET".
+		// Type is activity. Could be one of: "CREATE_CA_SET", "CREATE_CA_SET_VERSION", "ACTIVATE_CA_SET_VERSION", "DEACTIVATE_CA_SET_VERSION", "DELETE_CA_SET", "REMOVE_CA_SET", "REMOVE_CA_SET_VERSION", "DELETE_CA_SET_VERSION".
 		Type string `json:"type"`
 
 		// Network is the network for any activation-related activities, either "STAGING" or "PRODUCTION".

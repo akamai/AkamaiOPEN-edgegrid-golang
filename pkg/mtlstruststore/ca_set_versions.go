@@ -6,9 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/texts"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -55,6 +59,9 @@ type (
 
 		// ActiveVersionsOnly includes only staging or production active versions if true. Defaults to false.
 		ActiveVersionsOnly bool
+
+		// CASetVersionStatuses filters CA sets by status values. Allowed values: `NOT_DELETED`, `DELETED`. Defaults to `NOT_DELETED`.
+		CASetVersionStatuses []string
 	}
 
 	// GetCASetVersionRequest represents a request to retrieve details of a specific CA Set version.
@@ -115,6 +122,15 @@ type (
 
 		// Description is an optional description of the certificate.
 		Description *string `json:"description,omitempty"`
+	}
+
+	// DeleteCASetVersionRequest represents a request to mark a CA set version for future deletion.
+	DeleteCASetVersionRequest struct {
+		// CASetID is a unique identifier representing the CA set.
+		CASetID string
+
+		// Version is the version number within the CA Set, starting at 1 and incrementing sequentially.
+		Version int64
 	}
 
 	// CertificateResponse represents details of a certificate returned for a CA Set version.
@@ -252,6 +268,12 @@ type (
 
 		// Validation contains any warnings or errors related to the CA Set version.
 		Validation *Validation `json:"validation"`
+
+		// RemovalDate is the time when the CA set will be permanently deleted from the system. The value is null when the CA set is not scheduled for deletion.
+		RemovalDate *time.Time `json:"removalDate"`
+
+		// CASetVersionStatus indicates the CA set version status, one of "NOT_DELETED" or "DELETED".
+		CASetVersionStatus string `json:"caSetVersionStatus"`
 	}
 )
 
@@ -268,6 +290,8 @@ var (
 	ErrGetCASetVersionCertificates = errors.New("fetching certificates for a CA set version")
 	// ErrUpdateCASetVersion represents an error when updating a CA set version fails.
 	ErrUpdateCASetVersion = errors.New("updating a CA set version")
+	// ErrDeleteCASetVersion represents an error when marking a CA set version for deletion fails.
+	ErrDeleteCASetVersion = errors.New("deleting a CA set version")
 )
 
 // CertificateStatus represents the state of certificates in a CA set version.
@@ -305,8 +329,31 @@ func (v CreateCASetVersionRequest) Validate() error {
 // Validate validates a ListCASetVersionsRequest.
 func (v ListCASetVersionsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"CASetID": validation.Validate(v.CASetID, validation.Required),
+		"CASetID":              validation.Validate(v.CASetID, validation.Required),
+		"CASetVersionStatuses": validation.Validate(v.CASetVersionStatuses, validation.By(caSetVersionStatusRule)),
 	})
+}
+
+// AllCASetVersionStatuses returns list of all allowed CA set version status values.
+func AllCASetVersionStatuses() []string {
+	return []string{CASetStatusNotDeleted, CASetStatusDeleted}
+}
+
+func caSetVersionStatusRule(value any) error {
+	statuses, ok := value.([]string)
+	if !ok {
+		return fmt.Errorf("expected []string, got %T", value)
+	}
+
+	allCASetStatuses := AllCASetVersionStatuses()
+	for _, s := range statuses {
+		if !slices.Contains(allCASetStatuses, s) {
+			return fmt.Errorf("list element '%s' is invalid. Each element must be one of: %s",
+				s, "'"+strings.Join(allCASetStatuses, "', '")+"'")
+		}
+	}
+
+	return nil
 }
 
 // Validate validates a UpdateCASetVersionRequest.
@@ -554,6 +601,10 @@ func (m *mtlstruststore) ListCASetVersions(ctx context.Context, params ListCASet
 		query.Set("activeVersionsOnly", strconv.FormatBool(params.ActiveVersionsOnly))
 	}
 
+	if len(params.CASetVersionStatuses) > 0 {
+		query.Set("caSetVersionStatus", texts.JoinStringBased(params.CASetVersionStatuses, ","))
+	}
+
 	uri.RawQuery = query.Encode()
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
@@ -656,4 +707,39 @@ func (m *mtlstruststore) UpdateCASetVersion(ctx context.Context, params UpdateCA
 	}
 
 	return &result, nil
+}
+
+// Validate validates a DeleteCASetVersionRequest.
+func (v DeleteCASetVersionRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"CASetID": validation.Validate(v.CASetID, validation.Required),
+		"Version": validation.Validate(v.Version, validation.Required),
+	})
+}
+
+func (m *mtlstruststore) DeleteCASetVersion(ctx context.Context, params DeleteCASetVersionRequest) error {
+	logger := m.Log(ctx)
+	logger.Debug("DeleteCASetVersion")
+
+	if err := params.Validate(); err != nil {
+		return fmt.Errorf("%s: %w: %s", ErrDeleteCASetVersion, ErrStructValidation, err)
+	}
+
+	req, err := request.NewDelete(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/versions/%d", params.CASetID, params.Version).
+		Build()
+	if err != nil {
+		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteCASetVersion, err)
+	}
+
+	resp, err := m.Exec(req, nil)
+	if err != nil {
+		return fmt.Errorf("%w: request failed: %s", ErrDeleteCASetVersion, err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusNoContent {
+		return m.Error(resp)
+	}
+
+	return nil
 }

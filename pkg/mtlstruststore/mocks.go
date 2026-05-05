@@ -209,3 +209,8 @@ func (m *Mock) ValidateCertificates(ctx context.Context, params ValidateCertific
 
 	return args.Get(0).(*ValidateCertificatesResponse), args.Error(1)
 }
+
+func (m *Mock) DeleteCASetVersion(ctx context.Context, params DeleteCASetVersionRequest) error {
+	args := m.Called(ctx, params)
+	return args.Error(0)
+}

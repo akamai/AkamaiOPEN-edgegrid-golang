@@ -74,6 +74,51 @@
 
 
 
+
+
+
+
+
+
+
+
+* mTLS Truststore
+  * Added support for the `RemovalDate` field to the following structures:
+    * `CASetResponse`
+    * `CreateCASetResponse`
+    * `GetCASetResponse`
+    * `ListCASetResponse`
+    * `CloneCASetResponse`
+    * `GetCASetDeletionStatusResponse`
+    * `CASetVersion`
+    * `CreateCASetVersionResponse`
+    * `GetCASetVersionResponse`
+    * `CloneCASetVersionResponse`
+    * `ListCASetVersionsResponse`
+    * `UpdateCASetVersionResponse`
+  * Added support for the `CASetVersionStatus` field to the following structures:
+    * `CASetVersion`
+    * `CreateCASetVersionResponse`
+    * `GetCASetVersionResponse`
+    * `CloneCASetVersionResponse`
+    * `ListCASetVersionsResponse`
+    * `UpdateCASetVersionResponse`
+  * Added support for the `CASetVersionStatuses` query parameter to the `ListCASetVersions` method to filter CA set versions by their status - `NOT_DELETED` or `DELETED`.
+  * Added support for the [DeleteCASetVersion](https://techdocs.akamai.com/mtls-edge-truststore/reference/delete-ca-set-version) endpoint
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### BUG FIXES:
 
 * Appsec
