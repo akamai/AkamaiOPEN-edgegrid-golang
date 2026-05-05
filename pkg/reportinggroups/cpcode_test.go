@@ -229,7 +229,7 @@ func TestListCPCodes(t *testing.T) {
 						Products: []Product{
 							{ProductID: "prd_Object_Delivery", ProductName: "Object Delivery"},
 						},
-						AccessGroup: AccessGroupModel{
+						AccessGroup: AccessGroup{
 							ContractID: "C-0N7RAC7",
 							GroupID:    nil,
 						},
@@ -251,7 +251,7 @@ func TestListCPCodes(t *testing.T) {
 						Products: []Product{
 							{ProductID: "prd_Site_Del", ProductName: "Site Delivery"},
 						},
-						AccessGroup: AccessGroupModel{
+						AccessGroup: AccessGroup{
 							ContractID: "C-0N7RAC7",
 							GroupID:    nil,
 						},
@@ -319,7 +319,7 @@ func TestListCPCodes(t *testing.T) {
 						Products: []Product{
 							{ProductID: "prd_Object_Delivery", ProductName: "Object Delivery"},
 						},
-						AccessGroup: AccessGroupModel{
+						AccessGroup: AccessGroup{
 							ContractID: "C-0N7RAC7",
 							GroupID:    nil,
 						},
@@ -434,7 +434,7 @@ func TestGetCPCode(t *testing.T) {
 				Products: []Product{
 					{ProductID: "test-product-id", ProductName: "test-product-name"},
 				},
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "test-contract-id",
 					GroupID:    ptr.To(int64(12345)),
 				},
@@ -489,7 +489,7 @@ func TestGetCPCode(t *testing.T) {
 				Products: []Product{
 					{ProductID: "test-product-id", ProductName: "test-product-name"},
 				},
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "test-contract-id",
 					GroupID:    ptr.To(int64(12345)),
 				},
@@ -544,7 +544,7 @@ func TestGetCPCode(t *testing.T) {
 				Products: []Product{
 					{ProductID: "test-product-id", ProductName: "test-product-name"},
 				},
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "test-contract-id",
 					GroupID:    nil,
 				},
@@ -702,7 +702,7 @@ func TestUpdateCPCode(t *testing.T) {
 				Products: []Product{
 					{ProductID: "test-product-id", ProductName: "test-product-name"},
 				},
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "test-contract-id",
 					GroupID:    ptr.To(int64(12345)),
 				},
@@ -765,7 +765,7 @@ func TestUpdateCPCode(t *testing.T) {
 				Products: []Product{
 					{ProductID: "test-product-id", ProductName: "test-product-name"},
 				},
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "test-contract-id",
 					GroupID:    ptr.To(int64(12345)),
 				},
@@ -825,7 +825,7 @@ func TestUpdateCPCode(t *testing.T) {
 				Products: []Product{
 					{ProductID: "test-product-id", ProductName: "test-product-name"},
 				},
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "test-contract-id",
 					GroupID:    ptr.To(int64(12345)),
 				},

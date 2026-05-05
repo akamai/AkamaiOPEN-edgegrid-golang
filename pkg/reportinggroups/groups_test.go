@@ -3,6 +3,7 @@ package reportinggroups
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,39 +28,40 @@ func TestCreateReportingGroup(t *testing.T) {
 	}{
 		"201 Created - minimal request": {
 			params: CreateReportingGroupRequest{
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "C-0N7RAC7",
 					GroupID:    ptr.To(int64(456)),
 				},
-				Contracts: []ContractCreateModel{
+				Contracts: []ContractCreate{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeCreateModel{
+						CPCodes: []CPCodeCreate{
 							{
-								CpCodeID: 12345,
+								CPCodeID: 12345,
 							},
 						},
 					},
 				},
 				ReportingGroupName: "Test Reporting Group",
 			},
+			expectedBody: `{"accessGroup":{"contractId":"C-0N7RAC7","groupId":456},"contracts":[{"contractId":"C-0N7RAC7","cpcodes":[{"cpcodeId":12345}]}],"reportingGroupName":"Test Reporting Group"}`,
 			returnedHeaders: map[string]string{
 				"X-Limit-Max-Reporting-Groups-Limit":     "100",
 				"X-Limit-Max-Reporting-Groups-Remaining": "99",
 			},
 			expectedResponse: &CreateReportingGroupResponse{
-				ReportingGroupItem: ReportingGroupItem{
-					AccessGroup: AccessGroupModel{
+				ReportingGroup: ReportingGroup{
+					AccessGroup: AccessGroup{
 						ContractID: "C-0N7RAC7",
 						GroupID:    ptr.To(int64(456)),
 					},
-					Contracts: []ContractModel{
+					Contracts: []Contract{
 						{
 							ContractID: "C-0N7RAC7",
-							CpCodes: []CpCodeModel{
+							CPCodes: []CPCode{
 								{
-									CpCodeID:   12345,
-									CpCodeName: "Test CP Code",
+									CPCodeID:   12345,
+									CPCodeName: "Test CP Code",
 								},
 							},
 						},
@@ -97,46 +99,47 @@ func TestCreateReportingGroup(t *testing.T) {
 		},
 		"201 Created - multiple CP codes": {
 			params: CreateReportingGroupRequest{
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "C-0N7RAC7",
 					GroupID:    ptr.To(int64(456)),
 				},
-				Contracts: []ContractCreateModel{
+				Contracts: []ContractCreate{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeCreateModel{
+						CPCodes: []CPCodeCreate{
 							{
-								CpCodeID: 12345,
+								CPCodeID: 12345,
 							},
 							{
-								CpCodeID: 654321,
+								CPCodeID: 654321,
 							},
 						},
 					},
 				},
 				ReportingGroupName: "Multi Contract Group",
 			},
+			expectedBody: `{"accessGroup":{"contractId":"C-0N7RAC7","groupId":456},"contracts":[{"contractId":"C-0N7RAC7","cpcodes":[{"cpcodeId":12345},{"cpcodeId":654321}]}],"reportingGroupName":"Multi Contract Group"}`,
 			returnedHeaders: map[string]string{
 				"X-Limit-Max-Reporting-Groups-Limit":     "100",
 				"X-Limit-Max-Reporting-Groups-Remaining": "99",
 			},
 			expectedResponse: &CreateReportingGroupResponse{
-				ReportingGroupItem: ReportingGroupItem{
-					AccessGroup: AccessGroupModel{
+				ReportingGroup: ReportingGroup{
+					AccessGroup: AccessGroup{
 						ContractID: "C-0N7RAC7",
 						GroupID:    ptr.To(int64(456)),
 					},
-					Contracts: []ContractModel{
+					Contracts: []Contract{
 						{
 							ContractID: "C-0N7RAC7",
-							CpCodes: []CpCodeModel{
+							CPCodes: []CPCode{
 								{
-									CpCodeID:   12345,
-									CpCodeName: "CP Code 1",
+									CPCodeID:   12345,
+									CPCodeName: "CP Code 1",
 								},
 								{
-									CpCodeID:   654321,
-									CpCodeName: "CP Code 2",
+									CPCodeID:   654321,
+									CPCodeName: "CP Code 2",
 								},
 							},
 						},
@@ -178,16 +181,16 @@ func TestCreateReportingGroup(t *testing.T) {
 		},
 		"validation error - missing reporting group name": {
 			params: CreateReportingGroupRequest{
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "C-0N7RAC7",
 					GroupID:    ptr.To(int64(456)),
 				},
-				Contracts: []ContractCreateModel{
+				Contracts: []ContractCreate{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeCreateModel{
+						CPCodes: []CPCodeCreate{
 							{
-								CpCodeID: 12345,
+								CPCodeID: 12345,
 							},
 						},
 					},
@@ -200,24 +203,24 @@ func TestCreateReportingGroup(t *testing.T) {
 		},
 		"validation error - more than one contract provided in create request": {
 			params: CreateReportingGroupRequest{
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "C-0N7RAC7",
 					GroupID:    ptr.To(int64(456)),
 				},
-				Contracts: []ContractCreateModel{
+				Contracts: []ContractCreate{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeCreateModel{
+						CPCodes: []CPCodeCreate{
 							{
-								CpCodeID: 12345,
+								CPCodeID: 12345,
 							},
 						},
 					},
 					{
 						ContractID: "C-0N7RAC71",
-						CpCodes: []CpCodeCreateModel{
+						CPCodes: []CPCodeCreate{
 							{
-								CpCodeID: 67890,
+								CPCodeID: 67890,
 							},
 						},
 					},
@@ -230,15 +233,15 @@ func TestCreateReportingGroup(t *testing.T) {
 		},
 		"validation error - missing access group contract ID": {
 			params: CreateReportingGroupRequest{
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					GroupID: ptr.To(int64(456)),
 				},
-				Contracts: []ContractCreateModel{
+				Contracts: []ContractCreate{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeCreateModel{
+						CPCodes: []CPCodeCreate{
 							{
-								CpCodeID: 12345,
+								CPCodeID: 12345,
 							},
 						},
 					},
@@ -248,16 +251,101 @@ func TestCreateReportingGroup(t *testing.T) {
 			withError: func(t *testing.T, err error) {
 				assert.ErrorIs(t, err, ErrStructValidation)
 				assert.Contains(t, err.Error(), "AccessGroup")
+				assert.Contains(t, err.Error(), "ContractID")
+			},
+		},
+		"validation error - missing access group group ID": {
+			params: CreateReportingGroupRequest{
+				AccessGroup: AccessGroup{
+					ContractID: "C-0N7RAC7",
+				},
+				Contracts: []ContractCreate{
+					{
+						ContractID: "C-0N7RAC7",
+						CPCodes: []CPCodeCreate{
+							{
+								CPCodeID: 12345,
+							},
+						},
+					},
+				},
+				ReportingGroupName: "Test Reporting Group",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.ErrorIs(t, err, ErrStructValidation)
+				assert.Contains(t, err.Error(), "AccessGroup")
+				assert.Contains(t, err.Error(), "GroupID")
+			},
+		},
+		"validation error - missing contract ID in contracts": {
+			params: CreateReportingGroupRequest{
+				AccessGroup: AccessGroup{
+					ContractID: "C-0N7RAC7",
+					GroupID:    ptr.To(int64(456)),
+				},
+				Contracts: []ContractCreate{
+					{
+						CPCodes: []CPCodeCreate{
+							{
+								CPCodeID: 12345,
+							},
+						},
+					},
+				},
+				ReportingGroupName: "Test Reporting Group",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.ErrorIs(t, err, ErrStructValidation)
+				assert.Regexp(t, `(?s)Contracts\[0\]:.*ContractID: cannot be blank`, err.Error())
+			},
+		},
+		"validation error - empty CPCodes in contracts": {
+			params: CreateReportingGroupRequest{
+				AccessGroup: AccessGroup{
+					ContractID: "C-0N7RAC7",
+					GroupID:    ptr.To(int64(456)),
+				},
+				Contracts: []ContractCreate{
+					{
+						ContractID: "C-0N7RAC7",
+					},
+				},
+				ReportingGroupName: "Test Reporting Group",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.ErrorIs(t, err, ErrStructValidation)
+				assert.Regexp(t, `(?s)Contracts\[0\]:.*CPCodes: cannot be blank`, err.Error())
+			},
+		},
+		"validation error - missing CPCode ID in contracts": {
+			params: CreateReportingGroupRequest{
+				AccessGroup: AccessGroup{
+					ContractID: "C-0N7RAC7",
+					GroupID:    ptr.To(int64(456)),
+				},
+				Contracts: []ContractCreate{
+					{
+						ContractID: "C-0N7RAC7",
+						CPCodes: []CPCodeCreate{
+							{},
+						},
+					},
+				},
+				ReportingGroupName: "Test Reporting Group",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.ErrorIs(t, err, ErrStructValidation)
+				assert.Regexp(t, `(?s)Contracts\[0\]:.*CPCodes\[0\]:.*CPCodeID: cannot be blank`, err.Error())
 			},
 		},
 		"validation error - missing access group": {
 			params: CreateReportingGroupRequest{
-				Contracts: []ContractCreateModel{
+				Contracts: []ContractCreate{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeCreateModel{
+						CPCodes: []CPCodeCreate{
 							{
-								CpCodeID: 12345,
+								CPCodeID: 12345,
 							},
 						},
 					},
@@ -271,7 +359,7 @@ func TestCreateReportingGroup(t *testing.T) {
 		},
 		"validation error - missing contracts": {
 			params: CreateReportingGroupRequest{
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "C-0N7RAC7",
 					GroupID:    ptr.To(int64(456)),
 				},
@@ -284,16 +372,16 @@ func TestCreateReportingGroup(t *testing.T) {
 		},
 		"500 internal server error": {
 			params: CreateReportingGroupRequest{
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "C-0N7RAC7",
 					GroupID:    ptr.To(int64(456)),
 				},
-				Contracts: []ContractCreateModel{
+				Contracts: []ContractCreate{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeCreateModel{
+						CPCodes: []CPCodeCreate{
 							{
-								CpCodeID: 12345,
+								CPCodeID: 12345,
 							},
 						},
 					},
@@ -329,6 +417,11 @@ func TestCreateReportingGroup(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if tc.expectedBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, tc.expectedBody, string(body))
+				}
 				if len(tc.returnedHeaders) > 0 {
 					for header, value := range tc.returnedHeaders {
 						w.Header().Set(header, value)
@@ -367,17 +460,17 @@ func TestGetReportingGroup(t *testing.T) {
 				ReportingGroupID: 789,
 			},
 			expectedResponse: &GetReportingGroupResponse{
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "C-0N7RAC7",
 					GroupID:    ptr.To(int64(456)),
 				},
-				Contracts: []ContractModel{
+				Contracts: []Contract{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeModel{
+						CPCodes: []CPCode{
 							{
-								CpCodeID:   12345,
-								CpCodeName: "Test CP Code",
+								CPCodeID:   12345,
+								CPCodeName: "Test CP Code",
 							},
 						},
 					},
@@ -472,6 +565,7 @@ func TestUpdateReportingGroup(t *testing.T) {
 		params           UpdateReportingGroupRequest
 		expectedResponse *UpdateReportingGroupResponse
 		expectedPath     string
+		expectedBody     string
 		responseStatus   int
 		responseBody     string
 		withError        func(*testing.T, error)
@@ -480,38 +574,39 @@ func TestUpdateReportingGroup(t *testing.T) {
 			params: UpdateReportingGroupRequest{
 				ReportingGroupID:   789,
 				ReportingGroupName: "Updated Reporting Group",
-				Contracts: []ContractModel{
+				Contracts: []Contract{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeModel{
+						CPCodes: []CPCode{
 							{
-								CpCodeID:   12345,
-								CpCodeName: "Test CP Code",
+								CPCodeID:   12345,
+								CPCodeName: "Test CP Code",
 							},
 							{
-								CpCodeID:   67890,
-								CpCodeName: "Additional CP Code",
+								CPCodeID:   67890,
+								CPCodeName: "Additional CP Code",
 							},
 						},
 					},
 				},
 			},
+			expectedBody: `{"reportingGroupId":789,"reportingGroupName":"Updated Reporting Group","contracts":[{"contractId":"C-0N7RAC7","cpcodes":[{"cpcodeId":12345,"cpcodeName":"Test CP Code"},{"cpcodeId":67890,"cpcodeName":"Additional CP Code"}]}]}`,
 			expectedResponse: &UpdateReportingGroupResponse{
-				AccessGroup: AccessGroupModel{
+				AccessGroup: AccessGroup{
 					ContractID: "C-0N7RAC7",
 					GroupID:    ptr.To(int64(456)),
 				},
-				Contracts: []ContractModel{
+				Contracts: []Contract{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeModel{
+						CPCodes: []CPCode{
 							{
-								CpCodeID:   12345,
-								CpCodeName: "Test CP Code",
+								CPCodeID:   12345,
+								CPCodeName: "Test CP Code",
 							},
 							{
-								CpCodeID:   67890,
-								CpCodeName: "Additional CP Code",
+								CPCodeID:   67890,
+								CPCodeName: "Additional CP Code",
 							},
 						},
 					},
@@ -549,13 +644,13 @@ func TestUpdateReportingGroup(t *testing.T) {
 		"validation error - missing reporting group ID": {
 			params: UpdateReportingGroupRequest{
 				ReportingGroupName: "Updated Reporting Group",
-				Contracts: []ContractModel{
+				Contracts: []Contract{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeModel{
+						CPCodes: []CPCode{
 							{
-								CpCodeID:   12345,
-								CpCodeName: "Test CP Code",
+								CPCodeID:   12345,
+								CPCodeName: "Test CP Code",
 							},
 						},
 					},
@@ -580,22 +675,22 @@ func TestUpdateReportingGroup(t *testing.T) {
 			params: UpdateReportingGroupRequest{
 				ReportingGroupID:   789,
 				ReportingGroupName: "Updated Reporting Group",
-				Contracts: []ContractModel{
+				Contracts: []Contract{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeModel{
+						CPCodes: []CPCode{
 							{
-								CpCodeID:   12345,
-								CpCodeName: "Test CP Code",
+								CPCodeID:   12345,
+								CPCodeName: "Test CP Code",
 							},
 						},
 					},
 					{
 						ContractID: "C-0N7RAC71",
-						CpCodes: []CpCodeModel{
+						CPCodes: []CPCode{
 							{
-								CpCodeID:   67890,
-								CpCodeName: "Test CP Code 2",
+								CPCodeID:   67890,
+								CPCodeName: "Test CP Code 2",
 							},
 						},
 					},
@@ -609,13 +704,13 @@ func TestUpdateReportingGroup(t *testing.T) {
 		"validation error - missing reporting group name": {
 			params: UpdateReportingGroupRequest{
 				ReportingGroupID: 789,
-				Contracts: []ContractModel{
+				Contracts: []Contract{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeModel{
+						CPCodes: []CPCode{
 							{
-								CpCodeID:   12345,
-								CpCodeName: "Test CP Code",
+								CPCodeID:   12345,
+								CPCodeName: "Test CP Code",
 							},
 						},
 					},
@@ -626,17 +721,76 @@ func TestUpdateReportingGroup(t *testing.T) {
 				assert.Contains(t, err.Error(), "ReportingGroupName")
 			},
 		},
+		"validation error - missing contract ID in contracts": {
+			params: UpdateReportingGroupRequest{
+				ReportingGroupID:   789,
+				ReportingGroupName: "Updated Reporting Group",
+				Contracts: []Contract{
+					{
+						CPCodes: []CPCode{
+							{
+								CPCodeID:   12345,
+								CPCodeName: "Test CP Code",
+							},
+						},
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.ErrorIs(t, err, ErrStructValidation)
+				assert.Contains(t, err.Error(), "Contracts")
+				assert.Contains(t, err.Error(), "ContractID")
+			},
+		},
+		"validation error - empty CPCodes in contracts": {
+			params: UpdateReportingGroupRequest{
+				ReportingGroupID:   789,
+				ReportingGroupName: "Updated Reporting Group",
+				Contracts: []Contract{
+					{
+						ContractID: "C-0N7RAC7",
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.ErrorIs(t, err, ErrStructValidation)
+				assert.Contains(t, err.Error(), "Contracts")
+				assert.Contains(t, err.Error(), "CPCodes")
+			},
+		},
+		"validation error - missing CPCode ID in contracts": {
+			params: UpdateReportingGroupRequest{
+				ReportingGroupID:   789,
+				ReportingGroupName: "Updated Reporting Group",
+				Contracts: []Contract{
+					{
+						ContractID: "C-0N7RAC7",
+						CPCodes: []CPCode{
+							{
+								CPCodeName: "Test CP Code",
+							},
+						},
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.ErrorIs(t, err, ErrStructValidation)
+				assert.Contains(t, err.Error(), "Contracts")
+				assert.Contains(t, err.Error(), "CPCodes")
+				assert.Contains(t, err.Error(), "CPCodeID")
+			},
+		},
 		"500 internal server error": {
 			params: UpdateReportingGroupRequest{
 				ReportingGroupID:   789,
 				ReportingGroupName: "Updated Reporting Group",
-				Contracts: []ContractModel{
+				Contracts: []Contract{
 					{
 						ContractID: "C-0N7RAC7",
-						CpCodes: []CpCodeModel{
+						CPCodes: []CPCode{
 							{
-								CpCodeID:   12345,
-								CpCodeName: "Test CP Code",
+								CPCodeID:   12345,
+								CPCodeName: "Test CP Code",
 							},
 						},
 					},
@@ -671,6 +825,11 @@ func TestUpdateReportingGroup(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if tc.expectedBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, tc.expectedBody, string(body))
+				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
@@ -702,19 +861,19 @@ func TestListReportingGroups(t *testing.T) {
 		"200 OK - no filters": {
 			params: ListReportingGroupsRequest{},
 			expectedResponse: &ListReportingGroupsResponse{
-				Groups: []ReportingGroupItem{
+				Groups: []ReportingGroup{
 					{
-						AccessGroup: AccessGroupModel{
+						AccessGroup: AccessGroup{
 							ContractID: "C-0N7RAC7",
 							GroupID:    ptr.To(int64(456)),
 						},
-						Contracts: []ContractModel{
+						Contracts: []Contract{
 							{
 								ContractID: "C-0N7RAC7",
-								CpCodes: []CpCodeModel{
+								CPCodes: []CPCode{
 									{
-										CpCodeID:   12345,
-										CpCodeName: "Test CP Code 12345",
+										CPCodeID:   12345,
+										CPCodeName: "Test CP Code 12345",
 									},
 								},
 							},
@@ -723,21 +882,21 @@ func TestListReportingGroups(t *testing.T) {
 						ReportingGroupName: "Test Reporting Group 1",
 					},
 					{
-						AccessGroup: AccessGroupModel{
+						AccessGroup: AccessGroup{
 							ContractID: "C-0N7RAC7",
 							GroupID:    nil,
 						},
-						Contracts: []ContractModel{
+						Contracts: []Contract{
 							{
 								ContractID: "C-0N7RAC7",
-								CpCodes: []CpCodeModel{
+								CPCodes: []CPCode{
 									{
-										CpCodeID:   22222,
-										CpCodeName: "Test CP Code 22222",
+										CPCodeID:   22222,
+										CPCodeName: "Test CP Code 22222",
 									},
 									{
-										CpCodeID:   33333,
-										CpCodeName: "Test CP Code 33333",
+										CPCodeID:   33333,
+										CPCodeName: "Test CP Code 33333",
 									},
 								},
 							},
@@ -746,21 +905,21 @@ func TestListReportingGroups(t *testing.T) {
 						ReportingGroupName: "Multi-Group Reporting Group",
 					},
 					{
-						AccessGroup: AccessGroupModel{
+						AccessGroup: AccessGroup{
 							ContractID: "C-1234XYZ",
 							GroupID:    ptr.To(int64(123)),
 						},
-						Contracts: []ContractModel{
+						Contracts: []Contract{
 							{
 								ContractID: "C-1234XYZ",
-								CpCodes: []CpCodeModel{
+								CPCodes: []CPCode{
 									{
-										CpCodeID:   33333,
-										CpCodeName: "Test CP Code 33333",
+										CPCodeID:   33333,
+										CPCodeName: "Test CP Code 33333",
 									},
 									{
-										CpCodeID:   44444,
-										CpCodeName: "Test CP Code 44444",
+										CPCodeID:   44444,
+										CPCodeName: "Test CP Code 44444",
 									},
 								},
 							},
@@ -848,19 +1007,19 @@ func TestListReportingGroups(t *testing.T) {
 				ContractID: "C-0N7RAC7",
 			},
 			expectedResponse: &ListReportingGroupsResponse{
-				Groups: []ReportingGroupItem{
+				Groups: []ReportingGroup{
 					{
-						AccessGroup: AccessGroupModel{
+						AccessGroup: AccessGroup{
 							ContractID: "C-0N7RAC7",
 							GroupID:    ptr.To(int64(456)),
 						},
-						Contracts: []ContractModel{
+						Contracts: []Contract{
 							{
 								ContractID: "C-0N7RAC7",
-								CpCodes: []CpCodeModel{
+								CPCodes: []CPCode{
 									{
-										CpCodeID:   12345,
-										CpCodeName: "Test CP Code 12345",
+										CPCodeID:   12345,
+										CPCodeName: "Test CP Code 12345",
 									},
 								},
 							},
@@ -869,21 +1028,21 @@ func TestListReportingGroups(t *testing.T) {
 						ReportingGroupName: "Test Reporting Group 1",
 					},
 					{
-						AccessGroup: AccessGroupModel{
+						AccessGroup: AccessGroup{
 							ContractID: "C-0N7RAC7",
 							GroupID:    nil,
 						},
-						Contracts: []ContractModel{
+						Contracts: []Contract{
 							{
 								ContractID: "C-0N7RAC7",
-								CpCodes: []CpCodeModel{
+								CPCodes: []CPCode{
 									{
-										CpCodeID:   22222,
-										CpCodeName: "Test CP Code 22222",
+										CPCodeID:   22222,
+										CPCodeName: "Test CP Code 22222",
 									},
 									{
-										CpCodeID:   33333,
-										CpCodeName: "Test CP Code 33333",
+										CPCodeID:   33333,
+										CPCodeName: "Test CP Code 33333",
 									},
 								},
 							},
@@ -946,24 +1105,24 @@ func TestListReportingGroups(t *testing.T) {
 		"200 OK - with all filters": {
 			params: ListReportingGroupsRequest{
 				ContractID:         "C-0N7RAC7",
-				GroupID:            456,
+				GroupID:            "456",
 				ReportingGroupName: "Test Reporting Group 1",
-				CpCodeID:           "12345",
+				CPCodeID:           "12345",
 			},
 			expectedResponse: &ListReportingGroupsResponse{
-				Groups: []ReportingGroupItem{
+				Groups: []ReportingGroup{
 					{
-						AccessGroup: AccessGroupModel{
+						AccessGroup: AccessGroup{
 							ContractID: "C-0N7RAC7",
 							GroupID:    ptr.To(int64(456)),
 						},
-						Contracts: []ContractModel{
+						Contracts: []Contract{
 							{
 								ContractID: "C-0N7RAC7",
-								CpCodes: []CpCodeModel{
+								CPCodes: []CPCode{
 									{
-										CpCodeID:   12345,
-										CpCodeName: "Test CP Code 12345",
+										CPCodeID:   12345,
+										CPCodeName: "Test CP Code 12345",
 									},
 								},
 							},
@@ -1002,26 +1161,26 @@ func TestListReportingGroups(t *testing.T) {
 		},
 		"200 OK - with groupId filter": {
 			params: ListReportingGroupsRequest{
-				GroupID: 123,
+				GroupID: "123",
 			},
 			expectedResponse: &ListReportingGroupsResponse{
-				Groups: []ReportingGroupItem{
+				Groups: []ReportingGroup{
 					{
-						AccessGroup: AccessGroupModel{
+						AccessGroup: AccessGroup{
 							ContractID: "C-1234XYZ",
 							GroupID:    ptr.To(int64(123)),
 						},
-						Contracts: []ContractModel{
+						Contracts: []Contract{
 							{
 								ContractID: "C-1234XYZ",
-								CpCodes: []CpCodeModel{
+								CPCodes: []CPCode{
 									{
-										CpCodeID:   33333,
-										CpCodeName: "Test CP Code 33333",
+										CPCodeID:   33333,
+										CPCodeName: "Test CP Code 33333",
 									},
 									{
-										CpCodeID:   44444,
-										CpCodeName: "Test CP Code 44444",
+										CPCodeID:   44444,
+										CPCodeName: "Test CP Code 44444",
 									},
 								},
 							},
@@ -1065,7 +1224,7 @@ func TestListReportingGroups(t *testing.T) {
 		"200 OK - empty groups": {
 			params: ListReportingGroupsRequest{},
 			expectedResponse: &ListReportingGroupsResponse{
-				Groups: []ReportingGroupItem{},
+				Groups: []ReportingGroup{},
 			},
 			responseStatus: 200,
 			responseBody: `

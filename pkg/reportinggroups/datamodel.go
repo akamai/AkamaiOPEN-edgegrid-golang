@@ -15,6 +15,11 @@ var (
 	_ validation.Validatable = GetCPCodesWaterMarkLimitsRequest{}
 	_ validation.Validatable = GetCPCodeRequest{}
 	_ validation.Validatable = UpdateCPCodeRequest{}
+	_ validation.Validatable = AccessGroup{}
+	_ validation.Validatable = ContractCreate{}
+	_ validation.Validatable = CPCodeCreate{}
+	_ validation.Validatable = Contract{}
+	_ validation.Validatable = CPCode{}
 	_ validation.Validatable = CPCodeContract{}
 	_ validation.Validatable = Product{}
 	_ validation.Validatable = CPCodeTimeZone{}
@@ -24,17 +29,17 @@ type (
 	// CreateReportingGroupRequest is the request body for creating a reporting group.
 	CreateReportingGroupRequest struct {
 		// A group that controls access to specific CP codes.
-		AccessGroup AccessGroupModel `json:"accessGroup"`
+		AccessGroup AccessGroup `json:"accessGroup"`
 
 		// A collection of contracts and CP codes assigned to the reporting group.
-		Contracts []ContractCreateModel `json:"contracts"`
+		Contracts []ContractCreate `json:"contracts"`
 
 		// The descriptive label for the reporting group.
 		ReportingGroupName string `json:"reportingGroupName"`
 	}
 
-	// AccessGroupModel is the model for the access group in the reporting group.
-	AccessGroupModel struct {
+	// AccessGroup is the model for the access group in the reporting group.
+	AccessGroup struct {
 		// Identifies the contract assigned to the access control group. Get and store this ID from your account using the Contracts API.
 		ContractID string `json:"contractId"`
 
@@ -42,43 +47,43 @@ type (
 		GroupID *int64 `json:"groupId"`
 	}
 
-	// ContractCreateModel is the model for the contract in the reporting group.
-	ContractCreateModel struct {
+	// ContractCreate is the model for the contract in the reporting group.
+	ContractCreate struct {
 		// Identifies the contract assigned to the reporting group.
 		ContractID string `json:"contractId"`
 
 		// A collection of CP codes assigned to the reporting group.
-		CpCodes []CpCodeCreateModel `json:"cpcodes"`
+		CPCodes []CPCodeCreate `json:"cpcodes"`
 	}
 
-	// CpCodeCreateModel is the model for the CP code in the reporting group.
-	CpCodeCreateModel struct {
+	// CPCodeCreate is the model for the CP code in the reporting group.
+	CPCodeCreate struct {
 		// Identifies a CP code.
-		CpCodeID int64 `json:"cpcodeId"`
+		CPCodeID int64 `json:"cpcodeId"`
 	}
 
-	// ContractModel is the response model for the contract in the reporting group.
-	ContractModel struct {
+	// Contract is the response model for the contract in the reporting group.
+	Contract struct {
 		// Identifies the contract assigned to the reporting group.
 		ContractID string `json:"contractId"`
 
 		// A collection of CP codes assigned to the reporting group.
-		CpCodes []CpCodeModel `json:"cpcodes"`
+		CPCodes []CPCode `json:"cpcodes"`
 	}
 
-	// CpCodeModel is the resposne model for the CP code in the reporting group.
-	CpCodeModel struct {
+	// CPCode is the response model for the CP code in the reporting group.
+	CPCode struct {
 		// Identifies a CP code.
-		CpCodeID int64 `json:"cpcodeId"`
+		CPCodeID int64 `json:"cpcodeId"`
 
 		// The descriptive label for the CP code.
-		CpCodeName string `json:"cpcodeName"`
+		CPCodeName string `json:"cpcodeName"`
 	}
 
 	// CreateReportingGroupResponse is the response body for creating a reporting group.
 	CreateReportingGroupResponse struct {
-		// ReportingGroupItem contains detailed information about the created reporting group.
-		ReportingGroupItem
+		// ReportingGroup contains detailed information about the created reporting group.
+		ReportingGroup
 
 		// ResourceLimits contains information about reporting groups limits.
 		ResourceLimits ResourceLimitsMetadata
@@ -100,7 +105,7 @@ type (
 	}
 
 	// GetReportingGroupResponse is the response body for getting a reporting group.
-	GetReportingGroupResponse ReportingGroupItem
+	GetReportingGroupResponse ReportingGroup
 
 	// UpdateReportingGroupRequest is the request body for updating a reporting group.
 	UpdateReportingGroupRequest struct {
@@ -111,11 +116,11 @@ type (
 		ReportingGroupName string `json:"reportingGroupName,omitempty"`
 
 		// A collection of contracts and CP codes assigned to the reporting group.
-		Contracts []ContractModel `json:"contracts,omitempty"`
+		Contracts []Contract `json:"contracts,omitempty"`
 	}
 
 	// UpdateReportingGroupResponse is the response body for updating a reporting group.
-	UpdateReportingGroupResponse ReportingGroupItem
+	UpdateReportingGroupResponse ReportingGroup
 
 	// DeleteReportingGroupRequest is the request body for deleting a reporting group.
 	DeleteReportingGroupRequest struct {
@@ -129,28 +134,28 @@ type (
 		ContractID string `json:"contractId,omitempty"`
 
 		// Identifies the access group to filter data by.
-		GroupID int64 `json:"groupId,omitempty"`
+		GroupID string `json:"groupId,omitempty"`
 
 		// The name of the reporting group to filter data by.
 		ReportingGroupName string `json:"reportingGroupName,omitempty"`
 
 		// Identifies the CP code to filter data by.
-		CpCodeID string `json:"cpcodeId,omitempty"`
+		CPCodeID string `json:"cpcodeId,omitempty"`
 	}
 
 	// ListReportingGroupsResponse is the response body for listing reporting groups.
 	ListReportingGroupsResponse struct {
 		// A set of reporting groups available for your contract.
-		Groups []ReportingGroupItem `json:"groups"`
+		Groups []ReportingGroup `json:"groups"`
 	}
 
-	// ReportingGroupItem is the model for a reporting group item in the list response.
-	ReportingGroupItem struct {
+	// ReportingGroup is the model for a reporting group item in the list response.
+	ReportingGroup struct {
 		// A group that controls access to specific CP codes.
-		AccessGroup AccessGroupModel `json:"accessGroup"`
+		AccessGroup AccessGroup `json:"accessGroup"`
 
 		// A collection of contracts and CP codes assigned to the reporting group.
-		Contracts []ContractModel `json:"contracts"`
+		Contracts []Contract `json:"contracts"`
 
 		// Identifies the reporting group.
 		ReportingGroupID int64 `json:"reportingGroupId"`
@@ -222,7 +227,7 @@ type (
 	// CPCodeDetails contains detailed information about a single CP code in the list response.
 	CPCodeDetails struct {
 		// AccessGroup is the group that controls access to specific CP codes.
-		AccessGroup AccessGroupModel `json:"accessGroup"`
+		AccessGroup AccessGroup `json:"accessGroup"`
 
 		// AccountID identifies an account assigned to the CP code.
 		AccountID string `json:"accountId"`
@@ -326,7 +331,7 @@ type (
 func (r CreateReportingGroupRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"ReportingGroupName": validation.Validate(r.ReportingGroupName, validation.Required),
-		"AccessGroup":        validation.Validate(r.AccessGroup.ContractID, validation.Required),
+		"AccessGroup":        validation.Validate(r.AccessGroup),
 		"Contracts":          validation.Validate(r.Contracts, validation.Required, validation.Length(1, 1)),
 	})
 }
@@ -411,5 +416,43 @@ func (p Product) Validate() error {
 func (tz CPCodeTimeZone) Validate() error {
 	return validation.Errors{
 		"TimeZoneID": validation.Validate(tz.TimeZoneID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates AccessGroup.
+func (a AccessGroup) Validate() error {
+	return validation.Errors{
+		"ContractID": validation.Validate(a.ContractID, validation.Required),
+		"GroupID":    validation.Validate(a.GroupID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates ContractCreate.
+func (c ContractCreate) Validate() error {
+	return validation.Errors{
+		"ContractID": validation.Validate(c.ContractID, validation.Required),
+		"CPCodes":    validation.Validate(c.CPCodes, validation.Required),
+	}.Filter()
+}
+
+// Validate validates CPCodeCreate.
+func (c CPCodeCreate) Validate() error {
+	return validation.Errors{
+		"CPCodeID": validation.Validate(c.CPCodeID, validation.Required),
+	}.Filter()
+}
+
+// Validate validates Contract.
+func (c Contract) Validate() error {
+	return validation.Errors{
+		"ContractID": validation.Validate(c.ContractID, validation.Required),
+		"CPCodes":    validation.Validate(c.CPCodes, validation.Required),
+	}.Filter()
+}
+
+// Validate validates CPCode.
+func (c CPCode) Validate() error {
+	return validation.Errors{
+		"CPCodeID": validation.Validate(c.CPCodeID, validation.Required),
 	}.Filter()
 }

@@ -27,7 +27,7 @@ func (r *reportinggroups) CreateReportingGroup(ctx context.Context, params Creat
 	var result CreateReportingGroupResponse
 	resp, err := r.Exec(req, &result, params)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request execution failed: %w", ErrCreateReportingGroup, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrCreateReportingGroup, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -73,9 +73,9 @@ func (r *reportinggroups) ListReportingGroups(ctx context.Context, params ListRe
 
 	req, err := request.NewGet(ctx, "/cprg/v1/reporting-groups").
 		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
-		AddQueryParamIf("groupId", strconv.FormatInt(params.GroupID, 10), params.GroupID != 0).
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
 		AddQueryParamIf("reportingGroupName", params.ReportingGroupName, params.ReportingGroupName != "").
-		AddQueryParamIf("cpcodeId", params.CpCodeID, params.CpCodeID != "").
+		AddQueryParamIf("cpcodeId", params.CPCodeID, params.CPCodeID != "").
 		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListReportingGroups, err)
