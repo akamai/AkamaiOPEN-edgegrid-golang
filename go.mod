@@ -12,7 +12,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	github.com/wk8/go-ordered-map/v2 v2.1.8
 	go.uber.org/ratelimit v0.3.1
-	golang.org/x/net v0.49.0
+	golang.org/x/net v0.53.0
 	gopkg.in/ini.v1 v1.67.0
 )
 
