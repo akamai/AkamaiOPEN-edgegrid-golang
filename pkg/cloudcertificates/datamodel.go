@@ -26,7 +26,6 @@ var (
 	_ validation.Validatable = CryptographicAlgorithm("")
 	_ validation.Validatable = KeySize("")
 	_ validation.Validatable = SecureNetwork("")
-	_ validation.Validatable = GeoClass("")
 )
 
 const (
@@ -59,15 +58,6 @@ const (
 
 	// KeySizeP384 represents a key size of 384 bits.
 	KeySizeP384 KeySize = "P-384"
-
-	// GeoClassStandardWorldwide represents the default worldwide geographic class.
-	GeoClassStandardWorldwide GeoClass = "STANDARD_WORLDWIDE"
-
-	// GeoClassContiguousUS represents the contiguous United States geographic class. Only valid for ENHANCED_TLS.
-	GeoClassContiguousUS GeoClass = "CONTIGUOUS_US"
-
-	// GeoClassReservedGlobal represents the reserved global geographic class. Only valid for ENHANCED_TLS.
-	GeoClassReservedGlobal GeoClass = "RESERVED_GLOBAL"
 
 	// NetworkStaging represents staging network.
 	NetworkStaging Network = "STAGING"
@@ -317,12 +307,6 @@ type (
 
 		// Subject fields as defined in X.509 certificates (RFC 5280).
 		Subject *Subject `json:"subject,omitempty"`
-
-		// GeoClass represents the geographic network class of the certificate.
-		// Valid values depend on the selected SecureNetwork type:
-		// For ENHANCED_TLS: STANDARD_WORLDWIDE (default), CONTIGUOUS_US, RESERVED_GLOBAL.
-		// For STANDARD_TLS: STANDARD_WORLDWIDE (the only valid value, default).
-		GeoClass GeoClass `json:"geoClass,omitempty"`
 	}
 
 	// Certificate represents a certificate and its metadata.
@@ -398,9 +382,6 @@ type (
 
 		// PEM content of Trust chain uploaded by end user.
 		TrustChainPEM *string `json:"trustChainPem"`
-
-		// GeoClass represents the geographic network class of the certificate.
-		GeoClass GeoClass `json:"geoClass"`
 	}
 
 	// Subject contains the subject details for a certificate.
@@ -491,9 +472,6 @@ type (
 
 	// Network represents the network type, `STAGING` or `PRODUCTION`.
 	Network string
-
-	// GeoClass represents the geographic network class of the certificate.
-	GeoClass string
 )
 
 var (
@@ -616,7 +594,6 @@ func (r CreateCertificateRequest) Validate() error {
 		"SecureNetwork":   validation.Validate(r.Body.SecureNetwork, validation.Required),
 		"SANs":            validation.Validate(r.Body.SANs, validation.Required),
 		"Subject":         validation.Validate(r.Body.Subject),
-		"GeoClass":        validation.Validate(r.Body.GeoClass),
 	})
 }
 
@@ -670,12 +647,4 @@ func (r DeleteCertificateRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"CertificateID": validation.Validate(r.CertificateID, validation.Required),
 	})
-}
-
-// Validate validates GeoClass.
-func (g GeoClass) Validate() error {
-	return validation.In(GeoClassStandardWorldwide, GeoClassContiguousUS, GeoClassReservedGlobal).
-		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s', or '%s'",
-			g, GeoClassStandardWorldwide, GeoClassContiguousUS, GeoClassReservedGlobal)).
-		Validate(g)
 }

@@ -41,14 +41,6 @@
 
 
 
-* Cloud Certificates
-  * Added support for the`GeoClass` field to the folowing structures:
-      * `CreateCertificateRequestBody`
-      * `CreateCertificateResponse`
-      * `GetCertificateResponse`
-      * `ListCertificatesResponse`
-      * `UpdateCertificateResponse`
-      * `PatchCertificateResponse`
 
 
 
