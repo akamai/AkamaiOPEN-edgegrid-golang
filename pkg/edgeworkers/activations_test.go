@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -291,9 +292,10 @@ func TestActivateVersion(t *testing.T) {
 					Network: "STAGING",
 					Version: "1",
 					Note:    "activation note1",
+					AutoPin: ptr.To(false),
 				},
 			},
-			expectedRequestBody: `{"network":"STAGING","version":"1","note":"activation note1"}`,
+			expectedRequestBody: `{"network":"STAGING","version":"1","note":"activation note1","autoPin":false}`,
 			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
@@ -417,7 +419,7 @@ func TestActivateVersion(t *testing.T) {
 				if len(test.expectedRequestBody) > 0 {
 					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
 			client := mockAPIClient(t, mockServer)

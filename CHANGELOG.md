@@ -30,6 +30,9 @@
 
 
 
+* Edgeworkers
+  * Added support for the `autoPin` attribute in the Edgeworkers activation requests.
+
 
 
 
