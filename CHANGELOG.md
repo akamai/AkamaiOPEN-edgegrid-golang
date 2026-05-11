@@ -1,5 +1,72 @@
 # RELEASE NOTES
 
+## 13.2.0 (May 11, 2026)
+
+### FEATURES/ENHANCEMENTS:
+
+* Appsec
+  * Relaxed validation of the `UpdatePenaltyBoxRequest` structure to allow the `deny_custom_{custom_deny_id}` value.
+  * Added the `ApplyAccountProtectionControls` field to the `UpdatePolicyProtectionsRequest` structure.
+
+* Edgeworkers
+  * Added support for the `autoPin` attribute in the Edgeworkers activation requests.
+
+* mTLS Truststore
+  * Added the `CASetStatuses` field to the `ListCASetsRequest` structure that allows filtering CA sets by their statuses, including `NOT_DELETED`, `DELETING`, and `DELETED`.
+  * Added support for the `RemovalDate` field to the following structures:
+    * `CASetResponse`
+    * `CreateCASetResponse`
+    * `GetCASetResponse`
+    * `ListCASetResponse`
+    * `CloneCASetResponse`
+    * `GetCASetDeletionStatusResponse`
+    * `CASetVersion`
+    * `CreateCASetVersionResponse`
+    * `GetCASetVersionResponse`
+    * `CloneCASetVersionResponse`
+    * `ListCASetVersionsResponse`
+    * `UpdateCASetVersionResponse`
+  * Added support for the `CASetVersionStatus` field to the following structures:
+    * `CASetVersion`
+    * `CreateCASetVersionResponse`
+    * `GetCASetVersionResponse`
+    * `CloneCASetVersionResponse`
+    * `ListCASetVersionsResponse`
+    * `UpdateCASetVersionResponse`
+  * Added support for the `CASetVersionStatuses` query parameter to the `ListCASetVersions` method to filter CA set versions by their statuses, either `NOT_DELETED` or `DELETED`.
+  * Added support for the [DeleteCASetVersion](https://techdocs.akamai.com/mtls-edge-truststore/reference/delete-ca-set-version) endpoint.
+
+* PAPI
+  * Added the `AccessGroup` field to the `CPCodeDetailResponse` structure, returned by the following methods:
+    * `GetCPCodeDetail`
+    * `UpdateCPCode`
+
+* Reporting Groups (Beta)
+  * Added support for the Reporting Groups API:
+    * [CreateReportingGroup](https://techdocs.akamai.com/cp-codes/reference/post-reporting-groups) - Creates a new reporting group.
+    * [GetReportingGroup](https://techdocs.akamai.com/cp-codes/reference/get-reporting-group) - Gets details of a specific reporting group.
+    * [ListReportingGroups](https://techdocs.akamai.com/cp-codes/reference/get-reporting-groups) - Lists all reporting groups.
+    * [ListProducts](https://techdocs.akamai.com/cp-codes/reference/get-reporting-group-products) - Lists products and services assigned to a specific reporting group.
+    * [UpdateReportingGroup](https://techdocs.akamai.com/cp-codes/reference/put-reporting-group) - Updates an existing reporting group.
+    * [DeleteReportingGroup](https://techdocs.akamai.com/cp-codes/reference/delete-reporting-group) - Deletes a reporting group.
+    * [GetReportingGroupsWaterMarkLimits](https://techdocs.akamai.com/cp-codes/reference/get-reporting-groups-watermark-limits) - Gets water-mark limits for reporting groups.
+    * [GetCPCodesWaterMarkLimits](https://techdocs.akamai.com/cp-codes/reference/get-cpcodes-watermark-limits) - Gets water-mark limits for CP codes.
+  * Added support for the CP Codes API:
+    * [ListCPCodes](https://techdocs.akamai.com/cp-codes/reference/get-cpcodes) - Lists CP codes.
+    * [GetCPCode](https://techdocs.akamai.com/cp-codes/reference/get-cpcode) - Gets details of a specific CP code.
+    * [UpdateCPCode](https://techdocs.akamai.com/cp-codes/reference/put-cpcode) - Updates a specific CP code.
+
+### BUG FIXES:
+
+* Appsec
+  * Removed the incorrectly allowed `StatusCreated` response status from the `UpdatePolicyProtections` method.
+
+### Deprecations:
+
+* PAPI
+  * Deprecated `GetCPCodeDetail`. Use `reportinggroups.GetCPCode` instead.
+  * Deprecated `UpdateCPCode`. Use `reportinggroups.UpdateCPCode` instead.
+
 ## 13.1.0 (Mar 30, 2026)
 
 ### FEATURES/ENHANCEMENTS:

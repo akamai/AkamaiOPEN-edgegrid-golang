@@ -61,6 +61,11 @@ type (
 		// See: https://techdocs.akamai.com/mtls-edge-truststore/reference/put-ca-set-version
 		UpdateCASetVersion(ctx context.Context, params UpdateCASetVersionRequest) (*UpdateCASetVersionResponse, error)
 
+		// DeleteCASetVersion marks a CA set version for future deletion.
+		//
+		// See: https://techdocs.akamai.com/mtls-edge-truststore/reference/delete-ca-set-version
+		DeleteCASetVersion(ctx context.Context, params DeleteCASetVersionRequest) error
+
 		// GetCASetVersionCertificates returns certificates details of a CA sets version.
 		//
 		// See: https://techdocs.akamai.com/mtls-edge-truststore/reference/get-ca-set-version-certificates

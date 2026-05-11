@@ -26,6 +26,7 @@ type (
 
 	// ActivateVersion represents the request body used to activate a version
 	ActivateVersion struct {
+		AutoPin *bool             `json:"autoPin,omitempty"`
 		Network ActivationNetwork `json:"network"`
 		Version string            `json:"version"`
 		Note    string            `json:"note,omitempty"`

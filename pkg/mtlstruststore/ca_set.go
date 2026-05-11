@@ -7,10 +7,12 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/texts"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -80,6 +82,9 @@ type (
 
 		// DeletedBy is the user who deleted the CA set if the CA set has been deleted, `nil` otherwise.
 		DeletedBy *string `json:"deletedBy"`
+
+		// RemovalDate is the time when the CA set will be permanently deleted from the system. The value is null when the CA set is not scheduled for deletion.
+		RemovalDate *time.Time `json:"removalDate"`
 	}
 
 	// CreateCASetResponse contains response from CreateCASet.
@@ -98,6 +103,9 @@ type (
 		// The values that could be provided are `INACTIVE`, `STAGING`, `PRODUCTION`, `STAGING+PRODUCTION`, `PRODUCTION+STAGING`, `STAGING,PRODUCTION`, `PRODUCTION,STAGING`.
 		// A CA set will not be included if it was created but none of its versions was ever activated.
 		ActivatedOn Network
+
+		// CASetStatuses filters CA sets by status values. Allowed values: `NOT_DELETED`, `DELETING`, `DELETED`. Defaults to `NOT_DELETED`.
+		CASetStatuses []string
 	}
 
 	// ListCASetsResponse contains response from ListCASets.
@@ -264,6 +272,9 @@ type (
 		// Usually 300 seconds after the deletion request was made.
 		// This header value is returned only if the CA set deletion status is "IN_PROGRESS".
 		RetryAfter time.Time
+
+		// RemovalDate is the time when the CA set will be permanently deleted from the system. The value is null when the CA set is not scheduled for deletion.
+		RemovalDate *time.Time `json:"removalDate"`
 	}
 
 	// CASetNetworkDeleteStatus holds information about one network for GetCASetDeleteStatus response.
@@ -325,7 +336,7 @@ type (
 
 	// CASetActivity holds one activity entry from ListCASetActivities response.
 	CASetActivity struct {
-		// Type is activity. Could be one of: "CREATE_CA_SET", "CREATE_CA_SET_VERSION", "ACTIVATE_CA_SET_VERSION", "DEACTIVATE_CA_SET_VERSION", "DELETE_CA_SET".
+		// Type is activity. Could be one of: "CREATE_CA_SET", "CREATE_CA_SET_VERSION", "ACTIVATE_CA_SET_VERSION", "DEACTIVATE_CA_SET_VERSION", "DELETE_CA_SET", "REMOVE_CA_SET", "REMOVE_CA_SET_VERSION", "DELETE_CA_SET_VERSION".
 		Type string `json:"type"`
 
 		// Network is the network for any activation-related activities, either "STAGING" or "PRODUCTION".
@@ -436,8 +447,31 @@ func (r ListCASetsRequest) Validate() error {
 			validation.Length(0, 64),
 			validation.Match(CASetNameRegex).Error(CASetNameDescription),
 			validateCASetName()),
-		"ActivatedOn": validation.Validate(r.ActivatedOn, r.ActivatedOn.Validate()),
+		"ActivatedOn":   validation.Validate(r.ActivatedOn, r.ActivatedOn.Validate()),
+		"CASetStatuses": validation.Validate(r.CASetStatuses, validation.By(caSetStatusRule)),
 	})
+}
+
+// AllCASetStatuses returns list of all allowed CA set status values.
+func AllCASetStatuses() []string {
+	return []string{CASetStatusNotDeleted, CASetStatusDeleted, CASetStatusDeleting}
+}
+
+func caSetStatusRule(value any) error {
+	statuses, ok := value.([]string)
+	if !ok {
+		return fmt.Errorf("expected []string, got %T", value)
+	}
+
+	allCASetStatuses := AllCASetStatuses()
+	for _, s := range statuses {
+		if !slices.Contains(allCASetStatuses, s) {
+			return fmt.Errorf("list element '%s' is invalid. Each element must be one of: %s",
+				s, "'"+strings.Join(allCASetStatuses, "', '")+"'")
+		}
+	}
+
+	return nil
 }
 
 // Validate validates DeleteCASetsRequest.
@@ -587,6 +621,9 @@ func (m *mtlstruststore) ListCASets(ctx context.Context, params ListCASetsReques
 	}
 	if params.ActivatedOn != "" {
 		q.Add("activatedOn", string(params.ActivatedOn))
+	}
+	if len(params.CASetStatuses) > 0 {
+		q.Add("caSetStatus", texts.JoinStringBased(params.CASetStatuses, ","))
 	}
 	uri.RawQuery = q.Encode()
 

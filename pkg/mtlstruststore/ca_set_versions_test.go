@@ -75,7 +75,9 @@ func TestCreateCASetVersion(t *testing.T) {
 				  ],
 				  "validation": {
 					"warnings": []
-				  }
+				  },
+				  "removalDate": null,
+				  "caSetVersionStatus": "NOT_DELETED"
 				}`,
 			expectedPath: `/mtls-edge-truststore/v2/ca-sets/123/versions`,
 			expectedResponse: &CreateCASetVersionResponse{
@@ -105,7 +107,9 @@ func TestCreateCASetVersion(t *testing.T) {
 						CreatedBy:          "tester",
 					},
 				},
-				Validation: &Validation{Warnings: []Warning{}},
+				Validation:         &Validation{Warnings: []Warning{}},
+				RemovalDate:        nil,
+				CASetVersionStatus: "NOT_DELETED",
 			},
 		},
 		"201 Successful creation without description": {
@@ -158,7 +162,9 @@ func TestCreateCASetVersion(t *testing.T) {
 				  ],
 				  "validation": {
 					"warnings": []
-				  }
+				  },
+				  "removalDate": null,
+				  "caSetVersionStatus": "NOT_DELETED"
 				}`,
 			expectedPath: `/mtls-edge-truststore/v2/ca-sets/123/versions`,
 			expectedResponse: &CreateCASetVersionResponse{
@@ -188,7 +194,9 @@ func TestCreateCASetVersion(t *testing.T) {
 						CreatedBy:          "tester",
 					},
 				},
-				Validation: &Validation{Warnings: []Warning{}},
+				Validation:         &Validation{Warnings: []Warning{}},
+				RemovalDate:        nil,
+				CASetVersionStatus: "NOT_DELETED",
 			},
 		},
 		"201 Successful creation without version description": {
@@ -240,7 +248,9 @@ func TestCreateCASetVersion(t *testing.T) {
 				  ],
 				  "validation": {
 					"warnings": []
-				  }
+				  },
+				  "removalDate": null,
+				  "caSetVersionStatus": "NOT_DELETED"
 				}`,
 			expectedPath: `/mtls-edge-truststore/v2/ca-sets/123/versions`,
 			expectedResponse: &CreateCASetVersionResponse{
@@ -269,7 +279,9 @@ func TestCreateCASetVersion(t *testing.T) {
 						CreatedBy:          "tester",
 					},
 				},
-				Validation: &Validation{Warnings: []Warning{}},
+				Validation:         &Validation{Warnings: []Warning{}},
+				RemovalDate:        nil,
+				CASetVersionStatus: "NOT_DELETED",
 			},
 		},
 		"201 with duplicated certificates (warning)": {
@@ -340,7 +352,9 @@ func TestCreateCASetVersion(t *testing.T) {
 							"type": "/mtls-edge-truststore/error-types/duplicate-certificate"
 						}
 					]
-				}
+				},
+				"removalDate": null,
+				"caSetVersionStatus": "NOT_DELETED"
 			}`,
 			expectedPath: `/mtls-edge-truststore/v2/ca-sets/123/versions`,
 			expectedResponse: &CreateCASetVersionResponse{
@@ -382,6 +396,8 @@ func TestCreateCASetVersion(t *testing.T) {
 						Type:    "/mtls-edge-truststore/error-types/duplicate-certificate",
 					},
 				}},
+				RemovalDate:        nil,
+				CASetVersionStatus: "NOT_DELETED",
 			},
 		},
 		"Validation error - CA Set version description greater than max allowed length": {
@@ -838,7 +854,9 @@ func TestCloneCASetVersion(t *testing.T) {
 					  ],
 					  "validation": {
 						"warnings": []
-					  }
+					  },
+					  "removalDate": null,
+					  "caSetVersionStatus": "NOT_DELETED"
 					}`,
 			expectedPath: `/mtls-edge-truststore/v2/ca-sets/123/versions/1/clone`,
 			expectedResponse: &CloneCASetVersionResponse{
@@ -868,7 +886,9 @@ func TestCloneCASetVersion(t *testing.T) {
 						CreatedBy:          "tester",
 					},
 				},
-				Validation: &Validation{Warnings: []Warning{}},
+				Validation:         &Validation{Warnings: []Warning{}},
+				RemovalDate:        nil,
+				CASetVersionStatus: "NOT_DELETED",
 			},
 		},
 		"201 Successful creation but with expired certificate (warning)": {
@@ -920,7 +940,9 @@ func TestCloneCASetVersion(t *testing.T) {
 					        "type": "/mtls-edge-truststore/v2/error-types/expired-certificate"
 					      }
 					    ]
-					  }
+					  },
+					  "removalDate": null,
+					  "caSetVersionStatus": "NOT_DELETED"
 					}`,
 			expectedPath: `/mtls-edge-truststore/v2/ca-sets/123/versions/1/clone`,
 			expectedResponse: &CloneCASetVersionResponse{
@@ -966,6 +988,8 @@ func TestCloneCASetVersion(t *testing.T) {
 						},
 					},
 				},
+				RemovalDate:        nil,
+				CASetVersionStatus: "NOT_DELETED",
 			},
 		},
 		"Validation error - missing CASetID and Version": {
@@ -1159,7 +1183,9 @@ func TestGetCASetVersion(t *testing.T) {
 						"createdBy":"tester"
 					}
 				],
-				"validation": null
+				"validation": null,
+				"removalDate": null,
+				"caSetVersionStatus": "NOT_DELETED"
 			}`,
 			expectedResponse: &GetCASetVersionResponse{
 				CASetID:           "123",
@@ -1188,6 +1214,9 @@ func TestGetCASetVersion(t *testing.T) {
 						CreatedBy:          "tester",
 					},
 				},
+				Validation:         nil,
+				RemovalDate:        nil,
+				CASetVersionStatus: "NOT_DELETED",
 			},
 		},
 		"Validation error - missing CASetID and Version": {
@@ -1331,7 +1360,9 @@ func TestUpdateCASetVersion(t *testing.T) {
 					  ],
 					  "validation": {
 						"warnings": []
-					  }
+					  },
+					  "removalDate": null,
+					  "caSetVersionStatus": "NOT_DELETED"
 					}`,
 			expectedPath: `/mtls-edge-truststore/v2/ca-sets/123/versions/1`,
 			expectedResponse: &UpdateCASetVersionResponse{
@@ -1361,7 +1392,9 @@ func TestUpdateCASetVersion(t *testing.T) {
 						CreatedBy:          "tester",
 					},
 				},
-				Validation: &Validation{Warnings: []Warning{}},
+				Validation:         &Validation{Warnings: []Warning{}},
+				RemovalDate:        nil,
+				CASetVersionStatus: "NOT_DELETED",
 			},
 		},
 		"200 Successful update with missing description": {
@@ -1415,7 +1448,9 @@ func TestUpdateCASetVersion(t *testing.T) {
 					  ],
 					  "validation": {
 						"warnings": []
-					  }
+					  },
+					  "removalDate": null,
+					  "caSetVersionStatus": "NOT_DELETED"
 					}`,
 			expectedPath: `/mtls-edge-truststore/v2/ca-sets/123/versions/1`,
 			expectedResponse: &UpdateCASetVersionResponse{
@@ -1444,7 +1479,9 @@ func TestUpdateCASetVersion(t *testing.T) {
 						CreatedBy:          "tester",
 					},
 				},
-				Validation: &Validation{Warnings: []Warning{}},
+				Validation:         &Validation{Warnings: []Warning{}},
+				RemovalDate:        nil,
+				CASetVersionStatus: "NOT_DELETED",
 			},
 		},
 		"200 Successful update but with duplicated certificates (warning)": {
@@ -1518,7 +1555,9 @@ func TestUpdateCASetVersion(t *testing.T) {
 								  "type": "/mtls-edge-truststore/error-types/duplicate-certificate"
 							  }
 						  ]
-					  }
+					  },
+					  "removalDate": null,
+					  "caSetVersionStatus": "NOT_DELETED"
 					}`,
 			expectedPath: `/mtls-edge-truststore/v2/ca-sets/123/versions/1`,
 			expectedResponse: &UpdateCASetVersionResponse{
@@ -1560,6 +1599,8 @@ func TestUpdateCASetVersion(t *testing.T) {
 						Type:    "/mtls-edge-truststore/error-types/duplicate-certificate",
 					},
 				}},
+				RemovalDate:        nil,
+				CASetVersionStatus: "NOT_DELETED",
 			},
 		},
 		"Validation error - CA Set version description greater than max allowed length": {
@@ -2158,7 +2199,9 @@ func TestListCASetVersions(t *testing.T) {
 							   "description": "Optional description for the certificate"
 							}
 						 ],
-						 "validation": null
+						 "validation": null,
+						 "removalDate": null,
+						 "caSetVersionStatus": "NOT_DELETED"
 					  },
 					  {
 						 "caSetId" : "1000",
@@ -2201,7 +2244,9 @@ func TestListCASetVersions(t *testing.T) {
 							   "description": "Optional description for the certificate"
 							}
 						 ],
-						 "validation": null
+						 "validation": null,
+						 "removalDate": "2025-07-01T00:00:00Z",
+						 "caSetVersionStatus": "NOT_DELETED"
 					  }
 				   ]
 				}`,
@@ -2248,6 +2293,9 @@ func TestListCASetVersions(t *testing.T) {
 								Description:        ptr.To("Optional description for the certificate"),
 							},
 						},
+						Validation:         nil,
+						RemovalDate:        nil,
+						CASetVersionStatus: "NOT_DELETED",
 					},
 					{
 						CASetID:           "1000",
@@ -2290,6 +2338,9 @@ func TestListCASetVersions(t *testing.T) {
 								Description:        ptr.To("Optional description for the certificate"),
 							},
 						},
+						Validation:         nil,
+						RemovalDate:        ptr.To(test.NewTimeFromString(t, "2025-07-01T00:00:00Z")),
+						CASetVersionStatus: "NOT_DELETED",
 					},
 				},
 			},
@@ -2345,7 +2396,9 @@ func TestListCASetVersions(t *testing.T) {
 							   "description": "Optional description for the certificate"
 							}
 						 ],
-						 "validation": null
+						 "validation": null,
+						 "removalDate": null,
+						 "caSetVersionStatus": "NOT_DELETED"
 					  },
 					  {
 						 "caSetId" : "1000",
@@ -2388,7 +2441,9 @@ func TestListCASetVersions(t *testing.T) {
 							   "description": "Optional description for the certificate"
 							}
 						 ],
-						 "validation": null
+						 "validation": null,
+						 "removalDate": null,
+						 "caSetVersionStatus": "NOT_DELETED"
 					  }
 				   ]
 				}`,
@@ -2435,6 +2490,9 @@ func TestListCASetVersions(t *testing.T) {
 								Description:        ptr.To("Optional description for the certificate"),
 							},
 						},
+						Validation:         nil,
+						RemovalDate:        nil,
+						CASetVersionStatus: "NOT_DELETED",
 					},
 					{
 						CASetID:           "1000",
@@ -2477,6 +2535,9 @@ func TestListCASetVersions(t *testing.T) {
 								Description:        ptr.To("Optional description for the certificate"),
 							},
 						},
+						Validation:         nil,
+						RemovalDate:        nil,
+						CASetVersionStatus: "NOT_DELETED",
 					},
 				},
 			},
@@ -2504,7 +2565,9 @@ func TestListCASetVersions(t *testing.T) {
 						 "createdBy": "jsmith",
 						 "modifiedDate": "2023-01-10T12:00:00.733190Z",
 						 "modifiedBy": "jsmith",
-						 "validation": null
+						 "validation": null,
+						 "removalDate": null,
+						 "caSetVersionStatus": "NOT_DELETED"
 					  },
 					  {
 						 "caSetId" : "1000",
@@ -2519,40 +2582,240 @@ func TestListCASetVersions(t *testing.T) {
 						 "createdBy": "jsmith",
 						 "modifiedDate": "2023-01-10T12:00:00.733191Z",
 						 "modifiedBy": "jsmith",
-						 "validation": null
+						 "validation": null,
+						 "removalDate": null,
+						 "caSetVersionStatus": "NOT_DELETED"
 					  }
 				   ]
 				}`,
 			expectedResponse: &ListCASetVersionsResponse{
 				Versions: []CASetVersion{
 					{
-						CASetID:           "1000",
-						Version:           1,
-						CASetName:         "test1",
-						VersionLink:       "/mtls-edge-truststore/v2/ca-sets/1000/versions/1",
-						Description:       ptr.To("Optional description for this version."),
-						AllowInsecureSHA1: false,
-						StagingStatus:     "ACTIVE",
-						ProductionStatus:  "ACTIVE",
-						CreatedDate:       test.NewTimeFromString(t, "2023-01-10T11:00:00.633918Z"),
-						CreatedBy:         "jsmith",
-						ModifiedDate:      ptr.To(test.NewTimeFromString(t, "2023-01-10T12:00:00.733190Z")),
-						ModifiedBy:        ptr.To("jsmith"),
+						CASetID:            "1000",
+						Version:            1,
+						CASetName:          "test1",
+						VersionLink:        "/mtls-edge-truststore/v2/ca-sets/1000/versions/1",
+						Description:        ptr.To("Optional description for this version."),
+						AllowInsecureSHA1:  false,
+						StagingStatus:      "ACTIVE",
+						ProductionStatus:   "ACTIVE",
+						CreatedDate:        test.NewTimeFromString(t, "2023-01-10T11:00:00.633918Z"),
+						CreatedBy:          "jsmith",
+						ModifiedDate:       ptr.To(test.NewTimeFromString(t, "2023-01-10T12:00:00.733190Z")),
+						ModifiedBy:         ptr.To("jsmith"),
+						Validation:         nil,
+						RemovalDate:        nil,
+						CASetVersionStatus: "NOT_DELETED",
 					},
 					{
 						CASetID: "1000",
 						Version: 2,
 
-						CASetName:         "test1",
-						VersionLink:       "/mtls-edge-truststore/v2/ca-sets/1000/versions/2",
-						Description:       nil,
-						AllowInsecureSHA1: true,
-						StagingStatus:     "ACTIVE",
-						ProductionStatus:  "ACTIVE",
-						CreatedDate:       test.NewTimeFromString(t, "2023-01-10T11:00:00.633919Z"),
-						CreatedBy:         "jsmith",
-						ModifiedDate:      ptr.To(test.NewTimeFromString(t, "2023-01-10T12:00:00.733191Z")),
-						ModifiedBy:        ptr.To("jsmith"),
+						CASetName:          "test1",
+						VersionLink:        "/mtls-edge-truststore/v2/ca-sets/1000/versions/2",
+						Description:        nil,
+						AllowInsecureSHA1:  true,
+						StagingStatus:      "ACTIVE",
+						ProductionStatus:   "ACTIVE",
+						CreatedDate:        test.NewTimeFromString(t, "2023-01-10T11:00:00.633919Z"),
+						CreatedBy:          "jsmith",
+						ModifiedDate:       ptr.To(test.NewTimeFromString(t, "2023-01-10T12:00:00.733191Z")),
+						ModifiedBy:         ptr.To("jsmith"),
+						Validation:         nil,
+						RemovalDate:        nil,
+						CASetVersionStatus: "NOT_DELETED",
+					},
+				},
+			},
+		},
+		"200 OK with empty CASetVersionStatuses - defaults to NOT_DELETED": {
+			request: ListCASetVersionsRequest{
+				CASetID:              "123",
+				CASetVersionStatuses: []string{},
+			},
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets/123/versions",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"versions": [
+					{
+						"version": 1,
+						"versionLink": "/mtls-edge-truststore/v2/ca-sets/123/versions/1",
+						"caSetId": "123",
+						"caSetName": "test1",
+						"description": null,
+						"allowInsecureSha1": false,
+						"stagingStatus": "INACTIVE",
+						"productionStatus": "INACTIVE",
+						"createdDate": "2023-01-10T11:00:00.435643Z",
+						"createdBy": "jsmith",
+						"modifiedDate": null,
+						"modifiedBy": null,
+						"certificates": [],
+						"validation": null,
+						"removalDate": "2025-07-01T00:00:00Z",
+						"caSetVersionStatus": "NOT_DELETED"
+					}
+				]
+			}`,
+			expectedResponse: &ListCASetVersionsResponse{
+				Versions: []CASetVersion{
+					{
+						CASetID:            "123",
+						Version:            1,
+						CASetName:          "test1",
+						VersionLink:        "/mtls-edge-truststore/v2/ca-sets/123/versions/1",
+						Description:        nil,
+						AllowInsecureSHA1:  false,
+						StagingStatus:      "INACTIVE",
+						ProductionStatus:   "INACTIVE",
+						CreatedDate:        test.NewTimeFromString(t, "2023-01-10T11:00:00.435643Z"),
+						CreatedBy:          "jsmith",
+						ModifiedDate:       nil,
+						ModifiedBy:         nil,
+						Certificates:       []CertificateResponse{},
+						Validation:         nil,
+						RemovalDate:        ptr.To(test.NewTimeFromString(t, "2025-07-01T00:00:00Z")),
+						CASetVersionStatus: "NOT_DELETED",
+					},
+				},
+			},
+		},
+		"200 OK with single CASetVersionStatuses filter": {
+			request: ListCASetVersionsRequest{
+				CASetID:              "123",
+				CASetVersionStatuses: []string{CASetStatusDeleted},
+			},
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets/123/versions?caSetVersionStatus=DELETED",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"versions": [
+					{
+						"version": 1,
+						"versionLink": "/mtls-edge-truststore/v2/ca-sets/123/versions/1",
+						"caSetId": "123",
+						"caSetName": "test1",
+						"description": null,
+						"allowInsecureSha1": false,
+						"stagingStatus": "INACTIVE",
+						"productionStatus": "INACTIVE",
+						"createdDate": "2023-01-10T11:00:00.435643Z",
+						"createdBy": "jsmith",
+						"modifiedDate": null,
+						"modifiedBy": null,
+						"certificates": [],
+						"validation": null,
+						"removalDate": "2025-07-01T00:00:00Z",
+						"caSetVersionStatus": "DELETED"
+					}
+				]
+			}`,
+			expectedResponse: &ListCASetVersionsResponse{
+				Versions: []CASetVersion{
+					{
+						CASetID:            "123",
+						Version:            1,
+						CASetName:          "test1",
+						VersionLink:        "/mtls-edge-truststore/v2/ca-sets/123/versions/1",
+						Description:        nil,
+						AllowInsecureSHA1:  false,
+						StagingStatus:      "INACTIVE",
+						ProductionStatus:   "INACTIVE",
+						CreatedDate:        test.NewTimeFromString(t, "2023-01-10T11:00:00.435643Z"),
+						CreatedBy:          "jsmith",
+						ModifiedDate:       nil,
+						ModifiedBy:         nil,
+						Certificates:       []CertificateResponse{},
+						Validation:         nil,
+						RemovalDate:        ptr.To(test.NewTimeFromString(t, "2025-07-01T00:00:00Z")),
+						CASetVersionStatus: "DELETED",
+					},
+				},
+			},
+		},
+		"200 OK with multiple CASetVersionStatuses filter": {
+			request: ListCASetVersionsRequest{
+				CASetID:              "123",
+				CASetVersionStatuses: []string{CASetStatusDeleted, CASetStatusNotDeleted},
+			},
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets/123/versions?caSetVersionStatus=DELETED%2CNOT_DELETED",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"versions": [
+					{
+						"version": 1,
+						"versionLink": "/mtls-edge-truststore/v2/ca-sets/123/versions/1",
+						"caSetId": "123",
+						"caSetName": "test1",
+						"description": null,
+						"allowInsecureSha1": false,
+						"stagingStatus": "INACTIVE",
+						"productionStatus": "INACTIVE",
+						"createdDate": "2023-01-10T11:00:00.435643Z",
+						"createdBy": "jsmith",
+						"modifiedDate": null,
+						"modifiedBy": null,
+						"certificates": [],
+						"validation": null,
+						"removalDate": "2025-07-01T00:00:00Z",
+						"caSetVersionStatus": "DELETED"
+					},
+					{
+						"version": 2,
+						"versionLink": "/mtls-edge-truststore/v2/ca-sets/123/versions/2",
+						"caSetId": "123",
+						"caSetName": "test1",
+						"description": "Active version",
+						"allowInsecureSha1": false,
+						"stagingStatus": "ACTIVE",
+						"productionStatus": "INACTIVE",
+						"createdDate": "2023-01-10T12:00:00.435643Z",
+						"createdBy": "jsmith",
+						"modifiedDate": null,
+						"modifiedBy": null,
+						"certificates": [],
+						"validation": null,
+						"removalDate": null,
+						"caSetVersionStatus": "NOT_DELETED"
+					}
+				]
+			}`,
+			expectedResponse: &ListCASetVersionsResponse{
+				Versions: []CASetVersion{
+					{
+						CASetID:            "123",
+						Version:            1,
+						CASetName:          "test1",
+						VersionLink:        "/mtls-edge-truststore/v2/ca-sets/123/versions/1",
+						Description:        nil,
+						AllowInsecureSHA1:  false,
+						StagingStatus:      "INACTIVE",
+						ProductionStatus:   "INACTIVE",
+						CreatedDate:        test.NewTimeFromString(t, "2023-01-10T11:00:00.435643Z"),
+						CreatedBy:          "jsmith",
+						ModifiedDate:       nil,
+						ModifiedBy:         nil,
+						Certificates:       []CertificateResponse{},
+						Validation:         nil,
+						RemovalDate:        ptr.To(test.NewTimeFromString(t, "2025-07-01T00:00:00Z")),
+						CASetVersionStatus: "DELETED",
+					},
+					{
+						CASetID:            "123",
+						Version:            2,
+						CASetName:          "test1",
+						VersionLink:        "/mtls-edge-truststore/v2/ca-sets/123/versions/2",
+						Description:        ptr.To("Active version"),
+						AllowInsecureSHA1:  false,
+						StagingStatus:      "ACTIVE",
+						ProductionStatus:   "INACTIVE",
+						CreatedDate:        test.NewTimeFromString(t, "2023-01-10T12:00:00.435643Z"),
+						CreatedBy:          "jsmith",
+						ModifiedDate:       nil,
+						ModifiedBy:         nil,
+						Certificates:       []CertificateResponse{},
+						Validation:         nil,
+						RemovalDate:        nil,
+						CASetVersionStatus: "NOT_DELETED",
 					},
 				},
 			},
@@ -2561,6 +2824,16 @@ func TestListCASetVersions(t *testing.T) {
 			request: ListCASetVersionsRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "fetching CA set versions: struct validation: CASetID: cannot be blank", err.Error())
+			},
+		},
+		"invalid CASetVersionStatuses - validation error": {
+			request: ListCASetVersionsRequest{
+				CASetID:              "123",
+				CASetVersionStatuses: []string{"INVALID"},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "fetching CA set versions: struct validation: CASetVersionStatuses: list element 'INVALID' is invalid. "+
+					"Each element must be one of: 'NOT_DELETED', 'DELETED'", err.Error())
 			},
 		},
 		"Error Response - CA set is not found": {
@@ -3030,6 +3303,110 @@ func TestGetCASetVersionCertificates(t *testing.T) {
 
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedResponse, result)
+		})
+	}
+}
+
+func TestDeleteCASetVersion(t *testing.T) {
+	tests := map[string]struct {
+		params         DeleteCASetVersionRequest
+		expectedPath   string
+		responseStatus int
+		responseBody   string
+		withError      func(*testing.T, error)
+	}{
+		"204 No Content": {
+			params: DeleteCASetVersionRequest{
+				CASetID: "123",
+				Version: 1,
+			},
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets/123/versions/1",
+			responseStatus: http.StatusNoContent,
+		},
+		"missing CASetID - validation error": {
+			params: DeleteCASetVersionRequest{
+				Version: 1,
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "deleting a CA set version: struct validation: CASetID: cannot be blank", err.Error())
+			},
+		},
+		"missing Version - validation error": {
+			params: DeleteCASetVersionRequest{
+				CASetID: "123",
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "deleting a CA set version: struct validation: Version: cannot be blank", err.Error())
+			},
+		},
+		"404 version not found": {
+			params: DeleteCASetVersionRequest{
+				CASetID: "123",
+				Version: 99,
+			},
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets/123/versions/99",
+			responseStatus: http.StatusNotFound,
+			responseBody: `{
+				"contextInfo": {
+					"caSetId": "123",
+					"version": 99
+				},
+				"detail": "Cannot find CA set version with version 99 for CA set with caSetId 123.",
+				"status": 404,
+				"title": "CA set version is not found.",
+				"type": "/mtls-edge-truststore/error-types/ca-set-version-not-found"
+			}`,
+			withError: func(t *testing.T, err error) {
+				assert.True(t, errors.Is(err, ErrGetCASetVersionNotFound), "want: %s; got: %s", ErrGetCASetVersionNotFound, err)
+			},
+		},
+		"500 internal server error": {
+			params: DeleteCASetVersionRequest{
+				CASetID: "123",
+				Version: 1,
+			},
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets/123/versions/1",
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `{
+				"type": "internal-server-error",
+				"title": "Internal Server Error",
+				"detail": "Error processing request",
+				"instance": "TestInstances",
+				"status": 500
+			}`,
+			withError: func(t *testing.T, err error) {
+				want := &Error{
+					Type:     "internal-server-error",
+					Title:    "Internal Server Error",
+					Detail:   "Error processing request",
+					Instance: "TestInstances",
+					Status:   500,
+				}
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, tc.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodDelete, r.Method)
+				w.WriteHeader(tc.responseStatus)
+				_, err := w.Write([]byte(tc.responseBody))
+				assert.NoError(t, err)
+			}))
+			defer mockServer.Close()
+
+			client := mockAPIClient(t, mockServer)
+			err := client.DeleteCASetVersion(context.Background(), tc.params)
+
+			if tc.withError != nil {
+				tc.withError(t, err)
+				return
+			}
+
+			require.NoError(t, err)
 		})
 	}
 }

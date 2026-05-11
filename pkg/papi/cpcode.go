@@ -26,6 +26,15 @@ type (
 		Status     string `json:"status,omitempty"`
 	}
 
+	// AccessGroup contains the access group information for a CP code details.
+	AccessGroup struct {
+		// ContractID identifies the contract assigned to the access control group.
+		ContractID string `json:"contractId"`
+
+		// GroupID identifies the access control group.
+		GroupID *int64 `json:"groupId"`
+	}
+
 	// CPCodeDetailResponse is a response returned while fetching CP code details using CPRG API call
 	CPCodeDetailResponse struct {
 		ID               int              `json:"cpcodeId"`
@@ -37,6 +46,7 @@ type (
 		Type             string           `json:"type"`
 		Contracts        []CPCodeContract `json:"contracts"`
 		Products         []CPCodeProduct  `json:"products"`
+		AccessGroup      AccessGroup      `json:"accessGroup"`
 	}
 
 	// CPCodeItems contains a list of CPCode items
@@ -264,6 +274,8 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 }
 
 // GetCPCodeDetail is used to fetch CP code detail with provided ID using CPRG API
+//
+// Deprecated: Use reportinggroups.GetCPCode instead.
 func (p *papi) GetCPCodeDetail(ctx context.Context, ID int) (*CPCodeDetailResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("GetCPCodeDetail")
@@ -327,6 +339,8 @@ func (p *papi) CreateCPCode(ctx context.Context, params CreateCPCodeRequest) (*C
 }
 
 // UpdateCPCode is used to update CP code using CPRG API
+//
+// Deprecated: Use reportinggroups.UpdateCPCode instead.
 func (p *papi) UpdateCPCode(ctx context.Context, r UpdateCPCodeRequest) (*CPCodeDetailResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("UpdateCPCode")
