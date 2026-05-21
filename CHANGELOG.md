@@ -33,6 +33,9 @@
 
 ### BUG FIXES:
 
+* Fixed incorrect Authorization header generation for POST requests when `Config.MaxBody` was not set (defaulted to 0). 
+  `SignRequest` now defaults `MaxBody` to `MaxBodySize` (131072) when the value is 0 or negative. 
+  ([I#234](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/issues/234)).
 
 
 
