@@ -80,6 +80,7 @@ func TestGTM_ListCIDRMaps(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListCIDRMaps(
 				session.ContextWithOptions(
@@ -162,6 +163,7 @@ func TestGTM_GetCIDRMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCIDRMap(
 				session.ContextWithOptions(
@@ -311,6 +313,7 @@ func TestGTM_CreateCIDRMap(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCIDRMap(
 				session.ContextWithOptions(
@@ -402,6 +405,7 @@ func TestGTM_UpdateCIDRMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCIDRMap(
 				session.ContextWithOptions(
@@ -493,6 +497,7 @@ func TestGTM_DeleteCIDRMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteCIDRMap(
 				session.ContextWithOptions(

@@ -127,6 +127,7 @@ func TestCloudwrapper_ListLocations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.ListLocations(context.Background())
 			if test.withError != nil {

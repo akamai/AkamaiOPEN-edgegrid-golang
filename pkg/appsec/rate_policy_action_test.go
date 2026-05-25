@@ -78,6 +78,7 @@ func TestAppSec_ListRatePolicyActions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRatePolicyActions(
 				session.ContextWithOptions(
@@ -167,6 +168,7 @@ func TestAppSec_UpdateRatePolicyAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRatePolicyAction(
 				session.ContextWithOptions(

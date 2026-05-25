@@ -167,6 +167,7 @@ func TestListActivations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListActivations(context.Background(), test.params)
 			if test.withError != nil {
@@ -263,6 +264,7 @@ func TestGetActivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetActivation(context.Background(), test.params)
 			if test.withError != nil {
@@ -422,6 +424,7 @@ func TestActivateVersion(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivateVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -583,6 +586,7 @@ func TestCancelActivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CancelPendingActivation(context.Background(), test.params)
 			if test.withError != nil {

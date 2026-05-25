@@ -182,6 +182,7 @@ func TestPapiGetEdgeHostnames(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEdgeHostnames(context.Background(), test.params)
 			if test.withError != nil {
@@ -428,6 +429,7 @@ func TestPapiGetEdgeHostname(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEdgeHostname(context.Background(), test.params)
 			if test.withError != nil {
@@ -1128,6 +1130,7 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateEdgeHostname(context.Background(), test.params)
 			if test.withError != nil {

@@ -130,6 +130,7 @@ func TestBotman_GetCustomClientList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomClientList(
 				session.ContextWithOptions(
@@ -235,6 +236,7 @@ func TestBotman_GetCustomClient(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomClient(context.Background(), test.params)
 			if test.withError != nil {
@@ -340,6 +342,7 @@ func TestBotman_CreateCustomClient(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCustomClient(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -460,6 +463,7 @@ func TestBotman_UpdateCustomClient(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCustomClient(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -561,6 +565,7 @@ func TestBotman_RemoveCustomClient(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveCustomClient(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

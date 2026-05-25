@@ -180,6 +180,7 @@ func TestListProperties(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListProperties(context.Background(), test.params)
 			if test.withError != nil {
@@ -371,6 +372,7 @@ func TestListOrigins(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListOrigins(context.Background(), test.params)
 			if test.withError != nil {

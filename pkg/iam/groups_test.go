@@ -101,6 +101,7 @@ func TestIAM_CreateGroup(t *testing.T) {
 					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateGroup(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -150,6 +151,7 @@ func TestIAM_MoveGroup(t *testing.T) {
 				_, err = w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.MoveGroup(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -264,6 +266,7 @@ func TestIAM_GetGroup(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetGroup(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -372,6 +375,7 @@ func TestIAM_ListAffectedUsers(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAffectedUsers(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -491,6 +495,7 @@ func TestIAM_ListGroups(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListGroups(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -576,6 +581,7 @@ func TestIAM_RemoveGroup(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveGroup(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -675,6 +681,7 @@ func TestIAM_UpdateGroupName(t *testing.T) {
 					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateGroupName(context.Background(), tc.params)
 			if tc.withError != nil {

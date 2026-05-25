@@ -76,6 +76,7 @@ func TestAppSec_ListApiHostnameCoverageOverlapping(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetApiHostnameCoverageOverlapping(
 				session.ContextWithOptions(
@@ -153,6 +154,7 @@ func TestAppSec_GetApiHostnameCoverageOverlapping(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetApiHostnameCoverageOverlapping(context.Background(), test.params)
 			if test.withError != nil {

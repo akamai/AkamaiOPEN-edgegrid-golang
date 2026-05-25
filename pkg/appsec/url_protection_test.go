@@ -149,6 +149,7 @@ func TestAppSec_ListURLProtectionPolicies(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListURLProtectionPolicies(
 				session.ContextWithOptions(
@@ -274,6 +275,7 @@ func TestAppSec_GetURLProtectionPolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetURLProtectionPolicy(context.Background(), test.params)
 			if test.withError != nil {
@@ -544,6 +546,7 @@ func TestAppSec_CreateURLProtectionPolicyHostnamePaths(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateURLProtectionPolicy(
 				session.ContextWithOptions(
@@ -697,6 +700,7 @@ func TestAppSec_UpdateURLProtectionPolicy(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateURLProtectionPolicy(
 				session.ContextWithOptions(
@@ -816,6 +820,7 @@ func TestAppSec_RemoveURLProtectionPolicy(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveURLProtectionPolicy(
 				session.ContextWithOptions(

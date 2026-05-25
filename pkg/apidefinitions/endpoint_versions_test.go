@@ -462,6 +462,7 @@ func TestListEndpointVersions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListEndpointVersions(context.Background(), test.params)
 			if test.withError != nil {
@@ -1153,6 +1154,7 @@ func TestUpdateEndpointVersion(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateEndpointVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -1775,6 +1777,7 @@ func TestGetEndpointVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEndpointVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -2231,6 +2234,7 @@ func TestCloneEndpointVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CloneEndpointVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -2338,6 +2342,7 @@ func TestDeleteEndpointVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteEndpointVersion(context.Background(), test.params)
 			if test.withError != nil {

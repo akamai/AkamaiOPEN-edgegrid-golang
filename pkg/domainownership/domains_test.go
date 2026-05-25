@@ -1164,6 +1164,7 @@ func TestListDomains(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListDomains(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1488,6 +1489,7 @@ func TestGetDomain(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetDomain(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1747,6 +1749,7 @@ func TestSearchDomains(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.SearchDomains(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -2248,6 +2251,7 @@ func TestAddDomains(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.AddDomains(context.Background(), tc.request)
 			if tc.withError != nil {
@@ -2369,6 +2373,7 @@ func TestDeleteDomain(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteDomain(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -2560,6 +2565,7 @@ func TestDeleteDomains(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteDomains(context.Background(), tc.params)
 			if tc.withError != nil {

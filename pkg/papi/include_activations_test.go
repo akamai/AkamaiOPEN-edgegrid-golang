@@ -286,6 +286,7 @@ func TestActivateInclude(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivateInclude(context.Background(), test.params)
 
@@ -456,6 +457,7 @@ func TestDeactivateInclude(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeactivateInclude(context.Background(), test.params)
 			if test.withError != nil {
@@ -601,6 +603,7 @@ func TestCancelIncludeActivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CancelIncludeActivation(context.Background(), test.params)
 			if test.withError != nil {
@@ -890,6 +893,7 @@ func TestGetIncludeActivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetIncludeActivation(context.Background(), test.params)
 			if test.withError != nil {
@@ -1210,6 +1214,7 @@ func TestListIncludeActivations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListIncludeActivations(context.Background(), test.params)
 			if test.withError != nil {

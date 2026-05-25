@@ -78,6 +78,7 @@ func TestAppSec_ListMatchTargetSequence(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetMatchTargetSequence(
 				session.ContextWithOptions(
@@ -155,6 +156,7 @@ func TestAppSec_GetMatchTargetSequence(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetMatchTargetSequence(context.Background(), test.params)
 			if test.withError != nil {
@@ -237,6 +239,7 @@ func TestAppSec_UpdateMatchTargetSequence(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateMatchTargetSequence(
 				session.ContextWithOptions(

@@ -130,6 +130,7 @@ func TestBotman_GetCustomBotCategoryList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomBotCategoryList(
 				session.ContextWithOptions(
@@ -235,6 +236,7 @@ func TestBotman_GetCustomBotCategory(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomBotCategory(context.Background(), test.params)
 			if test.withError != nil {
@@ -340,6 +342,7 @@ func TestBotman_CreateCustomBotCategory(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCustomBotCategory(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -460,6 +463,7 @@ func TestBotman_UpdateCustomBotCategory(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCustomBotCategory(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -561,6 +565,7 @@ func TestBotman_RemoveCustomBotCategory(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveCustomBotCategory(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

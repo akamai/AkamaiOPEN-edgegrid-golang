@@ -79,6 +79,7 @@ func TestGTM_ListGeoMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListGeoMaps(
 				session.ContextWithOptions(
@@ -161,6 +162,7 @@ func TestGTM_GetGeoMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetGeoMap(
 				session.ContextWithOptions(
@@ -252,6 +254,7 @@ func TestGTM_CreateGeoMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateGeoMap(
 				session.ContextWithOptions(
@@ -343,6 +346,7 @@ func TestGTM_UpdateGeoMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateGeoMap(
 				session.ContextWithOptions(
@@ -434,6 +438,7 @@ func TestGTM_DeleteGeoMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteGeoMap(
 				session.ContextWithOptions(

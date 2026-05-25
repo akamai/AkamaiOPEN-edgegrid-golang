@@ -190,6 +190,7 @@ func TestDs_ActivateStream(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivateStream(context.Background(), test.request)
 			if test.withError != nil {
@@ -381,6 +382,7 @@ func TestDs_DeactivateStream(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeactivateStream(context.Background(), test.request)
 			if test.withError != nil {
@@ -490,6 +492,7 @@ func TestDs_GetActivationHistory(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetActivationHistory(context.Background(), test.request)
 			if test.withError != nil {

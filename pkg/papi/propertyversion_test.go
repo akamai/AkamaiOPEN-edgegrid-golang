@@ -201,6 +201,7 @@ func TestPapiGetPropertyVersions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPropertyVersions(context.Background(), test.params)
 			if test.withError != nil {
@@ -461,6 +462,7 @@ func TestPapiGetPropertyVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPropertyVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -609,6 +611,7 @@ func TestPapiCreatePropertyVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreatePropertyVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -850,6 +853,7 @@ func TestPapiGetLatestVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetLatestVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -1031,6 +1035,7 @@ func TestPapiGetAvailableBehaviors(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAvailableBehaviors(context.Background(), test.params)
 			if test.withError != nil {
@@ -1212,6 +1217,7 @@ func TestPapiGetAvailableCriteria(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAvailableCriteria(context.Background(), test.params)
 			if test.withError != nil {
@@ -2015,6 +2021,7 @@ func TestPapiListAvailableIncludes(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAvailableIncludes(context.Background(), test.params)
 			if test.withError != nil {
@@ -2152,6 +2159,7 @@ func TestPapiListReferencedIncludes(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListReferencedIncludes(context.Background(), test.params)
 			if test.withError != nil {

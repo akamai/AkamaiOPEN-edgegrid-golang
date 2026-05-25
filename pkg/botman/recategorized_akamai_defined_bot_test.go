@@ -129,6 +129,7 @@ func TestBotman_GetRecategorizedAkamaiDefinedBotList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRecategorizedAkamaiDefinedBotList(
 				session.ContextWithOptions(
@@ -237,6 +238,7 @@ func TestBotman_GetRecategorizedAkamaiDefinedBot(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRecategorizedAkamaiDefinedBot(context.Background(), test.params)
 			if test.withError != nil {
@@ -362,6 +364,7 @@ func TestBotman_CreateRecategorizedAkamaiDefinedBot(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateRecategorizedAkamaiDefinedBot(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -485,6 +488,7 @@ func TestBotman_UpdateRecategorizedAkamaiDefinedBot(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRecategorizedAkamaiDefinedBot(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -586,6 +590,7 @@ func TestBotman_RemoveRecategorizedAkamaiDefinedBot(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveRecategorizedAkamaiDefinedBot(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

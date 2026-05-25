@@ -76,6 +76,7 @@ func TestAppSec_ListVersionNotes(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetVersionNotes(
 				session.ContextWithOptions(
@@ -151,6 +152,7 @@ func TestAppSec_GetVersionNotes(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetVersionNotes(context.Background(), test.params)
 			if test.withError != nil {
@@ -231,6 +233,7 @@ func TestAppSec_UpdateVersionNotes(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateVersionNotes(
 				session.ContextWithOptions(

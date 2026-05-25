@@ -126,6 +126,7 @@ func TestPapiGetCPCodes(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCPCodes(context.Background(), test.params)
 			if test.withError != nil {
@@ -295,6 +296,7 @@ func TestPapiGetCPCode(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCPCode(context.Background(), test.params)
 			if test.withError != nil {
@@ -472,6 +474,7 @@ func TestGetCPCodeDetail(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCPCodeDetail(context.Background(), test.id)
 			if test.withError != nil {
@@ -650,6 +653,7 @@ func TestPapiCreateCPCode(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCPCode(context.Background(), test.params)
 			if test.withError != nil {
@@ -1113,6 +1117,7 @@ func TestUpdateCPCode(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCPCode(context.Background(), test.params)
 			if test.withError != nil {

@@ -126,6 +126,7 @@ func TestUpdateResourceOperation(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateResourceOperation(context.Background(), test.params)
 			if test.withError != nil {
@@ -252,6 +253,7 @@ func TestGetResourceOperation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetResourceOperation(context.Background(), test.params)
 			if test.withError != nil {
@@ -306,6 +308,7 @@ func TestDeleteResourceOperation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteResourceOperation(context.Background(), test.params)
 			if test.withError != nil {

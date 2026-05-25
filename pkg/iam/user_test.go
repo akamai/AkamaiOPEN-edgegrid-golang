@@ -186,6 +186,7 @@ func TestIAM_CreateUser(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateUser(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -273,6 +274,7 @@ func TestIAM_GetUser(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetUser(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -489,6 +491,7 @@ func TestIAM_ListUsers(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.ListUsers(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -612,6 +615,7 @@ func TestIAM_UpdateUserInfo(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateUserInfo(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -735,6 +739,7 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateUserNotifications(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -842,6 +847,7 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateUserAuthGrants(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -912,6 +918,7 @@ func TestIAM_RemoveUser(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveUser(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -975,6 +982,7 @@ func TestIAM_UpdateMFA(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.UpdateMFA(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1036,6 +1044,7 @@ func TestIAM_ResetMFA(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.ResetMFA(context.Background(), tc.params)
 			if tc.withError != nil {

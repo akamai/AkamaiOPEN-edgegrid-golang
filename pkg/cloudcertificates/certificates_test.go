@@ -1167,6 +1167,7 @@ func TestCreateCertificate(t *testing.T) {
 				_, err = w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCertificate(context.Background(), tc.params)
 
@@ -1480,6 +1481,7 @@ func TestDeleteCertificate(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteCertificate(context.Background(), tc.params)
 
@@ -2466,6 +2468,7 @@ func TestPatchCertificate(t *testing.T) {
 				_, err = w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.PatchCertificate(context.Background(), tc.params)
 
@@ -3441,6 +3444,7 @@ func TestUpdateCertificate(t *testing.T) {
 				_, err = w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCertificate(context.Background(), tc.params)
 
@@ -4655,6 +4659,7 @@ func TestListCertificates(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListCertificates(context.Background(), tc.params)
 

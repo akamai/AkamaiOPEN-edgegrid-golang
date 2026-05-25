@@ -1137,6 +1137,7 @@ func TestListPolicies(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListPolicies(context.Background(), test.params)
 			if test.withError != nil {
@@ -1821,6 +1822,7 @@ func TestGetPolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPolicy(context.Background(), test.params)
 			if test.withError != nil {
@@ -2145,6 +2147,7 @@ func TestPutPolicy(t *testing.T) {
 					assert.Equal(t, prettyExpectedJSON, prettyActualJSON)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpsertPolicy(context.Background(), test.params)
 			if test.withError != nil {
@@ -2326,6 +2329,7 @@ func TestDeletePolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeletePolicy(context.Background(), test.params)
 			if test.withError != nil {
@@ -2536,6 +2540,7 @@ func TestGetPolicyHistory(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPolicyHistory(context.Background(), test.params)
 			if test.withError != nil {
@@ -2717,6 +2722,7 @@ func TestRollbackPolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RollbackPolicy(context.Background(), test.params)
 			if test.withError != nil {

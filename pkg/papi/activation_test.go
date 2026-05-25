@@ -427,6 +427,7 @@ func TestPapiCreateActivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateActivation(context.Background(), test.request)
 			if test.withError != nil || test.assertError != nil {
@@ -585,6 +586,7 @@ func TestPapiGetActivations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetActivations(context.Background(), test.request)
 			if test.withError != nil {
@@ -691,6 +693,7 @@ func TestPapiGetActivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetActivation(context.Background(), test.request)
 			if test.withError != nil {
@@ -824,6 +827,7 @@ func TestPapiCancelActivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CancelActivation(context.Background(), test.request)
 			if test.withError != nil {

@@ -87,6 +87,7 @@ func TestBotman_GetChallengeInjectionRules(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetChallengeInjectionRules(context.Background(), test.params)
 			if test.withError != nil {
@@ -190,6 +191,7 @@ func TestBotman_UpdateChallengeInjectionRules(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateChallengeInjectionRules(
 				session.ContextWithOptions(

@@ -202,6 +202,7 @@ func TestListOrigins(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListOrigins(context.Background(), test.originType)
 			if test.withError != nil {
@@ -271,6 +272,7 @@ func TestGetOrigin(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetOrigin(context.Background(), GetOriginRequest{OriginID: test.originID})
 			if test.withError != nil {
@@ -365,6 +367,7 @@ func TestCreateOrigin(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateOrigin(context.Background(), test.request)
 			if test.withError != nil {
@@ -408,6 +411,7 @@ func TestCreateOriginValidation(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
 			client := mockAPIClient(t, mockServer)
+			defer mockServer.Close()
 			_, err := client.CreateOrigin(context.Background(), test.request)
 			assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 		})
@@ -495,6 +499,7 @@ func TestUpdateOrigin(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateOrigin(context.Background(), test.request)
 			if test.withError != nil {
@@ -538,6 +543,7 @@ func TestUpdateOriginValidation(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
 			client := mockAPIClient(t, mockServer)
+			defer mockServer.Close()
 			_, err := client.UpdateOrigin(context.Background(), test.request)
 			assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 		})

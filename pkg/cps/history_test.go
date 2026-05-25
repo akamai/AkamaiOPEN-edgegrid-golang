@@ -221,6 +221,7 @@ func TestGetDVHistory(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetDVHistory(context.Background(), test.request)
 			if test.withError != nil {
@@ -327,6 +328,7 @@ func TestGetCertificateHistory(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCertificateHistory(context.Background(), test.request)
 			if test.withError != nil {
@@ -434,6 +436,7 @@ func TestGetChangeHistory(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetChangeHistory(context.Background(), test.request)
 			if test.withError != nil {

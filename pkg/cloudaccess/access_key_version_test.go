@@ -112,6 +112,7 @@ func TestGetAccessKeyVersionStatus(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAccessKeyVersionStatus(context.Background(), test.params)
 			if test.withError != nil {
@@ -330,6 +331,7 @@ func TestCreateAccessKeyVersion(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateAccessKeyVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -506,6 +508,7 @@ func TestGetAccessKeyVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAccessKeyVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -666,6 +669,7 @@ func TestListAccessKeyVersions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAccessKeyVersions(context.Background(), test.params)
 			if test.withError != nil {
@@ -758,6 +762,7 @@ func TestDeleteAccessKeyVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteAccessKeyVersion(context.Background(), test.params)
 			if test.withError != nil {

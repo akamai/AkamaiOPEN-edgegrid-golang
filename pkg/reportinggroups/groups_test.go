@@ -431,6 +431,7 @@ func TestCreateReportingGroup(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateReportingGroup(context.Background(), tc.params)
 
@@ -545,6 +546,7 @@ func TestGetReportingGroup(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetReportingGroup(context.Background(), tc.params)
 
@@ -834,6 +836,7 @@ func TestUpdateReportingGroup(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateReportingGroup(context.Background(), tc.params)
 
@@ -1268,6 +1271,7 @@ func TestListReportingGroups(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListReportingGroups(context.Background(), tc.params)
 
@@ -1342,6 +1346,7 @@ func TestDeleteReportingGroup(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteReportingGroup(context.Background(), tc.params)
 
@@ -1479,6 +1484,7 @@ func TestListProducts(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListProducts(context.Background(), tc.params)
 
@@ -1601,6 +1607,7 @@ func TestGetReportingGroupsWaterMarkLimits(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetReportingGroupsWaterMarkLimits(context.Background(), tc.params)
 

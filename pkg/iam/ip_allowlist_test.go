@@ -54,6 +54,7 @@ func TestIAM_DisableIPAllowlist(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DisableIPAllowlist(context.Background())
 			if tc.withError != nil {
@@ -109,6 +110,7 @@ func TestIAM_EnableIPAllowlist(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.EnableIPAllowlist(context.Background())
 			if tc.withError != nil {
@@ -182,6 +184,7 @@ func TestIAM_GetIPAllowlistStatus(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetIPAllowlistStatus(context.Background())
 			if tc.withError != nil {

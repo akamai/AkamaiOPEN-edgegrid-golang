@@ -176,6 +176,7 @@ func TestIAM_ListCIDRBlocks(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListCIDRBlocks(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -329,6 +330,7 @@ func TestIAM_CreateCIDRBlock(t *testing.T) {
 					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCIDRBlock(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -485,6 +487,7 @@ func TestIAM_GetCIDRBlock(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCIDRBlock(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -621,6 +624,7 @@ func TestIAM_UpdateCIDRBlock(t *testing.T) {
 					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCIDRBlock(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -720,6 +724,7 @@ func TestIAM_DeleteCIDRBlock(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteCIDRBlock(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -794,6 +799,7 @@ func TestIAM_ValidateCIDRBlock(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.ValidateCIDRBlock(context.Background(), tc.params)
 			if tc.withError != nil {

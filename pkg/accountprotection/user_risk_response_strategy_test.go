@@ -66,6 +66,7 @@ func Test_GetUserRiskResponseStrategy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetUserRiskResponseStrategy(context.Background(), test.params)
 			if test.withError != nil {
@@ -166,6 +167,7 @@ func Test_UpdateUserRiskResponseStrategy(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpsertUserRiskResponseStrategy(
 				session.ContextWithOptions(

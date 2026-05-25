@@ -238,6 +238,7 @@ func TestCreateSecureToken(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateSecureToken(context.Background(), test.params)
 			if test.withError != nil {

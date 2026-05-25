@@ -146,6 +146,7 @@ func TestBotman_GetContentProtectionRuleList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetContentProtectionRuleList(
 				session.ContextWithOptions(
@@ -268,6 +269,7 @@ func TestBotman_GetContentProtectionRule(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetContentProtectionRule(context.Background(), test.params)
 			if test.withError != nil {
@@ -378,6 +380,7 @@ func TestBotman_CreateContentProtectionRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateContentProtectionRule(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -517,6 +520,7 @@ func TestBotman_UpdateContentProtectionRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateContentProtectionRule(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -635,6 +639,7 @@ func TestBotman_RemoveContentProtectionRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveContentProtectionRule(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

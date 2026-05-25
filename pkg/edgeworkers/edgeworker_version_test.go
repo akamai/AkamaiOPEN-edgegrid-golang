@@ -164,6 +164,7 @@ func TestGetEdgeWorkerVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEdgeWorkerVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -325,6 +326,7 @@ func TestListEdgeWorkerVersions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListEdgeWorkerVersions(context.Background(), test.params)
 			if test.withError != nil {
@@ -467,6 +469,7 @@ func TestGetEdgeWorkerVersionContent(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			_, err := client.GetEdgeWorkerVersionContent(context.Background(), test.params)
 			if test.withError != nil {
@@ -606,6 +609,7 @@ func TestCreateEdgeWorkerVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateEdgeWorkerVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -712,6 +716,7 @@ func TestDeleteEdgeWorkerVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteEdgeWorkerVersion(context.Background(), test.params)
 			if test.withError != nil {

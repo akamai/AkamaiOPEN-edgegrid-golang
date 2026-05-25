@@ -109,6 +109,7 @@ func TestAppSec_ListWAPBypassNetworkLists(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetWAPBypassNetworkLists(
 				session.ContextWithOptions(
@@ -185,6 +186,7 @@ func TestAppSec_GetWAPBypassNetworkLists(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetWAPBypassNetworkLists(context.Background(), test.params)
 			if test.withError != nil {
@@ -266,6 +268,7 @@ func TestAppSec_UpdateWAPBypassNetworkLists(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateWAPBypassNetworkLists(
 				session.ContextWithOptions(

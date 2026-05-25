@@ -130,6 +130,7 @@ func TestBotman_GetCustomDenyActionList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomDenyActionList(
 				session.ContextWithOptions(
@@ -235,6 +236,7 @@ func TestBotman_GetCustomDenyAction(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomDenyAction(context.Background(), test.params)
 			if test.withError != nil {
@@ -340,6 +342,7 @@ func TestBotman_CreateCustomDenyAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCustomDenyAction(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -460,6 +463,7 @@ func TestBotman_UpdateCustomDenyAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCustomDenyAction(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -561,6 +565,7 @@ func TestBotman_RemoveCustomDenyAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveCustomDenyAction(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

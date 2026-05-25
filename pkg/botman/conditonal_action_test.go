@@ -130,6 +130,7 @@ func TestBotman_GetConditionalActionList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetConditionalActionList(
 				session.ContextWithOptions(
@@ -235,6 +236,7 @@ func TestBotman_GetConditionalAction(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetConditionalAction(context.Background(), test.params)
 			if test.withError != nil {
@@ -340,6 +342,7 @@ func TestBotman_CreateConditionalAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateConditionalAction(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -460,6 +463,7 @@ func TestBotman_UpdateConditionalAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateConditionalAction(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -561,6 +565,7 @@ func TestBotman_RemoveConditionalAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveConditionalAction(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

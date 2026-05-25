@@ -329,6 +329,7 @@ func TestGetConfiguration(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetConfiguration(context.Background(), test.params)
 			if test.withError != nil {
@@ -573,6 +574,7 @@ func TestListConfigurations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListConfigurations(context.Background())
 			if test.withError != nil {
@@ -2087,6 +2089,7 @@ func TestCreateConfiguration(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateConfiguration(context.Background(), test.params)
 			if test.withError != nil {
@@ -2730,6 +2733,7 @@ func TestUpdateConfiguration(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateConfiguration(context.Background(), test.params)
 			if test.withError != nil {
@@ -2799,6 +2803,7 @@ func TestDeleteConfiguration(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteConfiguration(context.Background(), test.params)
 			if test.withError != nil {
@@ -2894,6 +2899,7 @@ func TestActivateConfiguration(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.ActivateConfiguration(context.Background(), test.params)
 			if test.withError != nil {

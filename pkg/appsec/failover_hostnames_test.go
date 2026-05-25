@@ -74,6 +74,7 @@ func TestAppSec_ListFailoverHostnames(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetFailoverHostnames(
 				session.ContextWithOptions(
@@ -147,6 +148,7 @@ func TestAppSec_GetFailoverHostnames(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetFailoverHostnames(context.Background(), test.params)
 			if test.withError != nil {

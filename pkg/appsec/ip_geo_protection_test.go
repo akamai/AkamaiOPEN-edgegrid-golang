@@ -78,6 +78,7 @@ func TestAppSec_ListIPGeoProtections(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetIPGeoProtections(
 				session.ContextWithOptions(
@@ -155,6 +156,7 @@ func TestAppSec_GetIPGeoProtection(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetIPGeoProtection(context.Background(), test.params)
 			if test.withError != nil {
@@ -237,6 +239,7 @@ func TestAppSec_UpdateIPGeoProtection(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateIPGeoProtection(
 				session.ContextWithOptions(

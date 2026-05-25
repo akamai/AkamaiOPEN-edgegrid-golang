@@ -95,6 +95,7 @@ func TestIAM_LockUser(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.LockUser(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -190,6 +191,7 @@ func TestIAM_UnlockUser(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.UnlockUser(context.Background(), tc.params)
 			if tc.withError != nil {

@@ -79,6 +79,7 @@ func TestGTM_ListResources(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListResources(
 				session.ContextWithOptions(
@@ -155,6 +156,7 @@ func TestGTM_GetResource(t *testing.T) {
 				_, err := w.Write(test.responseBody)
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetResource(context.Background(), test.params)
 			if test.withError != nil {
@@ -244,6 +246,7 @@ func TestGTM_CreateResource(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateResource(
 				session.ContextWithOptions(
@@ -336,6 +339,7 @@ func TestGTM_UpdateResource(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateResource(
 				session.ContextWithOptions(
@@ -428,6 +432,7 @@ func TestGTM_DeleteResource(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteResource(
 				session.ContextWithOptions(

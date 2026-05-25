@@ -80,6 +80,7 @@ func TestAppSec_GetTuningRecommendations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetTuningRecommendations(
 				session.ContextWithOptions(
@@ -166,6 +167,7 @@ func TestAppSec_GetRuleRecommendations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRuleRecommendations(
 				session.ContextWithOptions(

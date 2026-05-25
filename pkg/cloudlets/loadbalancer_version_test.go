@@ -252,6 +252,7 @@ func TestCreateLoadBalancerVersion(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateLoadBalancerVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -498,6 +499,7 @@ func TestGetLoadBalancerVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetLoadBalancerVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -709,6 +711,7 @@ func TestUpdateLoadBalancerVersion(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateLoadBalancerVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -876,6 +879,7 @@ func TestListLoadBalancerVersions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListLoadBalancerVersions(context.Background(), test.listLoadBalancerVersionsRequest)
 			if test.withError != nil {

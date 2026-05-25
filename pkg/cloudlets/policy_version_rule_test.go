@@ -206,6 +206,7 @@ func TestGetPolicyVersionRule(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPolicyVersionRule(context.Background(), test.request)
 			if test.withError != nil {
@@ -436,6 +437,7 @@ func TestCreatePolicyVersionRule(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreatePolicyVersionRule(context.Background(), test.request)
 			if test.withError != nil {
@@ -679,6 +681,7 @@ func TestUpdatePolicyVersionRule(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdatePolicyVersionRule(context.Background(), test.request)
 			if test.withError != nil {

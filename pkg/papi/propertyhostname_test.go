@@ -553,6 +553,7 @@ func TestPapiGetPropertyVersionHostnames(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPropertyVersionHostnames(context.Background(), test.params)
 			if test.withError != nil {
@@ -1642,6 +1643,7 @@ func TestPapiUpdatePropertyVersionHostnames(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdatePropertyVersionHostnames(context.Background(), test.params)
 			if test.withError != nil {
@@ -2764,6 +2766,7 @@ func TestPapiPatchPropertyVersionHostnames(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.PatchPropertyVersionHostnames(context.Background(), test.params)
 			if test.withError != nil {
@@ -2998,6 +3001,7 @@ func TestPapiGetAuditHistory(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAuditHistory(context.Background(), test.params)
 			if test.withError != nil {

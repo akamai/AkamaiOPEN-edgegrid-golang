@@ -135,6 +135,7 @@ func TestIAM_ListProperties(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.ListProperties(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -252,6 +253,7 @@ func TestIAM_ListUserForProperty(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.ListUsersForProperty(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -348,6 +350,7 @@ func TestIAM_GetProperty(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.GetProperty(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -439,6 +442,7 @@ func TestIAM_MoveProperty(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.MoveProperty(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -521,6 +525,7 @@ func TestIAM_MapPropertyIDToName(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.MapPropertyIDToName(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -696,6 +701,7 @@ func TestIAM_BlockUsers(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.BlockUsers(context.Background(), tc.params)
 			if tc.withError != nil {

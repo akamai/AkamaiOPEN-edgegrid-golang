@@ -131,6 +131,7 @@ func Test_ListProtectedOperations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListProtectedOperations(
 				session.ContextWithOptions(
@@ -262,6 +263,7 @@ func Test_GetProtectedOperationByID(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetProtectedOperationByID(
 				session.ContextWithOptions(
@@ -394,6 +396,7 @@ func Test_CreateProtectedOperations(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateProtectedOperations(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -532,6 +535,7 @@ func Test_UpdateProtectedOperation(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateProtectedOperation(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -649,6 +653,7 @@ func Test_RemoveProtectedOperation(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveProtectedOperation(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

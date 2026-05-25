@@ -148,6 +148,7 @@ func TestGetEdgeWorkerID(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEdgeWorkerID(context.Background(), test.params)
 			if test.withError != nil {
@@ -380,6 +381,7 @@ func TestListEdgeWorkersID(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListEdgeWorkersID(context.Background(), test.params)
 			if test.withError != nil {
@@ -523,6 +525,7 @@ func TestCreateEdgeWorkerID(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateEdgeWorkerID(context.Background(), test.params)
 			if test.withError != nil {
@@ -688,6 +691,7 @@ func TestUpdateEdgeWorkerID(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateEdgeWorkerID(context.Background(), test.params)
 			if test.withError != nil {
@@ -852,6 +856,7 @@ func TestCloneEdgeWorkerID(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CloneEdgeWorkerID(context.Background(), test.params)
 			if test.withError != nil {
@@ -962,6 +967,7 @@ func TestEdgeworkers_DeleteEdgeWorkerID(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteEdgeWorkerID(context.Background(), test.params)
 			if test.withError != nil {

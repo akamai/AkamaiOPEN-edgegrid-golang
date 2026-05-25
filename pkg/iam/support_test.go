@@ -78,6 +78,7 @@ func TestIAM_GetPasswordPolicy(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPasswordPolicy(context.Background())
 			if tc.withError != nil {
@@ -140,6 +141,7 @@ func TestIAM_SupportedCountries(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.SupportedCountries(context.Background())
 			if tc.withError != nil {
@@ -212,6 +214,7 @@ func TestIAM_SupportedTimezones(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.SupportedTimezones(context.Background())
 			if tc.withError != nil {
@@ -273,6 +276,7 @@ func TestIAM_SupportedContactTypes(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.SupportedContactTypes(context.Background())
 			if tc.withError != nil {
@@ -334,6 +338,7 @@ func TestIAM_SupportedLanguages(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.SupportedLanguages(context.Background())
 			if tc.withError != nil {
@@ -395,6 +400,7 @@ func TestIAM_ListProducts(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListProducts(context.Background())
 			if tc.withError != nil {
@@ -471,6 +477,7 @@ func TestIAM_ListTimeoutPolicies(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListTimeoutPolicies(context.Background())
 			if tc.withError != nil {
@@ -546,6 +553,7 @@ func TestIAM_ListStates(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListStates(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -736,6 +744,7 @@ func TestIAM_ListAccountSwitchKeys(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.ListAccountSwitchKeys(context.Background(), tc.params)
 			if tc.withError != nil {

@@ -426,6 +426,7 @@ func TestAppSec_ListURLProtectionPoliciesActions(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListURLProtectionPoliciesActions(
 				session.ContextWithOptions(
@@ -558,6 +559,7 @@ func TestAppSec_GetURLProtectionPolicyActions(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetURLProtectionPolicyActions(
 				session.ContextWithOptions(
@@ -710,6 +712,7 @@ func TestAppSec_UpdateURLProtectionPoliciesActions(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateURLProtectionPolicyActions(
 				session.ContextWithOptions(

@@ -134,6 +134,7 @@ func TestListPolicyActivations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListPolicyActivations(context.Background(), test.parameters)
 			if test.withError != nil {
@@ -284,6 +285,7 @@ func TestActivatePolicyVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivatePolicyVersion(context.Background(), test.parameters)
 			if test.withError != nil {

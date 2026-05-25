@@ -152,6 +152,7 @@ func TestDNS_ListZones(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListZones(
 				session.ContextWithOptions(
@@ -308,6 +309,7 @@ func TestDNS_GetZonesDNSSecStatus(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetZonesDNSSecStatus(
 				session.ContextWithOptions(
@@ -425,6 +427,7 @@ func TestDNS_GetZone(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetZone(context.Background(), test.params)
 			if test.withError != nil {
@@ -498,6 +501,7 @@ www.example.com.        300 IN  A   10.0.0.2"`,
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetMasterZoneFile(context.Background(), test.params)
 			if test.withError != nil {
@@ -573,6 +577,7 @@ www.example.com.        300 IN  A   10.0.0.2"`,
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.PostMasterZoneFile(context.Background(), test.params)
 			if test.withError != nil {
@@ -646,6 +651,7 @@ func TestDNS_GetChangeList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetChangeList(context.Background(), test.params)
 			if test.withError != nil {
@@ -723,6 +729,7 @@ func TestDNS_GetMasterZoneFile(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetMasterZoneFile(context.Background(), test.params)
 			if test.withError != nil {
@@ -867,6 +874,7 @@ func TestDNS_CreateZone(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.CreateZone(context.Background(), test.params)
 			if test.withError != nil {
@@ -934,6 +942,7 @@ func TestDNS_SaveChangelist(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.SaveChangeList(context.Background(), test.params)
 			if test.withError != nil {
@@ -997,6 +1006,7 @@ func TestDNS_SubmitChangelist(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.SubmitChangeList(context.Background(), test.params)
 			if test.withError != nil {
@@ -1180,6 +1190,7 @@ func TestDNS_UpdateZone(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.UpdateZone(context.Background(), test.params)
 			if test.withError != nil {
@@ -1251,6 +1262,7 @@ func TestDNS_GetZoneNames(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetZoneNames(context.Background(), test.params)
 			if test.withError != nil {
@@ -1323,6 +1335,7 @@ func TestDNS_GetZoneNameTypes(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetZoneNameTypes(context.Background(), test.params)
 			if test.withError != nil {

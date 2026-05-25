@@ -256,6 +256,7 @@ func TestListPolicySets(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListPolicySets(context.Background(), test.params)
 			if test.withError != nil {
@@ -401,6 +402,7 @@ func TestGetPolicySet(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPolicySet(context.Background(), test.params)
 			if test.withError != nil {
@@ -610,6 +612,7 @@ func TestCreatePolicySet(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreatePolicySet(context.Background(), test.params)
 			if test.withError != nil {
@@ -800,6 +803,7 @@ func TestUpdatePolicySet(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdatePolicySet(context.Background(), test.params)
 			if test.withError != nil {
@@ -945,6 +949,7 @@ func TestDeletePolicySet(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeletePolicySet(context.Background(), test.params)
 			if test.withError != nil {

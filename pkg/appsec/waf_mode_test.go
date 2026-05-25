@@ -73,6 +73,7 @@ func TestAppSec_GetWAFMode(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetWAFMode(context.Background(), test.params)
 			if test.withError != nil {
@@ -155,6 +156,7 @@ func TestAppSec_UpdateWAFMode(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateWAFMode(
 				session.ContextWithOptions(

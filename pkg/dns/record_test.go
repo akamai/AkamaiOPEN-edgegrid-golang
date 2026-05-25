@@ -196,6 +196,7 @@ func TestDNS_CreateRecord(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.CreateRecord(context.Background(), test.params)
 			if test.withError != nil {
@@ -279,6 +280,7 @@ func TestDNS_UpdateRecord(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.UpdateRecord(context.Background(), test.params)
 			if test.withError != nil {
@@ -345,6 +347,7 @@ func TestDNS_DeleteRecord(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteRecord(context.Background(), test.params)
 			if test.withError != nil {

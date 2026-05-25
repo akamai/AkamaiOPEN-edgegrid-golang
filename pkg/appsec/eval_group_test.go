@@ -78,6 +78,7 @@ func TestAppSec_ListEvalGroup(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEvalGroups(
 				session.ContextWithOptions(
@@ -157,6 +158,7 @@ func TestAppSec_GetEvalGroup(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEvalGroup(context.Background(), test.params)
 			if test.withError != nil {
@@ -241,6 +243,7 @@ func TestAppSec_UpdateEvalGroup(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateEvalGroup(
 				session.ContextWithOptions(

@@ -144,6 +144,7 @@ func TestGetAccessKeyStatus(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAccessKeyStatus(context.Background(), test.params)
 			if test.withError != nil {
@@ -442,6 +443,7 @@ func TestCreateAccessKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateAccessKey(context.Background(), test.accessKey)
 			if test.withError != nil {
@@ -570,6 +572,7 @@ func TestGetAccessKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAccessKey(context.Background(), test.params)
 			if test.withError != nil {
@@ -679,6 +682,7 @@ func TestListAccessKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAccessKeys(context.Background(), test.params)
 			if test.withError != nil {
@@ -749,6 +753,7 @@ func TestDeleteAccessKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteAccessKey(context.Background(), test.params)
 			if test.withError != nil {
@@ -872,6 +877,7 @@ func TestUpdateAccessKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAccessKey(context.Background(), test.accessKey, test.params)
 			if test.withError != nil {

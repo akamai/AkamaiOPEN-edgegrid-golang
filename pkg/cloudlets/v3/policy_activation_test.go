@@ -261,6 +261,7 @@ func TestListPolicyActivations(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListPolicyActivations(context.Background(), tc.params)
 
@@ -408,6 +409,7 @@ func TestActivatePolicy(t *testing.T) {
 					assert.JSONEq(t, tc.expectedReqBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivatePolicy(context.Background(), tc.params)
 
@@ -557,6 +559,7 @@ func TestDeactivatePolicy(t *testing.T) {
 					assert.JSONEq(t, tc.expectedReqBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeactivatePolicy(context.Background(), tc.params)
 
@@ -716,6 +719,7 @@ func TestGetPolicyActivation(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPolicyActivation(context.Background(), tc.params)
 

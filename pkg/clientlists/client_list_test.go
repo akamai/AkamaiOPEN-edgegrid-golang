@@ -314,6 +314,7 @@ func TestGetClientLists(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetClientLists(
 				context.Background(),
@@ -492,6 +493,7 @@ func TestGetClientList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetClientList(
 				session.ContextWithOptions(
@@ -625,6 +627,7 @@ func TestUpdateClientList(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateClientList(
 				context.Background(),
@@ -805,6 +808,7 @@ func TestUpdateClientListItems(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateClientListItems(
 				context.Background(),
@@ -935,6 +939,7 @@ func TestCreateClientLists(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateClientList(
 				context.Background(),
@@ -1003,6 +1008,7 @@ func TestDeleteClientLists(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteClientList(
 				context.Background(),
@@ -1089,6 +1095,7 @@ func TestTranslateUsernames(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.TranslateUsernames(
 				context.Background(),
@@ -1295,6 +1302,7 @@ func TestGetClientListItems(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetClientListItems(
 				session.ContextWithOptions(

@@ -100,6 +100,7 @@ func TestGetDeploymentSchedule(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetDeploymentSchedule(context.Background(), test.params)
 			if test.withError != nil {
@@ -222,6 +223,7 @@ func TestUpdateDeploymentSchedule(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateDeploymentSchedule(context.Background(), test.params)
 			if test.withError != nil {

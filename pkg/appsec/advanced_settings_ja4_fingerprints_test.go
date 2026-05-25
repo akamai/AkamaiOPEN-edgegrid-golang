@@ -70,6 +70,7 @@ func TestAppSec_GetAdvancedSettingsJA4Fingerprint(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsJA4Fingerprint(context.Background(), test.params)
 			if test.withError != nil {
@@ -151,6 +152,7 @@ func TestAppSec_UpdateAdvancedSettingsJA4Fingerprint(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsJA4Fingerprint(
 				session.ContextWithOptions(
@@ -233,6 +235,7 @@ func TestAppSec_RemoveAdvancedSettingsJA4Fingerprint(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RemoveAdvancedSettingsJA4Fingerprint(
 				session.ContextWithOptions(

@@ -416,6 +416,7 @@ func TestDs_GetStream(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetStream(context.Background(), test.request)
 			if test.withError != nil {
@@ -885,6 +886,7 @@ func TestDs_CreateStream(t *testing.T) {
 					assert.Equal(t, expectedBody, reqBody)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateStream(context.Background(), test.request)
 			if test.withError != nil {
@@ -1153,6 +1155,7 @@ func TestDs_UpdateStream(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateStream(context.Background(), test.request)
 			if test.withError != nil {
@@ -1237,6 +1240,7 @@ func TestDs_DeleteStream(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteStream(context.Background(), test.request)
 			if test.withError != nil {
@@ -1633,6 +1637,7 @@ func TestDs_Destinations(t *testing.T) {
 				res := reflect.DeepEqual(expectedMap, destinationMap["destination"])
 				assert.True(t, res)
 			}))
+			defer mockServer.Close()
 
 			client := mockAPIClient(t, mockServer)
 			_, _ = client.CreateStream(context.Background(), request)
@@ -1701,6 +1706,7 @@ func TestDs_setDestinationTypes(t *testing.T) {
 		_, err := w.Write([]byte("{}"))
 		require.NoError(t, err)
 	}))
+	defer mockServer.Close()
 	client := mockAPIClient(t, mockServer)
 	_, err := client.CreateStream(context.Background(), request)
 	require.NoError(t, err)
@@ -2017,6 +2023,7 @@ func TestDs_ListStreams(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListStreams(context.Background(), test.request)
 			if test.withError != nil {

@@ -70,6 +70,7 @@ func TestBotman_GetBotManagementSetting(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetBotManagementSetting(context.Background(), test.params)
 			if test.withError != nil {
@@ -187,6 +188,7 @@ func TestBotman_UpdateBotManagementSetting(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateBotManagementSetting(
 				session.ContextWithOptions(

@@ -558,6 +558,7 @@ func TestRegisterAPI(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RegisterAPI(context.Background(), test.body)
 			if test.withError != nil {
@@ -626,6 +627,7 @@ func TestUpdateAPIVersion(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAPIVersion(context.Background(), UpdateAPIVersionRequest{
 				ID:      1,
@@ -693,6 +695,7 @@ func TestGetAPIVersion(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAPIVersion(context.Background(), GetAPIVersionRequest{
 				ID:      1,
@@ -742,6 +745,7 @@ func TestFromOpenAPIFile(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.FromOpenAPIFile(context.Background(), FromOpenAPIFileRequest{
 				Content:  []byte("zip archive with Open API Files"),
@@ -798,6 +802,7 @@ func TestToOpenAPI(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ToOpenAPIFile(context.Background(), ToOpenAPIFileRequest{
 				ID:      1,

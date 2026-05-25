@@ -154,6 +154,7 @@ func TestListItems(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListItems(context.Background(), test.params)
 			if test.withError != nil {
@@ -347,6 +348,7 @@ func TestGetItem(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetItem(context.Background(), test.params)
 			if test.withError != nil {
@@ -521,6 +523,7 @@ func TestUpsertItem(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpsertItem(context.Background(), test.params)
 			if test.withError != nil {
@@ -654,6 +657,7 @@ func TestDeleteItem(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteItem(context.Background(), test.params)
 			if test.withError != nil {

@@ -76,6 +76,7 @@ func TestAppSec_ListSecurityPolicyClone(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetSecurityPolicyClone(
 				session.ContextWithOptions(
@@ -151,6 +152,7 @@ func TestAppSec_GetSecurityPolicyClone(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetSecurityPolicyClone(context.Background(), test.params)
 			if test.withError != nil {
@@ -234,6 +236,7 @@ func TestAppSec_CreateSecurityPolicyClone(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateSecurityPolicyClone(
 				session.ContextWithOptions(

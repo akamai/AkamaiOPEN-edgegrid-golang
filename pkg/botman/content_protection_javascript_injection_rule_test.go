@@ -146,6 +146,7 @@ func TestBotman_GetContentProtectionJavaScriptInjectionRuleList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetContentProtectionJavaScriptInjectionRuleList(
 				session.ContextWithOptions(
@@ -268,6 +269,7 @@ func TestBotman_GetContentProtectionJavaScriptInjectionRule(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetContentProtectionJavaScriptInjectionRule(context.Background(), test.params)
 			if test.withError != nil {
@@ -378,6 +380,7 @@ func TestBotman_CreateContentProtectionJavaScriptInjectionRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateContentProtectionJavaScriptInjectionRule(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -517,6 +520,7 @@ func TestBotman_UpdateContentProtectionJavaScriptInjectionRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateContentProtectionJavaScriptInjectionRule(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -635,6 +639,7 @@ func TestBotman_RemoveContentProtectionJavaScriptInjectionRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveContentProtectionJavaScriptInjectionRule(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

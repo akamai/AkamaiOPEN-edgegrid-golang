@@ -76,6 +76,7 @@ func TestAppSec_ListReputationProfile(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetReputationProfiles(
 				session.ContextWithOptions(
@@ -153,6 +154,7 @@ func TestAppSec_GetReputationProfile(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetReputationProfile(context.Background(), test.params)
 			if test.withError != nil {
@@ -235,6 +237,7 @@ func TestAppSec_CreateReputationProfile(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateReputationProfile(
 				session.ContextWithOptions(
@@ -320,6 +323,7 @@ func TestAppSec_UpdateReputationProfile(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateReputationProfile(
 				session.ContextWithOptions(
@@ -406,6 +410,7 @@ func TestAppSec_RemoveReputationProfile(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RemoveReputationProfile(
 				session.ContextWithOptions(

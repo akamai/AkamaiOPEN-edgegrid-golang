@@ -78,6 +78,7 @@ func TestAppSec_ListApiRequestConstraints(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetApiRequestConstraints(
 				session.ContextWithOptions(
@@ -155,6 +156,7 @@ func TestAppSec_GetApiRequestConstraints(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetApiRequestConstraints(context.Background(), test.params)
 			if test.withError != nil {
@@ -237,6 +239,7 @@ func TestAppSec_UpdateApiRequestConstraints(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateApiRequestConstraints(
 				session.ContextWithOptions(

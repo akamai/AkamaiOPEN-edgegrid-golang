@@ -76,6 +76,7 @@ func TestAppSec_ListAdvancedSettingsPragma(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsPragma(
 				session.ContextWithOptions(
@@ -151,6 +152,7 @@ func TestAppSec_GetAdvancedSettingsPrama(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsPragma(context.Background(), test.params)
 			if test.withError != nil {
@@ -226,6 +228,7 @@ func TestAppSec_UpdateAdvancedSettingsPragma(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsPragma(
 				session.ContextWithOptions(

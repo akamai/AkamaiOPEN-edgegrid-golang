@@ -267,6 +267,7 @@ func TestCreateCASet(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCASet(context.Background(), tc.request)
 			if tc.withError != nil {
@@ -397,6 +398,7 @@ func TestGetCASet(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCASet(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -865,6 +867,7 @@ func TestListCASets(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListCASets(context.Background(), tc.request)
 			if tc.withError != nil {
@@ -1136,6 +1139,7 @@ func TestDeleteCASet(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteCASet(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1374,6 +1378,7 @@ func TestListCASetAssociations(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListCASetAssociations(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1658,6 +1663,7 @@ func TestCloneCASet(t *testing.T) {
 					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CloneCASet(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1917,6 +1923,7 @@ func TestGetCASetDeletionStatus(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCASetDeletionStatus(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -2115,6 +2122,7 @@ func TestListCASetActivities(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListCASetActivities(context.Background(), tc.params)
 			if tc.withError != nil {
