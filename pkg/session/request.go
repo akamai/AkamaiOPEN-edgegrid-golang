@@ -19,7 +19,11 @@ var (
 	ErrUnmarshaling = errors.New("unmarshaling output")
 )
 
-// Exec will sign and execute the request using the client edgegrid.Config
+// Exec will sign and execute the request using the client edgegrid.Config.
+// The response body will be unmarshaled into out.
+// Optionally the in value will be marshaled into the request body.
+//
+// The 'in' parameter is deprecated and will be removed in a future release.
 func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*http.Response, error) {
 	if len(in) > 1 {
 		return nil, fmt.Errorf("%w: %s", ErrInvalidArgument, "'in' argument must have 0 or 1 value")
@@ -48,6 +52,10 @@ func (s *session) Exec(r *http.Request, out interface{}, in ...interface{}) (*ht
 
 	if r.URL.Scheme == "" {
 		r.URL.Scheme = "https"
+	}
+
+	if len(in) > 0 && r.Body != nil {
+		log.Warn("Request body provided in both the request and the 'in' argument. This can lead to unexpected behavior. Please pass body within *http.Request or the 'in' argument (deprecated), not both.")
 	}
 
 	if len(in) > 0 {

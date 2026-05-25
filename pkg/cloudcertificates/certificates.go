@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
@@ -52,7 +51,7 @@ func (c *cloudcertificates) ListCertificates(ctx context.Context, params ListCer
 
 	var result ListCertificatesResponse
 
-	resp, err := c.Exec(req, &result, nil)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrListCertificates, err)
 	}
@@ -78,15 +77,15 @@ func (c *cloudcertificates) PatchCertificate(ctx context.Context, params PatchCe
 	req, err := request.NewPatch(ctx, "/ccm/v1/certificates/%s", params.CertificateID).
 		AddQueryParamIf("acknowledgeWarnings", strconv.FormatBool(params.AcknowledgeWarnings), params.AcknowledgeWarnings).
 		AddHeader("Content-Type", "application/json-patch+json").
+		WithBody(buildPatchRequestBody(params)).
 		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrPatchCertificate, err)
 	}
 
-	reqBody := buildPatchRequestBody(params)
 	var result PatchCertificateResponse
 
-	resp, err := c.Exec(req, &result.Certificate, reqBody)
+	resp, err := c.Exec(req, &result.Certificate)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrPatchCertificate, err)
 	}
@@ -109,25 +108,17 @@ func (c *cloudcertificates) UpdateCertificate(ctx context.Context, params Update
 		return nil, fmt.Errorf("%w: %w: %w", ErrUpdateCertificate, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/ccm/v1/certificates/%s", params.CertificateID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse URL: %w", ErrUpdateCertificate, err)
-	}
-
-	query := url.Values{}
-	if params.AcknowledgeWarnings {
-		query.Set("acknowledgeWarnings", strconv.FormatBool(params.AcknowledgeWarnings))
-	}
-	uri.RawQuery = query.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/ccm/v1/certificates/%s", params.CertificateID).
+		AddQueryParamIf("acknowledgeWarnings", strconv.FormatBool(params.AcknowledgeWarnings), params.AcknowledgeWarnings).
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrUpdateCertificate, err)
 	}
 
 	var result UpdateCertificateResponse
 
-	resp, err := c.Exec(req, &result.Certificate, params)
+	resp, err := c.Exec(req, &result.Certificate)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrUpdateCertificate, err)
 	}
@@ -181,13 +172,14 @@ func (c *cloudcertificates) CreateCertificate(ctx context.Context, params Create
 	req, err := request.NewPost(ctx, "/ccm/v1/certificates").
 		AddQueryParam("contractId", params.ContractID).
 		AddQueryParam("groupId", params.GroupID).
+		WithBody(params.Body).
 		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrCreateCertificate, err)
 	}
 
 	var result CreateCertificateResponse
-	resp, err := c.Exec(req, &result.Certificate, params.Body)
+	resp, err := c.Exec(req, &result.Certificate)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request execution failed: %w", ErrCreateCertificate, err)
 	}
