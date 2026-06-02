@@ -13,6 +13,10 @@
 ### FEATURES/ENHANCEMENTS:
 
 
+* Cloud Access
+  * Added support for the new authentication method `G2O` (Akamai Signature Header Authentication) in the cloud access.
+
+
 
 ### DEPRECATIONS:
 

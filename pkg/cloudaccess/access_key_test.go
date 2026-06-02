@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -216,6 +217,52 @@ func TestCreateAccessKey(t *testing.T) {
 				"Location": "https://abc.com",
 			},
 		},
+		"202 Accepted - G2O": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudAccessKeyID:     "12345678",
+					CloudSecretAccessKey: strings.Repeat("a", 32),
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			expectedPath:   "/cam/v1/access-keys",
+			responseStatus: http.StatusAccepted,
+			responseBody: `
+			{
+				"requestId": 198,
+				"retryAfter": 3
+			}`,
+			expectedRequestBody: `
+			{
+				"accessKeyName": "g2o-key",
+				"authenticationMethod": "G2O",
+				"contractId": "TestContractID",
+				"credentials": 
+					{
+						"cloudAccessKeyId": "12345678",
+						"cloudSecretAccessKey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+					},
+				"groupId": 123,
+				"networkConfiguration": 
+					{
+						"securityNetwork": "ENHANCED_TLS"
+					}
+			}`,
+			expectedResponse: &CreateAccessKeyResponse{
+				RequestID:  198,
+				RetryAfter: 3,
+				Location:   "https://abc.com",
+			},
+			responseHeaders: map[string]string{
+				"Location": "https://abc.com",
+			},
+		},
 		"cloudAccessKeyID not required for VP_QUEUE_IT": {
 			accessKey: CreateAccessKeyRequest{
 				AccessKeyName:        "vp-queue-it-key",
@@ -383,6 +430,94 @@ func TestCreateAccessKey(t *testing.T) {
 			},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "create an access key: struct validation: AdditionalCDN: must be blank", err.Error())
+			},
+		},
+		"G2O cloudAccessKeyID missing - validation error": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key-no-id",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudSecretAccessKey: strings.Repeat("a", 32),
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create an access key: struct validation: CloudAccessKeyID: cannot be blank", err.Error())
+			},
+		},
+		"G2O cloudSecretAccessKey missing - validation error": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key-no-secret",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudAccessKeyID: "12345678",
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create an access key: struct validation: CloudSecretAccessKey: cannot be blank", err.Error())
+			},
+		},
+		"G2O cloudAccessKeyID too long - validation error": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key-long-id",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudAccessKeyID:     "123456789",
+					CloudSecretAccessKey: "12345678901234567890123456789012",
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create an access key: struct validation: CloudAccessKeyID: the length must be between 1 and 8", err.Error())
+			},
+		},
+		"G2O cloudSecretAccessKey too short - validation error": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key-short-secret",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudAccessKeyID:     "12345678",
+					CloudSecretAccessKey: strings.Repeat("a", 31),
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create an access key: struct validation: CloudSecretAccessKey: the length must be between 32 and 64", err.Error())
+			},
+		},
+		"G2O cloudSecretAccessKey too long - validation error": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key-long-secret",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudAccessKeyID:     "12345678",
+					CloudSecretAccessKey: strings.Repeat("a", 65),
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create an access key: struct validation: CloudSecretAccessKey: the length must be between 32 and 64", err.Error())
 			},
 		},
 		"500 internal server error": {

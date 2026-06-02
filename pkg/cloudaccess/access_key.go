@@ -13,6 +13,17 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+const (
+	// G2OAccessKeyIDMinLength is the minimum length for a G2O access key ID
+	G2OAccessKeyIDMinLength = 1
+	// G2OAccessKeyIDMaxLength is the maximum length for a G2O access key ID
+	G2OAccessKeyIDMaxLength = 8
+	// G2OSecretAccessKeyMinLength is the minimum length for a G2O secret access key
+	G2OSecretAccessKeyMinLength = 32
+	// G2OSecretAccessKeyMaxLength is the maximum length for a G2O secret access key
+	G2OSecretAccessKeyMaxLength = 64
+)
+
 type (
 	// GetAccessKeyStatusResponse contains response from GetAccessKeyStatus
 	GetAccessKeyStatusResponse struct {
@@ -117,10 +128,10 @@ func (r GetAccessKeyStatusRequest) Validate() error {
 func (r CreateAccessKeyRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"AccessKeyName":        validation.Validate(r.AccessKeyName, validation.Required),
-		"AuthenticationMethod": validation.Validate(r.AuthenticationMethod, validation.Required, validation.In(string(AuthAWS), string(AuthGOOG), string(AuthAOS), string(AuthAVMCloudinary), string(AuthVPQueueIt))),
+		"AuthenticationMethod": validation.Validate(r.AuthenticationMethod, validation.Required, validation.In(string(AuthAWS), string(AuthGOOG), string(AuthAOS), string(AuthAVMCloudinary), string(AuthVPQueueIt), string(AuthG2O))),
 		"ContractID":           validation.Validate(r.ContractID, validation.Required),
-		"CloudAccessKeyID":     validation.Validate(r.Credentials.CloudAccessKeyID, validation.When(r.AuthenticationMethod != string(AuthVPQueueIt) && r.AuthenticationMethod != string(AuthAVMCloudinary), validation.Required)),
-		"CloudSecretAccessKey": validation.Validate(r.Credentials.CloudSecretAccessKey, validation.Required),
+		"CloudAccessKeyID":     validation.Validate(r.Credentials.CloudAccessKeyID, validation.When(r.AuthenticationMethod != string(AuthVPQueueIt) && r.AuthenticationMethod != string(AuthAVMCloudinary), validation.Required), validation.When(r.AuthenticationMethod == string(AuthG2O), validation.Length(G2OAccessKeyIDMinLength, G2OAccessKeyIDMaxLength))),
+		"CloudSecretAccessKey": validation.Validate(r.Credentials.CloudSecretAccessKey, validation.Required, validation.When(r.AuthenticationMethod == string(AuthG2O), validation.Length(G2OSecretAccessKeyMinLength, G2OSecretAccessKeyMaxLength))),
 		"GroupID":              validation.Validate(r.GroupID, validation.Required),
 		"SecurityNetwork":      validation.Validate(r.NetworkConfiguration.SecurityNetwork, validation.Required),
 		"AdditionalCDN":        validation.Validate(r.NetworkConfiguration.AdditionalCDN, validation.When(r.AuthenticationMethod == string(AuthVPQueueIt) || r.AuthenticationMethod == string(AuthAVMCloudinary), validation.Nil)),
