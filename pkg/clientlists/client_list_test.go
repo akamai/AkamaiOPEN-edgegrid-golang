@@ -15,6 +15,51 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var (
+	internalServerErrBody = `
+				{
+					"type": "internal_error",
+					"title": "Internal Server Error",
+					"detail": "Error fetching client lists",
+					"status": 500
+				}`
+
+	internalServerErr = &Error{
+		Type:       "internal_error",
+		Title:      "Internal Server Error",
+		Detail:     "Error fetching client lists",
+		StatusCode: http.StatusInternalServerError,
+	}
+)
+
+func getMockTestServer(t *testing.T, method, expectedPath string, responseStatus int, responseBody, expectedRequestBody string) *httptest.Server {
+	t.Helper()
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, expectedPath, r.URL.String())
+		assert.Equal(t, method, r.Method)
+		w.WriteHeader(responseStatus)
+		_, err := w.Write([]byte(responseBody))
+		assert.NoError(t, err)
+		if len(expectedRequestBody) > 0 {
+			body, err := io.ReadAll(r.Body)
+			require.NoError(t, err)
+			assert.Equal(t, expectedRequestBody, string(body))
+		}
+	}))
+	t.Cleanup(server.Close)
+	return server
+}
+
+func checkResponse[T any](t *testing.T, result *T, err error, expectedResponse *T, withError error) {
+	t.Helper()
+	if withError != nil {
+		assert.True(t, errors.Is(err, withError), "want: %s; got: %s", withError, err)
+		return
+	}
+	require.NoError(t, err)
+	assert.Equal(t, expectedResponse, result)
+}
+
 func TestGetClientLists(t *testing.T) {
 	uri := "/client-list/v1/lists"
 
@@ -162,6 +207,62 @@ func TestGetClientLists(t *testing.T) {
 				},
 			},
 		},
+		"200 OK - Lists filtered by RequestHeaderNameValue type": {
+			params: GetClientListsRequest{
+				Type: []ClientListType{RequestHeaderNameValue},
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"content": [
+					{
+						"createDate": "2023-06-06T15:58:39.225+00:00",
+						"createdBy": "ccare2",
+						"deprecated": false,
+						"filePrefix": "CL",
+						"itemsCount": 1,
+						"listId": "91596_REQHEADERLIST",
+						"listType": "CL",
+						"name": "Request Header List",
+						"productionActivationStatus": "INACTIVE",
+						"readOnly": false,
+						"shared": false,
+						"stagingActivationStatus": "INACTIVE",
+						"tags": [],
+						"type": "REQUEST_HEADER_NAME_VALUE",
+						"updateDate": "2023-06-06T15:58:39.225+00:00",
+						"updatedBy": "ccare2",
+						"version": 1
+					}
+				]
+			}
+			`,
+			expectedPath: fmt.Sprintf(uri+"?type=%s", "REQUEST_HEADER_NAME_VALUE"),
+			expectedResponse: &GetClientListsResponse{
+				Content: []ClientList{
+					{
+						ListContent: ListContent{
+							CreateDate:                 "2023-06-06T15:58:39.225+00:00",
+							CreatedBy:                  "ccare2",
+							Deprecated:                 false,
+							ItemsCount:                 1,
+							ListID:                     "91596_REQHEADERLIST",
+							ListType:                   "CL",
+							Name:                       "Request Header List",
+							ProductionActivationStatus: "INACTIVE",
+							ReadOnly:                   false,
+							Shared:                     false,
+							StagingActivationStatus:    "INACTIVE",
+							Tags:                       []string{},
+							Type:                       "REQUEST_HEADER_NAME_VALUE",
+							UpdateDate:                 "2023-06-06T15:58:39.225+00:00",
+							UpdatedBy:                  "ccare2",
+							Version:                    1,
+						},
+					},
+				},
+			},
+		},
 		"200 OK - Lists filtered by name and type": {
 			params: GetClientListsRequest{
 				Name: "list name",
@@ -288,43 +389,18 @@ func TestGetClientLists(t *testing.T) {
 		"500 internal server error": {
 			params:         GetClientListsRequest{},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-				{
-					"type": "internal_error",
-					"title": "Internal Server Error",
-					"detail": "Error fetching client lists",
-					"status": 500
-				}`,
-			expectedPath: uri,
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching client lists",
-				StatusCode: http.StatusInternalServerError,
-			},
+			responseBody:   internalServerErrBody,
+			expectedPath:   uri,
+			withError:      internalServerErr,
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			defer mockServer.Close()
+			mockServer := getMockTestServer(t, http.MethodGet, test.expectedPath, test.responseStatus, test.responseBody, "")
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetClientLists(
-				context.Background(),
-				test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			result, err := client.GetClientLists(context.Background(), test.params)
+			checkResponse(t, result, err, test.expectedResponse, test.withError)
 		})
 	}
 }
@@ -457,26 +533,126 @@ func TestGetClientList(t *testing.T) {
 				},
 			},
 		},
+		"200 OK - RequestHeaderNameValue items with key and values": {
+			params: GetClientListRequest{
+				ListID:       "12_RH",
+				IncludeItems: true,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"createDate": "2023-06-06T15:58:39.225+00:00",
+				"createdBy": "ccare2",
+				"deprecated": false,
+				"filePrefix": "CL",
+				"itemsCount": 2,
+				"listId": "12_RH",
+				"listType": "CL",
+				"name": "Request Header List",
+				"productionActivationStatus": "INACTIVE",
+				"readOnly": false,
+				"shared": false,
+				"stagingActivationStatus": "INACTIVE",
+				"tags": [],
+				"type": "REQUEST_HEADER_NAME_VALUE",
+				"updateDate": "2023-06-06T15:58:39.225+00:00",
+				"updatedBy": "ccare2",
+				"version": 3,
+				"groupId": 12,
+				"groupName": "Group A",
+				"contractId": "12_CO",
+				"items": [
+					{
+						"key": "X-Custom-Header",
+						"values": ["value1", "value2"],
+						"createDate": "2023-01-01T00:00:00.000+00:00",
+						"createdBy": "ccare2",
+						"createdVersion": 1,
+						"productionStatus": "INACTIVE",
+						"stagingStatus": "INACTIVE",
+						"tags": [],
+						"type": "REQUEST_HEADER_NAME_VALUE",
+						"updateDate": "2023-01-01T00:00:00.000+00:00",
+						"updatedBy": "ccare2"
+					},
+					{
+						"key": "Accept-Language",
+						"values": ["en-US"],
+						"description": "Language header match",
+						"createDate": "2023-02-01T00:00:00.000+00:00",
+						"createdBy": "ccare2",
+						"createdVersion": 2,
+						"productionStatus": "INACTIVE",
+						"stagingStatus": "INACTIVE",
+						"tags": ["lang"],
+						"type": "REQUEST_HEADER_NAME_VALUE",
+						"updateDate": "2023-02-01T00:00:00.000+00:00",
+						"updatedBy": "ccare2"
+					}
+				]
+			}`,
+			expectedPath: "/client-list/v1/lists/12_RH?includeItems=true",
+			expectedResponse: &GetClientListResponse{
+				ListContent: ListContent{
+					CreateDate:                 "2023-06-06T15:58:39.225+00:00",
+					CreatedBy:                  "ccare2",
+					Deprecated:                 false,
+					ItemsCount:                 2,
+					ListID:                     "12_RH",
+					ListType:                   "CL",
+					Name:                       "Request Header List",
+					ProductionActivationStatus: "INACTIVE",
+					ReadOnly:                   false,
+					Shared:                     false,
+					StagingActivationStatus:    "INACTIVE",
+					Tags:                       []string{},
+					Type:                       "REQUEST_HEADER_NAME_VALUE",
+					UpdateDate:                 "2023-06-06T15:58:39.225+00:00",
+					UpdatedBy:                  "ccare2",
+					Version:                    3,
+				},
+				GroupID:    12,
+				GroupName:  "Group A",
+				ContractID: "12_CO",
+				Items: []ListItemContent{
+					{
+						Key:              "X-Custom-Header",
+						Values:           []string{"value1", "value2"},
+						CreateDate:       "2023-01-01T00:00:00.000+00:00",
+						CreatedBy:        "ccare2",
+						CreatedVersion:   1,
+						ProductionStatus: "INACTIVE",
+						StagingStatus:    "INACTIVE",
+						Tags:             []string{},
+						Type:             "REQUEST_HEADER_NAME_VALUE",
+						UpdateDate:       "2023-01-01T00:00:00.000+00:00",
+						UpdatedBy:        "ccare2",
+					},
+					{
+						Key:              "Accept-Language",
+						Values:           []string{"en-US"},
+						Description:      "Language header match",
+						CreateDate:       "2023-02-01T00:00:00.000+00:00",
+						CreatedBy:        "ccare2",
+						CreatedVersion:   2,
+						ProductionStatus: "INACTIVE",
+						StagingStatus:    "INACTIVE",
+						Tags:             []string{"lang"},
+						Type:             "REQUEST_HEADER_NAME_VALUE",
+						UpdateDate:       "2023-02-01T00:00:00.000+00:00",
+						UpdatedBy:        "ccare2",
+					},
+				},
+			},
+		},
 		"500 internal server error": {
 			params: GetClientListRequest{
 				ListID:       "12_AB",
 				IncludeItems: true,
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-				{
-					"type": "internal_error",
-					"title": "Internal Server Error",
-					"detail": "Error fetching client lists",
-					"status": 500
-				}`,
-			expectedPath: uri,
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching client lists",
-				StatusCode: http.StatusInternalServerError,
-			},
+			responseBody:   internalServerErrBody,
+			expectedPath:   uri,
+			withError:      internalServerErr,
 		},
 		"validation error": {
 			params:    GetClientListRequest{},
@@ -486,26 +662,10 @@ func TestGetClientList(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			defer mockServer.Close()
+			mockServer := getMockTestServer(t, http.MethodGet, test.expectedPath, test.responseStatus, test.responseBody, "")
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetClientList(
-				session.ContextWithOptions(
-					context.Background(),
-				),
-				test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			result, err := client.GetClientList(session.ContextWithOptions(context.Background()), test.params)
+			checkResponse(t, result, err, test.expectedResponse, test.withError)
 		})
 	}
 }
@@ -591,20 +751,9 @@ func TestUpdateClientList(t *testing.T) {
 		"500 internal server error": {
 			params:         request,
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-				{
-					"type": "internal_error",
-					"title": "Internal Server Error",
-					"detail": "Error fetching client lists",
-					"status": 500
-				}`,
-			expectedPath: uri,
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching client lists",
-				StatusCode: http.StatusInternalServerError,
-			},
+			responseBody:   internalServerErrBody,
+			expectedPath:   uri,
+			withError:      internalServerErr,
 		},
 		"validation error": {
 			params:    UpdateClientListRequest{},
@@ -614,30 +763,10 @@ func TestUpdateClientList(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodPut, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-
-				if len(test.expectedRequestBody) > 0 {
-					body, err := io.ReadAll(r.Body)
-					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
-				}
-			}))
-			defer mockServer.Close()
+			mockServer := getMockTestServer(t, http.MethodPut, test.expectedPath, test.responseStatus, test.responseBody, test.expectedRequestBody)
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateClientList(
-				context.Background(),
-				test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			result, err := client.UpdateClientList(context.Background(), test.params)
+			checkResponse(t, result, err, test.expectedResponse, test.withError)
 		})
 	}
 }
@@ -769,23 +898,113 @@ func TestUpdateClientListItems(t *testing.T) {
 			expectedPath:     uri,
 			expectedResponse: &result,
 		},
+		"200 OK - Update RequestHeaderNameValue items": {
+			params: UpdateClientListItemsRequest{
+				ListID: "12_RH",
+				UpdateClientListItems: UpdateClientListItems{
+					Append: []ListItemPayload{
+						{
+							Key:    "X-New-Header",
+							Values: []string{"newval"},
+							Tags:   []string{},
+						},
+					},
+					Update: []ListItemPayload{
+						{
+							Key:    "X-Custom-Header",
+							Values: []string{"updated1", "updated2"},
+							Tags:   []string{"t"},
+						},
+					},
+					Delete: []ListItemPayload{
+						{
+							Key: "X-Old-Header",
+						},
+					},
+				},
+			},
+			expectedRequestBody: `{"append":[{"key":"X-New-Header","values":["newval"],"tags":[],"description":"","expirationDate":""}],"update":[{"key":"X-Custom-Header","values":["updated1","updated2"],"tags":["t"],"description":"","expirationDate":""}],"delete":[{"key":"X-Old-Header","tags":null,"description":"","expirationDate":""}]}`,
+			responseStatus:      http.StatusOK,
+			responseBody: `{
+				"appended": [
+					{
+						"key": "X-New-Header",
+						"values": ["newval"],
+						"tags": [],
+						"type": "REQUEST_HEADER_NAME_VALUE",
+						"productionStatus": "INACTIVE",
+						"stagingStatus": "INACTIVE",
+						"createDate": "2023-06-15T20:46:30.780+00:00",
+						"createdBy": "ccare2",
+						"createdVersion": 5,
+						"updateDate": "2023-06-15T20:46:30.780+00:00",
+						"updatedBy": "ccare2"
+					}
+				],
+				"deleted": [
+					{
+						"key": "X-Old-Header"
+					}
+				],
+				"updated": [
+					{
+						"key": "X-Custom-Header",
+						"values": ["updated1", "updated2"],
+						"tags": ["t"],
+						"type": "REQUEST_HEADER_NAME_VALUE",
+						"productionStatus": "INACTIVE",
+						"stagingStatus": "INACTIVE",
+						"createDate": "2023-04-28T19:34:00.906+00:00",
+						"createdBy": "ccare2",
+						"createdVersion": 3,
+						"updateDate": "2023-06-15T20:46:30.765+00:00",
+						"updatedBy": "ccare2"
+					}
+				]
+			}`,
+			expectedPath: "/client-list/v1/lists/12_RH/items",
+			expectedResponse: &UpdateClientListItemsResponse{
+				Appended: []ListItemContent{
+					{
+						Key:              "X-New-Header",
+						Values:           []string{"newval"},
+						Tags:             []string{},
+						Type:             "REQUEST_HEADER_NAME_VALUE",
+						ProductionStatus: "INACTIVE",
+						StagingStatus:    "INACTIVE",
+						CreateDate:       "2023-06-15T20:46:30.780+00:00",
+						CreatedBy:        "ccare2",
+						CreatedVersion:   5,
+						UpdateDate:       "2023-06-15T20:46:30.780+00:00",
+						UpdatedBy:        "ccare2",
+					},
+				},
+				Deleted: []ListItemContent{
+					{Key: "X-Old-Header"},
+				},
+				Updated: []ListItemContent{
+					{
+						Key:              "X-Custom-Header",
+						Values:           []string{"updated1", "updated2"},
+						Tags:             []string{"t"},
+						Type:             "REQUEST_HEADER_NAME_VALUE",
+						ProductionStatus: "INACTIVE",
+						StagingStatus:    "INACTIVE",
+						CreateDate:       "2023-04-28T19:34:00.906+00:00",
+						CreatedBy:        "ccare2",
+						CreatedVersion:   3,
+						UpdateDate:       "2023-06-15T20:46:30.765+00:00",
+						UpdatedBy:        "ccare2",
+					},
+				},
+			},
+		},
 		"500 internal server error": {
 			params:         request,
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-				{
-					"type": "internal_error",
-					"title": "Internal Server Error",
-					"detail": "Error fetching client lists",
-					"status": 500
-				}`,
-			expectedPath: uri,
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching client lists",
-				StatusCode: http.StatusInternalServerError,
-			},
+			responseBody:   internalServerErrBody,
+			expectedPath:   uri,
+			withError:      internalServerErr,
 		},
 		"validation error": {
 			params:    UpdateClientListItemsRequest{},
@@ -795,30 +1014,10 @@ func TestUpdateClientListItems(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-
-				if len(test.expectedRequestBody) > 0 {
-					body, err := io.ReadAll(r.Body)
-					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
-				}
-			}))
-			defer mockServer.Close()
+			mockServer := getMockTestServer(t, http.MethodPost, test.expectedPath, test.responseStatus, test.responseBody, test.expectedRequestBody)
 			client := mockAPIClient(t, mockServer)
-			result, err := client.UpdateClientListItems(
-				context.Background(),
-				test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			result, err := client.UpdateClientListItems(context.Background(), test.params)
+			checkResponse(t, result, err, test.expectedResponse, test.withError)
 		})
 	}
 }
@@ -900,23 +1099,70 @@ func TestCreateClientLists(t *testing.T) {
 			expectedPath:     uri,
 			expectedResponse: &result,
 		},
+		"201 Created - RequestHeaderNameValue type": {
+			params: CreateClientListRequest{
+				Name:       "Request Header List",
+				Type:       RequestHeaderNameValue,
+				Notes:      "Some notes",
+				Tags:       []string{"tag1"},
+				ContractID: "M-2CF0QRI",
+				GroupID:    112524,
+				Items: []ListItemPayload{
+					{
+						Key:    "X-Custom-Header",
+						Values: []string{"value1", "value2"},
+						Tags:   []string{},
+					},
+				},
+			},
+			expectedRequestBody: `{"contractId":"M-2CF0QRI","groupId":112524,"name":"Request Header List","type":"REQUEST_HEADER_NAME_VALUE","notes":"Some notes","tags":["tag1"],"items":[{"key":"X-Custom-Header","values":["value1","value2"],"tags":[],"description":"","expirationDate":""}]}`,
+			responseStatus:      http.StatusCreated,
+			responseBody: `{
+				"listId": "456_RH",
+				"name": "Request Header List",
+				"type": "REQUEST_HEADER_NAME_VALUE",
+				"notes": "Some notes",
+				"tags": ["tag1"],
+				"contractId": "M-2CF0QRI",
+				"groupName": "Group A",
+				"groupId": 12,
+				"items": [
+					{
+						"key": "X-Custom-Header",
+						"values": ["value1", "value2"],
+						"tags": [],
+						"description": "",
+						"expirationDate": ""
+					}
+				]
+			}`,
+			expectedPath: uri,
+			expectedResponse: &CreateClientListResponse{
+				ListContent: ListContent{
+					ListID: "456_RH",
+					Name:   "Request Header List",
+					Type:   "REQUEST_HEADER_NAME_VALUE",
+					Notes:  "Some notes",
+					Tags:   []string{"tag1"},
+				},
+				ContractID: "M-2CF0QRI",
+				GroupName:  "Group A",
+				GroupID:    12,
+				Items: []ListItemContent{
+					{
+						Key:    "X-Custom-Header",
+						Values: []string{"value1", "value2"},
+						Tags:   []string{},
+					},
+				},
+			},
+		},
 		"500 internal server error": {
 			params:         request,
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-				{
-					"type": "internal_error",
-					"title": "Internal Server Error",
-					"detail": "Error fetching client lists",
-					"status": 500
-				}`,
-			expectedPath: uri,
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching client lists",
-				StatusCode: http.StatusInternalServerError,
-			},
+			responseBody:   internalServerErrBody,
+			expectedPath:   uri,
+			withError:      internalServerErr,
 		},
 		"validation error": {
 			params:    CreateClientListRequest{},
@@ -926,30 +1172,10 @@ func TestCreateClientLists(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-
-				if len(test.expectedRequestBody) > 0 {
-					body, err := io.ReadAll(r.Body)
-					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
-				}
-			}))
-			defer mockServer.Close()
+			mockServer := getMockTestServer(t, http.MethodPost, test.expectedPath, test.responseStatus, test.responseBody, test.expectedRequestBody)
 			client := mockAPIClient(t, mockServer)
-			result, err := client.CreateClientList(
-				context.Background(),
-				test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			result, err := client.CreateClientList(context.Background(), test.params)
+			checkResponse(t, result, err, test.expectedResponse, test.withError)
 		})
 	}
 }
@@ -978,20 +1204,9 @@ func TestDeleteClientLists(t *testing.T) {
 		"500 internal server error": {
 			params:         request,
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-				{
-					"type": "internal_error",
-					"title": "Internal Server Error",
-					"detail": "Error fetching client lists",
-					"status": 500
-				}`,
-			expectedPath: uri,
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching client lists",
-				StatusCode: http.StatusInternalServerError,
-			},
+			responseBody:   internalServerErrBody,
+			expectedPath:   uri,
+			withError:      internalServerErr,
 		},
 		"validation error": {
 			params:    DeleteClientListRequest{},
@@ -1001,18 +1216,9 @@ func TestDeleteClientLists(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodDelete, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			defer mockServer.Close()
+			mockServer := getMockTestServer(t, http.MethodDelete, test.expectedPath, test.responseStatus, test.responseBody, "")
 			client := mockAPIClient(t, mockServer)
-			err := client.DeleteClientList(
-				context.Background(),
-				test.params)
+			err := client.DeleteClientList(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return
@@ -1059,20 +1265,9 @@ func TestTranslateUsernames(t *testing.T) {
 		"500 internal server error": {
 			params:         request,
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-				{
-					"type": "internal_error",
-					"title": "Internal Server Error",
-					"detail": "Error fetching client lists",
-					"status": 500
-				}`,
-			expectedPath: uri,
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching client lists",
-				StatusCode: http.StatusInternalServerError,
-			},
+			responseBody:   internalServerErrBody,
+			expectedPath:   uri,
+			withError:      internalServerErr,
 		},
 		"validation error": {
 			params:    TranslateUsernamesRequest{},
@@ -1082,30 +1277,10 @@ func TestTranslateUsernames(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodPost, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-
-				if len(test.expectedRequestBody) > 0 {
-					body, err := io.ReadAll(r.Body)
-					require.NoError(t, err)
-					assert.Equal(t, test.expectedRequestBody, string(body))
-				}
-			}))
-			defer mockServer.Close()
+			mockServer := getMockTestServer(t, http.MethodPost, test.expectedPath, test.responseStatus, test.responseBody, test.expectedRequestBody)
 			client := mockAPIClient(t, mockServer)
-			result, err := client.TranslateUsernames(
-				context.Background(),
-				test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			result, err := client.TranslateUsernames(context.Background(), test.params)
+			checkResponse(t, result, err, test.expectedResponse, test.withError)
 		})
 	}
 }
@@ -1267,25 +1442,83 @@ func TestGetClientListItems(t *testing.T) {
 				},
 			},
 		},
+		"200 OK - RequestHeaderNameValue items with key and values": {
+			params: GetClientListItemsRequest{
+				ListID: "12_RH",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"content": [
+					{
+						"key": "X-Custom-Header",
+						"values": ["value1", "value2"],
+						"createDate": "2023-01-01T00:00:00.000+00:00",
+						"createdBy": "ccare2",
+						"createdVersion": 1,
+						"productionStatus": "INACTIVE",
+						"stagingStatus": "INACTIVE",
+						"tags": [],
+						"type": "REQUEST_HEADER_NAME_VALUE",
+						"updateDate": "2023-01-01T00:00:00.000+00:00",
+						"updatedBy": "ccare2"
+					},
+					{
+						"key": "Accept-Language",
+						"values": ["en-US"],
+						"description": "Language header match",
+						"createDate": "2023-02-01T00:00:00.000+00:00",
+						"createdBy": "ccare2",
+						"createdVersion": 2,
+						"productionStatus": "ACTIVE",
+						"stagingStatus": "ACTIVE",
+						"tags": ["lang"],
+						"type": "REQUEST_HEADER_NAME_VALUE",
+						"updateDate": "2023-02-01T00:00:00.000+00:00",
+						"updatedBy": "ccare2"
+					}
+				]
+			}`,
+			expectedPath: "/client-list/v1/lists/12_RH/items?showUsernames=true",
+			expectedResponse: &GetClientListItemsResponse{
+				Items: []ListItemContent{
+					{
+						Key:              "X-Custom-Header",
+						Values:           []string{"value1", "value2"},
+						CreateDate:       "2023-01-01T00:00:00.000+00:00",
+						CreatedBy:        "ccare2",
+						CreatedVersion:   1,
+						ProductionStatus: "INACTIVE",
+						StagingStatus:    "INACTIVE",
+						Tags:             []string{},
+						Type:             "REQUEST_HEADER_NAME_VALUE",
+						UpdateDate:       "2023-01-01T00:00:00.000+00:00",
+						UpdatedBy:        "ccare2",
+					},
+					{
+						Key:              "Accept-Language",
+						Values:           []string{"en-US"},
+						Description:      "Language header match",
+						CreateDate:       "2023-02-01T00:00:00.000+00:00",
+						CreatedBy:        "ccare2",
+						CreatedVersion:   2,
+						ProductionStatus: "ACTIVE",
+						StagingStatus:    "ACTIVE",
+						Tags:             []string{"lang"},
+						Type:             "REQUEST_HEADER_NAME_VALUE",
+						UpdateDate:       "2023-02-01T00:00:00.000+00:00",
+						UpdatedBy:        "ccare2",
+					},
+				},
+			},
+		},
 		"500 internal server error": {
 			params: GetClientListItemsRequest{
 				ListID: "12_AB",
 			},
 			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-				{
-					"type": "internal_error",
-					"title": "Internal Server Error",
-					"detail": "Error fetching client lists",
-					"status": 500
-				}`,
-			expectedPath: uri,
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching client lists",
-				StatusCode: http.StatusInternalServerError,
-			},
+			responseBody:   internalServerErrBody,
+			expectedPath:   uri,
+			withError:      internalServerErr,
 		},
 		"validation error": {
 			params:    GetClientListItemsRequest{},
@@ -1295,26 +1528,10 @@ func TestGetClientListItems(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			defer mockServer.Close()
+			mockServer := getMockTestServer(t, http.MethodGet, test.expectedPath, test.responseStatus, test.responseBody, "")
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetClientListItems(
-				session.ContextWithOptions(
-					context.Background(),
-				),
-				test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
+			result, err := client.GetClientListItems(session.ContextWithOptions(context.Background()), test.params)
+			checkResponse(t, result, err, test.expectedResponse, test.withError)
 		})
 	}
 }
