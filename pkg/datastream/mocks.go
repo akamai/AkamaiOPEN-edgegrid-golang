@@ -113,3 +113,13 @@ func (m *Mock) GetDatasetFields(ctx context.Context, r GetDatasetFieldsRequest) 
 
 	return args.Get(0).(*DataSets), args.Error(1)
 }
+
+func (m *Mock) GetAppSecConfigs(ctx context.Context, r GetAppSecConfigsRequest) ([]AppSecConfigDetails, error) {
+	args := m.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).([]AppSecConfigDetails), args.Error(1)
+}

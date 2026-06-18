@@ -23,8 +23,111 @@ func TestDs_GetStream(t *testing.T) {
 		expectedResponse *DetailedStreamVersion
 		withError        func(*testing.T, error)
 	}{
+		"200 OK APPSEC Stream": {
+			request: GetStreamRequest{
+				LogType:  LogTypeAppSec,
+				StreamID: 2,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `{
+    "contractId": "P-1324", 
+    "createdBy": "sample_username", 
+    "createdDate": "2022-11-04T00:49:45Z", 
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE",
+        "format": "STRUCTURED",
+        "frequency": { "intervalInSeconds": 30 },
+        "uploadFilePrefix": "ak",
+        "uploadFileSuffix": "ds"
+    },
+    "destination": {
+        "bucket": "sample_bucket",
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample_display_name",
+        "path": "/sample_path",
+        "region": "us-east-1"
+    },
+    "groupId": 1234,
+    "latestVersion": 2,
+    "modifiedBy": "sample_username2",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": [
+        "sample_username@akamai.com"
+    ],
+    "productId": "Adaptive_Media_Delivery",
+	"datasetFields": [
+        {
+            "datasetFieldId":1000,
+            "datasetFieldName":"dataset_field_name_1",
+            "datasetFieldJsonKey":"dataset_field_json_key_1"
+        },
+        {
+            "datasetFieldId":1002,
+            "datasetFieldName":"dataset_field_name_2",
+            "datasetFieldJsonKey":"dataset_field_json_key_2"
+        },
+        {
+            "datasetFieldId":1082,
+            "datasetFieldName":"dataset_field_name_3",
+            "datasetFieldJsonKey":"dataset_field_json_key_3"
+        }
+    ],
+    "appSecConfigs": [
+        {
+            "appSecId": 12345,
+            "appSecName": "example_config"
+        }
+    ],
+    "streamId": 2,
+    "streamName": "ds2-appsec-stream",
+    "streamStatus": "ACTIVATED",
+    "streamVersion": 2
+}`,
+			expectedPath: "/datastream-config-api/v3/log/appsec/streams/2",
+			expectedResponse: &DetailedStreamVersion{
+				LogType:      LogTypeAppSec,
+				StreamStatus: StreamStatusActivated,
+				DeliveryConfiguration: DeliveryConfiguration{
+					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
+					Format:           FormatTypeStructured,
+					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					UploadFilePrefix: "ak",
+					UploadFileSuffix: "ds",
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample_display_name",
+					DestinationType: DestinationTypeS3,
+					Path:            "/sample_path",
+					Bucket:          "sample_bucket",
+					Region:          "us-east-1",
+				},
+				ContractID:  "P-1324",
+				CreatedBy:   "sample_username",
+				CreatedDate: "2022-11-04T00:49:45Z",
+				DatasetFields: []DataSetField{
+					{DatasetFieldID: 1000, DatasetFieldName: "dataset_field_name_1", DatasetFieldJsonKey: "dataset_field_json_key_1"},
+					{DatasetFieldID: 1002, DatasetFieldName: "dataset_field_name_2", DatasetFieldJsonKey: "dataset_field_json_key_2"},
+					{DatasetFieldID: 1082, DatasetFieldName: "dataset_field_name_3", DatasetFieldJsonKey: "dataset_field_json_key_3"},
+				},
+				NotificationEmails: []string{"sample_username@akamai.com"},
+				GroupID:            1234,
+				ModifiedBy:         "sample_username2",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				ProductID:          "Adaptive_Media_Delivery",
+				AppSecConfigs: []AppSecConfig{
+					{AppSecID: 12345, AppSecName: "example_config"},
+				},
+				StreamID:      2,
+				StreamName:    "ds2-appsec-stream",
+				StreamVersion: 2,
+				LatestVersion: 2,
+			},
+		},
 		"200 OK Without midgress, integrationType, and samplingPercentage": {
 			request: GetStreamRequest{
+				LogType:  LogTypeCDN,
 				StreamID: 1,
 			},
 			responseStatus: http.StatusOK,
@@ -87,6 +190,7 @@ func TestDs_GetStream(t *testing.T) {
 `,
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams/1",
 			expectedResponse: &DetailedStreamVersion{
+				LogType:      LogTypeCDN,
 				StreamStatus: StreamStatusActivated,
 				DeliveryConfiguration: DeliveryConfiguration{
 					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
@@ -127,6 +231,7 @@ func TestDs_GetStream(t *testing.T) {
 		},
 		"200 OK With midgress field, integrationType DS_MANAGED and samplingPercentage 33": {
 			request: GetStreamRequest{
+				LogType:  LogTypeCDN,
 				StreamID: 2,
 			},
 			responseStatus: http.StatusOK,
@@ -171,6 +276,7 @@ func TestDs_GetStream(t *testing.T) {
 `,
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams/2",
 			expectedResponse: &DetailedStreamVersion{
+				LogType:         LogTypeCDN,
 				CollectMidgress: true,
 				StreamStatus:    StreamStatusActivated,
 				DeliveryConfiguration: DeliveryConfiguration{
@@ -209,6 +315,7 @@ func TestDs_GetStream(t *testing.T) {
 		"200 OK With integrationType PM_DEPENDENT and samplingPercentage 50": {
 			request: GetStreamRequest{
 				StreamID: 3,
+				LogType:  LogTypeCDN,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -249,6 +356,7 @@ func TestDs_GetStream(t *testing.T) {
 `,
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams/3",
 			expectedResponse: &DetailedStreamVersion{
+				LogType:      LogTypeCDN,
 				StreamStatus: StreamStatusInactive,
 				DeliveryConfiguration: DeliveryConfiguration{
 					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
@@ -286,6 +394,7 @@ func TestDs_GetStream(t *testing.T) {
 		"200 OK With integrationType HYBRID and samplingPercentage 88": {
 			request: GetStreamRequest{
 				StreamID: 4,
+				LogType:  LogTypeCDN,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -326,6 +435,7 @@ func TestDs_GetStream(t *testing.T) {
 `,
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams/4",
 			expectedResponse: &DetailedStreamVersion{
+				LogType:      LogTypeCDN,
 				StreamStatus: StreamStatusInactive,
 				DeliveryConfiguration: DeliveryConfiguration{
 					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
@@ -367,8 +477,15 @@ func TestDs_GetStream(t *testing.T) {
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
+		"validation error - invalid log type": {
+			request: GetStreamRequest{StreamID: 12, LogType: "INVALID"},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
 		"400 bad request": {
-			request:        GetStreamRequest{StreamID: 12},
+			request:        GetStreamRequest{StreamID: 12, LogType: LogTypeCDN},
 			responseStatus: http.StatusBadRequest,
 			expectedPath:   "/datastream-config-api/v3/log/cdn/streams/12",
 			responseBody: `
@@ -431,6 +548,7 @@ func TestDs_GetStream(t *testing.T) {
 
 func TestDs_CreateStream(t *testing.T) {
 	createStreamRequest := CreateStreamRequest{
+		LogType:  LogTypeCDN,
 		Activate: true,
 		StreamConfiguration: StreamConfiguration{
 			DeliveryConfiguration: DeliveryConfiguration{
@@ -481,6 +599,144 @@ func TestDs_CreateStream(t *testing.T) {
 		expectedResponse *DetailedStreamVersion
 		withError        error
 	}{
+		"201 Created APPSEC Stream": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.LogType = LogTypeAppSec
+				r.StreamConfiguration.AppSecConfigs = []AppSecConfigID{
+					{AppSecID: 12345},
+				}
+				r.StreamConfiguration.Properties = []PropertyID{}
+				r.StreamConfiguration.DatasetFields = []DatasetFieldID{}
+			}),
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "contractId": "2-AB1234", 
+    "createdBy": "sample_username", 
+    "createdDate": "2022-11-04T00:49:45Z", 
+    "collectMidgress": true,
+    "datasetFields": [
+        {
+            "datasetFieldId":2020,
+            "datasetFieldName":"field_name_1",
+            "datasetFieldJsonKey":"field_json_key_1"
+        }
+    ],
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE", 
+        "format": "STRUCTURED", 
+        "frequency": {
+            "intervalInSeconds": 30
+        }, 
+        "uploadFilePrefix": "logs", 
+        "uploadFileSuffix": "ak"
+    },
+    "destination": {
+        "bucket": "datastream.com", 
+        "compressLogs": true, 
+        "destinationType": "S3", 
+        "displayName": "sample-display-name", 
+        "path": "sample-path/{%Y/%m/%d}", 
+        "region": "ap-south-1"
+    },
+    "groupId": 1234, 
+    "latestVersion": 1, 
+    "modifiedBy": "sample_username2", 
+    "modifiedDate": "2022-11-04T02:14:29Z", 
+    "notificationEmails": [
+        "useremail1@akamai.com", "useremail2@akamai.com"
+    ], 
+    "productId": "Adaptive_Media_Delivery", 
+	"appSecConfigs": [
+        {
+			"appSecId": 12345,
+			"appSecName": "example_config"
+		}
+    ], 
+    "streamId": 7050, 
+    "streamName": "TestStream", 
+    "streamStatus": "ACTIVATED", 
+    "streamVersion": 1
+}`,
+			expectedPath: "/datastream-config-api/v3/log/appsec/streams?activate=true",
+			expectedBody: `{
+   "streamName":"TestStream",
+   "groupId":1234,
+   "contractId":"2-AB1234",
+   "collectMidgress":true,
+   "notificationEmails":[
+      "useremail1@akamai.com",
+      "useremail2@akamai.com"
+   ],
+   "appSecConfigs":[
+      {"appSecId":12345}
+   ],
+   "deliveryConfiguration":{
+      "uploadFilePrefix":"logs",
+      "uploadFileSuffix":"ak",
+      "fieldDelimiter":"SPACE",
+      "format":"STRUCTURED",
+      "frequency":{"intervalInSeconds":30}
+   },
+   "destination":{
+      "path":"sample-path/{%Y/%m/%d}",
+      "displayName":"sample-display-name",
+      "bucket":"datastream.com",
+      "region":"ap-south-1",
+      "accessKey":"1234ABCD",
+      "secretAccessKey":"1234ABCD",
+      "destinationType":"S3"
+   }
+}
+`,
+			expectedResponse: &DetailedStreamVersion{
+				LogType:         LogTypeAppSec,
+				ContractID:      "2-AB1234",
+				CreatedBy:       "sample_username",
+				CreatedDate:     "2022-11-04T00:49:45Z",
+				CollectMidgress: true,
+				DatasetFields: []DataSetField{
+					{
+						DatasetFieldID:      2020,
+						DatasetFieldName:    "field_name_1",
+						DatasetFieldJsonKey: "field_json_key_1",
+					},
+				},
+				DeliveryConfiguration: DeliveryConfiguration{
+					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
+					Format:           FormatTypeStructured,
+					Frequency:        Frequency{IntervalInSeconds: 30},
+					UploadFilePrefix: "logs",
+					UploadFileSuffix: "ak",
+				},
+				Destination: Destination{
+					Bucket:          "datastream.com",
+					CompressLogs:    true,
+					DestinationType: DestinationTypeS3,
+					DisplayName:     "sample-display-name",
+					Path:            "sample-path/{%Y/%m/%d}",
+					Region:          "ap-south-1",
+				},
+				GroupID:       1234,
+				LatestVersion: 1,
+				ModifiedBy:    "sample_username2",
+				ModifiedDate:  "2022-11-04T02:14:29Z",
+				NotificationEmails: []string{
+					"useremail1@akamai.com",
+					"useremail2@akamai.com",
+				},
+				ProductID: "Adaptive_Media_Delivery",
+				AppSecConfigs: []AppSecConfig{
+					{
+						AppSecID:   12345,
+						AppSecName: "example_config",
+					},
+				},
+				StreamID:      7050,
+				StreamName:    "TestStream",
+				StreamStatus:  StreamStatusActivated,
+				StreamVersion: 1,
+			},
+		},
 		"201 Created with IntegrationType PM_DEPENDENT and SamplingPercentage 75 (output only)": {
 			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
 				r.StreamConfiguration.SamplingPercentage = 75
@@ -563,6 +819,7 @@ func TestDs_CreateStream(t *testing.T) {
 }
 `,
 			expectedResponse: &DetailedStreamVersion{
+				LogType:            LogTypeCDN,
 				ContractID:         "2-AB1234",
 				CreatedBy:          "pmuser",
 				CreatedDate:        "2023-01-20T10:00:00Z",
@@ -660,6 +917,7 @@ func TestDs_CreateStream(t *testing.T) {
 `,
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams?activate=true",
 			expectedResponse: &DetailedStreamVersion{
+				LogType:         LogTypeCDN,
 				CollectMidgress: true,
 				ContractID:      "2-AB1234",
 				CreatedBy:       "sample_username",
@@ -796,6 +1054,12 @@ func TestDs_CreateStream(t *testing.T) {
 			}),
 			withError: ErrStructValidation,
 		},
+		"validation error - invalid log type": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.LogType = "INVALID"
+			}),
+			withError: ErrStructValidation,
+		},
 		"403 forbidden": {
 			request:        createStreamRequest,
 			responseStatus: http.StatusForbidden,
@@ -901,6 +1165,7 @@ func TestDs_CreateStream(t *testing.T) {
 
 func TestDs_UpdateStream(t *testing.T) {
 	updateRequest := UpdateStreamRequest{
+		LogType:  LogTypeCDN,
 		StreamID: 7050,
 		Activate: true,
 		StreamConfiguration: StreamConfiguration{
@@ -948,6 +1213,119 @@ func TestDs_UpdateStream(t *testing.T) {
 		expectedResponse *DetailedStreamVersion
 		withError        error
 	}{
+		"200 OK AppSec Streams": {
+			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
+				r.LogType = LogTypeAppSec
+				r.StreamConfiguration.AppSecConfigs = []AppSecConfigID{
+					{AppSecID: 12345},
+				}
+				r.StreamConfiguration.Properties = []PropertyID{}
+				r.StreamConfiguration.DatasetFields = []DatasetFieldID{}
+			}),
+			responseStatus: http.StatusOK,
+			expectedPath:   "/datastream-config-api/v3/log/appsec/streams/7050?activate=true",
+			responseBody: `
+{
+    "contractId": "2-AB1234",
+    "createdBy": "sample_username",
+    "createdDate": "2022-11-04T00:49:45Z",
+    "collectMidgress": true,
+    "integrationType": "PM_DEPENDENT",
+    "samplingPercentage": 55,
+    "datasetFields": [
+        {
+            "datasetFieldId":2020,
+            "datasetFieldName":"field_name_1",
+            "datasetFieldJsonKey":"field_json_key_1"
+        }
+    ],
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE",
+        "format": "STRUCTURED",
+        "frequency": {
+            "intervalInSeconds": 30
+        },
+        "uploadFilePrefix": "logs",
+        "uploadFileSuffix": "ak"
+    },
+    "destination": {
+        "bucket": "datastream.com",
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample-display-name",
+        "path": "sample-path/{%Y/%m/%d}",
+        "region": "ap-south-1"
+    },
+    "groupId": 1234,
+    "latestVersion": 2,
+    "modifiedBy": "modified_by_user",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": [
+        "useremail1@akamai.com", "useremail2@akamai.com"
+    ],
+    "productId": "Adaptive_Media_Delivery",
+    "appSecConfigs": [
+        {
+            "appSecId": 12345,
+			"appSecName": "example_config"
+        }
+    ],
+    "streamId": 7050,
+    "streamName": "TestStream",
+    "streamStatus": "ACTIVATED",
+    "streamVersion": 2
+}
+`,
+			expectedResponse: &DetailedStreamVersion{
+				LogType:            LogTypeAppSec,
+				CollectMidgress:    true,
+				ContractID:         "2-AB1234",
+				CreatedBy:          "sample_username",
+				CreatedDate:        "2022-11-04T00:49:45Z",
+				IntegrationType:    "PM_DEPENDENT",
+				SamplingPercentage: 55,
+				DatasetFields: []DataSetField{
+					{
+						DatasetFieldName:    "field_name_1",
+						DatasetFieldID:      2020,
+						DatasetFieldJsonKey: "field_json_key_1",
+					},
+				},
+				DeliveryConfiguration: DeliveryConfiguration{
+					Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
+					Format:    FormatTypeStructured,
+					Frequency: Frequency{
+						IntervalInSeconds: IntervalInSeconds30,
+					},
+					UploadFilePrefix: "logs",
+					UploadFileSuffix: "ak",
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample-display-name",
+					DestinationType: DestinationTypeS3,
+					Path:            "sample-path/{%Y/%m/%d}",
+					Bucket:          "datastream.com",
+					Region:          "ap-south-1",
+				},
+				GroupID:            1234,
+				LatestVersion:      2,
+				StreamID:           7050,
+				StreamVersion:      2,
+				StreamName:         "TestStream",
+				StreamStatus:       StreamStatusActivated,
+				ModifiedBy:         "modified_by_user",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				NotificationEmails: []string{"useremail1@akamai.com", "useremail2@akamai.com"},
+				ProductID:          "Adaptive_Media_Delivery",
+				AppSecConfigs: []AppSecConfig{
+					{
+						AppSecID:   12345,
+						AppSecName: "example_config",
+					},
+				},
+			},
+		},
 		"200 OK activate:true with IntegrationType and SamplingPercentage": {
 			request:        updateRequest,
 			responseStatus: http.StatusOK,
@@ -1009,6 +1387,7 @@ func TestDs_UpdateStream(t *testing.T) {
 `,
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams/7050?activate=true",
 			expectedResponse: &DetailedStreamVersion{
+				LogType:            LogTypeCDN,
 				CollectMidgress:    true,
 				ContractID:         "2-AB1234",
 				CreatedBy:          "sample_username",
@@ -1109,6 +1488,12 @@ func TestDs_UpdateStream(t *testing.T) {
 			}),
 			withError: ErrStructValidation,
 		},
+		"validation error - invalid log type": {
+			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
+				r.LogType = "INVALID"
+			}),
+			withError: ErrStructValidation,
+		},
 		"400 bad request": {
 			request:        updateRequest,
 			responseStatus: http.StatusBadRequest,
@@ -1176,8 +1561,18 @@ func TestDs_DeleteStream(t *testing.T) {
 		expectedPath   string
 		withError      func(*testing.T, error)
 	}{
+		"200 OK AppSec Stream": {
+			request: DeleteStreamRequest{
+				LogType:  LogTypeAppSec,
+				StreamID: 1,
+			},
+			responseStatus: http.StatusNoContent,
+			responseBody:   ``,
+			expectedPath:   "/datastream-config-api/v3/log/appsec/streams/1",
+		},
 		"200 OK": {
 			request: DeleteStreamRequest{
+				LogType:  LogTypeCDN,
 				StreamID: 1,
 			},
 			responseStatus: http.StatusNoContent,
@@ -1185,14 +1580,24 @@ func TestDs_DeleteStream(t *testing.T) {
 			expectedPath:   "/datastream-config-api/v3/log/cdn/streams/1",
 		},
 		"validation error": {
-			request: DeleteStreamRequest{},
+			request: DeleteStreamRequest{LogType: LogTypeCDN},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"validation error - invalid log type": {
+			request: DeleteStreamRequest{StreamID: 1, LogType: "INVALID"},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
 		"400 bad request": {
-			request:        DeleteStreamRequest{StreamID: 12},
+			request: DeleteStreamRequest{
+				StreamID: 12,
+				LogType:  LogTypeCDN,
+			},
 			responseStatus: http.StatusBadRequest,
 			expectedPath:   "/datastream-config-api/v3/log/cdn/streams/12",
 			responseBody: `
@@ -1661,6 +2066,7 @@ func TestDs_setDestinationTypes(t *testing.T) {
 	mockConnector := mockConnector{Called: false}
 
 	request := CreateStreamRequest{
+		LogType:  LogTypeCDN,
 		Activate: true,
 		StreamConfiguration: StreamConfiguration{
 			DeliveryConfiguration: DeliveryConfiguration{
@@ -1723,8 +2129,101 @@ func TestDs_ListStreams(t *testing.T) {
 		expectedResponse []StreamDetails
 		withError        func(*testing.T, error)
 	}{
+		"200 OK - AppSec streams": {
+			request:        ListStreamsRequest{LogType: LogTypeAppSec, GroupID: ptr.To(123)},
+			responseStatus: http.StatusOK,
+			responseBody: `
+[
+   {
+      "contractId":"1-ABC",
+      "createdBy":"abc",
+      "createdDate":"2022-04-21T17:02:58Z",
+      "groupId":123,
+      "latestVersion":15,
+      "modifiedBy":"abc",
+      "modifiedDate":"2022-12-26T17:00:03Z",
+      "productId":"API_Acceleration",
+	  "appSecConfigs" : [
+	  	{
+			"appSecId": 123,
+			"appSecName": "test-appsec-config"
+	  	}
+	 ],
+      "streamId":123,
+      "streamName":"test-stream-1",
+      "streamStatus":"ACTIVATED",
+      "streamVersion":15
+   },
+   {
+      "contractId":"1-123",
+      "createdBy":"abc",
+      "createdDate":"2023-01-03T12:44:15Z",
+      "groupId":123,
+      "latestVersion":1,
+      "modifiedBy":"abc",
+      "modifiedDate":"2023-01-03T12:44:15Z",
+      "productId":"Download_Delivery",
+      "appSecConfigs" : [
+	  	{
+			"appSecId": 123,
+			"appSecName": "test-appsec-config"
+	  	}
+	  ],
+      "streamId":123,
+      "streamName":"test-stream-2",
+      "streamStatus":"INACTIVE",
+      "streamVersion":1
+   }
+]
+`,
+			expectedPath: "/datastream-config-api/v3/log/appsec/streams?groupId=123",
+			expectedResponse: []StreamDetails{
+				{
+					LogType:       LogTypeAppSec,
+					StreamStatus:  StreamStatusActivated,
+					ProductID:     "API_Acceleration",
+					ModifiedBy:    "abc",
+					ModifiedDate:  "2022-12-26T17:00:03Z",
+					ContractID:    "1-ABC",
+					CreatedBy:     "abc",
+					CreatedDate:   "2022-04-21T17:02:58Z",
+					LatestVersion: 15,
+					GroupID:       123,
+					AppSecConfigs: []AppSecConfig{
+						{
+							AppSecID:   123,
+							AppSecName: "test-appsec-config",
+						},
+					},
+					StreamID:      123,
+					StreamName:    "test-stream-1",
+					StreamVersion: 15,
+				},
+				{
+					LogType:       LogTypeAppSec,
+					StreamStatus:  StreamStatusInactive,
+					ProductID:     "Download_Delivery",
+					ModifiedBy:    "abc",
+					ModifiedDate:  "2023-01-03T12:44:15Z",
+					ContractID:    "1-123",
+					CreatedBy:     "abc",
+					CreatedDate:   "2023-01-03T12:44:15Z",
+					LatestVersion: 1,
+					GroupID:       123,
+					AppSecConfigs: []AppSecConfig{
+						{
+							AppSecID:   123,
+							AppSecName: "test-appsec-config",
+						},
+					},
+					StreamID:      123,
+					StreamName:    "test-stream-2",
+					StreamVersion: 1,
+				},
+			},
+		},
 		"200 OK": {
-			request:        ListStreamsRequest{},
+			request:        ListStreamsRequest{LogType: LogTypeCDN},
 			responseStatus: http.StatusOK,
 			responseBody: `
 [
@@ -1777,6 +2276,7 @@ func TestDs_ListStreams(t *testing.T) {
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams",
 			expectedResponse: []StreamDetails{
 				{
+					LogType:       LogTypeCDN,
 					StreamStatus:  StreamStatusActivated,
 					ProductID:     "API_Acceleration",
 					ModifiedBy:    "abc",
@@ -1801,6 +2301,7 @@ func TestDs_ListStreams(t *testing.T) {
 					StreamVersion: 15,
 				},
 				{
+					LogType:       LogTypeCDN,
 					StreamStatus:  StreamStatusInactive,
 					ProductID:     "Download_Delivery",
 					ModifiedBy:    "abc",
@@ -1825,6 +2326,7 @@ func TestDs_ListStreams(t *testing.T) {
 		"200 OK - with groupId": {
 			request: ListStreamsRequest{
 				GroupID: ptr.To(1234),
+				LogType: LogTypeCDN,
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -1854,6 +2356,7 @@ func TestDs_ListStreams(t *testing.T) {
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams?groupId=1234",
 			expectedResponse: []StreamDetails{
 				{
+					LogType:       LogTypeCDN,
 					StreamStatus:  StreamStatusActivated,
 					ProductID:     "Object_Delivery",
 					ModifiedBy:    "abc",
@@ -1876,7 +2379,7 @@ func TestDs_ListStreams(t *testing.T) {
 			},
 		},
 		"200 OK - with IntegrationType and SamplingPercentage": {
-			request:        ListStreamsRequest{},
+			request:        ListStreamsRequest{LogType: LogTypeCDN},
 			responseStatus: http.StatusOK,
 			responseBody: `
 [
@@ -1929,6 +2432,7 @@ func TestDs_ListStreams(t *testing.T) {
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams",
 			expectedResponse: []StreamDetails{
 				{
+					LogType:       LogTypeCDN,
 					StreamStatus:  StreamStatusActivated,
 					ProductID:     "Premium_Delivery",
 					ModifiedBy:    "pmuser",
@@ -1951,6 +2455,7 @@ func TestDs_ListStreams(t *testing.T) {
 					SamplingPercentage: 75,
 				},
 				{
+					LogType:       LogTypeCDN,
 					StreamStatus:  StreamStatusInactive,
 					ProductID:     "Data_Stream",
 					ModifiedBy:    "dsuser",
@@ -1974,8 +2479,22 @@ func TestDs_ListStreams(t *testing.T) {
 				},
 			},
 		},
+		"validation error - missing log type": {
+			request: ListStreamsRequest{},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
+		"validation error - invalid log type": {
+			request: ListStreamsRequest{LogType: "INVALID"},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+			},
+		},
 		"400 bad request": {
-			request:        ListStreamsRequest{},
+			request:        ListStreamsRequest{LogType: LogTypeCDN},
 			responseStatus: http.StatusBadRequest,
 			expectedPath:   "/datastream-config-api/v3/log/cdn/streams",
 			responseBody: `

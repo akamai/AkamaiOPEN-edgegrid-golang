@@ -24,6 +24,7 @@ type (
 	// ActivateStreamRequest contains parameters necessary to send a ActivateStream request
 	ActivateStreamRequest struct {
 		StreamID int64
+		LogType  LogType
 	}
 
 	// DeactivateStreamRequest contains parameters necessary to send a DeactivateStream request
@@ -37,6 +38,7 @@ type (
 func (r ActivateStreamRequest) Validate() error {
 	return validation.Errors{
 		"streamId": validation.Validate(r.StreamID, validation.Required),
+		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
 	}.Filter()
 }
 
@@ -44,6 +46,7 @@ func (r ActivateStreamRequest) Validate() error {
 func (r DeactivateStreamRequest) Validate() error {
 	return validation.Errors{
 		"streamId": validation.Validate(r.StreamID, validation.Required),
+		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
 	}.Filter()
 }
 
@@ -51,6 +54,7 @@ func (r DeactivateStreamRequest) Validate() error {
 func (r GetActivationHistoryRequest) Validate() error {
 	return validation.Errors{
 		"streamId": validation.Validate(r.StreamID, validation.Required),
+		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
 	}.Filter()
 }
 
@@ -71,9 +75,8 @@ func (d *ds) ActivateStream(ctx context.Context, params ActivateStreamRequest) (
 		return nil, fmt.Errorf("%s: %w: %s", ErrActivateStream, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v3/log/cdn/streams/%d/activate",
-		params.StreamID))
+	path := fmt.Sprintf("/datastream-config-api/v3/log/%s/streams/%d/activate", params.LogType.ToPathValue(), params.StreamID)
+	uri, err := url.Parse(path)
 	if err != nil {
 		return nil, fmt.Errorf("%w: parsing URL: %s", ErrActivateStream, err)
 	}
@@ -94,6 +97,7 @@ func (d *ds) ActivateStream(ctx context.Context, params ActivateStreamRequest) (
 		return nil, fmt.Errorf("%s: %w", ErrActivateStream, d.Error(resp))
 	}
 
+	rval.LogType = params.LogType
 	return &rval, nil
 }
 
@@ -105,9 +109,8 @@ func (d *ds) DeactivateStream(ctx context.Context, params DeactivateStreamReques
 		return nil, fmt.Errorf("%s: %w: %s", ErrDeactivateStream, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v3/log/cdn/streams/%d/deactivate",
-		params.StreamID))
+	path := fmt.Sprintf("/datastream-config-api/v3/log/%s/streams/%d/deactivate", params.LogType.ToPathValue(), params.StreamID)
+	uri, err := url.Parse(path)
 	if err != nil {
 		return nil, fmt.Errorf("%w: parsing URL: %s", ErrDeactivateStream, err)
 	}
@@ -128,6 +131,7 @@ func (d *ds) DeactivateStream(ctx context.Context, params DeactivateStreamReques
 		return nil, fmt.Errorf("%s: %w", ErrDeactivateStream, d.Error(resp))
 	}
 
+	rval.LogType = params.LogType
 	return &rval, nil
 }
 
@@ -139,9 +143,8 @@ func (d *ds) GetActivationHistory(ctx context.Context, params GetActivationHisto
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetActivationHistory, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v3/log/cdn/streams/%d/activation-history",
-		params.StreamID))
+	path := fmt.Sprintf("/datastream-config-api/v3/log/%s/streams/%d/activation-history", params.LogType.ToPathValue(), params.StreamID)
+	uri, err := url.Parse(path)
 	if err != nil {
 		return nil, fmt.Errorf("%w: parsing URL: %s", ErrGetActivationHistory, err)
 	}

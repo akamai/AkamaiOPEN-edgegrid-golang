@@ -20,8 +20,76 @@ func TestDs_ActivateStream(t *testing.T) {
 		expectedResponse *DetailedStreamVersion
 		withError        error
 	}{
+		"200 OK APPSEC Stream": {
+			request:        ActivateStreamRequest{StreamID: 5, LogType: LogTypeAppSec},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "contractId": "P-1324",
+    "createdBy": "sample_username",
+    "createdDate": "2022-11-04T00:49:45Z",
+    "deliveryConfiguration": {
+        "format": "JSON",
+        "frequency": { "intervalInSeconds": 30 }
+    },
+    "destination": {
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample_display_name",
+        "bucket": "sample_bucket",
+        "path": "/sample_path",
+        "region": "us-east-1"
+    },
+    "appSecConfigs": [
+        { "appSecId": 12345, "appSecName": "WAF Security File" }
+    ],
+    "groupId": 1234,
+    "latestVersion": 1,
+    "modifiedBy": "sample_username2",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": [ "sample_username@akamai.com" ],
+    "productId": "Adaptive_Media_Delivery",
+    "streamId": 5,
+    "streamName": "ds2-appsec-stream",
+    "streamStatus": "ACTIVATING",
+    "streamVersion": 1
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/appsec/streams/5/activate",
+			expectedResponse: &DetailedStreamVersion{
+				LogType:      LogTypeAppSec,
+				StreamStatus: StreamStatusActivating,
+				DeliveryConfiguration: DeliveryConfiguration{
+					Format:    FormatTypeJson,
+					Frequency: Frequency{IntervalInSeconds: IntervalInSeconds30},
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample_display_name",
+					DestinationType: DestinationTypeS3,
+					Path:            "/sample_path",
+					Bucket:          "sample_bucket",
+					Region:          "us-east-1",
+				},
+				AppSecConfigs: []AppSecConfig{
+					{AppSecID: 12345, AppSecName: "WAF Security File"},
+				},
+				ContractID:         "P-1324",
+				CreatedBy:          "sample_username",
+				CreatedDate:        "2022-11-04T00:49:45Z",
+				NotificationEmails: []string{"sample_username@akamai.com"},
+				GroupID:            1234,
+				ModifiedBy:         "sample_username2",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				ProductID:          "Adaptive_Media_Delivery",
+				StreamID:           5,
+				StreamName:         "ds2-appsec-stream",
+				StreamVersion:      1,
+				LatestVersion:      1,
+			},
+		},
 		"200 OK": {
-			request:        ActivateStreamRequest{StreamID: 3},
+			request:        ActivateStreamRequest{StreamID: 3, LogType: LogTypeCDN},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -85,6 +153,7 @@ func TestDs_ActivateStream(t *testing.T) {
 `,
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams/3/activate",
 			expectedResponse: &DetailedStreamVersion{
+				LogType:         LogTypeCDN,
 				CollectMidgress: true,
 				StreamStatus:    StreamStatusActivating,
 				DeliveryConfiguration: DeliveryConfiguration{
@@ -145,8 +214,12 @@ func TestDs_ActivateStream(t *testing.T) {
 			request:   ActivateStreamRequest{},
 			withError: ErrStructValidation,
 		},
+		"validation error - invalid log type": {
+			request:   ActivateStreamRequest{StreamID: 5, LogType: "INVALID"},
+			withError: ErrStructValidation,
+		},
 		"400 bad request": {
-			request:        ActivateStreamRequest{StreamID: 123},
+			request:        ActivateStreamRequest{StreamID: 123, LogType: LogTypeCDN},
 			responseStatus: http.StatusBadRequest,
 			responseBody: `
 {
@@ -212,8 +285,76 @@ func TestDs_DeactivateStream(t *testing.T) {
 		expectedResponse *DetailedStreamVersion
 		withError        error
 	}{
+		"200 OK APPSEC Stream": {
+			request:        DeactivateStreamRequest{StreamID: 5, LogType: LogTypeAppSec},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "contractId": "P-1324",
+    "createdBy": "sample_username",
+    "createdDate": "2022-11-04T00:49:45Z",
+    "deliveryConfiguration": {
+        "format": "JSON",
+        "frequency": { "intervalInSeconds": 30 }
+    },
+    "destination": {
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample_display_name",
+        "bucket": "sample_bucket",
+        "path": "/sample_path",
+        "region": "us-east-1"
+    },
+    "appSecConfigs": [
+        { "appSecId": 12345, "appSecName": "WAF Security File" }
+    ],
+    "groupId": 1234,
+    "latestVersion": 1,
+    "modifiedBy": "sample_username2",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": [ "sample_username@akamai.com" ],
+    "productId": "Adaptive_Media_Delivery",
+    "streamId": 5,
+    "streamName": "ds2-appsec-stream",
+    "streamStatus": "DEACTIVATING",
+    "streamVersion": 1
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/appsec/streams/5/deactivate",
+			expectedResponse: &DetailedStreamVersion{
+				LogType:      LogTypeAppSec,
+				StreamStatus: StreamStatusDeactivating,
+				DeliveryConfiguration: DeliveryConfiguration{
+					Format:    FormatTypeJson,
+					Frequency: Frequency{IntervalInSeconds: IntervalInSeconds30},
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample_display_name",
+					DestinationType: DestinationTypeS3,
+					Path:            "/sample_path",
+					Bucket:          "sample_bucket",
+					Region:          "us-east-1",
+				},
+				AppSecConfigs: []AppSecConfig{
+					{AppSecID: 12345, AppSecName: "WAF Security File"},
+				},
+				ContractID:         "P-1324",
+				CreatedBy:          "sample_username",
+				CreatedDate:        "2022-11-04T00:49:45Z",
+				NotificationEmails: []string{"sample_username@akamai.com"},
+				GroupID:            1234,
+				ModifiedBy:         "sample_username2",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				ProductID:          "Adaptive_Media_Delivery",
+				StreamID:           5,
+				StreamName:         "ds2-appsec-stream",
+				StreamVersion:      1,
+				LatestVersion:      1,
+			},
+		},
 		"200 ok": {
-			request:        DeactivateStreamRequest{StreamID: 3},
+			request:        DeactivateStreamRequest{StreamID: 3, LogType: LogTypeCDN},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
@@ -277,6 +418,7 @@ func TestDs_DeactivateStream(t *testing.T) {
 `,
 			expectedPath: "/datastream-config-api/v3/log/cdn/streams/3/deactivate",
 			expectedResponse: &DetailedStreamVersion{
+				LogType:         LogTypeCDN,
 				CollectMidgress: true,
 				StreamStatus:    StreamStatusDeactivating,
 				DeliveryConfiguration: DeliveryConfiguration{
@@ -337,8 +479,12 @@ func TestDs_DeactivateStream(t *testing.T) {
 			request:   DeactivateStreamRequest{},
 			withError: ErrStructValidation,
 		},
+		"validation error - invalid log type": {
+			request:   DeactivateStreamRequest{StreamID: 5, LogType: "INVALID"},
+			withError: ErrStructValidation,
+		},
 		"400 bad request": {
-			request:        DeactivateStreamRequest{StreamID: 123},
+			request:        DeactivateStreamRequest{StreamID: 123, LogType: LogTypeCDN},
 			responseStatus: http.StatusBadRequest,
 			responseBody: `
 {
@@ -404,8 +550,47 @@ func TestDs_GetActivationHistory(t *testing.T) {
 		expectedResponse []ActivationHistoryEntry
 		withError        error
 	}{
+		"200 OK APPSEC Stream": {
+			request:        GetActivationHistoryRequest{StreamID: 5, LogType: LogTypeAppSec},
+			responseStatus: http.StatusOK,
+			responseBody: `
+[
+    {
+        "streamId": 5,
+        "streamVersion": 1,
+        "modifiedBy": "user1",
+        "modifiedDate": "16-01-2020 11:07:12 GMT",
+        "status": "DEACTIVATED"
+    },
+    {
+        "streamId": 5,
+        "streamVersion": 1,
+        "modifiedBy": "user2",
+        "modifiedDate": "16-01-2020 09:31:02 GMT",
+        "status": "ACTIVATED"
+    }
+]
+`,
+			expectedPath: "/datastream-config-api/v3/log/appsec/streams/5/activation-history",
+			expectedResponse: []ActivationHistoryEntry{
+				{
+					ModifiedBy:    "user1",
+					ModifiedDate:  "16-01-2020 11:07:12 GMT",
+					Status:        StreamStatusDeactivated,
+					StreamID:      5,
+					StreamVersion: 1,
+				},
+				{
+					ModifiedBy:    "user2",
+					ModifiedDate:  "16-01-2020 09:31:02 GMT",
+					Status:        StreamStatusActivated,
+					StreamID:      5,
+					StreamVersion: 1,
+				},
+			},
+		},
 		"200 OK": {
-			request:        GetActivationHistoryRequest{StreamID: 3},
+			request:        GetActivationHistoryRequest{StreamID: 3, LogType: LogTypeCDN},
 			responseStatus: http.StatusOK,
 			responseBody: `
 [
@@ -447,8 +632,12 @@ func TestDs_GetActivationHistory(t *testing.T) {
 			request:   GetActivationHistoryRequest{},
 			withError: ErrStructValidation,
 		},
+		"validation error - invalid log type": {
+			request:   GetActivationHistoryRequest{StreamID: 5, LogType: "INVALID"},
+			withError: ErrStructValidation,
+		},
 		"400 bad request": {
-			request:        GetActivationHistoryRequest{StreamID: 123},
+			request:        GetActivationHistoryRequest{StreamID: 123, LogType: LogTypeCDN},
 			responseStatus: http.StatusBadRequest,
 			responseBody: `
 {

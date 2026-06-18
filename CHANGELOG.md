@@ -7,12 +7,16 @@
 
 
 
-
-
-
 ### FEATURES/ENHANCEMENTS:
 * ClientLists
   * Added support for `REQUEST_HEADER_NAME_VALUE` type client lists.
+
+* Datastream
+  * Added support for managing and listing `AppSec` streams in addition to `CDN` streams.
+  * Added the [GetAppSecConfigs](https://techdocs.akamai.com/datastream2/reference/get-configs-appsec) method to list Application Security configurations.
+  * Added the `LogType` enum and the `LogType` field to stream request and response structures to support `CDN` and `APPSEC` stream operations.
+  * Added the `AppSecConfig`, `AppSecConfigID`, and `AppSecConfigDetails` types, along with related `AppSecConfigs` fields, to support Application Security configurations in requests and responses.
+  * Updated validation for `DatasetFields` and `Properties` to apply only to `CDN` stream operations.
 
 
 * Cloud Access
