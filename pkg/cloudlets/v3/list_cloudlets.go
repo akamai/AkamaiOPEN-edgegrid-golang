@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 )
 
@@ -26,9 +27,7 @@ func (c *cloudlets) ListCloudlets(ctx context.Context) ([]ListCloudletsItem, err
 	logger := c.Log(ctx)
 	logger.Debug("ListCloudlets")
 
-	uri := "/cloudlets/v3/cloudlet-info"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/cloudlets/v3/cloudlet-info").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListCloudlets, err)
 	}

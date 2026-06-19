@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -75,12 +75,7 @@ func (c *cloudlets) GetPolicyProperties(ctx context.Context, params GetPolicyPro
 	logger := c.Log(ctx)
 	logger.Debug("GetPolicyProperties")
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/properties", params.PolicyID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPolicyProperties, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/api/v2/policies/%d/properties", params.PolicyID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicyProperties, err)
 	}
@@ -106,19 +101,10 @@ func (c *cloudlets) DeletePolicyProperty(ctx context.Context, params DeletePolic
 		return fmt.Errorf("%s: %w:\n%s", ErrDeletePolicyProperty, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/properties/%d", params.PolicyID, params.PropertyID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrDeletePolicyProperty, err.Error())
-	}
-
-	q := uri.Query()
-	q.Set("async", "true")
-	if params.Network != "" {
-		q.Set("network", string(params.Network))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/cloudlets/api/v2/policies/%d/properties/%d", params.PolicyID, params.PropertyID).
+		AddQueryParam("async", "true").
+		AddQueryParamIf("network", string(params.Network), params.Network != "").
+		Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeletePolicyProperty, err)
 	}

@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -104,21 +104,10 @@ func (c *cloudlets) ListPolicyActivations(ctx context.Context, params ListPolicy
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListPolicyActivations, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/activations", params.PolicyID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPolicyActivations, err)
-	}
-
-	q := uri.Query()
-	if params.Network != "" {
-		q.Set("network", string(params.Network))
-	}
-	if params.PropertyName != "" {
-		q.Set("propertyName", params.PropertyName)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/api/v2/policies/%d/activations", params.PolicyID).
+		AddQueryParamIf("network", string(params.Network), params.Network != "").
+		AddQueryParamIf("propertyName", params.PropertyName, params.PropertyName != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPolicyActivations, err)
 	}
@@ -144,20 +133,15 @@ func (c *cloudlets) ActivatePolicyVersion(ctx context.Context, params ActivatePo
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrActivatePolicyVersion, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/cloudlets/api/v2/policies/%d/versions/%d/activations",
-		params.PolicyID, params.Version))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create POST URI: %s", ErrActivatePolicyVersion, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/cloudlets/api/v2/policies/%d/versions/%d/activations", params.PolicyID, params.Version).
+		WithBody(params.PolicyVersionActivation).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create POST request: %s", ErrActivatePolicyVersion, err)
 	}
 
 	var result []PolicyActivation
-	resp, err := c.Exec(req, &result, params.PolicyVersionActivation)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivatePolicyVersion, err)
 	}

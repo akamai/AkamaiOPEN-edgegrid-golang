@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -156,21 +156,10 @@ func (c *cloudlets) ListPolicyActivations(ctx context.Context, params ListPolicy
 		return nil, fmt.Errorf("%s: %w: %s", ErrListPolicyActivations, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/v3/policies/%d/activations", params.PolicyID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPolicyActivations, err)
-	}
-
-	q := uri.Query()
-	if params.Size != 0 {
-		q.Add("size", strconv.Itoa(params.Size))
-	}
-	if params.Page != 0 {
-		q.Add("page", strconv.Itoa(params.Page))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/v3/policies/%d/activations", params.PolicyID).
+		AddQueryParamIf("size", strconv.Itoa(params.Size), params.Size != 0).
+		AddQueryParamIf("page", strconv.Itoa(params.Page), params.Page != 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPolicyActivations, err)
 	}
@@ -196,20 +185,21 @@ func (c *cloudlets) ActivatePolicy(ctx context.Context, params ActivatePolicyReq
 		return nil, fmt.Errorf("%s: %w: %s", ErrActivatePolicy, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/activations", params.PolicyID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrActivatePolicy, err)
-	}
-
 	reqBody := policyActivationRequest{
 		Network:       params.Network,
 		PolicyVersion: params.PolicyVersion,
 		Operation:     OperationActivation,
 	}
 
+	req, err := request.NewPost(ctx, "/cloudlets/v3/policies/%d/activations", params.PolicyID).
+		WithBody(reqBody).
+		Build()
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrActivatePolicy, err)
+	}
+
 	var result PolicyActivation
-	resp, err := c.Exec(req, &result, reqBody)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivatePolicy, err)
 	}
@@ -229,20 +219,21 @@ func (c *cloudlets) DeactivatePolicy(ctx context.Context, params DeactivatePolic
 		return nil, fmt.Errorf("%s: %w: %s", ErrDeactivatePolicy, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/activations", params.PolicyID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeactivatePolicy, err)
-	}
-
 	reqBody := policyActivationRequest{
 		Network:       params.Network,
 		PolicyVersion: params.PolicyVersion,
 		Operation:     OperationDeactivation,
 	}
 
+	req, err := request.NewPost(ctx, "/cloudlets/v3/policies/%d/activations", params.PolicyID).
+		WithBody(reqBody).
+		Build()
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeactivatePolicy, err)
+	}
+
 	var result PolicyActivation
-	resp, err := c.Exec(req, &result, reqBody)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeactivatePolicy, err)
 	}
@@ -262,8 +253,7 @@ func (c *cloudlets) GetPolicyActivation(ctx context.Context, params GetPolicyAct
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetPolicyActivation, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/activations/%d", params.PolicyID, params.ActivationID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/cloudlets/v3/policies/%d/activations/%d", params.PolicyID, params.ActivationID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicyActivation, err)
 	}

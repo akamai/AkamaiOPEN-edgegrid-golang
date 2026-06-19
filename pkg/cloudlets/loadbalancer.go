@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -116,17 +116,9 @@ func (c *cloudlets) ListOrigins(ctx context.Context, params ListOriginsRequest) 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListOrigins, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/cloudlets/api/v2/origins")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListOrigins, err)
-	}
-	if params.Type != OriginTypeAll {
-		q := uri.Query()
-		q.Add("type", string(params.Type))
-		uri.RawQuery = q.Encode()
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/api/v2/origins").
+		AddQueryParamIf("type", string(params.Type), params.Type != OriginTypeAll).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListOrigins, err)
 	}
@@ -149,12 +141,7 @@ func (c *cloudlets) GetOrigin(ctx context.Context, params GetOriginRequest) (*Or
 	logger := c.Log(ctx)
 	logger.Debug("GetOrigin")
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s", params.OriginID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetOrigin, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/api/v2/origins/%s", params.OriginID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetOrigin, err)
 	}
@@ -181,19 +168,16 @@ func (c *cloudlets) CreateOrigin(ctx context.Context, params CreateOriginRequest
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateOrigin, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/cloudlets/api/v2/origins")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateOrigin, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/cloudlets/api/v2/origins").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateOrigin, err)
 	}
 
 	var result Origin
 
-	resp, err := c.Exec(req, &result, params)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateOrigin, err)
 	}
@@ -214,19 +198,16 @@ func (c *cloudlets) UpdateOrigin(ctx context.Context, params UpdateOriginRequest
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateOrigin, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s", params.OriginID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateOrigin, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/cloudlets/api/v2/origins/%s", params.OriginID).
+		WithBody(params.Description).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateOrigin, err)
 	}
 
 	var result Origin
 
-	resp, err := c.Exec(req, &result, params.Description)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateOrigin, err)
 	}

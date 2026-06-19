@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func ListActivePolicyProperties(t *testing.T) {
+func TestListActivePolicyProperties(t *testing.T) {
 	t.Parallel()
 
 	tests := map[string]struct {
@@ -193,7 +193,7 @@ func ListActivePolicyProperties(t *testing.T) {
 		"validation errors - missing required params": {
 			params: ListActivePolicyPropertiesRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "get policy properties: struct validation: PolicyID: cannot be blank", err.Error())
+				assert.Equal(t, "list active policy properties: struct validation: PolicyID: cannot be blank", err.Error())
 			},
 		},
 		"validation errors - size lower than 10, negative page number": {
@@ -203,7 +203,7 @@ func ListActivePolicyProperties(t *testing.T) {
 				Size:     5,
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "get policy properties: struct validation: Page: must be no less than 0\nSize: must be no less than 10", err.Error())
+				assert.Equal(t, "list active policy properties: struct validation: Page: must be no less than 0\nSize: must be no less than 10", err.Error())
 			},
 		},
 		"500 Internal Server Error": {

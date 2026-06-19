@@ -5,9 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
+	"strconv"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -161,19 +162,10 @@ func (c *cloudlets) ListPolicyVersions(ctx context.Context, params ListPolicyVer
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListPolicyVersions, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/v3/policies/%d/versions", params.PolicyID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPolicyVersions, err)
-	}
-
-	q := uri.Query()
-	q.Add("page", fmt.Sprintf("%d", params.Page))
-	if params.Size != 0 {
-		q.Add("size", fmt.Sprintf("%d", params.Size))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/v3/policies/%d/versions", params.PolicyID).
+		AddQueryParam("page", strconv.Itoa(params.Page)).
+		AddQueryParamIf("size", strconv.Itoa(params.Size), params.Size != 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPolicyVersions, err)
 	}
@@ -196,9 +188,7 @@ func (c *cloudlets) GetPolicyVersion(ctx context.Context, params GetPolicyVersio
 	logger := c.Log(ctx)
 	logger.Debug("GetPolicyVersion")
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.PolicyVersion)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.PolicyVersion).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicyVersion, err)
 	}
@@ -226,16 +216,16 @@ func (c *cloudlets) CreatePolicyVersion(ctx context.Context, params CreatePolicy
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreatePolicyVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions", params.PolicyID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/cloudlets/v3/policies/%d/versions", params.PolicyID).
+		WithBody(params.CreatePolicyVersion).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreatePolicyVersion, err)
 	}
 
 	var result PolicyVersion
 
-	resp, err := c.Exec(req, &result, params.CreatePolicyVersion)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreatePolicyVersion, err)
 	}
@@ -256,9 +246,7 @@ func (c *cloudlets) DeletePolicyVersion(ctx context.Context, params DeletePolicy
 		return fmt.Errorf("%s: %w:\n%s", ErrDeletePolicyVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.PolicyVersion)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := request.NewDelete(ctx, "/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.PolicyVersion).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeletePolicyVersion, err)
 	}
@@ -284,16 +272,16 @@ func (c *cloudlets) UpdatePolicyVersion(ctx context.Context, params UpdatePolicy
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdatePolicyVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.PolicyVersion)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
+	req, err := request.NewPut(ctx, "/cloudlets/v3/policies/%d/versions/%d", params.PolicyID, params.PolicyVersion).
+		WithBody(params.UpdatePolicyVersion).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdatePolicyVersion, err)
 	}
 
 	var result PolicyVersion
 
-	resp, err := c.Exec(req, &result, params.UpdatePolicyVersion)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePolicyVersion, err)
 	}

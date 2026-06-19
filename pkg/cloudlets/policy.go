@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"regexp"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -162,23 +162,16 @@ func (c *cloudlets) ListPolicies(ctx context.Context, params ListPoliciesRequest
 	logger := c.Log(ctx)
 	logger.Debug("ListPolicies")
 
-	uri, err := url.Parse("/cloudlets/api/v2/policies")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPolicies, err)
-	}
-
-	q := uri.Query()
-	if params.CloudletID != nil {
-		q.Add("cloudletId", fmt.Sprintf("%d", *params.CloudletID))
-	}
-	if params.PageSize != nil {
-		q.Add("pageSize", fmt.Sprintf("%d", *params.PageSize))
-	}
-	q.Add("offset", fmt.Sprintf("%d", params.Offset))
-	q.Add("includeDeleted", strconv.FormatBool(params.IncludeDeleted))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/api/v2/policies").
+		AddQueryParamFunc("cloudletId", func() string {
+			return fmt.Sprintf("%d", *params.CloudletID)
+		}, params.CloudletID != nil).
+		AddQueryParamFunc("pageSize", func() string {
+			return fmt.Sprintf("%d", *params.PageSize)
+		}, params.PageSize != nil).
+		AddQueryParam("offset", fmt.Sprintf("%d", params.Offset)).
+		AddQueryParam("includeDeleted", strconv.FormatBool(params.IncludeDeleted)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPolicies, err)
 	}
@@ -203,12 +196,7 @@ func (c *cloudlets) GetPolicy(ctx context.Context, params GetPolicyRequest) (*Po
 
 	var result Policy
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d", params.PolicyID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPolicy, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/api/v2/policies/%d", params.PolicyID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicy, err)
 	}
@@ -234,19 +222,16 @@ func (c *cloudlets) CreatePolicy(ctx context.Context, params CreatePolicyRequest
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreatePolicy, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/cloudlets/api/v2/policies")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreatePolicy, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/cloudlets/api/v2/policies").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreatePolicy, err)
 	}
 
 	var result Policy
 
-	resp, err := c.Exec(req, &result, params)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreatePolicy, err)
 	}
@@ -263,12 +248,7 @@ func (c *cloudlets) RemovePolicy(ctx context.Context, params RemovePolicyRequest
 	logger := c.Log(ctx)
 	logger.Debug("RemovePolicy")
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d", params.PolicyID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrRemovePolicy, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/cloudlets/api/v2/policies/%d", params.PolicyID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrRemovePolicy, err)
 	}
@@ -294,22 +274,16 @@ func (c *cloudlets) UpdatePolicy(ctx context.Context, params UpdatePolicyRequest
 		return nil, fmt.Errorf("%s: %w: %s", ErrUpdatePolicy, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/cloudlets/api/v2/policies/%d",
-		params.PolicyID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdatePolicy, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/cloudlets/api/v2/policies/%d", params.PolicyID).
+		WithBody(params.UpdatePolicy).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdatePolicy, err)
 	}
 
 	var result Policy
 
-	resp, err := c.Exec(req, &result, params.UpdatePolicy)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePolicy, err)
 	}

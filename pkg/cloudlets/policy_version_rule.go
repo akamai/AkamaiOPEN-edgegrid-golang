@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -87,13 +87,8 @@ func (c *cloudlets) GetPolicyVersionRule(ctx context.Context, params GetPolicyVe
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetPolicyVersionRule, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/versions/%d/rules/%s",
-		params.PolicyID, params.Version, params.AkaRuleID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPolicyVersionRule, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/api/v2/policies/%d/versions/%d/rules/%s", params.PolicyID, params.Version, params.AkaRuleID).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicyVersionRule, err)
 	}
@@ -120,25 +115,16 @@ func (c *cloudlets) CreatePolicyVersionRule(ctx context.Context, params CreatePo
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreatePolicyVersionRule, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/versions/%d/rules",
-		params.PolicyID, params.Version))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreatePolicyVersionRule, err)
-	}
-
-	q := uri.Query()
-	if params.Index > 0 {
-		q.Set("index", strconv.FormatInt(params.Index, 10))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/cloudlets/api/v2/policies/%d/versions/%d/rules", params.PolicyID, params.Version).
+		AddQueryParamIf("index", strconv.FormatInt(params.Index, 10), params.Index > 0).
+		WithBody(params.MatchRule).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreatePolicyVersionRule, err)
 	}
 
 	var res policyMatchRule
-	resp, err := c.Exec(req, &res, params.MatchRule)
+	resp, err := c.Exec(req, &res)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreatePolicyVersionRule, err)
 	}
@@ -159,19 +145,15 @@ func (c *cloudlets) UpdatePolicyVersionRule(ctx context.Context, params UpdatePo
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdatePolicyVersionRule, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/policies/%d/versions/%d/rules/%s",
-		params.PolicyID, params.Version, params.AkaRuleID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdatePolicyVersionRule, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/cloudlets/api/v2/policies/%d/versions/%d/rules/%s", params.PolicyID, params.Version, params.AkaRuleID).
+		WithBody(params.MatchRule).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdatePolicyVersionRule, err)
 	}
 
 	var res policyMatchRule
-	resp, err := c.Exec(req, &res, params.MatchRule)
+	resp, err := c.Exec(req, &res)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePolicyVersionRule, err)
 	}
