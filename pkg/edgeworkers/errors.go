@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/errs"
 )
@@ -39,15 +40,23 @@ const (
 	errorCodeNotFound                  = "EKV_9000"
 	errorCodeVersionIsBeingDeactivated = "EW1031"
 	errorCodeVersionAlreadyDeactivated = "EW1032"
+
+	errorDetailNamespaceNotFound     = "The requested namespace does not exist."
+	errorDetailNoScheduledDeletePart = "No current scheduled delete"
 )
 
 var (
-	// ErrNotFound is returned when edgeKV resource does not exist
+	// ErrNotFound is returned when edgeKV resource does not exist.
 	ErrNotFound = errors.New("specified edgeKV resource does not exist")
-	// ErrVersionBeingDeactivated is returned when edgeworkers version is currently being deactivated
+	// ErrVersionBeingDeactivated is returned when edgeworkers version is currently being deactivated.
 	ErrVersionBeingDeactivated = errors.New("version is being deactivated")
-	// ErrVersionAlreadyDeactivated is returned when edgeworkers version is already deactivated
+	// ErrVersionAlreadyDeactivated is returned when edgeworkers version is already deactivated.
 	ErrVersionAlreadyDeactivated = errors.New("version is already deactivated")
+	// ErrNamespaceNoScheduledDelete is returned when there is no current scheduled delete for an edgeKV resource
+	// and an attempt is made to modify it.
+	ErrNamespaceNoScheduledDelete = errors.New("no current scheduled delete for the specified edgeKV resource")
+	// ErrNamespaceNotFound is returned when the requested edgeKV namespace does not exist.
+	ErrNamespaceNotFound = errors.New("the requested edgeKV namespace does not exist")
 )
 
 // Error parses an error from the response
@@ -84,6 +93,12 @@ func (e *Error) Error() string {
 func (e *Error) Is(target error) bool {
 	if errors.Is(target, ErrNotFound) {
 		return e.Status == http.StatusNotFound && e.ErrorCode == errorCodeNotFound
+	}
+	if errors.Is(target, ErrNamespaceNoScheduledDelete) {
+		return e.Status == http.StatusBadRequest && e.ErrorCode == errorCodeNotFound && strings.Contains(e.Detail, errorDetailNoScheduledDeletePart)
+	}
+	if errors.Is(target, ErrNamespaceNotFound) {
+		return e.Status == http.StatusBadRequest && e.ErrorCode == errorCodeNotFound && e.Detail == errorDetailNamespaceNotFound
 	}
 	if errors.Is(target, ErrVersionBeingDeactivated) {
 		return e.ErrorCode == errorCodeVersionIsBeingDeactivated

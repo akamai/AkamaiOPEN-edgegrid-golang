@@ -133,6 +133,7 @@ type (
 		Name string
 
 		// Sync specifies whether to delete the namespace synchronously or asynchronously.
+		// Deprecated: Sync is no longer supported by the API and may be removed in a future release.
 		Sync bool
 	}
 

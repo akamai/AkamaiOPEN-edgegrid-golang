@@ -18,7 +18,8 @@
 * Cloud Access
   * Added support for the new authentication method `G2O` (Akamai Signature Header Authentication) in the cloud access.
 
-
+* Edgeworkers
+  * Added sentinel errors `ErrNamespaceNoScheduledDelete` and `ErrNamespaceNotFound`.
 
 ### DEPRECATIONS:
 
@@ -26,6 +27,8 @@
 
 
 
+* Edgeworkers
+  * Deprecated the `Sync` field in `DeleteEdgeKVNamespaceRequest`.
 
 
 
