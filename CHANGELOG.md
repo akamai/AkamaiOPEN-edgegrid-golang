@@ -1,15 +1,17 @@
 # RELEASE NOTES
 
-## X.X.X (X X, X)
-
-### BREAKING CHANGES:
-
-
-
+## 13.3.0 (Jun 29, 2026)
 
 ### FEATURES/ENHANCEMENTS:
+
+* General
+  * Updated various dependencies.
+
 * ClientLists
-  * Added support for `REQUEST_HEADER_NAME_VALUE` type client lists.
+  * Added support for the `REQUEST_HEADER_NAME_VALUE` client lists type.
+
+* Cloud Access
+  * Added support for the new authentication method `G2O` (Akamai Signature Header Authentication).
 
 * Datastream
   * Added support for managing and listing `AppSec` streams in addition to `CDN` streams.
@@ -19,54 +21,23 @@
   * Updated validation for `DatasetFields` and `Properties` to apply only to `CDN` stream operations.
 
 
-* Cloud Access
-  * Added support for the new authentication method `G2O` (Akamai Signature Header Authentication) in the cloud access.
-
 * Edgeworkers
   * Added sentinel errors `ErrNamespaceNoScheduledDelete` and `ErrNamespaceNotFound`.
 
+### BUG FIXES:
+
+* General
+  * Fixed incorrect Authorization header generation for POST requests when `Config.MaxBody` was not set (defaulted to 0).
+    `SignRequest` now defaults `MaxBody` to `MaxBodySize` (131072) when the value is 0 or negative.
+    ([I#234](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/issues/234)).
+
 ### DEPRECATIONS:
 
-* The `in` parameter of `session.Exec` is deprecated and will be removed in a future release. Please pass body within `*http.Request` instead.
-
-
+* General
+  * The `in` parameter of `session.Exec` is deprecated and will be removed in a future release. Please pass body within `*http.Request` instead.
 
 * Edgeworkers
   * Deprecated the `Sync` field in `DeleteEdgeKVNamespaceRequest`.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### BUG FIXES:
-
-* Fixed incorrect Authorization header generation for POST requests when `Config.MaxBody` was not set (defaulted to 0). 
-  `SignRequest` now defaults `MaxBody` to `MaxBodySize` (131072) when the value is 0 or negative. 
-  ([I#234](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/issues/234)).
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 13.2.0 (May 11, 2026)
 
