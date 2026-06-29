@@ -43,6 +43,9 @@ var (
 
 // SignRequest adds a signed authorization header to the http request
 func (c Config) SignRequest(r *http.Request) {
+	if c.MaxBody <= 0 {
+		c.MaxBody = MaxBodySize
+	}
 	if r.URL.Host == "" {
 		r.URL.Host = c.Host
 	}
@@ -120,6 +123,9 @@ func canonicalizeHeaders(requestHeaders http.Header, headersToSign []string) str
 // Any request that does not meet this criteria SHOULD be rejected during the signing process,
 // as the request will be rejected by EdgeGrid.
 func createContentHash(r *http.Request, maxBody int) string {
+	if maxBody <= 0 {
+		maxBody = MaxBodySize
+	}
 	var (
 		contentHash  string
 		preparedBody string

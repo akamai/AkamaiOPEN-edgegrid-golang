@@ -165,6 +165,7 @@ func TestDs_GetProperties(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetProperties(context.Background(), test.request)
 			if test.withError != nil {
@@ -291,8 +292,132 @@ func TestDs_GetDatasetFields(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetDatasetFields(context.Background(), test.request)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestDs_GetAppSecConfigs(t *testing.T) {
+	tests := map[string]struct {
+		request          GetAppSecConfigsRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse []AppSecConfigDetails
+		withError        error
+	}{
+		"200 OK": {
+			request: GetAppSecConfigsRequest{
+				GroupID:    12345,
+				ContractID: "1-ABC",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+[
+    {
+        "fileType": "LOG",
+        "id": 12345,
+        "latestVersion": 3,
+        "name": "WAF Security File",
+        "productionVersion": 2,
+        "targetProduct": "KSD"
+    },
+    {
+        "fileType": "LOG",
+        "id": 67890,
+        "latestVersion": 1,
+        "name": "Bot Manager Config",
+        "productionVersion": 1,
+        "targetProduct": "BOT_MANAGER"
+    }
+]
+`,
+			expectedPath: "/datastream-config-api/v3/log/appsec/groups/12345/contracts/1-ABC/configs",
+			expectedResponse: []AppSecConfigDetails{
+				{
+					FileType:          "LOG",
+					ID:                12345,
+					LatestVersion:     3,
+					Name:              "WAF Security File",
+					ProductionVersion: 2,
+					TargetProduct:     "KSD",
+				},
+				{
+					FileType:          "LOG",
+					ID:                67890,
+					LatestVersion:     1,
+					Name:              "Bot Manager Config",
+					ProductionVersion: 1,
+					TargetProduct:     "BOT_MANAGER",
+				},
+			},
+		},
+		"validation error - missing GroupID": {
+			request:   GetAppSecConfigsRequest{ContractID: "1-ABC"},
+			withError: ErrStructValidation,
+		},
+		"validation error - missing ContractID": {
+			request:   GetAppSecConfigsRequest{GroupID: 12345},
+			withError: ErrStructValidation,
+		},
+		"403 forbidden": {
+			request: GetAppSecConfigsRequest{
+				GroupID:    12345,
+				ContractID: "1-ABC",
+			},
+			responseStatus: http.StatusForbidden,
+			responseBody: `
+{
+	"type": "forbidden",
+	"title": "Forbidden",
+	"detail": "",
+	"instance": "28eb43a8-97ae-4c57-98aa-258081582b92",
+	"statusCode": 403,
+	"errors": [
+		{
+			"type": "forbidden",
+			"title": "Forbidden",
+			"detail": "User does not have access to the requested group."
+		}
+	]
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/appsec/groups/12345/contracts/1-ABC/configs",
+			withError: &Error{
+				Type:       "forbidden",
+				Title:      "Forbidden",
+				Instance:   "28eb43a8-97ae-4c57-98aa-258081582b92",
+				StatusCode: http.StatusForbidden,
+				Errors: []RequestErrors{
+					{
+						Type:   "forbidden",
+						Title:  "Forbidden",
+						Detail: "User does not have access to the requested group.",
+					},
+				},
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			client := mockAPIClient(t, mockServer)
+			result, err := client.GetAppSecConfigs(context.Background(), test.request)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
 				return

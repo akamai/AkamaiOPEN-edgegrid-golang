@@ -9,11 +9,11 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cast v1.7.0
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/wk8/go-ordered-map/v2 v2.1.8
 	go.uber.org/ratelimit v0.3.1
-	golang.org/x/net v0.53.0
-	gopkg.in/ini.v1 v1.67.0
+	golang.org/x/net v0.56.0
+	gopkg.in/ini.v1 v1.67.3
 )
 
 require (

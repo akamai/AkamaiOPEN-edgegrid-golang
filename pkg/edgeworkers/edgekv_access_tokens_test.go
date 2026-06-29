@@ -307,6 +307,7 @@ func TestCreateEdgeKVAccessToken(t *testing.T) {
 				}
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateEdgeKVAccessToken(context.Background(), test.params)
 			if test.withError != nil {
@@ -485,6 +486,7 @@ func TestGetEdgeKVAccessToken(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEdgeKVAccessToken(context.Background(), test.params)
 			if test.withError != nil {
@@ -673,6 +675,7 @@ func TestListEdgeKVAccessTokens(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListEdgeKVAccessTokens(context.Background(), test.params)
 			if test.withError != nil {
@@ -817,6 +820,7 @@ func TestDeleteEdgeKVAccessToken(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			_, err := client.DeleteEdgeKVAccessToken(context.Background(), test.params)
 			if test.withError != nil {

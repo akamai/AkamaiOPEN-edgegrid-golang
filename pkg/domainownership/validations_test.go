@@ -223,6 +223,7 @@ func TestValidateDomains(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ValidateDomains(context.Background(), tc.request)
 			if tc.withError != nil {
@@ -335,6 +336,7 @@ func TestInvalidateDomain(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.InvalidateDomain(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -518,6 +520,7 @@ func TestInvalidateDomains(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.InvalidateDomains(context.Background(), tc.request)
 			if tc.withError != nil {

@@ -104,6 +104,7 @@ func TestIAM_ResetUserPassword(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			response, err := client.ResetUserPassword(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -229,6 +230,7 @@ func TestIAM_SetUserPassword(t *testing.T) {
 					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.SetUserPassword(context.Background(), tc.params)
 			if tc.withError != nil {

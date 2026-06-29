@@ -147,6 +147,7 @@ func TestBotman_BotDetectionActionList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetBotDetectionActionList(
 				session.ContextWithOptions(
@@ -269,6 +270,7 @@ func TestBotman_GetBotDetectionAction(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetBotDetectionAction(context.Background(), test.params)
 			if test.withError != nil {
@@ -404,6 +406,7 @@ func TestBotman_UpdateBotDetectionAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateBotDetectionAction(
 				session.ContextWithOptions(

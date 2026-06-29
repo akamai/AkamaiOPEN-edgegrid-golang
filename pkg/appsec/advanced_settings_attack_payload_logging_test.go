@@ -76,6 +76,7 @@ func TestAppSec_ListAdvancedSettingsAttackPayloadLogging(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsAttackPayloadLogging(
 				session.ContextWithOptions(
@@ -153,6 +154,7 @@ func TestAppSec_GetAdvancedSettingsAttackPayloadLoggingPolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsAttackPayloadLogging(context.Background(), test.params)
 			if test.withError != nil {
@@ -233,6 +235,7 @@ func TestAppSec_UpdateAdvancedSettingsAttackPayloadLogging(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsAttackPayloadLogging(
 				session.ContextWithOptions(
@@ -318,6 +321,7 @@ func TestAppSec_UpdateAdvancedSettingsAttackPayloadLoggingPolicy(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsAttackPayloadLogging(
 				session.ContextWithOptions(

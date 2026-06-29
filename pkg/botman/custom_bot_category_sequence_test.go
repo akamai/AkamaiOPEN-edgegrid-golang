@@ -88,6 +88,7 @@ func TestBotman_GetCustomBotCategorySequence(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomBotCategorySequence(context.Background(), test.params)
 			if test.withError != nil {
@@ -193,6 +194,7 @@ func TestBotman_UpdateCustomBotCategorySequence(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCustomBotCategorySequence(
 				session.ContextWithOptions(

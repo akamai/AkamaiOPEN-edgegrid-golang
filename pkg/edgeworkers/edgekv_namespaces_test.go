@@ -168,6 +168,7 @@ func TestListNamespaces(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListEdgeKVNamespaces(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -319,6 +320,7 @@ func TestGetNamespace(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEdgeKVNamespace(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -579,6 +581,7 @@ func TestCreateNamespace(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateEdgeKVNamespace(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -738,6 +741,7 @@ func TestUpdateNamespace(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateEdgeKVNamespace(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -864,6 +868,7 @@ func TestDeleteNamespace(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteEdgeKVNamespace(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -967,6 +972,7 @@ func TestGetScheduledDeleteTime(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetNamespaceScheduledDeleteTime(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1082,6 +1088,7 @@ func TestRescheduleNamespaceDelete(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RescheduleNamespaceDelete(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1172,6 +1179,7 @@ func TestCancelScheduledNamespaceDelete(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.CancelScheduledNamespaceDelete(context.Background(), tc.params)
 			if tc.withError != nil {

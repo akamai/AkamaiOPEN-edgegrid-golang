@@ -155,6 +155,7 @@ func TestAppSec_GetWAFCompositeRuleset(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetWAFCompositeRuleset(
 				session.ContextWithOptions(
@@ -342,6 +343,7 @@ func TestAppSec_UpdateWAFCompositeRuleset(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateWAFCompositeRuleset(
 				session.ContextWithOptions(

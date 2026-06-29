@@ -76,6 +76,7 @@ func TestAppSec_ListSecurityPolicies(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetSecurityPolicies(
 				session.ContextWithOptions(
@@ -161,6 +162,7 @@ func TestAppSec_CreateSecurityPolicyWithDefaultProtectionsSuccess(t *testing.T) 
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			_, err := client.CreateSecurityPolicyWithDefaultProtections(
 				session.ContextWithOptions(

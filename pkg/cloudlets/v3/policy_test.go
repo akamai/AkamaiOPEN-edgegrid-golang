@@ -477,6 +477,7 @@ func TestListPolicies(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListPolicies(context.Background(), test.params)
 			if test.withError != nil {
@@ -666,6 +667,7 @@ func TestCreatePolicy(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreatePolicy(context.Background(), test.params)
 			if test.withError != nil {
@@ -710,6 +712,7 @@ func TestDeletePolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeletePolicy(context.Background(), test.params)
 			if test.withError != nil {
@@ -1146,6 +1149,7 @@ func TestGetPolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPolicy(context.Background(), test.params)
 			if test.withError != nil {
@@ -1477,6 +1481,7 @@ func TestUpdatePolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdatePolicy(context.Background(), test.params)
 			if test.withError != nil {
@@ -1811,6 +1816,7 @@ func TestClonePolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ClonePolicy(context.Background(), test.params)
 			if test.withError != nil {

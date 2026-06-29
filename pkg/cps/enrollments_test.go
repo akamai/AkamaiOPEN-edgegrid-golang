@@ -553,6 +553,7 @@ func TestListEnrollments(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListEnrollments(context.Background(), test.params)
 			if test.withError != nil {
@@ -1016,6 +1017,7 @@ func TestGetEnrollment(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEnrollment(context.Background(), test.params)
 			if test.withError != nil {
@@ -1339,6 +1341,7 @@ func TestCreateEnrollment(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateEnrollment(context.Background(), test.request)
 			if test.withError != nil {
@@ -1546,6 +1549,7 @@ func TestUpdateEnrollment(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateEnrollment(context.Background(), test.request)
 			if test.withError != nil {
@@ -1625,6 +1629,7 @@ func TestRemoveEnrollment(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RemoveEnrollment(context.Background(), test.request)
 			if test.withError != nil {

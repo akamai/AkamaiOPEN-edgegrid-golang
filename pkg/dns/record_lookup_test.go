@@ -80,6 +80,7 @@ func TestDNS_GetRecord(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRecord(context.Background(), test.params)
 			if test.withError != nil {
@@ -181,6 +182,7 @@ func TestDNS_GetRecordList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRecordList(context.Background(), test.params)
 			if test.withError != nil {
@@ -299,6 +301,7 @@ func TestDNS_GetRdata(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRdata(context.Background(), test.params)
 			if test.withError != nil {

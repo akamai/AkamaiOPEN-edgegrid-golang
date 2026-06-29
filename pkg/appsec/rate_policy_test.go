@@ -76,6 +76,7 @@ func TestAppSec_ListRatePolicies(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRatePolicies(
 				session.ContextWithOptions(
@@ -153,6 +154,7 @@ func TestAppSec_GetRatePolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRatePolicy(context.Background(), test.params)
 			if test.withError != nil {
@@ -235,6 +237,7 @@ func TestAppSec_CreateRatePolicy(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateRatePolicy(
 				session.ContextWithOptions(
@@ -320,6 +323,7 @@ func TestAppSec_CreateRatePolicy_NegativeMatch(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateRatePolicy(
 				session.ContextWithOptions(
@@ -405,6 +409,7 @@ func TestAppSec_UpdateRatePolicy(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRatePolicy(
 				session.ContextWithOptions(
@@ -491,6 +496,7 @@ func TestAppSec_RemoveRatePolicy(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RemoveRatePolicy(
 				session.ContextWithOptions(

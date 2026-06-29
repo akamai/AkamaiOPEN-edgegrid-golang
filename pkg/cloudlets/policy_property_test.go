@@ -206,6 +206,7 @@ func TestGetPolicyProperties(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPolicyProperties(context.Background(), GetPolicyPropertiesRequest{PolicyID: test.policyID})
 			if test.withError != nil {
@@ -284,6 +285,7 @@ func TestCloudlets_DeletePolicyProperty(t *testing.T) {
 				assert.Equal(t, http.MethodDelete, r.Method)
 				w.WriteHeader(test.responseStatus)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 
 			err := client.DeletePolicyProperty(context.Background(), test.params)

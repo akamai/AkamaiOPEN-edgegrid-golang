@@ -2,6 +2,7 @@ package edgeworkers
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -68,35 +69,128 @@ func TestNewError(t *testing.T) {
 
 func TestIs(t *testing.T) {
 	tests := map[string]struct {
-		err      Error
-		target   Error
+		err      error
+		target   error
 		expected bool
 	}{
 		"different error code": {
-			err:      Error{Status: 404},
-			target:   Error{Status: 401},
+			err:      &Error{Status: 404},
+			target:   &Error{Status: 401},
 			expected: false,
 		},
 		"same error code": {
-			err:      Error{Status: 404},
-			target:   Error{Status: 404},
+			err:      &Error{Status: 404},
+			target:   &Error{Status: 404},
 			expected: true,
 		},
 		"same error code and title": {
-			err:      Error{Status: 404, Title: "some error"},
-			target:   Error{Status: 404, Title: "some error"},
+			err:      &Error{Status: 404, Title: "some error"},
+			target:   &Error{Status: 404, Title: "some error"},
 			expected: true,
 		},
 		"same error code and different error message": {
-			err:      Error{Status: 404, Title: "some error"},
-			target:   Error{Status: 404, Title: "other error"},
+			err:      &Error{Status: 404, Title: "some error"},
+			target:   &Error{Status: 404, Title: "other error"},
 			expected: false,
+		},
+		"ErrNotFound matched by status 404 and EKV_9000": {
+			err:      &Error{Status: http.StatusNotFound, ErrorCode: "EKV_9000"},
+			target:   ErrNotFound,
+			expected: true,
+		},
+		"ErrNotFound not matched when status is 400": {
+			err:      &Error{Status: http.StatusBadRequest, ErrorCode: "EKV_9000"},
+			target:   ErrNotFound,
+			expected: false,
+		},
+		"ErrNamespaceNoScheduledDelete matched by status 400, EKV_9000 and matching detail": {
+			err: &Error{
+				Status:    http.StatusBadRequest,
+				ErrorCode: "EKV_9000",
+				Detail:    "No current scheduled delete for DevExpAutomatedTest-c7OIFc. Must first schedule the delete before modifying it.",
+			},
+			target:   ErrNamespaceNoScheduledDelete,
+			expected: true,
+		},
+		"ErrNamespaceNoScheduledDelete not matched when status is 404": {
+			err: &Error{
+				Status:    http.StatusNotFound,
+				ErrorCode: "EKV_9000",
+				Detail:    "No current scheduled delete for some-namespace.",
+			},
+			target:   ErrNamespaceNoScheduledDelete,
+			expected: false,
+		},
+		"ErrNamespaceNoScheduledDelete not matched when error code differs": {
+			err: &Error{
+				Status:    http.StatusBadRequest,
+				ErrorCode: "EKV_0000",
+				Detail:    "No current scheduled delete for some-namespace.",
+			},
+			target:   ErrNamespaceNoScheduledDelete,
+			expected: false,
+		},
+		"ErrNamespaceNoScheduledDelete not matched when detail does not contain expected substring": {
+			err: &Error{
+				Status:    http.StatusBadRequest,
+				ErrorCode: "EKV_9000",
+				Detail:    "The requested namespace does not exist.",
+			},
+			target:   ErrNamespaceNoScheduledDelete,
+			expected: false,
+		},
+		"ErrNamespaceNotFound matched by status 400, EKV_9000 and exact detail": {
+			err: &Error{
+				Status:    http.StatusBadRequest,
+				ErrorCode: "EKV_9000",
+				Detail:    "The requested namespace does not exist.",
+			},
+			target:   ErrNamespaceNotFound,
+			expected: true,
+		},
+		"ErrNamespaceNotFound not matched when status is 404": {
+			err: &Error{
+				Status:    http.StatusNotFound,
+				ErrorCode: "EKV_9000",
+				Detail:    "The requested namespace does not exist.",
+			},
+			target:   ErrNamespaceNotFound,
+			expected: false,
+		},
+		"ErrNamespaceNotFound not matched when error code differs": {
+			err: &Error{
+				Status:    http.StatusBadRequest,
+				ErrorCode: "EKV_0000",
+				Detail:    "The requested namespace does not exist.",
+			},
+			target:   ErrNamespaceNotFound,
+			expected: false,
+		},
+		"ErrNamespaceNotFound not matched when detail differs": {
+			err: &Error{
+				Status:    http.StatusBadRequest,
+				ErrorCode: "EKV_9000",
+				Detail:    "No current scheduled delete for some-namespace.",
+			},
+			target:   ErrNamespaceNotFound,
+			expected: false,
+		},
+		"ErrVersionBeingDeactivated matched by error code EW1031": {
+			err:      &Error{ErrorCode: "EW1031"},
+			target:   ErrVersionBeingDeactivated,
+			expected: true,
+		},
+		"ErrVersionAlreadyDeactivated matched by error code EW1032": {
+			err:      &Error{ErrorCode: "EW1032"},
+			target:   ErrVersionAlreadyDeactivated,
+			expected: true,
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, test.err.Is(&test.target), test.expected)
+			t.Parallel()
+			assert.Equal(t, test.expected, errors.Is(test.err, test.target))
 		})
 	}
 }

@@ -78,6 +78,7 @@ func TestAppSec_ListRateProtections(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRateProtections(
 				session.ContextWithOptions(
@@ -155,6 +156,7 @@ func TestAppSec_GetRateProtection(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRateProtection(context.Background(), test.params)
 			if test.withError != nil {
@@ -237,6 +239,7 @@ func TestAppSec_UpdateRateProtection(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRateProtection(
 				session.ContextWithOptions(

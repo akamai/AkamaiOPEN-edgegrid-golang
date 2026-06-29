@@ -214,6 +214,7 @@ func TestDeleteEdgeHostname(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteEdgeHostname(context.Background(), test.request)
 			if test.withError != nil {
@@ -393,6 +394,7 @@ func TestGetEdgeHostname(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEdgeHostname(context.Background(), test.edgeHostnameID)
 			if test.withError != nil {
@@ -885,6 +887,7 @@ func TestPatchEdgeHostname(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateEdgeHostname(context.Background(), test.request)
 			if test.withError != nil {
@@ -1011,6 +1014,7 @@ func TestGetCertificate(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCertificate(context.Background(), test.request)
 			if test.withError != nil {

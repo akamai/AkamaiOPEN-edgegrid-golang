@@ -68,6 +68,7 @@ func Test_GetGeneralSettings(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetGeneralSettings(context.Background(), test.params)
 			if test.withError != nil {
@@ -184,6 +185,7 @@ func Test_UpdateAccountProtectionGeneralSettings(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpsertGeneralSettings(
 				session.ContextWithOptions(

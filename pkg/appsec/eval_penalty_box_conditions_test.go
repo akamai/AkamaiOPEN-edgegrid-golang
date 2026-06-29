@@ -102,6 +102,7 @@ func TestAppSec_GetEvalPenaltyBoxConditions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEvalPenaltyBoxConditions(context.Background(), test.params)
 			if test.withError != nil {
@@ -283,6 +284,7 @@ func TestAppsec_UpdateEvalPenaltyBoxConditions(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateEvalPenaltyBoxConditions(
 				session.ContextWithOptions(

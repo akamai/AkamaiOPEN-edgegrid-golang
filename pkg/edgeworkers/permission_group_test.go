@@ -130,6 +130,7 @@ func TestGetPermissionGroup(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPermissionGroup(context.Background(), test.params)
 			if test.withError != nil {
@@ -314,6 +315,7 @@ func TestListPermissionGroups(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListPermissionGroups(context.Background())
 			if test.withError != nil {

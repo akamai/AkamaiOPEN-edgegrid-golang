@@ -116,6 +116,7 @@ func TestIAM_CreateRole(t *testing.T) {
 					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateRole(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -313,6 +314,7 @@ func TestIAM_GetRole(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRole(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -448,6 +450,7 @@ func TestIAM_UpdateRole(t *testing.T) {
 					assert.Equal(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRole(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -524,6 +527,7 @@ func TestIAM_DeleteRole(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteRole(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -616,6 +620,7 @@ func TestIAM_ListRoles(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListRoles(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -694,6 +699,7 @@ func TestIAM_ListGrantableRoles(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListGrantableRoles(context.Background())
 			if tc.withError != nil {

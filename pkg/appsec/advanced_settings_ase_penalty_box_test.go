@@ -76,6 +76,7 @@ func TestApsec_ListAdvancedSettingsAsePenaltyBox(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsAsePenaltyBox(
 				session.ContextWithOptions(
@@ -151,6 +152,7 @@ func TestAppSec_GetAdvancedSettingsAsePenaltyBox(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsAsePenaltyBox(context.Background(), test.params)
 			if test.withError != nil {
@@ -231,6 +233,7 @@ func TestAppSec_UpdateAdvancedSettingsAsePenaltyBox(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsAsePenaltyBox(
 				session.ContextWithOptions(
@@ -314,6 +317,7 @@ func TestAppSec_RemoveAdvancedSettingsAsePenaltyBox(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RemoveAdvancedSettingsAsePenaltyBox(
 				session.ContextWithOptions(

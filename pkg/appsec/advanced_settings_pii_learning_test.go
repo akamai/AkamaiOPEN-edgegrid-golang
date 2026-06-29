@@ -76,6 +76,7 @@ func TestAppsec_GetAdvancedSettingsPIILearning(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsPIILearning(
 				session.ContextWithOptions(context.Background()),
@@ -185,6 +186,7 @@ func TestAppSec_UpdateAdvancedSettingsPIILearning(t *testing.T) {
 					assert.Equal(t, expectedBody, reqBody)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsPIILearning(
 				session.ContextWithOptions(context.Background()),

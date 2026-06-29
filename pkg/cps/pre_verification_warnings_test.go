@@ -74,6 +74,7 @@ func TestGetPreVerificationWarnings(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetChangePreVerificationWarnings(context.Background(), test.params)
 			if test.withError != nil {
@@ -147,6 +148,7 @@ func TestAcknowledgePreVerificationWarnings(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				require.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.AcknowledgePreVerificationWarnings(context.Background(), test.params)
 			if test.withError != nil {

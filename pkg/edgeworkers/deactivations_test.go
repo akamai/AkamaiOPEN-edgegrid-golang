@@ -198,6 +198,7 @@ func TestListDeactivations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 
 			result, err := client.ListDeactivations(context.Background(), test.params)
@@ -393,6 +394,7 @@ func TestEdgeworkers_DeactivateVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 
 			response, err := client.DeactivateVersion(context.Background(), test.params)
@@ -518,6 +520,7 @@ func TestEdgeworkers_GetDeactivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 
 			response, err := client.GetDeactivation(context.Background(), test.request)

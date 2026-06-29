@@ -76,6 +76,7 @@ func TestAppSec_ListSelectedHostnames(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetSelectedHostnames(
 				session.ContextWithOptions(
@@ -151,6 +152,7 @@ func TestAppSec_GetSelectedHostname(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetSelectedHostname(context.Background(), test.params)
 			if test.withError != nil {
@@ -231,6 +233,7 @@ func TestAppSec_UpdateSelectedHostname(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateSelectedHostname(
 				session.ContextWithOptions(
@@ -314,6 +317,7 @@ func TestAppSec_UpdateSelectedHostnames(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateSelectedHostnames(
 				session.ContextWithOptions(

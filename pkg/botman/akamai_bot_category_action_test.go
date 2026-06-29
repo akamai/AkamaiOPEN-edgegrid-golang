@@ -147,6 +147,7 @@ func TestBotman_AkamaiBotCategoryActionList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAkamaiBotCategoryActionList(
 				session.ContextWithOptions(
@@ -269,6 +270,7 @@ func TestBotman_GetAkamaiBotCategoryAction(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAkamaiBotCategoryAction(context.Background(), test.params)
 			if test.withError != nil {
@@ -404,6 +406,7 @@ func TestBotman_UpdateAkamaiBotCategoryAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAkamaiBotCategoryAction(
 				session.ContextWithOptions(

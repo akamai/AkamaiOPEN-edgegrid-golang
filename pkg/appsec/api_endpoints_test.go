@@ -76,6 +76,7 @@ func TestAppSec_ListApiEndpoints(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetApiEndpoints(
 				session.ContextWithOptions(
@@ -151,6 +152,7 @@ func TestAppSec_GetApiEndpoints(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetApiEndpoints(context.Background(), test.params)
 			if test.withError != nil {

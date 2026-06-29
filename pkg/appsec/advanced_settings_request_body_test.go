@@ -76,6 +76,7 @@ func TestAppsecGetAdvancedSettingsRequestBody(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsRequestBody(
 				session.ContextWithOptions(
@@ -143,6 +144,7 @@ func TestAppsecGetAdvancedSettingsRequestBodyValidation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsRequestBody(
 				session.ContextWithOptions(
@@ -219,6 +221,7 @@ func TestAppsecGetAdvancedSettingsRequestBodyPolicy(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsRequestBody(context.Background(), test.params)
 			if test.withError != nil {
@@ -299,6 +302,7 @@ func TestAppsecUpdateAdvancedSettingsRequestBody(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsRequestBody(
 				session.ContextWithOptions(
@@ -404,6 +408,7 @@ func TestAppsecUpdateAdvancedSettingsRequestBodyPolicy(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsRequestBody(
 				session.ContextWithOptions(
@@ -475,6 +480,7 @@ func TestAppsecUpdateAdvancedSettingsRequestBodyPolicyWithInvalidValue(t *testin
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsRequestBody(
 				session.ContextWithOptions(
@@ -540,6 +546,7 @@ func TestAppsecUpdateAdvancedSettingsRequestBodyPolicyWithOverrideUnset(t *testi
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RemoveAdvancedSettingsRequestBody(
 				session.ContextWithOptions(

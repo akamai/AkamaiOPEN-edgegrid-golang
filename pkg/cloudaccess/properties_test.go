@@ -147,6 +147,7 @@ func TestLookupProperties(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.LookupProperties(context.Background(), test.request)
 			if test.withError != nil {
@@ -247,6 +248,7 @@ func TestGetAsyncPropertiesLookupID(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAsyncPropertiesLookupID(context.Background(), test.request)
 			if test.withError != nil {
@@ -373,6 +375,7 @@ func TestPerformAsyncPropertiesLookup(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.PerformAsyncPropertiesLookup(context.Background(), test.request)
 			if test.withError != nil {

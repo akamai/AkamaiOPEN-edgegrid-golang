@@ -78,6 +78,7 @@ func TestAppSec_ListAttackGroup(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAttackGroups(
 				session.ContextWithOptions(
@@ -157,6 +158,7 @@ func TestAppSec_GetAttackGroup(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAttackGroup(context.Background(), test.params)
 			if test.withError != nil {
@@ -241,6 +243,7 @@ func TestAppSec_UpdateAttackGroup(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAttackGroup(
 				session.ContextWithOptions(

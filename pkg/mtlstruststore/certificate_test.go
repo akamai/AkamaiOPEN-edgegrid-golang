@@ -306,6 +306,7 @@ func TestValidateCertificates(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ValidateCertificates(context.Background(), tc.params)
 			if tc.withError != nil {

@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -144,6 +145,7 @@ func TestGetAccessKeyStatus(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAccessKeyStatus(context.Background(), test.params)
 			if test.withError != nil {
@@ -209,6 +211,52 @@ func TestCreateAccessKey(t *testing.T) {
 			expectedResponse: &CreateAccessKeyResponse{
 				RequestID:  195,
 				RetryAfter: 4,
+				Location:   "https://abc.com",
+			},
+			responseHeaders: map[string]string{
+				"Location": "https://abc.com",
+			},
+		},
+		"202 Accepted - G2O": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudAccessKeyID:     "12345678",
+					CloudSecretAccessKey: strings.Repeat("a", 32),
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			expectedPath:   "/cam/v1/access-keys",
+			responseStatus: http.StatusAccepted,
+			responseBody: `
+			{
+				"requestId": 198,
+				"retryAfter": 3
+			}`,
+			expectedRequestBody: `
+			{
+				"accessKeyName": "g2o-key",
+				"authenticationMethod": "G2O",
+				"contractId": "TestContractID",
+				"credentials": 
+					{
+						"cloudAccessKeyId": "12345678",
+						"cloudSecretAccessKey": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+					},
+				"groupId": 123,
+				"networkConfiguration": 
+					{
+						"securityNetwork": "ENHANCED_TLS"
+					}
+			}`,
+			expectedResponse: &CreateAccessKeyResponse{
+				RequestID:  198,
+				RetryAfter: 3,
 				Location:   "https://abc.com",
 			},
 			responseHeaders: map[string]string{
@@ -384,6 +432,94 @@ func TestCreateAccessKey(t *testing.T) {
 				assert.Equal(t, "create an access key: struct validation: AdditionalCDN: must be blank", err.Error())
 			},
 		},
+		"G2O cloudAccessKeyID missing - validation error": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key-no-id",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudSecretAccessKey: strings.Repeat("a", 32),
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create an access key: struct validation: CloudAccessKeyID: cannot be blank", err.Error())
+			},
+		},
+		"G2O cloudSecretAccessKey missing - validation error": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key-no-secret",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudAccessKeyID: "12345678",
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create an access key: struct validation: CloudSecretAccessKey: cannot be blank", err.Error())
+			},
+		},
+		"G2O cloudAccessKeyID too long - validation error": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key-long-id",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudAccessKeyID:     "123456789",
+					CloudSecretAccessKey: "12345678901234567890123456789012",
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create an access key: struct validation: CloudAccessKeyID: the length must be between 1 and 8", err.Error())
+			},
+		},
+		"G2O cloudSecretAccessKey too short - validation error": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key-short-secret",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudAccessKeyID:     "12345678",
+					CloudSecretAccessKey: strings.Repeat("a", 31),
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create an access key: struct validation: CloudSecretAccessKey: the length must be between 32 and 64", err.Error())
+			},
+		},
+		"G2O cloudSecretAccessKey too long - validation error": {
+			accessKey: CreateAccessKeyRequest{
+				AccessKeyName:        "g2o-key-long-secret",
+				AuthenticationMethod: string(AuthG2O),
+				ContractID:           "TestContractID",
+				Credentials: Credentials{
+					CloudAccessKeyID:     "12345678",
+					CloudSecretAccessKey: strings.Repeat("a", 65),
+				},
+				GroupID: 123,
+				NetworkConfiguration: SecureNetwork{
+					SecurityNetwork: NetworkEnhanced,
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.Equal(t, "create an access key: struct validation: CloudSecretAccessKey: the length must be between 32 and 64", err.Error())
+			},
+		},
 		"500 internal server error": {
 			accessKey: CreateAccessKeyRequest{
 				AccessKeyName:        "key1",
@@ -442,6 +578,7 @@ func TestCreateAccessKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateAccessKey(context.Background(), test.accessKey)
 			if test.withError != nil {
@@ -570,6 +707,7 @@ func TestGetAccessKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAccessKey(context.Background(), test.params)
 			if test.withError != nil {
@@ -679,6 +817,7 @@ func TestListAccessKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAccessKeys(context.Background(), test.params)
 			if test.withError != nil {
@@ -749,6 +888,7 @@ func TestDeleteAccessKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteAccessKey(context.Background(), test.params)
 			if test.withError != nil {
@@ -872,6 +1012,7 @@ func TestUpdateAccessKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAccessKey(context.Background(), test.accessKey, test.params)
 			if test.withError != nil {

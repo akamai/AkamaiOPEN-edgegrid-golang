@@ -79,6 +79,7 @@ func TestGTM_ListASMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListASMaps(
 				session.ContextWithOptions(
@@ -161,6 +162,7 @@ func TestGTM_GetASMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetASMap(
 				session.ContextWithOptions(
@@ -252,6 +254,7 @@ func TestGTM_CreateASMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateASMap(
 				session.ContextWithOptions(
@@ -343,6 +346,7 @@ func TestGTM_UpdateASMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateASMap(
 				session.ContextWithOptions(
@@ -434,6 +438,7 @@ func TestGTM_DeleteASMap(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteASMap(
 				session.ContextWithOptions(

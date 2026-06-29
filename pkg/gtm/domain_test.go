@@ -166,6 +166,7 @@ func TestGTM_ListDomains(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListDomains(
 				session.ContextWithOptions(
@@ -250,6 +251,7 @@ func TestGTM_NullFieldMap(t *testing.T) {
 				_, err := w.Write(test.responseBody)
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.NullFieldMap(context.Background(), test.arg)
 			if test.withError != nil {
@@ -321,6 +323,7 @@ func TestGTM_GetDomain(t *testing.T) {
 				_, err := w.Write(test.responseBody)
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetDomain(context.Background(), test.params)
 			if test.withError != nil {
@@ -406,6 +409,7 @@ func TestGTM_CreateDomain(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateDomain(
 				session.ContextWithOptions(
@@ -496,6 +500,7 @@ func TestGTM_UpdateDomain(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateDomain(
 				session.ContextWithOptions(

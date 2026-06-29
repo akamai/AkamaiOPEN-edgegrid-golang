@@ -65,7 +65,9 @@ type (
 
 	// ListItemContent contains client list item information
 	ListItemContent struct {
-		Value            string         `json:"value"`
+		Value            string         `json:"value,omitempty"`
+		Key              string         `json:"key,omitempty"`
+		Values           []string       `json:"values,omitempty"`
 		Username         string         `json:"username,omitempty"`
 		Tags             []string       `json:"tags"`
 		Description      string         `json:"description"`
@@ -82,7 +84,9 @@ type (
 
 	// ListItemPayload contains item's editable fields to use as update/create/delete payload
 	ListItemPayload struct {
-		Value          string   `json:"value"`
+		Value          string   `json:"value,omitempty"`
+		Key            string   `json:"key,omitempty"`
+		Values         []string `json:"values,omitempty"`
 		Tags           []string `json:"tags"`
 		Description    string   `json:"description"`
 		ExpirationDate string   `json:"expirationDate"`
@@ -529,6 +533,8 @@ const (
 	USER ClientListType = "USER_ID"
 	// DOMAIN for domain list type
 	DOMAIN ClientListType = "DOMAIN"
+	// RequestHeaderNameValue for request header name value list type
+	RequestHeaderNameValue ClientListType = "REQUEST_HEADER_NAME_VALUE"
 )
 
 func getValidListTypesAsInterface() []interface{} {
@@ -540,5 +546,6 @@ func getValidListTypesAsInterface() []interface{} {
 		FileHash,
 		USER,
 		DOMAIN,
+		RequestHeaderNameValue,
 	}
 }

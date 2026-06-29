@@ -88,6 +88,7 @@ func TestGTM_ListProperties(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListProperties(
 				session.ContextWithOptions(
@@ -174,6 +175,7 @@ func TestGTM_GetProperty(t *testing.T) {
 				_, err := w.Write(test.responseBody)
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetProperty(context.Background(), test.params)
 			if test.withError != nil {
@@ -937,6 +939,7 @@ func TestGTM_CreateProperty(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateProperty(
 				session.ContextWithOptions(
@@ -1320,6 +1323,7 @@ func TestGTM_UpdateProperty(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateProperty(
 				session.ContextWithOptions(
@@ -1412,6 +1416,7 @@ func TestGTM_DeleteProperty(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteProperty(
 				session.ContextWithOptions(

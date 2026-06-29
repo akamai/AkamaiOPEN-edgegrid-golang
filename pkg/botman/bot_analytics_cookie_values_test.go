@@ -76,6 +76,7 @@ func TestBotman_GetBotAnalyticsCookieValues(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetBotAnalyticsCookieValues(
 				session.ContextWithOptions(

@@ -78,6 +78,7 @@ func TestAppSec_ListRuleUpgrade(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRuleUpgrade(
 				session.ContextWithOptions(
@@ -155,6 +156,7 @@ func TestAppSec_GetRuleUpgrade(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRuleUpgrade(context.Background(), test.params)
 			if test.withError != nil {
@@ -237,6 +239,7 @@ func TestAppSec_UpdateRuleUpgrade(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRuleUpgrade(
 				session.ContextWithOptions(

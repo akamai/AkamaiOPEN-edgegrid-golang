@@ -89,6 +89,7 @@ func TestBotman_GetCustomClientSequence(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomClientSequence(context.Background(), test.params)
 			if test.withError != nil {
@@ -202,6 +203,7 @@ func TestBotman_UpdateCustomClientSequence(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCustomClientSequence(
 				session.ContextWithOptions(

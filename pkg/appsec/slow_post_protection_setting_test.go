@@ -78,6 +78,7 @@ func TestAppSec_ListSlowPostProtectionSettings(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetSlowPostProtectionSettings(
 				session.ContextWithOptions(
@@ -165,6 +166,7 @@ func TestAppSec_UpdateSlowPostProtectionSetting(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateSlowPostProtectionSetting(
 				session.ContextWithOptions(

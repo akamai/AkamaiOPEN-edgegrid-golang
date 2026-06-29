@@ -75,6 +75,7 @@ func TestDNS_GetBulkZoneCreateStatus(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetBulkZoneCreateStatus(context.Background(), test.params)
 			if test.withError != nil {
@@ -154,6 +155,7 @@ func TestDNS_GetBulkZoneCreateResult(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetBulkZoneCreateResult(context.Background(), test.params)
 			if test.withError != nil {
@@ -267,6 +269,7 @@ func TestDNS_CreateBulkZones(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateBulkZones(context.Background(), test.params)
 			if test.withError != nil {
@@ -343,6 +346,7 @@ func TestDNS_GetBulkZoneDeleteStatus(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetBulkZoneDeleteStatus(context.Background(), test.params)
 			if test.withError != nil {
@@ -422,6 +426,7 @@ func TestDNS_GetBulkZoneDeleteResult(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetBulkZoneDeleteResult(context.Background(), test.params)
 			if test.withError != nil {
@@ -497,6 +502,7 @@ func TestDNS_DeleteBulkZones(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteBulkZones(context.Background(), test.params)
 			if test.withError != nil {

@@ -212,6 +212,7 @@ func TestListDeployments(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListDeployments(context.Background(), test.params)
 			if test.withError != nil {
@@ -356,6 +357,7 @@ func TestGetProductionDeployment(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetProductionDeployment(context.Background(), test.params)
 			if test.withError != nil {
@@ -501,6 +503,7 @@ func TestGetStagingDeployment(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetStagingDeployment(context.Background(), test.params)
 			if test.withError != nil {

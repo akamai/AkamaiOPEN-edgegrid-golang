@@ -162,6 +162,7 @@ func TestGetLoadBalancerActivations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListLoadBalancerActivations(context.Background(), test.params)
 			if test.withError != nil {
@@ -274,6 +275,7 @@ func TestActivateLoadBalancerVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivateLoadBalancerVersion(context.Background(), test.params)
 			if test.withError != nil {

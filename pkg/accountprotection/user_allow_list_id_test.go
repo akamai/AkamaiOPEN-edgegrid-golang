@@ -66,6 +66,7 @@ func Test_GetUserAllowListID(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetUserAllowListID(context.Background(), test.params)
 			if test.withError != nil {
@@ -166,6 +167,7 @@ func Test_UpsertUserAllowListID(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpsertUserAllowListID(
 				session.ContextWithOptions(
@@ -253,6 +255,7 @@ func Test_DeleteUserAllowListID(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteUserAllowListID(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

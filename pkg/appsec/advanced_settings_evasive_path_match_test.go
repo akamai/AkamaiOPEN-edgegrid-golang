@@ -76,6 +76,7 @@ func TestApsec_ListAdvancedSettingsEvasivePathMatch(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsEvasivePathMatch(
 				session.ContextWithOptions(
@@ -151,6 +152,7 @@ func TestAppSec_GetAdvancedSettingsEvasivePathmatch(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsEvasivePathMatch(context.Background(), test.params)
 			if test.withError != nil {
@@ -231,6 +233,7 @@ func TestAppSec_UpdateAdvancedSettingsEvasivePathMatch(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsEvasivePathMatch(
 				session.ContextWithOptions(

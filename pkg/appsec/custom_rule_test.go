@@ -75,6 +75,7 @@ func TestAppSec_ListCustomRules(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomRules(
 				session.ContextWithOptions(
@@ -150,6 +151,7 @@ func TestAppSec_GetCustomRule(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomRule(context.Background(), test.params)
 			if test.withError != nil {
@@ -230,6 +232,7 @@ func TestAppSec_CreateCustomRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCustomRule(
 				session.ContextWithOptions(
@@ -313,6 +316,7 @@ func TestAppSec_UpdateCustomRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCustomRule(
 				session.ContextWithOptions(
@@ -397,6 +401,7 @@ func TestAppSec_RemoveCustomRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RemoveCustomRule(
 				session.ContextWithOptions(
@@ -556,6 +561,7 @@ func TestAppSec_GetCustomRuleUsage(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomRulesUsage(
 				session.ContextWithOptions(

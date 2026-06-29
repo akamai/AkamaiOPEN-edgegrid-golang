@@ -78,6 +78,7 @@ func TestAppSec_ListRule(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRules(
 				session.ContextWithOptions(
@@ -157,6 +158,7 @@ func TestAppSec_GetRule(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRule(context.Background(), test.params)
 			if test.withError != nil {
@@ -234,6 +236,7 @@ func TestAppSec_UpdateRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRule(
 				session.ContextWithOptions(
@@ -314,6 +317,7 @@ func TestAppSec_UpdateRuleConditionException(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRuleConditionException(
 				session.ContextWithOptions(
@@ -394,6 +398,7 @@ func TestAppSec_UpdateRuleAdvancedConditionException(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRuleConditionException(
 				session.ContextWithOptions(

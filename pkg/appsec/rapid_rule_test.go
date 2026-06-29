@@ -150,6 +150,7 @@ func TestAppSec_ListRapidRule(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRapidRules(
 				session.ContextWithOptions(
@@ -271,6 +272,7 @@ func TestAppSec_GetRapidRulesDefaultAction(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRapidRulesDefaultAction(
 				session.ContextWithOptions(
@@ -392,6 +394,7 @@ func TestAppSec_GetRapidRulesStatus(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetRapidRulesStatus(
 				session.ContextWithOptions(
@@ -554,6 +557,7 @@ func TestAppSec_UpdateRapidRulesStatus(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRapidRulesStatus(
 				session.ContextWithOptions(
@@ -714,6 +718,7 @@ func TestAppSec_UpdateRapidRulesDefaultAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRapidRulesDefaultAction(
 				session.ContextWithOptions(
@@ -895,6 +900,7 @@ func TestAppSec_UpdateRapidRuleActionLock(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRapidRuleActionLock(
 				session.ContextWithOptions(
@@ -1100,6 +1106,7 @@ func TestAppSec_UpdateRapidRuleAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRapidRuleAction(
 				session.ContextWithOptions(
@@ -1279,6 +1286,7 @@ func TestAppSec_UpdateRapidRuleException(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateRapidRuleException(
 				session.ContextWithOptions(

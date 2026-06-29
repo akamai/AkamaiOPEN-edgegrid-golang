@@ -76,6 +76,7 @@ func TestAppSec_ListConfigurationVersionClone(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetConfigurationVersionClone(
 				session.ContextWithOptions(
@@ -151,6 +152,7 @@ func TestAppSec_GetConfigurationVersionClone(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetConfigurationVersionClone(context.Background(), test.params)
 			if test.withError != nil {
@@ -234,6 +236,7 @@ func TestAppSec_CreateConfigurationVersionClone(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateConfigurationVersionClone(
 				session.ContextWithOptions(

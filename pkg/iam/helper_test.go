@@ -176,6 +176,7 @@ func TestIAM_ListAllowedCPCodes(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAllowedCPCodes(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -277,6 +278,7 @@ func TestIAM_ListAuthorizedUsers(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAuthorizedUsers(context.Background())
 			if tc.withError != nil {
@@ -467,6 +469,7 @@ func TestIAM_ListAllowedAPIs(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAllowedAPIs(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -591,6 +594,7 @@ func TestIAM_AccessibleGroups(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAccessibleGroups(context.Background(), tc.params)
 			if tc.withError != nil {

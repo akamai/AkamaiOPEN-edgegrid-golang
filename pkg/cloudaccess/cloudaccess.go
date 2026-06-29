@@ -151,6 +151,8 @@ const (
 	AuthAWS AuthType = "AWS4_HMAC_SHA256"
 	// AuthGOOG represents Authentication value of "GOOG4_HMAC_SHA256"
 	AuthGOOG AuthType = "GOOG4_HMAC_SHA256"
+	// AuthG2O represents Authentication value of "G2O" (Akamai Signature Header Authentication)
+	AuthG2O AuthType = "G2O"
 	// AuthAOS represents Authentication value of Akamai Object Storage "AOS4_HMAC_SHA256"
 	AuthAOS AuthType = "AOS4_HMAC_SHA256"
 	// AuthAVMCloudinary represents Authentication value of Akamai Video Manager Cloudinary "AVM_CLOUDINARY"

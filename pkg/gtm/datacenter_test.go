@@ -78,6 +78,7 @@ func TestGTM_ListDatacenters(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListDatacenters(
 				session.ContextWithOptions(
@@ -159,6 +160,7 @@ func TestGTM_GetDatacenter(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetDatacenter(
 				session.ContextWithOptions(
@@ -250,6 +252,7 @@ func TestGTM_CreateDatacenter(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateDatacenter(
 				session.ContextWithOptions(
@@ -335,6 +338,7 @@ func TestGTM_CreateMapsDefaultDatacenter(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateMapsDefaultDatacenter(
 				session.ContextWithOptions(
@@ -420,6 +424,7 @@ func TestGTM_CreateIPv4DefaultDatacenter(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateIPv4DefaultDatacenter(
 				session.ContextWithOptions(
@@ -505,6 +510,7 @@ func TestGTM_CreateIPv6DefaultDatacenter(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateIPv6DefaultDatacenter(
 				session.ContextWithOptions(
@@ -596,6 +602,7 @@ func TestGTM_UpdateDatacenter(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateDatacenter(
 				session.ContextWithOptions(
@@ -687,6 +694,7 @@ func TestGTM_DeleteDatacenter(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteDatacenter(
 				session.ContextWithOptions(

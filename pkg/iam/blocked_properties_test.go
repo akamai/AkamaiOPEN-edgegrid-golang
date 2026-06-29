@@ -108,6 +108,7 @@ func TestIAM_ListBlockedProperties(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.ListBlockedProperties(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -236,6 +237,7 @@ func TestIAM_UpdateBlockedProperties(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.UpdateBlockedProperties(context.Background(), tc.params)
 			if tc.withError != nil {

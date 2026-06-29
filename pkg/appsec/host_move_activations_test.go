@@ -129,6 +129,7 @@ func TestAppSec_GetHostMoveValidation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetHostMoveValidation(
 				session.ContextWithOptions(
@@ -348,6 +349,7 @@ func TestAppSec_CreateActivationsWithHostMove(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateActivationsWithHostMove(
 				session.ContextWithOptions(

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -29,12 +30,14 @@ type (
 		NotificationEmails    []string              `json:"notificationEmails"`
 		ProductID             string                `json:"productId"`
 		Properties            []Property            `json:"properties"`
+		AppSecConfigs         []AppSecConfig        `json:"appSecConfigs"`
 		StreamID              int64                 `json:"streamId"`
 		StreamName            string                `json:"streamName"`
 		StreamVersion         int64                 `json:"streamVersion"`
 		StreamStatus          StreamStatus          `json:"streamStatus"`
 		IntegrationType       string                `json:"integrationType"`
 		SamplingPercentage    int                   `json:"samplingPercentage"`
+		LogType               LogType               `json:"-"`
 	}
 
 	// Destination provides detailed information about the destination’s configuration in the stream
@@ -67,12 +70,13 @@ type (
 	StreamConfiguration struct {
 		ContractID            string                `json:"contractId"`
 		CollectMidgress       bool                  `json:"collectMidgress,omitempty"`
-		DatasetFields         []DatasetFieldID      `json:"datasetFields"`
+		DatasetFields         []DatasetFieldID      `json:"datasetFields,omitempty"`
 		Destination           AbstractConnector     `json:"destination"`
 		DeliveryConfiguration DeliveryConfiguration `json:"deliveryConfiguration"`
 		GroupID               int                   `json:"groupId,omitempty"`
 		NotificationEmails    []string              `json:"notificationEmails,omitempty"`
-		Properties            []PropertyID          `json:"properties"`
+		Properties            []PropertyID          `json:"properties,omitempty"`
+		AppSecConfigs         []AppSecConfigID      `json:"appSecConfigs,omitempty"`
 		StreamName            string                `json:"streamName"`
 		SamplingPercentage    int                   `json:"samplingPercentage,omitempty"`
 	}
@@ -117,9 +121,20 @@ type (
 		IntegrationType string `json:"integrationType"`
 	}
 
+	// AppSecConfig holds the AppSec configuration associated with a stream.
+	AppSecConfig struct {
+		AppSecID   int    `json:"appSecId"`
+		AppSecName string `json:"appSecName"`
+	}
+
 	// PropertyID identifies property details required in the create stream request.
 	PropertyID struct {
 		PropertyID int `json:"propertyId"`
+	}
+
+	// AppSecConfigID identifies AppSec config details required in the create stream request.
+	AppSecConfigID struct {
+		AppSecID int `json:"appSecId"`
 	}
 
 	// StreamStatus is used to create an enum of possible StreamStatus values
@@ -144,12 +159,14 @@ type (
 	CreateStreamRequest struct {
 		StreamConfiguration StreamConfiguration
 		Activate            bool
+		LogType             LogType
 	}
 
 	// GetStreamRequest is passed to GetStream
 	GetStreamRequest struct {
 		StreamID int64
 		Version  *int64
+		LogType  LogType
 	}
 
 	// UpdateStreamRequest is passed to UpdateStream
@@ -157,6 +174,7 @@ type (
 		StreamID            int64
 		StreamConfiguration StreamConfiguration
 		Activate            bool
+		LogType             LogType
 	}
 
 	// StreamUpdate contains information about stream ID and version
@@ -168,31 +186,45 @@ type (
 	// DeleteStreamRequest is passed to DeleteStream
 	DeleteStreamRequest struct {
 		StreamID int64
+		LogType  LogType
 	}
 
 	// ListStreamsRequest is passed to ListStreams
 	ListStreamsRequest struct {
 		GroupID *int
+		LogType LogType
 	}
 
 	// StreamDetails contains information about stream
 	StreamDetails struct {
-		ContractID         string       `json:"contractId"`
-		CreatedBy          string       `json:"createdBy"`
-		CreatedDate        string       `json:"createdDate"`
-		GroupID            int          `json:"groupId"`
-		LatestVersion      int64        `json:"latestVersion"`
-		ModifiedBy         string       `json:"modifiedBy"`
-		ModifiedDate       string       `json:"modifiedDate"`
-		Properties         []Property   `json:"properties"`
-		ProductID          string       `json:"productId"`
-		StreamID           int64        `json:"streamId"`
-		StreamName         string       `json:"streamName"`
-		StreamStatus       StreamStatus `json:"streamStatus"`
-		StreamVersion      int64        `json:"streamVersion"`
-		IntegrationType    string       `json:"integrationType"`
-		SamplingPercentage int          `json:"samplingPercentage"`
+		ContractID         string         `json:"contractId"`
+		CreatedBy          string         `json:"createdBy"`
+		CreatedDate        string         `json:"createdDate"`
+		GroupID            int            `json:"groupId"`
+		LatestVersion      int64          `json:"latestVersion"`
+		ModifiedBy         string         `json:"modifiedBy"`
+		ModifiedDate       string         `json:"modifiedDate"`
+		Properties         []Property     `json:"properties"`
+		ProductID          string         `json:"productId"`
+		StreamID           int64          `json:"streamId"`
+		StreamName         string         `json:"streamName"`
+		StreamStatus       StreamStatus   `json:"streamStatus"`
+		StreamVersion      int64          `json:"streamVersion"`
+		IntegrationType    string         `json:"integrationType"`
+		SamplingPercentage int            `json:"samplingPercentage"`
+		LogType            LogType        `json:"-"`
+		AppSecConfigs      []AppSecConfig `json:"appSecConfigs"`
 	}
+
+	// LogType enumeration
+	LogType string
+)
+
+const (
+	// LogTypeCDN is the log type for CDN streams.
+	LogTypeCDN LogType = "CDN"
+	// LogTypeAppSec is the log type for AppSec streams.
+	LogTypeAppSec LogType = "APPSEC"
 )
 
 const (
@@ -221,6 +253,19 @@ const (
 	IntervalInSeconds60 IntervalInSeconds = 60
 )
 
+// ToPathValue converts the LogType enum to the lowercase string used in URL paths.
+func (logType LogType) ToPathValue() string {
+	return strings.ToLower(string(logType))
+}
+
+// Validate validates ListStreamsRequest.
+func (r ListStreamsRequest) Validate() error {
+	return validation.Errors{
+		// check that the LogType field is not empty and is a valid value.
+		"LogType": validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
+	}.Filter()
+}
+
 // Validate validates CreateStreamRequest
 func (r CreateStreamRequest) Validate() error {
 	return validation.Errors{
@@ -231,11 +276,13 @@ func (r CreateStreamRequest) Validate() error {
 		"StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds": validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds, validation.Required, validation.In(IntervalInSeconds30, IntervalInSeconds60)),
 		"StreamConfiguration.Destination":                                       validation.Validate(r.StreamConfiguration.Destination, validation.Required),
 		"StreamConfiguration.ContractId":                                        validation.Validate(r.StreamConfiguration.ContractID, validation.Required),
-		"StreamConfiguration.DatasetFields":                                     validation.Validate(r.StreamConfiguration.DatasetFields, validation.Required),
+		"StreamConfiguration.DatasetFields":                                     validation.Validate(r.StreamConfiguration.DatasetFields, validation.When(r.LogType == LogTypeCDN, validation.Required), validation.When(r.LogType == LogTypeAppSec, validation.Empty)),
 		"StreamConfiguration.GroupID":                                           validation.Validate(r.StreamConfiguration.GroupID, validation.Required, validation.Min(1)),
-		"StreamConfiguration.Properties":                                        validation.Validate(r.StreamConfiguration.Properties, validation.Required),
+		"StreamConfiguration.Properties":                                        validation.Validate(r.StreamConfiguration.Properties, validation.When(r.LogType == LogTypeCDN, validation.Required)),
+		"StreamConfiguration.AppSecConfigs":                                     validation.Validate(r.StreamConfiguration.AppSecConfigs, validation.When(r.LogType == LogTypeAppSec, validation.Required)),
 		"StreamConfiguration.StreamName":                                        validation.Validate(r.StreamConfiguration.StreamName, validation.Required),
 		"StreamConfiguration.SamplingPercentage":                                validation.Validate(r.StreamConfiguration.SamplingPercentage, validation.When(r.StreamConfiguration.SamplingPercentage != 0, validation.Min(1), validation.Max(100))),
+		"LogType":                                                               validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
 	}.Filter()
 }
 
@@ -243,6 +290,7 @@ func (r CreateStreamRequest) Validate() error {
 func (r GetStreamRequest) Validate() error {
 	return validation.Errors{
 		"streamId": validation.Validate(r.StreamID, validation.Required),
+		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
 	}.Filter()
 }
 
@@ -256,11 +304,13 @@ func (r UpdateStreamRequest) Validate() error {
 		"StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds": validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds, validation.Required, validation.In(IntervalInSeconds30, IntervalInSeconds60)),
 		"StreamConfiguration.Destination":                                       validation.Validate(r.StreamConfiguration.Destination, validation.Required),
 		"StreamConfiguration.ContractId":                                        validation.Validate(r.StreamConfiguration.ContractID, validation.Required),
-		"StreamConfiguration.DatasetFields":                                     validation.Validate(r.StreamConfiguration.DatasetFields, validation.Required),
+		"StreamConfiguration.DatasetFields":                                     validation.Validate(r.StreamConfiguration.DatasetFields, validation.When(r.LogType == LogTypeCDN, validation.Required), validation.When(r.LogType == LogTypeAppSec, validation.Empty)),
 		"StreamConfiguration.GroupID":                                           validation.Validate(r.StreamConfiguration.GroupID, validation.In(0)),
-		"StreamConfiguration.Properties":                                        validation.Validate(r.StreamConfiguration.Properties, validation.Required),
+		"StreamConfiguration.Properties":                                        validation.Validate(r.StreamConfiguration.Properties, validation.When(r.LogType == LogTypeCDN, validation.Required)),
+		"StreamConfiguration.AppSecConfigs":                                     validation.Validate(r.StreamConfiguration.AppSecConfigs, validation.When(r.LogType == LogTypeAppSec, validation.Required)),
 		"StreamConfiguration.StreamName":                                        validation.Validate(r.StreamConfiguration.StreamName, validation.Required),
 		"StreamConfiguration.SamplingPercentage":                                validation.Validate(r.StreamConfiguration.SamplingPercentage, validation.When(r.StreamConfiguration.SamplingPercentage != 0, validation.Min(1), validation.Max(100))),
+		"LogType":                                                               validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
 	}.Filter()
 }
 
@@ -268,6 +318,7 @@ func (r UpdateStreamRequest) Validate() error {
 func (r DeleteStreamRequest) Validate() error {
 	return validation.Errors{
 		"streamId": validation.Validate(r.StreamID, validation.Required),
+		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
 	}.Filter()
 }
 
@@ -293,7 +344,7 @@ func (d *ds) CreateStream(ctx context.Context, params CreateStreamRequest) (*Det
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateStream, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/datastream-config-api/v3/log/cdn/streams")
+	uri, err := url.Parse(fmt.Sprintf("/datastream-config-api/v3/log/%s/streams", params.LogType.ToPathValue()))
 	if err != nil {
 		return nil, fmt.Errorf("%w: parsing URL: %s", ErrCreateStream, err)
 	}
@@ -318,6 +369,9 @@ func (d *ds) CreateStream(ctx context.Context, params CreateStreamRequest) (*Det
 		return nil, fmt.Errorf("%s: %w", ErrCreateStream, d.Error(resp))
 	}
 
+	// echo the log type back in the response since the API does not return it.
+	rval.LogType = params.LogType
+
 	return &rval, nil
 }
 
@@ -329,9 +383,8 @@ func (d *ds) GetStream(ctx context.Context, params GetStreamRequest) (*DetailedS
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetStream, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v3/log/cdn/streams/%d",
-		params.StreamID))
+	path := fmt.Sprintf("/datastream-config-api/v3/log/%s/streams/%d", params.LogType.ToPathValue(), params.StreamID)
+	uri, err := url.Parse(path)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetStream, err)
 	}
@@ -358,6 +411,9 @@ func (d *ds) GetStream(ctx context.Context, params GetStreamRequest) (*DetailedS
 		return nil, fmt.Errorf("%s: %w", ErrGetStream, d.Error(resp))
 	}
 
+	// propagate log type to stream details since GetStreamRequest requires log type and the API does not return it
+	rval.LogType = params.LogType
+
 	return &rval, nil
 }
 
@@ -370,8 +426,8 @@ func (d *ds) UpdateStream(ctx context.Context, params UpdateStreamRequest) (*Det
 		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateStream, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/datastream-config-api/v3/log/cdn/streams/%d", params.StreamID))
-
+	path := fmt.Sprintf("/datastream-config-api/v3/log/%s/streams/%d", params.LogType.ToPathValue(), params.StreamID)
+	uri, err := url.Parse(path)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateStream, err)
 	}
@@ -396,6 +452,9 @@ func (d *ds) UpdateStream(ctx context.Context, params UpdateStreamRequest) (*Det
 		return nil, fmt.Errorf("%s: %w", ErrUpdateStream, d.Error(resp))
 	}
 
+	// echo the log type back in the response since the API does not return it.
+	rval.LogType = params.LogType
+
 	return &rval, nil
 }
 
@@ -408,8 +467,8 @@ func (d *ds) DeleteStream(ctx context.Context, params DeleteStreamRequest) error
 	}
 
 	uri, err := url.Parse(fmt.Sprintf(
-		"/datastream-config-api/v3/log/cdn/streams/%d",
-		params.StreamID),
+		"/datastream-config-api/v3/log/%s/streams/%d",
+		params.LogType.ToPathValue(), params.StreamID),
 	)
 	if err != nil {
 		return fmt.Errorf("%w: failed to parse url: %s", ErrDeleteStream, err)
@@ -437,7 +496,12 @@ func (d *ds) ListStreams(ctx context.Context, params ListStreamsRequest) ([]Stre
 	logger := d.Log(ctx)
 	logger.Debug("ListStreams")
 
-	uri, err := url.Parse("/datastream-config-api/v3/log/cdn/streams")
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListStreams, ErrStructValidation, err)
+	}
+
+	path := fmt.Sprintf("/datastream-config-api/v3/log/%s/streams", params.LogType.ToPathValue())
+	uri, err := url.Parse(path)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListStreams, err)
 	}
@@ -462,6 +526,11 @@ func (d *ds) ListStreams(ctx context.Context, params ListStreamsRequest) ([]Stre
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("%s: %w", ErrListStreams, d.Error(resp))
+	}
+
+	// propagate log type to stream details since ListStreamsRequest requires log type and the API does not return it
+	for i := range result {
+		result[i].LogType = params.LogType
 	}
 
 	return result, nil

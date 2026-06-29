@@ -116,6 +116,7 @@ func TestGetChangeLetsEncryptChallenges(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetChangeLetsEncryptChallenges(context.Background(), test.params)
 			if test.withError != nil {
@@ -189,6 +190,7 @@ func TestAcknowledgeDVChallenges(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				require.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.AcknowledgeDVChallenges(context.Background(), test.params)
 			if test.withError != nil {

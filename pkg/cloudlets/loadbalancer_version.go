@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -232,18 +232,15 @@ func (c *cloudlets) CreateLoadBalancerVersion(ctx context.Context, params Create
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateLoadBalancerVersion, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/versions", params.OriginID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateLoadBalancerVersion, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/cloudlets/api/v2/origins/%s/versions", params.OriginID).
+		WithBody(params.LoadBalancerVersion).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateLoadBalancerVersion, err)
 	}
 
 	var result LoadBalancerVersion
-	resp, err := c.Exec(req, &result, params.LoadBalancerVersion)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateLoadBalancerVersion, err)
 	}
@@ -264,18 +261,9 @@ func (c *cloudlets) GetLoadBalancerVersion(ctx context.Context, params GetLoadBa
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetLoadBalancerVersion, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/versions/%d", params.OriginID, params.Version))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetLoadBalancerVersion, err)
-	}
-
-	if params.ShouldValidate {
-		q := uri.Query()
-		q.Add("validate", "true")
-		uri.RawQuery = q.Encode()
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/api/v2/origins/%s/versions/%d", params.OriginID, params.Version).
+		AddQueryParamIf("validate", "true", params.ShouldValidate).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetLoadBalancerVersion, err)
 	}
@@ -302,24 +290,16 @@ func (c *cloudlets) UpdateLoadBalancerVersion(ctx context.Context, params Update
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateLoadBalancerVersion, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/versions/%d", params.OriginID, params.Version))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateLoadBalancerVersion, err)
-	}
-
-	if params.ShouldValidate {
-		q := uri.Query()
-		q.Add("validate", "true")
-		uri.RawQuery = q.Encode()
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/cloudlets/api/v2/origins/%s/versions/%d", params.OriginID, params.Version).
+		AddQueryParamIf("validate", "true", params.ShouldValidate).
+		WithBody(params.LoadBalancerVersion).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateLoadBalancerVersion, err)
 	}
 
 	var result LoadBalancerVersion
-	resp, err := c.Exec(req, &result, params.LoadBalancerVersion)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateLoadBalancerVersion, err)
 	}
@@ -340,12 +320,9 @@ func (c *cloudlets) ListLoadBalancerVersions(ctx context.Context, params ListLoa
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListLoadBalancerVersions, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/versions?includeModel=true", params.OriginID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListLoadBalancerVersions, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/api/v2/origins/%s/versions", params.OriginID).
+		AddQueryParam("includeModel", "true").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListLoadBalancerVersions, err)
 	}

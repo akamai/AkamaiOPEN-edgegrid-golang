@@ -225,6 +225,7 @@ func TestAppSec_GetIPGeo(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetIPGeo(context.Background(), test.params)
 			if test.withError != nil {
@@ -461,6 +462,7 @@ func TestAppSec_UpdateIPGeo(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateIPGeo(
 				session.ContextWithOptions(

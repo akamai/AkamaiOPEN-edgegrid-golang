@@ -212,6 +212,7 @@ func TestGetSummaryReport(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetSummaryReport(context.Background(), test.params)
 			if test.withError != nil {
@@ -1127,6 +1128,7 @@ func TestGetReport(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetReport(context.Background(), test.params)
 			if test.withError != nil {
@@ -1267,6 +1269,7 @@ func TestListReports(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListReports(context.Background())
 			if test.withError != nil {

@@ -3,9 +3,11 @@ package request
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"reflect"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
@@ -792,6 +794,84 @@ func TestRequestBuilder_UseCommaSeparatedQuery(t *testing.T) {
 			assert.Equal(t, tt.expectedPath, httpReq.URL.String())
 			assert.Equal(t, http.MethodPatch, httpReq.Method)
 			assert.Equal(t, ctx, httpReq.Context())
+		})
+	}
+}
+
+func TestRequestBuilder_WithBody(t *testing.T) {
+	t.Parallel()
+
+	type bodyStruct struct {
+		Name  string `json:"name"`
+		Value int    `json:"value"`
+	}
+
+	tests := map[string]struct {
+		body          any
+		expectedBody  string
+		expectedNil   bool
+		expectedError error
+	}{
+		"POST with struct body": {
+			body:         bodyStruct{Name: "test", Value: 42},
+			expectedBody: `{"name":"test","value":42}`,
+		},
+		"POST with map body": {
+			body:         map[string]string{"key": "value"},
+			expectedBody: `{"key":"value"}`,
+		},
+		"POST with slice body": {
+			body:         []int{1, 2, 3},
+			expectedBody: `[1,2,3]`,
+		},
+		"POST without body - nil body": {
+			body:        nil,
+			expectedNil: true,
+		},
+		"POST with body that cannot be marshaled": {
+			body:          make(chan int),
+			expectedError: fmt.Errorf("failed to marshal request body"),
+		},
+		"POST with []byte body - used as-is, no JSON marshaling": {
+			body:         []byte(`{"raw":"bytes"}`),
+			expectedBody: `{"raw":"bytes"}`,
+		},
+		"POST with io.Reader body - used as-is, no JSON marshaling": {
+			body:         strings.NewReader(`{"raw":"reader"}`),
+			expectedBody: `{"raw":"reader"}`,
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			ctx := context.Background()
+			req := NewPost(ctx, "/test/path")
+			if tt.body != nil {
+				req = req.WithBody(tt.body)
+			}
+
+			httpReq, err := req.Build()
+
+			if tt.expectedError != nil {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.expectedError.Error())
+				return
+			}
+
+			require.NoError(t, err)
+
+			if tt.expectedNil {
+				assert.Nil(t, httpReq.Body)
+				assert.Equal(t, int64(0), httpReq.ContentLength)
+				return
+			}
+
+			require.NotNil(t, httpReq.Body)
+			data, err := io.ReadAll(httpReq.Body)
+			require.NoError(t, err)
+			assert.JSONEq(t, tt.expectedBody, string(data))
+			assert.Equal(t, int64(len(data)), httpReq.ContentLength)
 		})
 	}
 }

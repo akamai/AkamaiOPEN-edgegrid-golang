@@ -66,6 +66,7 @@ func TestApsec_ListActivations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetActivations(
 				session.ContextWithOptions(
@@ -131,6 +132,7 @@ func TestAppSec_GetActivations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetActivations(context.Background(), test.params)
 			if test.withError != nil {

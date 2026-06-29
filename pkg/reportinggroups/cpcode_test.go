@@ -122,6 +122,7 @@ func TestGetCPCodesWaterMarkLimits(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCPCodesWaterMarkLimits(context.Background(), tc.params)
 
@@ -361,6 +362,7 @@ func TestListCPCodes(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListCPCodes(context.Background(), tc.params)
 
@@ -624,6 +626,7 @@ func TestGetCPCode(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCPCode(context.Background(), tc.params)
 
@@ -1074,6 +1077,7 @@ func TestUpdateCPCode(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCPCode(context.Background(), tc.params)
 

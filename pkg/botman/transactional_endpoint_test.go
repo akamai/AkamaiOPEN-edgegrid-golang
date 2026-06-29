@@ -146,6 +146,7 @@ func TestBotman_GetTransactionalEndpointList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetTransactionalEndpointList(
 				session.ContextWithOptions(
@@ -268,6 +269,7 @@ func TestBotman_GetTransactionalEndpoint(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetTransactionalEndpoint(context.Background(), test.params)
 			if test.withError != nil {
@@ -378,6 +380,7 @@ func TestBotman_CreateTransactionalEndpoint(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateTransactionalEndpoint(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -517,6 +520,7 @@ func TestBotman_UpdateTransactionalEndpoint(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateTransactionalEndpoint(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -635,6 +639,7 @@ func TestBotman_RemoveTransactionalEndpoint(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveTransactionalEndpoint(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

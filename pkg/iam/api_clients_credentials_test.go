@@ -134,6 +134,7 @@ func TestIAM_CreateCredential(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			response, err := client.CreateCredential(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -325,6 +326,7 @@ func TestIAM_ListCredentials(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			response, err := client.ListCredentials(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -482,6 +484,7 @@ func TestIAM_GetCredential(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			response, err := client.GetCredential(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -698,6 +701,7 @@ func TestIAM_UpdateCredential(t *testing.T) {
 					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			response, err := client.UpdateCredential(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -799,6 +803,7 @@ func TestIAM_DeleteCredential(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteCredential(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -899,6 +904,7 @@ func TestIAM_DeactivateCredential(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeactivateCredential(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -986,6 +992,7 @@ func TestIAM_DeactivateCredentials(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeactivateCredentials(context.Background(), tc.params)
 			if tc.withError != nil {

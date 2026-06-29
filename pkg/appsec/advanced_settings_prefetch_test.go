@@ -76,6 +76,7 @@ func TestAppSec_ListAdvancedSettingsPrefetch(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsPrefetch(
 				session.ContextWithOptions(
@@ -151,6 +152,7 @@ func TestAppSec_GetAdvancedSettingsPrefetch(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAdvancedSettingsPrefetch(context.Background(), test.params)
 			if test.withError != nil {
@@ -231,6 +233,7 @@ func TestAppSec_UpdateAdvancedSettingsPrefetch(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateAdvancedSettingsPrefetch(
 				session.ContextWithOptions(

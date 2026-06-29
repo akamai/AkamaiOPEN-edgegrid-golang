@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -121,27 +121,16 @@ func (c *cloudlets) ListLoadBalancerActivations(ctx context.Context, params List
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListLoadBalancerActivations, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/activations", params.OriginID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListLoadBalancerActivations, err)
-	}
-
-	q := uri.Query()
-	if params.Network != "" {
-		q.Add("network", string(params.Network))
-	}
-	if params.PageSize != nil {
-		q.Add("pageSize", fmt.Sprintf("%d", *params.PageSize))
-	}
-	if params.Page != nil {
-		q.Add("page", fmt.Sprintf("%d", *params.Page))
-	}
-	if params.LatestOnly {
-		q.Add("latestOnly", strconv.FormatBool(params.LatestOnly))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/api/v2/origins/%s/activations", params.OriginID).
+		AddQueryParamIf("network", string(params.Network), params.Network != "").
+		AddQueryParamIf("latestOnly", strconv.FormatBool(params.LatestOnly), params.LatestOnly).
+		AddQueryParamFunc("pageSize", func() string {
+			return fmt.Sprintf("%d", *params.PageSize)
+		}, params.PageSize != nil).
+		AddQueryParamFunc("page", func() string {
+			return fmt.Sprintf("%d", *params.Page)
+		}, params.Page != nil).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListLoadBalancerActivations, err)
 	}
@@ -168,23 +157,17 @@ func (c *cloudlets) ActivateLoadBalancerVersion(ctx context.Context, params Acti
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrActivateLoadBalancerVersion, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/api/v2/origins/%s/activations", params.OriginID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrActivateLoadBalancerVersion, err)
-	}
-
-	q := uri.Query()
-	q.Add("async", strconv.FormatBool(params.Async))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/cloudlets/api/v2/origins/%s/activations", params.OriginID).
+		AddQueryParam("async", strconv.FormatBool(params.Async)).
+		WithBody(params.LoadBalancerVersionActivation).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrActivateLoadBalancerVersion, err)
 	}
 
 	var result LoadBalancerActivation
 
-	resp, err := c.Exec(req, &result, params.LoadBalancerVersionActivation)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateLoadBalancerVersion, err)
 	}

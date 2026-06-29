@@ -102,6 +102,7 @@ func TestInitializeEdgeKV(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.InitializeEdgeKV(context.Background())
 			if test.withError != nil {
@@ -204,6 +205,7 @@ func TestGetEdgeKVInitializeStatus(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEdgeKVInitializationStatus(context.Background())
 			if test.withError != nil {

@@ -87,6 +87,7 @@ func TestDNS_ListTSIGKeys(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListTSIGKeys(context.Background(), test.params)
 			if test.withError != nil {
@@ -164,6 +165,7 @@ func TestDNS_GetTSIGKeyZones(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetTSIGKeyZones(context.Background(), test.params)
 			if test.withError != nil {
@@ -235,6 +237,7 @@ func TestDNS_GetTSIGKeyAliases(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetTSIGKeyAliases(context.Background(), test.params)
 			if test.withError != nil {
@@ -313,6 +316,7 @@ func TestDNS_TSIGKeyBulkUpdate(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.UpdateTSIGKeyBulk(context.Background(), test.params)
 			if test.withError != nil {
@@ -386,6 +390,7 @@ func TestDNS_GetTSIGKey(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetTSIGKey(context.Background(), test.params)
 			if test.withError != nil {
@@ -447,6 +452,7 @@ func TestDNS_DeleteTSIGKey(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteTSIGKey(context.Background(), test.params)
 			if test.withError != nil {
@@ -517,6 +523,7 @@ func TestDNS_UpdateTSIGKey(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.UpdateTSIGKey(context.Background(), test.params)
 			if test.withError != nil {

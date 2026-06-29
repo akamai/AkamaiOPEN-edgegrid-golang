@@ -469,6 +469,7 @@ func TestGetIncludeRuleTree(t *testing.T) {
 				}
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetIncludeRuleTree(context.Background(), test.params)
 			if test.withError != nil {
@@ -1311,6 +1312,7 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateIncludeRuleTree(context.Background(), test.params)
 			if test.withError != nil {

@@ -76,6 +76,7 @@ func TestAppSec_ListCustomDeny(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomDenyList(
 				session.ContextWithOptions(
@@ -153,6 +154,7 @@ func TestAppSec_GetCustomDeny(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCustomDeny(context.Background(), test.params)
 			if test.withError != nil {
@@ -235,6 +237,7 @@ func TestAppSec_CreateCustomDeny(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCustomDeny(
 				session.ContextWithOptions(
@@ -320,6 +323,7 @@ func TestAppSec_UpdateCustomDeny(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCustomDeny(
 				session.ContextWithOptions(
@@ -406,6 +410,7 @@ func TestAppSec_RemoveCustomDeny(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RemoveCustomDeny(
 				session.ContextWithOptions(

@@ -149,6 +149,7 @@ func TestListPolicyVersions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListPolicyVersions(context.Background(), test.request)
 			if test.withError != nil {
@@ -766,6 +767,7 @@ func TestGetPolicyVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPolicyVersion(context.Background(), test.request)
 			if test.withError != nil {
@@ -4081,6 +4083,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreatePolicyVersion(context.Background(), test.request)
 			if test.withError != nil {
@@ -4143,6 +4146,7 @@ func TestDeletePolicyVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeletePolicyVersion(context.Background(), test.request)
 			if test.withError != nil {
@@ -4446,6 +4450,7 @@ func TestUpdatePolicyVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdatePolicyVersion(context.Background(), test.request)
 			if test.withError != nil {

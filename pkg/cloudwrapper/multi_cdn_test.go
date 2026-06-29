@@ -91,6 +91,7 @@ func TestCloudwrapper_ListAuthKeys(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.ListAuthKeys(context.Background(), test.params)
 			if test.withError != nil {
@@ -177,6 +178,7 @@ func TestCloudwrapper_ListCDNProviders(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			users, err := client.ListCDNProviders(context.Background())
 			if test.withError != nil {

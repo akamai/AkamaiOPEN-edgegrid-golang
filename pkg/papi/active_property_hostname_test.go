@@ -547,6 +547,7 @@ func TestPapiListActivePropertyHostnames(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListActivePropertyHostnames(context.Background(), test.params)
 			if test.withError != nil {
@@ -758,6 +759,7 @@ func TestPapiGetActivePropertyHostnamesDiff(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetActivePropertyHostnamesDiff(context.Background(), test.params)
 			if test.withError != nil {
@@ -1074,6 +1076,7 @@ func TestPapiListActivePropertyHostnamesForAccount(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListActiveAccountHostnames(context.Background(), test.params)
 			if test.withError != nil {

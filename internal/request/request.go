@@ -3,8 +3,11 @@
 package request
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"slices"
@@ -19,6 +22,7 @@ type Builder struct {
 	query                  url.Values
 	headers                http.Header
 	useCommaSeparatedQuery bool
+	body                   any
 }
 
 func newBuilder(ctx context.Context, method, path string, pathArgs ...any) *Builder {
@@ -126,6 +130,13 @@ func (b *Builder) AddHeader(key, value string) *Builder {
 	return b
 }
 
+// WithBody sets the request body. The body will be JSON-marshaled when Build is called,
+// unless it is already a []byte or an io.Reader, in which case it is used as-is.
+func (b *Builder) WithBody(body any) *Builder {
+	b.body = body
+	return b
+}
+
 // UseCommaSeparatedQuery enables the use of comma-separated query parameters.
 // When enabled, multiple values for the same query parameter key will be combined
 // into a single key-value pair with values separated by commas.
@@ -172,7 +183,23 @@ func (b *Builder) Build() (*http.Request, error) {
 		uri.RawQuery = b.query.Encode()
 	}
 
-	req, err := http.NewRequestWithContext(b.ctx, b.method, uri.String(), nil)
+	var bodyReader io.Reader
+	if b.body != nil {
+		switch v := b.body.(type) {
+		case io.Reader:
+			bodyReader = v
+		case []byte:
+			bodyReader = bytes.NewReader(v)
+		default:
+			data, err := json.Marshal(b.body)
+			if err != nil {
+				return nil, fmt.Errorf("failed to marshal request body: %w", err)
+			}
+			bodyReader = bytes.NewReader(data)
+		}
+	}
+
+	req, err := http.NewRequestWithContext(b.ctx, b.method, uri.String(), bodyReader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create HTTP request: %w", err)
 	}

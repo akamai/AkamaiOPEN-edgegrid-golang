@@ -151,6 +151,7 @@ func TestPapiGetProperties(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetProperties(context.Background(), test.request)
 			if test.withError != nil {
@@ -344,6 +345,7 @@ func TestPapiGetProperty(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetProperty(context.Background(), test.request)
 			if test.withError != nil {
@@ -469,6 +471,7 @@ func TestPapiCreateProperty(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateProperty(context.Background(), test.request)
 			if test.withError != nil {
@@ -546,6 +549,7 @@ func TestPapiRemoveProperty(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RemoveProperty(context.Background(), test.request)
 			if test.withError != nil {
@@ -661,6 +665,7 @@ func TestPapiMapPropertyNameToID(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.MapPropertyNameToID(context.Background(), test.request)
 			if test.withError != nil {

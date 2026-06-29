@@ -112,6 +112,7 @@ func TestCreateActivation(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateActivation(
 				session.ContextWithOptions(
@@ -258,6 +259,7 @@ func TestCreateDeactivation(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateDeactivation(
 				session.ContextWithOptions(
@@ -360,6 +362,7 @@ func TestGetActivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetActivation(
 				session.ContextWithOptions(
@@ -458,6 +461,7 @@ func TestGetActivationStatus(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetActivationStatus(
 				session.ContextWithOptions(

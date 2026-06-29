@@ -166,6 +166,7 @@ func TestIAM_LockAPIClient(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			response, err := client.LockAPIClient(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -296,6 +297,7 @@ func TestIAM_UnlockAPIClient(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			response, err := client.UnlockAPIClient(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -547,6 +549,7 @@ func TestIAM_ListAPIClients(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListAPIClients(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1122,6 +1125,7 @@ func TestIAM_CreateAPIClient(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			response, err := client.CreateAPIClient(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1872,6 +1876,7 @@ func TestIAM_UpdateAPIClient(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			response, err := client.UpdateAPIClient(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -2268,6 +2273,7 @@ func TestIAM_GetAPIClient(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAPIClient(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -2332,6 +2338,7 @@ func TestIAM_DeleteAPIClient(t *testing.T) {
 				assert.NoError(t, err)
 
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteAPIClient(context.Background(), tc.params)
 			if tc.withError != nil {

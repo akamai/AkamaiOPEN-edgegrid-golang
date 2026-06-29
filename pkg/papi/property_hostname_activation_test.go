@@ -487,6 +487,7 @@ func TestPapiGetPropertyHostnameActivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetPropertyHostnameActivation(context.Background(), test.params)
 
@@ -810,6 +811,7 @@ func TestPapiListPropertyHostnameActivations(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListPropertyHostnameActivations(context.Background(), test.params)
 
@@ -968,6 +970,7 @@ func TestPapiCancelPropertyHostnameActivation(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CancelPropertyHostnameActivation(context.Background(), test.params)
 

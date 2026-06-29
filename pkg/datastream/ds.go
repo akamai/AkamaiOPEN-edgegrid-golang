@@ -47,6 +47,13 @@ type (
 		// See: https://techdocs.akamai.com/datastream2/v3/reference/get-dataset-fields
 		GetDatasetFields(context.Context, GetDatasetFieldsRequest) (*DataSets, error)
 
+		// Application Security Configurations
+
+		// GetAppSecConfigs returns the AppSec configurations available for streams for a given group and contract.
+		//
+		// See: https://techdocs.akamai.com/datastream2/reference/get-configs-appsec
+		GetAppSecConfigs(context.Context, GetAppSecConfigsRequest) ([]AppSecConfigDetails, error)
+
 		// Stream
 
 		// CreateStream creates a stream

@@ -103,6 +103,7 @@ func TestBotman_GetContentProtectionRuleSequence(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetContentProtectionRuleSequence(context.Background(), test.params)
 			if test.withError != nil {
@@ -225,6 +226,7 @@ func TestBotman_UpdateContentProtectionRuleSequence(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateContentProtectionRuleSequence(
 				session.ContextWithOptions(

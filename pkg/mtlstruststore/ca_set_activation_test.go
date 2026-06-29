@@ -226,6 +226,7 @@ func TestActivateCASetVersion(t *testing.T) {
 					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivateCASetVersion(context.Background(), tc.request)
 			if tc.withError != nil {
@@ -627,6 +628,7 @@ func TestDeactivateCASetVersion(t *testing.T) {
 					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeactivateCASetVersion(context.Background(), tc.request)
 			if tc.withError != nil {
@@ -863,6 +865,7 @@ func TestGetCASetVersionActivation(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetCASetVersionActivation(context.Background(), tc.params)
 			if tc.withError != nil {
@@ -1022,6 +1025,7 @@ func TestListCASetVersionActivations(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListCASetVersionActivations(context.Background(), tc.request)
 			if tc.withError != nil {
@@ -1193,6 +1197,7 @@ func TestListCASetActivations(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListCASetActivations(context.Background(), tc.request)
 			if tc.withError != nil {

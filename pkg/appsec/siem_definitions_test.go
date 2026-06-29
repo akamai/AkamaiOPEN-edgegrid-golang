@@ -64,6 +64,7 @@ func TestAppSec_GetSiemDefinitions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetSiemDefinitions(context.Background(), test.params)
 			if test.withError != nil {

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -74,21 +74,10 @@ func (c *cloudlets) ListActivePolicyProperties(ctx context.Context, params ListA
 		return nil, fmt.Errorf("%s: %w: %s", ErrListActivePolicyProperties, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloudlets/v3/policies/%d/properties", params.PolicyID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListActivePolicyProperties, err)
-	}
-
-	q := uri.Query()
-	if params.Page != 0 {
-		q.Add("page", strconv.Itoa(params.Page))
-	}
-	if params.Size != 0 {
-		q.Add("size", strconv.Itoa(params.Size))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cloudlets/v3/policies/%d/properties", params.PolicyID).
+		AddQueryParamIf("page", strconv.Itoa(params.Page), params.Page != 0).
+		AddQueryParamIf("size", strconv.Itoa(params.Size), params.Size != 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListActivePolicyProperties, err)
 	}

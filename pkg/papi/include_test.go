@@ -205,6 +205,7 @@ func TestListIncludes(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListIncludes(context.Background(), test.params)
 			if test.withError != nil {
@@ -361,6 +362,7 @@ func TestListIncludeParents(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListIncludeParents(context.Background(), test.params)
 			if test.withError != nil {
@@ -492,6 +494,7 @@ func TestGetInclude(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetInclude(context.Background(), test.params)
 			if test.withError != nil {
@@ -710,6 +713,7 @@ func TestCreateInclude(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateInclude(context.Background(), test.params)
 			if test.withError != nil {
@@ -800,6 +804,7 @@ func TestDeleteInclude(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeleteInclude(context.Background(), test.params)
 			if test.withError != nil {

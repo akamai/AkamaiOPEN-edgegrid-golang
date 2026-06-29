@@ -17,9 +17,11 @@ type (
 	// Session is the interface that is used by the pa
 	// This allows the client itself to be more extensible and readily testable, ets.
 	Session interface {
-		// Exec will sign and execute a request returning the response
-		// The response body will be unmarshaled in to out
-		// Optionally the in value will be marshaled into the body
+		// Exec will sign and execute a request returning the response.
+		// The response body will be unmarshaled into out.
+		// Optionally the in value will be marshaled into the request body.
+		//
+		// The 'in' parameter is deprecated and will be removed in a future release.
 		Exec(r *http.Request, out interface{}, in ...interface{}) (*http.Response, error)
 
 		// Sign will only sign a request, this is useful for circumstances

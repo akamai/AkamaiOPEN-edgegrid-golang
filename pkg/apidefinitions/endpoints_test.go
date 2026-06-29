@@ -240,6 +240,7 @@ func TestGetEndpoint(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEndpoint(context.Background(), test.params)
 			if test.withError != nil {
@@ -918,6 +919,7 @@ func TestListEndpoints(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListEndpoints(context.Background(), test.request)
 			if test.withError != nil {
@@ -1415,6 +1417,7 @@ func TestRegisterEndpoint(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RegisterEndpoint(context.Background(), test.body)
 			if test.withError != nil {
@@ -1484,6 +1487,7 @@ func TestListUserEntitlements(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListUserEntitlements(context.Background())
 			if test.withError != nil {
@@ -1682,6 +1686,7 @@ func TestShowEndpoint(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ShowEndpoint(context.Background(), test.params)
 			if test.withError != nil {
@@ -1864,6 +1869,7 @@ func TestHideEndpoint(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.HideEndpoint(context.Background(), test.params)
 			if test.withError != nil {
@@ -1943,6 +1949,7 @@ func TestDeleteEndpoint(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.DeleteEndpoint(context.Background(), test.params)
 			if test.withError != nil {
@@ -2338,6 +2345,7 @@ func TestRegisterEndpointFromFile(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			response, err := client.RegisterEndpointFromFile(context.Background(), test.params)
 			if test.withError != nil {

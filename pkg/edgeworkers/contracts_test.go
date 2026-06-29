@@ -68,6 +68,7 @@ func TestListContracts(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListContracts(context.Background())
 			if test.withError != nil {

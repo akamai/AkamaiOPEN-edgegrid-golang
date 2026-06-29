@@ -65,6 +65,7 @@ func TestPapiGetClientSettings(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetClientSettings(context.Background())
 			if test.withError != nil {
@@ -140,6 +141,7 @@ func TestPapiUpdateClientSettings(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateClientSettings(context.Background(), test.params)
 			if test.withError != nil {

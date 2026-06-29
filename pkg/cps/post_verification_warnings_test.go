@@ -74,6 +74,7 @@ func TestGetChangePostVerificationWarnings(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetChangePostVerificationWarnings(context.Background(), test.params)
 			if test.withError != nil {
@@ -150,6 +151,7 @@ func TestAcknowledgePostVerificationWarnings(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.AcknowledgePostVerificationWarnings(context.Background(), test.params)
 			if test.withError != nil {

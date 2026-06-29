@@ -63,6 +63,7 @@ type (
 // New returns new configuration with the specified options
 func New(opts ...Option) (*Config, error) {
 	c := &Config{
+		MaxBody: MaxBodySize,
 		section: DefaultSection,
 		env:     false,
 	}
@@ -150,7 +151,7 @@ func (c *Config) FromFile(file string, section string) error {
 		}
 	}
 
-	if c.MaxBody == 0 {
+	if c.MaxBody <= 0 {
 		c.MaxBody = MaxBodySize
 	}
 

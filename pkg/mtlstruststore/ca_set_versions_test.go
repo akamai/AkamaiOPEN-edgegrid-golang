@@ -795,6 +795,7 @@ func TestCreateCASetVersion(t *testing.T) {
 					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateCASetVersion(context.Background(), tc.request)
 			if tc.withError != nil {
@@ -1126,6 +1127,7 @@ func TestCloneCASetVersion(t *testing.T) {
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CloneCASetVersion(context.Background(), tc.request)
 			if tc.withError != nil {
@@ -2129,6 +2131,7 @@ func TestUpdateCASetVersion(t *testing.T) {
 					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateCASetVersion(context.Background(), tc.request)
 			if tc.withError != nil {

@@ -78,6 +78,7 @@ func TestAppSec_ListApiHostnameCoverageMatchTargets(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetApiHostnameCoverageMatchTargets(
 				session.ContextWithOptions(
@@ -155,6 +156,7 @@ func TestAppSec_GetApiHostnameCoverageMatchTargets(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetApiHostnameCoverageMatchTargets(context.Background(), test.params)
 			if test.withError != nil {

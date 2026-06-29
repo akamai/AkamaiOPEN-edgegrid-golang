@@ -124,6 +124,7 @@ func TestVerifyVersion(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.VerifyVersion(context.Background(), test.request)
 			if test.withError != nil {
@@ -334,6 +335,7 @@ func TestActivateVersion(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ActivateVersion(context.Background(), test.request)
 			if test.withError != nil {
@@ -532,6 +534,7 @@ func TestDeactivateVersion(t *testing.T) {
 					assert.JSONEq(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.DeactivateVersion(context.Background(), test.request)
 			if test.withError != nil {

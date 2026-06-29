@@ -130,6 +130,7 @@ func TestBotman_GetServeAlternateActionList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetServeAlternateActionList(
 				session.ContextWithOptions(
@@ -235,6 +236,7 @@ func TestBotman_GetServeAlternateAction(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetServeAlternateAction(context.Background(), test.params)
 			if test.withError != nil {
@@ -340,6 +342,7 @@ func TestBotman_CreateServeAlternateAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateServeAlternateAction(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -460,6 +463,7 @@ func TestBotman_UpdateServeAlternateAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateServeAlternateAction(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {
@@ -561,6 +565,7 @@ func TestBotman_RemoveServeAlternateAction(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.RemoveServeAlternateAction(session.ContextWithOptions(context.Background()), test.params)
 			if test.withError != nil {

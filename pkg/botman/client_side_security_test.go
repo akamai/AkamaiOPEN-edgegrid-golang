@@ -87,6 +87,7 @@ func TestBotman_GetClientSideSecurity(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetClientSideSecurity(context.Background(), test.params)
 			if test.withError != nil {
@@ -190,6 +191,7 @@ func TestBotman_UpdateClientSideSecurity(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateClientSideSecurity(
 				session.ContextWithOptions(

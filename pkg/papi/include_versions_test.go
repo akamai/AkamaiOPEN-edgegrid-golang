@@ -94,6 +94,7 @@ func TestCreateIncludeVersion(t *testing.T) {
 					assert.Equal(t, test.expectedRequestBody, string(body))
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateIncludeVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -247,6 +248,7 @@ func TestGetIncludeVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetIncludeVersion(context.Background(), test.params)
 			if test.withError != nil {
@@ -437,6 +439,7 @@ func TestListIncludeVersions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListIncludeVersions(context.Background(), test.params)
 			if test.withError != nil {
@@ -554,6 +557,7 @@ func TestGetIncludeVersionAvailableCriteria(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListIncludeVersionAvailableCriteria(context.Background(), test.params)
 			if test.withError != nil {
@@ -679,6 +683,7 @@ func TestListIncludeVersionAvailableBehaviors(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.ListIncludeVersionAvailableBehaviors(context.Background(), test.params)
 			if test.withError != nil {

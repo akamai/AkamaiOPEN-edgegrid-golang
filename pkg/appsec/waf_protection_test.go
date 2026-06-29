@@ -78,6 +78,7 @@ func TestAppSec_ListWAFProtections(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetWAFProtections(
 				session.ContextWithOptions(
@@ -155,6 +156,7 @@ func TestAppSec_GetWAFProtection(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetWAFProtection(context.Background(), test.params)
 			if test.withError != nil {
@@ -237,6 +239,7 @@ func TestAppSec_UpdateWAFProtection(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateWAFProtection(
 				session.ContextWithOptions(

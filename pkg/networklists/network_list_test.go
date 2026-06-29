@@ -70,6 +70,7 @@ func TestNetworkList_ListNetworkList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetNetworkLists(
 				session.ContextWithOptions(
@@ -149,6 +150,7 @@ func TestNetworkList_FilterNetworkLists(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetNetworkLists(
 				session.ContextWithOptions(
@@ -218,6 +220,7 @@ func TestNetworkList_GetNetworkList(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetNetworkList(context.Background(), test.params)
 			if test.withError != nil {
@@ -295,6 +298,7 @@ func TestNetworkList_CreateNetworkList(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.CreateNetworkList(
 				session.ContextWithOptions(
@@ -373,6 +377,7 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateNetworkList(
 				session.ContextWithOptions(
@@ -451,6 +456,7 @@ func TestNetworkList_DeleteNetworkList(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.RemoveNetworkList(
 				session.ContextWithOptions(

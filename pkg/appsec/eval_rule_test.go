@@ -78,6 +78,7 @@ func TestAppSec_ListEvalRule(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEvalRules(
 				session.ContextWithOptions(
@@ -157,6 +158,7 @@ func TestAppSec_GetEvalRule(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetEvalRule(context.Background(), test.params)
 			if test.withError != nil {
@@ -241,6 +243,7 @@ func TestAppSec_UpdateEvalRule(t *testing.T) {
 					assert.NoError(t, err)
 				}
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.UpdateEvalRule(
 				session.ContextWithOptions(

@@ -145,6 +145,7 @@ func TestGetChangeManagementInfo(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetChangeManagementInfo(context.Background(), test.params)
 			if test.withError != nil {
@@ -262,6 +263,7 @@ func TestGetChangeDeploymentInfo(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetChangeDeploymentInfo(context.Background(), test.params)
 			if test.withError != nil {
@@ -333,6 +335,7 @@ func TestAcknowledgeChangeManagement(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			err := client.AcknowledgeChangeManagement(context.Background(), test.params)
 			if test.withError != nil {

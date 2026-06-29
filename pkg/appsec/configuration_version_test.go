@@ -74,6 +74,7 @@ func TestAppSec_ListConfigurationVersions(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetConfigurationVersions(
 				session.ContextWithOptions(
@@ -154,6 +155,7 @@ func TestAppSec_GetConfigurationVersion(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetConfigurationVersion(
 				session.ContextWithOptions(

@@ -179,6 +179,7 @@ func TestPapiSearchProperties(t *testing.T) {
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.SearchProperties(context.Background(), test.params)
 			if test.withError != nil {

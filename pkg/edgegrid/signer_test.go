@@ -1,6 +1,7 @@
 package edgegrid
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
 	"net/http"
 	"strings"
@@ -91,24 +92,61 @@ func TestCanonicalizeHeaders(t *testing.T) {
 
 func TestCreateContentHash(t *testing.T) {
 	tests := map[string]struct {
-		httpMethod  string
-		body        string
-		resultEmpty bool
+		httpMethod   string
+		body         string
+		maxBody      int
+		resultEmpty  bool
+		expectedHash string
 	}{
 		"PUT request": {
 			httpMethod:  http.MethodPut,
 			body:        `{"key":"value"}`,
+			maxBody:     MaxBodySize,
 			resultEmpty: true,
 		},
 		"POST request, empty body": {
 			httpMethod:  http.MethodPost,
 			body:        "",
+			maxBody:     MaxBodySize,
 			resultEmpty: true,
 		},
 		"POST request, body is not empty": {
 			httpMethod:  http.MethodPost,
 			body:        `{"key":"value"}`,
+			maxBody:     MaxBodySize,
 			resultEmpty: false,
+		},
+		"POST request, body larger than maxBody - truncates to maxBody": {
+			httpMethod:  http.MethodPost,
+			body:        `{"key":"value"}`,
+			maxBody:     5,
+			resultEmpty: false,
+			expectedHash: func() string {
+				sum := sha256.Sum256([]byte(`{"key":"value"}`[:5]))
+				return base64.StdEncoding.EncodeToString(sum[:])
+			}(),
+		},
+		"POST request, body smaller than maxBody - hashes full body": {
+			httpMethod:  http.MethodPost,
+			body:        `{"key":"value"}`,
+			maxBody:     1000,
+			resultEmpty: false,
+		},
+		"POST request, body equal to maxBody - hashes full body": {
+			httpMethod:  http.MethodPost,
+			body:        `{"key":"value"}`,
+			maxBody:     len(`{"key":"value"}`),
+			resultEmpty: false,
+		},
+		"POST request, maxBody is 0 - uses default MaxBodySize": {
+			httpMethod:  http.MethodPost,
+			body:        `{"key":"value"}`,
+			maxBody:     0,
+			resultEmpty: false,
+			expectedHash: func() string {
+				sum := sha256.Sum256([]byte(`{"key":"value"}`))
+				return base64.StdEncoding.EncodeToString(sum[:])
+			}(),
 		},
 	}
 
@@ -116,7 +154,7 @@ func TestCreateContentHash(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			req, err := http.NewRequest(test.httpMethod, "", strings.NewReader(test.body))
 			require.NoError(t, err)
-			res := createContentHash(req, MaxBodySize)
+			res := createContentHash(req, test.maxBody)
 			if test.resultEmpty {
 				assert.Empty(t, res)
 				return
@@ -124,6 +162,9 @@ func TestCreateContentHash(t *testing.T) {
 			require.NotEmpty(t, res)
 			_, err = base64.StdEncoding.DecodeString(res)
 			assert.NoError(t, err)
+			if test.expectedHash != "" {
+				assert.Equal(t, test.expectedHash, res)
+			}
 		})
 	}
 }
