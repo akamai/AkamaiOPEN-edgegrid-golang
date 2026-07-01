@@ -17,6 +17,9 @@
 
 ### FEATURES/ENHANCEMENTS:
 
+* PurgeCache
+  * Added `RateLimitStatus` method to the `purgecache` package, which checks the rate and object limit statuses for a given purge type ([POST /ccu/v3/rate-limit-status/{purge-type}](https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status)).
+
 
 
 

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -132,9 +133,9 @@ func TestNewError(t *testing.T) {
 				SupportID:                   "aaaa-1234",
 				Title:                       "URL Rate Limit exceeded",
 				DescribedBy:                 "https://www.example.com/purge-cache/rate-limit-errors",
-				RateLimit:                   10000,
-				RateLimitCurrentRequestSize: 110,
-				RateLimitRemaining:          94,
+				RateLimit:                   ptr.To(int64(10000)),
+				RateLimitCurrentRequestSize: ptr.To(int64(110)),
+				RateLimitRemaining:          ptr.To(int64(94)),
 			},
 		},
 		"Gateway timeout 504": {
@@ -187,6 +188,7 @@ func TestNewError(t *testing.T) {
 	}
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			res := Client(sess).(*purgecache).Error(tc.response)
 			assert.Equal(t, tc.expected, res)
 		})
@@ -283,9 +285,9 @@ func TestIs(t *testing.T) {
 				HTTPStatus:                  429,
 				Title:                       "URL Rate Limit exceeded",
 				DescribedBy:                 "https://www.example.com/purge-cache/rate-limit-errors",
-				RateLimit:                   10000,
-				RateLimitCurrentRequestSize: 110,
-				RateLimitRemaining:          94,
+				RateLimit:                   ptr.To(int64(10000)),
+				RateLimitCurrentRequestSize: ptr.To(int64(110)),
+				RateLimitRemaining:          ptr.To(int64(94)),
 			},
 			target:   Error{HTTPStatus: 429, Title: "URL Rate Limit exceeded"},
 			expected: true,
@@ -314,6 +316,7 @@ func TestIs(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			source := test.source
 			if source == nil {
 				source = &someError
@@ -351,9 +354,9 @@ func TestError_RateLimit(t *testing.T) {
 		Detail:                      "",
 		DescribedBy:                 "https://www.example.com/purge-cache/rate-limit-errors",
 		SupportID:                   "aaaa-1234",
-		RateLimit:                   10000,
-		RateLimitCurrentRequestSize: 110,
-		RateLimitRemaining:          94,
+		RateLimit:                   ptr.To(int64(10000)),
+		RateLimitCurrentRequestSize: ptr.To(int64(110)),
+		RateLimitRemaining:          ptr.To(int64(94)),
 	}
 	expected := `API error: 
 {

@@ -2,12 +2,18 @@
 package purgecache
 
 import (
+	"context"
+
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 )
 
 type (
 	// PurgeCache is the interface for the Purge Cache API.
 	PurgeCache interface {
+		// RateLimitStatus checks the rate and object limit statuses for a specific purge type.
+		//
+		// See: https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status
+		RateLimitStatus(ctx context.Context, params RateLimitStatusRequest) (*RateLimitStatusResponse, error)
 	}
 
 	purgecache struct {
