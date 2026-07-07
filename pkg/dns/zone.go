@@ -44,6 +44,7 @@ type (
 		EndCustomerID         string                `json:"endCustomerId,omitempty"`
 		ContractID            string                `json:"contractId,omitempty"`
 		OutboundZoneTransfer  *OutboundZoneTransfer `json:"outboundZoneTransfer,omitempty"`
+		MultiProviderDnssec   *MultiProviderDnssec  `json:"multiProviderDnssec,omitempty"`
 	}
 
 	// OutboundZoneTransfer contains OutboundZoneTransfer request parameters
@@ -52,6 +53,11 @@ type (
 		Enabled       bool     `json:"enabled"`
 		NotifyTargets []string `json:"notifyTargets"`
 		TSIGKey       *TSIGKey `json:"tsigKey,omitempty"`
+	}
+
+	// MultiProviderDnssec contains multi-signer DNSSEC configuration for a zone
+	MultiProviderDnssec struct {
+		Enabled bool `json:"enabled"`
 	}
 
 	// ZoneResponse contains zone create response
@@ -73,6 +79,7 @@ type (
 		LastModifiedDate      string                `json:"lastModifiedDate,omitempty"`
 		VersionID             string                `json:"versionId,omitempty"`
 		OutboundZoneTransfer  *OutboundZoneTransfer `json:"outboundZoneTransfer,omitempty"`
+		MultiProviderDnssec   *MultiProviderDnssec  `json:"multiProviderDnssec,omitempty"`
 	}
 
 	// ListMetadata contains metadata for List Zones request
@@ -302,6 +309,7 @@ var zoneStructMap = map[string]string{
 	"Target":                "target",
 	"EndCustomerID":         "endCustomerId",
 	"OutboundZoneTransfer":  "outboundZoneTransfer",
+	"MultiProviderDnssec":   "multiProviderDnssec",
 	"ContractID":            "contractId"}
 
 // Util to convert struct to http request body, e.g. io.reader
@@ -698,6 +706,18 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 			// this is workaround for the check if value is not nil to avoid adding empty entry
 			switch v := varValue.(type) {
 			case *OutboundZoneTransfer:
+				{
+					if v != nil {
+						filteredZone[varLower] = varValue
+					}
+				}
+			default:
+				filteredZone[varLower] = varValue
+			}
+		case "MultiProviderDnssec":
+			// same workaround as OutboundZoneTransfer above: skip nil pointer to avoid adding empty entry
+			switch v := varValue.(type) {
+			case *MultiProviderDnssec:
 				{
 					if v != nil {
 						filteredZone[varLower] = varValue
