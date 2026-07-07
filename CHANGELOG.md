@@ -18,8 +18,11 @@
 ### FEATURES/ENHANCEMENTS:
 
 * PurgeCache
-  * Added `RateLimitStatus` method to the `purgecache` package, which checks the rate and object limit statuses for a given purge type ([POST /ccu/v3/rate-limit-status/{purge-type}](https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status)).
-
+  * Added methods to the `purgecache` package:
+    * [RateLimitStatus](https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status) - Checks the rate and object limit statuses for a given purge type.
+    * [DeleteByURL](https://techdocs.akamai.com/purge-cache/reference/post-delete-url) - Deletes content on the selected URL or ARL.
+    * [DeleteByTag](https://techdocs.akamai.com/purge-cache/reference/post-delete-tag) - Deletes content on the selected set of cache tags.
+    * [DeleteByCPCode](https://techdocs.akamai.com/purge-cache/reference/post-delete-cpcode) - Deletes content on the selected CP code.
 
 
 

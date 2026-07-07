@@ -17,6 +17,9 @@ var (
 
 	// ErrRateLimitStatus is returned when RateLimitStatus fails.
 	ErrRateLimitStatus = errors.New("checking rate limit status")
+
+	// ErrDelete is returned when a deletion request fails.
+	ErrDelete = errors.New("delete cache")
 )
 
 type (

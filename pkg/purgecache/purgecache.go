@@ -14,6 +14,21 @@ type (
 		//
 		// See: https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status
 		RateLimitStatus(ctx context.Context, params RateLimitStatusRequest) (*RateLimitStatusResponse, error)
+
+		// DeleteByURL deletes cache content by identifying URLs or ARLs.
+		//
+		// See: https://techdocs.akamai.com/purge-cache/reference/post-delete-url
+		DeleteByURL(ctx context.Context, params DeleteByURLRequest) (*DeleteResponse, error)
+
+		// DeleteByTag deletes cache content by identifying cache tags.
+		//
+		// See: https://techdocs.akamai.com/purge-cache/reference/post-delete-tag
+		DeleteByTag(ctx context.Context, params DeleteByTagRequest) (*DeleteResponse, error)
+
+		// DeleteByCPCode deletes cache content by identifying CP Codes.
+		//
+		// See: https://techdocs.akamai.com/purge-cache/reference/post-delete-cpcode
+		DeleteByCPCode(ctx context.Context, params DeleteByCPCodeRequest) (*DeleteResponse, error)
 	}
 
 	purgecache struct {

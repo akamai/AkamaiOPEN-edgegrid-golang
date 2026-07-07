@@ -23,3 +23,33 @@ func (m *Mock) RateLimitStatus(ctx context.Context, params RateLimitStatusReques
 
 	return args.Get(0).(*RateLimitStatusResponse), args.Error(1)
 }
+
+func (m *Mock) DeleteByURL(ctx context.Context, params DeleteByURLRequest) (*DeleteResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*DeleteResponse), args.Error(1)
+}
+
+func (m *Mock) DeleteByTag(ctx context.Context, params DeleteByTagRequest) (*DeleteResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*DeleteResponse), args.Error(1)
+}
+
+func (m *Mock) DeleteByCPCode(ctx context.Context, params DeleteByCPCodeRequest) (*DeleteResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*DeleteResponse), args.Error(1)
+}
