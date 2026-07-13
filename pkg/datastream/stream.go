@@ -247,6 +247,9 @@ const (
 	// FormatTypeJson const
 	FormatTypeJson FormatType = "JSON"
 
+	// Note: the validation on the interval was removed - instead, the API will validate them.
+	// These values will be removed in a future breaking change release.
+
 	// IntervalInSeconds30 const
 	IntervalInSeconds30 IntervalInSeconds = 30
 	// IntervalInSeconds60 const
@@ -273,7 +276,7 @@ func (r CreateStreamRequest) Validate() error {
 		"StreamConfiguration.DeliveryConfiguration.Delimiter":                   validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Delimiter, validation.When(r.StreamConfiguration.DeliveryConfiguration.Format == FormatTypeStructured, validation.Required, validation.In(DelimiterTypeSpace)), validation.When(r.StreamConfiguration.DeliveryConfiguration.Format == FormatTypeJson, validation.Nil)),
 		"StreamConfiguration.DeliveryConfiguration.Format":                      validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Format, validation.Required, validation.In(FormatTypeStructured, FormatTypeJson), validation.When(r.StreamConfiguration.DeliveryConfiguration.Delimiter != nil, validation.Required, validation.In(FormatTypeStructured))),
 		"StreamConfiguration.DeliveryConfiguration.Frequency":                   validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency, validation.Required),
-		"StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds": validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds, validation.Required, validation.In(IntervalInSeconds30, IntervalInSeconds60)),
+		"StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds": validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds, validation.Required),
 		"StreamConfiguration.Destination":                                       validation.Validate(r.StreamConfiguration.Destination, validation.Required),
 		"StreamConfiguration.ContractId":                                        validation.Validate(r.StreamConfiguration.ContractID, validation.Required),
 		"StreamConfiguration.DatasetFields":                                     validation.Validate(r.StreamConfiguration.DatasetFields, validation.When(r.LogType == LogTypeCDN, validation.Required), validation.When(r.LogType == LogTypeAppSec, validation.Empty)),
@@ -301,7 +304,7 @@ func (r UpdateStreamRequest) Validate() error {
 		"StreamConfiguration.DeliveryConfiguration.Delimiter":                   validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Delimiter, validation.When(r.StreamConfiguration.DeliveryConfiguration.Format == FormatTypeStructured, validation.Required, validation.In(DelimiterTypeSpace)), validation.When(r.StreamConfiguration.DeliveryConfiguration.Format == FormatTypeJson, validation.Nil)),
 		"StreamConfiguration.DeliveryConfiguration.Format":                      validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Format, validation.In(FormatTypeStructured, FormatTypeJson)),
 		"StreamConfiguration.DeliveryConfiguration.Frequency":                   validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency, validation.Required),
-		"StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds": validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds, validation.Required, validation.In(IntervalInSeconds30, IntervalInSeconds60)),
+		"StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds": validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds, validation.Required),
 		"StreamConfiguration.Destination":                                       validation.Validate(r.StreamConfiguration.Destination, validation.Required),
 		"StreamConfiguration.ContractId":                                        validation.Validate(r.StreamConfiguration.ContractID, validation.Required),
 		"StreamConfiguration.DatasetFields":                                     validation.Validate(r.StreamConfiguration.DatasetFields, validation.When(r.LogType == LogTypeCDN, validation.Required), validation.When(r.LogType == LogTypeAppSec, validation.Empty)),

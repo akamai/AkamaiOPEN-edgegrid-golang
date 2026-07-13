@@ -17,6 +17,10 @@
 
 ### FEATURES/ENHANCEMENTS:
 
+* DataStream
+  * Added support for the DataStream NetStorage (`NS4`) destination type.
+  * Removed validation on the destination interval - the API validates these values instead. The interval constants `IntervalInSeconds30` and `IntervalInSeconds60` will be removed in a future breaking change release.
+
 * PurgeCache
   * Added methods to the `purgecache` package:
     * [DeleteByURL](https://techdocs.akamai.com/purge-cache/reference/post-delete-url) - Deletes content on the selected URL or ARL.

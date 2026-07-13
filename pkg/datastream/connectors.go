@@ -182,7 +182,7 @@ type (
 		Password string `json:"password"`
 		// Endpoint is the endpoint URL of the destination.
 		Endpoint string `json:"endpoint"`
-		// UserName is the user name for the destination.
+		// UserName is the username for the destination.
 		UserName string `json:"userName"`
 		// ContentType is the content type for the destination. Set it to application/json or application/json; charset=utf-8.
 		ContentType TrafficPeakContentType `json:"contentType"`
@@ -190,6 +190,24 @@ type (
 		CustomHeaderName string `json:"customHeaderName,omitempty"`
 		// CustomHeaderValue is the custom header value for the destination. It is optional.
 		CustomHeaderValue string `json:"customHeaderValue,omitempty"`
+	}
+
+	// NetStorageConnector provides details about the NetStorage destination in a stream.
+	NetStorageConnector struct {
+		// DestinationType is the destination type's name. Set it to NS4 for this destination type.
+		DestinationType DestinationType `json:"destinationType"`
+		// UserName is the user name for the NS4 endpoint.
+		UserName string `json:"userName"`
+		// Endpoint is the domain prefix for the URL of the NS4 endpoint.
+		Endpoint string `json:"endpoint"`
+		// SecretAccessKey is the g2o key for the NS4 endpoint.
+		SecretAccessKey string `json:"secretAccessKey"`
+		// Bucket is the CP code for the NS4 endpoint (API expects this field as 'bucket').
+		Bucket string `json:"bucket"`
+		// DisplayName is the display name of the NS4 destination.
+		DisplayName string `json:"displayName"`
+		// Path is the path within the bucket where logs will be stored. It is optional.
+		Path string `json:"path,omitempty"`
 	}
 
 	// DynatraceConnector contains details about Dynatrace destination.
@@ -247,6 +265,8 @@ const (
 	DestinationTypeTrafficPeak DestinationType = "TRAFFICPEAK"
 	// DestinationTypeDynatrace const
 	DestinationTypeDynatrace DestinationType = "DYNATRACE"
+	// DestinationTypeNetStorage const
+	DestinationTypeNetStorage DestinationType = "NS4"
 
 	// AuthenticationTypeNone const
 	AuthenticationTypeNone AuthenticationType = "NONE"
@@ -505,5 +525,22 @@ func (c *DynatraceConnector) Validate() error {
 		"AuthToken":         validation.Validate(c.AuthToken, validation.Required),
 		"CustomHeaderName":  validation.Validate(c.CustomHeaderName, validation.Required.When(c.CustomHeaderValue != ""), validation.When(c.CustomHeaderName != "", validation.Match(customHeaderNameRegexp))),
 		"CustomHeaderValue": validation.Validate(c.CustomHeaderValue, validation.Required.When(c.CustomHeaderName != "")),
+	}.Filter()
+}
+
+// SetDestinationType for NetStorageConnector
+func (c *NetStorageConnector) SetDestinationType() {
+	c.DestinationType = DestinationTypeNetStorage
+}
+
+// Validate validates NetStorageConnector
+func (c *NetStorageConnector) Validate() error {
+	return validation.Errors{
+		"DestinationType": validation.Validate(c.DestinationType, validation.Required, validation.In(DestinationTypeNetStorage)),
+		"UserName":        validation.Validate(c.UserName, validation.Required),
+		"Endpoint":        validation.Validate(c.Endpoint, validation.Required),
+		"DisplayName":     validation.Validate(c.DisplayName, validation.Required),
+		"SecretAccessKey": validation.Validate(c.SecretAccessKey, validation.Required),
+		"Bucket":          validation.Validate(c.Bucket, validation.Required),
 	}.Filter()
 }

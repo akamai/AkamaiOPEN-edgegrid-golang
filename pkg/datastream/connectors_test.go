@@ -121,3 +121,84 @@ func TestCustomHTPPSValidation(t *testing.T) {
 		})
 	}
 }
+
+func TestNetStorageValidation(t *testing.T) {
+	t.Parallel()
+	baseConnector := NetStorageConnector{
+		DisplayName:     "Test Connector",
+		UserName:        "testUser",
+		Endpoint:        "test.example.akamaihd.net",
+		SecretAccessKey: "testSecretKey",
+		Bucket:          "123456",
+	}
+	baseConnector.SetDestinationType()
+
+	tests := map[string]struct {
+		connectorBuilder      func() NetStorageConnector
+		expectValidationError bool
+	}{
+		"valid connector": {
+			connectorBuilder: func() NetStorageConnector {
+				return baseConnector
+			},
+			expectValidationError: false,
+		},
+		"missing UserName": {
+			connectorBuilder: func() NetStorageConnector {
+				c := baseConnector
+				c.UserName = ""
+				return c
+			},
+			expectValidationError: true,
+		},
+		"missing Endpoint": {
+			connectorBuilder: func() NetStorageConnector {
+				c := baseConnector
+				c.Endpoint = ""
+				return c
+			},
+			expectValidationError: true,
+		},
+		"missing DisplayName": {
+			connectorBuilder: func() NetStorageConnector {
+				c := baseConnector
+				c.DisplayName = ""
+				return c
+			},
+			expectValidationError: true,
+		},
+		"missing SecretAccessKey": {
+			connectorBuilder: func() NetStorageConnector {
+				c := baseConnector
+				c.SecretAccessKey = ""
+				return c
+			},
+			expectValidationError: true,
+		},
+		"missing Bucket (CP code)": {
+			connectorBuilder: func() NetStorageConnector {
+				c := baseConnector
+				c.Bucket = ""
+				return c
+			},
+			expectValidationError: true,
+		},
+		"Path is optional": {
+			connectorBuilder: func() NetStorageConnector {
+				c := baseConnector
+				c.Path = ""
+				return c
+			},
+			expectValidationError: false,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			c := test.connectorBuilder()
+			err := c.Validate()
+			assert.True(t, (err != nil) == test.expectValidationError, err)
+		})
+	}
+}

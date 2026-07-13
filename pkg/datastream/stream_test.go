@@ -91,7 +91,7 @@ func TestDs_GetStream(t *testing.T) {
 				DeliveryConfiguration: DeliveryConfiguration{
 					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 					Format:           FormatTypeStructured,
-					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					Frequency:        Frequency{IntervalInSeconds: 30},
 					UploadFilePrefix: "ak",
 					UploadFileSuffix: "ds",
 				},
@@ -195,7 +195,7 @@ func TestDs_GetStream(t *testing.T) {
 				DeliveryConfiguration: DeliveryConfiguration{
 					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 					Format:           FormatTypeStructured,
-					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					Frequency:        Frequency{IntervalInSeconds: 30},
 					UploadFilePrefix: "ak",
 					UploadFileSuffix: "ds",
 				},
@@ -554,7 +554,7 @@ func TestDs_CreateStream(t *testing.T) {
 			DeliveryConfiguration: DeliveryConfiguration{
 				Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 				Format:           FormatTypeStructured,
-				Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+				Frequency:        Frequency{IntervalInSeconds: 30},
 				UploadFilePrefix: "logs",
 				UploadFileSuffix: "ak",
 			},
@@ -933,7 +933,7 @@ func TestDs_CreateStream(t *testing.T) {
 					Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
 					Format:    FormatTypeStructured,
 					Frequency: Frequency{
-						IntervalInSeconds: IntervalInSeconds30,
+						IntervalInSeconds: 30,
 					},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
@@ -1011,7 +1011,7 @@ func TestDs_CreateStream(t *testing.T) {
 				r.StreamConfiguration.DeliveryConfiguration = DeliveryConfiguration{
 					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 					Format:           FormatTypeJson,
-					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					Frequency:        Frequency{IntervalInSeconds: 30},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
 				}
@@ -1022,7 +1022,7 @@ func TestDs_CreateStream(t *testing.T) {
 			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
 				r.StreamConfiguration.DeliveryConfiguration = DeliveryConfiguration{
 					Format:           FormatTypeStructured,
-					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					Frequency:        Frequency{IntervalInSeconds: 30},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
 				}
@@ -1172,7 +1172,7 @@ func TestDs_UpdateStream(t *testing.T) {
 			DeliveryConfiguration: DeliveryConfiguration{
 				Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 				Format:           FormatTypeStructured,
-				Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+				Frequency:        Frequency{IntervalInSeconds: 30},
 				UploadFilePrefix: "logs",
 				UploadFileSuffix: "ak",
 			},
@@ -1295,7 +1295,7 @@ func TestDs_UpdateStream(t *testing.T) {
 					Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
 					Format:    FormatTypeStructured,
 					Frequency: Frequency{
-						IntervalInSeconds: IntervalInSeconds30,
+						IntervalInSeconds: 30,
 					},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
@@ -1405,7 +1405,7 @@ func TestDs_UpdateStream(t *testing.T) {
 					Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
 					Format:    FormatTypeStructured,
 					Frequency: Frequency{
-						IntervalInSeconds: IntervalInSeconds30,
+						IntervalInSeconds: 30,
 					},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
@@ -1446,7 +1446,7 @@ func TestDs_UpdateStream(t *testing.T) {
 				r.StreamConfiguration.DeliveryConfiguration = DeliveryConfiguration{
 					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 					Format:           FormatTypeJson,
-					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					Frequency:        Frequency{IntervalInSeconds: 30},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
 				}
@@ -1457,7 +1457,7 @@ func TestDs_UpdateStream(t *testing.T) {
 			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
 				r.StreamConfiguration.DeliveryConfiguration = DeliveryConfiguration{
 					Format:           FormatTypeStructured,
-					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					Frequency:        Frequency{IntervalInSeconds: 30},
 					UploadFilePrefix: "logs",
 					UploadFileSuffix: "ak",
 				}
@@ -1986,6 +1986,27 @@ func TestDs_Destinations(t *testing.T) {
 }
 `,
 		},
+		"NetStorageConnector": {
+			destination: &NetStorageConnector{
+				DisplayName:     "testDisplayName",
+				UserName:        "testUserName",
+				Endpoint:        "testEndpoint",
+				SecretAccessKey: "testSecretAccessKey",
+				Bucket:          "123456",
+				Path:            "testPath",
+			},
+			expectedJSON: `
+{
+    "destinationType": "NS4",
+    "displayName": "testDisplayName",
+    "userName": "testUserName",
+    "endpoint": "testEndpoint",
+    "secretAccessKey": "testSecretAccessKey",
+    "bucket": "123456",
+    "path": "testPath"
+}
+`,
+		},
 	}
 
 	request := CreateStreamRequest{
@@ -1994,7 +2015,7 @@ func TestDs_Destinations(t *testing.T) {
 			DeliveryConfiguration: DeliveryConfiguration{
 				Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 				Format:           FormatTypeStructured,
-				Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+				Frequency:        Frequency{IntervalInSeconds: 30},
 				UploadFilePrefix: "logs",
 				UploadFileSuffix: "ak",
 			},
@@ -2072,7 +2093,7 @@ func TestDs_setDestinationTypes(t *testing.T) {
 			DeliveryConfiguration: DeliveryConfiguration{
 				Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
 				Format:           FormatTypeStructured,
-				Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+				Frequency:        Frequency{IntervalInSeconds: 30},
 				UploadFilePrefix: "logs",
 				UploadFileSuffix: "ak",
 			},
