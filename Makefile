@@ -81,7 +81,7 @@ create-junit-report: | $(GOJUNITREPORT) ; $(info $(M) Creating junit xml report)
 
 .PHONY: create-coverage-files
 create-coverage-files: COVERAGE_DIR := $(CURDIR)/test/coverage
-create-coverage-files: | $(GOCOV) $(GOCOVXML); $(info $(M) Creating coverage files...) @ ## Run coverage tests
+create-coverage-files: $(CURDIR)/test/coverage/profile.out | $(GOCOV) $(GOCOVXML); $(info $(M) Creating coverage files...) @ ## Run coverage tests
 	$Q $(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
 	$Q $(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
 
@@ -112,6 +112,7 @@ fmt-check: | $(GOIMPORTS); $(info $(M) Running format and imports check...) @ ##
 clean: ; $(info $(M) Cleaning...)	@ ## Cleanup everything
 	@rm -rf $(BIN)
 	@rm -rf test/tests.* test/coverage
+	@$(GO) clean -testcache 
 
 .PHONY: help
 help:

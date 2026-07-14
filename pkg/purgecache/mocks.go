@@ -53,3 +53,33 @@ func (m *Mock) DeleteByCPCode(ctx context.Context, params DeleteByCPCodeRequest)
 
 	return args.Get(0).(*DeleteResponse), args.Error(1)
 }
+
+func (m *Mock) InvalidateByURL(ctx context.Context, params InvalidateByURLRequest) (*InvalidateResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*InvalidateResponse), args.Error(1)
+}
+
+func (m *Mock) InvalidateByTag(ctx context.Context, params InvalidateByTagRequest) (*InvalidateResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*InvalidateResponse), args.Error(1)
+}
+
+func (m *Mock) InvalidateByCPCode(ctx context.Context, params InvalidateByCPCodeRequest) (*InvalidateResponse, error) {
+	args := m.Called(ctx, params)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*InvalidateResponse), args.Error(1)
+}

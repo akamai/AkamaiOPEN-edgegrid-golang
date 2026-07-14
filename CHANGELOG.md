@@ -19,10 +19,13 @@
 
 * PurgeCache
   * Added methods to the `purgecache` package:
-    * [RateLimitStatus](https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status) - Checks the rate and object limit statuses for a given purge type.
     * [DeleteByURL](https://techdocs.akamai.com/purge-cache/reference/post-delete-url) - Deletes content on the selected URL or ARL.
     * [DeleteByTag](https://techdocs.akamai.com/purge-cache/reference/post-delete-tag) - Deletes content on the selected set of cache tags.
     * [DeleteByCPCode](https://techdocs.akamai.com/purge-cache/reference/post-delete-cpcode) - Deletes content on the selected CP code.
+    * [InvalidateByURL](https://techdocs.akamai.com/purge-cache/reference/post-invalidate-url) - Invalidates content on the selected URL or ARL.
+    * [InvalidateByTag](https://techdocs.akamai.com/purge-cache/reference/post-invalidate-tag) - Invalidates content on the selected set of cache tags.
+    * [InvalidateByCPCode](https://techdocs.akamai.com/purge-cache/reference/post-invalidate-cpcode) - Invalidates content on the selected CP code.
+    * [RateLimitStatus](https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status) - Checks the rate and object limit statuses for a given purge type.
 
 
 

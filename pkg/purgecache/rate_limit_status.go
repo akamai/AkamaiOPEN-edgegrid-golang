@@ -14,7 +14,7 @@ import (
 type (
 	// RateLimitStatusRequest contains request parameters for checking rate limit status.
 	RateLimitStatusRequest struct {
-		// PurgeType specifies the type of purge objects. Must be one of: cpcode, tag, url.
+		// PurgeType specifies the type of purge objects. Must be one of: `cpcode`, `tag`, `url`.
 		PurgeType PurgeType
 
 		// Network specifies the network environment: staging or production.
@@ -52,9 +52,6 @@ func (r RateLimitStatusRequest) Validate() error {
 	})
 }
 
-// RateLimitStatus checks the rate and object limit statuses for a specific purge type.
-//
-// See: https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status
 func (p *purgecache) RateLimitStatus(ctx context.Context, params RateLimitStatusRequest) (*RateLimitStatusResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("RateLimitStatus")
@@ -85,7 +82,7 @@ func (p *purgecache) RateLimitStatus(ctx context.Context, params RateLimitStatus
 		return nil, p.Error(resp)
 	}
 
-	result.RateLimitHeaders = extractRateLimitStatusHeaders(resp, logger)
+	result.RateLimitHeaders = extractRateLimitHeaders(resp, logger)
 
 	return &result, nil
 }

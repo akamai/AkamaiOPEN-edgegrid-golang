@@ -1,14 +1,10 @@
 package purgecache
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
-	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
@@ -16,22 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func loadFixtureBytes(path string) []byte {
-	contents, err := os.ReadFile(path)
-	if err != nil {
-		panic(err)
-	}
-	return contents
-}
-
-func compactJSON(encoded []byte) string {
-	buf := bytes.Buffer{}
-	if err := json.Compact(&buf, encoded); err != nil {
-		panic(fmt.Sprintf("%s: %s", err, string(encoded)))
-	}
-	return buf.String()
-}
 
 func TestRateLimitStatus(t *testing.T) {
 	t.Parallel()
@@ -255,17 +235,7 @@ func TestRateLimitStatus(t *testing.T) {
 				return
 			}
 
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodPost, r.Method)
-				for header, value := range test.responseHeaders {
-					w.Header().Set(header, value)
-				}
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			defer mockServer.Close()
+			mockServer := getMockTestServer(t, http.MethodPost, test.expectedPath, test.responseStatus, test.responseBody, "", test.responseHeaders)
 
 			client := mockAPIClient(t, mockServer)
 			resp, err := client.RateLimitStatus(context.Background(), test.params)

@@ -15,11 +15,14 @@ var (
 	// ErrStructValidation is returned when given struct validation failed.
 	ErrStructValidation = errors.New("struct validation")
 
-	// ErrRateLimitStatus is returned when RateLimitStatus fails.
-	ErrRateLimitStatus = errors.New("checking rate limit status")
-
 	// ErrDelete is returned when a deletion request fails.
 	ErrDelete = errors.New("delete cache")
+
+	// ErrInvalidate is returned when an invalidation request fails.
+	ErrInvalidate = errors.New("invalidate cache")
+
+	// ErrRateLimitStatus is returned when RateLimitStatus fails.
+	ErrRateLimitStatus = errors.New("checking rate limit status")
 )
 
 type (

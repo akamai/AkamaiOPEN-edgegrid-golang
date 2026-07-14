@@ -10,11 +10,6 @@ import (
 type (
 	// PurgeCache is the interface for the Purge Cache API.
 	PurgeCache interface {
-		// RateLimitStatus checks the rate and object limit statuses for a specific purge type.
-		//
-		// See: https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status
-		RateLimitStatus(ctx context.Context, params RateLimitStatusRequest) (*RateLimitStatusResponse, error)
-
 		// DeleteByURL deletes cache content by identifying URLs or ARLs.
 		//
 		// See: https://techdocs.akamai.com/purge-cache/reference/post-delete-url
@@ -29,6 +24,26 @@ type (
 		//
 		// See: https://techdocs.akamai.com/purge-cache/reference/post-delete-cpcode
 		DeleteByCPCode(ctx context.Context, params DeleteByCPCodeRequest) (*DeleteResponse, error)
+
+		// InvalidateByURL invalidates cache content by identifying URLs or ARLs.
+		//
+		// See: https://techdocs.akamai.com/purge-cache/reference/post-invalidate-url
+		InvalidateByURL(ctx context.Context, params InvalidateByURLRequest) (*InvalidateResponse, error)
+
+		// InvalidateByTag invalidates cache content by identifying cache tags.
+		//
+		// See: https://techdocs.akamai.com/purge-cache/reference/post-invalidate-tag
+		InvalidateByTag(ctx context.Context, params InvalidateByTagRequest) (*InvalidateResponse, error)
+
+		// InvalidateByCPCode invalidates cache content by identifying CP Codes.
+		//
+		// See: https://techdocs.akamai.com/purge-cache/reference/post-invalidate-cpcode
+		InvalidateByCPCode(ctx context.Context, params InvalidateByCPCodeRequest) (*InvalidateResponse, error)
+
+		// RateLimitStatus checks the rate and object limit statuses for a specific purge type.
+		//
+		// See: https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status
+		RateLimitStatus(ctx context.Context, params RateLimitStatusRequest) (*RateLimitStatusResponse, error)
 	}
 
 	purgecache struct {

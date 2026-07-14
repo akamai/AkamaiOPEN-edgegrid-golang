@@ -1,11 +1,14 @@
 package purgecache
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/log"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -15,6 +18,63 @@ type (
 
 	// PurgeNetwork represents the network environment to target.
 	PurgeNetwork string
+
+	// PurgeByURLRequest is the common request struct for purge operations by URL or ARL.
+	PurgeByURLRequest struct {
+		// Network specifies the network environment: `staging` or `production`.
+		// When omitted, the API defaults to production.
+		Network PurgeNetwork `json:"-"`
+
+		// Objects is the list of URLs or ARLs to purge.
+		Objects []string `json:"objects"`
+	}
+
+	// PurgeByTagRequest is the common request struct for purge operations by cache tag.
+	PurgeByTagRequest struct {
+		// Network specifies the network environment: `staging` or `production`.
+		// When omitted, the API defaults to production.
+		Network PurgeNetwork `json:"-"`
+
+		// Objects is the list of cache tags to purge.
+		Objects []string `json:"objects"`
+	}
+
+	// PurgeByCPCodeRequest is the common request struct for purge operations by CP Code.
+	PurgeByCPCodeRequest struct {
+		// Network specifies the network environment: `staging` or `production`.
+		// When omitted, the API defaults to production.
+		Network PurgeNetwork `json:"-"`
+
+		// Objects is the list of CP Codes to purge.
+		Objects []int64 `json:"objects"`
+	}
+
+	// PurgeResponse is the common response struct for cache purge operations.
+	PurgeResponse struct {
+		// DescribedBy is a URL that describes the API's error response.
+		DescribedBy string `json:"describedBy"`
+
+		// Detail contains detailed information about the HTTP status code returned.
+		Detail string `json:"detail"`
+
+		// EstimatedSeconds is the estimated number of seconds before the purge is complete.
+		EstimatedSeconds int64 `json:"estimatedSeconds"`
+
+		// HTTPStatus is the HTTP code that indicates the status of the purge request.
+		HTTPStatus int `json:"httpStatus"`
+
+		// PurgeID is the unique identifier for the purge request.
+		PurgeID string `json:"purgeId"`
+
+		// SupportID is an identifier to provide Akamai Technical Support if issues arise.
+		SupportID string `json:"supportId"`
+
+		// Title describes the response type.
+		Title string `json:"title"`
+
+		// RateLimitHeaders contains rate limit information extracted from response headers.
+		RateLimitHeaders RateLimitHeaders `json:"-"`
+	}
 
 	// RateLimitHeaders contains rate limit information extracted from response headers.
 	RateLimitHeaders struct {
@@ -85,7 +145,7 @@ func (n PurgeNetwork) Validate() error {
 			n, PurgeNetworkStaging, PurgeNetworkProduction)).Validate(n)
 }
 
-func extractRateLimitStatusHeaders(resp *http.Response, logger log.Interface) RateLimitHeaders {
+func extractRateLimitHeaders(resp *http.Response, logger log.Interface) RateLimitHeaders {
 	var h RateLimitHeaders
 
 	parseIntHeader := func(name string) *int64 {
@@ -124,4 +184,32 @@ func extractRateLimitStatusHeaders(resp *http.Response, logger log.Interface) Ra
 	h.SecondsToRefreshLimitObjects = parseFloatHeader("X-Ratelimit-Seconds-To-Refresh-Limit-Objects")
 
 	return h
+}
+
+// performPurgeRequest builds and executes a purge request for the given action and purgeType.
+func (p *purgecache) performPurgeRequest(ctx context.Context, wrapErr error, action string, purgeType PurgeType, network PurgeNetwork, body any) (*PurgeResponse, error) {
+	var err error
+	var req *http.Request
+	if network == "" {
+		req, err = request.NewPost(ctx, "/ccu/v3/%s/%s", action, purgeType).WithBody(body).Build()
+	} else {
+		req, err = request.NewPost(ctx, "/ccu/v3/%s/%s/%s", action, purgeType, network).WithBody(body).Build()
+	}
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %w", wrapErr, err)
+	}
+
+	var result PurgeResponse
+	resp, err := p.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("%w: request failed: %w", wrapErr, err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusCreated {
+		return nil, p.Error(resp)
+	}
+
+	result.RateLimitHeaders = extractRateLimitHeaders(resp, p.Log(ctx))
+	return &result, nil
 }

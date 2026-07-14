@@ -13,25 +13,25 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDeleteByURL(t *testing.T) {
+func TestInvalidateByURL(t *testing.T) {
 	t.Parallel()
 
-	result := DeleteResponse{}
-	respData := compactJSON(loadFixtureBytes("testdata/TestDelete/Delete.json"))
+	result := InvalidateResponse{}
+	respData := compactJSON(loadFixtureBytes("testdata/TestInvalidate/Invalidate.json"))
 	require.NoError(t, json.Unmarshal([]byte(respData), &result))
 
 	tests := map[string]struct {
-		params          DeleteByURLRequest
+		params          InvalidateByURLRequest
 		responseStatus  int
 		responseBody    string
 		responseHeaders map[string]string
 		expectedPath    string
 		expectedBody    string
-		expectedResp    *DeleteResponse
+		expectedResp    *InvalidateResponse
 		withError       func(*testing.T, error)
 	}{
 		"201 - with rate limit headers": {
-			params: DeleteByURLRequest{
+			params: InvalidateByURLRequest{
 				Objects: []string{"http://example.com"},
 			},
 			responseStatus: http.StatusCreated,
@@ -46,9 +46,9 @@ func TestDeleteByURL(t *testing.T) {
 				"X-Ratelimit-Seconds-To-Refresh-Limit":         "0.5",
 				"X-Ratelimit-Seconds-To-Refresh-Limit-Objects": "0.1",
 			},
-			expectedPath: "/ccu/v3/delete/url",
+			expectedPath: "/ccu/v3/invalidate/url",
 			expectedBody: `{"objects":["http://example.com"]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -67,14 +67,14 @@ func TestDeleteByURL(t *testing.T) {
 			},
 		},
 		"201 - no rate limit headers": {
-			params: DeleteByURLRequest{
+			params: InvalidateByURLRequest{
 				Objects: []string{"http://example.com"},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody:   respData,
-			expectedPath:   "/ccu/v3/delete/url",
+			expectedPath:   "/ccu/v3/invalidate/url",
 			expectedBody:   `{"objects":["http://example.com"]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -84,15 +84,15 @@ func TestDeleteByURL(t *testing.T) {
 			},
 		},
 		"201 - staging network": {
-			params: DeleteByURLRequest{
+			params: InvalidateByURLRequest{
 				Network: PurgeNetworkStaging,
 				Objects: []string{"http://example.com"},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody:   respData,
-			expectedPath:   "/ccu/v3/delete/url/staging",
+			expectedPath:   "/ccu/v3/invalidate/url/staging",
 			expectedBody:   `{"objects":["http://example.com"]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -102,15 +102,15 @@ func TestDeleteByURL(t *testing.T) {
 			},
 		},
 		"201 - production network": {
-			params: DeleteByURLRequest{
+			params: InvalidateByURLRequest{
 				Network: PurgeNetworkProduction,
 				Objects: []string{"http://example.com"},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody:   respData,
-			expectedPath:   "/ccu/v3/delete/url/production",
+			expectedPath:   "/ccu/v3/invalidate/url/production",
 			expectedBody:   `{"objects":["http://example.com"]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -120,7 +120,7 @@ func TestDeleteByURL(t *testing.T) {
 			},
 		},
 		"400 bad request": {
-			params: DeleteByURLRequest{
+			params: InvalidateByURLRequest{
 				Objects: []string{"not-a-valid-url"},
 			},
 			responseStatus: http.StatusBadRequest,
@@ -131,7 +131,7 @@ func TestDeleteByURL(t *testing.T) {
 				"title": "Bad Request",
 				"describedBy": "https://techdocs.akamai.com/purge-cache/reference/400"
 			}`,
-			expectedPath: "/ccu/v3/delete/url",
+			expectedPath: "/ccu/v3/invalidate/url",
 			expectedBody: `{"objects":["not-a-valid-url"]}`,
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -145,7 +145,7 @@ func TestDeleteByURL(t *testing.T) {
 			},
 		},
 		"429 too many requests": {
-			params: DeleteByURLRequest{
+			params: InvalidateByURLRequest{
 				Objects: []string{"http://example.com"},
 			},
 			responseStatus: http.StatusTooManyRequests,
@@ -159,7 +159,7 @@ func TestDeleteByURL(t *testing.T) {
 				"rateLimitCurrentRequestSize": 1,
 				"rateLimitRemaining": 0
 			}`,
-			expectedPath: "/ccu/v3/delete/url",
+			expectedPath: "/ccu/v3/invalidate/url",
 			expectedBody: `{"objects":["http://example.com"]}`,
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -176,7 +176,7 @@ func TestDeleteByURL(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			params: DeleteByURLRequest{
+			params: InvalidateByURLRequest{
 				Objects: []string{"http://example.com"},
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -187,7 +187,7 @@ func TestDeleteByURL(t *testing.T) {
 				"title": "Internal Server Error",
 				"describedBy": "https://techdocs.akamai.com/purge-cache/reference/500"
 			}`,
-			expectedPath: "/ccu/v3/delete/url",
+			expectedPath: "/ccu/v3/invalidate/url",
 			expectedBody: `{"objects":["http://example.com"]}`,
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -201,25 +201,25 @@ func TestDeleteByURL(t *testing.T) {
 			},
 		},
 		"validation error - missing objects": {
-			params: DeleteByURLRequest{},
+			params: InvalidateByURLRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t,
-					"delete cache: struct validation: Objects: must contain at least one URL or ARL to delete",
+					"invalidate cache: struct validation: Objects: must contain at least one URL or ARL to invalidate",
 					err.Error())
-				assert.ErrorIs(t, err, ErrDelete)
+				assert.ErrorIs(t, err, ErrInvalidate)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
 		},
 		"validation error - invalid network": {
-			params: DeleteByURLRequest{
+			params: InvalidateByURLRequest{
 				Network: "invalid",
 				Objects: []string{"http://example.com"},
 			},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t,
-					"delete cache: struct validation: Network: value 'invalid' is invalid. Must be one of: 'staging', 'production'",
+					"invalidate cache: struct validation: Network: value 'invalid' is invalid. Must be one of: 'staging', 'production'",
 					err.Error())
-				assert.ErrorIs(t, err, ErrDelete)
+				assert.ErrorIs(t, err, ErrInvalidate)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
 		},
@@ -232,7 +232,7 @@ func TestDeleteByURL(t *testing.T) {
 				sess, err := session.New()
 				require.NoError(t, err)
 				client := Client(sess)
-				_, err = client.DeleteByURL(context.Background(), test.params)
+				_, err = client.InvalidateByURL(context.Background(), test.params)
 				require.Error(t, err)
 				test.withError(t, err)
 				return
@@ -241,7 +241,7 @@ func TestDeleteByURL(t *testing.T) {
 			mockServer := getMockTestServer(t, http.MethodPost, test.expectedPath, test.responseStatus, test.responseBody, test.expectedBody, test.responseHeaders)
 
 			client := mockAPIClient(t, mockServer)
-			resp, err := client.DeleteByURL(context.Background(), test.params)
+			resp, err := client.InvalidateByURL(context.Background(), test.params)
 			if test.withError != nil {
 				require.Error(t, err)
 				test.withError(t, err)
@@ -253,25 +253,25 @@ func TestDeleteByURL(t *testing.T) {
 	}
 }
 
-func TestDeleteByTag(t *testing.T) {
+func TestInvalidateByTag(t *testing.T) {
 	t.Parallel()
 
-	result := DeleteResponse{}
-	respData := compactJSON(loadFixtureBytes("testdata/TestDelete/Delete.json"))
+	result := InvalidateResponse{}
+	respData := compactJSON(loadFixtureBytes("testdata/TestInvalidate/Invalidate.json"))
 	require.NoError(t, json.Unmarshal([]byte(respData), &result))
 
 	tests := map[string]struct {
-		params          DeleteByTagRequest
+		params          InvalidateByTagRequest
 		responseStatus  int
 		responseBody    string
 		responseHeaders map[string]string
 		expectedPath    string
 		expectedBody    string
-		expectedResp    *DeleteResponse
+		expectedResp    *InvalidateResponse
 		withError       func(*testing.T, error)
 	}{
 		"201 - with rate limit headers": {
-			params: DeleteByTagRequest{
+			params: InvalidateByTagRequest{
 				Objects: []string{"tag-1", "tag-2"},
 			},
 			responseStatus: http.StatusCreated,
@@ -286,9 +286,9 @@ func TestDeleteByTag(t *testing.T) {
 				"X-Ratelimit-Seconds-To-Refresh-Limit":         "0.5",
 				"X-Ratelimit-Seconds-To-Refresh-Limit-Objects": "0.1",
 			},
-			expectedPath: "/ccu/v3/delete/tag",
+			expectedPath: "/ccu/v3/invalidate/tag",
 			expectedBody: `{"objects":["tag-1","tag-2"]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -307,14 +307,14 @@ func TestDeleteByTag(t *testing.T) {
 			},
 		},
 		"201 - no rate limit headers": {
-			params: DeleteByTagRequest{
+			params: InvalidateByTagRequest{
 				Objects: []string{"tag-1"},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody:   respData,
-			expectedPath:   "/ccu/v3/delete/tag",
+			expectedPath:   "/ccu/v3/invalidate/tag",
 			expectedBody:   `{"objects":["tag-1"]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -324,15 +324,15 @@ func TestDeleteByTag(t *testing.T) {
 			},
 		},
 		"201 - staging network": {
-			params: DeleteByTagRequest{
+			params: InvalidateByTagRequest{
 				Network: PurgeNetworkStaging,
 				Objects: []string{"tag-1"},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody:   respData,
-			expectedPath:   "/ccu/v3/delete/tag/staging",
+			expectedPath:   "/ccu/v3/invalidate/tag/staging",
 			expectedBody:   `{"objects":["tag-1"]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -342,15 +342,15 @@ func TestDeleteByTag(t *testing.T) {
 			},
 		},
 		"201 - production network": {
-			params: DeleteByTagRequest{
+			params: InvalidateByTagRequest{
 				Network: PurgeNetworkProduction,
 				Objects: []string{"tag-1"},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody:   respData,
-			expectedPath:   "/ccu/v3/delete/tag/production",
+			expectedPath:   "/ccu/v3/invalidate/tag/production",
 			expectedBody:   `{"objects":["tag-1"]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -360,7 +360,7 @@ func TestDeleteByTag(t *testing.T) {
 			},
 		},
 		"400 bad request": {
-			params: DeleteByTagRequest{
+			params: InvalidateByTagRequest{
 				Objects: []string{"tag-1"},
 			},
 			responseStatus: http.StatusBadRequest,
@@ -371,7 +371,7 @@ func TestDeleteByTag(t *testing.T) {
 				"title": "Bad Request",
 				"describedBy": "https://techdocs.akamai.com/purge-cache/reference/400"
 			}`,
-			expectedPath: "/ccu/v3/delete/tag",
+			expectedPath: "/ccu/v3/invalidate/tag",
 			expectedBody: `{"objects":["tag-1"]}`,
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -385,7 +385,7 @@ func TestDeleteByTag(t *testing.T) {
 			},
 		},
 		"429 too many requests": {
-			params: DeleteByTagRequest{
+			params: InvalidateByTagRequest{
 				Objects: []string{"tag-1"},
 			},
 			responseStatus: http.StatusTooManyRequests,
@@ -399,7 +399,7 @@ func TestDeleteByTag(t *testing.T) {
 				"rateLimitCurrentRequestSize": 1,
 				"rateLimitRemaining": 0
 			}`,
-			expectedPath: "/ccu/v3/delete/tag",
+			expectedPath: "/ccu/v3/invalidate/tag",
 			expectedBody: `{"objects":["tag-1"]}`,
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -416,7 +416,7 @@ func TestDeleteByTag(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			params: DeleteByTagRequest{
+			params: InvalidateByTagRequest{
 				Objects: []string{"tag-1"},
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -427,7 +427,7 @@ func TestDeleteByTag(t *testing.T) {
 				"title": "Internal Server Error",
 				"describedBy": "https://techdocs.akamai.com/purge-cache/reference/500"
 			}`,
-			expectedPath: "/ccu/v3/delete/tag",
+			expectedPath: "/ccu/v3/invalidate/tag",
 			expectedBody: `{"objects":["tag-1"]}`,
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -441,25 +441,25 @@ func TestDeleteByTag(t *testing.T) {
 			},
 		},
 		"validation error - missing objects": {
-			params: DeleteByTagRequest{},
+			params: InvalidateByTagRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t,
-					"delete cache: struct validation: Objects: must contain at least one tag to delete",
+					"invalidate cache: struct validation: Objects: must contain at least one tag to invalidate",
 					err.Error())
-				assert.ErrorIs(t, err, ErrDelete)
+				assert.ErrorIs(t, err, ErrInvalidate)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
 		},
 		"validation error - invalid network": {
-			params: DeleteByTagRequest{
+			params: InvalidateByTagRequest{
 				Network: "invalid",
 				Objects: []string{"tag-1"},
 			},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t,
-					"delete cache: struct validation: Network: value 'invalid' is invalid. Must be one of: 'staging', 'production'",
+					"invalidate cache: struct validation: Network: value 'invalid' is invalid. Must be one of: 'staging', 'production'",
 					err.Error())
-				assert.ErrorIs(t, err, ErrDelete)
+				assert.ErrorIs(t, err, ErrInvalidate)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
 		},
@@ -472,7 +472,7 @@ func TestDeleteByTag(t *testing.T) {
 				sess, err := session.New()
 				require.NoError(t, err)
 				client := Client(sess)
-				_, err = client.DeleteByTag(context.Background(), test.params)
+				_, err = client.InvalidateByTag(context.Background(), test.params)
 				require.Error(t, err)
 				test.withError(t, err)
 				return
@@ -481,7 +481,7 @@ func TestDeleteByTag(t *testing.T) {
 			mockServer := getMockTestServer(t, http.MethodPost, test.expectedPath, test.responseStatus, test.responseBody, test.expectedBody, test.responseHeaders)
 
 			client := mockAPIClient(t, mockServer)
-			resp, err := client.DeleteByTag(context.Background(), test.params)
+			resp, err := client.InvalidateByTag(context.Background(), test.params)
 			if test.withError != nil {
 				require.Error(t, err)
 				test.withError(t, err)
@@ -493,25 +493,25 @@ func TestDeleteByTag(t *testing.T) {
 	}
 }
 
-func TestDeleteByCPCode(t *testing.T) {
+func TestInvalidateByCPCode(t *testing.T) {
 	t.Parallel()
 
-	result := DeleteResponse{}
-	respData := compactJSON(loadFixtureBytes("testdata/TestDelete/Delete.json"))
+	result := InvalidateResponse{}
+	respData := compactJSON(loadFixtureBytes("testdata/TestInvalidate/Invalidate.json"))
 	require.NoError(t, json.Unmarshal([]byte(respData), &result))
 
 	tests := map[string]struct {
-		params          DeleteByCPCodeRequest
+		params          InvalidateByCPCodeRequest
 		responseStatus  int
 		responseBody    string
 		responseHeaders map[string]string
 		expectedPath    string
 		expectedBody    string
-		expectedResp    *DeleteResponse
+		expectedResp    *InvalidateResponse
 		withError       func(*testing.T, error)
 	}{
 		"201 - with rate limit headers": {
-			params: DeleteByCPCodeRequest{
+			params: InvalidateByCPCodeRequest{
 				Objects: []int64{12345, 67890},
 			},
 			responseStatus: http.StatusCreated,
@@ -526,9 +526,9 @@ func TestDeleteByCPCode(t *testing.T) {
 				"X-Ratelimit-Seconds-To-Refresh-Limit":         "0.5",
 				"X-Ratelimit-Seconds-To-Refresh-Limit-Objects": "0.1",
 			},
-			expectedPath: "/ccu/v3/delete/cpcode",
+			expectedPath: "/ccu/v3/invalidate/cpcode",
 			expectedBody: `{"objects":[12345,67890]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -547,14 +547,14 @@ func TestDeleteByCPCode(t *testing.T) {
 			},
 		},
 		"201 - no rate limit headers": {
-			params: DeleteByCPCodeRequest{
+			params: InvalidateByCPCodeRequest{
 				Objects: []int64{12345},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody:   respData,
-			expectedPath:   "/ccu/v3/delete/cpcode",
+			expectedPath:   "/ccu/v3/invalidate/cpcode",
 			expectedBody:   `{"objects":[12345]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -564,15 +564,15 @@ func TestDeleteByCPCode(t *testing.T) {
 			},
 		},
 		"201 - staging network": {
-			params: DeleteByCPCodeRequest{
+			params: InvalidateByCPCodeRequest{
 				Network: PurgeNetworkStaging,
 				Objects: []int64{12345},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody:   respData,
-			expectedPath:   "/ccu/v3/delete/cpcode/staging",
+			expectedPath:   "/ccu/v3/invalidate/cpcode/staging",
 			expectedBody:   `{"objects":[12345]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -582,15 +582,15 @@ func TestDeleteByCPCode(t *testing.T) {
 			},
 		},
 		"201 - production network": {
-			params: DeleteByCPCodeRequest{
+			params: InvalidateByCPCodeRequest{
 				Network: PurgeNetworkProduction,
 				Objects: []int64{12345},
 			},
 			responseStatus: http.StatusCreated,
 			responseBody:   respData,
-			expectedPath:   "/ccu/v3/delete/cpcode/production",
+			expectedPath:   "/ccu/v3/invalidate/cpcode/production",
 			expectedBody:   `{"objects":[12345]}`,
-			expectedResp: &DeleteResponse{
+			expectedResp: &InvalidateResponse{
 				Detail:           result.Detail,
 				EstimatedSeconds: result.EstimatedSeconds,
 				HTTPStatus:       result.HTTPStatus,
@@ -600,7 +600,7 @@ func TestDeleteByCPCode(t *testing.T) {
 			},
 		},
 		"400 bad request": {
-			params: DeleteByCPCodeRequest{
+			params: InvalidateByCPCodeRequest{
 				Objects: []int64{99999},
 			},
 			responseStatus: http.StatusBadRequest,
@@ -611,7 +611,7 @@ func TestDeleteByCPCode(t *testing.T) {
 				"title": "Bad Request",
 				"describedBy": "https://techdocs.akamai.com/purge-cache/reference/400"
 			}`,
-			expectedPath: "/ccu/v3/delete/cpcode",
+			expectedPath: "/ccu/v3/invalidate/cpcode",
 			expectedBody: `{"objects":[99999]}`,
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -625,7 +625,7 @@ func TestDeleteByCPCode(t *testing.T) {
 			},
 		},
 		"429 too many requests": {
-			params: DeleteByCPCodeRequest{
+			params: InvalidateByCPCodeRequest{
 				Objects: []int64{12345},
 			},
 			responseStatus: http.StatusTooManyRequests,
@@ -639,7 +639,7 @@ func TestDeleteByCPCode(t *testing.T) {
 				"rateLimitCurrentRequestSize": 1,
 				"rateLimitRemaining": 0
 			}`,
-			expectedPath: "/ccu/v3/delete/cpcode",
+			expectedPath: "/ccu/v3/invalidate/cpcode",
 			expectedBody: `{"objects":[12345]}`,
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -656,7 +656,7 @@ func TestDeleteByCPCode(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			params: DeleteByCPCodeRequest{
+			params: InvalidateByCPCodeRequest{
 				Objects: []int64{12345},
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -667,7 +667,7 @@ func TestDeleteByCPCode(t *testing.T) {
 				"title": "Internal Server Error",
 				"describedBy": "https://techdocs.akamai.com/purge-cache/reference/500"
 			}`,
-			expectedPath: "/ccu/v3/delete/cpcode",
+			expectedPath: "/ccu/v3/invalidate/cpcode",
 			expectedBody: `{"objects":[12345]}`,
 			withError: func(t *testing.T, err error) {
 				want := &Error{
@@ -681,25 +681,25 @@ func TestDeleteByCPCode(t *testing.T) {
 			},
 		},
 		"validation error - missing objects": {
-			params: DeleteByCPCodeRequest{},
+			params: InvalidateByCPCodeRequest{},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t,
-					"delete cache: struct validation: Objects: must contain at least one CP Code to delete",
+					"invalidate cache: struct validation: Objects: must contain at least one CP Code to invalidate",
 					err.Error())
-				assert.ErrorIs(t, err, ErrDelete)
+				assert.ErrorIs(t, err, ErrInvalidate)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
 		},
 		"validation error - invalid network": {
-			params: DeleteByCPCodeRequest{
+			params: InvalidateByCPCodeRequest{
 				Network: "invalid",
 				Objects: []int64{12345},
 			},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t,
-					"delete cache: struct validation: Network: value 'invalid' is invalid. Must be one of: 'staging', 'production'",
+					"invalidate cache: struct validation: Network: value 'invalid' is invalid. Must be one of: 'staging', 'production'",
 					err.Error())
-				assert.ErrorIs(t, err, ErrDelete)
+				assert.ErrorIs(t, err, ErrInvalidate)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
 		},
@@ -712,7 +712,7 @@ func TestDeleteByCPCode(t *testing.T) {
 				sess, err := session.New()
 				require.NoError(t, err)
 				client := Client(sess)
-				_, err = client.DeleteByCPCode(context.Background(), test.params)
+				_, err = client.InvalidateByCPCode(context.Background(), test.params)
 				require.Error(t, err)
 				test.withError(t, err)
 				return
@@ -721,7 +721,7 @@ func TestDeleteByCPCode(t *testing.T) {
 			mockServer := getMockTestServer(t, http.MethodPost, test.expectedPath, test.responseStatus, test.responseBody, test.expectedBody, test.responseHeaders)
 
 			client := mockAPIClient(t, mockServer)
-			resp, err := client.DeleteByCPCode(context.Background(), test.params)
+			resp, err := client.InvalidateByCPCode(context.Background(), test.params)
 			if test.withError != nil {
 				require.Error(t, err)
 				test.withError(t, err)
