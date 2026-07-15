@@ -69,7 +69,7 @@ $(TEST_TARGETS): SHELL = /bin/bash
 $(TEST_TARGETS): ; $(info $(M) Running tests with coverage...) @ ## Run coverage tests
 	$Q mkdir -p $(COVERAGE_DIR)
 	$Q mkdir -p test
-	$Q set -o pipefail && $(GO) test -timeout $(TIMEOUT)s $(ARGS) \
+	$Q set -o pipefail && $(GO) test -count=1 -timeout $(TIMEOUT)s $(ARGS) \
 		-coverpkg=./... \
 		-covermode=$(COVERAGE_MODE) \
 		-coverprofile="$(COVERAGE_PROFILE)" ./... | tee test/tests.output
