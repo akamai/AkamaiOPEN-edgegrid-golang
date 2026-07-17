@@ -68,7 +68,7 @@ type (
 
 	// StreamConfiguration is used in CreateStream as a request body
 	StreamConfiguration struct {
-		ContractID            string                `json:"contractId"`
+		ContractID            string                `json:"contractId,omitempty"`
 		CollectMidgress       bool                  `json:"collectMidgress,omitempty"`
 		DatasetFields         []DatasetFieldID      `json:"datasetFields,omitempty"`
 		Destination           AbstractConnector     `json:"destination"`
@@ -278,9 +278,9 @@ func (r CreateStreamRequest) Validate() error {
 		"StreamConfiguration.DeliveryConfiguration.Frequency":                   validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency, validation.Required),
 		"StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds": validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds, validation.Required),
 		"StreamConfiguration.Destination":                                       validation.Validate(r.StreamConfiguration.Destination, validation.Required),
-		"StreamConfiguration.ContractId":                                        validation.Validate(r.StreamConfiguration.ContractID, validation.Required),
+		"StreamConfiguration.ContractId":                                        validation.Validate(r.StreamConfiguration.ContractID, validation.When(r.LogType != LogTypeCDN, validation.Required)),
 		"StreamConfiguration.DatasetFields":                                     validation.Validate(r.StreamConfiguration.DatasetFields, validation.When(r.LogType == LogTypeCDN, validation.Required), validation.When(r.LogType == LogTypeAppSec, validation.Empty)),
-		"StreamConfiguration.GroupID":                                           validation.Validate(r.StreamConfiguration.GroupID, validation.Required, validation.Min(1)),
+		"StreamConfiguration.GroupID":                                           validation.Validate(r.StreamConfiguration.GroupID, validation.When(r.LogType == LogTypeCDN, validation.When(r.StreamConfiguration.GroupID != 0, validation.Min(1))), validation.When(r.LogType != LogTypeCDN, validation.Required, validation.Min(1))),
 		"StreamConfiguration.Properties":                                        validation.Validate(r.StreamConfiguration.Properties, validation.When(r.LogType == LogTypeCDN, validation.Required)),
 		"StreamConfiguration.AppSecConfigs":                                     validation.Validate(r.StreamConfiguration.AppSecConfigs, validation.When(r.LogType == LogTypeAppSec, validation.Required)),
 		"StreamConfiguration.StreamName":                                        validation.Validate(r.StreamConfiguration.StreamName, validation.Required),
@@ -306,9 +306,9 @@ func (r UpdateStreamRequest) Validate() error {
 		"StreamConfiguration.DeliveryConfiguration.Frequency":                   validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency, validation.Required),
 		"StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds": validation.Validate(r.StreamConfiguration.DeliveryConfiguration.Frequency.IntervalInSeconds, validation.Required),
 		"StreamConfiguration.Destination":                                       validation.Validate(r.StreamConfiguration.Destination, validation.Required),
-		"StreamConfiguration.ContractId":                                        validation.Validate(r.StreamConfiguration.ContractID, validation.Required),
+		"StreamConfiguration.ContractId":                                        validation.Validate(r.StreamConfiguration.ContractID, validation.When(r.LogType != LogTypeCDN, validation.Required)),
 		"StreamConfiguration.DatasetFields":                                     validation.Validate(r.StreamConfiguration.DatasetFields, validation.When(r.LogType == LogTypeCDN, validation.Required), validation.When(r.LogType == LogTypeAppSec, validation.Empty)),
-		"StreamConfiguration.GroupID":                                           validation.Validate(r.StreamConfiguration.GroupID, validation.In(0)),
+		"StreamConfiguration.GroupID":                                           validation.Validate(r.StreamConfiguration.GroupID, validation.When(r.LogType == LogTypeCDN, validation.When(r.StreamConfiguration.GroupID != 0, validation.Min(1))), validation.When(r.LogType != LogTypeCDN, validation.In(0))),
 		"StreamConfiguration.Properties":                                        validation.Validate(r.StreamConfiguration.Properties, validation.When(r.LogType == LogTypeCDN, validation.Required)),
 		"StreamConfiguration.AppSecConfigs":                                     validation.Validate(r.StreamConfiguration.AppSecConfigs, validation.When(r.LogType == LogTypeAppSec, validation.Required)),
 		"StreamConfiguration.StreamName":                                        validation.Validate(r.StreamConfiguration.StreamName, validation.Required),
@@ -343,6 +343,7 @@ func (d *ds) CreateStream(ctx context.Context, params CreateStreamRequest) (*Det
 	logger.Debug("CreateStream")
 
 	setDestinationType(&params.StreamConfiguration)
+	params.StreamConfiguration.ContractID = strings.TrimSpace(params.StreamConfiguration.ContractID)
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateStream, ErrStructValidation, err)
 	}
@@ -425,6 +426,7 @@ func (d *ds) UpdateStream(ctx context.Context, params UpdateStreamRequest) (*Det
 	logger.Debug("UpdateStream")
 
 	setDestinationType(&params.StreamConfiguration)
+	params.StreamConfiguration.ContractID = strings.TrimSpace(params.StreamConfiguration.ContractID)
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateStream, ErrStructValidation, err)
 	}
