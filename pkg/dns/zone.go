@@ -79,7 +79,7 @@ type (
 		LastModifiedDate      string                `json:"lastModifiedDate,omitempty"`
 		VersionID             string                `json:"versionId,omitempty"`
 		OutboundZoneTransfer  *OutboundZoneTransfer `json:"outboundZoneTransfer,omitempty"`
-		MultiProviderDnssec   *MultiProviderDnssec  `json:"multiProviderDnssec,omitempty"`
+		MultiProviderDnssec   *MultiProviderDnssec  `json:"multiProviderDnssec"`
 	}
 
 	// ListMetadata contains metadata for List Zones request
