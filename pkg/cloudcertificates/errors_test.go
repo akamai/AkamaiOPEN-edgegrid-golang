@@ -1,6 +1,7 @@
 package cloudcertificates
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"strings"
@@ -25,104 +26,86 @@ func TestNewError(t *testing.T) {
 	tests := map[string]struct {
 		response *http.Response
 		expected *Error
+		is       error // if set, asserts errors.Is(res, is) matches a known sentinel error
 	}{
-		"Bad request 400 - invalid field value": {
+		"403 - account not allowed": {
 			response: &http.Response{
-				StatusCode: http.StatusBadRequest,
+				StatusCode: http.StatusForbidden,
 				Body: io.NopCloser(strings.NewReader(`
 					{
-						"detail": "Invalid value '{grp_1234}' for field '{groupId}'. Failed to convert value of type 'String' to required type 'Integer'; For input string: \"grp_1234\"",
-						"status": 400,
-						"title": "Invalid field value.",
-						"type": "/error-types/invalid-field",
-						"instance": "/error-types/invalid-field?traceId=12345",
-						"explanation": "Failed to convert value of type 'String' to required type 'Integer'; For input string: \"grp_1234\"",
-						"parameterName": "groupId",
-						"invalidParameterValue": "grp_1234"
+						"type": "/error-types/lineage-account-not-allowed",
+						"title": "Account is not allowed to use Certificate Lineage.",
+						"status": 403,
+						"detail": "This account is not permitted to access Certificate Lineage APIs.",
+						"instance": "/error-types/lineage-account-not-allowed?traceId=1234567891011"
 					}`),
 				),
 				Request: req,
 			},
 			expected: &Error{
-				Type:                  "/error-types/invalid-field",
-				Title:                 "Invalid field value.",
-				Detail:                "Invalid value '{grp_1234}' for field '{groupId}'. Failed to convert value of type 'String' to required type 'Integer'; For input string: \"grp_1234\"",
-				Status:                http.StatusBadRequest,
-				Instance:              "/error-types/invalid-field?traceId=12345",
-				Explanation:           "Failed to convert value of type 'String' to required type 'Integer'; For input string: \"grp_1234\"",
-				ParameterName:         "groupId",
-				InvalidParameterValue: "grp_1234",
+				Type:     "/error-types/lineage-account-not-allowed",
+				Title:    "Account is not allowed to use Certificate Lineage.",
+				Status:   http.StatusForbidden,
+				Detail:   "This account is not permitted to access Certificate Lineage APIs.",
+				Instance: "/error-types/lineage-account-not-allowed?traceId=1234567891011",
 			},
+			is: ErrLineageAccountNotAllowed,
 		},
-		"Resource not found 404": {
+		"409 - cert already uploaded with context": {
 			response: &http.Response{
-				StatusCode: http.StatusNotFound,
+				StatusCode: http.StatusConflict,
 				Body: io.NopCloser(strings.NewReader(`
 					{
-						"type": "/error-types/certificate-not-found",
-						"title": "Certificate subscription is not found.",
-						"instance": "/error-types/certificate-not-found?traceId=12345",
-						"status": 404,
-						"detail": "Certificate subscription with {certificateSubscriptionId}: {1234} is not found.",
-						"certificateIdentifier": "certificateSubscriptionId",
-						"certificateIdentifierValue": "1234"
+						"type": "/error-types/cert-already-uploaded",
+						"title": "A signed certificate has already been uploaded for this algorithm instance.",
+						"status": 409,
+						"detail": "Algorithm instance {RSA} on generation {2912} already has an accepted signed certificate. Re-upload is not permitted.",
+						"instance": "/error-types/cert-already-uploaded?traceId=1234567891012",
+						"context": {"generationId": 2912, "keyType": "RSA"}
 					}`),
 				),
 				Request: req,
 			},
 			expected: &Error{
-				Type:                       "/error-types/certificate-not-found",
-				Title:                      "Certificate subscription is not found.",
-				Instance:                   "/error-types/certificate-not-found?traceId=12345",
-				Detail:                     "Certificate subscription with {certificateSubscriptionId}: {1234} is not found.",
-				Status:                     http.StatusNotFound,
-				CertificateIdentifier:      "certificateSubscriptionId",
-				CertificateIdentifierValue: "1234",
+				Type:     "/error-types/cert-already-uploaded",
+				Title:    "A signed certificate has already been uploaded for this algorithm instance.",
+				Status:   http.StatusConflict,
+				Detail:   "Algorithm instance {RSA} on generation {2912} already has an accepted signed certificate. Re-upload is not permitted.",
+				Instance: "/error-types/cert-already-uploaded?traceId=1234567891012",
+				Context:  map[string]any{"generationId": float64(2912), "keyType": "RSA"},
 			},
+			is: ErrCertAlreadyUploaded,
 		},
-		"Validation error 400 - invalid parameter value": {
+		"415 - media type not supported, context contains array": {
 			response: &http.Response{
-				StatusCode: http.StatusBadRequest,
+				StatusCode: http.StatusUnsupportedMediaType,
 				Body: io.NopCloser(strings.NewReader(`
 					{
-						"type": "/error-types/validation-failure",
-						"title": "Validation failure.",
-						"instance": "/error-types/validation-failure?traceId=12345",
-						"status": 400,
-						"detail": "Validation failed while executing the operation.",
-						"errors": [
-							{
-								"type": "/error-types/invalid-field",
-								"title": "Invalid field value.",
-								"detail": "Invalid value '{[example.com]}' for field '{sans}'. SANs list cannot contain duplicates.",
-								"instance": "/error-types/validation-failure?traceId=12345",
-								"explanation": "SANs list cannot contain duplicates.",
-								"invalidParameterValue": ["example.com"],
-								"parameterName": "sans"
-							}
-						]
+						"type": "/error-types/media-type-not-supported",
+						"title": "Media type not supported.",
+						"status": 415,
+						"detail": "Media type {application/json-patch+json} is not supported. Supported media type(s) are {[application/json]}.",
+						"instance": "/error-types/media-type-not-supported?traceId=1234567891013",
+						"context": {
+							"allowedMediaTypes": ["application/json"],
+							"unsupportedMediaType": "application/json-patch+json"
+						}
 					}`),
 				),
 				Request: req,
 			},
 			expected: &Error{
-				Type:     "/error-types/validation-failure",
-				Title:    "Validation failure.",
-				Instance: "/error-types/validation-failure?traceId=12345",
-				Detail:   "Validation failed while executing the operation.",
-				Status:   http.StatusBadRequest,
-				Errors: []SecondaryError{
-					{
-						Type:                  "/error-types/invalid-field",
-						Title:                 "Invalid field value.",
-						Detail:                "Invalid value '{[example.com]}' for field '{sans}'. SANs list cannot contain duplicates.",
-						Instance:              "/error-types/validation-failure?traceId=12345",
-						Explanation:           "SANs list cannot contain duplicates.",
-						InvalidParameterValue: []string{"example.com"},
-						ParameterName:         "sans",
-					},
+				Type:     "/error-types/media-type-not-supported",
+				Title:    "Media type not supported.",
+				Status:   http.StatusUnsupportedMediaType,
+				Detail:   "Media type {application/json-patch+json} is not supported. Supported media type(s) are {[application/json]}.",
+				Instance: "/error-types/media-type-not-supported?traceId=1234567891013",
+				Context: map[string]any{
+					"allowedMediaTypes":    []any{"application/json"},
+					"unsupportedMediaType": "application/json-patch+json",
 				},
 			},
+			is: ErrMediaTypeNotSupported,
 		},
 		"Invalid response body, assign status code": {
 			response: &http.Response{
@@ -155,6 +138,9 @@ func TestNewError(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			res := Client(sess).(*cloudcertificates).Error(tc.response)
 			assert.Equal(t, tc.expected, res)
+			if tc.is != nil {
+				assert.True(t, errors.Is(res, tc.is))
+			}
 		})
 	}
 }

@@ -12,507 +12,221 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestListCertificateBindings(t *testing.T) {
+func TestListLineageBindings(t *testing.T) {
 	t.Parallel()
+
 	tests := map[string]struct {
-		params           ListCertificateBindingsRequest
+		params           ListLineageBindingsRequest
 		responseStatus   int
 		responseBody     string
-		expectedResponse *ListCertificateBindingsResponse
+		expectedResponse *ListLineageBindingsResponse
 		expectedPath     string
-		returnedHeaders  map[string]string
 		withError        func(*testing.T, error)
 	}{
-		"200 - fetch of certificate bindings successful": {
-			params: ListCertificateBindingsRequest{
-				CertificateID: "123",
-			},
-			returnedHeaders: map[string]string{
-				"Akamai-RateLimit-Limit":     "60",
-				"Akamai-RateLimit-Remaining": "59",
-			},
-			expectedResponse: &ListCertificateBindingsResponse{
-				Bindings: []CertificateBinding{
-					{
-						CertificateID: "123456",
-						Hostname:      "www.example.com",
-						Network:       "PRODUCTION",
-						ResourceType:  "CDN_HOSTNAME",
-					},
-					{
-						CertificateID: "654321",
-						Hostname:      "secure.example.com",
-						Network:       "STAGING",
-						ResourceType:  "CDN_HOSTNAME",
-					},
-					{
-						CertificateID: "789012",
-						Hostname:      "api.example.com",
-						Network:       "PRODUCTION",
-						ResourceType:  "CDN_HOSTNAME",
-					},
-					// There should be 10 bindings in the response to match links correctly, but only 3 are shown here for brevity.
-				},
-				Links: Links{
-					Next:     ptr.To("https://api.example.com/v1/certificates/123/certificate-bindings?page=2&pageSize=10"),
-					Previous: nil,
-					Self:     "https://api.example.com/v1/certificates/123/certificate-bindings?page=1&pageSize=10",
-				},
-				RateLimits: RateLimitsMetadata{
-					Limit:     ptr.To(int64(60)),
-					Remaining: ptr.To(int64(59)),
-				},
-			},
-			responseStatus: 200,
-			expectedPath:   "/ccm/v1/certificates/123/certificate-bindings",
-			responseBody: `
-{
-  "bindings": [
-    {
-      "certificateId": 123456,
-      "hostname": "www.example.com",
-      "network": "PRODUCTION",
-      "resourceType": "CDN_HOSTNAME"
-    },
-    {
-      "certificateId": "654321",
-      "hostname": "secure.example.com",
-      "network": "STAGING",
-      "resourceType": "CDN_HOSTNAME"
-    },
-    {
-      "certificateId": "789012",
-      "hostname": "api.example.com",
-      "network": "PRODUCTION",
-      "resourceType": "CDN_HOSTNAME"
-    }
-  ],
-  "links": {
-    "next": "https://api.example.com/v1/certificates/123/certificate-bindings?page=2&pageSize=10",
-    "previous": null,
-    "self": "https://api.example.com/v1/certificates/123/certificate-bindings?page=1&pageSize=10"
-  }
-}`,
-		},
-		"200 - fetch of certificate bindings with paging successful": {
-			params: ListCertificateBindingsRequest{
-				CertificateID: "123",
-				Page:          3,
-				PageSize:      1,
-			},
-			expectedResponse: &ListCertificateBindingsResponse{
-				Bindings: []CertificateBinding{
-					{
-						CertificateID: "789012",
-						Hostname:      "api.example.com",
-						Network:       "PRODUCTION",
-						ResourceType:  "CDN_HOSTNAME",
-					},
-				},
-				Links: Links{
-					Next:     nil,
-					Previous: ptr.To("https://api.example.com/v1/certificates/123/certificate-bindings?page=2&pageSize=1"),
-					Self:     "https://api.example.com/v1/certificates/123/certificate-bindings?page=3&pageSize=1",
-				},
-			},
-			responseStatus: 200,
-			expectedPath:   "/ccm/v1/certificates/123/certificate-bindings?page=3&pageSize=1",
-			responseBody: `
-{
-  "bindings": [
-    {
-      "certificateId": "789012",
-      "hostname": "api.example.com",
-      "network": "PRODUCTION",
-      "resourceType": "CDN_HOSTNAME"
-    }
-  ],
-  "links": {
-    "next": null,
-    "previous": "https://api.example.com/v1/certificates/123/certificate-bindings?page=2&pageSize=1",
-    "self": "https://api.example.com/v1/certificates/123/certificate-bindings?page=3&pageSize=1"
-  }
-}`,
-		},
-		"404 resource not found - certificate not found": {
-			params: ListCertificateBindingsRequest{
-				CertificateID: "1234",
-			},
-			responseStatus: 404,
-			expectedPath:   "/ccm/v1/certificates/1234/certificate-bindings",
+		"200 OK - list bindings": {
+			params:         ListLineageBindingsRequest{LineageID: 12345},
+			expectedPath:   "/ccm/v2/lineages/12345/bindings",
+			responseStatus: http.StatusOK,
 			responseBody: `{
-				"certificateIdentifier": "certificateId",
-				"certificateIdentifierValue": "1234",
-				"detail": "Certificate with {certificateId}: {1234} is not found.",
-				"instance": "/error-types/certificate-not-found?traceId=-11111",
+				"bindings": [
+					{ "active": true,  "hostname": "www.example.com",     "network": ["PRODUCTION"] },
+					{ "active": false, "hostname": "api.example.com",     "network": ["PRODUCTION"] },
+					{ "active": true,  "hostname": "staging.example.com", "network": ["STAGING", "PRODUCTION"] }
+				],
+				"nextCursor": "12350",
+				"totalCount": 87
+			}`,
+			expectedResponse: &ListLineageBindingsResponse{
+				Bindings: []LineageBinding{
+					{Active: true, Hostname: "www.example.com", Networks: []string{"PRODUCTION"}},
+					{Active: false, Hostname: "api.example.com", Networks: []string{"PRODUCTION"}},
+					{Active: true, Hostname: "staging.example.com", Networks: []string{"STAGING", "PRODUCTION"}},
+				},
+				NextCursor: ptr.To("12350"),
+				TotalCount: 87,
+			},
+		},
+		"200 OK - list bindings, empty": {
+			params:         ListLineageBindingsRequest{LineageID: 500033},
+			expectedPath:   "/ccm/v2/lineages/500033/bindings",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"bindings": [],
+				"totalCount": 0
+			}`,
+			expectedResponse: &ListLineageBindingsResponse{
+				Bindings:   []LineageBinding{},
+				TotalCount: 0,
+			},
+		},
+		"200 OK - filtered by network, pageSize, after and sort": {
+			params: ListLineageBindingsRequest{
+				LineageID: 12345,
+				Network:   TargetNetworkStaging,
+				PageSize:  2,
+				After:     "12300",
+				Sort:      SortOrderDescending,
+			},
+			expectedPath:   "/ccm/v2/lineages/12345/bindings?after=12300&network=STAGING&pageSize=2&sort=DESC",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"bindings": [
+					{ "active": true, "hostname": "staging.example.com", "network": ["STAGING"] }
+				],
+				"totalCount": 1
+			}`,
+			expectedResponse: &ListLineageBindingsResponse{
+				Bindings: []LineageBinding{
+					{Active: true, Hostname: "staging.example.com", Networks: []string{"STAGING"}},
+				},
+				TotalCount: 1,
+			},
+		},
+		"200 OK - maximum page size": {
+			params:         ListLineageBindingsRequest{LineageID: 12345, PageSize: MaxListLineageBindingsPageSize},
+			expectedPath:   fmt.Sprintf("/ccm/v2/lineages/12345/bindings?pageSize=%d", MaxListLineageBindingsPageSize),
+			responseStatus: http.StatusOK,
+			responseBody:   `{"bindings": [], "totalCount": 0}`,
+			expectedResponse: &ListLineageBindingsResponse{
+				Bindings:   []LineageBinding{},
+				TotalCount: 0,
+			},
+		},
+		"404 lineage not found": {
+			params:         ListLineageBindingsRequest{LineageID: 999999},
+			expectedPath:   "/ccm/v2/lineages/999999/bindings",
+			responseStatus: http.StatusNotFound,
+			responseBody: `{
+				"type": "/error-types/lineage-not-found",
+				"title": "Certificate lineage not found.",
 				"status": 404,
-				"title": "Certificate is not found.",
-				"type": "/error-types/certificate-not-found"
+				"detail": "Certificate lineage {999999} not found.",
+				"instance": "/error-types/lineage-not-found?traceId=1234567891080",
+				"context": {"lineageId": 999999}
 			}`,
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrListCertificateBindings, &Error{
-					Type:                       "/error-types/certificate-not-found",
-					Title:                      "Certificate is not found.",
-					Detail:                     "Certificate with {certificateId}: {1234} is not found.",
-					Status:                     http.StatusNotFound,
-					Instance:                   "/error-types/certificate-not-found?traceId=-11111",
-					CertificateIdentifier:      "certificateId",
-					CertificateIdentifierValue: "1234",
+				want := fmt.Errorf("%w: %w", ErrListLineageBindings, &Error{
+					Type:     "/error-types/lineage-not-found",
+					Title:    "Certificate lineage not found.",
+					Status:   http.StatusNotFound,
+					Detail:   "Certificate lineage {999999} not found.",
+					Instance: "/error-types/lineage-not-found?traceId=1234567891080",
+					Context:  map[string]any{"lineageId": float64(999999)},
 				})
 				assert.EqualError(t, err, want.Error(), "want: %s; got: %s", want, err)
-				assert.ErrorIs(t, err, ErrCertificateNotFound)
-				assert.ErrorIs(t, err, ErrListCertificateBindings)
+				assert.ErrorIs(t, err, ErrLineageNotFound)
+				assert.ErrorIs(t, err, ErrListLineageBindings)
 			},
 		},
-		"500 internal server error - assert that error is ErrListCertificateBindings": {
-			params: ListCertificateBindingsRequest{
-				CertificateID: "123",
-			},
-			responseStatus: 500,
-			responseBody: `
-			{
-				"type": "internal_error",
-				"title": "Internal Server Error",
-				"detail": "Error removing certificate",
-				"status": 500
+		"403 forbidden - missing ACMI_CCM_READ_ONLY": {
+			params:         ListLineageBindingsRequest{LineageID: 12345},
+			expectedPath:   "/ccm/v2/lineages/12345/bindings",
+			responseStatus: http.StatusForbidden,
+			responseBody: `{
+				"type": "/error-types/forbidden",
+				"title": "Forbidden.",
+				"status": 403,
+				"detail": "User lacks ACMI_CCM_READ_ONLY on this lineage.",
+				"instance": "/error-types/forbidden?traceId=1234567891081"
 			}`,
-			expectedPath: "/ccm/v1/certificates/123/certificate-bindings",
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrListCertificateBindings, &Error{
-					Type:   "internal_error",
-					Title:  "Internal Server Error",
-					Detail: "Error removing certificate",
-					Status: http.StatusInternalServerError,
+				want := fmt.Errorf("%w: %w", ErrListLineageBindings, &Error{
+					Type:     "/error-types/forbidden",
+					Title:    "Forbidden.",
+					Status:   http.StatusForbidden,
+					Detail:   "User lacks ACMI_CCM_READ_ONLY on this lineage.",
+					Instance: "/error-types/forbidden?traceId=1234567891081",
 				})
 				assert.EqualError(t, err, want.Error(), "want: %s; got: %s", want, err)
-				assert.ErrorIs(t, err, ErrListCertificateBindings)
+				assert.ErrorIs(t, err, ErrForbidden)
+				assert.ErrorIs(t, err, ErrListLineageBindings)
 			},
 		},
-		"validation error - missing CertificateID": {
-			params:       ListCertificateBindingsRequest{},
-			expectedPath: "/ccm/v1/certificates/123/certificate-bindings",
-			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "listing certificate bindings: struct validation: CertificateID: cannot be blank",
-					err.Error())
-				assert.ErrorIs(t, err, ErrListCertificateBindings)
-				assert.ErrorIs(t, err, ErrStructValidation)
-			},
-		},
-		"validation error - page size less than 1": {
-			params: ListCertificateBindingsRequest{
-				CertificateID: "123",
-				PageSize:      -1,
-			},
-			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "listing certificate bindings: struct validation: PageSize: must be 1 or greater", err.Error())
-				assert.ErrorIs(t, err, ErrListCertificateBindings)
-				assert.ErrorIs(t, err, ErrStructValidation)
-			},
-		},
-		"validation error - page size greater than 100": {
-			params: ListCertificateBindingsRequest{
-				CertificateID: "123",
-				PageSize:      101,
-			},
-			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "listing certificate bindings: struct validation: PageSize: cannot be greater than 100", err.Error())
-				assert.ErrorIs(t, err, ErrListCertificateBindings)
-				assert.ErrorIs(t, err, ErrStructValidation)
-			},
-		},
-		"validation error - page value less than 1": {
-			params: ListCertificateBindingsRequest{
-				CertificateID: "123",
-				Page:          -1,
-			},
-			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "listing certificate bindings: struct validation: Page: must be 1 or greater", err.Error())
-				assert.ErrorIs(t, err, ErrListCertificateBindings)
-				assert.ErrorIs(t, err, ErrStructValidation)
-			},
-		},
-	}
-
-	for name, tc := range tests {
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, tc.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodGet, r.Method)
-				if len(tc.returnedHeaders) > 0 {
-					for header, value := range tc.returnedHeaders {
-						w.Header().Set(header, value)
-					}
-				}
-				w.WriteHeader(tc.responseStatus)
-				_, err := w.Write([]byte(tc.responseBody))
-				assert.NoError(t, err)
-			}))
-			defer mockServer.Close()
-
-			client := mockAPIClient(t, mockServer)
-			result, err := client.ListCertificateBindings(context.Background(), tc.params)
-			if tc.withError != nil {
-				tc.withError(t, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, tc.expectedResponse, result)
-		})
-	}
-}
-
-func TestListBindings(t *testing.T) {
-	t.Parallel()
-	tests := map[string]struct {
-		params           ListBindingsRequest
-		responseStatus   int
-		responseBody     string
-		expectedResponse *ListBindingsResponse
-		expectedPath     string
-		returnedHeaders  map[string]string
-		withError        func(*testing.T, error)
-	}{
-		"200 - fetch of bindings successful": {
-			params: ListBindingsRequest{},
-			returnedHeaders: map[string]string{
-				"Akamai-RateLimit-Limit":     "60",
-				"Akamai-RateLimit-Remaining": "59",
-			},
-			expectedResponse: &ListBindingsResponse{
-				Bindings: []CertificateBinding{
-					{
-						CertificateID: "123456",
-						Hostname:      "www.example.com",
-						Network:       "PRODUCTION",
-						ResourceType:  "CDN_HOSTNAME",
-					},
-					{
-						CertificateID: "654321",
-						Hostname:      "secure.example.com",
-						Network:       "STAGING",
-						ResourceType:  "CDN_HOSTNAME",
-					},
-					{
-						CertificateID: "789012",
-						Hostname:      "api.example.com",
-						Network:       "PRODUCTION",
-						ResourceType:  "CDN_HOSTNAME",
-					},
-					// There should be 10 bindings in the response to match links correctly, but only 3 are shown here for brevity.
-				},
-				Links: Links{
-					Next:     ptr.To("https://api.example.com/v1/certificate-bindings?page=2&pageSize=10"),
-					Previous: nil,
-					Self:     "https://api.example.com/v1/certificate-bindings?page=1&pageSize=10",
-				},
-				RateLimits: RateLimitsMetadata{
-					Limit:     ptr.To(int64(60)),
-					Remaining: ptr.To(int64(59)),
-				},
-			},
-			responseStatus: 200,
-			expectedPath:   "/ccm/v1/certificate-bindings",
-			responseBody: `
-				{
-				  "bindings": [
-					{
-					  "certificateId": 123456,
-					  "hostname": "www.example.com",
-					  "network": "PRODUCTION",
-					  "resourceType": "CDN_HOSTNAME"
-					},
-					{
-					  "certificateId": "654321",
-					  "hostname": "secure.example.com",
-					  "network": "STAGING",
-					  "resourceType": "CDN_HOSTNAME"
-					},
-					{
-					  "certificateId": "789012",
-					  "hostname": "api.example.com",
-					  "network": "PRODUCTION",
-					  "resourceType": "CDN_HOSTNAME"
-					}
-				  ],
-				  "links": {
-					"next": "https://api.example.com/v1/certificate-bindings?page=2&pageSize=10",
-					"previous": null,
-					"self": "https://api.example.com/v1/certificate-bindings?page=1&pageSize=10"
-				  }
-				}`,
-		},
-		"200 - fetch of bindings with paging successful": {
-			params: ListBindingsRequest{
-				Page:     3,
-				PageSize: 1,
-			},
-			expectedResponse: &ListBindingsResponse{
-				Bindings: []CertificateBinding{
-					{
-						CertificateID: "789012",
-						Hostname:      "api.example.com",
-						Network:       "PRODUCTION",
-						ResourceType:  "CDN_HOSTNAME",
-					},
-				},
-				Links: Links{
-					Next:     nil,
-					Previous: ptr.To("https://api.example.com/v1/certificate-bindings?page=2&pageSize=1"),
-					Self:     "https://api.example.com/v1/certificate-bindings?page=3&pageSize=1",
-				},
-			},
-			responseStatus: 200,
-			expectedPath:   "/ccm/v1/certificate-bindings?page=3&pageSize=1",
-			responseBody: `
-				{
-				  "bindings": [
-					{
-					  "certificateId": "789012",
-					  "hostname": "api.example.com",
-					  "network": "PRODUCTION",
-					  "resourceType": "CDN_HOSTNAME"
-					}
-				  ],
-				  "links": {
-					"next": null,
-					"previous": "https://api.example.com/v1/certificate-bindings?page=2&pageSize=1",
-					"self": "https://api.example.com/v1/certificate-bindings?page=3&pageSize=1"
-				  }
-				}`,
-		},
-		"200 - fetch of bindings with all filters": {
-			params: ListBindingsRequest{
-				ContractID:     "12345",
-				GroupID:        "999",
-				Domain:         "api.example.com",
-				ExpiringInDays: ptr.To(int64(30)),
-				Network:        "PRODUCTION",
-				Page:           3,
-				PageSize:       1,
-			},
-			expectedResponse: &ListBindingsResponse{
-				Bindings: []CertificateBinding{
-					{
-						CertificateID: "789012",
-						Hostname:      "api.example.com",
-						Network:       "PRODUCTION",
-						ResourceType:  "CDN_HOSTNAME",
-					},
-				},
-				Links: Links{
-					Next:     nil,
-					Previous: ptr.To("https://api.example.com/v1/certificate-bindings?page=2&pageSize=1"),
-					Self:     "https://api.example.com/v1/certificate-bindings?page=3&pageSize=1",
-				},
-			},
-			responseStatus: 200,
-			expectedPath:   "/ccm/v1/certificate-bindings?contractId=12345&domain=api.example.com&expiringInDays=30&groupId=999&network=PRODUCTION&page=3&pageSize=1",
-			responseBody: `
-				{
-				  "bindings": [
-					{
-					  "certificateId": "789012",
-					  "hostname": "api.example.com",
-					  "network": "PRODUCTION",
-					  "resourceType": "CDN_HOSTNAME"
-					}
-				  ],
-				  "links": {
-					"next": null,
-					"previous": "https://api.example.com/v1/certificate-bindings?page=2&pageSize=1",
-					"self": "https://api.example.com/v1/certificate-bindings?page=3&pageSize=1"
-				  }
-				}`,
-		},
-		"200 - empty response": {
-			params: ListBindingsRequest{
-				ContractID:     "12345",
-				GroupID:        "999",
-				Domain:         "foo.example.com",
-				ExpiringInDays: ptr.To(int64(30)),
-				Network:        "PRODUCTION",
-			},
-			expectedResponse: &ListBindingsResponse{
-				Bindings: []CertificateBinding{},
-				Links: Links{
-					Next:     nil,
-					Previous: nil,
-					Self:     "",
-				},
-			},
-			responseStatus: 200,
-			expectedPath:   "/ccm/v1/certificate-bindings?contractId=12345&domain=foo.example.com&expiringInDays=30&groupId=999&network=PRODUCTION",
-			responseBody: `
-				{
-				  "bindings": [],
-				  "links": {
-					"next": null,
-					"previous": null,
-					"self": null
-				  }
-				}`,
-		},
-		"500 internal server error - assert that error is ErrListBindings": {
-			params:         ListBindingsRequest{},
-			responseStatus: 500,
-			responseBody: `
-			{
-				"instance": "/error-types/internal-error?traceId=-11111",
-				"status": 500,
+		"500 internal server error": {
+			params:         ListLineageBindingsRequest{LineageID: 12345},
+			expectedPath:   "/ccm/v2/lineages/12345/bindings",
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `{
+				"type": "/error-types/internal-error",
 				"title": "An unexpected error occurred.",
-				"type": "/error-types/internal-error"
+				"status": 500,
+				"instance": "/error-types/internal-error?traceId=1234567891085"
 			}`,
-			expectedPath: "/ccm/v1/certificate-bindings",
 			withError: func(t *testing.T, err error) {
-				want := fmt.Errorf("%w: %w", ErrListBindings, &Error{
+				want := fmt.Errorf("%w: %w", ErrListLineageBindings, &Error{
 					Type:     "/error-types/internal-error",
 					Title:    "An unexpected error occurred.",
 					Status:   http.StatusInternalServerError,
-					Instance: "/error-types/internal-error?traceId=-11111",
+					Instance: "/error-types/internal-error?traceId=1234567891085",
 				})
 				assert.EqualError(t, err, want.Error(), "want: %s; got: %s", want, err)
-				assert.ErrorIs(t, err, ErrListBindings)
+				assert.ErrorIs(t, err, ErrInternalError)
+				assert.ErrorIs(t, err, ErrListLineageBindings)
 			},
 		},
-		"validation error - invalid network": {
-			params: ListBindingsRequest{
-				PageSize: 1,
-				Network:  "foo",
-			},
+		"validation error - invalid network value": {
+			params: ListLineageBindingsRequest{LineageID: 12345, Network: "not-a-real-network"},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "listing bindings: struct validation: Network: must be either 'STAGING' or 'PRODUCTION'", err.Error())
-				assert.ErrorIs(t, err, ErrListBindings)
+				assert.EqualError(t, err, "listing lineage bindings: struct validation: Network: value "+
+					"'not-a-real-network' is invalid. Must be either 'STAGING' or 'PRODUCTION'")
+				assert.ErrorIs(t, err, ErrListLineageBindings)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
 		},
-		"validation error - page size less than 1": {
-			params: ListBindingsRequest{
-				PageSize: -1,
-			},
+		"validation error - invalid sort value": {
+			params: ListLineageBindingsRequest{LineageID: 12345, Sort: "not-a-real-sort"},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "listing bindings: struct validation: PageSize: must be 1 or greater", err.Error())
-				assert.ErrorIs(t, err, ErrListBindings)
+				assert.EqualError(t, err, "listing lineage bindings: struct validation: Sort: value "+
+					"'not-a-real-sort' is invalid. Must be either 'ASC' or 'DESC'")
+				assert.ErrorIs(t, err, ErrListLineageBindings)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
 		},
-		"validation error - page size greater than 100": {
-			params: ListBindingsRequest{
-				PageSize: 101,
-			},
+		"400 invalid or expired after cursor": {
+			params:         ListLineageBindingsRequest{LineageID: 12345, After: "invalid-or-expired-cursor"},
+			expectedPath:   "/ccm/v2/lineages/12345/bindings?after=invalid-or-expired-cursor",
+			responseStatus: http.StatusBadRequest,
+			responseBody: `{
+				"type": "/error-types/invalid-cursor",
+				"title": "Invalid or expired pagination cursor.",
+				"status": 400,
+				"detail": "The 'after' cursor value is invalid or has expired. Please restart pagination without a cursor.",
+				"instance": "/error-types/invalid-cursor?traceId=1234567891084"
+			}`,
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "listing bindings: struct validation: PageSize: cannot be greater than 100", err.Error())
-				assert.ErrorIs(t, err, ErrListBindings)
+				want := fmt.Errorf("%w: %w", ErrListLineageBindings, &Error{
+					Type:     "/error-types/invalid-cursor",
+					Title:    "Invalid or expired pagination cursor.",
+					Status:   http.StatusBadRequest,
+					Detail:   "The 'after' cursor value is invalid or has expired. Please restart pagination without a cursor.",
+					Instance: "/error-types/invalid-cursor?traceId=1234567891084",
+				})
+				assert.EqualError(t, err, want.Error(), "want: %s; got: %s", want, err)
+				assert.ErrorIs(t, err, ErrInvalidCursor)
+				assert.ErrorIs(t, err, ErrListLineageBindings)
+			},
+		},
+		"validation error - missing LineageID": {
+			params: ListLineageBindingsRequest{},
+			withError: func(t *testing.T, err error) {
+				assert.EqualError(t, err, "listing lineage bindings: struct validation: LineageID: cannot be blank")
+				assert.ErrorIs(t, err, ErrListLineageBindings)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
 		},
-		"validation error - page value less than 1": {
-			params: ListBindingsRequest{
-				Page: -1,
-			},
+		"validation error - PageSize exceeds maximum": {
+			params: ListLineageBindingsRequest{LineageID: 12345, PageSize: 101},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "listing bindings: struct validation: Page: must be 1 or greater", err.Error())
-				assert.ErrorIs(t, err, ErrListBindings)
+				assert.EqualError(t, err, fmt.Sprintf("listing lineage bindings: struct validation: PageSize: must be no greater than %d", MaxListLineageBindingsPageSize))
+				assert.ErrorIs(t, err, ErrListLineageBindings)
+				assert.ErrorIs(t, err, ErrStructValidation)
+			},
+		},
+		"validation error - PageSize is negative": {
+			params: ListLineageBindingsRequest{LineageID: 12345, PageSize: -1},
+			withError: func(t *testing.T, err error) {
+				assert.EqualError(t, err, "listing lineage bindings: struct validation: PageSize: must be no less than 0")
+				assert.ErrorIs(t, err, ErrListLineageBindings)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
 		},
@@ -524,11 +238,6 @@ func TestListBindings(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				if len(tc.returnedHeaders) > 0 {
-					for header, value := range tc.returnedHeaders {
-						w.Header().Set(header, value)
-					}
-				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
@@ -536,7 +245,7 @@ func TestListBindings(t *testing.T) {
 			defer mockServer.Close()
 
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListBindings(context.Background(), tc.params)
+			result, err := client.ListLineageBindings(context.Background(), tc.params)
 			if tc.withError != nil {
 				tc.withError(t, err)
 				return

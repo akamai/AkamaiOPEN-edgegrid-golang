@@ -177,15 +177,20 @@ Each rule has a stable `id` so review tools can reference it.
 - **STR-11**: Struct embedding is allowed ONLY in responses, and only sparingly —
   it adds overhead for customers.
 - **STR-12**: All fields and structs must be documented.
-- **STR-13**: Do not use pointers to slices or maps — slices and maps can
+- **STR-13**: When a field's doc comment describes a fixed bound or an
+  enumerated value that has a corresponding exported named constant (see
+  VAL-07), link to that constant using the Go doc-comment link syntax
+  supported since Go 1.19 (e.g. `// Maximum is [MaxListXPageSize].`) instead of
+  restating the literal value, so the comment cannot drift from the constant.
+- **STR-14**: Do not use pointers to slices or maps — slices and maps can
   already hold `nil`.
-- **STR-14**: Do not use anonymous structs inside other types.
-- **STR-15**: For readability, separate each field (and its doc comment) with a
+- **STR-15**: Do not use anonymous structs inside other types.
+- **STR-16**: For readability, separate each field (and its doc comment) with a
   newline from the next field, instead of one solid block of declarations.
-- **STR-16**: If the endpoint has a known request/response schema, define the
+- **STR-17**: If the endpoint has a known request/response schema, define the
   matching struct. Avoid `interface{}` / `any` / `json.RawMessage` when the type
   is known.
-- **STR-17**: If a method has BOTH body and path/query parameters, there must be
+- **STR-18**: If a method has BOTH body and path/query parameters, there must be
   TWO structs: one for the Request and one for the Body, with the Body being a
   field of the Request. Structure of that Body should have `Body` suffix.
 
@@ -224,6 +229,12 @@ Each rule has a stable `id` so review tools can reference it.
   several validation checks (e.g. all required fields missing) as long as the
   exact error message is asserted.
 - **VAL-06**: Validation must use the currently adopted library: `ozzo-validation`.
+- **VAL-07**: Fixed bounds or enumerated values checked by a `Validate` method
+  (e.g. a maximum page size, or a list of allowed values) must be declared as
+  exported named constant(s) and referenced from the validation call, rather
+  than hardcoded as a magic number/string (e.g. `validation.Max(MaxListXPageSize)`,
+  `validation.In(KeySize2048, ...)`). See also STR-13 for referencing the same
+  constant from the doc comment.
 
 ## 9. Tests
 
@@ -241,4 +252,11 @@ Each rule has a stable `id` so review tools can reference it.
 - **TST-04**: Validation tests are exempt from rule TST-01 (no server mock
   needed). See also VAL-05 for validation-specific test requirements.
 - **TST-05**: `t.Parallel()` must be present wherever applicable.
+- **TST-06**: Tests exercising a field's bound or enumerated value (e.g. a
+  maximum page size, or an allowed/disallowed enum value) must reference the
+  same exported named constant used by its `Validate` method — not a hardcoded
+  literal — wherever the test intends that exact value (e.g.
+  `PageSize: MaxListXPageSize + 1`). Literals are still appropriate for
+  intentionally invalid/unrelated values (e.g. `KeyType: "INVALID"`) that have
+  no corresponding constant.
 

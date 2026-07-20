@@ -60,8 +60,13 @@ type (
 		// CertProvisioningType indicates the certificate's provisioning type. Either `CPS_MANAGED` type for the certificates you create with the Certificate Provisioning System API (CPS), `DEFAULT` for the Default Domain Validation (DV) certificates created automatically, or `CCM` type for the third party certificates you create with the Cloud Certificate Manager.
 		CertProvisioningType string `json:"certProvisioningType"`
 
-		// CCMCertificates is certificate identifiers and links for the CCM-managed certificates.
+		// CCMCertificates contains certificate identifiers and links for the CCM-managed certificates. Use this field for the legacy CCM flow that manages separate RSA and ECDSA certificates. It can't be used together with CCMCertID.
+		//
+		// Deprecated: Use CCMCertID instead.
 		CCMCertificates *CCMCertificates `json:"ccmCertificates,omitempty"`
+
+		// CCMCertID is the certificate lineage ID for the CCM-managed certificate to bind to the hostname. It can't be used together with CCMCertificates.
+		CCMCertID string `json:"ccmCertId,omitempty"`
 
 		// MTLS is mutual TLS configuration settings applicable to the Cloud Certificate Manager (CCM) hostnames.
 		MTLS *MTLS `json:"mtls,omitempty"`
@@ -93,8 +98,19 @@ type (
 		// CCMCertStatus is deployment status for the RSA and ECDSA certificates created with Cloud Certificate Manager (CCM).
 		CCMCertStatus *CCMCertStatus `json:"ccmCertStatus"`
 
-		// CCMCertificates is certificate identifiers and links for the CCM-managed certificates.
+		// CCMCertificates contains certificate identifiers and links for the CCM-managed certificates.
+		//
+		// Deprecated: Use CCMCertID instead. CCMCertificates is for the legacy CCM flow that manages separate RSA and ECDSA certificates. It can't be used together with CCMCertID.
 		CCMCertificates *CCMCertificatesResp `json:"ccmCertificates"`
+
+		// CCMCertID is the certificate lineage ID of the CCM-managed certificate bound to the hostname.
+		CCMCertID *string `json:"ccmCertId"`
+
+		// CCMCertLink is the link to the CCM certificate lineage bound to the hostname.
+		CCMCertLink *string `json:"ccmCertLink"`
+
+		// CCMCertStatuses contains the deployment statuses of the CCM certificate lineage bound to the hostname, listed by key type and network.
+		CCMCertStatuses []CCMCertStatusItem `json:"ccmCertStatuses"`
 
 		// MTLS is mutual TLS configuration settings applicable to the Cloud Certificate Manager (CCM) hostnames.
 		MTLS *MTLSResp `json:"mtls"`
@@ -105,6 +121,18 @@ type (
 		// DomainOwnershipVerification is optional domain ownership verification details for the hostname.
 		// This field is returned only in responses and should not be populated in requests.
 		DomainOwnershipVerification *DomainOwnershipVerification `json:"domainOwnershipVerification"`
+	}
+
+	// CCMCertStatusItem is the deployment status for a single key type in a CCM certificate lineage on a given network.
+	CCMCertStatusItem struct {
+		// KeyType is the key algorithm type of the certificate, either `RSA` or `ECDSA`.
+		KeyType string `json:"keyType"`
+
+		// Network is the network the status applies to, either `STAGING` or `PRODUCTION`.
+		Network string `json:"network"`
+
+		// Status is the deployment status of the certificate on the given network.
+		Status string `json:"status"`
 	}
 
 	// CCMCertStatus is status of CCM certificates in each environment.
@@ -198,6 +226,8 @@ type (
 	}
 
 	// CCMCertificates contains identifiers for the RSA and ECDSA certificates.
+	//
+	// Deprecated: Use CCMCertID instead. CCMCertificates is for the legacy CCM flow that manages separate RSA and ECDSA certificates. It can't be used together with CCMCertID.
 	CCMCertificates struct {
 		// ECDSACertID is certificate ID for ECDSA.
 		ECDSACertID string `json:"ecdsaCertId,omitempty"`
@@ -207,6 +237,8 @@ type (
 	}
 
 	// CCMCertificatesResp contains identifiers for the RSA and ECDSA certificates.
+	//
+	// Deprecated: Use CCMCertID instead. CCMCertificatesResp is for the legacy CCM flow that manages separate RSA and ECDSA certificates. It can't be used together with CCMCertID.
 	CCMCertificatesResp struct {
 		CCMCertificates
 
@@ -359,8 +391,13 @@ type (
 		// TLSConfiguration is optional TLS configuration settings applicable to the Cloud Certificate Manager (CCM) hostnames.
 		TLSConfiguration *TLSConfiguration `json:"tlsConfiguration,omitempty"`
 
-		// CCMCertStatus is deployment status for the RSA and ECDSA certificates created with Cloud Certificate Manager (CCM).
+		// CCMCertificates contains certificate identifiers and links for the CCM-managed certificates.
+		//
+		// Deprecated: Use CCMCertID instead. CCMCertificates is for the legacy CCM flow that manages separate RSA and ECDSA certificates. It can't be used together with CCMCertID.
 		CCMCertificates *CCMCertificates `json:"ccmCertificates,omitempty"`
+
+		// CCMCertID is the certificate lineage ID for the CCM-managed certificate to bind to the hostname. It can't be used together with CCMCertificates.
+		CCMCertID string `json:"ccmCertId,omitempty"`
 	}
 
 	// PatchPropertyVersionHostnamesResponse contains response from patch property version hostnames
@@ -476,7 +513,8 @@ func (h Hostname) Validate() error {
 	return validation.Errors{
 		"MTLS":                validation.Validate(h.MTLS),
 		"CCMCertificates":     validation.Validate(h.CCMCertificates),
-		"ValidateCCMHostname": validateCCMHostname(h.CertProvisioningType, h.CCMCertificates, h.MTLS, h.TLSConfiguration),
+		"CCMCertID":           validation.Validate(h.CCMCertID, validation.When(h.CCMCertID != "", is.Digit)),
+		"ValidateCCMHostname": validateCCMHostname(h.CertProvisioningType, h.CCMCertificates, h.CCMCertID, h.MTLS, h.TLSConfiguration),
 	}.Filter()
 }
 
@@ -495,10 +533,13 @@ func (c CCMCertificates) Validate() error {
 	}.Filter()
 }
 
-func validateCCMHostname(certType string, certs *CCMCertificates, mTLS *MTLS, tls *TLSConfiguration) error {
+func validateCCMHostname(certType string, certs *CCMCertificates, ccmCertID string, mTLS *MTLS, tls *TLSConfiguration) error {
 	if certType != string(CertTypeCCM) {
 		if certs != nil {
 			return errors.New("the CCM cert details are provided without `certProvisioningType` set to `CCM`")
+		}
+		if ccmCertID != "" {
+			return errors.New("the `ccmCertId` is provided without `certProvisioningType` set to `CCM`")
 		}
 		if mTLS != nil {
 			return errors.New("the mTLS configuration is provided without `certProvisioningType` set to `CCM`")
@@ -508,10 +549,13 @@ func validateCCMHostname(certType string, certs *CCMCertificates, mTLS *MTLS, tl
 		}
 		return nil
 	}
-	if certs == nil {
-		return errors.New("when using `certProvisioningType` set to `CCM`, the request body must contain `ccmCertificates` with at least `rsaCertId` or `ecdsaCertId`")
+	if certs != nil && ccmCertID != "" {
+		return errors.New("provide either `ccmCertId` or `ccmCertificates`, not both")
 	}
-	if certs.RSACertID == "" && certs.ECDSACertID == "" {
+	if certs == nil && ccmCertID == "" {
+		return errors.New("when using `certProvisioningType` set to `CCM`, the request body must contain either `ccmCertId` or `ccmCertificates` with at least `rsaCertId` or `ecdsaCertId`")
+	}
+	if certs != nil && certs.RSACertID == "" && certs.ECDSACertID == "" {
 		return errors.New("either RSACertID or ECDSACertID must be provided")
 	}
 	if tls != nil && len(tls.CipherProfile) == 0 {
@@ -553,7 +597,8 @@ func (h HostnameAdd) Validate() error {
 			validation.When(h.CertProvisioningType != "", h.CertProvisioningType.Validate())),
 		"MTLS":                validation.Validate(h.MTLS),
 		"CCMCertificates":     validation.Validate(h.CCMCertificates),
-		"ValidateCCMHostname": validateCCMHostname(string(h.CertProvisioningType), h.CCMCertificates, h.MTLS, h.TLSConfiguration),
+		"CCMCertID":           validation.Validate(h.CCMCertID, validation.When(h.CCMCertID != "", is.Digit)),
+		"ValidateCCMHostname": validateCCMHostname(string(h.CertProvisioningType), h.CCMCertificates, h.CCMCertID, h.MTLS, h.TLSConfiguration),
 		"required parameters": validation.Validate(nil,
 			validation.By(func(interface{}) error {
 				if h.CnameTo == "" && h.EdgeHostnameID == "" {

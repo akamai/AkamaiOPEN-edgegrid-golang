@@ -2,20 +2,34 @@
 
 ## X.X.X (X X, X)
 
-### BREAKING CHANGES:
-
-
-
-
-
-
-
-
-
-
-
-
 ### FEATURES/ENHANCEMENTS:
+
+* Cloud Certificates (Beta)
+  * Replaced the entire V1 certificate API with the new Certificate Lineage (CCM V3) API. As a result, the following methods and types have been removed: `CreateCertificate`, `GetCertificate`, `UpdateCertificate`, `PatchCertificate`, `DeleteCertificate`, `ListCertificates`, `ListCertificateBindings`, `ListBindings`, `CertificateBinding`, `Links`, `ResourceLimitsMetadata`, `ErrCertificateResourceNotFound`, and `SortFieldPat`.
+  * Added support for the Certificate Lineage (CCM V3) API with the following methods. Public API documentation for these endpoints isn't available yet; it's planned for a later release.
+    * `CreateLineage` - Creates a new certificate lineage, generating a certificate signing request (CSR) for each requested key type.
+    * `GetLineage` - Retrieves a single certificate lineage by its lineage ID, optionally expanding its head, current production, current staging, and previous production generations.
+    * `ListLineages` - Returns a paginated, filterable, and sortable list of certificate lineages accessible to the requesting user.
+    * `RenameLineage` - Updates the name of a certificate lineage.
+    * `DeleteLineage` - Permanently deletes a certificate lineage. The lineage must have no active production or staging generation and no pending activation in progress.
+    * `ListLineageActivity` - Returns a paginated, newest-first list of activity events recorded for a certificate lineage.
+    * `RenewLineage` - Creates a new head generation for a lineage, generating fresh CSRs for all key types in the lineage's key specs. Any existing head generation is abandoned as part of the renewal.
+    * `CompleteLineage` - Adds the second algorithm (e.g. ECDSA) to a `MULTIPLE_STACK` lineage where only one algorithm (e.g. RSA) is currently live on production, creating a new generation with the completed algorithm ready for use.
+    * `GetGeneration` - Retrieves a single certificate generation within a lineage, including full algorithm instance details.
+    * `ListArchivedGenerations` - Returns the unpaginated list of archived and abandoned generations for a certificate lineage. Optionally accepts an `IncludeAlgorithms` flag to return full algorithm instance detail (CSR/signed certificate PEM, issuer, validity dates, etc.) instead of identifier-only fields for each generation's algorithms.
+    * `DeleteGeneration` - Permanently deletes a single certificate generation within a lineage. The generation must not be currently deployed on staging or production, and must not be the only generation in the lineage.
+    * `UploadSignedCertificate` - Uploads a PEM-encoded signed certificate and optional trust chain for one or more key types of a lineage generation. Optionally accepts an `AutoActivate` list of target networks (`STAGING`/`PRODUCTION`) to immediately promote the generation to those networks after a successful upload.
+    * `PromoteLineage` - Promotes a lineage's head generation to one or more networks (`STAGING`/`PRODUCTION`). Defaults promoting to production only when no networks are given.
+    * `RollbackLineage` - Rolls a lineage's production generation back to its previous production generation.
+    * `ReplaceStagingLineage` - Replaces the generation currently deployed on staging with the lineage's current production or previous production generation.
+    * `GetActivationStatus` - Retrieves the status of a lineage activation request, as returned by `PromoteLineage`, `RollbackLineage`, or `ReplaceStagingLineage`.
+    * `ListActivations` - Returns a paginated, newest-first list of activation requests (`PROMOTE`, `ROLLBACK`, or `REPLACE_STAGING`) recorded for a certificate lineage.
+    * `ListLineageBindings` - Returns a paginated list of hostname bindings for a certificate lineage, optionally filtered by network and sorted chronologically.
+
+* PAPI
+  * Added `CCMCertID` to `Hostname` and `HostnameAdd` to bind a single Cloud Certificate Manager (CCM) certificate lineage to a property hostname using the `ccmCertId` JSON field.
+  * Added `CCMCertID`, `CCMCertLink`, and `CCMCertStatuses` to `HostnameResponseItem`, and added the `CCMCertStatusItem` type, to expose the bound lineage and its deployment statuses.
+  * Deprecated `CCMCertificates` and `CCMCertificatesResp`, including their corresponding fields, in favor of `CCMCertID` for the CCM V3 flow.
 
 
 
