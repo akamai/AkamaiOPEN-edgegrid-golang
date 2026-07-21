@@ -15,8 +15,6 @@
 ### FEATURES/ENHANCEMENTS:
 
 * DataStream
-  * Added support for the DataStream NetStorage (`NS4`) destination type.
-  * Removed validation on the destination interval - the API validates these values instead. The interval constants `IntervalInSeconds30` and `IntervalInSeconds60` will be removed in a future breaking change release.
   * Made `ContractID` and `GroupID` optional when creating or updating streams with log type `CDN`. Either or both fields could be omitted for CDN. If `GroupID` was set for CDN, it had to be greater than zero. For non-CDN log types (such as `APPSEC`), `ContractID` remained required on create and update, and `GroupID` remained required on create (must be greater than zero) and was not accepted on update.
 
 * PurgeCache

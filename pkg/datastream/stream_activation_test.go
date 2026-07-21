@@ -62,7 +62,7 @@ func TestDs_ActivateStream(t *testing.T) {
 				StreamStatus: StreamStatusActivating,
 				DeliveryConfiguration: DeliveryConfiguration{
 					Format:    FormatTypeJson,
-					Frequency: Frequency{IntervalInSeconds: 30},
+					Frequency: Frequency{IntervalInSeconds: IntervalInSeconds30},
 				},
 				Destination: Destination{
 					CompressLogs:    true,
@@ -161,7 +161,7 @@ func TestDs_ActivateStream(t *testing.T) {
 					Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
 					Format:    FormatTypeStructured,
 					Frequency: Frequency{
-						IntervalInSeconds: 30,
+						IntervalInSeconds: IntervalInSeconds30,
 					},
 					UploadFilePrefix: "ak",
 					UploadFileSuffix: "ds",
@@ -329,7 +329,7 @@ func TestDs_DeactivateStream(t *testing.T) {
 				StreamStatus: StreamStatusDeactivating,
 				DeliveryConfiguration: DeliveryConfiguration{
 					Format:    FormatTypeJson,
-					Frequency: Frequency{IntervalInSeconds: 30},
+					Frequency: Frequency{IntervalInSeconds: IntervalInSeconds30},
 				},
 				Destination: Destination{
 					CompressLogs:    true,
@@ -428,7 +428,7 @@ func TestDs_DeactivateStream(t *testing.T) {
 					Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
 					Format:    FormatTypeStructured,
 					Frequency: Frequency{
-						IntervalInSeconds: 30,
+						IntervalInSeconds: IntervalInSeconds30,
 					},
 					UploadFilePrefix: "ak",
 					UploadFileSuffix: "ds",
