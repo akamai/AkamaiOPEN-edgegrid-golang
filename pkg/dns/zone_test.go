@@ -417,7 +417,7 @@ func TestDNS_GetZone(t *testing.T) {
 				Zone:         "example.com",
 				Type:         "primary",
 				SignAndServe: false,
-				MultiProviderDnssec: &MultiProviderDnssec{
+				MultiProviderDNSSEC: &MultiProviderDNSSEC{
 					Enabled: true,
 				},
 			},
@@ -1113,7 +1113,7 @@ func TestDNS_UpdateZone(t *testing.T) {
 					Zone:       "example.com",
 					ContractID: "1-2ABCDE",
 					Type:       "primary",
-					MultiProviderDnssec: &MultiProviderDnssec{
+					MultiProviderDNSSEC: &MultiProviderDNSSEC{
 						Enabled: true,
 					},
 				},

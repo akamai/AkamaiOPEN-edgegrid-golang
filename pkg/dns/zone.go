@@ -44,7 +44,7 @@ type (
 		EndCustomerID         string                `json:"endCustomerId,omitempty"`
 		ContractID            string                `json:"contractId,omitempty"`
 		OutboundZoneTransfer  *OutboundZoneTransfer `json:"outboundZoneTransfer,omitempty"`
-		MultiProviderDnssec   *MultiProviderDnssec  `json:"multiProviderDnssec,omitempty"`
+		MultiProviderDNSSEC   *MultiProviderDNSSEC  `json:"multiProviderDnssec,omitempty"`
 	}
 
 	// OutboundZoneTransfer contains OutboundZoneTransfer request parameters
@@ -55,8 +55,8 @@ type (
 		TSIGKey       *TSIGKey `json:"tsigKey,omitempty"`
 	}
 
-	// MultiProviderDnssec contains multi-signer DNSSEC configuration for a zone.
-	MultiProviderDnssec struct {
+	// MultiProviderDNSSEC contains multi-signer DNSSEC configuration for a zone.
+	MultiProviderDNSSEC struct {
 		Enabled bool `json:"enabled"`
 	}
 
@@ -79,7 +79,7 @@ type (
 		LastModifiedDate      string                `json:"lastModifiedDate,omitempty"`
 		VersionID             string                `json:"versionId,omitempty"`
 		OutboundZoneTransfer  *OutboundZoneTransfer `json:"outboundZoneTransfer,omitempty"`
-		MultiProviderDnssec   *MultiProviderDnssec  `json:"multiProviderDnssec"`
+		MultiProviderDNSSEC   *MultiProviderDNSSEC  `json:"multiProviderDnssec"`
 	}
 
 	// ListMetadata contains metadata for List Zones request
@@ -309,7 +309,7 @@ var zoneStructMap = map[string]string{
 	"Target":                "target",
 	"EndCustomerID":         "endCustomerId",
 	"OutboundZoneTransfer":  "outboundZoneTransfer",
-	"MultiProviderDnssec":   "multiProviderDnssec",
+	"MultiProviderDNSSEC":   "multiProviderDnssec",
 	"ContractID":            "contractId"}
 
 // Util to convert struct to http request body, e.g. io.reader
@@ -714,10 +714,10 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 			default:
 				filteredZone[varLower] = varValue
 			}
-		case "MultiProviderDnssec":
+		case "MultiProviderDNSSEC":
 			// same workaround as OutboundZoneTransfer above: skip nil pointer to avoid adding empty entry
 			switch v := varValue.(type) {
-			case *MultiProviderDnssec:
+			case *MultiProviderDNSSEC:
 				{
 					if v != nil {
 						filteredZone[varLower] = varValue
