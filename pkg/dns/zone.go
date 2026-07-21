@@ -55,7 +55,7 @@ type (
 		TSIGKey       *TSIGKey `json:"tsigKey,omitempty"`
 	}
 
-	// MultiProviderDnssec contains multi-signer DNSSEC configuration for a zone
+	// MultiProviderDnssec contains multi-signer DNSSEC configuration for a zone.
 	MultiProviderDnssec struct {
 		Enabled bool `json:"enabled"`
 	}
