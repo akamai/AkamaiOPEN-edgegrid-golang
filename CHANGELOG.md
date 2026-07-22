@@ -4,7 +4,7 @@
 
 ### FEATURES/ENHANCEMENTS:
 
-* Cloud Certificates
+* Cloud Certificates (Beta)
   * Added support for the `GeoClass` field to the following structures:
     * `CreateCertificateRequestBody`
     * `CreateCertificateResponse`
