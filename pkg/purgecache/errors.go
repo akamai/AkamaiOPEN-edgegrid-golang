@@ -28,14 +28,29 @@ var (
 type (
 	// Error represents an error returned by the Purge Cache API.
 	Error struct {
-		HTTPStatus                  int    `json:"httpStatus"`
-		Title                       string `json:"title"`
-		Detail                      string `json:"detail"`
-		DescribedBy                 string `json:"describedBy"`
-		SupportID                   string `json:"supportId"`
-		RateLimit                   *int64 `json:"rateLimit,omitempty"`
+		// HTTPStatus contains the HTTP response code.
+		HTTPStatus int `json:"httpStatus"`
+
+		// Title describes the response type.
+		Title string `json:"title"`
+
+		// Detail contains detailed information about the HTTP status code returned.
+		Detail string `json:"detail"`
+
+		// DescribedBy is a URL that describes the API's error response.
+		DescribedBy string `json:"describedBy"`
+
+		// SupportID is an identifier to provide Akamai Technical Support if issues arise.
+		SupportID string `json:"supportId"`
+
+		// RateLimit is a limit specifying how many requests you can make in excess of the rate limit.
+		RateLimit *int64 `json:"rateLimit,omitempty"`
+
+		// RateLimitCurrentRequestSize is the number of objects submitted in the request.
 		RateLimitCurrentRequestSize *int64 `json:"rateLimitCurrentRequestSize,omitempty"`
-		RateLimitRemaining          *int64 `json:"rateLimitRemaining,omitempty"`
+
+		// RateLimitRemaining is the number of requests left before exceeding the limit.
+		RateLimitRemaining *int64 `json:"rateLimitRemaining,omitempty"`
 	}
 )
 
