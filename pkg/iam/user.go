@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -310,23 +310,16 @@ func (i *iam) CreateUser(ctx context.Context, params CreateUserRequest) (*User, 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateUser, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/identity-management/v3/user-admin/ui-identities")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateUser, err)
-	}
-
-	q := uri.Query()
-	q.Add("sendEmail", strconv.FormatBool(params.SendEmail))
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/ui-identities").
+		AddQueryParam("sendEmail", strconv.FormatBool(params.SendEmail)).
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateUser, err)
 	}
 
 	var result User
-	resp, err := i.Exec(req, &result, params)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateUser, err)
 	}
@@ -347,19 +340,11 @@ func (i *iam) GetUser(ctx context.Context, params GetUserRequest) (*User, error)
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetUser, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s", params.IdentityID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetUser, err)
-	}
-
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	q.Add("authGrants", strconv.FormatBool(params.AuthGrants))
-	q.Add("notifications", strconv.FormatBool(params.Notifications))
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/ui-identities/%s", params.IdentityID).
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		AddQueryParam("authGrants", strconv.FormatBool(params.AuthGrants)).
+		AddQueryParam("notifications", strconv.FormatBool(params.Notifications)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetUser, err)
 	}
@@ -382,20 +367,13 @@ func (i *iam) ListUsers(ctx context.Context, params ListUsersRequest) ([]UserLis
 	logger := i.Log(ctx)
 	logger.Debug("ListUsers")
 
-	uri, err := url.Parse("/identity-management/v3/user-admin/ui-identities")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse the URL:\n%s", ErrListUsers, err)
-	}
-
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	q.Add("authGrants", strconv.FormatBool(params.AuthGrants))
-	if params.GroupID != nil {
-		q.Add("groupId", strconv.FormatInt(*params.GroupID, 10))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/ui-identities").
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		AddQueryParam("authGrants", strconv.FormatBool(params.AuthGrants)).
+		AddQueryParamFunc("groupId", func() string {
+			return strconv.FormatInt(*params.GroupID, 10)
+		}, params.GroupID != nil).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request:\n%s", ErrListUsers, err)
 	}
@@ -422,12 +400,7 @@ func (i *iam) RemoveUser(ctx context.Context, params RemoveUserRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrRemoveUser, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s", params.IdentityID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveUser, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/identity-management/v3/user-admin/ui-identities/%s", params.IdentityID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveUser, err)
 	}
@@ -453,19 +426,16 @@ func (i *iam) UpdateUserAuthGrants(ctx context.Context, params UpdateUserAuthGra
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserAuthGrants, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/auth-grants", params.IdentityID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserAuthGrants, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/ui-identities/%s/auth-grants", params.IdentityID).
+		WithBody(params.AuthGrants).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserAuthGrants, err)
 	}
 
 	var result []AuthGrant
 
-	resp, err := i.Exec(req, &result, params.AuthGrants)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserAuthGrants, err)
 	}
@@ -486,18 +456,15 @@ func (i *iam) UpdateUserInfo(ctx context.Context, params UpdateUserInfoRequest) 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserInfo, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/basic-info", params.IdentityID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserInfo, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/ui-identities/%s/basic-info", params.IdentityID).
+		WithBody(params.User).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserInfo, err)
 	}
 
 	var result UserBasicInfo
-	resp, err := i.Exec(req, &result, params.User)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserInfo, err)
 	}
@@ -518,18 +485,15 @@ func (i *iam) UpdateUserNotifications(ctx context.Context, params UpdateUserNoti
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateUserNotifications, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/notifications", params.IdentityID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserNotifications, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/ui-identities/%s/notifications", params.IdentityID).
+		WithBody(params.Notifications).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateUserNotifications, err)
 	}
 
 	var result UserNotifications
-	resp, err := i.Exec(req, &result, params.Notifications)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateUserNotifications, err)
 	}
@@ -550,17 +514,14 @@ func (i *iam) UpdateMFA(ctx context.Context, params UpdateMFARequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrUpdateMFA, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/additionalAuthentication", params.IdentityID))
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/ui-identities/%s/additionalAuthentication", params.IdentityID).
+		WithBody(params.Value).
+		Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateMFA, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrUpdateMFA, err)
-	}
-
-	resp, err := i.Exec(req, nil, params.Value)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrUpdateMFA, err)
 	}
@@ -577,17 +538,12 @@ func (i *iam) ResetMFA(ctx context.Context, params ResetMFARequest) error {
 	logger := i.Log(ctx)
 	logger.Debug("ResetMFA")
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/additionalAuthentication/reset", params.IdentityID))
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/ui-identities/%s/additionalAuthentication/reset", params.IdentityID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrResetMFA, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrResetMFA, err)
-	}
-
-	resp, err := i.Exec(req, nil, nil)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrResetMFA, err)
 	}

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -54,12 +54,7 @@ func (i *iam) LockUser(ctx context.Context, params LockUserRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrLockUser, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/lock", params.IdentityID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrLockUser, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/ui-identities/%s/lock", params.IdentityID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrLockUser, err)
 	}
@@ -85,12 +80,7 @@ func (i *iam) UnlockUser(ctx context.Context, params UnlockUserRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrUnlockUser, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/unlock", params.IdentityID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrUnlockUser, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/ui-identities/%s/unlock", params.IdentityID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrUnlockUser, err)
 	}

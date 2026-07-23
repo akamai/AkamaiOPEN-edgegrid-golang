@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -161,18 +161,15 @@ func (i *iam) CreateRole(ctx context.Context, params CreateRoleRequest) (*Role, 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/identity-management/v3/user-admin/roles")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateRole, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/roles").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateRole, err)
 	}
 
 	var result Role
-	resp, err := i.Exec(req, &result, params)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateRole, err)
 	}
@@ -193,19 +190,11 @@ func (i *iam) GetRole(ctx context.Context, params GetRoleRequest) (*Role, error)
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/roles/%d", params.ID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetRole, err)
-	}
-
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	q.Add("grantedRoles", strconv.FormatBool(params.GrantedRoles))
-	q.Add("users", strconv.FormatBool(params.Users))
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/roles/%d", params.ID).
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		AddQueryParam("grantedRoles", strconv.FormatBool(params.GrantedRoles)).
+		AddQueryParam("users", strconv.FormatBool(params.Users)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetRole, err)
 	}
@@ -232,18 +221,15 @@ func (i *iam) UpdateRole(ctx context.Context, params UpdateRoleRequest) (*Role, 
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/roles/%d", params.ID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateRole, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/roles/%d", params.ID).
+		WithBody(params.RoleRequest).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateRole, err)
 	}
 
 	var result Role
-	resp, err := i.Exec(req, &result, params.RoleRequest)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateRole, err)
 	}
@@ -264,12 +250,7 @@ func (i *iam) DeleteRole(ctx context.Context, params DeleteRoleRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrDeleteRole, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/roles/%d", params.ID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrDeleteRole, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/identity-management/v3/user-admin/roles/%d", params.ID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteRole, err)
 	}
@@ -291,22 +272,14 @@ func (i *iam) ListRoles(ctx context.Context, params ListRolesRequest) ([]Role, e
 	logger := i.Log(ctx)
 	logger.Debug("ListRoles")
 
-	uri, err := url.Parse("/identity-management/v3/user-admin/roles")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListRoles, err)
-	}
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	q.Add("ignoreContext", strconv.FormatBool(params.IgnoreContext))
-	q.Add("users", strconv.FormatBool(params.Users))
-
-	if params.GroupID != nil {
-		q.Add("groupId", strconv.FormatInt(*params.GroupID, 10))
-	}
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/roles").
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		AddQueryParam("ignoreContext", strconv.FormatBool(params.IgnoreContext)).
+		AddQueryParam("users", strconv.FormatBool(params.Users)).
+		AddQueryParamFunc("groupId", func() string {
+			return strconv.FormatInt(*params.GroupID, 10)
+		}, params.GroupID != nil).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListRoles, err)
 	}
@@ -329,12 +302,7 @@ func (i *iam) ListGrantableRoles(ctx context.Context) ([]RoleGrantedRole, error)
 	logger := i.Log(ctx)
 	logger.Debug("ListGrantableRoles")
 
-	uri, err := url.Parse("/identity-management/v3/user-admin/roles/grantable-roles")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListGrantableRoles, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/roles/grantable-roles").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListGrantableRoles, err)
 	}

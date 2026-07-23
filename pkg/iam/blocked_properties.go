@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -56,12 +56,7 @@ func (i *iam) ListBlockedProperties(ctx context.Context, params ListBlockedPrope
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListBlockedProperties, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/groups/%d/blocked-properties", params.IdentityID, params.GroupID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListBlockedProperties, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/ui-identities/%s/groups/%d/blocked-properties", params.IdentityID, params.GroupID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListBlockedProperties, err)
 	}
@@ -85,18 +80,15 @@ func (i *iam) UpdateBlockedProperties(ctx context.Context, params UpdateBlockedP
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateBlockedProperties, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/groups/%d/blocked-properties", params.IdentityID, params.GroupID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateBlockedProperties, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/ui-identities/%s/groups/%d/blocked-properties", params.IdentityID, params.GroupID).
+		WithBody(params.Properties).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateBlockedProperties, err)
 	}
 
 	var blockedProperties []int64
-	resp, err := i.Exec(req, &blockedProperties, params.Properties)
+	resp, err := i.Exec(req, &blockedProperties)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateBlockedProperties, err)
 	}

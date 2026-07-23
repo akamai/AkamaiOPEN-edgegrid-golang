@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -152,18 +152,15 @@ func (i *iam) CreateGroup(ctx context.Context, params GroupRequest) (*Group, err
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateGroup, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/groups/%d", params.GroupID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateGroup, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/groups/%d", params.GroupID).
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateGroup, err)
 	}
 
 	var result Group
-	resp, err := i.Exec(req, &result, params)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateGroup, err)
 	}
@@ -184,16 +181,9 @@ func (i *iam) GetGroup(ctx context.Context, params GetGroupRequest) (*Group, err
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetGroup, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/groups/%d", params.GroupID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetGroup, err)
-	}
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/groups/%d", params.GroupID).
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetGroup, err)
 	}
@@ -220,18 +210,9 @@ func (i *iam) ListAffectedUsers(ctx context.Context, params ListAffectedUsersReq
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListAffectedUsers, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/groups/move/%d/%d/affected-users", params.SourceGroupID, params.DestinationGroupID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAffectedUsers, err)
-	}
-
-	if params.UserType != "" {
-		q := uri.Query()
-		q.Add("userType", params.UserType)
-		uri.RawQuery = q.Encode()
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/groups/move/%d/%d/affected-users", params.SourceGroupID, params.DestinationGroupID).
+		AddQueryParamIf("userType", params.UserType, params.UserType != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAffectedUsers, err)
 	}
@@ -254,16 +235,9 @@ func (i *iam) ListGroups(ctx context.Context, params ListGroupsRequest) ([]Group
 	logger := i.Log(ctx)
 	logger.Debug("ListGroups")
 
-	uri, err := url.Parse("/identity-management/v3/user-admin/groups")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListGroups, err)
-	}
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/groups").
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListGroups, err)
 	}
@@ -290,12 +264,7 @@ func (i *iam) RemoveGroup(ctx context.Context, params RemoveGroupRequest) error 
 		return fmt.Errorf("%s: %w:\n%s", ErrRemoveGroup, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/groups/%d", params.GroupID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveGroup, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/identity-management/v3/user-admin/groups/%d", params.GroupID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrRemoveGroup, err)
 	}
@@ -321,18 +290,15 @@ func (i *iam) UpdateGroupName(ctx context.Context, params GroupRequest) (*Group,
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateGroupName, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/groups/%d", params.GroupID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateGroupName, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/groups/%d", params.GroupID).
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateGroupName, err)
 	}
 
 	var result Group
-	resp, err := i.Exec(req, &result, params)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateGroupName, err)
 	}
@@ -353,17 +319,14 @@ func (i *iam) MoveGroup(ctx context.Context, params MoveGroupRequest) error {
 		return fmt.Errorf("%s: %w:\n%s", ErrMoveGroup, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/identity-management/v3/user-admin/groups/move")
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrMoveGroup, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/groups/move").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrMoveGroup, err)
 	}
 
-	resp, err := i.Exec(req, nil, params)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrMoveGroup, err)
 	}

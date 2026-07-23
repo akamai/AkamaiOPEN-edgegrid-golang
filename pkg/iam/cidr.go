@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -168,16 +168,9 @@ func (i *iam) ListCIDRBlocks(ctx context.Context, params ListCIDRBlocksRequest) 
 	logger := i.Log(ctx)
 	logger.Debug("ListCIDRBlocks")
 
-	uri, err := url.Parse("/identity-management/v3/user-admin/ip-acl/allowlist")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListCIDRBlocks, err)
-	}
-
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/ip-acl/allowlist").
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListCIDRBlocks, err)
 	}
@@ -204,13 +197,15 @@ func (i *iam) CreateCIDRBlock(ctx context.Context, params CreateCIDRBlockRequest
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateCIDRBlock, ErrStructValidation, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/identity-management/v3/user-admin/ip-acl/allowlist", nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/ip-acl/allowlist").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateCIDRBlock, err)
 	}
 
 	var result CreateCIDRBlockResponse
-	resp, err := i.Exec(req, &result, params)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateCIDRBlock, err)
 	}
@@ -231,16 +226,9 @@ func (i *iam) GetCIDRBlock(ctx context.Context, params GetCIDRBlockRequest) (*Ge
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetCIDRBlock, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ip-acl/allowlist/%d", params.CIDRBlockID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetCIDRBlock, err)
-	}
-
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/ip-acl/allowlist/%d", params.CIDRBlockID).
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCIDRBlock, err)
 	}
@@ -267,13 +255,15 @@ func (i *iam) UpdateCIDRBlock(ctx context.Context, params UpdateCIDRBlockRequest
 		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateCIDRBlock, ErrStructValidation, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, fmt.Sprintf("/identity-management/v3/user-admin/ip-acl/allowlist/%d", params.CIDRBlockID), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/ip-acl/allowlist/%d", params.CIDRBlockID).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateCIDRBlock, err)
 	}
 
 	var result UpdateCIDRBlockResponse
-	resp, err := i.Exec(req, &result, params.Body)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateCIDRBlock, err)
 	}
@@ -294,7 +284,7 @@ func (i *iam) DeleteCIDRBlock(ctx context.Context, params DeleteCIDRBlockRequest
 		return fmt.Errorf("%s: %w: %s", ErrDeleteCIDRBlock, ErrStructValidation, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, fmt.Sprintf("/identity-management/v3/user-admin/ip-acl/allowlist/%d", params.CIDRBlockID), nil)
+	req, err := request.NewDelete(ctx, "/identity-management/v3/user-admin/ip-acl/allowlist/%d", params.CIDRBlockID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteCIDRBlock, err)
 	}
@@ -320,16 +310,9 @@ func (i *iam) ValidateCIDRBlock(ctx context.Context, params ValidateCIDRBlockReq
 		return fmt.Errorf("%s: %w: %s", ErrValidateCIDRBlock, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/identity-management/v3/user-admin/ip-acl/allowlist/validate")
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrValidateCIDRBlock, err)
-	}
-
-	q := uri.Query()
-	q.Add("cidrblock", params.CIDRBlock)
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/ip-acl/allowlist/validate").
+		AddQueryParam("cidrblock", params.CIDRBlock).
+		Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrValidateCIDRBlock, err)
 	}

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -213,19 +213,10 @@ func (i *iam) ListProperties(ctx context.Context, params ListPropertiesRequest) 
 	logger := i.Log(ctx)
 	logger.Debug("ListProperties")
 
-	uri, err := url.Parse("/identity-management/v3/user-admin/properties")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListProperties, err)
-	}
-
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	if params.GroupID != 0 {
-		q.Add("groupId", strconv.FormatInt(params.GroupID, 10))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/properties").
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		AddQueryParamIf("groupId", strconv.FormatInt(params.GroupID, 10), params.GroupID != 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListProperties, err)
 	}
@@ -252,18 +243,9 @@ func (i *iam) ListUsersForProperty(ctx context.Context, params ListUsersForPrope
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListUsersForProperty, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/properties/%d/users", params.PropertyID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListUsersForProperty, err)
-	}
-
-	if params.UserType != "" {
-		q := uri.Query()
-		q.Add("userType", string(params.UserType))
-		uri.RawQuery = q.Encode()
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/properties/%d/users", params.PropertyID).
+		AddQueryParamIf("userType", string(params.UserType), params.UserType != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListUsersForProperty, err)
 	}
@@ -290,16 +272,9 @@ func (i *iam) GetProperty(ctx context.Context, params GetPropertyRequest) (*GetP
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetProperty, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/properties/%d", params.PropertyID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetProperty, err)
-	}
-
-	q := uri.Query()
-	q.Add("groupId", strconv.FormatInt(params.GroupID, 10))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/properties/%d", params.PropertyID).
+		AddQueryParam("groupId", strconv.FormatInt(params.GroupID, 10)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProperty, err)
 	}
@@ -326,14 +301,14 @@ func (i *iam) MoveProperty(ctx context.Context, params MovePropertyRequest) erro
 		return fmt.Errorf("%s: %w: %s", ErrMoveProperty, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/identity-management/v3/user-admin/properties/%d", params.PropertyID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/properties/%d", params.PropertyID).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrMoveProperty, err)
 	}
 
-	resp, err := i.Exec(req, nil, params.Body)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrMoveProperty, err)
 	}
@@ -394,15 +369,15 @@ func (i *iam) BlockUsers(ctx context.Context, params BlockUsersRequest) (*BlockU
 		return nil, fmt.Errorf("%s: %w: %s", ErrBlockUsers, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/identity-management/v3/user-admin/properties/%d/users/block", params.PropertyID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/user-admin/properties/%d/users/block", params.PropertyID).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrBlockUsers, err)
 	}
 
 	var result BlockUsersResponse
-	resp, err := i.Exec(req, &result, params.Body)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrBlockUsers, err)
 	}

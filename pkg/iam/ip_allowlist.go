@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 )
 
@@ -29,14 +30,12 @@ func (i *iam) DisableIPAllowlist(ctx context.Context) error {
 	logger := i.Log(ctx)
 	logger.Debug("DisableIPAllowlist")
 
-	uri := "/identity-management/v3/user-admin/ip-acl/allowlist/disable"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/ip-acl/allowlist/disable").Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDisableIPAllowlist, err)
 	}
 
-	resp, err := i.Exec(req, nil, nil)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDisableIPAllowlist, err)
 	}
@@ -53,14 +52,12 @@ func (i *iam) EnableIPAllowlist(ctx context.Context) error {
 	logger := i.Log(ctx)
 	logger.Debug("EnableIPAllowlist")
 
-	uri := "/identity-management/v3/user-admin/ip-acl/allowlist/enable"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/ip-acl/allowlist/enable").Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrEnableIPAllowlist, err)
 	}
 
-	resp, err := i.Exec(req, nil, nil)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrEnableIPAllowlist, err)
 	}
@@ -77,9 +74,7 @@ func (i *iam) GetIPAllowlistStatus(ctx context.Context) (*GetIPAllowlistStatusRe
 	logger := i.Log(ctx)
 	logger.Debug("GetIPAllowlistStatus")
 
-	uri := "/identity-management/v3/user-admin/ip-acl/allowlist/status"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/ip-acl/allowlist/status").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetIPAllowlistStatus, err)
 	}
