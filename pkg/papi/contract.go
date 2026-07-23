@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 )
 
@@ -39,7 +40,7 @@ func (p *papi) GetContracts(ctx context.Context) (*GetContractsResponse, error) 
 
 	var contracts GetContractsResponse
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/contracts", nil)
+	req, err := request.NewGet(ctx, "/papi/v1/contracts").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetContracts, err)
 	}

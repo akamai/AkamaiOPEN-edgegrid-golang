@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
@@ -584,22 +583,12 @@ func (p *papi) GetPropertyVersionHostnames(ctx context.Context, params GetProper
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetPropertyVersionHostnames, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/properties/%s/versions/%d/hostnames", params.PropertyID, params.PropertyVersion))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPropertyVersionHostnames, err)
-	}
-	q := url.Values{}
-	if params.GroupID != "" {
-		q.Set("groupId", params.GroupID)
-	}
-	if params.ContractID != "" {
-		q.Set("contractId", params.ContractID)
-	}
-	q.Set("validateHostnames", strconv.FormatBool(params.ValidateHostnames))
-	q.Set("includeCertStatus", strconv.FormatBool(params.IncludeCertStatus))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/properties/%s/versions/%d/hostnames", params.PropertyID, params.PropertyVersion).
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		AddQueryParam("validateHostnames", strconv.FormatBool(params.ValidateHostnames)).
+		AddQueryParam("includeCertStatus", strconv.FormatBool(params.IncludeCertStatus)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPropertyVersionHostnames, err)
 	}
@@ -630,33 +619,23 @@ func (p *papi) UpdatePropertyVersionHostnames(ctx context.Context, params Update
 		return nil, fmt.Errorf("%s: %w: %s", ErrUpdatePropertyVersionHostnames, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/properties/%s/versions/%v/hostnames", params.PropertyID, params.PropertyVersion))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdatePropertyVersionHostnames, err)
-	}
-
-	q := url.Values{}
-	if params.GroupID != "" {
-		q.Set("groupId", params.GroupID)
-	}
-	if params.ContractID != "" {
-		q.Set("contractId", params.ContractID)
-	}
-	q.Set("validateHostnames", strconv.FormatBool(params.ValidateHostnames))
-	q.Set("includeCertStatus", strconv.FormatBool(params.IncludeCertStatus))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdatePropertyVersionHostnames, err)
-	}
-
 	var hostnames UpdatePropertyVersionHostnamesResponse
 	newHostnames := params.Hostnames
 	if newHostnames == nil {
 		newHostnames = []Hostname{}
 	}
-	resp, err := p.Exec(req, &hostnames, newHostnames)
+	req, err := request.NewPut(ctx, "/papi/v1/properties/%s/versions/%v/hostnames", params.PropertyID, params.PropertyVersion).
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		AddQueryParam("validateHostnames", strconv.FormatBool(params.ValidateHostnames)).
+		AddQueryParam("includeCertStatus", strconv.FormatBool(params.IncludeCertStatus)).
+		WithBody(newHostnames).
+		Build()
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdatePropertyVersionHostnames, err)
+	}
+
+	resp, err := p.Exec(req, &hostnames)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePropertyVersionHostnames, err)
 	}
@@ -677,37 +656,19 @@ func (p *papi) PatchPropertyVersionHostnames(ctx context.Context, params PatchPr
 		return nil, fmt.Errorf("%w: %w: %w", ErrPatchPropertyVersionHostnames, ErrStructValidation, err)
 	}
 
-	query := url.Values{}
-	if params.ContractID != "" {
-		query.Set("contractId", params.ContractID)
-	}
-	if params.GroupID != "" {
-		query.Set("groupId", params.GroupID)
-	}
-	if params.ValidateHostnames {
-		query.Set("validateHostnames", fmt.Sprintf("%t", params.ValidateHostnames))
-	}
-	if params.IncludeCertStatus {
-		query.Set("includeCertStatus", fmt.Sprintf("%t", params.IncludeCertStatus))
-	}
-
-	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s/versions/%v/hostnames",
-		params.PropertyID,
-		params.PropertyVersion,
-	))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %w", ErrPatchPropertyVersionHostnames, err)
-	}
-	uri.RawQuery = query.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, uri.String(), nil)
+	req, err := request.NewPatch(ctx, "/papi/v1/properties/%s/versions/%v/hostnames", params.PropertyID, params.PropertyVersion).
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("validateHostnames", strconv.FormatBool(params.ValidateHostnames), params.ValidateHostnames).
+		AddQueryParamIf("includeCertStatus", strconv.FormatBool(params.IncludeCertStatus), params.IncludeCertStatus).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrPatchPropertyVersionHostnames, err)
 	}
 
 	var result PatchPropertyVersionHostnamesResponse
-	resp, err := p.Exec(req, &result, params.Body)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrPatchPropertyVersionHostnames, err)
 	}

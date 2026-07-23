@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -114,23 +114,12 @@ func (p *papi) GetIncludeRuleTree(ctx context.Context, params GetIncludeRuleTree
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetIncludeRuleTree, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/includes/%s/versions/%d/rules", params.IncludeID, params.IncludeVersion))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetIncludeRuleTree, err)
-	}
-
-	q := uri.Query()
-	q.Add("contractId", params.ContractID)
-	q.Add("groupId", params.GroupID)
-	if params.ValidateMode != "" {
-		q.Add("validateMode", params.ValidateMode)
-	}
-	if !params.ValidateRules {
-		q.Add("validateRules", strconv.FormatBool(params.ValidateRules))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/includes/%s/versions/%d/rules", params.IncludeID, params.IncludeVersion).
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParam("groupId", params.GroupID).
+		AddQueryParamIf("validateMode", params.ValidateMode, params.ValidateMode != "").
+		AddQueryParamIf("validateRules", strconv.FormatBool(params.ValidateRules), !params.ValidateRules).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetIncludeRuleTree, err)
 	}
@@ -161,32 +150,20 @@ func (p *papi) UpdateIncludeRuleTree(ctx context.Context, params UpdateIncludeRu
 		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateIncludeRuleTree, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/includes/%s/versions/%d/rules", params.IncludeID, params.IncludeVersion))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateIncludeRuleTree, err)
-	}
-
-	q := uri.Query()
-	q.Add("contractId", params.ContractID)
-	q.Add("groupId", params.GroupID)
-	if params.ValidateMode != "" {
-		q.Add("validateMode", params.ValidateMode)
-	}
-	if !params.ValidateRules {
-		q.Add("validateRules", strconv.FormatBool(params.ValidateRules))
-	}
-	if params.DryRun {
-		q.Add("dryRun", strconv.FormatBool(params.DryRun))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/papi/v1/includes/%s/versions/%d/rules", params.IncludeID, params.IncludeVersion).
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParam("groupId", params.GroupID).
+		AddQueryParamIf("validateMode", params.ValidateMode, params.ValidateMode != "").
+		AddQueryParamIf("validateRules", strconv.FormatBool(params.ValidateRules), !params.ValidateRules).
+		AddQueryParamIf("dryRun", strconv.FormatBool(params.DryRun), params.DryRun).
+		WithBody(params.Rules).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateIncludeRuleTree, err)
 	}
 
 	var result UpdateIncludeRuleTreeResponse
-	resp, err := p.Exec(req, &result, params.Rules)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateIncludeRuleTree, err)
 	}

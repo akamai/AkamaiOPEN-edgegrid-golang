@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -208,12 +208,10 @@ func (p *papi) GetProperties(ctx context.Context, params GetPropertiesRequest) (
 
 	var rval GetPropertiesResponse
 
-	uri := fmt.Sprintf(
-		"/papi/v1/properties?contractId=%s&groupId=%s",
-		params.ContractID,
-		params.GroupID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/papi/v1/properties").
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParam("groupId", params.GroupID).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProperties, err)
 	}
@@ -239,19 +237,18 @@ func (p *papi) CreateProperty(ctx context.Context, params CreatePropertyRequest)
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateProperty, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf(
-		"/papi/v1/properties?contractId=%s&groupId=%s",
-		params.ContractID,
-		params.GroupID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/papi/v1/properties").
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParam("groupId", params.GroupID).
+		WithBody(params.Property).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateProperty, err)
 	}
 
 	var rval CreatePropertyResponse
 
-	resp, err := p.Exec(req, &rval, params.Property)
+	resp, err := p.Exec(req, &rval)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateProperty, err)
 	}
@@ -285,23 +282,10 @@ func (p *papi) GetProperty(ctx context.Context, params GetPropertyRequest) (*Get
 
 	var rval GetPropertyResponse
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s",
-		params.PropertyID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetProperty, err)
-	}
-	q := uri.Query()
-	if params.GroupID != "" {
-		q.Add("groupId", params.GroupID)
-	}
-	if params.ContractID != "" {
-		q.Add("contractId", params.ContractID)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/properties/%s", params.PropertyID).
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProperty, err)
 	}
@@ -334,23 +318,10 @@ func (p *papi) RemoveProperty(ctx context.Context, params RemovePropertyRequest)
 
 	var rval RemovePropertyResponse
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s",
-		params.PropertyID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed parse url: %s", ErrRemoveProperty, err)
-	}
-	q := uri.Query()
-	if params.GroupID != "" {
-		q.Add("groupId", params.GroupID)
-	}
-	if params.ContractID != "" {
-		q.Add("contractId", params.ContractID)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/papi/v1/properties/%s", params.PropertyID).
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrRemoveProperty, err)
 	}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 )
 
@@ -43,7 +44,7 @@ func (p *papi) GetGroups(ctx context.Context) (*GetGroupsResponse, error) {
 
 	var groups GetGroupsResponse
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/groups", nil)
+	req, err := request.NewGet(ctx, "/papi/v1/groups").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetGroups, err)
 	}

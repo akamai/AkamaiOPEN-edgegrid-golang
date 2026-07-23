@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"regexp"
 	"strings"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -200,16 +200,11 @@ func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequ
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetEdgeHostnames, ErrStructValidation, err)
 	}
-	uri := url.URL{Path: "/papi/v1/edgehostnames"}
-	q := url.Values{}
-	q.Set("groupId", params.GroupID)
-	q.Set("contractId", params.ContractID)
-	if len(params.Options) > 0 {
-		q.Set("options", strings.Join(params.Options, ","))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/edgehostnames").
+		AddQueryParam("groupId", params.GroupID).
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParamIf("options", strings.Join(params.Options, ","), len(params.Options) > 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeHostnames, err)
 	}
@@ -237,19 +232,11 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetEdgeHostname, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/edgehostnames/%s", params.EdgeHostnameID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetEdgeHostname, err)
-	}
-	q := url.Values{}
-	q.Set("groupId", params.GroupID)
-	q.Set("contractId", params.ContractID)
-	if len(params.Options) > 0 {
-		q.Set("options", strings.Join(params.Options, ","))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/edgehostnames/%s", params.EdgeHostnameID).
+		AddQueryParam("groupId", params.GroupID).
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParamIf("options", strings.Join(params.Options, ","), len(params.Options) > 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeHostname, err)
 	}
@@ -285,22 +272,18 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, params CreateEdgeHostname
 		return nil, err
 	}
 
-	uri := url.URL{Path: "/papi/v1/edgehostnames"}
-	q := url.Values{}
-	q.Set("groupId", params.GroupID)
-	q.Set("contractId", params.ContractID)
-	if len(params.Options) > 0 {
-		q.Set("options", strings.Join(params.Options, ","))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/papi/v1/edgehostnames").
+		AddQueryParam("groupId", params.GroupID).
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParamIf("options", strings.Join(params.Options, ","), len(params.Options) > 0).
+		WithBody(params.EdgeHostname).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateEdgeHostname, err)
 	}
 
 	var createResponse CreateEdgeHostnameResponse
-	resp, err := p.Exec(req, &createResponse, params.EdgeHostname)
+	resp, err := p.Exec(req, &createResponse)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEdgeHostname, err)
 	}

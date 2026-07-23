@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 )
 
@@ -29,8 +30,7 @@ func (p *papi) GetClientSettings(ctx context.Context) (*ClientSettingsBody, erro
 	logger := p.Log(ctx)
 	logger.Debug("GetClientSettings")
 
-	getURL := "/papi/v1/client-settings"
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	req, err := request.NewGet(ctx, "/papi/v1/client-settings").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetClientSettings, err)
 	}
@@ -55,14 +55,15 @@ func (p *papi) UpdateClientSettings(ctx context.Context, params ClientSettingsBo
 	logger := p.Log(ctx)
 	logger.Debug("UpdateClientSettings")
 
-	putURL := "/papi/v1/client-settings"
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, putURL, nil)
+	req, err := request.NewPut(ctx, "/papi/v1/client-settings").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateClientSettings, err)
 	}
 
 	var clientSettings ClientSettingsBody
-	resp, err := p.Exec(req, &clientSettings, params)
+	resp, err := p.Exec(req, &clientSettings)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateClientSettings, err)
 	}

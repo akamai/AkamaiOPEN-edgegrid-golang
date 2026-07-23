@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -103,31 +103,18 @@ func (p *papi) PatchPropertyHostnameBucket(ctx context.Context, params PatchProp
 		return nil, fmt.Errorf("%s: %w: %s", ErrPatchPropertyHostnameBucket, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s/hostnames",
-		params.PropertyID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrPatchPropertyHostnameBucket, err)
-	}
-	q := uri.Query()
-	if params.GroupID != "" {
-		q.Add("groupId", params.GroupID)
-	}
-	if params.ContractID != "" {
-		q.Add("contractId", params.ContractID)
-	}
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, uri.String(), nil)
+	req, err := request.NewPatch(ctx, "/papi/v1/properties/%s/hostnames", params.PropertyID).
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrPatchPropertyHostnameBucket, err)
 	}
 
 	var result PatchPropertyHostnameBucketResponse
 
-	resp, err := p.Exec(req, &result, params.Body)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrPatchPropertyHostnameBucket, err)
 	}

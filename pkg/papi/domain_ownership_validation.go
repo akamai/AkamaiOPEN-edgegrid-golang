@@ -67,13 +67,14 @@ func (p *papi) ValidateDomainsOwnership(ctx context.Context, params ValidateDoma
 
 	req, err := request.NewPost(ctx, "/papi/v1/domain-challenges").
 		AddQueryParam("refreshToken", strconv.FormatBool(params.RefreshToken)).
+		WithBody(params.Body).
 		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrValidateDomainsOwnership, err)
 	}
 
 	var result ValidateDomainsOwnershipResponse
-	resp, err := p.Exec(req, &result, params.Body)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrValidateDomainsOwnership, err)
 	}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 )
 
@@ -32,7 +33,7 @@ func (p *papi) GetRuleFormats(ctx context.Context) (*GetRuleFormatsResponse, err
 
 	var ruleFormats GetRuleFormatsResponse
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/papi/v1/rule-formats", nil)
+	req, err := request.NewGet(ctx, "/papi/v1/rule-formats").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetRuleFormats, err)
 	}
