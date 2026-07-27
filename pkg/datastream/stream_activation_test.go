@@ -12,6 +12,7 @@ import (
 )
 
 func TestDs_ActivateStream(t *testing.T) {
+	t.Parallel()
 	tests := map[string]struct {
 		request          ActivateStreamRequest
 		responseStatus   int
@@ -256,6 +257,7 @@ func TestDs_ActivateStream(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
@@ -277,6 +279,7 @@ func TestDs_ActivateStream(t *testing.T) {
 }
 
 func TestDs_DeactivateStream(t *testing.T) {
+	t.Parallel()
 	tests := map[string]struct {
 		request          DeactivateStreamRequest
 		responseStatus   int
@@ -521,6 +524,7 @@ func TestDs_DeactivateStream(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
@@ -542,6 +546,7 @@ func TestDs_DeactivateStream(t *testing.T) {
 }
 
 func TestDs_GetActivationHistory(t *testing.T) {
+	t.Parallel()
 	tests := map[string]struct {
 		request          GetActivationHistoryRequest
 		responseStatus   int
@@ -674,6 +679,7 @@ func TestDs_GetActivationHistory(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)

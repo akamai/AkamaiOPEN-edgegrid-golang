@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
@@ -15,6 +17,7 @@ import (
 )
 
 func TestDs_GetStream(t *testing.T) {
+	t.Parallel()
 	tests := map[string]struct {
 		request          GetStreamRequest
 		responseStatus   int
@@ -522,10 +525,22 @@ func TestDs_GetStream(t *testing.T) {
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
+
+		"200 OK without contractId and groupId": {
+			request: GetStreamRequest{
+				LogType:  LogTypeCDN,
+				StreamID: 7050,
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     createStreamResponseJSONWithoutContractAndGroupID,
+			expectedPath:     "/datastream-config-api/v3/log/cdn/streams/7050",
+			expectedResponse: createStreamResponseWithoutContractAndGroupID(),
+		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
@@ -546,7 +561,250 @@ func TestDs_GetStream(t *testing.T) {
 	}
 }
 
+func createStreamResponseWithoutContractAndGroupID() *DetailedStreamVersion {
+	return &DetailedStreamVersion{
+		CollectMidgress: true,
+		CreatedBy:       "sample_username",
+		CreatedDate:     "2022-11-04T00:49:45Z",
+		DatasetFields: []DataSetField{
+			{
+				DatasetFieldName:    "field_name_1",
+				DatasetFieldID:      2020,
+				DatasetFieldJsonKey: "field_json_key_1",
+			},
+		},
+		DeliveryConfiguration: DeliveryConfiguration{
+			Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
+			Format:           FormatTypeStructured,
+			Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+			UploadFilePrefix: "logs",
+			UploadFileSuffix: "ak",
+		},
+		Destination: Destination{
+			CompressLogs:    true,
+			DisplayName:     "sample-display-name",
+			DestinationType: DestinationTypeS3,
+			Path:            "sample-path/{%Y/%m/%d}",
+			Bucket:          "datastream.com",
+			Region:          "ap-south-1",
+		},
+		LatestVersion:      1,
+		StreamID:           7050,
+		StreamVersion:      1,
+		StreamName:         "TestStream",
+		StreamStatus:       StreamStatusActivated,
+		ModifiedBy:         "sample_username2",
+		ModifiedDate:       "2022-11-04T02:14:29Z",
+		NotificationEmails: []string{"useremail1@akamai.com", "useremail2@akamai.com"},
+		ProductID:          "Adaptive_Media_Delivery",
+		Properties:         []Property{{PropertyID: 1234, PropertyName: "abcd"}, {PropertyID: 1234, PropertyName: "abcd"}},
+		LogType:            LogTypeCDN,
+	}
+}
+
+const createStreamResponseJSONWithoutContractAndGroupID = `
+				{
+					"createdBy": "sample_username",
+					"createdDate": "2022-11-04T00:49:45Z",
+					"collectMidgress": true,
+					"datasetFields": [
+						{
+							"datasetFieldId":2020,
+							"datasetFieldName":"field_name_1",
+							"datasetFieldJsonKey":"field_json_key_1"
+						}
+					],
+					"deliveryConfiguration": {
+						"fieldDelimiter": "SPACE",
+						"format": "STRUCTURED",
+						"frequency": {
+							"intervalInSeconds": 30
+						},
+						"uploadFilePrefix": "logs",
+						"uploadFileSuffix": "ak"
+					},
+					"destination": {
+						"bucket": "datastream.com",
+						"compressLogs": true,
+						"destinationType": "S3",
+						"displayName": "sample-display-name",
+						"path": "sample-path/{%Y/%m/%d}",
+						"region": "ap-south-1"
+					},
+					"latestVersion": 1,
+					"modifiedBy": "sample_username2",
+					"modifiedDate": "2022-11-04T02:14:29Z",
+					"notificationEmails": [
+						"useremail1@akamai.com", "useremail2@akamai.com"
+					],
+					"productId": "Adaptive_Media_Delivery",
+					"properties": [
+						{
+							"propertyId": 1234,
+							"propertyName": "abcd"
+						},
+						{
+							"propertyId": 1234,
+							"propertyName": "abcd"
+						}
+					],
+					"streamId": 7050,
+					"streamName": "TestStream",
+					"streamStatus": "ACTIVATED",
+					"streamVersion": 1
+				}
+				`
+
+const createStreamRequestBodyWithoutContractAndGroupID = `
+				   "streamName":"TestStream",
+				   "collectMidgress":true,
+				   "notificationEmails":[
+					  "useremail1@akamai.com",
+					  "useremail2@akamai.com"
+				   ],
+				   "properties":[
+					  {"propertyId":1234},{"propertyId":1234}
+				   ],
+				   "datasetFields":[{"datasetFieldId":2020}],
+				   "deliveryConfiguration":{
+					  "uploadFilePrefix":"logs",
+					  "uploadFileSuffix":"ak",
+					  "fieldDelimiter":"SPACE",
+					  "format":"STRUCTURED",
+					  "frequency": {"intervalInSeconds":30}
+				   },
+				   "destination":{
+					  "path":"sample-path/{%Y/%m/%d}",
+					  "displayName":"sample-display-name",
+					  "bucket":"datastream.com",
+					  "region":"ap-south-1",
+					  "accessKey":"1234ABCD",
+					  "secretAccessKey":"1234ABCD",
+					  "destinationType":"S3"
+				   }`
+
+func updateStreamResponseWithoutContractAndGroupID() *DetailedStreamVersion {
+	return &DetailedStreamVersion{
+		CollectMidgress: true,
+		CreatedBy:       "sample_username",
+		CreatedDate:     "2022-11-04T00:49:45Z",
+		DatasetFields:   []DataSetField{{DatasetFieldName: "field_name_1", DatasetFieldID: 2020, DatasetFieldJsonKey: "field_json_key_1"}},
+		DeliveryConfiguration: DeliveryConfiguration{
+			Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
+			Format:           FormatTypeStructured,
+			Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+			UploadFilePrefix: "logs",
+			UploadFileSuffix: "ak",
+		},
+		Destination: Destination{
+			CompressLogs:    true,
+			DisplayName:     "sample-display-name",
+			DestinationType: DestinationTypeS3,
+			Path:            "sample-path/{%Y/%m/%d}",
+			Bucket:          "datastream.com",
+			Region:          "ap-south-1",
+		},
+		LatestVersion:      2,
+		StreamID:           7050,
+		StreamVersion:      2,
+		StreamName:         "TestStream",
+		StreamStatus:       StreamStatusActivated,
+		ModifiedBy:         "modified_by_user",
+		ModifiedDate:       "2022-11-04T02:14:29Z",
+		NotificationEmails: []string{"useremail1@akamai.com", "useremail2@akamai.com"},
+		ProductID:          "Adaptive_Media_Delivery",
+		Properties:         []Property{{PropertyID: 1234, PropertyName: "sample1.com"}, {PropertyID: 1234, PropertyName: "sample2.com"}},
+		LogType:            LogTypeCDN,
+	}
+}
+
+const updateStreamResponseJSONWithoutContractAndGroupID = `
+{
+    "createdBy": "sample_username",
+    "createdDate": "2022-11-04T00:49:45Z",
+    "collectMidgress": true,
+    "datasetFields": [
+        {
+            "datasetFieldId":2020,
+            "datasetFieldName":"field_name_1",
+            "datasetFieldJsonKey":"field_json_key_1"
+        }
+    ],
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE",
+        "format": "STRUCTURED",
+        "frequency": {
+            "intervalInSeconds": 30
+        },
+        "uploadFilePrefix": "logs",
+        "uploadFileSuffix": "ak"
+    },
+    "destination": {
+        "bucket": "datastream.com",
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample-display-name",
+        "path": "sample-path/{%Y/%m/%d}",
+        "region": "ap-south-1"
+    },
+    "latestVersion": 2,
+    "modifiedBy": "modified_by_user",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": [
+        "useremail1@akamai.com", "useremail2@akamai.com"
+    ],
+    "productId": "Adaptive_Media_Delivery",
+    "properties": [
+        {
+            "propertyId": 1234,
+            "propertyName": "sample1.com"
+        },
+        {
+            "propertyId": 1234,
+            "propertyName": "sample2.com"
+        }
+    ],
+    "streamId": 7050,
+    "streamName": "TestStream",
+    "streamStatus": "ACTIVATED",
+    "streamVersion": 2
+}
+`
+
+const updateStreamRequestBodyWithoutContractAndGroupID = `
+   "streamName":"TestStream",
+   "notificationEmails":[
+      "test@aka.mai",
+      "useremail2@akamai.com"
+   ],
+   "properties":[
+      {"propertyId":123123},
+      {"propertyId":123123}
+   ],
+   "datasetFields":[
+      {"datasetFieldId":1},
+      {"datasetFieldId":2},
+      {"datasetFieldId":3}
+   ],
+   "deliveryConfiguration":{
+      "uploadFilePrefix":"logs",
+      "uploadFileSuffix":"ak",
+      "fieldDelimiter":"SPACE",
+      "format":"STRUCTURED",
+      "frequency": {"intervalInSeconds":30}
+   },
+   "destination":{
+      "path":"sample-path/{%Y/%m/%d}",
+      "displayName":"sample-display-name",
+      "bucket":"datastream.com",
+      "region":"ap-south-1",
+      "accessKey":"ABC",
+      "secretAccessKey":"XYZ",
+      "destinationType":"S3"
+   }`
+
 func TestDs_CreateStream(t *testing.T) {
+	t.Parallel()
 	createStreamRequest := CreateStreamRequest{
 		LogType:  LogTypeCDN,
 		Activate: true,
@@ -1000,6 +1258,119 @@ func TestDs_CreateStream(t *testing.T) {
 }
 `,
 		},
+		"201 Created ActivateNow:true with omitted contractId and groupId": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+			}),
+			responseStatus:   http.StatusCreated,
+			responseBody:     createStreamResponseJSONWithoutContractAndGroupID,
+			expectedPath:     "/datastream-config-api/v3/log/cdn/streams?activate=true",
+			expectedResponse: createStreamResponseWithoutContractAndGroupID(),
+			expectedBody: `
+				{
+				   "streamName":"TestStream",
+				   "collectMidgress":true,
+				   "notificationEmails":[
+					  "useremail1@akamai.com",
+					  "useremail2@akamai.com"
+				   ],
+				   "properties":[
+					  {"propertyId":1234},{"propertyId":1234}
+				   ],
+				   "datasetFields":[{"datasetFieldId":2020}],
+				   "deliveryConfiguration":{
+					  "uploadFilePrefix":"logs",
+					  "uploadFileSuffix":"ak",
+					  "fieldDelimiter":"SPACE",
+					  "format":"STRUCTURED",
+					  "frequency": {"intervalInSeconds":30}
+				   },
+				   "destination":{
+					  "path":"sample-path/{%Y/%m/%d}",
+					  "displayName":"sample-display-name",
+					  "bucket":"datastream.com",
+					  "region":"ap-south-1",
+					  "accessKey":"1234ABCD",
+					  "secretAccessKey":"1234ABCD",
+				   "destinationType":"S3"
+				   }
+				}
+				`,
+		},
+		"201 Created ActivateNow:true with only contractId": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = "1-ONLY-CONTRACT"
+				r.StreamConfiguration.GroupID = 0
+			}),
+			responseStatus:   http.StatusCreated,
+			responseBody:     createStreamResponseJSONWithoutContractAndGroupID,
+			expectedPath:     "/datastream-config-api/v3/log/cdn/streams?activate=true",
+			expectedResponse: createStreamResponseWithoutContractAndGroupID(),
+			expectedBody: `{
+				` + createStreamRequestBodyWithoutContractAndGroupID + `,
+				"contractId":"1-ONLY-CONTRACT"
+				}`,
+		},
+		"201 Created ActivateNow:true with only groupId": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 9999
+			}),
+			responseStatus:   http.StatusCreated,
+			responseBody:     createStreamResponseJSONWithoutContractAndGroupID,
+			expectedPath:     "/datastream-config-api/v3/log/cdn/streams?activate=true",
+			expectedResponse: createStreamResponseWithoutContractAndGroupID(),
+			expectedBody: `{
+				` + createStreamRequestBodyWithoutContractAndGroupID + `,
+				"groupId":9999
+				}`,
+		},
+		"201 Created ActivateNow:true with whitespace contractId stripped": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = "   "
+				r.StreamConfiguration.GroupID = 0
+			}),
+			responseStatus:   http.StatusCreated,
+			responseBody:     createStreamResponseJSONWithoutContractAndGroupID,
+			expectedPath:     "/datastream-config-api/v3/log/cdn/streams?activate=true",
+			expectedResponse: createStreamResponseWithoutContractAndGroupID(),
+			expectedBody: `{
+				` + createStreamRequestBodyWithoutContractAndGroupID + `
+				}`,
+		},
+		"validation error - negative groupId with omitted contractId": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = -1
+			}),
+			withError: ErrStructValidation,
+		},
+		"201 Created ActivateNow:false with omitted contractId and groupId": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.Activate = false
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+			}),
+			responseStatus:   http.StatusCreated,
+			responseBody:     createStreamResponseJSONWithoutContractAndGroupID,
+			expectedPath:     "/datastream-config-api/v3/log/cdn/streams?activate=false",
+			expectedResponse: createStreamResponseWithoutContractAndGroupID(),
+			expectedBody: `{
+				` + createStreamRequestBodyWithoutContractAndGroupID + `
+				}`,
+		},
+		"validation error - appsec omitted contractId and groupId": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.LogType = LogTypeAppSec
+				r.StreamConfiguration.AppSecConfigs = []AppSecConfigID{{AppSecID: 12345}}
+				r.StreamConfiguration.Properties = []PropertyID{}
+				r.StreamConfiguration.DatasetFields = []DatasetFieldID{}
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+			}),
+			withError: ErrStructValidation,
+		},
 		"validation error - empty destination": {
 			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
 				r.StreamConfiguration.Destination = AbstractConnector(&S3Connector{})
@@ -1134,21 +1505,18 @@ func TestDs_CreateStream(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.withError == nil && test.expectedBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
-				if test.withError == nil && test.expectedBody != "" {
-					var reqBody interface{}
-					err = json.NewDecoder(r.Body).Decode(&reqBody)
-					require.NoError(t, err, "Error while decoding request body")
-					var expectedBody interface{}
-					err = json.Unmarshal([]byte(test.expectedBody), &expectedBody)
-					require.NoError(t, err, "Error while parsing expected body to JSON")
-					assert.Equal(t, expectedBody, reqBody)
-				}
 			}))
 			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
@@ -1164,6 +1532,7 @@ func TestDs_CreateStream(t *testing.T) {
 }
 
 func TestDs_UpdateStream(t *testing.T) {
+	t.Parallel()
 	updateRequest := UpdateStreamRequest{
 		LogType:  LogTypeCDN,
 		StreamID: 7050,
@@ -1210,6 +1579,7 @@ func TestDs_UpdateStream(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
+		expectedBody     string
 		expectedResponse *DetailedStreamVersion
 		withError        error
 	}{
@@ -1464,15 +1834,214 @@ func TestDs_UpdateStream(t *testing.T) {
 			}),
 			withError: ErrStructValidation,
 		},
-		"validation error - groupId modification": {
+		"200 OK activate:true with omitted contractId and groupId": {
 			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
-				r.StreamConfiguration.GroupID = 1337
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+			}),
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "createdBy": "sample_username",
+    "createdDate": "2022-11-04T00:49:45Z",
+    "collectMidgress": true,
+    "datasetFields": [
+        {
+            "datasetFieldId":2020,
+            "datasetFieldName":"field_name_1",
+            "datasetFieldJsonKey":"field_json_key_1"
+        }
+    ],
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE",
+        "format": "STRUCTURED",
+        "frequency": {
+            "intervalInSeconds": 30
+        },
+        "uploadFilePrefix": "logs",
+        "uploadFileSuffix": "ak"
+    },
+    "destination": {
+        "bucket": "datastream.com",
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample-display-name",
+        "path": "sample-path/{%Y/%m/%d}",
+        "region": "ap-south-1"
+    },
+    "latestVersion": 2,
+    "modifiedBy": "modified_by_user",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": [
+        "useremail1@akamai.com", "useremail2@akamai.com"
+    ],
+    "productId": "Adaptive_Media_Delivery",
+    "properties": [
+        {
+            "propertyId": 1234,
+            "propertyName": "sample1.com"
+        },
+        {
+            "propertyId": 1234,
+            "propertyName": "sample2.com"
+        }
+    ],
+    "streamId": 7050,
+    "streamName": "TestStream",
+    "streamStatus": "ACTIVATED",
+    "streamVersion": 2
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/cdn/streams/7050?activate=true",
+			expectedResponse: &DetailedStreamVersion{
+				CollectMidgress: true,
+				CreatedBy:       "sample_username",
+				CreatedDate:     "2022-11-04T00:49:45Z",
+				DatasetFields:   []DataSetField{{DatasetFieldName: "field_name_1", DatasetFieldID: 2020, DatasetFieldJsonKey: "field_json_key_1"}},
+				DeliveryConfiguration: DeliveryConfiguration{
+					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
+					Format:           FormatTypeStructured,
+					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					UploadFilePrefix: "logs",
+					UploadFileSuffix: "ak",
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample-display-name",
+					DestinationType: DestinationTypeS3,
+					Path:            "sample-path/{%Y/%m/%d}",
+					Bucket:          "datastream.com",
+					Region:          "ap-south-1",
+				},
+				LatestVersion:      2,
+				StreamID:           7050,
+				StreamVersion:      2,
+				StreamName:         "TestStream",
+				StreamStatus:       StreamStatusActivated,
+				ModifiedBy:         "modified_by_user",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				NotificationEmails: []string{"useremail1@akamai.com", "useremail2@akamai.com"},
+				ProductID:          "Adaptive_Media_Delivery",
+				Properties:         []Property{{PropertyID: 1234, PropertyName: "sample1.com"}, {PropertyID: 1234, PropertyName: "sample2.com"}},
+				LogType:            LogTypeCDN,
+			},
+		},
+		"200 OK activate:true with only contractId": {
+			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.ContractID = "P-ONLY"
+				r.StreamConfiguration.GroupID = 0
+			}),
+			responseStatus:   http.StatusOK,
+			responseBody:     updateStreamResponseJSONWithoutContractAndGroupID,
+			expectedPath:     "/datastream-config-api/v3/log/cdn/streams/7050?activate=true",
+			expectedResponse: updateStreamResponseWithoutContractAndGroupID(),
+			expectedBody: `{
+				` + updateStreamRequestBodyWithoutContractAndGroupID + `,
+				"contractId":"P-ONLY"
+				}`,
+		},
+		"200 OK activate:true with only groupId": {
+			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 5678
+			}),
+			responseStatus:   http.StatusOK,
+			responseBody:     updateStreamResponseJSONWithoutContractAndGroupID,
+			expectedPath:     "/datastream-config-api/v3/log/cdn/streams/7050?activate=true",
+			expectedResponse: updateStreamResponseWithoutContractAndGroupID(),
+			expectedBody: `{
+				` + updateStreamRequestBodyWithoutContractAndGroupID + `,
+				"groupId":5678
+				}`,
+		},
+		"200 OK activate:true with contractId and groupId": {
+			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.ContractID = "2-AB1234"
+				r.StreamConfiguration.GroupID = 5678
+			}),
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "contractId": "2-AB1234",
+    "groupId": 5678,
+    "createdBy": "sample_username",
+    "createdDate": "2022-11-04T00:49:45Z",
+    "collectMidgress": true,
+    "datasetFields": [
+        {
+            "datasetFieldId":2020,
+            "datasetFieldName":"field_name_1",
+            "datasetFieldJsonKey":"field_json_key_1"
+        }
+    ],
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE",
+        "format": "STRUCTURED",
+        "frequency": {
+            "intervalInSeconds": 30
+        },
+        "uploadFilePrefix": "logs",
+        "uploadFileSuffix": "ak"
+    },
+    "destination": {
+        "bucket": "datastream.com",
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample-display-name",
+        "path": "sample-path/{%Y/%m/%d}",
+        "region": "ap-south-1"
+    },
+    "latestVersion": 2,
+    "modifiedBy": "modified_by_user",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": [
+        "useremail1@akamai.com", "useremail2@akamai.com"
+    ],
+    "productId": "Adaptive_Media_Delivery",
+    "properties": [
+        {
+            "propertyId": 1234,
+            "propertyName": "sample1.com"
+        },
+        {
+            "propertyId": 1234,
+            "propertyName": "sample2.com"
+        }
+    ],
+    "streamId": 7050,
+    "streamName": "TestStream",
+    "streamStatus": "ACTIVATED",
+    "streamVersion": 2
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/cdn/streams/7050?activate=true",
+			expectedResponse: func() *DetailedStreamVersion {
+				resp := updateStreamResponseWithoutContractAndGroupID()
+				resp.ContractID = "2-AB1234"
+				resp.GroupID = 5678
+				return resp
+			}(),
+			expectedBody: `{
+				` + updateStreamRequestBodyWithoutContractAndGroupID + `,
+				"contractId":"2-AB1234",
+				"groupId":5678
+				}`,
+		},
+		"validation error - negative groupId with omitted contractId": {
+			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = -5
 			}),
 			withError: ErrStructValidation,
 		},
-		"validation error - missing contractId": {
+		"validation error - appsec omitted contractId": {
 			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
+				r.LogType = LogTypeAppSec
+				r.StreamConfiguration.AppSecConfigs = []AppSecConfigID{{AppSecID: 12345}}
+				r.StreamConfiguration.Properties = []PropertyID{}
+				r.StreamConfiguration.DatasetFields = []DatasetFieldID{}
 				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
 			}),
 			withError: ErrStructValidation,
 		},
@@ -1533,9 +2102,15 @@ func TestDs_UpdateStream(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.withError == nil && test.expectedBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
@@ -1554,6 +2129,7 @@ func TestDs_UpdateStream(t *testing.T) {
 }
 
 func TestDs_DeleteStream(t *testing.T) {
+	t.Parallel()
 	tests := map[string]struct {
 		request        DeleteStreamRequest
 		responseStatus int
@@ -1638,6 +2214,7 @@ func TestDs_DeleteStream(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodDelete, r.Method)
@@ -2028,6 +2605,7 @@ func TestDs_Destinations(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			request.StreamConfiguration.Destination = test.destination
 
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
@@ -2121,6 +2699,7 @@ func TestDs_setDestinationTypes(t *testing.T) {
 }
 
 func TestDs_ListStreams(t *testing.T) {
+	t.Parallel()
 	tests := map[string]struct {
 		request          ListStreamsRequest
 		responseStatus   int
@@ -2531,10 +3110,87 @@ func TestDs_ListStreams(t *testing.T) {
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
 			},
 		},
+		"200 OK without contractId and groupId": {
+			request:        ListStreamsRequest{LogType: LogTypeCDN},
+			responseStatus: http.StatusOK,
+			responseBody: `[
+   {
+      "createdBy":"abc",
+      "createdDate":"2022-04-21T17:02:58Z",
+      "latestVersion":1,
+      "modifiedBy":"abc",
+      "modifiedDate":"2022-12-26T17:00:03Z",
+      "productId":"API_Acceleration",
+      "properties":[],
+      "appSecConfigs":[],
+      "streamId":99,
+      "streamName":"no-contract-group-stream",
+      "streamStatus":"ACTIVATED",
+      "streamVersion":1
+   }
+]`,
+			expectedPath: "/datastream-config-api/v3/log/cdn/streams",
+			expectedResponse: []StreamDetails{
+				{
+					LogType:       LogTypeCDN,
+					StreamStatus:  StreamStatusActivated,
+					ProductID:     "API_Acceleration",
+					ModifiedBy:    "abc",
+					ModifiedDate:  "2022-12-26T17:00:03Z",
+					CreatedBy:     "abc",
+					CreatedDate:   "2022-04-21T17:02:58Z",
+					LatestVersion: 1,
+					Properties:    []Property{},
+					AppSecConfigs: []AppSecConfig{},
+					StreamID:      99,
+					StreamName:    "no-contract-group-stream",
+					StreamVersion: 1,
+				},
+			},
+		},
+		"200 OK groupId filter with response omitting contractId and groupId": {
+			request:        ListStreamsRequest{LogType: LogTypeCDN, GroupID: ptr.To(1234)},
+			responseStatus: http.StatusOK,
+			responseBody: `[
+   {
+      "streamId":1,
+      "streamName":"filtered",
+      "streamStatus":"ACTIVATED",
+      "streamVersion":1,
+      "latestVersion":1,
+      "createdBy":"u",
+      "createdDate":"d",
+      "modifiedBy":"u",
+      "modifiedDate":"d",
+      "productId":"p",
+      "properties":[],
+      "appSecConfigs":[]
+   }
+]`,
+			expectedPath: "/datastream-config-api/v3/log/cdn/streams?groupId=1234",
+			expectedResponse: []StreamDetails{
+				{
+					LogType:       LogTypeCDN,
+					StreamStatus:  StreamStatusActivated,
+					ProductID:     "p",
+					ModifiedBy:    "u",
+					ModifiedDate:  "d",
+					CreatedBy:     "u",
+					CreatedDate:   "d",
+					LatestVersion: 1,
+					Properties:    []Property{},
+					AppSecConfigs: []AppSecConfig{},
+					StreamID:      1,
+					StreamName:    "filtered",
+					StreamVersion: 1,
+				},
+			},
+		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
@@ -2552,5 +3208,648 @@ func TestDs_ListStreams(t *testing.T) {
 			require.NoError(t, err)
 			assert.Equal(t, test.expectedResponse, result)
 		})
+	}
+}
+
+func validCDNCreateStreamRequest() CreateStreamRequest {
+	return CreateStreamRequest{
+		LogType:  LogTypeCDN,
+		Activate: true,
+		StreamConfiguration: StreamConfiguration{
+			DeliveryConfiguration: DeliveryConfiguration{
+				Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
+				Format:           FormatTypeStructured,
+				Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+				UploadFilePrefix: "logs",
+				UploadFileSuffix: "ak",
+			},
+			Destination: AbstractConnector(&S3Connector{
+				Path:            "sample-path/{%Y/%m/%d}",
+				DisplayName:     "sample-display-name",
+				Bucket:          "datastream.com",
+				Region:          "ap-south-1",
+				AccessKey:       "1234ABCD",
+				SecretAccessKey: "1234ABCD",
+			}),
+			ContractID:         "2-AB1234",
+			GroupID:            1234,
+			DatasetFields:      []DatasetFieldID{{DatasetFieldID: 2020}},
+			NotificationEmails: []string{"useremail1@akamai.com"},
+			Properties:         []PropertyID{{PropertyID: 1234}},
+			StreamName:         "TestStream",
+			CollectMidgress:    true,
+		},
+	}
+}
+
+func validCDNUpdateStreamRequest() UpdateStreamRequest {
+	return UpdateStreamRequest{
+		LogType:  LogTypeCDN,
+		StreamID: 7050,
+		Activate: true,
+		StreamConfiguration: StreamConfiguration{
+			DeliveryConfiguration: DeliveryConfiguration{
+				Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
+				Format:           FormatTypeStructured,
+				Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+				UploadFilePrefix: "logs",
+				UploadFileSuffix: "ak",
+			},
+			Destination: AbstractConnector(&S3Connector{
+				DisplayName:     "sample-display-name",
+				DestinationType: DestinationTypeS3,
+				Path:            "sample-path/{%Y/%m/%d}",
+				Bucket:          "datastream.com",
+				Region:          "ap-south-1",
+				AccessKey:       "ABC",
+				SecretAccessKey: "XYZ",
+			}),
+			ContractID:         "P-1324",
+			DatasetFields:      []DatasetFieldID{{DatasetFieldID: 1}},
+			NotificationEmails: []string{"test@aka.mai"},
+			Properties:         []PropertyID{{PropertyID: 123123}},
+			StreamName:         "TestStream",
+		},
+	}
+}
+
+// prepareAndValidateCreateStreamRequest sets the destination type, trims ContractID, then runs Validate.
+func prepareAndValidateCreateStreamRequest(req CreateStreamRequest) error {
+	setDestinationType(&req.StreamConfiguration)
+	req.StreamConfiguration.ContractID = strings.TrimSpace(req.StreamConfiguration.ContractID)
+	return req.Validate()
+}
+
+// prepareAndValidateUpdateStreamRequest sets the destination type, trims ContractID, then runs Validate.
+func prepareAndValidateUpdateStreamRequest(req UpdateStreamRequest) error {
+	setDestinationType(&req.StreamConfiguration)
+	req.StreamConfiguration.ContractID = strings.TrimSpace(req.StreamConfiguration.ContractID)
+	return req.Validate()
+}
+
+func validAppSecCreateStreamRequest() CreateStreamRequest {
+	req := validCDNCreateStreamRequest()
+	req.LogType = LogTypeAppSec
+	req.StreamConfiguration.Properties = []PropertyID{}
+	req.StreamConfiguration.DatasetFields = []DatasetFieldID{}
+	req.StreamConfiguration.AppSecConfigs = []AppSecConfigID{{AppSecID: 12345}}
+	return req
+}
+
+func TestCreateStreamRequest_Validate_OptionalContractAndGroup(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		mutate  func(*CreateStreamRequest)
+		wantErr string
+	}{
+		"both omitted": {
+			mutate: func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+			},
+		},
+		"only contract present": {
+			mutate: func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = "1-ABC"
+				r.StreamConfiguration.GroupID = 0
+			},
+		},
+		"only group present": {
+			mutate: func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 42
+			},
+		},
+		"both present": {},
+		"groupId one": {
+			mutate: func(r *CreateStreamRequest) {
+				r.StreamConfiguration.GroupID = 1
+			},
+		},
+		"groupId max int": {
+			mutate: func(r *CreateStreamRequest) {
+				r.StreamConfiguration.GroupID = 2147483647
+			},
+		},
+		"whitespace contract passes client validation": {
+			mutate: func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = "   "
+				r.StreamConfiguration.GroupID = 0
+			},
+		},
+		"appsec both omitted": {
+			mutate: func(r *CreateStreamRequest) {
+				*r = validAppSecCreateStreamRequest()
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+			},
+			wantErr: "StreamConfiguration.ContractId",
+		},
+		"appsec only contract": {
+			mutate: func(r *CreateStreamRequest) {
+				*r = validAppSecCreateStreamRequest()
+				r.StreamConfiguration.ContractID = "P-999"
+				r.StreamConfiguration.GroupID = 0
+			},
+			wantErr: "StreamConfiguration.GroupID",
+		},
+		"appsec only group": {
+			mutate: func(r *CreateStreamRequest) {
+				*r = validAppSecCreateStreamRequest()
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 88
+			},
+			wantErr: "StreamConfiguration.ContractId",
+		},
+		"appsec whitespace contract": {
+			mutate: func(r *CreateStreamRequest) {
+				*r = validAppSecCreateStreamRequest()
+				r.StreamConfiguration.ContractID = "   "
+				r.StreamConfiguration.GroupID = 1
+			},
+			wantErr: "StreamConfiguration.ContractId",
+		},
+		"groupId negative": {
+			mutate: func(r *CreateStreamRequest) {
+				r.StreamConfiguration.GroupID = -1
+			},
+			wantErr: "StreamConfiguration.GroupID",
+		},
+		"omitted optional still requires stream name": {
+			mutate: func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+				r.StreamConfiguration.StreamName = ""
+			},
+			wantErr: "StreamConfiguration.StreamName",
+		},
+		"omitted optional still requires destination": {
+			mutate: func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+				r.StreamConfiguration.Destination = AbstractConnector(&S3Connector{})
+			},
+			wantErr: "StreamConfiguration.Destination",
+		},
+		"omitted optional still requires valid log type": {
+			mutate: func(r *CreateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+				r.LogType = "INVALID"
+			},
+			wantErr: "LogType",
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			req := validCDNCreateStreamRequest()
+			if tc.mutate != nil {
+				tc.mutate(&req)
+			}
+			err := prepareAndValidateCreateStreamRequest(req)
+			if tc.wantErr == "" {
+				require.NoError(t, err)
+				return
+			}
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), tc.wantErr)
+		})
+	}
+}
+
+func TestUpdateStreamRequest_Validate_OptionalContractAndGroup(t *testing.T) {
+	t.Parallel()
+
+	tests := map[string]struct {
+		mutate  func(*UpdateStreamRequest)
+		wantErr string
+	}{
+		"both omitted": {
+			mutate: func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+			},
+		},
+		"only contract present": {
+			mutate: func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.ContractID = "1-ABC"
+				r.StreamConfiguration.GroupID = 0
+			},
+		},
+		"only group present": {
+			mutate: func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 42
+			},
+		},
+		"non-zero groupId allowed on update": {
+			mutate: func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.GroupID = 5
+			},
+		},
+		"groupId negative": {
+			mutate: func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.GroupID = -1
+			},
+			wantErr: "StreamConfiguration.GroupID",
+		},
+		"groupId max int": {
+			mutate: func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.GroupID = 2147483647
+			},
+		},
+		"omitted optional still requires stream name": {
+			mutate: func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+				r.StreamConfiguration.StreamName = ""
+			},
+			wantErr: "StreamConfiguration.StreamName",
+		},
+		"omitted optional still requires destination": {
+			mutate: func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+				r.StreamConfiguration.Destination = AbstractConnector(&S3Connector{})
+			},
+			wantErr: "StreamConfiguration.Destination",
+		},
+		"omitted optional still requires valid log type": {
+			mutate: func(r *UpdateStreamRequest) {
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+				r.LogType = "INVALID"
+			},
+			wantErr: "LogType",
+		},
+		"appsec both omitted": {
+			mutate: func(r *UpdateStreamRequest) {
+				*r = validAppSecUpdateStreamRequest()
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 0
+			},
+			wantErr: "StreamConfiguration.ContractId",
+		},
+		"appsec both present": {
+			mutate: func(r *UpdateStreamRequest) {
+				*r = validAppSecUpdateStreamRequest()
+			},
+		},
+		"appsec whitespace contract": {
+			mutate: func(r *UpdateStreamRequest) {
+				*r = validAppSecUpdateStreamRequest()
+				r.StreamConfiguration.ContractID = "  "
+				r.StreamConfiguration.GroupID = 0
+			},
+			wantErr: "StreamConfiguration.ContractId",
+		},
+		"appsec non-zero groupId rejected": {
+			mutate: func(r *UpdateStreamRequest) {
+				*r = validAppSecUpdateStreamRequest()
+				r.StreamConfiguration.GroupID = 1
+			},
+			wantErr: "StreamConfiguration.GroupID",
+		},
+		"appsec only contract": {
+			mutate: func(r *UpdateStreamRequest) {
+				*r = validAppSecUpdateStreamRequest()
+				r.StreamConfiguration.ContractID = "P-999"
+				r.StreamConfiguration.GroupID = 0
+			},
+		},
+		"appsec only group rejected": {
+			mutate: func(r *UpdateStreamRequest) {
+				*r = validAppSecUpdateStreamRequest()
+				r.StreamConfiguration.ContractID = ""
+				r.StreamConfiguration.GroupID = 88
+			},
+			wantErr: "StreamConfiguration.ContractId",
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			req := validCDNUpdateStreamRequest()
+			if tc.mutate != nil {
+				tc.mutate(&req)
+			}
+			err := prepareAndValidateUpdateStreamRequest(req)
+			if tc.wantErr == "" {
+				require.NoError(t, err)
+				return
+			}
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), tc.wantErr)
+		})
+	}
+}
+
+func TestStreamConfiguration_JSONOptionalFields(t *testing.T) {
+	t.Parallel()
+
+	base := func() StreamConfiguration {
+		return StreamConfiguration{
+			StreamName: "TestStream",
+			DeliveryConfiguration: DeliveryConfiguration{
+				Delimiter: DelimiterTypePtr(DelimiterTypeSpace),
+				Format:    FormatTypeStructured,
+				Frequency: Frequency{IntervalInSeconds: IntervalInSeconds30},
+			},
+			Destination: AbstractConnector(&S3Connector{
+				Path:            "path",
+				DisplayName:     "display",
+				Bucket:          "bucket",
+				Region:          "us-east-1",
+				AccessKey:       "key",
+				SecretAccessKey: "secret",
+			}),
+			DatasetFields: []DatasetFieldID{{DatasetFieldID: 1}},
+			Properties:    []PropertyID{{PropertyID: 1}},
+		}
+	}
+
+	tests := map[string]struct {
+		mutate      func(*StreamConfiguration)
+		contains    []string
+		notContains []string
+		checkMap    func(*testing.T, map[string]any)
+		checkBody   func(*testing.T, []byte)
+	}{
+		"marshal omits zero contractId and groupId": {
+			mutate: func(c *StreamConfiguration) {
+				c.ContractID = ""
+				c.GroupID = 0
+			},
+			notContains: []string{"contractId", "groupId"},
+			checkMap: func(t *testing.T, decoded map[string]any) {
+				assert.Contains(t, decoded, "streamName")
+				assert.Contains(t, decoded, "destination")
+				assert.Contains(t, decoded, "deliveryConfiguration")
+			},
+		},
+		"marshal includes populated contractId and groupId": {
+			mutate: func(c *StreamConfiguration) {
+				c.ContractID = "2-AB1234"
+				c.GroupID = 1234
+			},
+			contains: []string{`"contractId":"2-AB1234"`, `"groupId":1234`},
+		},
+		"marshal only group omitted": {
+			mutate: func(c *StreamConfiguration) {
+				c.ContractID = "2-AB1234"
+				c.GroupID = 0
+			},
+			contains:    []string{`"contractId":"2-AB1234"`},
+			notContains: []string{"groupId"},
+		},
+		"marshal only contract omitted": {
+			mutate: func(c *StreamConfiguration) {
+				c.ContractID = ""
+				c.GroupID = 1234
+			},
+			contains:    []string{`"groupId":1234`},
+			notContains: []string{"contractId"},
+		},
+		"marshal includes whitespace contractId": {
+			mutate: func(c *StreamConfiguration) {
+				c.ContractID = "   "
+				c.GroupID = 0
+			},
+			contains:    []string{`"contractId":"   "`},
+			notContains: []string{"groupId"},
+		},
+		"marshal round-trip preserves optional field keys": {
+			mutate: func(c *StreamConfiguration) {
+				c.ContractID = "P-999"
+				c.GroupID = 77
+			},
+			checkMap: func(t *testing.T, decoded map[string]any) {
+				assert.Equal(t, "P-999", decoded["contractId"])
+				assert.Equal(t, float64(77), decoded["groupId"])
+			},
+		},
+		"marshal omits optional keys when zero after population cleared": {
+			mutate: func(c *StreamConfiguration) {
+				c.ContractID = "P-999"
+				c.GroupID = 77
+				c.ContractID = ""
+				c.GroupID = 0
+			},
+			checkMap: func(t *testing.T, decoded map[string]any) {
+				assert.NotContains(t, decoded, "contractId")
+				assert.NotContains(t, decoded, "groupId")
+			},
+		},
+		"deterministic marshal order": {
+			mutate: func(c *StreamConfiguration) {
+				c.ContractID = "C-1"
+				c.GroupID = 9
+			},
+			checkBody: func(t *testing.T, first []byte) {
+				cfg := base()
+				cfg.ContractID = "C-1"
+				cfg.GroupID = 9
+				second, err := json.Marshal(cfg)
+				require.NoError(t, err)
+				assert.Contains(t, string(first), "contractId")
+				assert.Contains(t, string(first), "groupId")
+				assert.Equal(t, string(first), string(second))
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			cfg := base()
+			if tc.mutate != nil {
+				tc.mutate(&cfg)
+			}
+			data, err := json.Marshal(cfg)
+			require.NoError(t, err)
+			body := string(data)
+			for _, s := range tc.contains {
+				assert.Contains(t, body, s)
+			}
+			for _, s := range tc.notContains {
+				assert.NotContains(t, body, s)
+			}
+			if tc.checkMap != nil {
+				var decoded map[string]any
+				require.NoError(t, json.Unmarshal(data, &decoded))
+				tc.checkMap(t, decoded)
+			}
+			if tc.checkBody != nil {
+				tc.checkBody(t, data)
+			}
+		})
+	}
+}
+
+func TestStreamResponseTypes_JSONOptionalFields(t *testing.T) {
+	t.Parallel()
+
+	const detailedBase = `{"streamId":7050,"streamName":"TestStream","streamStatus":"ACTIVATED","streamVersion":1,"latestVersion":1,"createdBy":"u","createdDate":"2022-11-04T00:49:45Z","modifiedBy":"u","modifiedDate":"2022-11-04T02:14:29Z","productId":"p","datasetFields":[],"deliveryConfiguration":{"format":"JSON","frequency":{"intervalInSeconds":30}},"destination":{"destinationType":"S3"},"notificationEmails":[],"properties":[]}`
+	const detailsBase = `{"streamId":1,"streamName":"n","streamStatus":"ACTIVATED","streamVersion":1,"latestVersion":1,"createdBy":"u","createdDate":"d","modifiedBy":"u","modifiedDate":"d","productId":"p","properties":[],"appSecConfigs":[]}`
+
+	tests := map[string]struct {
+		check func(*testing.T)
+	}{
+		"DetailedStreamVersion unmarshals without optional fields": {
+			check: func(t *testing.T) {
+				var v DetailedStreamVersion
+				require.NoError(t, json.Unmarshal([]byte(detailedBase), &v))
+				assert.Empty(t, v.ContractID)
+				assert.Zero(t, v.GroupID)
+				assert.Equal(t, int64(7050), v.StreamID)
+			},
+		},
+		"StreamDetails unmarshals without optional fields": {
+			check: func(t *testing.T) {
+				var s StreamDetails
+				require.NoError(t, json.Unmarshal([]byte(detailsBase), &s))
+				assert.Empty(t, s.ContractID)
+				assert.Zero(t, s.GroupID)
+			},
+		},
+		"DetailedStreamVersion unmarshals empty contractId and zero groupId": {
+			check: func(t *testing.T) {
+				raw := `{"contractId":"","groupId":0,"streamId":7050,"streamName":"TestStream","streamStatus":"ACTIVATED","streamVersion":1,"latestVersion":1,"createdBy":"u","createdDate":"2022-11-04T00:49:45Z","modifiedBy":"u","modifiedDate":"2022-11-04T02:14:29Z","productId":"p","datasetFields":[],"deliveryConfiguration":{"format":"JSON","frequency":{"intervalInSeconds":30}},"destination":{"destinationType":"S3"},"notificationEmails":[],"properties":[]}`
+				var v DetailedStreamVersion
+				require.NoError(t, json.Unmarshal([]byte(raw), &v))
+				assert.Empty(t, v.ContractID)
+				assert.Zero(t, v.GroupID)
+			},
+		},
+		"StreamDetails unmarshals empty contractId and zero groupId": {
+			check: func(t *testing.T) {
+				raw := `{"contractId":"","groupId":0,"streamId":1,"streamName":"n","streamStatus":"ACTIVATED","streamVersion":1,"latestVersion":1,"createdBy":"u","createdDate":"d","modifiedBy":"u","modifiedDate":"d","productId":"p","properties":[],"appSecConfigs":[]}`
+				var s StreamDetails
+				require.NoError(t, json.Unmarshal([]byte(raw), &s))
+				assert.Empty(t, s.ContractID)
+				assert.Zero(t, s.GroupID)
+			},
+		},
+		"DetailedStreamVersion and StreamDetails unmarshal populated optional fields": {
+			check: func(t *testing.T) {
+				raw := `{
+					"streamId": 1,
+					"streamName": "n",
+					"streamStatus": "ACTIVATED",
+					"streamVersion": 1,
+					"latestVersion": 1,
+					"contractId": "1-ABCDE",
+					"groupId": 211516,
+					"createdBy": "u",
+					"createdDate": "d",
+					"modifiedBy": "u",
+					"modifiedDate": "d",
+					"productId": "p",
+					"properties": [],
+					"appSecConfigs": []
+				}`
+				var listed StreamDetails
+				require.NoError(t, json.Unmarshal([]byte(raw), &listed))
+				assert.Equal(t, "1-ABCDE", listed.ContractID)
+				assert.Equal(t, 211516, listed.GroupID)
+
+				var detailed DetailedStreamVersion
+				require.NoError(t, json.Unmarshal([]byte(raw), &detailed))
+				assert.Equal(t, "1-ABCDE", detailed.ContractID)
+				assert.Equal(t, 211516, detailed.GroupID)
+			},
+		},
+		"DetailedStreamVersion marshal includes populated optional fields": {
+			check: func(t *testing.T) {
+				v := DetailedStreamVersion{
+					StreamID:   1,
+					StreamName: "s",
+					ContractID: "C-1",
+					GroupID:    42,
+				}
+				data, err := json.Marshal(v)
+				require.NoError(t, err)
+				body := string(data)
+				assert.Contains(t, body, `"contractId":"C-1"`)
+				assert.Contains(t, body, `"groupId":42`)
+			},
+		},
+		"StreamDetails marshal includes populated optional fields": {
+			check: func(t *testing.T) {
+				s := StreamDetails{
+					StreamID:   99,
+					StreamName: "stream",
+					ContractID: "C-1",
+					GroupID:    12,
+				}
+				data, err := json.Marshal(s)
+				require.NoError(t, err)
+				body := string(data)
+				assert.Contains(t, body, `"contractId":"C-1"`)
+				assert.Contains(t, body, `"groupId":12`)
+			},
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			tc.check(t)
+		})
+	}
+}
+
+func validAppSecUpdateStreamRequest() UpdateStreamRequest {
+	req := validCDNUpdateStreamRequest()
+	req.LogType = LogTypeAppSec
+	req.StreamConfiguration.Properties = []PropertyID{}
+	req.StreamConfiguration.DatasetFields = []DatasetFieldID{}
+	req.StreamConfiguration.AppSecConfigs = []AppSecConfigID{{AppSecID: 12345}}
+	return req
+}
+
+func TestStreamOptionalFields_ConcurrentMarshal(t *testing.T) {
+	t.Parallel()
+	cfg := StreamConfiguration{
+		StreamName: "TestStream",
+		ContractID: "",
+		GroupID:    0,
+		DeliveryConfiguration: DeliveryConfiguration{
+			Format:    FormatTypeJson,
+			Frequency: Frequency{IntervalInSeconds: IntervalInSeconds30},
+		},
+		Destination: AbstractConnector(&S3Connector{
+			Path:            "path",
+			DisplayName:     "display",
+			Bucket:          "bucket",
+			Region:          "us-east-1",
+			AccessKey:       "key",
+			SecretAccessKey: "secret",
+		}),
+	}
+
+	const workers = 32
+	errCh := make(chan error, workers)
+	for i := 0; i < workers; i++ {
+		go func() {
+			data, err := json.Marshal(cfg)
+			if err != nil {
+				errCh <- err
+				return
+			}
+			body := string(data)
+			if strings.Contains(body, "contractId") || strings.Contains(body, "groupId") {
+				errCh <- errors.New("optional fields must be omitted")
+				return
+			}
+			errCh <- nil
+		}()
+	}
+	for i := 0; i < workers; i++ {
+		require.NoError(t, <-errCh)
 	}
 }
