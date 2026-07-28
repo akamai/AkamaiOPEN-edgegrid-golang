@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -86,12 +87,13 @@ func TestBotman_GetBotManagementSetting(t *testing.T) {
 // Test Update BotManagementSetting.
 func TestBotman_UpdateBotManagementSetting(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateBotManagementSettingRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpdateBotManagementSettingRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateBotManagementSettingRequest{
@@ -100,10 +102,11 @@ func TestBotman_UpdateBotManagementSetting(t *testing.T) {
 				SecurityPolicyID: "AAAA_81230",
 				JsonPayload:      json.RawMessage(`{"testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     `{"testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/bot-management-settings",
+			expectedRequestBody: `{"testKey":"testValue3"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/bot-management-settings",
 		},
 		"500 internal server error": {
 			params: UpdateBotManagementSettingRequest{
@@ -182,6 +185,11 @@ func TestBotman_UpdateBotManagementSetting(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

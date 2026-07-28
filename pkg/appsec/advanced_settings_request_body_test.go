@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -249,19 +250,21 @@ func TestAppsecUpdateAdvancedSettingsRequestBody(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           UpdateAdvancedSettingsRequestBodyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateAdvancedSettingsRequestBodyResponse
-		withError        error
-		headers          http.Header
+		params              UpdateAdvancedSettingsRequestBodyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateAdvancedSettingsRequestBodyResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateAdvancedSettingsRequestBodyRequest{
 				ConfigID: 43253,
 				Version:  15,
 			},
+			expectedRequestBody: `{"ConfigID":43253,"Version":15,"PolicyID":"","requestBodyInspectionLimitInKB":"","override":false}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -296,6 +299,11 @@ func TestAppsecUpdateAdvancedSettingsRequestBody(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -510,13 +518,14 @@ func TestAppsecUpdateAdvancedSettingsRequestBodyPolicyWithOverrideUnset(t *testi
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           RemoveAdvancedSettingsRequestBodyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *RemoveAdvancedSettingsRequestBodyResponse
-		withError        error
-		headers          http.Header
+		params              RemoveAdvancedSettingsRequestBodyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *RemoveAdvancedSettingsRequestBodyResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: RemoveAdvancedSettingsRequestBodyRequest{
@@ -526,6 +535,7 @@ func TestAppsecUpdateAdvancedSettingsRequestBodyPolicyWithOverrideUnset(t *testi
 				RequestBodyInspectionLimitInKB:     req.RequestBodyInspectionLimitInKB,
 				RequestBodyInspectionLimitOverride: req.RequestBodyInspectionLimitOverride,
 			},
+			expectedRequestBody: `{"ConfigID":43253,"Version":15,"PolicyID":"test_policy","requestBodyInspectionLimitInKB":"16","override":false}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -540,6 +550,11 @@ func TestAppsecUpdateAdvancedSettingsRequestBodyPolicyWithOverrideUnset(t *testi
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

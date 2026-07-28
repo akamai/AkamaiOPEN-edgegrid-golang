@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -192,13 +193,14 @@ func TestGTM_CreateResource(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		params           CreateResourceRequest
-		responseStatus   int
-		responseBody     []byte
-		expectedPath     string
-		expectedResponse *CreateResourceResponse
-		withError        error
-		headers          http.Header
+		params              CreateResourceRequest
+		responseStatus      int
+		responseBody        []byte
+		expectedPath        string
+		expectedResponse    *CreateResourceResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
 			params: CreateResourceRequest{
@@ -208,10 +210,11 @@ func TestGTM_CreateResource(t *testing.T) {
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     respData,
-			expectedResponse: &result,
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/resources/origin",
+			responseStatus:      http.StatusCreated,
+			responseBody:        respData,
+			expectedResponse:    &result,
+			expectedPath:        "/config-gtm/v1/domains/example.akadns.net/resources/origin",
+			expectedRequestBody: `{"type":"weighted-round-robin","name":"origin","aggregationType":"mean"}`,
 		},
 		"500 internal server error": {
 			params: CreateResourceRequest{
@@ -240,6 +243,11 @@ func TestGTM_CreateResource(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write(test.responseBody)
@@ -285,13 +293,14 @@ func TestGTM_UpdateResource(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		params           UpdateResourceRequest
-		responseStatus   int
-		responseBody     []byte
-		expectedPath     string
-		expectedResponse *UpdateResourceResponse
-		withError        error
-		headers          http.Header
+		params              UpdateResourceRequest
+		responseStatus      int
+		responseBody        []byte
+		expectedPath        string
+		expectedResponse    *UpdateResourceResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateResourceRequest{
@@ -301,10 +310,11 @@ func TestGTM_UpdateResource(t *testing.T) {
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     respData,
-			expectedResponse: &result,
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/resources/origin",
+			responseStatus:      http.StatusOK,
+			responseBody:        respData,
+			expectedResponse:    &result,
+			expectedPath:        "/config-gtm/v1/domains/example.akadns.net/resources/origin",
+			expectedRequestBody: `{"type":"weighted-round-robin","name":"origin","aggregationType":"mean"}`,
 		},
 		"500 internal server error": {
 			params: UpdateResourceRequest{
@@ -333,6 +343,11 @@ func TestGTM_UpdateResource(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write(test.responseBody)

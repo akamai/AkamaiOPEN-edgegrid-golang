@@ -3,6 +3,7 @@ package botman
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -119,12 +120,13 @@ func TestBotman_GetContentProtectionRuleSequence(t *testing.T) {
 // Test Update ContentProtectionRuleSequence.
 func TestBotman_UpdateContentProtectionRuleSequence(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateContentProtectionRuleSequenceRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateContentProtectionRuleSequenceResponse
-		withError        func(*testing.T, error)
+		params              UpdateContentProtectionRuleSequenceRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateContentProtectionRuleSequenceResponse
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateContentProtectionRuleSequenceRequest{
@@ -133,8 +135,9 @@ func TestBotman_UpdateContentProtectionRuleSequence(t *testing.T) {
 				SecurityPolicyID:              "AAAA_81230",
 				ContentProtectionRuleSequence: ContentProtectionRuleUUIDSequence{ContentProtectionRuleSequence: []string{"fake3f89-e179-4892-89cf-d5e623ba9dc7", "fake85df-e399-43e8-bb0f-c0d980a88e4f", "fake9b8-4fd5-430e-a061-1c61df1d2ac2"}},
 			},
-			responseStatus: http.StatusOK,
-			responseBody:   `{"contentProtectionRuleSequence":["fake3f89-e179-4892-89cf-d5e623ba9dc7", "fake85df-e399-43e8-bb0f-c0d980a88e4f", "fake9b8-4fd5-430e-a061-1c61df1d2ac2"]}`,
+			expectedRequestBody: `{"contentProtectionRuleSequence":["fake3f89-e179-4892-89cf-d5e623ba9dc7","fake85df-e399-43e8-bb0f-c0d980a88e4f","fake9b8-4fd5-430e-a061-1c61df1d2ac2"]}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"contentProtectionRuleSequence":["fake3f89-e179-4892-89cf-d5e623ba9dc7", "fake85df-e399-43e8-bb0f-c0d980a88e4f", "fake9b8-4fd5-430e-a061-1c61df1d2ac2"]}`,
 			expectedResponse: &UpdateContentProtectionRuleSequenceResponse{
 				ContentProtectionRuleSequence: []string{"fake3f89-e179-4892-89cf-d5e623ba9dc7", "fake85df-e399-43e8-bb0f-c0d980a88e4f", "fake9b8-4fd5-430e-a061-1c61df1d2ac2"},
 			},
@@ -220,6 +223,11 @@ func TestBotman_UpdateContentProtectionRuleSequence(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

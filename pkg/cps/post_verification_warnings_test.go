@@ -3,6 +3,7 @@ package cps
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -88,11 +89,12 @@ func TestGetChangePostVerificationWarnings(t *testing.T) {
 }
 func TestAcknowledgePostVerificationWarnings(t *testing.T) {
 	tests := map[string]struct {
-		params         AcknowledgementRequest
-		responseStatus int
-		responseBody   string
-		expectedPath   string
-		withError      func(*testing.T, error)
+		params              AcknowledgementRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		withError           func(*testing.T, error)
 	}{
 		"200 OK": {
 			params: AcknowledgementRequest{
@@ -102,9 +104,10 @@ func TestAcknowledgePostVerificationWarnings(t *testing.T) {
 					Acknowledgement: AcknowledgementAcknowledge,
 				},
 			},
-			responseStatus: http.StatusOK,
-			responseBody:   "",
-			expectedPath:   "/cps/v2/enrollments/1/changes/2/input/update/post-verification-warnings-ack",
+			expectedRequestBody: `{"acknowledgement":"acknowledge"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        "",
+			expectedPath:        "/cps/v2/enrollments/1/changes/2/input/update/post-verification-warnings-ack",
 		},
 		"500 internal server error": {
 			params: AcknowledgementRequest{
@@ -147,6 +150,11 @@ func TestAcknowledgePostVerificationWarnings(t *testing.T) {
 				assert.Equal(t, http.MethodPost, r.Method)
 				assert.Equal(t, "application/vnd.akamai.cps.change-id.v1+json", r.Header.Get("Accept"))
 				assert.Equal(t, "application/vnd.akamai.cps.acknowledgement.v1+json; charset=utf-8", r.Header.Get("Content-Type"))
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

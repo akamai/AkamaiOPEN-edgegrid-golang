@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -213,13 +214,14 @@ func TestAppSec_UpdateWAPBypassNetworkLists(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           UpdateWAPBypassNetworkListsRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateWAPBypassNetworkListsResponse
-		withError        error
-		headers          http.Header
+		params              UpdateWAPBypassNetworkListsRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateWAPBypassNetworkListsResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateWAPBypassNetworkListsRequest{
@@ -227,6 +229,7 @@ func TestAppSec_UpdateWAPBypassNetworkLists(t *testing.T) {
 				Version:  15,
 				PolicyID: "AAAA_81230",
 			},
+			expectedRequestBody: `{"policyId":"AAAA_81230","networkLists":null}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -262,6 +265,11 @@ func TestAppSec_UpdateWAPBypassNetworkLists(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

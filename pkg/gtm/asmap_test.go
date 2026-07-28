@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -201,13 +202,14 @@ func TestGTM_CreateASMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		params           CreateASMapRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateASMapResponse
-		withError        error
-		headers          http.Header
+		params              CreateASMapRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateASMapResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 OK": {
 			params: CreateASMapRequest{
@@ -217,10 +219,11 @@ func TestGTM_CreateASMap(t *testing.T) {
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
-			expectedResponse: &result,
+			responseStatus:      http.StatusCreated,
+			responseBody:        string(respData),
+			expectedPath:        "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
+			expectedResponse:    &result,
+			expectedRequestBody: string(reqData),
 		},
 		"500 internal server error": {
 			params: CreateASMapRequest{
@@ -250,6 +253,11 @@ func TestGTM_CreateASMap(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
@@ -293,13 +301,14 @@ func TestGTM_UpdateASMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		params           UpdateASMapRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateASMapResponse
-		withError        error
-		headers          http.Header
+		params              UpdateASMapRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateASMapResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 OK": {
 			params: UpdateASMapRequest{
@@ -309,10 +318,11 @@ func TestGTM_UpdateASMap(t *testing.T) {
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
-			expectedResponse: &result,
+			responseStatus:      http.StatusOK,
+			responseBody:        string(respData),
+			expectedPath:        "/config-gtm/v1/domains/example.akadns.net/as-maps/The%20North",
+			expectedResponse:    &result,
+			expectedRequestBody: string(reqData),
 		},
 		"500 internal server error": {
 			params: UpdateASMapRequest{
@@ -342,6 +352,11 @@ func TestGTM_UpdateASMap(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

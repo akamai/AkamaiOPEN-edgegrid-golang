@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -176,27 +177,27 @@ func TestAppSec_CreateMatchTarget(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := CreateMatchTargetRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestMatchTargets/MatchTargets.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := CreateMatchTargetRequest{
+		ConfigID:       43253,
+		ConfigVersion:  15,
+		JsonPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           CreateMatchTargetRequest
-		prop             *CreateMatchTargetRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateMatchTargetResponse
-		withError        error
-		headers          http.Header
+		params              CreateMatchTargetRequest
+		prop                *CreateMatchTargetRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateMatchTargetResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
-			params: CreateMatchTargetRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -206,10 +207,7 @@ func TestAppSec_CreateMatchTarget(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets",
 		},
 		"500 internal server error": {
-			params: CreateMatchTargetRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -231,6 +229,11 @@ func TestAppSec_CreateMatchTarget(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -261,27 +264,27 @@ func TestAppSec_UpdateMatchTarget(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := UpdateMatchTargetRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestMatchTargets/MatchTargets.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := UpdateMatchTargetRequest{
+		ConfigID:       43253,
+		ConfigVersion:  15,
+		TargetID:       3008967,
+		JsonPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           UpdateMatchTargetRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateMatchTargetResponse
-		withError        error
-		headers          http.Header
+		params              UpdateMatchTargetRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateMatchTargetResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
-			params: UpdateMatchTargetRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				TargetID:      3008967,
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -291,11 +294,7 @@ func TestAppSec_UpdateMatchTarget(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/3008967",
 		},
 		"500 internal server error": {
-			params: UpdateMatchTargetRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				TargetID:      3008967,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -317,6 +316,11 @@ func TestAppSec_UpdateMatchTarget(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

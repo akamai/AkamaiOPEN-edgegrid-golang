@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -253,13 +254,14 @@ func TestBotman_GetCustomDefinedBot(t *testing.T) {
 func TestBotman_CreateCustomDefinedBot(t *testing.T) {
 
 	tests := map[string]struct {
-		params           CreateCustomDefinedBotRequest
-		prop             *CreateCustomDefinedBotRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              CreateCustomDefinedBotRequest
+		prop                *CreateCustomDefinedBotRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"201 Created": {
 			params: CreateCustomDefinedBotRequest{
@@ -267,10 +269,11 @@ func TestBotman_CreateCustomDefinedBot(t *testing.T) {
 				Version:     15,
 				JsonPayload: json.RawMessage(`{"testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"botId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/custom-defined-bots",
+			expectedRequestBody: `{"testKey":"testValue3"}`,
+			responseStatus:      http.StatusCreated,
+			responseBody:        `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"botId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/custom-defined-bots",
 		},
 		"500 internal server error": {
 			params: CreateCustomDefinedBotRequest{
@@ -336,6 +339,11 @@ func TestBotman_CreateCustomDefinedBot(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -358,12 +366,13 @@ func TestBotman_CreateCustomDefinedBot(t *testing.T) {
 // Test Update CustomDefinedBot
 func TestBotman_UpdateCustomDefinedBot(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateCustomDefinedBotRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpdateCustomDefinedBotRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateCustomDefinedBotRequest{
@@ -372,10 +381,11 @@ func TestBotman_UpdateCustomDefinedBot(t *testing.T) {
 				BotID:       "cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 				JsonPayload: json.RawMessage(`{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"botId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/10/custom-defined-bots/cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
+			expectedRequestBody: `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7","testKey":"testValue3"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"botId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/10/custom-defined-bots/cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 		},
 		"500 internal server error": {
 			params: UpdateCustomDefinedBotRequest{
@@ -457,6 +467,11 @@ func TestBotman_UpdateCustomDefinedBot(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.Path)
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

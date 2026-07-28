@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -286,13 +287,14 @@ func TestBotman_GetContentProtectionJavaScriptInjectionRule(t *testing.T) {
 func TestBotman_CreateContentProtectionJavaScriptInjectionRule(t *testing.T) {
 
 	tests := map[string]struct {
-		params           CreateContentProtectionJavaScriptInjectionRuleRequest
-		prop             *CreateContentProtectionJavaScriptInjectionRuleRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              CreateContentProtectionJavaScriptInjectionRuleRequest
+		prop                *CreateContentProtectionJavaScriptInjectionRuleRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"201 Created": {
 			params: CreateContentProtectionJavaScriptInjectionRuleRequest{
@@ -301,10 +303,11 @@ func TestBotman_CreateContentProtectionJavaScriptInjectionRule(t *testing.T) {
 				SecurityPolicyID: "AAAA_81230",
 				JsonPayload:      json.RawMessage(`{"testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     `{"contentProtectionJavaScriptInjectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"contentProtectionJavaScriptInjectionRuleId": "fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/content-protection-javascript-injection-rules",
+			expectedRequestBody: `{"testKey":"testValue3"}`,
+			responseStatus:      http.StatusCreated,
+			responseBody:        `{"contentProtectionJavaScriptInjectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"contentProtectionJavaScriptInjectionRuleId": "fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/content-protection-javascript-injection-rules",
 		},
 		"500 internal server error": {
 			params: CreateContentProtectionJavaScriptInjectionRuleRequest{
@@ -374,6 +377,11 @@ func TestBotman_CreateContentProtectionJavaScriptInjectionRule(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -396,12 +404,13 @@ func TestBotman_CreateContentProtectionJavaScriptInjectionRule(t *testing.T) {
 // Test Update ContentProtectionJavaScriptInjectionRule
 func TestBotman_UpdateContentProtectionJavaScriptInjectionRule(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateContentProtectionJavaScriptInjectionRuleRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpdateContentProtectionJavaScriptInjectionRuleRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateContentProtectionJavaScriptInjectionRuleRequest{
@@ -411,10 +420,11 @@ func TestBotman_UpdateContentProtectionJavaScriptInjectionRule(t *testing.T) {
 				ContentProtectionJavaScriptInjectionRuleID: "fake3f89-e179-4892-89cf-d5e623ba9dc7",
 				JsonPayload: json.RawMessage(`{"contentProtectionJavaScriptInjectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     `{"contentProtectionJavaScriptInjectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"contentProtectionJavaScriptInjectionRuleId": "fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/10/security-policies/AAAA_81230/content-protection-javascript-injection-rules/fake3f89-e179-4892-89cf-d5e623ba9dc7",
+			expectedRequestBody: `{"contentProtectionJavaScriptInjectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7","testKey":"testValue3"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"contentProtectionJavaScriptInjectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"contentProtectionJavaScriptInjectionRuleId": "fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/10/security-policies/AAAA_81230/content-protection-javascript-injection-rules/fake3f89-e179-4892-89cf-d5e623ba9dc7",
 		},
 		"500 internal server error": {
 			params: UpdateContentProtectionJavaScriptInjectionRuleRequest{
@@ -514,6 +524,11 @@ func TestBotman_UpdateContentProtectionJavaScriptInjectionRule(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.Path)
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

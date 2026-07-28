@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -111,13 +112,14 @@ func TestAppSec_UpdateSlowPostProtectionSetting(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           UpdateSlowPostProtectionSettingRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateSlowPostProtectionSettingResponse
-		withError        error
-		headers          http.Header
+		params              UpdateSlowPostProtectionSettingRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateSlowPostProtectionSettingResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateSlowPostProtectionSettingRequest{
@@ -125,6 +127,7 @@ func TestAppSec_UpdateSlowPostProtectionSetting(t *testing.T) {
 				Version:  15,
 				PolicyID: "AAAA_81230",
 			},
+			expectedRequestBody: `{"configId":43253,"version":15,"policyId":"AAAA_81230","action":"","slowRateThreshold":{"rate":0,"period":0},"durationThreshold":{"timeout":0}}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -160,6 +163,11 @@ func TestAppSec_UpdateSlowPostProtectionSetting(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

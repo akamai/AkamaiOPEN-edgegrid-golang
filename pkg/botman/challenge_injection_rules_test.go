@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -103,12 +104,13 @@ func TestBotman_GetChallengeInjectionRules(t *testing.T) {
 // Test Update ChallengeInjectionRules.
 func TestBotman_UpdateChallengeInjectionRules(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateChallengeInjectionRulesRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpdateChallengeInjectionRulesRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateChallengeInjectionRulesRequest{
@@ -116,10 +118,11 @@ func TestBotman_UpdateChallengeInjectionRules(t *testing.T) {
 				Version:     15,
 				JsonPayload: json.RawMessage(`{"testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     `{"testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/response-actions/challenge-injection-rules",
+			expectedRequestBody: `{"testKey":"testValue3"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/response-actions/challenge-injection-rules",
 		},
 		"500 internal server error": {
 			params: UpdateChallengeInjectionRulesRequest{
@@ -185,6 +188,11 @@ func TestBotman_UpdateChallengeInjectionRules(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -139,13 +140,14 @@ func TestAppsec_UpdateEvalPenaltyBoxConditions(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		params           UpdatePenaltyBoxConditionsRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdatePenaltyBoxConditionsResponse
-		headers          http.Header
-		withError        func(*testing.T, error)
+		params              UpdatePenaltyBoxConditionsRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdatePenaltyBoxConditionsResponse
+		headers             http.Header
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"validation errors - PolicyID cannot be empty string": {
 			params: UpdatePenaltyBoxConditionsRequest{
@@ -239,6 +241,7 @@ func TestAppsec_UpdateEvalPenaltyBoxConditions(t *testing.T) {
 				PolicyID:          "AAAA_81230",
 				ConditionsPayload: reqData,
 			},
+			expectedRequestBody: `{"conditionOperator":"AND","conditions":[{"type":"filenameMatch","filenames":["hh"],"positiveMatch":true},{"type":"clientListMatch","positiveMatch":true,"clientLists":["149526_REPUTATIONALLOWLISTSECC"]}]}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -278,6 +281,11 @@ func TestAppsec_UpdateEvalPenaltyBoxConditions(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

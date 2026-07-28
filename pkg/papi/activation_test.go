@@ -3,6 +3,7 @@ package papi
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -112,13 +113,14 @@ var (
 
 func TestPapiCreateActivation(t *testing.T) {
 	tests := map[string]struct {
-		request          CreateActivationRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateActivationResponse
-		withError        error
-		assertError      func(*testing.T, error)
+		request             CreateActivationRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateActivationResponse
+		withError           error
+		assertError         func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 OK": {
 			request: CreateActivationRequest{
@@ -136,7 +138,8 @@ func TestPapiCreateActivation(t *testing.T) {
 					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"activationType":"ACTIVATE","useFastFallback":false,"acknowledgeWarnings":["msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"],"acknowledgeAllWarnings":false,"propertyVersion":1,"network":"STAGING","notifyEmails":["you@example.com","them@example.com"]}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
 	"activationLink": "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225"
@@ -169,7 +172,8 @@ func TestPapiCreateActivation(t *testing.T) {
 					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"activationType":"ACTIVATE","useFastFallback":false,"acknowledgeWarnings":["msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"],"acknowledgeAllWarnings":false,"propertyVersion":1,"network":"STAGING","notifyEmails":["you@example.com","them@example.com"],"complianceRecord":{"customerEmail":"sb@akamai.com","peerReviewedBy":"sb@akamai.com","unitTested":true,"ticketId":"123","noncomplianceReason":"NONE"}}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
 	"activationLink": "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225"
@@ -200,7 +204,8 @@ func TestPapiCreateActivation(t *testing.T) {
 					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"activationType":"ACTIVATE","useFastFallback":false,"acknowledgeWarnings":["msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"],"acknowledgeAllWarnings":false,"propertyVersion":1,"network":"STAGING","notifyEmails":["you@example.com","them@example.com"],"complianceRecord":{"otherNoncomplianceReason":"some other reason","ticketId":"123","noncomplianceReason":"OTHER"}}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
 	"activationLink": "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225"
@@ -230,7 +235,8 @@ func TestPapiCreateActivation(t *testing.T) {
 					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"activationType":"ACTIVATE","useFastFallback":false,"acknowledgeWarnings":["msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"],"acknowledgeAllWarnings":false,"propertyVersion":1,"network":"STAGING","notifyEmails":["you@example.com","them@example.com"],"complianceRecord":{"ticketId":"123","noncomplianceReason":"NO_PRODUCTION_TRAFFIC"}}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
 	"activationLink": "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225"
@@ -260,7 +266,8 @@ func TestPapiCreateActivation(t *testing.T) {
 					AcknowledgeWarnings: []string{"msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"},
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"activationType":"ACTIVATE","useFastFallback":false,"acknowledgeWarnings":["msg_baa4560881774a45b5fd25f5b1eab021d7c40b4f"],"acknowledgeAllWarnings":false,"propertyVersion":1,"network":"STAGING","notifyEmails":["you@example.com","them@example.com"],"complianceRecord":{"ticketId":"123","noncomplianceReason":"EMERGENCY"}}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
 	"activationLink": "/papi/v1/properties/prp_173136/activations/atv_67037?contractId=ctr_1-1TJZFB&groupId=grp_15225"
@@ -423,6 +430,11 @@ func TestPapiCreateActivation(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -182,20 +183,22 @@ func TestAppSec_CreateSecurityPolicyClone(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           CreateSecurityPolicyCloneRequest
-		prop             *CreateSecurityPolicyCloneRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateSecurityPolicyCloneResponse
-		withError        error
-		headers          http.Header
+		params              CreateSecurityPolicyCloneRequest
+		prop                *CreateSecurityPolicyCloneRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateSecurityPolicyCloneResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
 			params: CreateSecurityPolicyCloneRequest{
 				ConfigID: 43253,
 				Version:  15,
 			},
+			expectedRequestBody: `{"configId":43253,"version":15,"createFromSecurityPolicy":"","policyName":"","policyPrefix":""}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -231,6 +234,11 @@ func TestAppSec_CreateSecurityPolicyClone(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
 				w.WriteHeader(test.responseStatus)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
 					assert.NoError(t, err)

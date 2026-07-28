@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -199,13 +200,14 @@ func TestGTM_CreateDatacenter(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		params           CreateDatacenterRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateDatacenterResponse
-		withError        error
-		headers          http.Header
+		params              CreateDatacenterRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateDatacenterResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 OK": {
 			params: CreateDatacenterRequest{
@@ -215,10 +217,11 @@ func TestGTM_CreateDatacenter(t *testing.T) {
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters",
-			expectedResponse: &result,
+			responseStatus:      http.StatusCreated,
+			responseBody:        string(respData),
+			expectedPath:        "/config-gtm/v1/domains/example.akadns.net/datacenters",
+			expectedResponse:    &result,
+			expectedRequestBody: `{"city":"Doune","cloudServerHostHeaderOverride":false,"cloudServerTargeting":false,"continent":"EU","country":"GB","defaultLoadObject":{},"latitude":56.185096,"longitude":-4.050264,"nickname":"Winterfell","stateOrProvince":"Perthshire","virtual":false}`,
 		},
 		"500 internal server error": {
 			params: CreateDatacenterRequest{
@@ -248,6 +251,11 @@ func TestGTM_CreateDatacenter(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
@@ -453,23 +461,25 @@ func TestGTM_CreateIPv6DefaultDatacenter(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		domainName       string
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *Datacenter
-		withError        error
-		headers          http.Header
+		domainName          string
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *Datacenter
+		withError           error
+		headers             http.Header
 	}{
 		"200 OK": {
 			domainName: "example.akadns.net",
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/datacenter-for-ip-version-selector-ipv6",
-			expectedResponse: result.Resource,
+			expectedRequestBody: "",
+			responseStatus:      http.StatusCreated,
+			responseBody:        string(respData),
+			expectedPath:        "/config-gtm/v1/domains/example.akadns.net/datacenters/datacenter-for-ip-version-selector-ipv6",
+			expectedResponse:    result.Resource,
 		},
 		"500 internal server error": {
 			domainName:     "example.akadns.net",
@@ -495,6 +505,11 @@ func TestGTM_CreateIPv6DefaultDatacenter(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if r.Method == http.MethodGet {
+					if test.expectedRequestBody != "" {
+						body, err := io.ReadAll(r.Body)
+						assert.NoError(t, err)
+						assert.JSONEq(t, test.expectedRequestBody, string(body))
+					}
 					w.WriteHeader(http.StatusNotFound)
 					_, err = w.Write([]byte(`
                                         {
@@ -549,13 +564,14 @@ func TestGTM_UpdateDatacenter(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		params           UpdateDatacenterRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateDatacenterResponse
-		withError        error
-		headers          http.Header
+		params              UpdateDatacenterRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateDatacenterResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 OK": {
 			params: UpdateDatacenterRequest{
@@ -565,10 +581,11 @@ func TestGTM_UpdateDatacenter(t *testing.T) {
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/datacenters/0",
-			expectedResponse: &result,
+			responseStatus:      http.StatusOK,
+			responseBody:        string(respData),
+			expectedPath:        "/config-gtm/v1/domains/example.akadns.net/datacenters/0",
+			expectedResponse:    &result,
+			expectedRequestBody: `{"city":"Doune","cloudServerHostHeaderOverride":false,"cloudServerTargeting":false,"continent":"EU","country":"GB","defaultLoadObject":{},"latitude":56.185096,"longitude":-4.050264,"nickname":"Winterfell","stateOrProvince":"Perthshire","virtual":false}`,
 		},
 		"500 internal server error": {
 			params: UpdateDatacenterRequest{
@@ -598,6 +615,11 @@ func TestGTM_UpdateDatacenter(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

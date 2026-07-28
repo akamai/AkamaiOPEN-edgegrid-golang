@@ -3,6 +3,7 @@ package cloudlets
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -177,12 +178,13 @@ func TestGetLoadBalancerActivations(t *testing.T) {
 
 func TestActivateLoadBalancerVersion(t *testing.T) {
 	tests := map[string]struct {
-		params           ActivateLoadBalancerVersionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *LoadBalancerActivation
-		withError        func(*testing.T, error)
+		params              ActivateLoadBalancerVersionRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *LoadBalancerActivation
+		withError           func(*testing.T, error)
 	}{
 		"200 OK": {
 			params: ActivateLoadBalancerVersionRequest{
@@ -194,7 +196,8 @@ func TestActivateLoadBalancerVersion(t *testing.T) {
 					Version: 1,
 				},
 			},
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"network":"PRODUCTION","version":1}`,
+			responseStatus:      http.StatusOK,
 			responseBody: `
 				{
 					"activatedBy": "jjones",
@@ -271,6 +274,11 @@ func TestActivateLoadBalancerVersion(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

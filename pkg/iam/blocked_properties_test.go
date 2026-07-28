@@ -3,6 +3,7 @@ package iam
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -123,14 +124,16 @@ func TestIAM_ListBlockedProperties(t *testing.T) {
 
 func TestIAM_UpdateBlockedProperties(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateBlockedPropertiesRequest
-		responseStatus   int
-		expectedPath     string
-		responseBody     string
-		expectedResponse []int64
-		withError        func(*testing.T, error)
+		params              UpdateBlockedPropertiesRequest
+		responseStatus      int
+		expectedPath        string
+		responseBody        string
+		expectedResponse    []int64
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 OK": {
+			expectedRequestBody: `[10977166,10977167]`,
 			params: UpdateBlockedPropertiesRequest{
 				GroupID:    12345,
 				IdentityID: "1-ABCDE",
@@ -233,6 +236,11 @@ func TestIAM_UpdateBlockedProperties(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if tc.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)

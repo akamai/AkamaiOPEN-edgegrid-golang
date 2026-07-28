@@ -3,6 +3,7 @@ package papi
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -444,12 +445,13 @@ func TestPapiGetEdgeHostname(t *testing.T) {
 
 func TestPapiCreateEdgeHostname(t *testing.T) {
 	tests := map[string]struct {
-		params           CreateEdgeHostnameRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateEdgeHostnameResponse
-		withError        func(*testing.T, error)
+		params              CreateEdgeHostnameRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateEdgeHostnameResponse
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 OK": {
 			params: CreateEdgeHostnameRequest{
@@ -469,7 +471,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 					}},
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"productId":"product","domainPrefix":"example.com","domainSuffix":"edgekey.net","secure":true,"ipVersionBehavior":"IPV4","useCases":[{"option":"option","type":"GLOBAL","useCase":"UseCase"}]}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
     "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
@@ -495,7 +498,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 					UseCases:          nil,
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"productId":"product","domainPrefix":"example.com","domainSuffix":"edgesuite.net","secure":true,"secureNetwork":"STANDARD_TLS","ipVersionBehavior":"IPV4"}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
     "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
@@ -521,7 +525,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 					UseCases:          nil,
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"productId":"product","domainPrefix":"example-com","domainSuffix":"akamaized.net","secure":true,"secureNetwork":"SHARED_CERT","ipVersionBehavior":"IPV4"}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
     "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
@@ -548,7 +553,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 					UseCases:          nil,
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"productId":"product","domainPrefix":"example.com","domainSuffix":"edgekey.net","secure":true,"secureNetwork":"ENHANCED_TLS","ipVersionBehavior":"IPV4","certEnrollmentId":5}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
     "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
@@ -575,7 +581,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 					HTTPSServiceBinding: "H3",
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"productId":"product","domainPrefix":"example.com","domainSuffix":"edgekey.net","secure":true,"secureNetwork":"ENHANCED_TLS","ipVersionBehavior":"IPV4","certEnrollmentId":5,"httpsServiceBinding":"H3"}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
     "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
@@ -1126,6 +1133,11 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

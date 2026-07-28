@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -179,19 +180,21 @@ func TestAppSec_UpdateAdvancedSettingsAsePenaltyBox(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           UpdateAdvancedSettingsAsePenaltyBoxRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateAdvancedSettingsAsePenaltyBoxResponse
-		withError        error
-		headers          http.Header
+		params              UpdateAdvancedSettingsAsePenaltyBoxRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateAdvancedSettingsAsePenaltyBoxResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateAdvancedSettingsAsePenaltyBoxRequest{
 				ConfigID: 43253,
 				Version:  15,
 			},
+			expectedRequestBody: `{}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -227,6 +230,11 @@ func TestAppSec_UpdateAdvancedSettingsAsePenaltyBox(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -263,19 +271,21 @@ func TestAppSec_RemoveAdvancedSettingsAsePenaltyBox(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           RemoveAdvancedSettingsAsePenaltyBoxRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *RemoveAdvancedSettingsAsePenaltyBoxResponse
-		withError        error
-		headers          http.Header
+		params              RemoveAdvancedSettingsAsePenaltyBoxRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *RemoveAdvancedSettingsAsePenaltyBoxResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: RemoveAdvancedSettingsAsePenaltyBoxRequest{
 				ConfigID: 43253,
 				Version:  15,
 			},
+			expectedRequestBody: `{"blockDuration":10}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -311,6 +321,11 @@ func TestAppSec_RemoveAdvancedSettingsAsePenaltyBox(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

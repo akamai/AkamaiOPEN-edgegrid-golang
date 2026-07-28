@@ -352,13 +352,14 @@ func TestGTM_UpdateCIDRMap(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		params           UpdateCIDRMapRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateCIDRMapResponse
-		withError        error
-		headers          http.Header
+		params              UpdateCIDRMapRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateCIDRMapResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 OK": {
 			params: UpdateCIDRMapRequest{
@@ -368,10 +369,11 @@ func TestGTM_UpdateCIDRMap(t *testing.T) {
 			headers: http.Header{
 				"Content-Type": []string{"application/vnd.config-gtm.v1.4+json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     string(respData),
-			expectedPath:     "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
-			expectedResponse: &result,
+			responseStatus:      http.StatusOK,
+			responseBody:        string(respData),
+			expectedPath:        "/config-gtm/v1/domains/example.akadns.net/cidr-maps/The%20North",
+			expectedResponse:    &result,
+			expectedRequestBody: string(reqData),
 		},
 		"500 internal server error": {
 			params: UpdateCIDRMapRequest{
@@ -401,6 +403,11 @@ func TestGTM_UpdateCIDRMap(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

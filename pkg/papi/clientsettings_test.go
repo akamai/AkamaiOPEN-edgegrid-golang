@@ -3,6 +3,7 @@ package papi
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -80,19 +81,21 @@ func TestPapiGetClientSettings(t *testing.T) {
 
 func TestPapiUpdateClientSettings(t *testing.T) {
 	tests := map[string]struct {
-		params           ClientSettingsBody
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *ClientSettingsBody
-		withError        func(*testing.T, error)
+		params              ClientSettingsBody
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *ClientSettingsBody
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 OK": {
 			params: ClientSettingsBody{
 				RuleFormat:  "v2015-08-08",
 				UsePrefixes: true,
 			},
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"ruleFormat":"v2015-08-08","usePrefixes":true}`,
+			responseStatus:      http.StatusOK,
 			responseBody: `
 {
     "ruleFormat": "v2015-08-08",
@@ -137,6 +140,11 @@ func TestPapiUpdateClientSettings(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

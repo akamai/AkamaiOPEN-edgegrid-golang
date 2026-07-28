@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -176,27 +177,27 @@ func TestAppSec_CreateCustomDeny(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := CreateCustomDenyRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomDeny/CustomDeny.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := CreateCustomDenyRequest{
+		ConfigID:       43253,
+		Version:        15,
+		JsonPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           CreateCustomDenyRequest
-		prop             *CreateCustomDenyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateCustomDenyResponse
-		withError        error
-		headers          http.Header
+		params              CreateCustomDenyRequest
+		prop                *CreateCustomDenyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateCustomDenyResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
-			params: CreateCustomDenyRequest{
-				ConfigID: 43253,
-				Version:  15,
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -206,10 +207,7 @@ func TestAppSec_CreateCustomDeny(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/custom-deny",
 		},
 		"500 internal server error": {
-			params: CreateCustomDenyRequest{
-				ConfigID: 43253,
-				Version:  15,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -231,6 +229,11 @@ func TestAppSec_CreateCustomDeny(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -261,27 +264,27 @@ func TestAppSec_UpdateCustomDeny(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := UpdateCustomDenyRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomDeny/CustomDeny.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := UpdateCustomDenyRequest{
+		ConfigID:       43253,
+		Version:        15,
+		ID:             "deny_custom_622918",
+		JsonPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           UpdateCustomDenyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateCustomDenyResponse
-		withError        error
-		headers          http.Header
+		params              UpdateCustomDenyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateCustomDenyResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
-			params: UpdateCustomDenyRequest{
-				ConfigID: 43253,
-				Version:  15,
-				ID:       "deny_custom_622918",
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -291,11 +294,7 @@ func TestAppSec_UpdateCustomDeny(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/custom-deny/deny_custom_622918",
 		},
 		"500 internal server error": {
-			params: UpdateCustomDenyRequest{
-				ConfigID: 43253,
-				Version:  15,
-				ID:       "deny_custom_622918",
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -317,6 +316,11 @@ func TestAppSec_UpdateCustomDeny(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

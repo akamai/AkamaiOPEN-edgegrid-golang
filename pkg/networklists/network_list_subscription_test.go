@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -168,16 +169,18 @@ func TestAppSec_UpdateNetworkListSubscription(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           UpdateNetworkListSubscriptionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateNetworkListSubscriptionResponse
-		withError        error
-		headers          http.Header
+		params              UpdateNetworkListSubscriptionRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateNetworkListSubscriptionResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
-			params: UpdateNetworkListSubscriptionRequest{},
+			params:              UpdateNetworkListSubscriptionRequest{},
+			expectedRequestBody: `{"recipients":null,"uniqueIds":null}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -210,6 +213,11 @@ func TestAppSec_UpdateNetworkListSubscription(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
 				assert.Equal(t, test.expectedPath, r.URL.String())
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

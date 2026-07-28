@@ -3,6 +3,7 @@ package edgeworkers
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -335,12 +336,13 @@ func TestGetNamespace(t *testing.T) {
 
 func TestCreateNamespace(t *testing.T) {
 	tests := map[string]struct {
-		params         CreateEdgeKVNamespaceRequest
-		withError      func(*testing.T, error)
-		expectedPath   string
-		responseStatus int
-		responseBody   string
-		expectedResult *Namespace
+		params              CreateEdgeKVNamespaceRequest
+		withError           func(*testing.T, error)
+		expectedPath        string
+		responseStatus      int
+		responseBody        string
+		expectedResult      *Namespace
+		expectedRequestBody string
 	}{
 		"200 OK - production": {
 			params: CreateEdgeKVNamespaceRequest{
@@ -352,8 +354,9 @@ func TestCreateNamespace(t *testing.T) {
 					GroupID:     ptr.To(0),
 				},
 			},
-			expectedPath:   "/edgekv/v1/networks/production/namespaces",
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"namespace":"testNs","geoLocation":"EU","retentionInSeconds":0,"groupId":0}`,
+			expectedPath:        "/edgekv/v1/networks/production/namespaces",
+			responseStatus:      http.StatusOK,
 			responseBody: `{
 				"namespace": "testNs",
 				"retentionInSeconds": 0,
@@ -577,6 +580,11 @@ func TestCreateNamespace(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if tc.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
@@ -596,12 +604,13 @@ func TestCreateNamespace(t *testing.T) {
 
 func TestUpdateNamespace(t *testing.T) {
 	tests := map[string]struct {
-		params         UpdateEdgeKVNamespaceRequest
-		withError      func(*testing.T, error)
-		expectedPath   string
-		responseStatus int
-		responseBody   string
-		expectedResult *UpdateNamespaceResponse
+		params              UpdateEdgeKVNamespaceRequest
+		withError           func(*testing.T, error)
+		expectedPath        string
+		responseStatus      int
+		responseBody        string
+		expectedResult      *UpdateNamespaceResponse
+		expectedRequestBody string
 	}{
 		"200 OK - production": {
 			params: UpdateEdgeKVNamespaceRequest{
@@ -612,8 +621,9 @@ func TestUpdateNamespace(t *testing.T) {
 					GroupID:   ptr.To(123456),
 				},
 			},
-			expectedPath:   "/edgekv/v1/networks/production/namespaces/testNs",
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"namespace":"testNs","retentionInSeconds":86410,"groupId":123456}`,
+			expectedPath:        "/edgekv/v1/networks/production/namespaces/testNs",
+			responseStatus:      http.StatusOK,
 			responseBody: `{
 				"retentionInSeconds": 86410,
 				"geoLocation": "EU",
@@ -737,6 +747,11 @@ func TestUpdateNamespace(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if tc.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
@@ -987,13 +1002,14 @@ func TestGetScheduledDeleteTime(t *testing.T) {
 
 func TestRescheduleNamespaceDelete(t *testing.T) {
 	tests := map[string]struct {
-		params           RescheduleNamespaceDeleteRequest
-		withError        func(*testing.T, error)
-		expectedPath     string
-		responseStatus   int
-		responseBody     string
-		expectedResult   *RescheduleNamespaceDeleteResponse
-		retryAfterHeader string
+		params              RescheduleNamespaceDeleteRequest
+		withError           func(*testing.T, error)
+		expectedPath        string
+		responseStatus      int
+		responseBody        string
+		expectedResult      *RescheduleNamespaceDeleteResponse
+		retryAfterHeader    string
+		expectedRequestBody string
 	}{
 		"200 reschedule namespace delete": {
 			params: RescheduleNamespaceDeleteRequest{
@@ -1003,9 +1019,10 @@ func TestRescheduleNamespaceDelete(t *testing.T) {
 					test.NewTimeFromString(t, "2025-06-05T19:58:37.565Z"),
 				},
 			},
-			expectedPath:     "/edgekv/v1/networks/staging/namespaces/testNs/status/scheduled-delete",
-			responseStatus:   http.StatusOK,
-			retryAfterHeader: "209278",
+			expectedRequestBody: `{"scheduledDeleteTime":"2025-06-05T19:58:37.565Z"}`,
+			expectedPath:        "/edgekv/v1/networks/staging/namespaces/testNs/status/scheduled-delete",
+			responseStatus:      http.StatusOK,
+			retryAfterHeader:    "209278",
 			responseBody: `{
 				"scheduledDeleteTime": "2025-06-05T19:58:37.565Z"
 			}`,
@@ -1083,6 +1100,11 @@ func TestRescheduleNamespaceDelete(t *testing.T) {
 				assert.Equal(t, http.MethodPut, r.Method)
 				if len(tc.retryAfterHeader) > 0 {
 					w.Header().Set("Retry-After", tc.retryAfterHeader)
+				}
+				if tc.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))

@@ -173,26 +173,26 @@ func TestAppSec_CreateCustomRule(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := CreateCustomRuleRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := CreateCustomRuleRequest{
+		ConfigID:       43253,
+		JsonPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           CreateCustomRuleRequest
-		prop             *CreateCustomRuleRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateCustomRuleResponse
-		withError        error
-		headers          http.Header
+		params              CreateCustomRuleRequest
+		prop                *CreateCustomRuleRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateCustomRuleResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
-			params: CreateCustomRuleRequest{
-				ConfigID: 43253,
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -202,9 +202,7 @@ func TestAppSec_CreateCustomRule(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/custom-rules",
 		},
 		"500 internal server error": {
-			params: CreateCustomRuleRequest{
-				ConfigID: 43253,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -226,6 +224,11 @@ func TestAppSec_CreateCustomRule(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -256,26 +259,26 @@ func TestAppSec_UpdateCustomRule(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := UpdateCustomRuleRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestCustomRules/CustomRule.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := UpdateCustomRuleRequest{
+		ConfigID:       43253,
+		ID:             60039625,
+		JsonPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           UpdateCustomRuleRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateCustomRuleResponse
-		withError        error
-		headers          http.Header
+		params              UpdateCustomRuleRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateCustomRuleResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
-			params: UpdateCustomRuleRequest{
-				ConfigID: 43253,
-				ID:       60039625,
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -285,10 +288,7 @@ func TestAppSec_UpdateCustomRule(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/custom-rules/%d",
 		},
 		"500 internal server error": {
-			params: UpdateCustomRuleRequest{
-				ConfigID: 43253,
-				ID:       60039625,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -310,6 +310,11 @@ func TestAppSec_UpdateCustomRule(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

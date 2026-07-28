@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -754,14 +755,16 @@ func TestIAM_UpdateUserNotifications(t *testing.T) {
 
 func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateUserAuthGrantsRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse []AuthGrant
-		withError        func(*testing.T, error)
+		params              UpdateUserAuthGrantsRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    []AuthGrant
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 OK": {
+			expectedRequestBody: `[{"groupId":12345,"isBlocked":false,"roleId":16,"subGroups":[{"groupId":54321,"isBlocked":false}]}]`,
 			params: UpdateUserAuthGrantsRequest{
 				IdentityID: "1-ABCDE",
 				AuthGrants: []AuthGrantRequest{
@@ -843,6 +846,11 @@ func TestIAM_UpdateUserAuthGrants(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if tc.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
@@ -932,13 +940,15 @@ func TestIAM_RemoveUser(t *testing.T) {
 
 func TestIAM_UpdateMFA(t *testing.T) {
 	tests := map[string]struct {
-		params         UpdateMFARequest
-		responseStatus int
-		responseBody   string
-		expectedPath   string
-		withError      func(*testing.T, error)
+		params              UpdateMFARequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"204 No Content": {
+			expectedRequestBody: `"MFA"`,
 			params: UpdateMFARequest{
 				IdentityID: "1-ABCDE",
 				Value:      MFAAuthentication,
@@ -978,6 +988,11 @@ func TestIAM_UpdateMFA(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if tc.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)

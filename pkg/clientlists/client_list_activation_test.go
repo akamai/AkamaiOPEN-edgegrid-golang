@@ -280,18 +280,20 @@ func TestGetActivation(t *testing.T) {
 	uri := "/client-list/v1/activations/12"
 
 	tests := map[string]struct {
-		params           GetActivationRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *GetActivationResponse
-		withError        error
+		params              GetActivationRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *GetActivationResponse
+		withError           error
 	}{
 		"200 OK": {
 			params: GetActivationRequest{
 				ActivationID: 12,
 			},
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"ActivationID":12}`,
+			responseStatus:      http.StatusOK,
 			responseBody: `{
 				"action": "ACTIVATE",
 				"activationId": 12,
@@ -358,6 +360,11 @@ func TestGetActivation(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
@@ -383,19 +390,21 @@ func TestGetActivationStatus(t *testing.T) {
 	uri := "/client-list/v1/lists/1234_NORTHAMERICAGEOALLOWLIST/environments/PRODUCTION/status"
 
 	tests := map[string]struct {
-		params           GetActivationStatusRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *GetActivationStatusResponse
-		withError        error
+		params              GetActivationStatusRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *GetActivationStatusResponse
+		withError           error
 	}{
 		"200 OK": {
 			params: GetActivationStatusRequest{
 				ListID:  "1234_NORTHAMERICAGEOALLOWLIST",
 				Network: Production,
 			},
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"ListID":"1234_NORTHAMERICAGEOALLOWLIST","Network":"PRODUCTION"}`,
+			responseStatus:      http.StatusOK,
 			responseBody: `{
 				"action": "ACTIVATE",
 				"activationStatus": "PENDING_ACTIVATION",
@@ -457,6 +466,11 @@ func TestGetActivationStatus(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

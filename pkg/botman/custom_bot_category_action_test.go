@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -286,12 +287,13 @@ func TestBotman_GetCustomBotCategoryAction(t *testing.T) {
 // Test Update CustomBotCategoryAction.
 func TestBotman_UpdateCustomBotCategoryAction(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateCustomBotCategoryActionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpdateCustomBotCategoryActionRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateCustomBotCategoryActionRequest{
@@ -301,10 +303,11 @@ func TestBotman_UpdateCustomBotCategoryAction(t *testing.T) {
 				CategoryID:       "cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 				JsonPayload:      json.RawMessage(`{"categoryId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     `{"categoryId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"categoryId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/custom-bot-category-actions/cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
+			expectedRequestBody: `{"categoryId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"categoryId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"categoryId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/custom-bot-category-actions/cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 		},
 		"500 internal server error": {
 			params: UpdateCustomBotCategoryActionRequest{
@@ -400,6 +403,11 @@ func TestBotman_UpdateCustomBotCategoryAction(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

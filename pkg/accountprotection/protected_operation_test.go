@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -283,13 +284,14 @@ func Test_GetProtectedOperationByID(t *testing.T) {
 func Test_CreateProtectedOperations(t *testing.T) {
 
 	tests := map[string]struct {
-		params           CreateProtectedOperationsRequest
-		prop             *CreateProtectedOperationsRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *ListProtectedOperationsResponse
-		withError        func(*testing.T, error)
+		params              CreateProtectedOperationsRequest
+		expectedRequestBody string
+		prop                *CreateProtectedOperationsRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *ListProtectedOperationsResponse
+		withError           func(*testing.T, error)
 	}{
 		"201 Created": {
 			params: CreateProtectedOperationsRequest{
@@ -298,7 +300,8 @@ func Test_CreateProtectedOperations(t *testing.T) {
 				SecurityPolicyID: "AAAA_81230",
 				JsonPayload:      json.RawMessage(`{"operations": [{"testKey":"testValue3"}]}`),
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"operations": [{"testKey":"testValue3"}]}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 				{
 			        "metadata": {
@@ -390,6 +393,11 @@ func Test_CreateProtectedOperations(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -411,12 +419,13 @@ func Test_CreateProtectedOperations(t *testing.T) {
 
 func Test_UpdateProtectedOperation(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateProtectedOperationRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpdateProtectedOperationRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
 	}{
 		"200 Success": {
 			params: UpdateProtectedOperationRequest{
@@ -426,10 +435,11 @@ func Test_UpdateProtectedOperation(t *testing.T) {
 				OperationID:      "cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 				JsonPayload:      json.RawMessage(`{"operationId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     `{"operationId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"operationId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/10/security-policies/AAAA_81230/transactional-endpoints/account-protection/cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"operationId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedRequestBody: `{"operationId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"operationId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/10/security-policies/AAAA_81230/transactional-endpoints/account-protection/cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 		},
 		"500 internal server error": {
 			params: UpdateProtectedOperationRequest{
@@ -529,6 +539,11 @@ func Test_UpdateProtectedOperation(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.Path)
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
