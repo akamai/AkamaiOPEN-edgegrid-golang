@@ -12,7 +12,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/wk8/go-ordered-map/v2 v2.1.8
 	go.uber.org/ratelimit v0.3.1
-	golang.org/x/net v0.56.0
+	golang.org/x/net v0.55.0
 	gopkg.in/ini.v1 v1.67.3
 )
 
@@ -33,4 +33,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/stretchr/testify v1.4.0 => github.com/stretchr/testify v1.10.0 // Fix security vulnerability
+replace (
+	github.com/stretchr/testify v1.4.0 => github.com/stretchr/testify v1.10.0 // Fix security vulnerability
+	golang.org/x/crypto => golang.org/x/crypto v0.52.0
+)

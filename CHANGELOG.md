@@ -7,6 +7,32 @@
 * DNS
   * Added the `MultiProviderDNSSEC` struct and field on `ZoneCreate` and `ZoneResponse` to support multi-signer DNSSEC configuration on Edge DNS zones.
 
+## 13.4.0 (Jul 27, 2026)
+
+### FEATURES/ENHANCEMENTS:
+
+* Cloud Certificates (Beta)
+  * Added support for the `GeoClass` field to the following structures:
+    * `CreateCertificateRequestBody`
+    * `CreateCertificateResponse`
+    * `GetCertificateResponse`
+    * `ListCertificatesResponse`
+    * `UpdateCertificateResponse`
+    * `PatchCertificateResponse`
+
+* DataStream
+  * Made `ContractID` and `GroupID` optional when creating or updating streams with log type `CDN`. Either or both fields could be omitted for CDN. If `GroupID` was set for CDN, it had to be greater than zero. For non-CDN log types (such as `APPSEC`), `ContractID` remained required on create and update, and `GroupID` remained required on create (must be greater than zero) and was not accepted on update.
+
+* PurgeCache
+  * Added methods to the `purgecache` package:
+    * [DeleteByURL](https://techdocs.akamai.com/purge-cache/reference/post-delete-url) - Deletes content on the selected URL or ARL.
+    * [DeleteByTag](https://techdocs.akamai.com/purge-cache/reference/post-delete-tag) - Deletes content on the selected set of cache tags.
+    * [DeleteByCPCode](https://techdocs.akamai.com/purge-cache/reference/post-delete-cpcode) - Deletes content on the selected CP code.
+    * [InvalidateByURL](https://techdocs.akamai.com/purge-cache/reference/post-invalidate-url) - Invalidates content on the selected URL or ARL.
+    * [InvalidateByTag](https://techdocs.akamai.com/purge-cache/reference/post-invalidate-tag) - Invalidates content on the selected set of cache tags.
+    * [InvalidateByCPCode](https://techdocs.akamai.com/purge-cache/reference/post-invalidate-cpcode) - Invalidates content on the selected CP code.
+    * [RateLimitStatus](https://techdocs.akamai.com/purge-cache/reference/post-rate-limit-status) - Checks the rate and object limit statuses for a given purge type.
+
 ## 13.3.0 (Jun 29, 2026)
 
 ### FEATURES/ENHANCEMENTS:
