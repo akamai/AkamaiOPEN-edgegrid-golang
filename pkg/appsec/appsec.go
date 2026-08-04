@@ -31,6 +31,7 @@ type (
 		AdvancedSettingsPrefetch
 		AdvancedSettingsRequestBody
 		AdvancedSettingsJA4Fingerprint
+		AdvancedSettingsURLEvasionDefense
 		ApiConstraintsProtection
 		ApiEndpoints
 		ApiHostnameCoverage

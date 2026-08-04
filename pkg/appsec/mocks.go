@@ -1675,3 +1675,19 @@ func (m *Mock) UpdateURLProtectionPolicyActions(ctx context.Context, req UpdateU
 	}
 	return args.Get(0).(*UpdateURLProtectionPolicyActionsResponse), args.Error(1)
 }
+
+func (m *Mock) GetAdvancedSettingsURLEvasionDefense(ctx context.Context, params GetAdvancedSettingsURLEvasionDefenseRequest) (*GetAdvancedSettingsURLEvasionDefenseResponse, error) {
+	args := m.Called(ctx, params)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetAdvancedSettingsURLEvasionDefenseResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateAdvancedSettingsURLEvasionDefense(ctx context.Context, params UpdateAdvancedSettingsURLEvasionDefenseRequest) (*UpdateAdvancedSettingsURLEvasionDefenseResponse, error) {
+	args := m.Called(ctx, params)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateAdvancedSettingsURLEvasionDefenseResponse), args.Error(1)
+}

@@ -302,15 +302,16 @@ type (
 
 	// AdvancedOptionsexp is returned as part of GetExportConfigurationResponse.
 	AdvancedOptionsexp struct {
-		Logging              *Loggingexp                        `json:"logging"`
-		AttackPayloadLogging *AttackPayloadLogging              `json:"attackPayloadLogging"`
-		EvasivePathMatch     *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
-		JA4Fingerprint       *JA4Fingerprintexp                 `json:"ja4Fingerprint,omitempty"`
-		Prefetch             *Prefetch                          `json:"prefetch"`
-		PragmaHeader         *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-		AsePenaltyBox        *AsePenaltyBoxexp                  `json:"asePenaltyBox,omitempty"`
-		RequestBody          *RequestBody                       `json:"requestBody,omitempty"`
-		PIILearning          *PIILearningexp                    `json:"piiLearning,omitempty"`
+		Logging              *Loggingexp                                   `json:"logging"`
+		AttackPayloadLogging *AttackPayloadLogging                         `json:"attackPayloadLogging"`
+		EvasivePathMatch     *EvasivePathMatchexp                          `json:"evasivePathMatch,omitempty"`
+		JA4Fingerprint       *JA4Fingerprintexp                            `json:"ja4Fingerprint,omitempty"`
+		Prefetch             *Prefetch                                     `json:"prefetch"`
+		PragmaHeader         *GetAdvancedSettingsPragmaResponse            `json:"pragmaHeader,omitempty"`
+		AsePenaltyBox        *AsePenaltyBoxexp                             `json:"asePenaltyBox,omitempty"`
+		RequestBody          *RequestBody                                  `json:"requestBody,omitempty"`
+		PIILearning          *PIILearningexp                               `json:"piiLearning,omitempty"`
+		URLEvasionDefense    *GetAdvancedSettingsURLEvasionDefenseResponse `json:"urlEvasion,omitempty"`
 	}
 
 	// CustomDenyListexp is returned as part of GetExportConfigurationResponse.
