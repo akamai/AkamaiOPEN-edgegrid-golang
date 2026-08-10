@@ -396,6 +396,32 @@ func TestDNS_GetZone(t *testing.T) {
 				},
 			},
 		},
+		"200 OK multi-signer DNSSEC": {
+			params: GetZoneRequest{
+				Zone: "example.com",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"contractId": "1-2ABCDE",
+				"zone": "example.com",
+				"type": "primary",
+				"signAndServe": false,
+				"multiProviderDnssec": {
+					"enabled": true
+				}
+			}`,
+			expectedPath: "/config-dns/v2/zones/example.com",
+			expectedResponse: &GetZoneResponse{
+				ContractID:   "1-2ABCDE",
+				Zone:         "example.com",
+				Type:         "primary",
+				SignAndServe: false,
+				MultiProviderDNSSEC: &MultiProviderDNSSEC{
+					Enabled: true,
+				},
+			},
+		},
 		"500 internal server error": {
 			params: GetZoneRequest{
 				Zone: "example.com",
@@ -1077,6 +1103,38 @@ func TestDNS_UpdateZone(t *testing.T) {
 						"name": "other.com.akamai.com3",
 						"secret": "C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="
 					}
+				}
+			}`,
+			expectedPath: "/config-dns/v2/zones/example.com",
+		},
+		"200 OK multi-signer DNSSEC": {
+			params: UpdateZoneRequest{
+				CreateZone: &ZoneCreate{
+					Zone:       "example.com",
+					ContractID: "1-2ABCDE",
+					Type:       "primary",
+					MultiProviderDNSSEC: &MultiProviderDNSSEC{
+						Enabled: true,
+					},
+				},
+			},
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","multiProviderDnssec":{"enabled":true},"signAndServe":false,"signAndServeAlgorithm":"","type":"primary","zone":"example.com"}`,
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"contractId": "1-2ABCDE",
+				"zone": "example.com",
+				"type": "primary",
+				"aliasCount": 1,
+				"signAndServe": false,
+				"comment": "Initial add",
+				"versionId": "7949b2db-ac43-4773-a3ec-dc93202142fd",
+				"lastModifiedDate": "2016-12-11T03:21:00Z",
+				"lastModifiedBy": "user31",
+				"lastActivationDate": "2017-01-03T12:00:00Z",
+				"activationState": "ERROR",
+				"multiProviderDnssec": {
+					"enabled": true
 				}
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com",

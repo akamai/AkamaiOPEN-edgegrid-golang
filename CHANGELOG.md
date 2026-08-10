@@ -1,5 +1,12 @@
 # RELEASE NOTES
 
+## Unreleased
+
+### FEATURES/ENHANCEMENTS:
+
+* DNS
+  * Added the `MultiProviderDNSSEC` struct and field on `ZoneCreate` and `ZoneResponse` to support multi-signer DNSSEC configuration on Edge DNS zones.
+
 ## 13.4.0 (Jul 27, 2026)
 
 ### FEATURES/ENHANCEMENTS:
