@@ -44,7 +44,8 @@
 
 
 
-
+* DNS
+  * Added the `MultiProviderDNSSEC` struct and field on `ZoneCreate` and `ZoneResponse` to support multi-signer DNSSEC configuration on Edge DNS zones.
 
 
 
