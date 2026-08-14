@@ -57,7 +57,8 @@ type (
 
 	// MultiProviderDNSSEC contains multi-signer DNSSEC configuration for a zone.
 	MultiProviderDNSSEC struct {
-		Enabled bool `json:"enabled"`
+		Enabled bool   `json:"enabled"`
+		Webhook string `json:"webhook,omitempty"`
 	}
 
 	// ZoneResponse contains zone create response

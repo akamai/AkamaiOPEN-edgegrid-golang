@@ -408,7 +408,8 @@ func TestDNS_GetZone(t *testing.T) {
 				"type": "primary",
 				"signAndServe": false,
 				"multiProviderDnssec": {
-					"enabled": true
+					"enabled": true,
+					"webhook": "https://example.com/webhook"
 				}
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com",
@@ -419,6 +420,7 @@ func TestDNS_GetZone(t *testing.T) {
 				SignAndServe: false,
 				MultiProviderDNSSEC: &MultiProviderDNSSEC{
 					Enabled: true,
+					Webhook: "https://example.com/webhook",
 				},
 			},
 		},
@@ -1115,10 +1117,11 @@ func TestDNS_UpdateZone(t *testing.T) {
 					Type:       "primary",
 					MultiProviderDNSSEC: &MultiProviderDNSSEC{
 						Enabled: true,
+						Webhook: "https://example.com/webhook",
 					},
 				},
 			},
-			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","multiProviderDnssec":{"enabled":true},"signAndServe":false,"signAndServeAlgorithm":"","type":"primary","zone":"example.com"}`,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","multiProviderDnssec":{"enabled":true,"webhook":"https://example.com/webhook"},"signAndServe":false,"signAndServeAlgorithm":"","type":"primary","zone":"example.com"}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -1134,7 +1137,8 @@ func TestDNS_UpdateZone(t *testing.T) {
 				"lastActivationDate": "2017-01-03T12:00:00Z",
 				"activationState": "ERROR",
 				"multiProviderDnssec": {
-					"enabled": true
+					"enabled": true,
+					"webhook": "https://example.com/webhook"
 				}
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com",
