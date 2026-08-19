@@ -673,3 +673,27 @@ func (p *Mock) RemoveContentProtectionJavaScriptInjectionRule(ctx context.Contex
 	args := p.Called(ctx, params)
 	return args.Error(0)
 }
+
+func (p *Mock) GetBotAnalyticsSettings(ctx context.Context, params GetBotAnalyticsSettingsRequest) (map[string]any, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]any), nil
+}
+
+func (p *Mock) UpdateBotAnalyticsSettings(ctx context.Context, params UpdateBotAnalyticsSettingsRequest) (map[string]any, error) {
+	args := p.Called(ctx, params)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]any), nil
+}
+
+func (p *Mock) GetBotAnalyticsSettingsValues(ctx context.Context) (map[string]any, error) {
+	args := p.Called(ctx)
+	if args.Error(1) != nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(map[string]any), nil
+}

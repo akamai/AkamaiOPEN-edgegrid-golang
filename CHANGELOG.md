@@ -51,7 +51,12 @@
   * Extended [`CreateStream`](https://techdocs.akamai.com/datastream2/reference/post-stream-answerx), [`UpdateStream`](https://techdocs.akamai.com/datastream2/reference/put-stream-answerx ), `GetStream`, `DeleteStream`, `ListStreams`, `ActivateStream`, `DeactivateStream`, and `GetActivationHistory` to support `ANSWERX` as a valid `LogType` value.
 
 
-
+* BOTMAN
+  * Added `BotAnalyticsSettings` interface containing these methods:
+    * [GetBotAnalyticsSettings](https://techdocs.akamai.com/bot-manager/reference/get-bot-analytics-settings)
+    * [UpdateBotAnalyticsSettings](https://techdocs.akamai.com/bot-manager/reference/put-bot-analytics-settings)
+  * Added `BotAnalyticsSettingsValues` interface containing the following method:
+    * [GetBotAnalyticsSettingsValues](https://techdocs.akamai.com/bot-manager/reference/get-bot-analytics-settings-values)
 
 
 

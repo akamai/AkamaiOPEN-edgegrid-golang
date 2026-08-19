@@ -609,6 +609,7 @@ type (
 	// AdvancedSettings is returned as part of GetExportConfigurationResponse
 	AdvancedSettings struct {
 		BotAnalyticsCookieSettings              map[string]interface{} `json:"botAnalyticsCookieSettings,omitempty"`
+		BotAnalyticsSettings                    map[string]interface{} `json:"botAnalyticsSettings,omitempty"`
 		ClientSideSecuritySettings              map[string]interface{} `json:"clientSideSecuritySettings,omitempty"`
 		TransactionalEndpointProtectionSettings map[string]interface{} `json:"transactionalEndpointProtectionSettings,omitempty"`
 		UserRiskResponseStrategySettings        map[string]interface{} `json:"userRiskResponseStrategySettings,omitempty"`

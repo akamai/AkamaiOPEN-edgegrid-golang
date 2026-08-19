@@ -20,6 +20,8 @@ type (
 		AkamaiDefinedBot
 		BotAnalyticsCookie
 		BotAnalyticsCookieValues
+		BotAnalyticsSettings
+		BotAnalyticsSettingsValues
 		BotCategoryException
 		BotDetection
 		BotDetectionAction
