@@ -245,6 +245,7 @@ type (
 			EvasivePathMatch               *EvasivePathMatchexp                  `json:"evasivePathMatch,omitempty"`
 			RequestBody                    *RequestBody                          `json:"requestBody,omitempty"`
 			BotManagement                  *BotManagement                        `json:"botManagement,omitempty"`
+			AIRules                        *ExportAIRulesResponse                `json:"aiRules,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -647,6 +648,41 @@ type (
 	TransactionalEndpoints struct {
 		BotProtection           []map[string]interface{} `json:"botProtection,omitempty"`
 		BotProtectionExceptions map[string]interface{}   `json:"botProtectionExceptions,omitempty"`
+	}
+
+	// ExportAIRulesResponse is the aiRules object nested inside a security policy in the export response.
+	ExportAIRulesResponse struct {
+		AIRuleStatus string               `json:"aiRuleStatus"`
+		AIRules      []ExportPolicyAIRule `json:"aiRules"`
+	}
+
+	// ExportPolicyAIRule is an AI rule as returned in the exported response.
+	ExportPolicyAIRule struct {
+		RuleID              int64                            `json:"ruleId"`
+		RuleVersion         int64                            `json:"ruleVersion"`
+		Title               string                           `json:"title"`
+		RiskScoreGroup      string                           `json:"riskScoreGroup"`
+		RuleDescription     string                           `json:"ruleDescription"`
+		Action              string                           `json:"action"`
+		ConditionExceptions []ExportAIRuleConditionException `json:"conditionExceptions"`
+	}
+
+	// ExportAIRuleConditionException is a single condition exception entry within an exported AI rule.
+	ExportAIRuleConditionException struct {
+		Exception *ExportAIRuleException `json:"exception"`
+	}
+
+	// ExportAIRuleException holds the exception selectors for an exported AI rule.
+	ExportAIRuleException struct {
+		SpecificHeaderCookieParamXMLOrJSONNames []ExportAIRuleExceptionSelector `json:"specificHeaderCookieParamXmlOrJsonNames"`
+	}
+
+	// ExportAIRuleExceptionSelector is a single selector entry within an AI rule exception.
+	ExportAIRuleExceptionSelector struct {
+		Names          []string `json:"names"`
+		Selector       string   `json:"selector"`
+		Wildcard       bool     `json:"wildcard"`
+		RiskScoreGroup string   `json:"riskScoreGroup"`
 	}
 )
 

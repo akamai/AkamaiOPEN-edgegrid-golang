@@ -1,0 +1,46 @@
+{
+  "configId": 77653,
+  "configName": "Example WAF Config",
+  "version": 25,
+  "securityPolicies": [
+    {
+      "id": "boBF_19288",
+      "name": "Default Policy",
+      "aiRules": {
+        "aiRuleStatus": "ENABLED",
+        "aiRules": [
+          {
+            "ruleId": 3001000,
+            "ruleVersion": 1,
+            "title": "AI-Detected SQL Injection Attack",
+            "riskScoreGroup": "SQL_AI",
+            "ruleDescription": "Detects SQL injection attempts using AI-based analysis.",
+            "action": "alert",
+            "conditionExceptions": [
+              {
+                "exception": {
+                  "specificHeaderCookieParamXmlOrJsonNames": [
+                    {
+                      "names": ["test"],
+                      "selector": "REQUEST_COOKIES_NAMES",
+                      "wildcard": true,
+                      "riskScoreGroup": "SQL"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "abc1_22345",
+      "name": "Secondary Policy",
+      "aiRules": {
+        "aiRuleStatus": "DISABLED",
+        "aiRules": []
+      }
+    }
+  ]
+}

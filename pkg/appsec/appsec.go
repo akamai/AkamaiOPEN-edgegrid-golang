@@ -21,6 +21,7 @@ var (
 type (
 	// APPSEC is the appsec api interface
 	APPSEC interface {
+		AIRule
 		Activations
 		AdvancedSettingsAsePenaltyBox
 		AdvancedSettingsAttackPayloadLogging

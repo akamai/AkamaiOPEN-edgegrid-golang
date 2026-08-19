@@ -1532,6 +1532,45 @@ func (m *Mock) UpdateMalwarePolicyActions(ctx context.Context, params UpdateMalw
 
 	return args.Get(0).(*UpdateMalwarePolicyActionsResponse), args.Error(1)
 }
+func (m *Mock) ListAIRules(ctx context.Context, req ListAIRulesRequest) (*ListAIRulesResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*ListAIRulesResponse), args.Error(1)
+}
+
+func (m *Mock) GetAIRulesStatus(ctx context.Context, req GetAIRulesStatusRequest) (*GetAIRulesStatusResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetAIRulesStatusResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateAIRulesStatus(ctx context.Context, req UpdateAIRulesStatusRequest) (*UpdateAIRulesStatusResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateAIRulesStatusResponse), args.Error(1)
+}
+
+func (m *Mock) GetAIRuleAction(ctx context.Context, req GetAIRuleActionRequest) (*GetAIRuleActionResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*GetAIRuleActionResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateAIRuleAction(ctx context.Context, req UpdateAIRuleActionRequest) (*UpdateAIRuleActionResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateAIRuleActionResponse), args.Error(1)
+}
 
 func (m *Mock) GetRapidRules(ctx context.Context, req GetRapidRulesRequest) (*GetRapidRulesResponse, error) {
 	args := m.Called(ctx, req)

@@ -35,6 +35,15 @@
 * Appsec
   * (Beta) Added URL Evasion Defense API.
 
+* Appsec
+  * Added support for the AI Rules API:
+    * `ListAIRules`
+    * `GetAIRulesStatus`
+    * `GetAIRuleAction`
+    * `UpdateAIRulesStatus`
+    * `UpdateAIRuleAction`
+  * Extended the `GetExportConfiguration` response to include AI rules data for security policies.
+
 * DataStream
   * Added support for managing and listing `AnswerX` streams.
   * Added the [`ListAnswerXServiceIDs`](https://techdocs.akamai.com/datastream2/reference/get-answerx-ssids/) method to list `AnswerX` service IDs.
