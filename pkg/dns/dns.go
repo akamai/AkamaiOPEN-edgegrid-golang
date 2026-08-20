@@ -155,14 +155,14 @@ type (
 		// See: https://techdocs.akamai.com/edge-dns/reference/put-zone
 		UpdateZone(context.Context, UpdateZoneRequest) error
 
-		// GetZoneNames retrieves a list of a zone's record names.
+		// ListRecordSetNames retrieves a list of a zone's record set names.
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-zone-names
-		GetZoneNames(context.Context, GetZoneNamesRequest) (*GetZoneNamesResponse, error)
-		// GetZoneNameTypes retrieves a zone name's record types.
+		ListRecordSetNames(context.Context, ListRecordSetNamesRequest) (*ListRecordSetNamesResponse, error)
+		// ListRecordSetTypes retrieves a record set name's types.
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/get-zone-name-types
-		GetZoneNameTypes(context.Context, GetZoneNameTypesRequest) (*GetZoneNameTypesResponse, error)
+		ListRecordSetTypes(context.Context, ListRecordSetTypesRequest) (*ListRecordSetTypesResponse, error)
 		// CreateBulkZones submits create bulk zone request.
 		//
 		// See: https://techdocs.akamai.com/edge-dns/reference/post-zones-create-requests
