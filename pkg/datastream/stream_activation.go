@@ -2,11 +2,11 @@ package datastream
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -36,36 +36,27 @@ type (
 
 // Validate performs validation on ActivateStreamRequest
 func (r ActivateStreamRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"streamId": validation.Validate(r.StreamID, validation.Required),
-		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
-	}.Filter()
+		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec, LogTypeAnswerX)),
+	})
 }
 
 // Validate performs validation on DeactivateStreamRequest
 func (r DeactivateStreamRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"streamId": validation.Validate(r.StreamID, validation.Required),
-		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
-	}.Filter()
+		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec, LogTypeAnswerX)),
+	})
 }
 
 // Validate performs validation on DeactivateStreamRequest
 func (r GetActivationHistoryRequest) Validate() error {
-	return validation.Errors{
+	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"streamId": validation.Validate(r.StreamID, validation.Required),
-		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec)),
-	}.Filter()
+		"LogType":  validation.Validate(r.LogType, validation.Required, validation.In(LogTypeCDN, LogTypeAppSec, LogTypeAnswerX)),
+	})
 }
-
-var (
-	// ErrActivateStream is returned when ActivateStream fails
-	ErrActivateStream = errors.New("activate stream")
-	// ErrDeactivateStream is returned when DeactivateStream fails
-	ErrDeactivateStream = errors.New("deactivate stream")
-	// ErrGetActivationHistory is returned when DeactivateStream fails
-	ErrGetActivationHistory = errors.New("view activation history")
-)
 
 func (d *ds) ActivateStream(ctx context.Context, params ActivateStreamRequest) (*DetailedStreamVersion, error) {
 	logger := d.Log(ctx)

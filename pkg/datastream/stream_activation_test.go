@@ -211,6 +211,84 @@ func TestDs_ActivateStream(t *testing.T) {
 				LatestVersion: 2,
 			},
 		},
+		"200 OK ANSWERX Stream": {
+			request:        ActivateStreamRequest{StreamID: 7, LogType: LogTypeAnswerX},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "contractId": "P-1324",
+    "createdBy": "sample_username",
+    "createdDate": "2022-11-04T00:49:45Z",
+    "datasetFields": [
+        {
+            "datasetFieldId": 2000,
+            "datasetFieldName": "answerx_field_1",
+            "datasetFieldJsonKey": "answerx_key_1"
+        }
+    ],
+    "deliveryConfiguration": {
+        "format": "JSON",
+        "frequency": { "intervalInSeconds": 30 }
+    },
+    "destination": {
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample_display_name",
+        "bucket": "sample_bucket",
+        "path": "/sample_path",
+        "region": "us-east-1"
+    },
+    "serviceSubletterIds": [
+        { "ssid": 101, "name": "ServiceA", "product": "AnswerX" }
+    ],
+    "groupId": 1234,
+    "latestVersion": 1,
+    "modifiedBy": "sample_username2",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": [ "sample_username@akamai.com" ],
+    "productId": "AnswerX_Product",
+    "streamId": 7,
+    "streamName": "ds2-answerx-stream",
+    "streamStatus": "ACTIVATING",
+    "streamVersion": 1
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/streams/7/activate",
+			expectedResponse: &DetailedStreamVersion{
+				LogType:      LogTypeAnswerX,
+				StreamStatus: StreamStatusActivating,
+				DeliveryConfiguration: DeliveryConfiguration{
+					Format:    FormatTypeJson,
+					Frequency: Frequency{IntervalInSeconds: IntervalInSeconds30},
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample_display_name",
+					DestinationType: DestinationTypeS3,
+					Path:            "/sample_path",
+					Bucket:          "sample_bucket",
+					Region:          "us-east-1",
+				},
+				DatasetFields: []DataSetField{
+					{DatasetFieldID: 2000, DatasetFieldName: "answerx_field_1", DatasetFieldJsonKey: "answerx_key_1"},
+				},
+				AnswerXServiceIDs: []AnswerXServiceDetail{
+					{SSID: 101, Name: "ServiceA", Product: "AnswerX"},
+				},
+				ContractID:         "P-1324",
+				CreatedBy:          "sample_username",
+				CreatedDate:        "2022-11-04T00:49:45Z",
+				NotificationEmails: []string{"sample_username@akamai.com"},
+				GroupID:            1234,
+				ModifiedBy:         "sample_username2",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				ProductID:          "AnswerX_Product",
+				StreamID:           7,
+				StreamName:         "ds2-answerx-stream",
+				StreamVersion:      1,
+				LatestVersion:      1,
+			},
+		},
 		"validation error": {
 			request:   ActivateStreamRequest{},
 			withError: ErrStructValidation,
@@ -478,6 +556,84 @@ func TestDs_DeactivateStream(t *testing.T) {
 				LatestVersion: 2,
 			},
 		},
+		"200 OK ANSWERX Stream": {
+			request:        DeactivateStreamRequest{StreamID: 7, LogType: LogTypeAnswerX},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "contractId": "P-1324",
+    "createdBy": "sample_username",
+    "createdDate": "2022-11-04T00:49:45Z",
+    "datasetFields": [
+        {
+            "datasetFieldId": 2000,
+            "datasetFieldName": "answerx_field_1",
+            "datasetFieldJsonKey": "answerx_key_1"
+        }
+    ],
+    "deliveryConfiguration": {
+        "format": "JSON",
+        "frequency": { "intervalInSeconds": 30 }
+    },
+    "destination": {
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample_display_name",
+        "bucket": "sample_bucket",
+        "path": "/sample_path",
+        "region": "us-east-1"
+    },
+    "serviceSubletterIds": [
+        { "ssid": 101, "name": "ServiceA", "product": "AnswerX" }
+    ],
+    "groupId": 1234,
+    "latestVersion": 1,
+    "modifiedBy": "sample_username2",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": [ "sample_username@akamai.com" ],
+    "productId": "AnswerX_Product",
+    "streamId": 7,
+    "streamName": "ds2-answerx-stream",
+    "streamStatus": "DEACTIVATING",
+    "streamVersion": 1
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/streams/7/deactivate",
+			expectedResponse: &DetailedStreamVersion{
+				LogType:      LogTypeAnswerX,
+				StreamStatus: StreamStatusDeactivating,
+				DeliveryConfiguration: DeliveryConfiguration{
+					Format:    FormatTypeJson,
+					Frequency: Frequency{IntervalInSeconds: IntervalInSeconds30},
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample_display_name",
+					DestinationType: DestinationTypeS3,
+					Path:            "/sample_path",
+					Bucket:          "sample_bucket",
+					Region:          "us-east-1",
+				},
+				DatasetFields: []DataSetField{
+					{DatasetFieldID: 2000, DatasetFieldName: "answerx_field_1", DatasetFieldJsonKey: "answerx_key_1"},
+				},
+				AnswerXServiceIDs: []AnswerXServiceDetail{
+					{SSID: 101, Name: "ServiceA", Product: "AnswerX"},
+				},
+				ContractID:         "P-1324",
+				CreatedBy:          "sample_username",
+				CreatedDate:        "2022-11-04T00:49:45Z",
+				NotificationEmails: []string{"sample_username@akamai.com"},
+				GroupID:            1234,
+				ModifiedBy:         "sample_username2",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				ProductID:          "AnswerX_Product",
+				StreamID:           7,
+				StreamName:         "ds2-answerx-stream",
+				StreamVersion:      1,
+				LatestVersion:      1,
+			},
+		},
 		"validation error": {
 			request:   DeactivateStreamRequest{},
 			withError: ErrStructValidation,
@@ -629,6 +785,45 @@ func TestDs_GetActivationHistory(t *testing.T) {
 					ModifiedDate:  "16-01-2020 09:31:02 GMT",
 					Status:        StreamStatusActivated,
 					StreamID:      3,
+					StreamVersion: 2,
+				},
+			},
+		},
+		"200 OK ANSWERX Stream": {
+			request:        GetActivationHistoryRequest{StreamID: 7, LogType: LogTypeAnswerX},
+			responseStatus: http.StatusOK,
+			responseBody: `
+[
+    {
+        "streamId": 7,
+        "streamVersion": 2,
+        "modifiedBy": "user1",
+        "modifiedDate": "16-01-2020 11:07:12 GMT",
+        "status": "DEACTIVATED"
+    },
+    {
+        "streamId": 7,
+        "streamVersion": 2,
+        "modifiedBy": "user2",
+        "modifiedDate": "16-01-2020 09:31:02 GMT",
+        "status": "ACTIVATED"
+    }
+]
+`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/streams/7/activation-history",
+			expectedResponse: []ActivationHistoryEntry{
+				{
+					ModifiedBy:    "user1",
+					ModifiedDate:  "16-01-2020 11:07:12 GMT",
+					Status:        StreamStatusDeactivated,
+					StreamID:      7,
+					StreamVersion: 2,
+				},
+				{
+					ModifiedBy:    "user2",
+					ModifiedDate:  "16-01-2020 09:31:02 GMT",
+					Status:        StreamStatusActivated,
+					StreamID:      7,
 					StreamVersion: 2,
 				},
 			},

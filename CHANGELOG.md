@@ -4,6 +4,9 @@
 
 ### BREAKING CHANGES:
 
+* Datastream
+  * `GetDatasetFieldsRequest.ProductID` changed from `*string` to `string` — callers that previously passed a pointer (e.g. `ProductID: ptr.To("value")`) must now pass the value directly (e.g. `ProductID: "value"`), and any pointer dereference on the field must be removed.
+  * `GetDatasetFieldsRequest` now has a required `LogType` field — existing code that constructs this struct without `LogType` will fail validation. Valid values are `CDN` and `ANSWERX`.
 
 
 
@@ -23,6 +26,12 @@
 
 
 ### FEATURES/ENHANCEMENTS:
+
+* DataStream
+  * Added support for managing and listing `AnswerX` streams.
+  * Added the [`ListAnswerXServiceIDs`](https://techdocs.akamai.com/datastream2/reference/get-answerx-ssids/) method to list `AnswerX` service IDs.
+  * Added `AnswerXServiceID` and `AnswerXServiceDetail` types, and the related `AnswerXServiceIDs` fields on `StreamConfiguration`, `DetailedStreamVersion`, `StreamDetails`, and `ListAnswerXServiceIDsResponse`, to support `AnswerX` service IDs in request and response payloads.
+  * Extended [`CreateStream`](https://techdocs.akamai.com/datastream2/reference/post-stream-answerx), [`UpdateStream`](https://techdocs.akamai.com/datastream2/reference/put-stream-answerx ), `GetStream`, `DeleteStream`, `ListStreams`, `ActivateStream`, `DeactivateStream`, and `GetActivationHistory` to support `ANSWERX` as a valid `LogType` value.
 
 
 

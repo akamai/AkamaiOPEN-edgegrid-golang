@@ -473,6 +473,97 @@ func TestDs_GetStream(t *testing.T) {
 				SamplingPercentage: 88,
 			},
 		},
+		"200 OK ANSWERX Stream": {
+			request: GetStreamRequest{
+				LogType:  LogTypeAnswerX,
+				StreamID: 5,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `{
+    "contractId": "ANS-001",
+    "createdBy": "answerx_user",
+    "createdDate": "2025-03-01T08:00:00Z",
+    "datasetFields": [
+        {
+            "datasetFieldId": 2000,
+            "datasetFieldName": "answerx_field_1",
+            "datasetFieldJsonKey": "answerx_key_1"
+        },
+		{
+			"datasetFieldId": 2001,
+			"datasetFieldName": "answerx_field_2",
+			"datasetFieldJsonKey": "answerx_key_2"
+		}
+    ],
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE",
+        "format": "STRUCTURED",
+        "frequency": { "intervalInSeconds": 30 },
+        "uploadFilePrefix": "ax",
+        "uploadFileSuffix": "ds"
+    },
+    "destination": {
+        "bucket": "answerx_bucket",
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "answerx_display_name",
+        "path": "/answerx_path",
+        "region": "us-east-1"
+    },
+    "groupId": 5678,
+    "latestVersion": 1,
+    "modifiedBy": "answerx_user2",
+    "modifiedDate": "2025-03-01T09:00:00Z",
+    "notificationEmails": ["answerx@akamai.com"],
+    "productId": "AnswerX_Product",
+    "serviceSubletterIds": [
+        {"ssid": 101, "name": "ServiceA", "product": "AnswerX"}
+    ],
+    "streamId": 5,
+    "streamName": "answerx-stream",
+    "streamStatus": "ACTIVATED",
+    "streamVersion": 1
+}`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/streams/5",
+			expectedResponse: &DetailedStreamVersion{
+				LogType:      LogTypeAnswerX,
+				StreamStatus: StreamStatusActivated,
+				DeliveryConfiguration: DeliveryConfiguration{
+					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
+					Format:           FormatTypeStructured,
+					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					UploadFilePrefix: "ax",
+					UploadFileSuffix: "ds",
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "answerx_display_name",
+					DestinationType: DestinationTypeS3,
+					Path:            "/answerx_path",
+					Bucket:          "answerx_bucket",
+					Region:          "us-east-1",
+				},
+				ContractID:  "ANS-001",
+				CreatedBy:   "answerx_user",
+				CreatedDate: "2025-03-01T08:00:00Z",
+				DatasetFields: []DataSetField{
+					{DatasetFieldID: 2000, DatasetFieldName: "answerx_field_1", DatasetFieldJsonKey: "answerx_key_1"},
+					{DatasetFieldID: 2001, DatasetFieldName: "answerx_field_2", DatasetFieldJsonKey: "answerx_key_2"},
+				},
+				NotificationEmails: []string{"answerx@akamai.com"},
+				GroupID:            5678,
+				ModifiedBy:         "answerx_user2",
+				ModifiedDate:       "2025-03-01T09:00:00Z",
+				ProductID:          "AnswerX_Product",
+				AnswerXServiceIDs: []AnswerXServiceDetail{
+					{SSID: 101, Name: "ServiceA", Product: "AnswerX"},
+				},
+				StreamID:      5,
+				StreamName:    "answerx-stream",
+				StreamVersion: 1,
+				LatestVersion: 1,
+			},
+		},
 		"validation error": {
 			request: GetStreamRequest{},
 			withError: func(t *testing.T, err error) {
@@ -855,6 +946,7 @@ func TestDs_CreateStream(t *testing.T) {
 		expectedPath     string
 		expectedBody     string
 		expectedResponse *DetailedStreamVersion
+		expectedErr      string
 		withError        error
 	}{
 		"201 Created APPSEC Stream": {
@@ -1371,6 +1463,126 @@ func TestDs_CreateStream(t *testing.T) {
 			}),
 			withError: ErrStructValidation,
 		},
+		"201 Created ANSWERX Stream": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.LogType = LogTypeAnswerX
+				r.StreamConfiguration.Properties = nil
+				r.StreamConfiguration.AnswerXServiceIDs = []AnswerXServiceID{
+					{SSID: 101},
+				}
+				r.StreamConfiguration.CollectMidgress = false
+			}),
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+    "contractId": "2-AB1234",
+    "createdBy": "sample_username",
+    "createdDate": "2022-11-04T00:49:45Z",
+    "datasetFields": [
+        {
+            "datasetFieldId": 2020,
+            "datasetFieldName": "field_name_1",
+            "datasetFieldJsonKey": "field_json_key_1"
+        }
+    ],
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE",
+        "format": "STRUCTURED",
+        "frequency": { "intervalInSeconds": 30 },
+        "uploadFilePrefix": "logs",
+        "uploadFileSuffix": "ak"
+    },
+    "destination": {
+        "bucket": "datastream.com",
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample-display-name",
+        "path": "sample-path/{%Y/%m/%d}",
+        "region": "ap-south-1"
+    },
+    "groupId": 1234,
+    "latestVersion": 1,
+    "modifiedBy": "sample_username2",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": ["useremail1@akamai.com", "useremail2@akamai.com"],
+    "productId": "Adaptive_Media_Delivery",
+    "serviceSubletterIds": [
+        {"ssid": 101, "name": "ServiceA", "product": "AnswerX"}
+    ],
+    "streamId": 8000,
+    "streamName": "TestStream",
+    "streamStatus": "ACTIVATED",
+    "streamVersion": 1
+}`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/streams?activate=true",
+			expectedBody: `{
+   "streamName":"TestStream",
+   "groupId":1234,
+   "contractId":"2-AB1234",
+   "notificationEmails":[
+      "useremail1@akamai.com",
+      "useremail2@akamai.com"
+   ],
+   "datasetFields":[{"datasetFieldId":2020}],
+   "serviceSubletterIds":[{"ssid":101}],
+   "deliveryConfiguration":{
+      "uploadFilePrefix":"logs",
+      "uploadFileSuffix":"ak",
+      "fieldDelimiter":"SPACE",
+      "format":"STRUCTURED",
+      "frequency":{"intervalInSeconds":30}
+   },
+   "destination":{
+      "path":"sample-path/{%Y/%m/%d}",
+      "displayName":"sample-display-name",
+      "bucket":"datastream.com",
+      "region":"ap-south-1",
+      "accessKey":"1234ABCD",
+      "secretAccessKey":"1234ABCD",
+      "destinationType":"S3"
+   }
+}
+`,
+			expectedResponse: &DetailedStreamVersion{
+				LogType:     LogTypeAnswerX,
+				ContractID:  "2-AB1234",
+				CreatedBy:   "sample_username",
+				CreatedDate: "2022-11-04T00:49:45Z",
+				DatasetFields: []DataSetField{
+					{DatasetFieldID: 2020, DatasetFieldName: "field_name_1", DatasetFieldJsonKey: "field_json_key_1"},
+				},
+				DeliveryConfiguration: DeliveryConfiguration{
+					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
+					Format:           FormatTypeStructured,
+					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					UploadFilePrefix: "logs",
+					UploadFileSuffix: "ak",
+				},
+				Destination: Destination{
+					Bucket:          "datastream.com",
+					CompressLogs:    true,
+					DestinationType: DestinationTypeS3,
+					DisplayName:     "sample-display-name",
+					Path:            "sample-path/{%Y/%m/%d}",
+					Region:          "ap-south-1",
+				},
+				GroupID:       1234,
+				LatestVersion: 1,
+				ModifiedBy:    "sample_username2",
+				ModifiedDate:  "2022-11-04T02:14:29Z",
+				NotificationEmails: []string{
+					"useremail1@akamai.com",
+					"useremail2@akamai.com",
+				},
+				ProductID: "Adaptive_Media_Delivery",
+				AnswerXServiceIDs: []AnswerXServiceDetail{
+					{SSID: 101, Name: "ServiceA", Product: "AnswerX"},
+				},
+				StreamID:      8000,
+				StreamName:    "TestStream",
+				StreamStatus:  StreamStatusActivated,
+				StreamVersion: 1,
+			},
+		},
 		"validation error - empty destination": {
 			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
 				r.StreamConfiguration.Destination = AbstractConnector(&S3Connector{})
@@ -1430,6 +1642,23 @@ func TestDs_CreateStream(t *testing.T) {
 				r.LogType = "INVALID"
 			}),
 			withError: ErrStructValidation,
+		},
+		"validation error - ANSWERX stream missing AnswerXServiceIDs": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.LogType = LogTypeAnswerX
+				r.StreamConfiguration.AnswerXServiceIDs = nil
+			}),
+			expectedErr: "StreamConfiguration.AnswerXServiceIDs",
+			withError:   ErrStructValidation,
+		},
+		"validation error - ANSWERX stream missing dataset fields": {
+			request: modifyRequest(createStreamRequest, func(r *CreateStreamRequest) {
+				r.LogType = LogTypeAnswerX
+				r.StreamConfiguration.AnswerXServiceIDs = []AnswerXServiceID{{SSID: 101}}
+				r.StreamConfiguration.DatasetFields = nil
+			}),
+			expectedErr: "StreamConfiguration.DatasetFields",
+			withError:   ErrStructValidation,
 		},
 		"403 forbidden": {
 			request:        createStreamRequest,
@@ -1523,6 +1752,9 @@ func TestDs_CreateStream(t *testing.T) {
 			result, err := client.CreateStream(context.Background(), test.request)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				if test.expectedErr != "" {
+					assert.Contains(t, err.Error(), test.expectedErr)
+				}
 				return
 			}
 			require.NoError(t, err)
@@ -1581,6 +1813,7 @@ func TestDs_UpdateStream(t *testing.T) {
 		expectedPath     string
 		expectedBody     string
 		expectedResponse *DetailedStreamVersion
+		expectedErr      string
 		withError        error
 	}{
 		"200 OK AppSec Streams": {
@@ -1807,6 +2040,126 @@ func TestDs_UpdateStream(t *testing.T) {
 						PropertyID:   1234,
 						PropertyName: "sample2.com",
 					},
+				},
+			},
+		},
+		"200 OK ANSWERX Stream": {
+			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
+				r.LogType = LogTypeAnswerX
+				r.StreamConfiguration.Properties = nil
+				r.StreamConfiguration.AnswerXServiceIDs = []AnswerXServiceID{
+					{SSID: 101},
+				}
+			}),
+			responseStatus: http.StatusOK,
+			expectedPath:   "/datastream-config-api/v3/log/answerx/streams/7050?activate=true",
+			expectedBody: `{
+			   "streamName":"TestStream",
+			   "contractId":"P-1324",
+			   "notificationEmails":[
+			      "test@aka.mai",
+			      "useremail2@akamai.com"
+			   ],
+			   "datasetFields":[
+			      {"datasetFieldId":1},
+			      {"datasetFieldId":2},
+			      {"datasetFieldId":3}
+			   ],
+			   "serviceSubletterIds":[
+			      {"ssid":101}
+			   ],
+			   "deliveryConfiguration":{
+			      "uploadFilePrefix":"logs",
+			      "uploadFileSuffix":"ak",
+			      "fieldDelimiter":"SPACE",
+			      "format":"STRUCTURED",
+			      "frequency":{"intervalInSeconds":30}
+			   },
+			   "destination":{
+			      "path":"sample-path/{%Y/%m/%d}",
+			      "displayName":"sample-display-name",
+			      "bucket":"datastream.com",
+			      "region":"ap-south-1",
+			      "accessKey":"ABC",
+			      "secretAccessKey":"XYZ",
+			      "destinationType":"S3"
+			   }
+			}`,
+			responseBody: `{
+    "contractId": "P-1324",
+    "createdBy": "sample_username",
+    "createdDate": "2022-11-04T00:49:45Z",
+    "datasetFields": [
+        {"datasetFieldId": 1, "datasetFieldName": "field_1", "datasetFieldJsonKey": "key_1"},
+        {"datasetFieldId": 2, "datasetFieldName": "field_2", "datasetFieldJsonKey": "key_2"},
+        {"datasetFieldId": 3, "datasetFieldName": "field_3", "datasetFieldJsonKey": "key_3"}
+    ],
+    "deliveryConfiguration": {
+        "fieldDelimiter": "SPACE",
+        "format": "STRUCTURED",
+        "frequency": { "intervalInSeconds": 30 },
+        "uploadFilePrefix": "logs",
+        "uploadFileSuffix": "ak"
+    },
+    "destination": {
+        "bucket": "datastream.com",
+        "compressLogs": true,
+        "destinationType": "S3",
+        "displayName": "sample-display-name",
+        "path": "sample-path/{%Y/%m/%d}",
+        "region": "ap-south-1"
+    },
+    "groupId": 1234,
+    "latestVersion": 2,
+    "modifiedBy": "modified_by_user",
+    "modifiedDate": "2022-11-04T02:14:29Z",
+    "notificationEmails": ["test@aka.mai", "useremail2@akamai.com"],
+    "productId": "AnswerX_Product",
+    "serviceSubletterIds": [
+        {"ssid": 101, "name": "ServiceA", "product": "AnswerX"}
+    ],
+    "streamId": 7050,
+    "streamName": "TestStream",
+    "streamStatus": "ACTIVATED",
+    "streamVersion": 2
+}`,
+			expectedResponse: &DetailedStreamVersion{
+				LogType:     LogTypeAnswerX,
+				ContractID:  "P-1324",
+				CreatedBy:   "sample_username",
+				CreatedDate: "2022-11-04T00:49:45Z",
+				DatasetFields: []DataSetField{
+					{DatasetFieldID: 1, DatasetFieldName: "field_1", DatasetFieldJsonKey: "key_1"},
+					{DatasetFieldID: 2, DatasetFieldName: "field_2", DatasetFieldJsonKey: "key_2"},
+					{DatasetFieldID: 3, DatasetFieldName: "field_3", DatasetFieldJsonKey: "key_3"},
+				},
+				DeliveryConfiguration: DeliveryConfiguration{
+					Delimiter:        DelimiterTypePtr(DelimiterTypeSpace),
+					Format:           FormatTypeStructured,
+					Frequency:        Frequency{IntervalInSeconds: IntervalInSeconds30},
+					UploadFilePrefix: "logs",
+					UploadFileSuffix: "ak",
+				},
+				Destination: Destination{
+					CompressLogs:    true,
+					DisplayName:     "sample-display-name",
+					DestinationType: DestinationTypeS3,
+					Path:            "sample-path/{%Y/%m/%d}",
+					Bucket:          "datastream.com",
+					Region:          "ap-south-1",
+				},
+				GroupID:            1234,
+				LatestVersion:      2,
+				StreamID:           7050,
+				StreamVersion:      2,
+				StreamName:         "TestStream",
+				StreamStatus:       StreamStatusActivated,
+				ModifiedBy:         "modified_by_user",
+				ModifiedDate:       "2022-11-04T02:14:29Z",
+				NotificationEmails: []string{"test@aka.mai", "useremail2@akamai.com"},
+				ProductID:          "AnswerX_Product",
+				AnswerXServiceIDs: []AnswerXServiceDetail{
+					{SSID: 101, Name: "ServiceA", Product: "AnswerX"},
 				},
 			},
 		},
@@ -2061,7 +2414,28 @@ func TestDs_UpdateStream(t *testing.T) {
 			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
 				r.LogType = "INVALID"
 			}),
-			withError: ErrStructValidation,
+			expectedErr: "LogType",
+			withError:   ErrStructValidation,
+		},
+		"validation error - ANSWERX stream missing AnswerXServiceIDs": {
+			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
+				r.LogType = LogTypeAnswerX
+				r.StreamConfiguration.Properties = nil
+			}),
+			expectedErr: "StreamConfiguration.AnswerXServiceIDs",
+			withError:   ErrStructValidation,
+		},
+		"validation error - ANSWERX stream missing dataset fields": {
+			request: modifyRequest(updateRequest, func(r *UpdateStreamRequest) {
+				r.LogType = LogTypeAnswerX
+				r.StreamConfiguration.Properties = nil
+				r.StreamConfiguration.AnswerXServiceIDs = []AnswerXServiceID{
+					{SSID: 101},
+				}
+				r.StreamConfiguration.DatasetFields = nil
+			}),
+			expectedErr: "StreamConfiguration.DatasetFields",
+			withError:   ErrStructValidation,
 		},
 		"400 bad request": {
 			request:        updateRequest,
@@ -2120,6 +2494,9 @@ func TestDs_UpdateStream(t *testing.T) {
 			result, err := client.UpdateStream(context.Background(), test.request)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				if test.expectedErr != "" {
+					assert.Contains(t, err.Error(), test.expectedErr)
+				}
 				return
 			}
 			require.NoError(t, err)
@@ -2137,7 +2514,7 @@ func TestDs_DeleteStream(t *testing.T) {
 		expectedPath   string
 		withError      func(*testing.T, error)
 	}{
-		"200 OK AppSec Stream": {
+		"204 No Content AppSec Stream": {
 			request: DeleteStreamRequest{
 				LogType:  LogTypeAppSec,
 				StreamID: 1,
@@ -2146,7 +2523,16 @@ func TestDs_DeleteStream(t *testing.T) {
 			responseBody:   ``,
 			expectedPath:   "/datastream-config-api/v3/log/appsec/streams/1",
 		},
-		"200 OK": {
+		"204 No Content ANSWERX Stream": {
+			request: DeleteStreamRequest{
+				LogType:  LogTypeAnswerX,
+				StreamID: 1,
+			},
+			responseStatus: http.StatusNoContent,
+			responseBody:   ``,
+			expectedPath:   "/datastream-config-api/v3/log/answerx/streams/1",
+		},
+		"204 No Content CDN Stream": {
 			request: DeleteStreamRequest{
 				LogType:  LogTypeCDN,
 				StreamID: 1,
@@ -2798,6 +3184,62 @@ func TestDs_ListStreams(t *testing.T) {
 					StreamID:      123,
 					StreamName:    "test-stream-2",
 					StreamVersion: 1,
+				},
+			},
+		},
+		"200 OK - AnswerX streams": {
+			request:        ListStreamsRequest{LogType: LogTypeAnswerX},
+			responseStatus: http.StatusOK,
+			responseBody: `
+[
+   {
+      "contractId":"ANS-123",
+      "createdBy":"answerx-user",
+      "createdDate":"2025-03-01T08:00:00Z",
+      "groupId":5678,
+      "latestVersion":2,
+      "modifiedBy":"answerx-admin",
+      "modifiedDate":"2025-03-01T09:00:00Z",
+      "productId":"AnswerX_Product",
+      "serviceSubletterIds":[
+         {
+            "ssid":101,
+            "name":"ServiceA",
+            "product":"AnswerX"
+         },
+         {
+            "ssid":202,
+            "name":"ServiceB",
+            "product":"AnswerX Plus"
+         }
+      ],
+      "streamId":456,
+      "streamName":"answerx-stream",
+      "streamStatus":"ACTIVATED",
+      "streamVersion":2
+   }
+]
+`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/streams",
+			expectedResponse: []StreamDetails{
+				{
+					LogType:       LogTypeAnswerX,
+					StreamStatus:  StreamStatusActivated,
+					ProductID:     "AnswerX_Product",
+					ModifiedBy:    "answerx-admin",
+					ModifiedDate:  "2025-03-01T09:00:00Z",
+					ContractID:    "ANS-123",
+					CreatedBy:     "answerx-user",
+					CreatedDate:   "2025-03-01T08:00:00Z",
+					LatestVersion: 2,
+					GroupID:       5678,
+					AnswerXServiceIDs: []AnswerXServiceDetail{
+						{SSID: 101, Name: "ServiceA", Product: "AnswerX"},
+						{SSID: 202, Name: "ServiceB", Product: "AnswerX Plus"},
+					},
+					StreamID:      456,
+					StreamName:    "answerx-stream",
+					StreamVersion: 2,
 				},
 			},
 		},

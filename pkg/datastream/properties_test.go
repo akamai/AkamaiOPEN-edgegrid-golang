@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -158,6 +157,7 @@ func TestDs_GetProperties(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
@@ -185,11 +185,13 @@ func TestDs_GetDatasetFields(t *testing.T) {
 		responseBody     string
 		expectedPath     string
 		expectedResponse *DataSets
+		expectedErr      string
 		withError        error
 	}{
 		"200 OK": {
 			request: GetDatasetFieldsRequest{
-				ProductID: nil,
+				LogType:   LogTypeCDN,
+				ProductID: "",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
@@ -247,7 +249,7 @@ func TestDs_GetDatasetFields(t *testing.T) {
 			},
 		},
 		"validation error - invalid product id": {
-			request:        GetDatasetFieldsRequest{ProductID: ptr.To("INVALID_PROD_ID")},
+			request:        GetDatasetFieldsRequest{LogType: LogTypeCDN, ProductID: "INVALID_PROD_ID"},
 			responseStatus: http.StatusBadRequest,
 			responseBody: `
 {
@@ -281,10 +283,74 @@ func TestDs_GetDatasetFields(t *testing.T) {
 				},
 			},
 		},
+		"200 OK - answerx log type": {
+			request: GetDatasetFieldsRequest{
+				LogType: LogTypeAnswerX,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "datasetFields": [
+        {
+            "datasetFieldDescription": "datasetFieldDescription_1",
+            "datasetFieldGroup": "datasetFieldGroup_1",
+            "datasetFieldId": 2000,
+            "datasetFieldJsonKey": "datasetFieldJsonKey_1",
+            "datasetFieldName": "datasetFieldName_1"
+        },
+        {
+            "datasetFieldDescription": "datasetFieldDescription_2",
+            "datasetFieldGroup": "datasetFieldGroup_2",
+            "datasetFieldId": 2001,
+            "datasetFieldJsonKey": "datasetFieldJsonKey_2",
+            "datasetFieldName": "datasetFieldName_2"
+        }
+    ]
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/datasets-fields",
+			expectedResponse: &DataSets{
+				DataSetFields: []DataSetField{
+					{
+						DatasetFieldID:          2000,
+						DatasetFieldName:        "datasetFieldName_1",
+						DatasetFieldJsonKey:     "datasetFieldJsonKey_1",
+						DatasetFieldGroup:       "datasetFieldGroup_1",
+						DatasetFieldDescription: "datasetFieldDescription_1",
+					},
+					{
+						DatasetFieldID:          2001,
+						DatasetFieldName:        "datasetFieldName_2",
+						DatasetFieldJsonKey:     "datasetFieldJsonKey_2",
+						DatasetFieldGroup:       "datasetFieldGroup_2",
+						DatasetFieldDescription: "datasetFieldDescription_2",
+					},
+				},
+			},
+		},
+		"validation error - answerx with product id": {
+			request: GetDatasetFieldsRequest{
+				LogType:   LogTypeAnswerX,
+				ProductID: "Ion_Standard",
+			},
+			expectedErr: "ProductID",
+			withError:   ErrStructValidation,
+		},
+		"validation error - missing log type": {
+			request:     GetDatasetFieldsRequest{},
+			expectedErr: "LogType",
+			withError:   ErrStructValidation,
+		},
+		"validation error - invalid log type": {
+			request:     GetDatasetFieldsRequest{LogType: "INVALID"},
+			expectedErr: "LogType",
+			withError:   ErrStructValidation,
+		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
@@ -297,6 +363,9 @@ func TestDs_GetDatasetFields(t *testing.T) {
 			result, err := client.GetDatasetFields(context.Background(), test.request)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				if test.expectedErr != "" {
+					assert.Contains(t, err.Error(), test.expectedErr)
+				}
 				return
 			}
 			require.NoError(t, err)
@@ -409,6 +478,7 @@ func TestDs_GetAppSecConfigs(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
@@ -416,10 +486,244 @@ func TestDs_GetAppSecConfigs(t *testing.T) {
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
+			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
 			result, err := client.GetAppSecConfigs(context.Background(), test.request)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestDs_ListAnswerXServiceIDs(t *testing.T) {
+	tests := map[string]struct {
+		request          ListAnswerXServiceIDsRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ListAnswerXServiceIDsResponse
+		expectedErr      string
+		withError        error
+	}{
+		"200 OK": {
+			request: ListAnswerXServiceIDsRequest{
+				ContractID: "1-ABC",
+				PageSize:   1000,
+				Page:       1,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "metadata": {"lastPage":1,"pageSize":1000,"page":1,"totalElements":2},
+    "contractId": "1-ABC",
+    "serviceSubletterIds": [
+        {
+			"ssid": 101,
+            "name": "ServiceA",
+            "product": "AnswerX"
+        },
+        {
+			"ssid": 102,
+            "name": "ServiceB",
+            "product": "AnswerX"
+        }
+    ]
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/contracts/1-ABC/answerxSSIDs?page=1&pageSize=1000",
+			expectedResponse: &ListAnswerXServiceIDsResponse{
+				Metadata: &PaginationMetadata{
+					LastPage:      1,
+					PageSize:      1000,
+					Page:          1,
+					TotalElements: 2,
+				},
+				ContractID: "1-ABC",
+				AnswerXServiceIDs: []AnswerXServiceDetail{
+					{SSID: 101, Name: "ServiceA", Product: "AnswerX"},
+					{SSID: 102, Name: "ServiceB", Product: "AnswerX"},
+				},
+			},
+		},
+		"200 OK - no pagination params": {
+			request: ListAnswerXServiceIDsRequest{
+				ContractID: "1-ABC",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "contractId": "1-ABC",
+    "serviceSubletterIds": [
+        {
+			"ssid": 101,
+            "name": "ServiceA",
+            "product": "AnswerX"
+        },
+        {
+			"ssid": 102,
+            "name": "ServiceB",
+            "product": "AnswerX"
+        }
+    ]
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/contracts/1-ABC/answerxSSIDs",
+			expectedResponse: &ListAnswerXServiceIDsResponse{
+				ContractID: "1-ABC",
+				AnswerXServiceIDs: []AnswerXServiceDetail{
+					{SSID: 101, Name: "ServiceA", Product: "AnswerX"},
+					{SSID: 102, Name: "ServiceB", Product: "AnswerX"},
+				},
+			},
+		},
+		"validation error - missing ContractID": {
+			request:     ListAnswerXServiceIDsRequest{},
+			expectedErr: "ContractID: cannot be blank",
+			withError:   ErrStructValidation,
+		},
+		"validation error - page without pageSize": {
+			request: ListAnswerXServiceIDsRequest{
+				ContractID: "1-ABC",
+				Page:       1,
+			},
+			expectedErr: "page and pageSize must be provided together",
+			withError:   ErrStructValidation,
+		},
+		"validation error - pageSize without page": {
+			request: ListAnswerXServiceIDsRequest{
+				ContractID: "1-ABC",
+				PageSize:   1000,
+			},
+			expectedErr: "page and pageSize must be provided together",
+			withError:   ErrStructValidation,
+		},
+		"validation error - negative page": {
+			request: ListAnswerXServiceIDsRequest{
+				ContractID: "1-ABC",
+				Page:       -1,
+				PageSize:   1000,
+			},
+			expectedErr: "Page: must be no less than 0",
+			withError:   ErrStructValidation,
+		},
+		"validation error - negative pageSize": {
+			request: ListAnswerXServiceIDsRequest{
+				ContractID: "1-ABC",
+				Page:       1,
+				PageSize:   -1000,
+			},
+			expectedErr: "PageSize: must be no less than 0",
+			withError:   ErrStructValidation,
+		},
+		"403 forbidden": {
+			request: ListAnswerXServiceIDsRequest{
+				ContractID: "1-ABC",
+				PageSize:   1000,
+				Page:       1,
+			},
+			responseStatus: http.StatusForbidden,
+			responseBody: `
+{
+	"type": "forbidden",
+	"title": "Forbidden",
+	"detail": "",
+	"instance": "28eb43a8-97ae-4c57-98aa-258081582b92",
+	"statusCode": 403,
+	"errors": [
+		{
+			"type": "forbidden",
+			"title": "Forbidden",
+			"detail": "User does not have access to the requested contract."
+		}
+	]
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/contracts/1-ABC/answerxSSIDs?page=1&pageSize=1000",
+			withError: &Error{
+				Type:       "forbidden",
+				Title:      "Forbidden",
+				Instance:   "28eb43a8-97ae-4c57-98aa-258081582b92",
+				StatusCode: http.StatusForbidden,
+				Errors: []RequestErrors{
+					{
+						Type:   "forbidden",
+						Title:  "Forbidden",
+						Detail: "User does not have access to the requested contract.",
+					},
+				},
+			},
+		},
+		"400 bad request": {
+			request: ListAnswerXServiceIDsRequest{
+				ContractID: "INVALID",
+			},
+			responseStatus: http.StatusBadRequest,
+			responseBody: `
+{
+	"type": "bad-request",
+	"title": "Bad Request",
+	"detail": "bad request",
+	"instance": "82b67b97-d98d-4bee-ac1e-ef6eaf7cac82",
+	"statusCode": 400,
+	"errors": [
+		{
+			"type": "bad-request",
+			"title": "Bad Request",
+			"detail": "Invalid contract ID. Please provide a valid contract."
+		}
+	]
+}
+`,
+			expectedPath: "/datastream-config-api/v3/log/answerx/contracts/INVALID/answerxSSIDs",
+			withError: &Error{
+				Type:       "bad-request",
+				Title:      "Bad Request",
+				Detail:     "bad request",
+				Instance:   "82b67b97-d98d-4bee-ac1e-ef6eaf7cac82",
+				StatusCode: http.StatusBadRequest,
+				Errors: []RequestErrors{
+					{
+						Type:   "bad-request",
+						Title:  "Bad Request",
+						Detail: "Invalid contract ID. Please provide a valid contract.",
+					},
+				},
+			},
+		},
+		"request execution error": {
+			request: ListAnswerXServiceIDsRequest{
+				ContractID: "1-ABC",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody:   `{"error": "internal server error"}`,
+			expectedPath:   "/datastream-config-api/v3/log/answerx/contracts/1-ABC/answerxSSIDs",
+			withError:      ErrListAnswerXServiceIDs,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			defer mockServer.Close()
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListAnswerXServiceIDs(context.Background(), test.request)
+			if test.withError != nil {
+				require.Error(t, err)
+				assert.ErrorIs(t, err, test.withError)
+				if test.expectedErr != "" {
+					assert.Contains(t, err.Error(), test.expectedErr)
+				}
 				return
 			}
 			require.NoError(t, err)
