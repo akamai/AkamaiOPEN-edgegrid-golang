@@ -791,7 +791,7 @@ func TestDNS_CreateZone(t *testing.T) {
 				},
 			},
 			responseStatus: http.StatusCreated,
-			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","signAndServe":false,"signAndServeAlgorithm":"","type":"primary","zone":"example.com"}`,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","signAndServe":false,"type":"primary","zone":"example.com"}`,
 			responseBody: `
 			{
 				"contractId": "1-2ABCDE",
@@ -829,7 +829,7 @@ func TestDNS_CreateZone(t *testing.T) {
 				},
 			},
 			responseStatus: http.StatusCreated,
-			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","masters":null,"signAndServe":false,"signAndServeAlgorithm":"","tsigKey":{"name":"other.com.akamai.com.","algorithm":"hmac-sha512","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="},"type":"secondary","zone":"example.com"}`,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","masters":null,"signAndServe":false,"tsigKey":{"name":"other.com.akamai.com.","algorithm":"hmac-sha512","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="},"type":"secondary","zone":"example.com"}`,
 			responseBody: `
 			{
 				"contractId": "1-2ABCDE",
@@ -1073,7 +1073,7 @@ func TestDNS_UpdateZone(t *testing.T) {
 					},
 				},
 			},
-			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com","algorithm":"hmac-sha1","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="}},"signAndServe":false,"signAndServeAlgorithm":"","type":"primary","zone":"example.com"}`,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com","algorithm":"hmac-sha1","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="}},"signAndServe":false,"type":"primary","zone":"example.com"}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -1121,7 +1121,7 @@ func TestDNS_UpdateZone(t *testing.T) {
 					},
 				},
 			},
-			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","multiProviderDnssec":{"enabled":true,"webhook":"https://example.com/webhook"},"signAndServe":false,"signAndServeAlgorithm":"","type":"primary","zone":"example.com"}`,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","multiProviderDnssec":{"enabled":true,"webhook":"https://example.com/webhook"},"signAndServe":false,"type":"primary","zone":"example.com"}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -1167,7 +1167,7 @@ func TestDNS_UpdateZone(t *testing.T) {
 					},
 				},
 			},
-			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","masters":["1.2.3.4","1.2.3.5"],"outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com","algorithm":"hmac-sha1","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="}},"signAndServe":false,"signAndServeAlgorithm":"","tsigKey":{"name":"other.com.akamai.com.","algorithm":"hmac-sha512","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="},"type":"secondary","zone":"example.com"}`,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","masters":["1.2.3.4","1.2.3.5"],"outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com","algorithm":"hmac-sha1","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="}},"signAndServe":false,"tsigKey":{"name":"other.com.akamai.com.","algorithm":"hmac-sha512","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="},"type":"secondary","zone":"example.com"}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{

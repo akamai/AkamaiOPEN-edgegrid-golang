@@ -92,6 +92,8 @@
 
 
 
+* DNS
+  * Fixed an issue in the `CreateZone` and `UpdateZone` methods where passing an empty `SignAndServeAlgorithm` field resulted in an API error.
 
 
 
