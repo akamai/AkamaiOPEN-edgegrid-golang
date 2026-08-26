@@ -125,19 +125,19 @@ func TestListNamespaces(t *testing.T) {
 						Name:        "testNs_1",
 						Retention:   ptr.To(0),
 						GeoLocation: "EU",
-						GroupID:     ptr.To(0),
+						GroupID:     ptr.To(int64(0)),
 					},
 					{
 						Name:        "testNs_2",
 						Retention:   ptr.To(86400),
 						GeoLocation: "JP",
-						GroupID:     ptr.To(123),
+						GroupID:     ptr.To(int64(123)),
 					},
 					{
 						Name:        "testNs_3",
 						Retention:   ptr.To(315360000),
 						GeoLocation: "US",
-						GroupID:     ptr.To(234),
+						GroupID:     ptr.To(int64(234)),
 					},
 				},
 			},
@@ -209,7 +209,7 @@ func TestGetNamespace(t *testing.T) {
 				Name:            "testNs",
 				Retention:       ptr.To(86400),
 				GeoLocation:     "EU",
-				GroupID:         ptr.To(123456),
+				GroupID:         ptr.To(int64(123456)),
 				NamespaceStatus: "READY",
 			},
 		},
@@ -231,7 +231,7 @@ func TestGetNamespace(t *testing.T) {
 				Name:            "testNs",
 				Retention:       ptr.To(86400),
 				GeoLocation:     "US",
-				GroupID:         ptr.To(123456),
+				GroupID:         ptr.To(int64(123456)),
 				NamespaceStatus: "READY",
 			},
 		},
@@ -253,7 +253,7 @@ func TestGetNamespace(t *testing.T) {
 			expectedResult: &GetNamespaceResponse{
 				Retention:           ptr.To(86400),
 				GeoLocation:         "US",
-				GroupID:             ptr.To(123456),
+				GroupID:             ptr.To(int64(123456)),
 				Name:                "testNs",
 				ScheduledDeleteTime: ptr.To(test.NewTimeFromString(t, "2025-06-12T10:38:33.779Z")),
 				NamespaceStatus:     "DELETING",
@@ -351,7 +351,7 @@ func TestCreateNamespace(t *testing.T) {
 					Name:        "testNs",
 					Retention:   ptr.To(0),
 					GeoLocation: "EU",
-					GroupID:     ptr.To(0),
+					GroupID:     ptr.To(int64(0)),
 				},
 			},
 			expectedRequestBody: `{"namespace":"testNs","geoLocation":"EU","retentionInSeconds":0,"groupId":0}`,
@@ -367,7 +367,7 @@ func TestCreateNamespace(t *testing.T) {
 				Name:        "testNs",
 				Retention:   ptr.To(0),
 				GeoLocation: "EU",
-				GroupID:     ptr.To(0),
+				GroupID:     ptr.To(int64(0)),
 			},
 		},
 		"200 OK - staging": {
@@ -376,7 +376,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "testNs",
 					Retention: ptr.To(86400),
-					GroupID:   ptr.To(123),
+					GroupID:   ptr.To(int64(123)),
 				},
 			},
 			expectedPath:   "/edgekv/v1/networks/staging/namespaces",
@@ -391,7 +391,7 @@ func TestCreateNamespace(t *testing.T) {
 				Name:        "testNs",
 				Retention:   ptr.To(86400),
 				GeoLocation: "US",
-				GroupID:     ptr.To(123),
+				GroupID:     ptr.To(int64(123)),
 			},
 		},
 		"400 bad request - invalid geoLocation for staging network": {
@@ -401,7 +401,7 @@ func TestCreateNamespace(t *testing.T) {
 					Name:        "testNs",
 					Retention:   ptr.To(0),
 					GeoLocation: "JP",
-					GroupID:     ptr.To(0),
+					GroupID:     ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -439,7 +439,7 @@ func TestCreateNamespace(t *testing.T) {
 					Name:        "testNs",
 					Retention:   ptr.To(0),
 					GeoLocation: "INVALID",
-					GroupID:     ptr.To(0),
+					GroupID:     ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -476,7 +476,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "testNs",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -523,7 +523,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "testNs",
 					Retention: ptr.To(86399),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -537,7 +537,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "testNs",
 					Retention: ptr.To(315360001),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -551,7 +551,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "namespaceNameThatHasMoreThan32Letters",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -565,7 +565,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "groupIDLessThan0",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(-1),
+					GroupID:   ptr.To(int64(-1)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -618,7 +618,7 @@ func TestUpdateNamespace(t *testing.T) {
 				UpdateNamespace: UpdateNamespace{
 					Name:      "testNs",
 					Retention: ptr.To(86410),
-					GroupID:   ptr.To(123456),
+					GroupID:   ptr.To(int64(123456)),
 				},
 			},
 			expectedRequestBody: `{"namespace":"testNs","retentionInSeconds":86410,"groupId":123456}`,
@@ -635,7 +635,7 @@ func TestUpdateNamespace(t *testing.T) {
 				Name:            "testNs",
 				Retention:       ptr.To(86410),
 				GeoLocation:     "EU",
-				GroupID:         ptr.To(123456),
+				GroupID:         ptr.To(int64(123456)),
 				NamespaceStatus: "READY",
 			},
 		},
@@ -645,7 +645,7 @@ func TestUpdateNamespace(t *testing.T) {
 				UpdateNamespace: UpdateNamespace{
 					Name:      "testNs",
 					Retention: ptr.To(86410),
-					GroupID:   ptr.To(123456),
+					GroupID:   ptr.To(int64(123456)),
 				},
 			},
 			expectedPath:   "/edgekv/v1/networks/staging/namespaces/testNs",
@@ -661,7 +661,7 @@ func TestUpdateNamespace(t *testing.T) {
 				Name:            "testNs",
 				Retention:       ptr.To(86410),
 				GeoLocation:     "US",
-				GroupID:         ptr.To(123456),
+				GroupID:         ptr.To(int64(123456)),
 				NamespaceStatus: "READY",
 			},
 		},
@@ -671,7 +671,7 @@ func TestUpdateNamespace(t *testing.T) {
 				UpdateNamespace: UpdateNamespace{
 					Name:      "testNs_2",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -718,7 +718,7 @@ func TestUpdateNamespace(t *testing.T) {
 				UpdateNamespace: UpdateNamespace{
 					Name:      "namespaceNameThatHasMoreThan32Letters",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -732,7 +732,7 @@ func TestUpdateNamespace(t *testing.T) {
 				UpdateNamespace: UpdateNamespace{
 					Name:      "groupIDLessThan0",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(-1),
+					GroupID:   ptr.To(int64(-1)),
 				},
 			},
 			withError: func(t *testing.T, err error) {

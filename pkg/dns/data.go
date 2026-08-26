@@ -23,7 +23,7 @@ type (
 
 	// Group contain the information of the particular group
 	Group struct {
-		GroupID     int      `json:"groupId"`
+		GroupID     int64    `json:"groupId"`
 		GroupName   string   `json:"groupName"`
 		ContractIDs []string `json:"contractIds"`
 		Permissions []string `json:"permissions"`

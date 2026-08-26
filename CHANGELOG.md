@@ -14,6 +14,11 @@
   * Renamed `GetZoneNames` to `ListRecordSetNames` and `GetZoneNameTypes` to `ListRecordSetTypes` to clarify their true purpose of retrieving record set names and types rather than zone names.
   * Renamed `ZoneName` field to `RecordName` in `ListRecordSetTypesRequest` struct to accurately reflect the parameter's semantic meaning.
   * Replaced error variables `ErrGetZoneNames` and `ErrGetZoneNameTypes` with `ErrListRecordSetNames` and `ErrListRecordSetTypes` in recordsets package.
+  * Changed `GroupID` field type from `int` to `int64` in `Group` struct.
+
+* EdgeWorkers
+  * Changed `GroupID` field type from `int` to `int64` in `EdgeWorkerIDRequestBody`, `CreateEdgeWorkerIDRequest`, and `ListEdgeWorkersIDRequest` structs.
+  * Changed `GroupID` field type from `*int` to `*int64` in `GetNamespaceResponse`, `ListEdgeKVNamespacesResponse`, `Namespace`, `NamespaceRequest`, and `UpdateNamespace` structs.
 
 
 
