@@ -675,7 +675,7 @@ type (
 
 	// ExportAIRuleException holds the exception selectors for an exported AI rule.
 	ExportAIRuleException struct {
-		SpecificHeaderCookieParamXMLOrJSONNames []ExportAIRuleExceptionSelector `json:"specificHeaderCookieParamXmlOrJsonNames"`
+		Selectors []ExportAIRuleExceptionSelector `json:"selectors"`
 	}
 
 	// ExportAIRuleExceptionSelector is a single selector entry within an AI rule exception.

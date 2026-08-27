@@ -72,7 +72,7 @@ type (
 
 	// AIRuleExceptionBody holds the exception selectors for an AI rule.
 	AIRuleExceptionBody struct {
-		SpecificHeaderCookieParamXMLOrJSONNames []AIRuleExceptionSelector `json:"specificHeaderCookieParamXmlOrJsonNames"`
+		Selectors []AIRuleExceptionSelector `json:"selectors"`
 	}
 
 	// AIRuleExceptionSelector is a single selector entry within an AI rule exception.
@@ -80,6 +80,7 @@ type (
 		Names    []string `json:"names"`
 		Selector string   `json:"selector"`
 		Wildcard bool     `json:"wildcard"`
+		Type     string   `json:"type"`
 	}
 
 	// GetAIRulesStatusRequest is used to retrieve the AI rules status (enabled/disabled).
@@ -113,21 +114,21 @@ type (
 
 	// GetAIRuleActionRequest is used to retrieve the action for a specific AI rule version.
 	GetAIRuleActionRequest struct {
-		ConfigID      int64
-		Version       int
-		PolicyID      string
-		RuleID        int64
-		RuleVersionID int64
+		ConfigID    int64
+		Version     int
+		PolicyID    string
+		RuleID      int64
+		RuleVersion int64
 	}
 
 	// UpdateAIRuleActionRequest is used to set the action for a specific AI rule.
 	UpdateAIRuleActionRequest struct {
-		ConfigID      int64
-		Version       int
-		PolicyID      string
-		RuleID        int64
-		RuleVersionID int64
-		Body          UpdateAIRuleActionRequestBody
+		ConfigID    int64
+		Version     int
+		PolicyID    string
+		RuleID      int64
+		RuleVersion int64
+		Body        UpdateAIRuleActionRequestBody
 	}
 
 	// GetAIRuleActionResponse is returned from a call to GetAIRuleAction.
@@ -182,23 +183,23 @@ var validAIRuleIDs = validation.In(AIRuleIDSQL, AIRuleIDXSS)
 // Validate validates a GetAIRuleActionRequest.
 func (v GetAIRuleActionRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
-		"Version":       validation.Validate(v.Version, validation.Required),
-		"PolicyID":      validation.Validate(v.PolicyID, validation.Required),
-		"RuleID":        validation.Validate(v.RuleID, validation.Required, validAIRuleIDs),
-		"RuleVersionID": validation.Validate(v.RuleVersionID, validation.Required),
+		"ConfigID":    validation.Validate(v.ConfigID, validation.Required),
+		"Version":     validation.Validate(v.Version, validation.Required),
+		"PolicyID":    validation.Validate(v.PolicyID, validation.Required),
+		"RuleID":      validation.Validate(v.RuleID, validation.Required, validAIRuleIDs),
+		"RuleVersion": validation.Validate(v.RuleVersion, validation.Required),
 	})
 }
 
 // Validate validates an UpdateAIRuleActionRequest.
 func (v UpdateAIRuleActionRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
-		"Version":       validation.Validate(v.Version, validation.Required),
-		"PolicyID":      validation.Validate(v.PolicyID, validation.Required),
-		"RuleID":        validation.Validate(v.RuleID, validation.Required, validAIRuleIDs),
-		"RuleVersionID": validation.Validate(v.RuleVersionID, validation.Required),
-		"Body":          validation.Validate(v.Body, validation.Required),
+		"ConfigID":    validation.Validate(v.ConfigID, validation.Required),
+		"Version":     validation.Validate(v.Version, validation.Required),
+		"PolicyID":    validation.Validate(v.PolicyID, validation.Required),
+		"RuleID":      validation.Validate(v.RuleID, validation.Required, validAIRuleIDs),
+		"RuleVersion": validation.Validate(v.RuleVersion, validation.Required),
+		"Body":        validation.Validate(v.Body, validation.Required),
 	})
 }
 
@@ -310,7 +311,7 @@ func (p *appsec) UpdateAIRuleAction(ctx context.Context, params UpdateAIRuleActi
 
 	req, err := request.NewPut(ctx,
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/ai-rules/%d/versions/%d/action",
-		params.ConfigID, params.Version, params.PolicyID, params.RuleID, params.RuleVersionID).
+		params.ConfigID, params.Version, params.PolicyID, params.RuleID, params.RuleVersion).
 		WithBody(params.Body).
 		Build()
 	if err != nil {
@@ -341,7 +342,7 @@ func (p *appsec) GetAIRuleAction(ctx context.Context, params GetAIRuleActionRequ
 
 	req, err := request.NewGet(ctx,
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/ai-rules/%d/versions/%d/action",
-		params.ConfigID, params.Version, params.PolicyID, params.RuleID, params.RuleVersionID).Build()
+		params.ConfigID, params.Version, params.PolicyID, params.RuleID, params.RuleVersion).Build()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetAIRuleAction request: %w", err)
 	}

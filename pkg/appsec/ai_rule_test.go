@@ -332,14 +332,14 @@ func TestAppSec_GetAIRuleAction(t *testing.T) {
 		withError        func(*testing.T, error)
 	}{
 		"200 OK": {
-			params:           GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersionID: 1},
+			params:           GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersion: 1},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
 			expectedPath:     "/appsec/v1/configs/77653/versions/25/security-policies/boBF_19288/ai-rules/3001000/versions/1/action",
 			expectedResponse: &result,
 		},
 		"404 not found": {
-			params:         GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersionID: 1},
+			params:         GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersion: 1},
 			responseStatus: http.StatusNotFound,
 			responseBody:   `{"type":"not_found","title":"Not Found","status":404,"detail":"AI rule not found for ruleId=3001000 ruleVersionId=1"}`,
 			expectedPath:   "/appsec/v1/configs/77653/versions/25/security-policies/boBF_19288/ai-rules/3001000/versions/1/action",
@@ -353,7 +353,7 @@ func TestAppSec_GetAIRuleAction(t *testing.T) {
 			},
 		},
 		"500 internal server error": {
-			params:         GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersionID: 1},
+			params:         GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersion: 1},
 			responseStatus: http.StatusInternalServerError,
 			responseBody:   internalServerError,
 			expectedPath:   "/appsec/v1/configs/77653/versions/25/security-policies/boBF_19288/ai-rules/3001000/versions/1/action",
@@ -362,37 +362,37 @@ func TestAppSec_GetAIRuleAction(t *testing.T) {
 			},
 		},
 		"validate - missing ConfigID": {
-			params: GetAIRuleActionRequest{Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersionID: 1},
+			params: GetAIRuleActionRequest{Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersion: 1},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "struct validation: ConfigID: cannot be blank", err.Error())
 			},
 		},
 		"validate - missing Version": {
-			params: GetAIRuleActionRequest{ConfigID: 77653, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersionID: 1},
+			params: GetAIRuleActionRequest{ConfigID: 77653, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersion: 1},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "struct validation: Version: cannot be blank", err.Error())
 			},
 		},
 		"validate - missing PolicyID": {
-			params: GetAIRuleActionRequest{ConfigID: 77653, Version: 25, RuleID: 3001000, RuleVersionID: 1},
+			params: GetAIRuleActionRequest{ConfigID: 77653, Version: 25, RuleID: 3001000, RuleVersion: 1},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "struct validation: PolicyID: cannot be blank", err.Error())
 			},
 		},
 		"validate - missing RuleID": {
-			params: GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleVersionID: 1},
+			params: GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleVersion: 1},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "struct validation: RuleID: cannot be blank", err.Error())
 			},
 		},
-		"validate - missing RuleVersionID": {
+		"validate - missing RuleVersion": {
 			params: GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "struct validation: RuleVersionID: cannot be blank", err.Error())
+				assert.Equal(t, "struct validation: RuleVersion: cannot be blank", err.Error())
 			},
 		},
 		"validate - invalid RuleID": {
-			params: GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 9999999, RuleVersionID: 1},
+			params: GetAIRuleActionRequest{ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 9999999, RuleVersion: 1},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "struct validation: RuleID: must be a valid value", err.Error())
 			},
@@ -400,7 +400,7 @@ func TestAppSec_GetAIRuleAction(t *testing.T) {
 		"validate - all missing": {
 			params: GetAIRuleActionRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "struct validation: ConfigID: cannot be blank\nPolicyID: cannot be blank\nRuleID: cannot be blank\nRuleVersionID: cannot be blank\nVersion: cannot be blank", err.Error())
+				assert.Equal(t, "struct validation: ConfigID: cannot be blank\nPolicyID: cannot be blank\nRuleID: cannot be blank\nRuleVersion: cannot be blank\nVersion: cannot be blank", err.Error())
 			},
 		},
 	}
@@ -440,7 +440,7 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		"200 OK": {
 			params: UpdateAIRuleActionRequest{
 				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288",
-				RuleID: 3001000, RuleVersionID: 1,
+				RuleID: 3001000, RuleVersion: 1,
 				Body: UpdateAIRuleActionRequestBody{Action: "deny"},
 			},
 			responseStatus:      http.StatusOK,
@@ -452,7 +452,7 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		"400 bad request": {
 			params: UpdateAIRuleActionRequest{
 				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288",
-				RuleID: 3001000, RuleVersionID: 1,
+				RuleID: 3001000, RuleVersion: 1,
 				Body: UpdateAIRuleActionRequestBody{Action: "deny"},
 			},
 			responseStatus: http.StatusBadRequest,
@@ -465,7 +465,7 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		"500 internal server error": {
 			params: UpdateAIRuleActionRequest{
 				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288",
-				RuleID: 3001000, RuleVersionID: 1,
+				RuleID: 3001000, RuleVersion: 1,
 				Body: UpdateAIRuleActionRequestBody{Action: "deny"},
 			},
 			responseStatus: http.StatusInternalServerError,
@@ -477,7 +477,7 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		},
 		"validate - missing ConfigID": {
 			params: UpdateAIRuleActionRequest{
-				Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersionID: 1,
+				Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersion: 1,
 				Body: UpdateAIRuleActionRequestBody{Action: "deny"},
 			},
 			withError: func(t *testing.T, err error) {
@@ -486,7 +486,7 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		},
 		"validate - missing Version": {
 			params: UpdateAIRuleActionRequest{
-				ConfigID: 77653, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersionID: 1,
+				ConfigID: 77653, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersion: 1,
 				Body: UpdateAIRuleActionRequestBody{Action: "deny"},
 			},
 			withError: func(t *testing.T, err error) {
@@ -495,7 +495,7 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		},
 		"validate - missing PolicyID": {
 			params: UpdateAIRuleActionRequest{
-				ConfigID: 77653, Version: 25, RuleID: 3001000, RuleVersionID: 1,
+				ConfigID: 77653, Version: 25, RuleID: 3001000, RuleVersion: 1,
 				Body: UpdateAIRuleActionRequestBody{Action: "deny"},
 			},
 			withError: func(t *testing.T, err error) {
@@ -504,25 +504,25 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		},
 		"validate - missing RuleID": {
 			params: UpdateAIRuleActionRequest{
-				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleVersionID: 1,
+				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleVersion: 1,
 				Body: UpdateAIRuleActionRequestBody{Action: "deny"},
 			},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "struct validation: RuleID: cannot be blank", err.Error())
 			},
 		},
-		"validate - missing RuleVersionID": {
+		"validate - missing RuleVersion": {
 			params: UpdateAIRuleActionRequest{
 				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000,
 				Body: UpdateAIRuleActionRequestBody{Action: "deny"},
 			},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "struct validation: RuleVersionID: cannot be blank", err.Error())
+				assert.Equal(t, "struct validation: RuleVersion: cannot be blank", err.Error())
 			},
 		},
 		"validate - invalid RuleID": {
 			params: UpdateAIRuleActionRequest{
-				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 9999999, RuleVersionID: 1,
+				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 9999999, RuleVersion: 1,
 				Body: UpdateAIRuleActionRequestBody{Action: "deny"},
 			},
 			withError: func(t *testing.T, err error) {
@@ -531,7 +531,7 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		},
 		"validate - deny_custom action accepted": {
 			params: UpdateAIRuleActionRequest{
-				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersionID: 1,
+				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersion: 1,
 				Body: UpdateAIRuleActionRequestBody{Action: "deny_custom_12345"},
 			},
 			responseStatus:      http.StatusOK,
@@ -542,7 +542,7 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		},
 		"validate - invalid action": {
 			params: UpdateAIRuleActionRequest{
-				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersionID: 1,
+				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersion: 1,
 				Body: UpdateAIRuleActionRequestBody{Action: "block"},
 			},
 			withError: func(t *testing.T, err error) {
@@ -551,7 +551,7 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		},
 		"validate - missing action": {
 			params: UpdateAIRuleActionRequest{
-				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersionID: 1,
+				ConfigID: 77653, Version: 25, PolicyID: "boBF_19288", RuleID: 3001000, RuleVersion: 1,
 			},
 			withError: func(t *testing.T, err error) {
 				assert.Equal(t, "struct validation: Body: {\n\tAction: cannot be blank\n}", err.Error())
@@ -560,7 +560,7 @@ func TestAppSec_UpdateAIRuleAction(t *testing.T) {
 		"validate - all missing": {
 			params: UpdateAIRuleActionRequest{},
 			withError: func(t *testing.T, err error) {
-				assert.Equal(t, "struct validation: Body: {\n\tAction: cannot be blank\n}\nConfigID: cannot be blank\nPolicyID: cannot be blank\nRuleID: cannot be blank\nRuleVersionID: cannot be blank\nVersion: cannot be blank", err.Error())
+				assert.Equal(t, "struct validation: Body: {\n\tAction: cannot be blank\n}\nConfigID: cannot be blank\nPolicyID: cannot be blank\nRuleID: cannot be blank\nRuleVersion: cannot be blank\nVersion: cannot be blank", err.Error())
 			},
 		},
 	}
