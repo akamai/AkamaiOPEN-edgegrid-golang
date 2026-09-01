@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/texts"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/texts"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
