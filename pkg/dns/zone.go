@@ -691,7 +691,7 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 				filteredZone[varLower] = varValue
 			}
 		case "SignAndServeAlgorithm":
-			if zoneType != "ALIAS" {
+			if zoneType != "ALIAS" && varValue.(string) != "" {
 				filteredZone[varLower] = varValue
 			}
 		case "OutboundZoneTransfer":

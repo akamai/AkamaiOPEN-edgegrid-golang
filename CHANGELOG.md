@@ -1,5 +1,12 @@
 # RELEASE NOTES
 
+## 13.4.1-kpp.1 (Sep 3, 2026)
+
+### BUG FIXES:
+
+* DNS
+  * Fixed `CreateZone` requests to omit an unset `SignAndServeAlgorithm` value.
+
 ## 13.4.0 (Jul 27, 2026)
 
 ### FEATURES/ENHANCEMENTS:
