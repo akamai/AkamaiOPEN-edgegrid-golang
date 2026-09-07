@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -179,15 +179,15 @@ func (i *iam) ListAllowedCPCodes(ctx context.Context, params ListAllowedCPCodesR
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListAllowedCPCodes, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/identity-management/v3/users/%s/allowed-cpcodes", params.UserName)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/users/%s/allowed-cpcodes", params.UserName).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAllowedCPCodes, err)
 	}
 
 	var result ListAllowedCPCodesResponse
-	resp, err := i.Exec(req, &result, params.Body)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrListAllowedCPCodes, err)
 	}
@@ -204,7 +204,7 @@ func (i *iam) ListAuthorizedUsers(ctx context.Context) (ListAuthorizedUsersRespo
 	logger := i.Log(ctx)
 	logger.Debug("ListAuthorizedUsers")
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/identity-management/v3/users", nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/users").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAuthorizedUsers, err)
 	}
@@ -231,20 +231,10 @@ func (i *iam) ListAllowedAPIs(ctx context.Context, params ListAllowedAPIsRequest
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListAllowedAPIs, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/users/%s/allowed-apis", params.UserName))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAllowedAPIs, err)
-	}
-
-	q := uri.Query()
-	if params.ClientType != "" {
-		q.Add("clientType", string(params.ClientType))
-
-	}
-	q.Add("allowAccountSwitch", strconv.FormatBool(params.AllowAccountSwitch))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/users/%s/allowed-apis", params.UserName).
+		AddQueryParamIf("clientType", string(params.ClientType), params.ClientType != "").
+		AddQueryParam("allowAccountSwitch", strconv.FormatBool(params.AllowAccountSwitch)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAllowedAPIs, err)
 	}
@@ -271,9 +261,7 @@ func (i *iam) ListAccessibleGroups(ctx context.Context, params ListAccessibleGro
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrAccessibleGroups, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/identity-management/v3/users/%s/group-access", params.UserName)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/users/%s/group-access", params.UserName).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrAccessibleGroups, err)
 	}

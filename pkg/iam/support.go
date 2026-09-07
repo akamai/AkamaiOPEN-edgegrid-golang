@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -101,9 +101,7 @@ func (i *iam) GetPasswordPolicy(ctx context.Context) (*GetPasswordPolicyResponse
 	logger := i.Log(ctx)
 	logger.Debug("GetPasswordPolicy")
 
-	uri := "/identity-management/v3/user-admin/common/password-policy"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/common/password-policy").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPasswordPolicy, err)
 	}
@@ -126,9 +124,7 @@ func (i *iam) ListProducts(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("ListProducts")
 
-	uri := "/identity-management/v3/user-admin/common/notification-products"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/common/notification-products").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListProducts, err)
 	}
@@ -155,9 +151,7 @@ func (i *iam) ListStates(ctx context.Context, params ListStatesRequest) ([]strin
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListStates, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/identity-management/v3/user-admin/common/countries/%s/states", params.Country)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/common/countries/%s/states", params.Country).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListStates, err)
 	}
@@ -180,9 +174,7 @@ func (i *iam) ListTimeoutPolicies(ctx context.Context) ([]TimeoutPolicy, error) 
 	logger := i.Log(ctx)
 	logger.Debug("ListTimeoutPolicies")
 
-	uri := "/identity-management/v3/user-admin/common/timeout-policies"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/common/timeout-policies").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListTimeoutPolicies, err)
 	}
@@ -209,18 +201,9 @@ func (i *iam) ListAccountSwitchKeys(ctx context.Context, params ListAccountSwitc
 		params.ClientID = "self"
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/account-switch-keys", params.ClientID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListAccountSwitchKeys, err)
-	}
-
-	if params.Search != "" {
-		q := uri.Query()
-		q.Add("search", params.Search)
-		uri.RawQuery = q.Encode()
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/api-clients/%s/account-switch-keys", params.ClientID).
+		AddQueryParamIf("search", params.Search, params.Search != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAccountSwitchKeys, err)
 	}
@@ -243,9 +226,7 @@ func (i *iam) SupportedContactTypes(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedContactTypes")
 
-	uri := "/identity-management/v3/user-admin/common/contact-types"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/common/contact-types").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrSupportedContactTypes, err)
 	}
@@ -268,9 +249,7 @@ func (i *iam) SupportedCountries(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedCountries")
 
-	uri := "/identity-management/v3/user-admin/common/countries"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/common/countries").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrSupportedCountries, err)
 	}
@@ -293,9 +272,7 @@ func (i *iam) SupportedLanguages(ctx context.Context) ([]string, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedLanguages")
 
-	uri := "/identity-management/v3/user-admin/common/supported-languages"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/common/supported-languages").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrSupportedLanguages, err)
 	}
@@ -318,9 +295,7 @@ func (i *iam) SupportedTimezones(ctx context.Context) ([]Timezone, error) {
 	logger := i.Log(ctx)
 	logger.Debug("SupportedTimezones")
 
-	uri := "/identity-management/v3/user-admin/common/timezones"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/user-admin/common/timezones").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrSupportedTimezones, err)
 	}

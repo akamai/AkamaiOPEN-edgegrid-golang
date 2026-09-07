@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -207,15 +207,15 @@ func (p *papi) CreateIncludeVersion(ctx context.Context, params CreateIncludeVer
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateIncludeVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/papi/v1/includes/%s/versions", params.IncludeID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/papi/v1/includes/%s/versions", params.IncludeID).
+		WithBody(params.IncludeVersionRequest).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateIncludeVersion, err)
 	}
 
 	var result CreateIncludeVersionResponse
-	resp, err := p.Exec(req, &result, params.IncludeVersionRequest)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateIncludeVersion, err)
 	}
@@ -245,17 +245,10 @@ func (p *papi) GetIncludeVersion(ctx context.Context, params GetIncludeVersionRe
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetIncludeVersion, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/includes/%s/versions/%d", params.IncludeID, params.Version))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetIncludeVersion, err)
-	}
-
-	q := uri.Query()
-	q.Add("contractId", params.ContractID)
-	q.Add("groupId", params.GroupID)
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/includes/%s/versions/%d", params.IncludeID, params.Version).
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParam("groupId", params.GroupID).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetIncludeVersion, err)
 	}
@@ -287,17 +280,10 @@ func (p *papi) ListIncludeVersions(ctx context.Context, params ListIncludeVersio
 		return nil, fmt.Errorf("%s: %w: %s", ErrListIncludeVersions, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/includes/%s/versions", params.IncludeID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListIncludeVersions, err)
-	}
-
-	q := uri.Query()
-	q.Add("contractId", params.ContractID)
-	q.Add("groupId", params.GroupID)
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/includes/%s/versions", params.IncludeID).
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParam("groupId", params.GroupID).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListIncludeVersions, err)
 	}
@@ -324,9 +310,7 @@ func (p *papi) ListIncludeVersionAvailableCriteria(ctx context.Context, params L
 		return nil, fmt.Errorf("%s: %w: %s", ErrListIncludeVersionAvailableCriteria, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/papi/v1/includes/%s/versions/%d/available-criteria", params.IncludeID, params.Version)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/papi/v1/includes/%s/versions/%d/available-criteria", params.IncludeID, params.Version).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListIncludeVersionAvailableCriteria, err)
 	}
@@ -353,9 +337,7 @@ func (p *papi) ListIncludeVersionAvailableBehaviors(ctx context.Context, params 
 		return nil, fmt.Errorf("%s: %w: %s", ErrListIncludeVersionAvailableBehaviors, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/papi/v1/includes/%s/versions/%d/available-behaviors", params.IncludeID, params.Version)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/papi/v1/includes/%s/versions/%d/available-behaviors", params.IncludeID, params.Version).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListIncludeVersionAvailableBehaviors, err)
 	}

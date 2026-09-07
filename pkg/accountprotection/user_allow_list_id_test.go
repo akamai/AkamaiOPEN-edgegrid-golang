@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -81,12 +82,13 @@ func Test_GetUserAllowListID(t *testing.T) {
 
 func Test_UpsertUserAllowListID(t *testing.T) {
 	tests := map[string]struct {
-		params           UpsertUserAllowListIDRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpsertUserAllowListIDRequest
+		expectedRequestBody string
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
 	}{
 		"200 Success": {
 			params: UpsertUserAllowListIDRequest{
@@ -94,10 +96,11 @@ func Test_UpsertUserAllowListID(t *testing.T) {
 				Version:     15,
 				JsonPayload: json.RawMessage(`{"testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     `{"testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/account-protection/user-allow-list-id",
+			expectedRequestBody: `{"testKey":"testValue3"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/advanced-settings/account-protection/user-allow-list-id",
 		},
 		"500 internal server error": {
 			params: UpsertUserAllowListIDRequest{
@@ -161,6 +164,11 @@ func Test_UpsertUserAllowListID(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

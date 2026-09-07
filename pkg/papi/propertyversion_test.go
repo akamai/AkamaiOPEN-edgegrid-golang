@@ -3,11 +3,12 @@ package papi
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -477,12 +478,13 @@ func TestPapiGetPropertyVersion(t *testing.T) {
 
 func TestPapiCreatePropertyVersion(t *testing.T) {
 	tests := map[string]struct {
-		params           CreatePropertyVersionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreatePropertyVersionResponse
-		withError        func(*testing.T, error)
+		params              CreatePropertyVersionRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreatePropertyVersionResponse
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"201 Created": {
 			params: CreatePropertyVersionRequest{
@@ -493,7 +495,8 @@ func TestPapiCreatePropertyVersion(t *testing.T) {
 					CreateFromVersion: 1,
 				},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"createFromVersion":1}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 		{
 		   "versionLink": "/papi/v1/properties/propertyID/versions/2?contractId=contract&groupId=group"
@@ -607,6 +610,11 @@ func TestPapiCreatePropertyVersion(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

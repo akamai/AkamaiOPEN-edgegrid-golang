@@ -3,6 +3,7 @@ package cps
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -102,12 +103,13 @@ func TestGetChangeThirdPartyCSR(t *testing.T) {
 }
 func TestUploadThirdPartyCertAndTrustChain(t *testing.T) {
 	tests := map[string]struct {
-		params           UploadThirdPartyCertAndTrustChainRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *ThirdPartyCSRResponse
-		withError        func(*testing.T, error)
+		params              UploadThirdPartyCertAndTrustChainRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *ThirdPartyCSRResponse
+		withError           func(*testing.T, error)
 	}{
 		"200 OK": {
 			params: UploadThirdPartyCertAndTrustChainRequest{
@@ -128,8 +130,9 @@ func TestUploadThirdPartyCertAndTrustChain(t *testing.T) {
 					},
 				},
 			},
-			responseStatus: http.StatusOK,
-			expectedPath:   "/cps/v2/enrollments/1/changes/2/input/update/third-party-cert-and-trust-chain",
+			expectedRequestBody: `{"certificatesAndTrustChains":[{"certificate":"-----BEGIN CERTIFICATE REQUEST-----\\n...\\n-----END CERTIFICATE REQUEST-----","keyAlgorithm":"RSA"},{"certificate":"-----BEGIN CERTIFICATE REQUEST-----\\n...\\n-----END CERTIFICATE REQUEST-----","keyAlgorithm":"ECDSA"}]}`,
+			responseStatus:      http.StatusOK,
+			expectedPath:        "/cps/v2/enrollments/1/changes/2/input/update/third-party-cert-and-trust-chain",
 		},
 		"500 internal server error": {
 			params: UploadThirdPartyCertAndTrustChainRequest{
@@ -182,6 +185,11 @@ func TestUploadThirdPartyCertAndTrustChain(t *testing.T) {
 				assert.Equal(t, http.MethodPost, r.Method)
 				assert.Equal(t, "application/vnd.akamai.cps.change-id.v1+json", r.Header.Get("Accept"))
 				assert.Equal(t, "application/vnd.akamai.cps.certificate-and-trust-chain.v2+json; charset=utf-8", r.Header.Get("Content-Type"))
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

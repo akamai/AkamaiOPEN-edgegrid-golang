@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/spf13/cast"
 )
@@ -250,30 +250,18 @@ func (p *papi) CreateActivation(ctx context.Context, params CreateActivationRequ
 		params.Activation.ActivationType = ActivationTypeActivate
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s/activations",
-		params.PropertyID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateActivation, err)
-	}
-	q := uri.Query()
-	if params.GroupID != "" {
-		q.Add("groupId", params.GroupID)
-	}
-	if params.ContractID != "" {
-		q.Add("contractId", params.ContractID)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/papi/v1/properties/%s/activations", params.PropertyID).
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		WithBody(params.Activation).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateActivation, err)
 	}
 
 	var rval CreateActivationResponse
 
-	resp, err := p.Exec(req, &rval, params.Activation)
+	resp, err := p.Exec(req, &rval)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateActivation, err)
 	}
@@ -300,23 +288,10 @@ func (p *papi) GetActivations(ctx context.Context, params GetActivationsRequest)
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetActivations, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s/activations",
-		params.PropertyID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetActivations, err)
-	}
-	q := url.Values{}
-	if params.GroupID != "" {
-		q.Set("groupId", params.GroupID)
-	}
-	if params.ContractID != "" {
-		q.Set("contractId", params.ContractID)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/properties/%s/activations", params.PropertyID).
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetActivations, err)
 	}
@@ -344,20 +319,10 @@ func (p *papi) GetActivation(ctx context.Context, params GetActivationRequest) (
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetActivation, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/properties/%s/activations/%s", params.PropertyID, params.ActivationID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetActivation, err)
-	}
-	q := url.Values{}
-	if params.ContractID != "" {
-		q.Set("contractId", params.ContractID)
-	}
-	if params.GroupID != "" {
-		q.Set("groupId", params.GroupID)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/properties/%s/activations/%s", params.PropertyID, params.ActivationID).
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetActivation, err)
 	}
@@ -395,21 +360,10 @@ func (p *papi) CancelActivation(ctx context.Context, params CancelActivationRequ
 		return nil, fmt.Errorf("%s: %w: %s", ErrCancelActivation, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/properties/%s/activations/%s", params.PropertyID, params.ActivationID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCancelActivation, err)
-	}
-
-	q := url.Values{}
-	if params.ContractID != "" {
-		q.Set("contractId", params.ContractID)
-	}
-	if params.GroupID != "" {
-		q.Set("groupId", params.GroupID)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/papi/v1/properties/%s/activations/%s", params.PropertyID, params.ActivationID).
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCancelActivation, err)
 	}

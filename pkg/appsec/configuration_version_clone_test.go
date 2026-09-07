@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -182,20 +183,22 @@ func TestAppSec_CreateConfigurationVersionClone(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           CreateConfigurationVersionCloneRequest
-		prop             *CreateConfigurationVersionCloneRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateConfigurationVersionCloneResponse
-		withError        error
-		headers          http.Header
+		params              CreateConfigurationVersionCloneRequest
+		prop                *CreateConfigurationVersionCloneRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateConfigurationVersionCloneResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
 			params: CreateConfigurationVersionCloneRequest{
 				ConfigID:          43253,
 				CreateFromVersion: 3,
 			},
+			expectedRequestBody: `{"createFromVersion":3,"ruleUpdate":false}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -230,6 +233,11 @@ func TestAppSec_CreateConfigurationVersionClone(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

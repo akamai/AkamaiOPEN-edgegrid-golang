@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -38,7 +38,7 @@ type (
 
 	// ListEdgeWorkersIDRequest contains query parameters used to list EdgeWorkerIDs
 	ListEdgeWorkersIDRequest struct {
-		GroupID        int
+		GroupID        int64
 		ResourceTierID int
 	}
 
@@ -50,14 +50,14 @@ type (
 	// CreateEdgeWorkerIDRequest contains body parameters used to create EdgeWorkerID
 	CreateEdgeWorkerIDRequest struct {
 		Name           string `json:"name"`
-		GroupID        int    `json:"groupId"`
+		GroupID        int64  `json:"groupId"`
 		ResourceTierID int    `json:"resourceTierId"`
 	}
 
 	// EdgeWorkerIDRequestBody contains body parameters used to update or clone EdgeWorkerID
 	EdgeWorkerIDRequestBody struct {
 		Name           string `json:"name"`
-		GroupID        int    `json:"groupId"`
+		GroupID        int64  `json:"groupId"`
 		ResourceTierID int    `json:"resourceTierId"`
 	}
 

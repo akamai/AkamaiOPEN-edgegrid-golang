@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -253,13 +254,14 @@ func TestBotman_GetConditionalAction(t *testing.T) {
 func TestBotman_CreateConditionalAction(t *testing.T) {
 
 	tests := map[string]struct {
-		params           CreateConditionalActionRequest
-		prop             *CreateConditionalActionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              CreateConditionalActionRequest
+		prop                *CreateConditionalActionRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"201 Created": {
 			params: CreateConditionalActionRequest{
@@ -267,10 +269,11 @@ func TestBotman_CreateConditionalAction(t *testing.T) {
 				Version:     15,
 				JsonPayload: json.RawMessage(`{"testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     `{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"actionId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/response-actions/conditional-actions",
+			expectedRequestBody: `{"testKey":"testValue3"}`,
+			responseStatus:      http.StatusCreated,
+			responseBody:        `{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"actionId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/response-actions/conditional-actions",
 		},
 		"500 internal server error": {
 			params: CreateConditionalActionRequest{
@@ -336,6 +339,11 @@ func TestBotman_CreateConditionalAction(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -358,12 +366,13 @@ func TestBotman_CreateConditionalAction(t *testing.T) {
 // Test Update ConditionalAction
 func TestBotman_UpdateConditionalAction(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateConditionalActionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpdateConditionalActionRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateConditionalActionRequest{
@@ -372,10 +381,11 @@ func TestBotman_UpdateConditionalAction(t *testing.T) {
 				ActionID:    "cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 				JsonPayload: json.RawMessage(`{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     `{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"actionId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/10/response-actions/conditional-actions/cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
+			expectedRequestBody: `{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7","testKey":"testValue3"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"actionId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/10/response-actions/conditional-actions/cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 		},
 		"500 internal server error": {
 			params: UpdateConditionalActionRequest{
@@ -457,6 +467,11 @@ func TestBotman_UpdateConditionalAction(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.Path)
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

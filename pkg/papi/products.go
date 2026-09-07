@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -56,8 +57,9 @@ func (p *papi) GetProducts(ctx context.Context, params GetProductsRequest) (*Get
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetProducts, ErrStructValidation, err)
 	}
 
-	getURL := fmt.Sprintf("/papi/v1/products?contractId=%s", params.ContractID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	req, err := request.NewGet(ctx, "/papi/v1/products").
+		AddQueryParam("contractId", params.ContractID).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetProducts, err)
 	}

@@ -15,8 +15,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -44,6 +44,7 @@ type (
 		EndCustomerID         string                `json:"endCustomerId,omitempty"`
 		ContractID            string                `json:"contractId,omitempty"`
 		OutboundZoneTransfer  *OutboundZoneTransfer `json:"outboundZoneTransfer,omitempty"`
+		MultiProviderDNSSEC   *MultiProviderDNSSEC  `json:"multiProviderDnssec,omitempty"`
 	}
 
 	// OutboundZoneTransfer contains OutboundZoneTransfer request parameters
@@ -52,6 +53,12 @@ type (
 		Enabled       bool     `json:"enabled"`
 		NotifyTargets []string `json:"notifyTargets"`
 		TSIGKey       *TSIGKey `json:"tsigKey,omitempty"`
+	}
+
+	// MultiProviderDNSSEC contains multi-signer DNSSEC configuration for a zone.
+	MultiProviderDNSSEC struct {
+		Enabled bool   `json:"enabled"`
+		Webhook string `json:"webhook,omitempty"`
 	}
 
 	// ZoneResponse contains zone create response
@@ -73,6 +80,7 @@ type (
 		LastModifiedDate      string                `json:"lastModifiedDate,omitempty"`
 		VersionID             string                `json:"versionId,omitempty"`
 		OutboundZoneTransfer  *OutboundZoneTransfer `json:"outboundZoneTransfer,omitempty"`
+		MultiProviderDNSSEC   *MultiProviderDNSSEC  `json:"multiProviderDnssec"`
 	}
 
 	// ListMetadata contains metadata for List Zones request
@@ -111,16 +119,6 @@ type (
 	ZoneNameListResponse struct {
 		Zones   []string `json:"zones"`
 		Aliases []string `json:"aliases,omitempty"`
-	}
-
-	// GetZoneNamesResponse contains record set names for zone
-	GetZoneNamesResponse struct {
-		Names []string `json:"names"`
-	}
-
-	// GetZoneNameTypesResponse contains record set types for zone
-	GetZoneNameTypesResponse struct {
-		Types []string `json:"types"`
 	}
 	// GetZoneRequest contains request parameters for GetZone
 	GetZoneRequest ZoneRequest
@@ -161,14 +159,6 @@ type (
 	// UpdateZoneRequest contains request parameters for UpdateZone
 	UpdateZoneRequest struct {
 		CreateZone *ZoneCreate
-	}
-	// GetZoneNamesRequest contains request parameters for GetZoneNames
-	GetZoneNamesRequest ZoneRequest
-
-	// GetZoneNameTypesRequest contains request parameters for GetZoneNameTypes
-	GetZoneNameTypesRequest struct {
-		Zone     string
-		ZoneName string
 	}
 
 	// GetZonesDNSSecStatusRequest is used to get the DNSSEC status for one or more zones
@@ -214,26 +204,7 @@ var (
 	ErrSaveChangeList = errors.New("save change list")
 	// ErrSubmitChangeList is returned when SubmitChangeList fails
 	ErrSubmitChangeList = errors.New("submit change list")
-	// ErrGetZoneNames is returned when GetZoneNames fails
-	ErrGetZoneNames = errors.New("get zone names")
-	// ErrGetZoneNameTypes is returned when GetZoneNameTypes fails
-	ErrGetZoneNameTypes = errors.New("get zone name types")
 )
-
-// Validate validates GetZoneNameTypesRequest
-func (r GetZoneNameTypesRequest) Validate() error {
-	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"Zone":     validation.Validate(r.Zone, validation.Required),
-		"ZoneName": validation.Validate(r.ZoneName, validation.Required),
-	})
-}
-
-// Validate validates GetZoneNamesRequest
-func (r GetZoneNamesRequest) Validate() error {
-	return edgegriderr.ParseValidationErrors(validation.Errors{
-		"Zone": validation.Validate(r.Zone, validation.Required),
-	})
-}
 
 // Validate validates SubmitChangeListRequest
 func (r SubmitChangeListRequest) Validate() error {
@@ -302,6 +273,7 @@ var zoneStructMap = map[string]string{
 	"Target":                "target",
 	"EndCustomerID":         "endCustomerId",
 	"OutboundZoneTransfer":  "outboundZoneTransfer",
+	"MultiProviderDNSSEC":   "multiProviderDnssec",
 	"ContractID":            "contractId"}
 
 // Util to convert struct to http request body, e.g. io.reader
@@ -691,13 +663,25 @@ func filterZoneCreate(zone *ZoneCreate) map[string]interface{} {
 				filteredZone[varLower] = varValue
 			}
 		case "SignAndServeAlgorithm":
-			if zoneType != "ALIAS" {
+			if zoneType != "ALIAS" && varValue.(string) != "" {
 				filteredZone[varLower] = varValue
 			}
 		case "OutboundZoneTransfer":
 			// this is workaround for the check if value is not nil to avoid adding empty entry
 			switch v := varValue.(type) {
 			case *OutboundZoneTransfer:
+				{
+					if v != nil {
+						filteredZone[varLower] = varValue
+					}
+				}
+			default:
+				filteredZone[varLower] = varValue
+			}
+		case "MultiProviderDNSSEC":
+			// same workaround as OutboundZoneTransfer above: skip nil pointer to avoid adding empty entry
+			switch v := varValue.(type) {
+			case *MultiProviderDNSSEC:
 				{
 					if v != nil {
 						filteredZone[varLower] = varValue
@@ -750,62 +734,6 @@ func ValidateZone(zone *ZoneCreate) error {
 	}
 
 	return nil
-}
-
-func (d *dns) GetZoneNames(ctx context.Context, params GetZoneNamesRequest) (*GetZoneNamesResponse, error) {
-	logger := d.Log(ctx)
-	logger.Debug("GetZoneNames")
-
-	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetZoneNames, ErrStructValidation, err)
-	}
-
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names", params.Zone)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create GetZoneNames request: %w", err)
-	}
-
-	var result GetZoneNamesResponse
-	resp, err := d.Exec(req, &result)
-	if err != nil {
-		return nil, fmt.Errorf("GetZoneNames request failed: %w", err)
-	}
-	defer session.CloseResponseBody(resp)
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, d.Error(resp)
-	}
-
-	return &result, nil
-}
-
-func (d *dns) GetZoneNameTypes(ctx context.Context, params GetZoneNameTypesRequest) (*GetZoneNameTypesResponse, error) {
-	logger := d.Log(ctx)
-	logger.Debug(" GetZoneNameTypes")
-
-	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetZoneNameTypes, ErrStructValidation, err)
-	}
-
-	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types", params.Zone, params.ZoneName)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create GetZoneNameTypes request: %w", err)
-	}
-
-	var result GetZoneNameTypesResponse
-	resp, err := d.Exec(req, &result)
-	if err != nil {
-		return nil, fmt.Errorf("GetZoneNameTypes request failed: %w", err)
-	}
-	defer session.CloseResponseBody(resp)
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, d.Error(resp)
-	}
-
-	return &result, nil
 }
 
 func (d *dns) GetZonesDNSSecStatus(ctx context.Context, params GetZonesDNSSecStatusRequest) (*GetZonesDNSSecStatusResponse, error) {

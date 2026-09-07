@@ -1,10 +1,10 @@
-# Akamai OPEN EdgeGrid for GoLang v13
+# Akamai OPEN EdgeGrid for GoLang v14
 
 ![Build Status](https://github.com/akamai/akamaiOPEN-edgegrid-golang/actions/workflows/checks.yml/badge.svg)
-[![Go Report Card](https://goreportcard.com/badge/github.com/akamai/AkamaiOPEN-edgegrid-golang/v13)](https://goreportcard.com/report/github.com/akamai/AkamaiOPEN-edgegrid-golang/v13)
+[![Go Report Card](https://goreportcard.com/badge/github.com/akamai/AkamaiOPEN-edgegrid-golang/v14)](https://goreportcard.com/report/github.com/akamai/AkamaiOPEN-edgegrid-golang/v14)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/akamai/akamaiOPEN-edgegrid-golang)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GoDoc](https://pkg.go.dev/badge/github.com/akamai/akamaiOPEN-edgegrid-golang?utm_source=godoc)](https://pkg.go.dev/github.com/akamai/AkamaiOPEN-edgegrid-golang/v13)
+[![GoDoc](https://pkg.go.dev/badge/github.com/akamai/akamaiOPEN-edgegrid-golang?utm_source=godoc)](https://pkg.go.dev/github.com/akamai/AkamaiOPEN-edgegrid-golang/v14)
 
 The library implements an Authentication handler for HTTP requests using the [Akamai EdgeGrid Authentication](https://techdocs.akamai.com/developer/docs/authenticate-with-edgegrid) scheme for Go. It also currently provides Akamai REST API support for the Akamai Terraform Provider.
 
@@ -13,7 +13,7 @@ The library implements an Authentication handler for HTTP requests using the [Ak
 
 This module isn't backward compatible with `v1`.
 
-The `master` branch isn't representing `v1` anymore, it's currently representing the latest `v13`. `v1` has been moved to a dedicated `v1` branch.
+The `master` branch isn't representing `v1` anymore, it's currently representing the latest `v14`. `v1` has been moved to a dedicated `v1` branch.
 
 ## Concurrent usage
 
@@ -22,7 +22,7 @@ You can import the library packages alongside the `v1` library without any confl
 ```go
 import (
     papiv1 "github.com/akamai/AkamaiOPEN-edgegrid-golang/papi-v1"
-    papi "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/papi"
+    papi "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/papi"
 )
 ```
 
@@ -57,7 +57,7 @@ You can obtain the authentication credentials through an API client. Requests to
         "io"
         "net/http"
 
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
     )
 
     func main() {
@@ -93,7 +93,7 @@ package main
         "io"
         "net/http"
 
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
     )
 
     func main() {
@@ -120,7 +120,7 @@ import (
     "io"
     "net/http"
 
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
 )
 
 func main() {
@@ -168,7 +168,7 @@ import (
     "io"
     "net/http"
 
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
 )
 
 func main() {
@@ -198,7 +198,7 @@ import (
     "net/http"
     "net/url"
 
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
 )
 
 func main() {
@@ -265,7 +265,7 @@ import (
     "io"
     "net/http"
 
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
 )
 
 func main() {
@@ -301,7 +301,7 @@ import (
     "net/http"
     "strings"
 
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
 )
 
 func main() {
@@ -351,7 +351,7 @@ import (
     "net/http"
     "net/http/httputil"
 
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
 )
 
 func main() {
@@ -402,8 +402,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 )
 
 func main() {
@@ -445,7 +445,7 @@ func main() {
 }
 ```
 
-The `session` package also supports the structured logging interface from `github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/log`. Thanks to this, you can adjust a logger (for example, change the logging level to `Debug`) in one of these ways:
+The `session` package also supports the structured logging interface from `github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/log`. Thanks to this, you can adjust a logger (for example, change the logging level to `Debug`) in one of these ways:
 
 - Apply a logger globally with the `log.SetLogger()` method to use it in all sessions. You can retrieve the logger from `context` using the `log.FromContext()` method.
 
@@ -460,9 +460,9 @@ The `session` package also supports the structured logging interface from `githu
         "net/http"
         "os"
 
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/log"
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/log"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
     )
 
 
@@ -517,9 +517,9 @@ The `session` package also supports the structured logging interface from `githu
         "net/http"
         "os"
 
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/log"
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/log"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
     )
 
 
@@ -573,9 +573,9 @@ The `session` package also supports the structured logging interface from `githu
         "net/http"
         "os"
 
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/log"
-        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/log"
+        "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
     )
 
 
@@ -634,8 +634,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 )
 
 func main() {
@@ -693,8 +693,8 @@ import (
 	"net/http"
     "time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 )
 
 func main() {
@@ -803,9 +803,9 @@ import (
     "context"
     "fmt"
 
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/iam"
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/iam"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 )
 
 func main() {
@@ -853,9 +853,9 @@ import (
     "context"
     "fmt"
 
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegrid"
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/iam"
-    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/iam"
+    "github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 )
 
 func main() {

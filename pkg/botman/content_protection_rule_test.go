@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -286,13 +287,14 @@ func TestBotman_GetContentProtectionRule(t *testing.T) {
 func TestBotman_CreateContentProtectionRule(t *testing.T) {
 
 	tests := map[string]struct {
-		params           CreateContentProtectionRuleRequest
-		prop             *CreateContentProtectionRuleRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              CreateContentProtectionRuleRequest
+		prop                *CreateContentProtectionRuleRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"201 Created": {
 			params: CreateContentProtectionRuleRequest{
@@ -301,10 +303,11 @@ func TestBotman_CreateContentProtectionRule(t *testing.T) {
 				SecurityPolicyID: "AAAA_81230",
 				JsonPayload:      json.RawMessage(`{"testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     `{"contentProtectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"contentProtectionRuleId": "fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/content-protection-rules",
+			expectedRequestBody: `{"testKey":"testValue3"}`,
+			responseStatus:      http.StatusCreated,
+			responseBody:        `{"contentProtectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"contentProtectionRuleId": "fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/security-policies/AAAA_81230/content-protection-rules",
 		},
 		"500 internal server error": {
 			params: CreateContentProtectionRuleRequest{
@@ -374,6 +377,11 @@ func TestBotman_CreateContentProtectionRule(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -396,12 +404,13 @@ func TestBotman_CreateContentProtectionRule(t *testing.T) {
 // Test Update ContentProtectionRule
 func TestBotman_UpdateContentProtectionRule(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateContentProtectionRuleRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpdateContentProtectionRuleRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateContentProtectionRuleRequest{
@@ -411,10 +420,11 @@ func TestBotman_UpdateContentProtectionRule(t *testing.T) {
 				ContentProtectionRuleID: "fake3f89-e179-4892-89cf-d5e623ba9dc7",
 				JsonPayload:             json.RawMessage(`{"contentProtectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     `{"contentProtectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"contentProtectionRuleId": "fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/10/security-policies/AAAA_81230/content-protection-rules/fake3f89-e179-4892-89cf-d5e623ba9dc7",
+			expectedRequestBody: `{"contentProtectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7","testKey":"testValue3"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"contentProtectionRuleId":"fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"contentProtectionRuleId": "fake3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/10/security-policies/AAAA_81230/content-protection-rules/fake3f89-e179-4892-89cf-d5e623ba9dc7",
 		},
 		"500 internal server error": {
 			params: UpdateContentProtectionRuleRequest{
@@ -514,6 +524,11 @@ func TestBotman_UpdateContentProtectionRule(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.Path)
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

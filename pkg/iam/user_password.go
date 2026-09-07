@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -63,16 +63,9 @@ func (i *iam) ResetUserPassword(ctx context.Context, params ResetUserPasswordReq
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrResetUserPassword, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/reset-password", params.IdentityID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrResetUserPassword, err)
-	}
-
-	q := uri.Query()
-	q.Add("sendEmail", strconv.FormatBool(params.SendEmail))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/ui-identities/%s/reset-password", params.IdentityID).
+		AddQueryParam("sendEmail", strconv.FormatBool(params.SendEmail)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrResetUserPassword, err)
 	}
@@ -100,17 +93,14 @@ func (i *iam) SetUserPassword(ctx context.Context, params SetUserPasswordRequest
 		return fmt.Errorf("%s: %w:\n%s", ErrSetUserPassword, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/user-admin/ui-identities/%s/set-password", params.IdentityID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrSetUserPassword, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/user-admin/ui-identities/%s/set-password", params.IdentityID).
+		WithBody(params).
+		Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrSetUserPassword, err)
 	}
 
-	resp, err := i.Exec(req, nil, params)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrSetUserPassword, err)
 	}

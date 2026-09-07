@@ -3,6 +3,7 @@ package iam
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,14 +14,16 @@ import (
 
 func TestIAM_ListAllowedCPCodes(t *testing.T) {
 	tests := map[string]struct {
-		params           ListAllowedCPCodesRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse ListAllowedCPCodesResponse
-		withError        func(*testing.T, error)
+		params              ListAllowedCPCodesRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    ListAllowedCPCodesResponse
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 OK": {
+			expectedRequestBody: `{"clientType":"CLIENT","groups":null}`,
 			params: ListAllowedCPCodesRequest{
 				UserName: "jsmith",
 				Body: ListAllowedCPCodesRequestBody{
@@ -67,6 +70,7 @@ func TestIAM_ListAllowedCPCodes(t *testing.T) {
 			},
 		},
 		"200 OK with groups": {
+			expectedRequestBody: `{"clientType":"SERVICE_ACCOUNT","groups":[{"groupId":1,"roleId":2,"subgroups":null}]}`,
 			params: ListAllowedCPCodesRequest{
 				UserName: "jsmith",
 				Body: ListAllowedCPCodesRequestBody{
@@ -172,6 +176,11 @@ func TestIAM_ListAllowedCPCodes(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if tc.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)

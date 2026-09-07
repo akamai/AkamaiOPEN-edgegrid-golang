@@ -284,3 +284,149 @@ func TestDNS_UpdateRecordSets(t *testing.T) {
 		})
 	}
 }
+
+func TestDNS_ListRecordSetNames(t *testing.T) {
+	tests := map[string]struct {
+		params           ListRecordSetNamesRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ListRecordSetNamesResponse
+		withError        error
+	}{
+		"200 OK": {
+			params: ListRecordSetNamesRequest{
+				Zone: "example.com",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"names": [
+					"example.com",
+					"www.example.com",
+					"ftp.example.com",
+					"space.example.com",
+					"bar.example.com"
+				]
+			}`,
+			expectedPath: "/config-dns/v2/zones/example.com/names",
+			expectedResponse: &ListRecordSetNamesResponse{
+				Names: []string{"example.com", "www.example.com", "ftp.example.com", "space.example.com", "bar.example.com"},
+			},
+		},
+		"500 internal server error": {
+			params: ListRecordSetNamesRequest{
+				Zone: "example.com",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching authorities",
+    "status": 500
+}`,
+			expectedPath: "/config-dns/v2/zones/example.com/names",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching authorities",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			defer mockServer.Close()
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListRecordSetNames(context.Background(), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}
+
+func TestDNS_ListRecordSetTypes(t *testing.T) {
+	tests := map[string]struct {
+		params           ListRecordSetTypesRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *ListRecordSetTypesResponse
+		withError        error
+	}{
+		"200 OK": {
+			params: ListRecordSetTypesRequest{
+				Zone:       "example.com",
+				RecordName: "www.example.com",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"types": [
+					"A",
+					"AAAA",
+					"MX"
+				]
+			}`,
+			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types",
+			expectedResponse: &ListRecordSetTypesResponse{
+				Types: []string{"A", "AAAA", "MX"},
+			},
+		},
+		"500 internal server error": {
+			params: ListRecordSetTypesRequest{
+				Zone:       "example.com",
+				RecordName: "www.example.com",
+			},
+			responseStatus: http.StatusInternalServerError,
+			responseBody: `
+{
+	"type": "internal_error",
+    "title": "Internal Server Error",
+    "detail": "Error fetching authorities",
+    "status": 500
+}`,
+			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types",
+			withError: &Error{
+				Type:       "internal_error",
+				Title:      "Internal Server Error",
+				Detail:     "Error fetching authorities",
+				StatusCode: http.StatusInternalServerError,
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, test.expectedPath, r.URL.String())
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.WriteHeader(test.responseStatus)
+				_, err := w.Write([]byte(test.responseBody))
+				assert.NoError(t, err)
+			}))
+			defer mockServer.Close()
+			client := mockAPIClient(t, mockServer)
+			result, err := client.ListRecordSetTypes(context.Background(), test.params)
+			if test.withError != nil {
+				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, test.expectedResponse, result)
+		})
+	}
+}

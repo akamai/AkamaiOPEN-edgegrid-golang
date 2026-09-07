@@ -3,11 +3,12 @@ package botman
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -255,13 +256,14 @@ func TestBotman_GetRecategorizedAkamaiDefinedBot(t *testing.T) {
 func TestBotman_CreateRecategorizedAkamaiDefinedBot(t *testing.T) {
 
 	tests := map[string]struct {
-		params           CreateRecategorizedAkamaiDefinedBotRequest
-		prop             *CreateRecategorizedAkamaiDefinedBotRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *RecategorizedAkamaiDefinedBotResponse
-		withError        func(*testing.T, error)
+		params              CreateRecategorizedAkamaiDefinedBotRequest
+		prop                *CreateRecategorizedAkamaiDefinedBotRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *RecategorizedAkamaiDefinedBotResponse
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"201 Created": {
 			params: CreateRecategorizedAkamaiDefinedBotRequest{
@@ -270,8 +272,9 @@ func TestBotman_CreateRecategorizedAkamaiDefinedBot(t *testing.T) {
 				BotID:      "cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 				CategoryID: "0d38d0fe-b05d-42f6-a58f-bc98c821793e",
 			},
-			responseStatus: http.StatusCreated,
-			responseBody:   `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "customBotCategoryId":"0d38d0fe-b05d-42f6-a58f-bc98c821793e"}`,
+			expectedRequestBody: `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7","customBotCategoryId":"0d38d0fe-b05d-42f6-a58f-bc98c821793e"}`,
+			responseStatus:      http.StatusCreated,
+			responseBody:        `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "customBotCategoryId":"0d38d0fe-b05d-42f6-a58f-bc98c821793e"}`,
 			expectedResponse: &RecategorizedAkamaiDefinedBotResponse{
 				BotID:      "cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 				CategoryID: "0d38d0fe-b05d-42f6-a58f-bc98c821793e",
@@ -358,6 +361,11 @@ func TestBotman_CreateRecategorizedAkamaiDefinedBot(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -380,12 +388,13 @@ func TestBotman_CreateRecategorizedAkamaiDefinedBot(t *testing.T) {
 // Test Update RecategorizedAkamaiDefinedBot
 func TestBotman_UpdateRecategorizedAkamaiDefinedBot(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateRecategorizedAkamaiDefinedBotRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *RecategorizedAkamaiDefinedBotResponse
-		withError        func(*testing.T, error)
+		params              UpdateRecategorizedAkamaiDefinedBotRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *RecategorizedAkamaiDefinedBotResponse
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateRecategorizedAkamaiDefinedBotRequest{
@@ -394,8 +403,9 @@ func TestBotman_UpdateRecategorizedAkamaiDefinedBot(t *testing.T) {
 				BotID:      "cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 				CategoryID: "0d38d0fe-b05d-42f6-a58f-bc98c821793e",
 			},
-			responseStatus: http.StatusOK,
-			responseBody:   `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "customBotCategoryId":"0d38d0fe-b05d-42f6-a58f-bc98c821793e"}`,
+			expectedRequestBody: `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7","customBotCategoryId":"0d38d0fe-b05d-42f6-a58f-bc98c821793e"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"botId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "customBotCategoryId":"0d38d0fe-b05d-42f6-a58f-bc98c821793e"}`,
 			expectedResponse: &RecategorizedAkamaiDefinedBotResponse{
 				BotID:      "cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 				CategoryID: "0d38d0fe-b05d-42f6-a58f-bc98c821793e",
@@ -482,6 +492,11 @@ func TestBotman_UpdateRecategorizedAkamaiDefinedBot(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.Path)
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

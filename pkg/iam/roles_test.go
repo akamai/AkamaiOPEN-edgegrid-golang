@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

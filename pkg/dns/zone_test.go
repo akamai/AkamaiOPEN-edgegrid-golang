@@ -9,8 +9,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -396,6 +396,34 @@ func TestDNS_GetZone(t *testing.T) {
 				},
 			},
 		},
+		"200 OK multi-signer DNSSEC": {
+			params: GetZoneRequest{
+				Zone: "example.com",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"contractId": "1-2ABCDE",
+				"zone": "example.com",
+				"type": "primary",
+				"signAndServe": false,
+				"multiProviderDnssec": {
+					"enabled": true,
+					"webhook": "https://example.com/webhook"
+				}
+			}`,
+			expectedPath: "/config-dns/v2/zones/example.com",
+			expectedResponse: &GetZoneResponse{
+				ContractID:   "1-2ABCDE",
+				Zone:         "example.com",
+				Type:         "primary",
+				SignAndServe: false,
+				MultiProviderDNSSEC: &MultiProviderDNSSEC{
+					Enabled: true,
+					Webhook: "https://example.com/webhook",
+				},
+			},
+		},
 		"500 internal server error": {
 			params: GetZoneRequest{
 				Zone: "example.com",
@@ -763,7 +791,7 @@ func TestDNS_CreateZone(t *testing.T) {
 				},
 			},
 			responseStatus: http.StatusCreated,
-			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","signAndServe":false,"signAndServeAlgorithm":"","type":"primary","zone":"example.com"}`,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","signAndServe":false,"type":"primary","zone":"example.com"}`,
 			responseBody: `
 			{
 				"contractId": "1-2ABCDE",
@@ -801,7 +829,7 @@ func TestDNS_CreateZone(t *testing.T) {
 				},
 			},
 			responseStatus: http.StatusCreated,
-			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","masters":null,"signAndServe":false,"signAndServeAlgorithm":"","tsigKey":{"name":"other.com.akamai.com.","algorithm":"hmac-sha512","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="},"type":"secondary","zone":"example.com"}`,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","masters":null,"signAndServe":false,"tsigKey":{"name":"other.com.akamai.com.","algorithm":"hmac-sha512","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="},"type":"secondary","zone":"example.com"}`,
 			responseBody: `
 			{
 				"contractId": "1-2ABCDE",
@@ -1045,7 +1073,7 @@ func TestDNS_UpdateZone(t *testing.T) {
 					},
 				},
 			},
-			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com","algorithm":"hmac-sha1","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="}},"signAndServe":false,"signAndServeAlgorithm":"","type":"primary","zone":"example.com"}`,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com","algorithm":"hmac-sha1","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="}},"signAndServe":false,"type":"primary","zone":"example.com"}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -1081,6 +1109,40 @@ func TestDNS_UpdateZone(t *testing.T) {
 			}`,
 			expectedPath: "/config-dns/v2/zones/example.com",
 		},
+		"200 OK multi-signer DNSSEC": {
+			params: UpdateZoneRequest{
+				CreateZone: &ZoneCreate{
+					Zone:       "example.com",
+					ContractID: "1-2ABCDE",
+					Type:       "primary",
+					MultiProviderDNSSEC: &MultiProviderDNSSEC{
+						Enabled: true,
+						Webhook: "https://example.com/webhook",
+					},
+				},
+			},
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","multiProviderDnssec":{"enabled":true,"webhook":"https://example.com/webhook"},"signAndServe":false,"type":"primary","zone":"example.com"}`,
+			responseStatus: http.StatusOK,
+			responseBody: `
+			{
+				"contractId": "1-2ABCDE",
+				"zone": "example.com",
+				"type": "primary",
+				"aliasCount": 1,
+				"signAndServe": false,
+				"comment": "Initial add",
+				"versionId": "7949b2db-ac43-4773-a3ec-dc93202142fd",
+				"lastModifiedDate": "2016-12-11T03:21:00Z",
+				"lastModifiedBy": "user31",
+				"lastActivationDate": "2017-01-03T12:00:00Z",
+				"activationState": "ERROR",
+				"multiProviderDnssec": {
+					"enabled": true,
+					"webhook": "https://example.com/webhook"
+				}
+			}`,
+			expectedPath: "/config-dns/v2/zones/example.com",
+		},
 		"200 OK secondary": {
 			params: UpdateZoneRequest{
 				CreateZone: &ZoneCreate{
@@ -1105,7 +1167,7 @@ func TestDNS_UpdateZone(t *testing.T) {
 					},
 				},
 			},
-			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","masters":["1.2.3.4","1.2.3.5"],"outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com","algorithm":"hmac-sha1","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="}},"signAndServe":false,"signAndServeAlgorithm":"","tsigKey":{"name":"other.com.akamai.com.","algorithm":"hmac-sha512","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="},"type":"secondary","zone":"example.com"}`,
+			requestBody:    `{"comment":"","contractId":"1-2ABCDE","endCustomerId":"","masters":["1.2.3.4","1.2.3.5"],"outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com","algorithm":"hmac-sha1","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="}},"signAndServe":false,"tsigKey":{"name":"other.com.akamai.com.","algorithm":"hmac-sha512","secret":"C113nt53KR3TN6N90yVuAgICxIRwsObLi0E67/N8eRN="},"type":"secondary","zone":"example.com"}`,
 			responseStatus: http.StatusOK,
 			responseBody: `
 			{
@@ -1198,152 +1260,6 @@ func TestDNS_UpdateZone(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-		})
-	}
-}
-
-func TestDNS_GetZoneNames(t *testing.T) {
-	tests := map[string]struct {
-		params           GetZoneNamesRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *GetZoneNamesResponse
-		withError        error
-	}{
-		"200 OK": {
-			params: GetZoneNamesRequest{
-				Zone: "example.com",
-			},
-			responseStatus: http.StatusOK,
-			responseBody: `
-			{
-				"names": [
-					"example.com",
-					"www.example.com",
-					"ftp.example.com",
-					"space.example.com",
-					"bar.example.com"
-				]
-			}`,
-			expectedPath: "/config-dns/v2/zones/example.com/names",
-			expectedResponse: &GetZoneNamesResponse{
-				Names: []string{"example.com", "www.example.com", "ftp.example.com", "space.example.com", "bar.example.com"},
-			},
-		},
-		"500 internal server error": {
-			params: GetZoneNamesRequest{
-				Zone: "example.com",
-			},
-			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-{
-	"type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching authorities",
-    "status": 500
-}`,
-			expectedPath: "/config-dns/v2/zones/example.com/names",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching authorities",
-				StatusCode: http.StatusInternalServerError,
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			defer mockServer.Close()
-			client := mockAPIClient(t, mockServer)
-			result, err := client.GetZoneNames(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
-		})
-	}
-}
-
-func TestDNS_GetZoneNameTypes(t *testing.T) {
-	tests := map[string]struct {
-		params           GetZoneNameTypesRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *GetZoneNameTypesResponse
-		withError        error
-	}{
-		"200 OK": {
-			params: GetZoneNameTypesRequest{
-				Zone:     "example.com",
-				ZoneName: "www.example.com",
-			},
-			responseStatus: http.StatusOK,
-			responseBody: `
-			{
-				"types": [
-					"A",
-					"AAAA",
-					"MX"
-				]
-			}`,
-			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types",
-			expectedResponse: &GetZoneNameTypesResponse{
-				Types: []string{"A", "AAAA", "MX"},
-			},
-		},
-		"500 internal server error": {
-			params: GetZoneNameTypesRequest{
-				Zone:     "example.com",
-				ZoneName: "www.example.com",
-			},
-			responseStatus: http.StatusInternalServerError,
-			responseBody: `
-{
-	"type": "internal_error",
-    "title": "Internal Server Error",
-    "detail": "Error fetching authorities",
-    "status": 500
-}`,
-			expectedPath: "/config-dns/v2/zones/example.com/names/www.example.com/types",
-			withError: &Error{
-				Type:       "internal_error",
-				Title:      "Internal Server Error",
-				Detail:     "Error fetching authorities",
-				StatusCode: http.StatusInternalServerError,
-			},
-		},
-	}
-
-	for name, test := range tests {
-		t.Run(name, func(t *testing.T) {
-			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				assert.Equal(t, test.expectedPath, r.URL.String())
-				assert.Equal(t, http.MethodGet, r.Method)
-				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
-				assert.NoError(t, err)
-			}))
-			defer mockServer.Close()
-			client := mockAPIClient(t, mockServer)
-			result, err := client.GetZoneNameTypes(context.Background(), test.params)
-			if test.withError != nil {
-				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
-				return
-			}
-			require.NoError(t, err)
-			assert.Equal(t, test.expectedResponse, result)
 		})
 	}
 }

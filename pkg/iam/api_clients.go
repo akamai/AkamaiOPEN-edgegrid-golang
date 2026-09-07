@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -430,12 +430,7 @@ func (i *iam) LockAPIClient(ctx context.Context, params LockAPIClientRequest) (*
 		params.ClientID = "self"
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/lock", params.ClientID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrLockAPIClient, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/api-clients/%s/lock", params.ClientID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrLockAPIClient, err)
 	}
@@ -462,12 +457,7 @@ func (i *iam) UnlockAPIClient(ctx context.Context, params UnlockAPIClientRequest
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUnlockAPIClient, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/unlock", params.ClientID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUnlockAPIClient, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/api-clients/%s/unlock", params.ClientID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUnlockAPIClient, err)
 	}
@@ -490,16 +480,9 @@ func (i *iam) ListAPIClients(ctx context.Context, params ListAPIClientsRequest) 
 	logger := i.Log(ctx)
 	logger.Debug("ListAPIClients")
 
-	uri, err := url.Parse("/identity-management/v3/api-clients")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAPIClients, err)
-	}
-
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/api-clients").
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAPIClients, err)
 	}
@@ -526,20 +509,13 @@ func (i *iam) GetAPIClient(ctx context.Context, params GetAPIClientRequest) (*Ge
 		params.ClientID = "self"
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s", params.ClientID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAPIClient, err)
-	}
-
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	q.Add("groupAccess", strconv.FormatBool(params.GroupAccess))
-	q.Add("apiAccess", strconv.FormatBool(params.APIAccess))
-	q.Add("credentials", strconv.FormatBool(params.Credentials))
-	q.Add("ipAcl", strconv.FormatBool(params.IPACL))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/api-clients/%s", params.ClientID).
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		AddQueryParam("groupAccess", strconv.FormatBool(params.GroupAccess)).
+		AddQueryParam("apiAccess", strconv.FormatBool(params.APIAccess)).
+		AddQueryParam("credentials", strconv.FormatBool(params.Credentials)).
+		AddQueryParam("ipAcl", strconv.FormatBool(params.IPACL)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAPIClient, err)
 	}
@@ -566,13 +542,15 @@ func (i *iam) CreateAPIClient(ctx context.Context, params CreateAPIClientRequest
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateAPIClient, ErrStructValidation, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/identity-management/v3/api-clients", nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/api-clients").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateAPIClient, err)
 	}
 
 	var result CreateAPIClientResponse
-	resp, err := i.Exec(req, &result, params)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateAPIClient, err)
 	}
@@ -597,13 +575,15 @@ func (i *iam) UpdateAPIClient(ctx context.Context, params UpdateAPIClientRequest
 		params.ClientID = "self"
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, fmt.Sprintf("/identity-management/v3/api-clients/%s", params.ClientID), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/api-clients/%s", params.ClientID).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateAPIClient, err)
 	}
 
 	var result UpdateAPIClientResponse
-	resp, err := i.Exec(req, &result, params.Body)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateAPIClient, err)
 	}
@@ -624,7 +604,7 @@ func (i *iam) DeleteAPIClient(ctx context.Context, params DeleteAPIClientRequest
 		params.ClientID = "self"
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, fmt.Sprintf("/identity-management/v3/api-clients/%s", params.ClientID), nil)
+	req, err := request.NewDelete(ctx, "/identity-management/v3/api-clients/%s", params.ClientID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteAPIClient, err)
 	}

@@ -3,6 +3,7 @@ package edgeworkers
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -309,12 +310,13 @@ func TestEdgeWorkerDeactivateVersionRequest_Validate(t *testing.T) {
 
 func TestEdgeworkers_DeactivateVersion(t *testing.T) {
 	tests := map[string]struct {
-		params           DeactivateVersionRequest
-		withError        error
-		expectedPath     string
-		responseStatus   int
-		responseBody     string
-		expectedResponse Deactivation
+		params              DeactivateVersionRequest
+		withError           error
+		expectedPath        string
+		responseStatus      int
+		responseBody        string
+		expectedResponse    Deactivation
+		expectedRequestBody string
 	}{
 		"400 bad request": {
 			params:    DeactivateVersionRequest{},
@@ -329,7 +331,8 @@ func TestEdgeworkers_DeactivateVersion(t *testing.T) {
 					Note:    "not used",
 				},
 			},
-			expectedPath: "/edgeworkers/v1/ids/1/deactivations",
+			expectedRequestBody: `{"network":"PRODUCTION","note":"not used","version":"123"}`,
+			expectedPath:        "/edgeworkers/v1/ids/1/deactivations",
 			responseBody: `{
 				"edgeWorkerId": 1,
 				"version": "123",
@@ -390,6 +393,11 @@ func TestEdgeworkers_DeactivateVersion(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

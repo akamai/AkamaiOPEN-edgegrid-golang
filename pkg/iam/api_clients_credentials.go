@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -192,12 +192,7 @@ func (i *iam) CreateCredential(ctx context.Context, params CreateCredentialReque
 		params.ClientID = "self"
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/credentials", params.ClientID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateCredential, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/api-clients/%s/credentials", params.ClientID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateCredential, err)
 	}
@@ -224,16 +219,9 @@ func (i *iam) ListCredentials(ctx context.Context, params ListCredentialsRequest
 		params.ClientID = "self"
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/credentials", params.ClientID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListCredentials, err)
-	}
-
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/api-clients/%s/credentials", params.ClientID).
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListCredentials, err)
 	}
@@ -264,16 +252,9 @@ func (i *iam) GetCredential(ctx context.Context, params GetCredentialRequest) (*
 		params.ClientID = "self"
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/credentials/%d", params.ClientID, params.CredentialID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetCredential, err)
-	}
-
-	q := uri.Query()
-	q.Add("actions", strconv.FormatBool(params.Actions))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/identity-management/v3/api-clients/%s/credentials/%d", params.ClientID, params.CredentialID).
+		AddQueryParam("actions", strconv.FormatBool(params.Actions)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCredential, err)
 	}
@@ -310,18 +291,15 @@ func (i *iam) UpdateCredential(ctx context.Context, params UpdateCredentialReque
 		params.Body.ExpiresOn = params.Body.ExpiresOn.Add(time.Nanosecond)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/credentials/%d", params.ClientID, params.CredentialID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateCredential, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/identity-management/v3/api-clients/%s/credentials/%d", params.ClientID, params.CredentialID).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateCredential, err)
 	}
 
 	var result UpdateCredentialResponse
-	resp, err := i.Exec(req, &result, params.Body)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateCredential, err)
 	}
@@ -346,17 +324,12 @@ func (i *iam) DeleteCredential(ctx context.Context, params DeleteCredentialReque
 		params.ClientID = "self"
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/credentials/%d", params.ClientID, params.CredentialID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrDeleteCredential, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/identity-management/v3/api-clients/%s/credentials/%d", params.ClientID, params.CredentialID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteCredential, err)
 	}
 
-	resp, err := i.Exec(req, nil, nil)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeleteCredential, err)
 	}
@@ -381,17 +354,12 @@ func (i *iam) DeactivateCredential(ctx context.Context, params DeactivateCredent
 		params.ClientID = "self"
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/credentials/%d/deactivate", params.ClientID, params.CredentialID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrDeactivateCredential, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/api-clients/%s/credentials/%d/deactivate", params.ClientID, params.CredentialID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeactivateCredential, err)
 	}
 
-	resp, err := i.Exec(req, nil, nil)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeactivateCredential, err)
 	}
@@ -412,17 +380,12 @@ func (i *iam) DeactivateCredentials(ctx context.Context, params DeactivateCreden
 		params.ClientID = "self"
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/identity-management/v3/api-clients/%s/credentials/deactivate", params.ClientID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrDeactivateCredentials, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/identity-management/v3/api-clients/%s/credentials/deactivate", params.ClientID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeactivateCredentials, err)
 	}
 
-	resp, err := i.Exec(req, nil, nil)
+	resp, err := i.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %s", ErrDeactivateCredentials, err)
 	}

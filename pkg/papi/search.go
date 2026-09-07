@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -70,22 +71,23 @@ var (
 	ErrSearchProperties = errors.New("searching for properties")
 )
 
-func (p *papi) SearchProperties(ctx context.Context, request SearchRequest) (*SearchResponse, error) {
+func (p *papi) SearchProperties(ctx context.Context, params SearchRequest) (*SearchResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("SearchProperties")
 
-	if err := request.Validate(); err != nil {
+	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("%s: %w: %s", ErrSearchProperties, ErrStructValidation, err)
 	}
 
-	searchURL := "/papi/v1/search/find-by-value"
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, searchURL, nil)
+	req, err := request.NewPost(ctx, "/papi/v1/search/find-by-value").
+		WithBody(map[string]string{params.Key: params.Value}).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrSearchProperties, err)
 	}
 
 	var search SearchResponse
-	resp, err := p.Exec(req, &search, map[string]string{request.Key: request.Value})
+	resp, err := p.Exec(req, &search)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrSearchProperties, err)
 	}

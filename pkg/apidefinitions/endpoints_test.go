@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -2106,12 +2106,13 @@ func TestRegisterEndpointFromFileRequest_Validate(t *testing.T) {
 
 func TestRegisterEndpointFromFile(t *testing.T) {
 	tests := map[string]struct {
-		params         RegisterEndpointFromFileRequest
-		withError      func(*testing.T, error)
-		expectedPath   string
-		responseStatus int
-		responseBody   string
-		expectedResult *RegisterEndpointFromFileResponse
+		params              RegisterEndpointFromFileRequest
+		withError           func(*testing.T, error)
+		expectedPath        string
+		expectedRequestBody string
+		responseStatus      int
+		responseBody        string
+		expectedResult      *RegisterEndpointFromFileResponse
 	}{
 		"does not validate": {
 			params: RegisterEndpointFromFileRequest{},
@@ -2127,8 +2128,9 @@ func TestRegisterEndpointFromFile(t *testing.T) {
 				ImportFileFormat:  "swagger",
 				ImportFileSource:  "BODY_BASE64",
 			},
-			expectedPath:   "/api-definitions/v2/endpoints/files",
-			responseStatus: http.StatusCreated,
+			expectedPath:        "/api-definitions/v2/endpoints/files",
+			expectedRequestBody: `{"contractId":"3-13H55B5","groupId":44681,"importFileContent":"test-file-content","importFileFormat":"swagger","importFileSource":"BODY_BASE64"}`,
+			responseStatus:      http.StatusCreated,
 			expectedResult: &RegisterEndpointFromFileResponse{
 				EndpointWithResources: EndpointWithResources{
 					APIResources: []APIResource{
@@ -2341,6 +2343,11 @@ func TestRegisterEndpointFromFile(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

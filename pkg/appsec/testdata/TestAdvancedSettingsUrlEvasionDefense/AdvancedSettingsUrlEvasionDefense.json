@@ -1,0 +1,101 @@
+{
+  "status": "enabled",
+  "lockVersion": 2,
+  "bypassLists": [
+    "123456_BYPASSLIST"
+  ],
+  "rules": [
+    {
+      "ruleId": 3002500,
+      "action": "deny",
+      "defaultAction": "alert",
+      "name": "General Path Traversal",
+      "description": "The General Path Traversal rule identifies attempts to bypass path-based matching using directory navigation patterns within the URI. When enabled, the rule examines each path segment and applies the configured action if it detects traversal sequences designed to alter the request path.",
+      "conditionOperator": "AND",
+      "conditions": [
+        {
+          "type": "hostMatch",
+          "hosts": [
+            "host.name"
+          ],
+          "positiveMatch": true
+        },
+        {
+          "type": "extensionMatch",
+          "extensions": [
+            "extension"
+          ],
+          "positiveMatch": true
+        },
+        {
+          "type": "filenameMatch",
+          "filenames": [
+            "filename"
+          ],
+          "positiveMatch": false
+        },
+        {
+          "type": "ipMatch",
+          "ips": [
+            "192.168.0.1"
+          ],
+          "positiveMatch": true,
+          "useHeaders": false
+        },
+        {
+          "type": "uriQueryMatch",
+          "caseSensitive": true,
+          "name": "query",
+          "nameCase": true,
+          "positiveMatch": true,
+          "value": "puery",
+          "wildcard": true
+        },
+        {
+          "type": "requestHeaderMatch",
+          "header": "Accept",
+          "positiveMatch": true,
+          "value": "XML",
+          "valueCase": false,
+          "valueWildcard": false
+        },
+        {
+          "type": "requestMethodMatch",
+          "methods": [
+            "DELETE"
+          ],
+          "positiveMatch": true
+        },
+        {
+          "type": "pathMatch",
+          "paths": [
+            "/path"
+          ],
+          "positiveMatch": true
+        },
+        {
+          "type": "clientListMatch",
+          "clientLists": [
+            "1234567_LIST"
+          ],
+          "positiveMatch": true,
+          "useHeaders": true
+        }
+      ]
+    },
+    {
+      "action": "none",
+      "defaultAction": "alert",
+      "description": "The Percent-Encoded Evasions rule identifies URI patterns which contain percent-encoded characters which could be used to disguise the path. For example, a path traversal sequence like “../” may appear as “%2E%2E%2F”. This rule will only match when three reserved characters which are percent-encoded are present in a row.",
+      "name": "Percent-Encoded Evasions",
+      "ruleId": 3002501
+    },
+    {
+      "action": "none",
+      "defaultAction": "alert",
+      "description": "The Double+ Percent-Encoded Evasions rule detects attempts to obscure the path using characters that have been percent-encoded at least two times. For example, a percent-encoded forward slash (/) is “%2F”. When percent-encoded twice, it becomes “%252F”. Additional layers of percent-encoding can be applied by repeatedly encoding the percent sign. This rule also looks for double percent-encoding being applied to the entire string rather than just the percent sign. In this case, a double percent-encoded forward slash (/) would be \"%25%32%66\". This rule looks for either of these techniques being applied to reserved characters.",
+      "name": "Double+ Percent-Encoded Evasions",
+      "ruleId": 3002502
+    }
+  ]
+}

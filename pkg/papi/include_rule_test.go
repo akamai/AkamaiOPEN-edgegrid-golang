@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -484,13 +485,14 @@ func TestGetIncludeRuleTree(t *testing.T) {
 
 func TestUpdateIncludeRuleTree(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateIncludeRuleTreeRequest
-		responseStatus   int
-		responseBody     string
-		responseHeaders  map[string]string
-		expectedPath     string
-		expectedResponse *UpdateIncludeRuleTreeResponse
-		withError        error
+		params              UpdateIncludeRuleTreeRequest
+		responseStatus      int
+		responseBody        string
+		responseHeaders     map[string]string
+		expectedPath        string
+		expectedResponse    *UpdateIncludeRuleTreeResponse
+		withError           error
+		expectedRequestBody string
 	}{
 		"200 OK - update rule tree": {
 			params: UpdateIncludeRuleTreeRequest{
@@ -572,7 +574,8 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 					},
 				},
 			},
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"comments":"version comment","rules":{"behaviors":[{"name":"origin","options":{"cacheKeyHostname":"ORIGIN_HOSTNAME","compress":true,"enableTrueClientIp":false,"forwardHostHeader":"REQUEST_HOST_HEADER","hostname":"origin.test.com","httpPort":80,"originType":"CUSTOMER"}},{"name":"cpCode","options":{"value":{"id":12345,"name":"my CP code"}}}],"children":[{"behaviors":[{"name":"gzipResponse","options":{"behavior":"ALWAYS"}}],"criteria":[{"name":"contentType","options":{"matchCaseSensitive":false,"matchOperator":"IS_ONE_OF","matchWildcard":true,"values":["text/html*","text/css*","application/x-javascript*"]}}],"name":"Compress Text Content","options":{}}],"comments":"default comment","customOverride":{"name":"mdc","overrideId":"cbo_12345"},"name":"default","options":{},"variables":[{"description":"This is a sample Property Manager variable.","hidden":false,"name":"VAR_NAME","sensitive":false,"value":"default value"}]}}`,
+			responseStatus:      http.StatusOK,
 			responseHeaders: map[string]string{
 				"x-limit-elements-per-property-limit":            "3000",
 				"x-limit-elements-per-property-remaining":        "3000",
@@ -1302,7 +1305,11 @@ func TestUpdateIncludeRuleTree(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				if len(test.responseHeaders) > 0 {
 					for header, value := range test.responseHeaders {
 						w.Header().Set(header, value)

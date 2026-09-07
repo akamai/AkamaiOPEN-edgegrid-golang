@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -184,13 +185,14 @@ func TestAppSec_UpdateReputationAnalysis(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           UpdateReputationAnalysisRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateReputationAnalysisResponse
-		withError        error
-		headers          http.Header
+		params              UpdateReputationAnalysisRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateReputationAnalysisResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateReputationAnalysisRequest{
@@ -198,6 +200,7 @@ func TestAppSec_UpdateReputationAnalysis(t *testing.T) {
 				Version:  15,
 				PolicyID: "AAAA_81230",
 			},
+			expectedRequestBody: `{"forwardToHTTPHeader":false,"forwardSharedIPToHTTPHeaderAndSIEM":false}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -234,6 +237,11 @@ func TestAppSec_UpdateReputationAnalysis(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -272,13 +280,14 @@ func TestAppSec_RemoveReputationAnalysis(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           RemoveReputationAnalysisRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *RemoveReputationAnalysisResponse
-		withError        error
-		headers          http.Header
+		params              RemoveReputationAnalysisRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *RemoveReputationAnalysisResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: RemoveReputationAnalysisRequest{
@@ -286,6 +295,7 @@ func TestAppSec_RemoveReputationAnalysis(t *testing.T) {
 				Version:  15,
 				PolicyID: "AAAA_81230",
 			},
+			expectedRequestBody: `{"forwardToHTTPHeader":false,"forwardSharedIPToHTTPHeaderAndSIEM":false}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -322,6 +332,11 @@ func TestAppSec_RemoveReputationAnalysis(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

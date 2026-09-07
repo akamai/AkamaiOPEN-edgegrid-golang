@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -253,13 +254,14 @@ func TestBotman_GetChallengeAction(t *testing.T) {
 func TestBotman_CreateChallengeAction(t *testing.T) {
 
 	tests := map[string]struct {
-		params           CreateChallengeActionRequest
-		prop             *CreateChallengeActionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              CreateChallengeActionRequest
+		prop                *CreateChallengeActionRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"201 Created": {
 			params: CreateChallengeActionRequest{
@@ -267,10 +269,11 @@ func TestBotman_CreateChallengeAction(t *testing.T) {
 				Version:     15,
 				JsonPayload: json.RawMessage(`{"testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     `{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"actionId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/response-actions/challenge-actions",
+			expectedRequestBody: `{"testKey":"testValue3"}`,
+			responseStatus:      http.StatusCreated,
+			responseBody:        `{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"actionId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/response-actions/challenge-actions",
 		},
 		"500 internal server error": {
 			params: CreateChallengeActionRequest{
@@ -336,6 +339,11 @@ func TestBotman_CreateChallengeAction(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -358,12 +366,13 @@ func TestBotman_CreateChallengeAction(t *testing.T) {
 // Test Update ChallengeAction
 func TestBotman_UpdateChallengeAction(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateChallengeActionRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpdateChallengeActionRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		expectedRequestBody string
+		withError           func(*testing.T, error)
 	}{
 		"200 Success": {
 			params: UpdateChallengeActionRequest{
@@ -372,10 +381,11 @@ func TestBotman_UpdateChallengeAction(t *testing.T) {
 				ActionID:    "cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 				JsonPayload: json.RawMessage(`{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`),
 			},
-			responseStatus:   http.StatusOK,
-			responseBody:     `{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
-			expectedResponse: map[string]interface{}{"actionId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
-			expectedPath:     "/appsec/v1/configs/43253/versions/10/response-actions/challenge-actions/cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
+			expectedRequestBody: `{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7","testKey":"testValue3"}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"actionId":"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey":"testValue3"}`,
+			expectedResponse:    map[string]interface{}{"actionId": "cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "testKey": "testValue3"},
+			expectedPath:        "/appsec/v1/configs/43253/versions/10/response-actions/challenge-actions/cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 		},
 		"500 internal server error": {
 			params: UpdateChallengeActionRequest{
@@ -457,6 +467,11 @@ func TestBotman_UpdateChallengeAction(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.Path)
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -580,12 +595,13 @@ func TestBotman_RemoveChallengeAction(t *testing.T) {
 // Test Update Google ReCaptcha Secret Key
 func TestBotman_UpdateGoogleReCaptchaSecretKey(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateGoogleReCaptchaSecretKeyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse map[string]interface{}
-		withError        func(*testing.T, error)
+		params              UpdateGoogleReCaptchaSecretKeyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    map[string]interface{}
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateGoogleReCaptchaSecretKeyRequest{
@@ -594,8 +610,9 @@ func TestBotman_UpdateGoogleReCaptchaSecretKey(t *testing.T) {
 				ActionID:  "cc9c3f89-e179-4892-89cf-d5e623ba9dc7",
 				SecretKey: "Test secret key",
 			},
-			responseStatus: http.StatusNoContent,
-			expectedPath:   "/appsec/v1/configs/43253/versions/10/response-actions/challenge-actions/cc9c3f89-e179-4892-89cf-d5e623ba9dc7/google-recaptcha-secret-key",
+			expectedRequestBody: `{"googleReCaptchaSecretKey":"Test secret key"}`,
+			responseStatus:      http.StatusNoContent,
+			expectedPath:        "/appsec/v1/configs/43253/versions/10/response-actions/challenge-actions/cc9c3f89-e179-4892-89cf-d5e623ba9dc7/google-recaptcha-secret-key",
 		},
 		"500 internal server error": {
 			params: UpdateGoogleReCaptchaSecretKeyRequest{
@@ -677,6 +694,11 @@ func TestBotman_UpdateGoogleReCaptchaSecretKey(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.Path)
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

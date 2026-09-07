@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 )
 
 type (
@@ -23,7 +23,7 @@ type (
 
 	// Group contain the information of the particular group
 	Group struct {
-		GroupID     int      `json:"groupId"`
+		GroupID     int64    `json:"groupId"`
 		GroupName   string   `json:"groupName"`
 		ContractIDs []string `json:"contractIds"`
 		Permissions []string `json:"permissions"`

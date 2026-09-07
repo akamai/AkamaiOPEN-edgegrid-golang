@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -67,7 +67,7 @@ type (
 		Retention *int `json:"retentionInSeconds,omitempty"`
 
 		// GroupID is an access group the namespace is assigned to.
-		GroupID *int `json:"groupId,omitempty"`
+		GroupID *int64 `json:"groupId,omitempty"`
 	}
 
 	// GetNamespaceResponse represents a response object details for the specified namespace.
@@ -82,7 +82,7 @@ type (
 		Retention *int `json:"retentionInSeconds"`
 
 		// GroupID is an access group the namespace is assigned to.
-		GroupID *int `json:"groupId"`
+		GroupID *int64 `json:"groupId"`
 
 		// ScheduledDeleteTime specifies the scheduled time for a namespace delete.
 		ScheduledDeleteTime *time.Time `json:"scheduledDeleteTime"`
@@ -103,7 +103,7 @@ type (
 		Retention *int `json:"retentionInSeconds"`
 
 		// GroupID is an access group the namespace is assigned to.
-		GroupID *int `json:"groupId"`
+		GroupID *int64 `json:"groupId"`
 	}
 
 	// UpdateNamespace represents a request body used to update a namespace
@@ -115,7 +115,7 @@ type (
 		Retention *int `json:"retentionInSeconds"`
 
 		// GroupID is an access group the namespace is assigned to.
-		GroupID *int `json:"groupId"`
+		GroupID *int64 `json:"groupId"`
 	}
 
 	// UpdateNamespaceResponse represents a response object details for the specified namespace.
@@ -289,9 +289,9 @@ func validateRetention(value interface{}) error {
 }
 
 func validateGroupID(value interface{}) error {
-	v, ok := value.(*int)
+	v, ok := value.(*int64)
 	if !ok {
-		return fmt.Errorf("type %T is invalid. Must be *int", value)
+		return fmt.Errorf("type %T is invalid. Must be *int64", value)
 	}
 	if v == nil {
 		return fmt.Errorf("cannot be blank")

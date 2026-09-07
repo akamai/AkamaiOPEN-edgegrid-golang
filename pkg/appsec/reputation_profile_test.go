@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -176,27 +177,27 @@ func TestAppSec_CreateReputationProfile(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := CreateReputationProfileRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestReputationProfile/ReputationProfile.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := CreateReputationProfileRequest{
+		ConfigID:       43253,
+		ConfigVersion:  15,
+		JsonPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           CreateReputationProfileRequest
-		prop             *CreateReputationProfileRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateReputationProfileResponse
-		withError        error
-		headers          http.Header
+		params              CreateReputationProfileRequest
+		prop                *CreateReputationProfileRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateReputationProfileResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
-			params: CreateReputationProfileRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -206,10 +207,7 @@ func TestAppSec_CreateReputationProfile(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/reputation-profiles",
 		},
 		"500 internal server error": {
-			params: CreateReputationProfileRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -231,6 +229,11 @@ func TestAppSec_CreateReputationProfile(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -261,41 +264,37 @@ func TestAppSec_UpdateReputationProfile(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := UpdateReputationProfileRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestReputationProfile/ReputationProfile.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := UpdateReputationProfileRequest{
+		ConfigID:            43253,
+		ConfigVersion:       15,
+		ReputationProfileId: 134644,
+		JsonPayloadRaw:      json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           UpdateReputationProfileRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateReputationProfileResponse
-		withError        error
-		headers          http.Header
+		params              UpdateReputationProfileRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateReputationProfileResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
-			params: UpdateReputationProfileRequest{
-				ConfigID:            43253,
-				ConfigVersion:       15,
-				ReputationProfileId: 134644,
-			},
+			params: req,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
-			responseStatus:   http.StatusCreated,
-			responseBody:     respData,
-			expectedResponse: &result,
-			expectedPath:     "/appsec/v1/configs/43253/versions/15/reputation-profiles/134644",
+			expectedRequestBody: reqData,
+			responseStatus:      http.StatusCreated,
+			responseBody:        respData,
+			expectedResponse:    &result,
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/reputation-profiles/134644",
 		},
 		"500 internal server error": {
-			params: UpdateReputationProfileRequest{
-				ConfigID:            43253,
-				ConfigVersion:       15,
-				ReputationProfileId: 134644,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -317,6 +316,11 @@ func TestAppSec_UpdateReputationProfile(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -207,13 +207,10 @@ func (p *papi) GetCPCodes(ctx context.Context, params GetCPCodesRequest) (*GetCP
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetCPCodes, ErrStructValidation, err)
 	}
 
-	uri := url.URL{Path: "/papi/v1/cpcodes"}
-	q := url.Values{}
-	q.Set("groupId", params.GroupID)
-	q.Set("contractId", params.ContractID)
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/cpcodes").
+		AddQueryParam("groupId", params.GroupID).
+		AddQueryParam("contractId", params.ContractID).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCPCodes, err)
 	}
@@ -241,16 +238,10 @@ func (p *papi) GetCPCode(ctx context.Context, params GetCPCodeRequest) (*GetCPCo
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetCPCode, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/cpcodes/%s", params.CPCodeID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetCPCode, err)
-	}
-	q := url.Values{}
-	q.Set("groupId", params.GroupID)
-	q.Set("contractId", params.ContractID)
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/cpcodes/%s", params.CPCodeID).
+		AddQueryParam("groupId", params.GroupID).
+		AddQueryParam("contractId", params.ContractID).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCPCode, err)
 	}
@@ -280,8 +271,7 @@ func (p *papi) GetCPCodeDetail(ctx context.Context, ID int) (*CPCodeDetailRespon
 	logger := p.Log(ctx)
 	logger.Debug("GetCPCodeDetail")
 
-	getURL := fmt.Sprintf("/cprg/v1/cpcodes/%d", ID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	req, err := request.NewGet(ctx, "/cprg/v1/cpcodes/%d", ID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCPCodeDetail, err)
 	}
@@ -309,19 +299,17 @@ func (p *papi) CreateCPCode(ctx context.Context, params CreateCPCodeRequest) (*C
 		return nil, fmt.Errorf("%s: %w: %v", ErrCreateCPCode, ErrStructValidation, err)
 	}
 
-	uri := url.URL{Path: "/papi/v1/cpcodes"}
-	q := url.Values{}
-	q.Set("groupId", params.GroupID)
-	q.Set("contractId", params.ContractID)
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/papi/v1/cpcodes").
+		AddQueryParam("groupId", params.GroupID).
+		AddQueryParam("contractId", params.ContractID).
+		WithBody(params.CPCode).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateCPCode, err)
 	}
 
 	var createResponse CreateCPCodeResponse
-	resp, err := p.Exec(req, &createResponse, params.CPCode)
+	resp, err := p.Exec(req, &createResponse)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateCPCode, err)
 	}
@@ -349,14 +337,15 @@ func (p *papi) UpdateCPCode(ctx context.Context, r UpdateCPCodeRequest) (*CPCode
 		return nil, fmt.Errorf("%s: %w: %v", ErrUpdateCPCode, ErrStructValidation, err)
 	}
 
-	updateURL := fmt.Sprintf("/cprg/v1/cpcodes/%d", r.ID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, updateURL, nil)
+	req, err := request.NewPut(ctx, "/cprg/v1/cpcodes/%d", r.ID).
+		WithBody(r).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateCPCode, err)
 	}
 
 	var cpCodeDetail CPCodeDetailResponse
-	resp, err := p.Exec(req, &cpCodeDetail, r)
+	resp, err := p.Exec(req, &cpCodeDetail)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateCPCode, err)
 	}

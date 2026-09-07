@@ -84,22 +84,22 @@ func (d *Mock) UpdateZone(ctx context.Context, req UpdateZoneRequest) error {
 	return args.Error(0)
 }
 
-func (d *Mock) GetZoneNames(ctx context.Context, req GetZoneNamesRequest) (*GetZoneNamesResponse, error) {
+func (d *Mock) ListRecordSetNames(ctx context.Context, req ListRecordSetNamesRequest) (*ListRecordSetNamesResponse, error) {
 	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*GetZoneNamesResponse), args.Error(1)
+	return args.Get(0).(*ListRecordSetNamesResponse), args.Error(1)
 }
 
-func (d *Mock) GetZoneNameTypes(ctx context.Context, req GetZoneNameTypesRequest) (*GetZoneNameTypesResponse, error) {
+func (d *Mock) ListRecordSetTypes(ctx context.Context, req ListRecordSetTypesRequest) (*ListRecordSetTypesResponse, error) {
 	args := d.Called(ctx, req)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
 	}
-	return args.Get(0).(*GetZoneNameTypesResponse), args.Error(1)
+	return args.Get(0).(*ListRecordSetTypesResponse), args.Error(1)
 }
 
 func (d *Mock) ListTSIGKeys(ctx context.Context, req ListTSIGKeysRequest) (*ListTSIGKeysResponse, error) {

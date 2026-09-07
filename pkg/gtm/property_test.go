@@ -5,12 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -190,16 +191,18 @@ func TestGTM_GetProperty(t *testing.T) {
 
 func TestGTM_CreateProperty(t *testing.T) {
 	tests := map[string]struct {
-		params           CreatePropertyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreatePropertyResponse
-		withError        bool
-		assertError      func(*testing.T, error)
-		headers          http.Header
+		params              CreatePropertyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreatePropertyResponse
+		withError           bool
+		assertError         func(*testing.T, error)
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
+			expectedRequestBody: `{"name":"origin","type":"weighted-round-robin","ipv6":false,"scoreAggregationType":"mean","useComputedTargets":false,"balanceByDownloadScore":false,"staticTTL":600,"lastModified":"","handoutLimit":0,"handoutMode":"normal","ghostDemandReporting":false,"trafficTargets":[{"datacenterId":3134,"enabled":true,"weight":50,"servers":["1.2.3.5"]},{"datacenterId":3133,"enabled":true,"weight":50,"servers":["1.2.3.4"]}],"livenessTests":[{"name":"health-check","peerCertificateVerification":false,"testInterval":60,"testObject":"/status","httpError3xx":true,"httpError4xx":true,"httpError5xx":true,"httpMethod":null,"httpRequestBody":null,"disabled":false,"testObjectProtocol":"HTTP","testObjectPort":80,"pre2023SecurityPosture":false,"disableNonstandardPortWarning":false,"testTimeout":25,"answersRequired":false,"recursionRequested":false,"alternateCACertificates":null}]}`,
 			params: CreatePropertyRequest{
 				Property: &Property{
 					BalanceByDownloadScore: false,
@@ -933,6 +936,11 @@ func TestGTM_CreateProperty(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -957,16 +965,18 @@ func TestGTM_CreateProperty(t *testing.T) {
 
 func TestGTM_UpdateProperty(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdatePropertyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdatePropertyResponse
-		withError        bool
-		assertError      func(*testing.T, error)
-		headers          http.Header
+		params              UpdatePropertyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdatePropertyResponse
+		withError           bool
+		assertError         func(*testing.T, error)
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
+			expectedRequestBody: `{"name":"origin","type":"weighted-round-robin","ipv6":false,"scoreAggregationType":"mean","useComputedTargets":false,"balanceByDownloadScore":false,"staticTTL":600,"lastModified":"","handoutLimit":0,"handoutMode":"normal","ghostDemandReporting":false,"trafficTargets":[{"datacenterId":3134,"enabled":true,"weight":50,"servers":["1.2.3.5"],"precedence":255},{"datacenterId":3133,"enabled":true,"weight":50,"servers":["1.2.3.4"]}],"livenessTests":[{"name":"health-check","peerCertificateVerification":false,"testInterval":60,"testObject":"/status","httpError3xx":true,"httpError4xx":true,"httpError5xx":true,"httpMethod":null,"httpRequestBody":null,"disabled":false,"testObjectProtocol":"HTTP","testObjectPort":80,"pre2023SecurityPosture":false,"disableNonstandardPortWarning":false,"testTimeout":25,"answersRequired":false,"recursionRequested":false,"alternateCACertificates":null}]}`,
 			params: UpdatePropertyRequest{
 				Property: &Property{
 					BalanceByDownloadScore: false,
@@ -1317,6 +1327,11 @@ func TestGTM_UpdateProperty(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

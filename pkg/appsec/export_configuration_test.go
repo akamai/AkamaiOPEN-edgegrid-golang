@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -19,6 +19,16 @@ func TestAppSec_ListExportConfiguration(t *testing.T) {
 
 	respData := compactJSON(loadFixtureBytes("testdata/TestExportConfiguration/ExportConfiguration.json"))
 	err := json.Unmarshal([]byte(respData), &result)
+	require.NoError(t, err)
+
+	aiRulesResult := GetExportConfigurationResponse{}
+	aiRulesRespData := compactJSON(loadFixtureBytes("testdata/TestAIRule/ExportAIRules.json"))
+	err = json.Unmarshal([]byte(aiRulesRespData), &aiRulesResult)
+	require.NoError(t, err)
+
+	aiRulesDisabledResult := GetExportConfigurationResponse{}
+	aiRulesDisabledRespData := compactJSON(loadFixtureBytes("testdata/TestExportConfiguration/ExportAIRulesDisabled.json"))
+	err = json.Unmarshal([]byte(aiRulesDisabledRespData), &aiRulesDisabledResult)
 	require.NoError(t, err)
 
 	tests := map[string]struct {
@@ -43,6 +53,34 @@ func TestAppSec_ListExportConfiguration(t *testing.T) {
 			responseBody:     string(respData),
 			expectedPath:     "/appsec/v1/export/configs/43253/versions/15?source=TF",
 			expectedResponse: &result,
+		},
+		"200 OK - with AI rules data": {
+			params: GetExportConfigurationRequest{
+				ConfigID: 77653,
+				Version:  25,
+				Source:   "TF",
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(aiRulesRespData),
+			expectedPath:     "/appsec/v1/export/configs/77653/versions/25?source=TF",
+			expectedResponse: &aiRulesResult,
+		},
+		"200 OK - DISABLED AI rules with empty list": {
+			params: GetExportConfigurationRequest{
+				ConfigID: 77653,
+				Version:  25,
+				Source:   "TF",
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json"},
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     string(aiRulesDisabledRespData),
+			expectedPath:     "/appsec/v1/export/configs/77653/versions/25?source=TF",
+			expectedResponse: &aiRulesDisabledResult,
 		},
 		"500 internal server error": {
 			params: GetExportConfigurationRequest{

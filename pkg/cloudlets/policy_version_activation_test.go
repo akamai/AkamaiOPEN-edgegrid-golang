@@ -3,6 +3,7 @@ package cloudlets
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -149,13 +150,14 @@ func TestListPolicyActivations(t *testing.T) {
 
 func TestActivatePolicyVersion(t *testing.T) {
 	tests := map[string]struct {
-		parameters         ActivatePolicyVersionRequest
-		responseStatus     int
-		uri                string
-		responseBody       string
-		expectedResponse   []PolicyActivation
-		expectedActivation PolicyVersionActivation
-		withError          func(*testing.T, error)
+		parameters          ActivatePolicyVersionRequest
+		responseStatus      int
+		uri                 string
+		responseBody        string
+		expectedResponse    []PolicyActivation
+		expectedActivation  PolicyVersionActivation
+		expectedRequestBody string
+		withError           func(*testing.T, error)
 	}{
 		"200 Policy version activation": {
 			responseStatus: http.StatusOK,
@@ -167,6 +169,7 @@ func TestActivatePolicyVersion(t *testing.T) {
 					AdditionalPropertyNames: []string{"www.rc-cloudlet.com"},
 				},
 			},
+			expectedRequestBody: `{"network":"staging","additionalPropertyNames":["www.rc-cloudlet.com"]}`,
 			responseBody: `[
 				{
 					"serviceVersion": null,
@@ -281,6 +284,11 @@ func TestActivatePolicyVersion(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -249,17 +250,19 @@ func TestNetworkList_CreateNetworkList(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           CreateNetworkListRequest
-		prop             *CreateNetworkListRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateNetworkListResponse
-		withError        error
-		headers          http.Header
+		params              CreateNetworkListRequest
+		prop                *CreateNetworkListRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateNetworkListResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
-			params: CreateNetworkListRequest{Name: "Test"},
+			params:              CreateNetworkListRequest{Name: "Test"},
+			expectedRequestBody: `{"name":"Test","type":"","description":"","list":null}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -292,6 +295,11 @@ func TestNetworkList_CreateNetworkList(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
 				assert.Equal(t, test.expectedPath, r.URL.String())
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -329,16 +337,18 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           UpdateNetworkListRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateNetworkListResponse
-		withError        error
-		headers          http.Header
+		params              UpdateNetworkListRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateNetworkListResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
-			params: UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test"},
+			params:              UpdateNetworkListRequest{Name: "TEST", UniqueID: "Test"},
+			expectedRequestBody: `{"name":"TEST","type":"","description":"","syncPoint":0,"list":null,"uniqueId":"Test"}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -371,6 +381,11 @@ func TestNetworkList_UpdateNetworkList(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
 				assert.Equal(t, test.expectedPath, r.URL.String())
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

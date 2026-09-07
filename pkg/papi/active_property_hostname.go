@@ -5,12 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/request"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -401,45 +400,17 @@ func (p *papi) ListActivePropertyHostnames(ctx context.Context, params ListActiv
 		return nil, fmt.Errorf("%s: %w: %s", ErrListActivePropertyHostnames, ErrStructValidation, err)
 	}
 
-	baseURL := fmt.Sprintf("/papi/v1/properties/%s/hostnames", params.PropertyID)
-
-	parsedURL, err := url.Parse(baseURL)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse base URL: %s", ErrListActivePropertyHostnames, err)
-	}
-
-	query := parsedURL.Query()
-	if params.ContractID != "" {
-		query.Set("contractId", params.ContractID)
-	}
-	if params.GroupID != "" {
-		query.Set("groupId", params.GroupID)
-	}
-	if params.Sort != "" {
-		query.Set("sort", string(params.Sort))
-	}
-	if params.Hostname != "" {
-		query.Set("hostname", params.Hostname)
-	}
-	if params.CnameTo != "" {
-		query.Set("cnameTo", params.CnameTo)
-	}
-	if params.Network != "" {
-		query.Set("network", string(params.Network))
-	}
-	if params.IncludeCertStatus {
-		query.Set("includeCertStatus", fmt.Sprintf("%t", params.IncludeCertStatus))
-	}
-	if params.Limit != 0 {
-		query.Set("limit", fmt.Sprintf("%d", params.Limit))
-	}
-	if params.Offset != 0 {
-		query.Set("offset", fmt.Sprintf("%d", params.Offset))
-	}
-
-	parsedURL.RawQuery = query.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, parsedURL.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/properties/%s/hostnames", params.PropertyID).
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("sort", string(params.Sort), params.Sort != "").
+		AddQueryParamIf("hostname", params.Hostname, params.Hostname != "").
+		AddQueryParamIf("cnameTo", params.CnameTo, params.CnameTo != "").
+		AddQueryParamIf("network", string(params.Network), params.Network != "").
+		AddQueryParamIf("includeCertStatus", strconv.FormatBool(params.IncludeCertStatus), params.IncludeCertStatus).
+		AddQueryParamIf("limit", strconv.Itoa(params.Limit), params.Limit != 0).
+		AddQueryParamIf("offset", strconv.Itoa(params.Offset), params.Offset != 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListActivePropertyHostnames, err)
 	}
@@ -466,30 +437,12 @@ func (p *papi) GetActivePropertyHostnamesDiff(ctx context.Context, params GetAct
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetActivePropertyHostnamesDiff, ErrStructValidation, err)
 	}
 
-	baseURL := fmt.Sprintf("/papi/v1/properties/%s/hostnames/diff", params.PropertyID)
-
-	parsedURL, err := url.Parse(baseURL)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse base URL: %s", ErrGetActivePropertyHostnamesDiff, err)
-	}
-
-	query := parsedURL.Query()
-	if params.ContractID != "" {
-		query.Set("contractId", params.ContractID)
-	}
-	if params.GroupID != "" {
-		query.Set("groupId", params.GroupID)
-	}
-	if params.Limit != 0 {
-		query.Set("limit", fmt.Sprintf("%d", params.Limit))
-	}
-	if params.Offset != 0 {
-		query.Set("offset", fmt.Sprintf("%d", params.Offset))
-	}
-
-	parsedURL.RawQuery = query.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, parsedURL.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/properties/%s/hostnames/diff", params.PropertyID).
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("limit", strconv.Itoa(params.Limit), params.Limit != 0).
+		AddQueryParamIf("offset", strconv.Itoa(params.Offset), params.Offset != 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetActivePropertyHostnamesDiff, err)
 	}

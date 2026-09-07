@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -111,17 +112,19 @@ func TestAppSec_CreateSecurityPolicyWithDefaultProtectionsSuccess(t *testing.T) 
 	}
 
 	tests := map[string]struct {
-		params           CreateSecurityPolicyWithDefaultProtectionsRequest
-		responseStatus   int
-		responseBody     string
-		expectedMethod   string
-		expectedPath     string
-		expectedResponse *CreateSecurityPolicyResponse
-		withError        error
-		headers          http.Header
+		params              CreateSecurityPolicyWithDefaultProtectionsRequest
+		responseStatus      int
+		responseBody        string
+		expectedMethod      string
+		expectedPath        string
+		expectedResponse    *CreateSecurityPolicyResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 OK": {
-			params: requestParams,
+			params:              requestParams,
+			expectedRequestBody: `{"ConfigID":43253,"Version":15,"policyName":"akamaitools","policyPrefix":"AK01"}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
@@ -158,6 +161,11 @@ func TestAppSec_CreateSecurityPolicyWithDefaultProtectionsSuccess(t *testing.T) 
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, test.expectedMethod, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

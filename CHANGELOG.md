@@ -1,5 +1,59 @@
 # RELEASE NOTES
 
+## 14.0.0 (Sep 7, 2026)
+
+### BREAKING CHANGES:
+
+* Datastream
+  * `GetDatasetFieldsRequest.ProductID` changed from `*string` to `string` — callers that previously passed a pointer (e.g. `ProductID: ptr.To("value")`) must now pass the value directly (e.g. `ProductID: "value"`), and any pointer dereference on the field must be removed.
+  * `GetDatasetFieldsRequest` now has a required `LogType` field — existing code that constructs this struct without `LogType` will fail validation. Valid values are `CDN` and `ANSWERX`.
+
+* DNS
+  * Renamed `GetZoneNames` to `ListRecordSetNames` and `GetZoneNameTypes` to `ListRecordSetTypes` to clarify their true purpose of retrieving record set names and types rather than zone names.
+  * Renamed `ZoneName` field to `RecordName` in `ListRecordSetTypesRequest` struct to accurately reflect the parameter's semantic meaning.
+  * Replaced error variables `ErrGetZoneNames` and `ErrGetZoneNameTypes` with `ErrListRecordSetNames` and `ErrListRecordSetTypes` in recordsets package.
+  * Changed `GroupID` field type from `int` to `int64` in `Group` struct.
+
+* EdgeWorkers
+  * Changed `GroupID` field type from `int` to `int64` in `EdgeWorkerIDRequestBody`, `CreateEdgeWorkerIDRequest`, and `ListEdgeWorkersIDRequest` structs.
+  * Changed `GroupID` field type from `*int` to `*int64` in `GetNamespaceResponse`, `ListEdgeKVNamespacesResponse`, `Namespace`, `NamespaceRequest`, and `UpdateNamespace` structs.
+
+### FEATURES/ENHANCEMENTS:
+
+* General
+  * Updated various dependencies.
+
+* Appsec
+  * (Beta) Added URL Evasion Defense API.
+  * Added support for the AI Rules API:
+    * `ListAIRules`
+    * `GetAIRulesStatus`
+    * `GetAIRuleAction`
+    * `UpdateAIRulesStatus`
+    * `UpdateAIRuleAction`
+  * Extended the `GetExportConfiguration` response to include AI rules data for security policies.
+
+* BOTMAN
+  * Added `BotAnalyticsSettings` interface containing the following methods:
+    * [GetBotAnalyticsSettings](https://techdocs.akamai.com/bot-manager/reference/get-bot-analytics-settings)
+    * [UpdateBotAnalyticsSettings](https://techdocs.akamai.com/bot-manager/reference/put-bot-analytics-settings)
+  * Added `BotAnalyticsSettingsValues` interface containing the following method:
+    * [GetBotAnalyticsSettingsValues](https://techdocs.akamai.com/bot-manager/reference/get-bot-analytics-settings-values)
+
+* DataStream
+  * Added support for managing and listing `AnswerX` streams.
+  * Added the [`ListAnswerXServiceIDs`](https://techdocs.akamai.com/datastream2/reference/get-answerx-ssids/) method to list `AnswerX` service IDs.
+  * Added `AnswerXServiceID` and `AnswerXServiceDetail` types, and the related `AnswerXServiceIDs` fields on `StreamConfiguration`, `DetailedStreamVersion`, `StreamDetails`, and `ListAnswerXServiceIDsResponse`, to support `AnswerX` service IDs in request and response payloads.
+  * Extended [`CreateStream`](https://techdocs.akamai.com/datastream2/reference/post-stream-answerx), [`UpdateStream`](https://techdocs.akamai.com/datastream2/reference/put-stream-answerx ), `GetStream`, `DeleteStream`, `ListStreams`, `ActivateStream`, `DeactivateStream`, and `GetActivationHistory` to support `ANSWERX` as a valid `LogType` value.
+
+* DNS
+  * Added the `MultiProviderDNSSEC` struct to `ZoneCreate` and `ZoneResponse` structs to support multi-signer DNSSEC configuration on Edge DNS zones.
+
+### BUG FIXES:
+
+* DNS
+  * Fixed an issue in the `CreateZone` and `UpdateZone` methods where passing an empty `SignAndServeAlgorithm` field resulted in an API error.
+
 ## 13.4.0 (Jul 27, 2026)
 
 ### FEATURES/ENHANCEMENTS:

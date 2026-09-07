@@ -3,13 +3,14 @@ package edgeworkers
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -124,19 +125,19 @@ func TestListNamespaces(t *testing.T) {
 						Name:        "testNs_1",
 						Retention:   ptr.To(0),
 						GeoLocation: "EU",
-						GroupID:     ptr.To(0),
+						GroupID:     ptr.To(int64(0)),
 					},
 					{
 						Name:        "testNs_2",
 						Retention:   ptr.To(86400),
 						GeoLocation: "JP",
-						GroupID:     ptr.To(123),
+						GroupID:     ptr.To(int64(123)),
 					},
 					{
 						Name:        "testNs_3",
 						Retention:   ptr.To(315360000),
 						GeoLocation: "US",
-						GroupID:     ptr.To(234),
+						GroupID:     ptr.To(int64(234)),
 					},
 				},
 			},
@@ -208,7 +209,7 @@ func TestGetNamespace(t *testing.T) {
 				Name:            "testNs",
 				Retention:       ptr.To(86400),
 				GeoLocation:     "EU",
-				GroupID:         ptr.To(123456),
+				GroupID:         ptr.To(int64(123456)),
 				NamespaceStatus: "READY",
 			},
 		},
@@ -230,7 +231,7 @@ func TestGetNamespace(t *testing.T) {
 				Name:            "testNs",
 				Retention:       ptr.To(86400),
 				GeoLocation:     "US",
-				GroupID:         ptr.To(123456),
+				GroupID:         ptr.To(int64(123456)),
 				NamespaceStatus: "READY",
 			},
 		},
@@ -252,7 +253,7 @@ func TestGetNamespace(t *testing.T) {
 			expectedResult: &GetNamespaceResponse{
 				Retention:           ptr.To(86400),
 				GeoLocation:         "US",
-				GroupID:             ptr.To(123456),
+				GroupID:             ptr.To(int64(123456)),
 				Name:                "testNs",
 				ScheduledDeleteTime: ptr.To(test.NewTimeFromString(t, "2025-06-12T10:38:33.779Z")),
 				NamespaceStatus:     "DELETING",
@@ -335,12 +336,13 @@ func TestGetNamespace(t *testing.T) {
 
 func TestCreateNamespace(t *testing.T) {
 	tests := map[string]struct {
-		params         CreateEdgeKVNamespaceRequest
-		withError      func(*testing.T, error)
-		expectedPath   string
-		responseStatus int
-		responseBody   string
-		expectedResult *Namespace
+		params              CreateEdgeKVNamespaceRequest
+		withError           func(*testing.T, error)
+		expectedPath        string
+		responseStatus      int
+		responseBody        string
+		expectedResult      *Namespace
+		expectedRequestBody string
 	}{
 		"200 OK - production": {
 			params: CreateEdgeKVNamespaceRequest{
@@ -349,11 +351,12 @@ func TestCreateNamespace(t *testing.T) {
 					Name:        "testNs",
 					Retention:   ptr.To(0),
 					GeoLocation: "EU",
-					GroupID:     ptr.To(0),
+					GroupID:     ptr.To(int64(0)),
 				},
 			},
-			expectedPath:   "/edgekv/v1/networks/production/namespaces",
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"namespace":"testNs","geoLocation":"EU","retentionInSeconds":0,"groupId":0}`,
+			expectedPath:        "/edgekv/v1/networks/production/namespaces",
+			responseStatus:      http.StatusOK,
 			responseBody: `{
 				"namespace": "testNs",
 				"retentionInSeconds": 0,
@@ -364,7 +367,7 @@ func TestCreateNamespace(t *testing.T) {
 				Name:        "testNs",
 				Retention:   ptr.To(0),
 				GeoLocation: "EU",
-				GroupID:     ptr.To(0),
+				GroupID:     ptr.To(int64(0)),
 			},
 		},
 		"200 OK - staging": {
@@ -373,7 +376,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "testNs",
 					Retention: ptr.To(86400),
-					GroupID:   ptr.To(123),
+					GroupID:   ptr.To(int64(123)),
 				},
 			},
 			expectedPath:   "/edgekv/v1/networks/staging/namespaces",
@@ -388,7 +391,7 @@ func TestCreateNamespace(t *testing.T) {
 				Name:        "testNs",
 				Retention:   ptr.To(86400),
 				GeoLocation: "US",
-				GroupID:     ptr.To(123),
+				GroupID:     ptr.To(int64(123)),
 			},
 		},
 		"400 bad request - invalid geoLocation for staging network": {
@@ -398,7 +401,7 @@ func TestCreateNamespace(t *testing.T) {
 					Name:        "testNs",
 					Retention:   ptr.To(0),
 					GeoLocation: "JP",
-					GroupID:     ptr.To(0),
+					GroupID:     ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -436,7 +439,7 @@ func TestCreateNamespace(t *testing.T) {
 					Name:        "testNs",
 					Retention:   ptr.To(0),
 					GeoLocation: "INVALID",
-					GroupID:     ptr.To(0),
+					GroupID:     ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -473,7 +476,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "testNs",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -520,7 +523,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "testNs",
 					Retention: ptr.To(86399),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -534,7 +537,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "testNs",
 					Retention: ptr.To(315360001),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -548,7 +551,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "namespaceNameThatHasMoreThan32Letters",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -562,7 +565,7 @@ func TestCreateNamespace(t *testing.T) {
 				NamespaceRequest: NamespaceRequest{
 					Name:      "groupIDLessThan0",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(-1),
+					GroupID:   ptr.To(int64(-1)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -577,6 +580,11 @@ func TestCreateNamespace(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if tc.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
@@ -596,12 +604,13 @@ func TestCreateNamespace(t *testing.T) {
 
 func TestUpdateNamespace(t *testing.T) {
 	tests := map[string]struct {
-		params         UpdateEdgeKVNamespaceRequest
-		withError      func(*testing.T, error)
-		expectedPath   string
-		responseStatus int
-		responseBody   string
-		expectedResult *UpdateNamespaceResponse
+		params              UpdateEdgeKVNamespaceRequest
+		withError           func(*testing.T, error)
+		expectedPath        string
+		responseStatus      int
+		responseBody        string
+		expectedResult      *UpdateNamespaceResponse
+		expectedRequestBody string
 	}{
 		"200 OK - production": {
 			params: UpdateEdgeKVNamespaceRequest{
@@ -609,11 +618,12 @@ func TestUpdateNamespace(t *testing.T) {
 				UpdateNamespace: UpdateNamespace{
 					Name:      "testNs",
 					Retention: ptr.To(86410),
-					GroupID:   ptr.To(123456),
+					GroupID:   ptr.To(int64(123456)),
 				},
 			},
-			expectedPath:   "/edgekv/v1/networks/production/namespaces/testNs",
-			responseStatus: http.StatusOK,
+			expectedRequestBody: `{"namespace":"testNs","retentionInSeconds":86410,"groupId":123456}`,
+			expectedPath:        "/edgekv/v1/networks/production/namespaces/testNs",
+			responseStatus:      http.StatusOK,
 			responseBody: `{
 				"retentionInSeconds": 86410,
 				"geoLocation": "EU",
@@ -625,7 +635,7 @@ func TestUpdateNamespace(t *testing.T) {
 				Name:            "testNs",
 				Retention:       ptr.To(86410),
 				GeoLocation:     "EU",
-				GroupID:         ptr.To(123456),
+				GroupID:         ptr.To(int64(123456)),
 				NamespaceStatus: "READY",
 			},
 		},
@@ -635,7 +645,7 @@ func TestUpdateNamespace(t *testing.T) {
 				UpdateNamespace: UpdateNamespace{
 					Name:      "testNs",
 					Retention: ptr.To(86410),
-					GroupID:   ptr.To(123456),
+					GroupID:   ptr.To(int64(123456)),
 				},
 			},
 			expectedPath:   "/edgekv/v1/networks/staging/namespaces/testNs",
@@ -651,7 +661,7 @@ func TestUpdateNamespace(t *testing.T) {
 				Name:            "testNs",
 				Retention:       ptr.To(86410),
 				GeoLocation:     "US",
-				GroupID:         ptr.To(123456),
+				GroupID:         ptr.To(int64(123456)),
 				NamespaceStatus: "READY",
 			},
 		},
@@ -661,7 +671,7 @@ func TestUpdateNamespace(t *testing.T) {
 				UpdateNamespace: UpdateNamespace{
 					Name:      "testNs_2",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -708,7 +718,7 @@ func TestUpdateNamespace(t *testing.T) {
 				UpdateNamespace: UpdateNamespace{
 					Name:      "namespaceNameThatHasMoreThan32Letters",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(0),
+					GroupID:   ptr.To(int64(0)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -722,7 +732,7 @@ func TestUpdateNamespace(t *testing.T) {
 				UpdateNamespace: UpdateNamespace{
 					Name:      "groupIDLessThan0",
 					Retention: ptr.To(0),
-					GroupID:   ptr.To(-1),
+					GroupID:   ptr.To(int64(-1)),
 				},
 			},
 			withError: func(t *testing.T, err error) {
@@ -737,6 +747,11 @@ func TestUpdateNamespace(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if tc.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)
@@ -987,13 +1002,14 @@ func TestGetScheduledDeleteTime(t *testing.T) {
 
 func TestRescheduleNamespaceDelete(t *testing.T) {
 	tests := map[string]struct {
-		params           RescheduleNamespaceDeleteRequest
-		withError        func(*testing.T, error)
-		expectedPath     string
-		responseStatus   int
-		responseBody     string
-		expectedResult   *RescheduleNamespaceDeleteResponse
-		retryAfterHeader string
+		params              RescheduleNamespaceDeleteRequest
+		withError           func(*testing.T, error)
+		expectedPath        string
+		responseStatus      int
+		responseBody        string
+		expectedResult      *RescheduleNamespaceDeleteResponse
+		retryAfterHeader    string
+		expectedRequestBody string
 	}{
 		"200 reschedule namespace delete": {
 			params: RescheduleNamespaceDeleteRequest{
@@ -1003,9 +1019,10 @@ func TestRescheduleNamespaceDelete(t *testing.T) {
 					test.NewTimeFromString(t, "2025-06-05T19:58:37.565Z"),
 				},
 			},
-			expectedPath:     "/edgekv/v1/networks/staging/namespaces/testNs/status/scheduled-delete",
-			responseStatus:   http.StatusOK,
-			retryAfterHeader: "209278",
+			expectedRequestBody: `{"scheduledDeleteTime":"2025-06-05T19:58:37.565Z"}`,
+			expectedPath:        "/edgekv/v1/networks/staging/namespaces/testNs/status/scheduled-delete",
+			responseStatus:      http.StatusOK,
+			retryAfterHeader:    "209278",
 			responseBody: `{
 				"scheduledDeleteTime": "2025-06-05T19:58:37.565Z"
 			}`,
@@ -1083,6 +1100,11 @@ func TestRescheduleNamespaceDelete(t *testing.T) {
 				assert.Equal(t, http.MethodPut, r.Method)
 				if len(tc.retryAfterHeader) > 0 {
 					w.Header().Set("Retry-After", tc.retryAfterHeader)
+				}
+				if tc.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, tc.expectedRequestBody, string(body))
 				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))

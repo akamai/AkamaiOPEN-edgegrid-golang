@@ -123,3 +123,13 @@ func (m *Mock) GetAppSecConfigs(ctx context.Context, r GetAppSecConfigsRequest) 
 
 	return args.Get(0).([]AppSecConfigDetails), args.Error(1)
 }
+
+func (m *Mock) ListAnswerXServiceIDs(ctx context.Context, r ListAnswerXServiceIDsRequest) (*ListAnswerXServiceIDsResponse, error) {
+	args := m.Called(ctx, r)
+
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+
+	return args.Get(0).(*ListAnswerXServiceIDsResponse), args.Error(1)
+}

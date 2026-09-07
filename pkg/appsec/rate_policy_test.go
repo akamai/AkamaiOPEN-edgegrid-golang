@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -176,27 +177,27 @@ func TestAppSec_CreateRatePolicy(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := CreateRatePolicyRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePolicy.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := CreateRatePolicyRequest{
+		ConfigID:       43253,
+		ConfigVersion:  15,
+		JsonPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           CreateRatePolicyRequest
-		prop             *CreateRatePolicyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateRatePolicyResponse
-		withError        error
-		headers          http.Header
+		params              CreateRatePolicyRequest
+		prop                *CreateRatePolicyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateRatePolicyResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
-			params: CreateRatePolicyRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -206,10 +207,7 @@ func TestAppSec_CreateRatePolicy(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/rate-policies",
 		},
 		"500 internal server error": {
-			params: CreateRatePolicyRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -231,6 +229,11 @@ func TestAppSec_CreateRatePolicy(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -262,27 +265,27 @@ func TestAppSec_CreateRatePolicy_NegativeMatch(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := CreateRatePolicyRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePoliciesHosts.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := CreateRatePolicyRequest{
+		ConfigID:       43253,
+		ConfigVersion:  15,
+		JsonPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           CreateRatePolicyRequest
-		prop             *CreateRatePolicyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateRatePolicyResponse
-		withError        error
-		headers          http.Header
+		params              CreateRatePolicyRequest
+		prop                *CreateRatePolicyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateRatePolicyResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"201 Created": {
-			params: CreateRatePolicyRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -292,10 +295,7 @@ func TestAppSec_CreateRatePolicy_NegativeMatch(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/rate-policies",
 		},
 		"500 internal server error": {
-			params: CreateRatePolicyRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -317,6 +317,11 @@ func TestAppSec_CreateRatePolicy_NegativeMatch(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -347,27 +352,27 @@ func TestAppSec_UpdateRatePolicy(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := UpdateRatePolicyRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestRatePolicies/RatePolicy.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := UpdateRatePolicyRequest{
+		ConfigID:       43253,
+		ConfigVersion:  15,
+		RatePolicyID:   134644,
+		JsonPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           UpdateRatePolicyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateRatePolicyResponse
-		withError        error
-		headers          http.Header
+		params              UpdateRatePolicyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateRatePolicyResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
-			params: UpdateRatePolicyRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				RatePolicyID:  134644,
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -377,11 +382,7 @@ func TestAppSec_UpdateRatePolicy(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/rate-policies/134644",
 		},
 		"500 internal server error": {
-			params: UpdateRatePolicyRequest{
-				ConfigID:      43253,
-				ConfigVersion: 15,
-				RatePolicyID:  134644,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -404,6 +405,11 @@ func TestAppSec_UpdateRatePolicy(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
 				w.WriteHeader(test.responseStatus)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
 					assert.NoError(t, err)

@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -156,13 +157,14 @@ func TestAppSec_CreateActivationsWithHostMove(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           CreateActivationsWithHostMoveRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateActivationsWithHostMoveResponse
-		withError        error
-		headers          http.Header
+		params              CreateActivationsWithHostMoveRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateActivationsWithHostMoveResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 OK": {
 			params: CreateActivationsWithHostMoveRequest{
@@ -176,6 +178,7 @@ func TestAppSec_CreateActivationsWithHostMove(t *testing.T) {
 				AcknowledgedInvalidHostsByConfig: []AcknowledgedInvalidHostsByConfig{},
 				HostsToMove:                      []HostToMove{},
 			},
+			expectedRequestBody: `{"action":"ACTIVATE","network":"STAGING","note":"Test activation with host move","notificationEmails":["test@example.com"],"acknowledgedInvalidHosts":[],"acknowledgedInvalidHostsByConfig":[],"hostsToMove":[],"supportId":""}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json"},
 			},
@@ -345,6 +348,11 @@ func TestAppSec_CreateActivationsWithHostMove(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

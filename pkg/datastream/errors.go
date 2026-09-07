@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/errs"
 )
 
 type (
@@ -28,6 +28,44 @@ type (
 		Instance string `json:"instance,omitempty"`
 		Detail   string `json:"detail"`
 	}
+)
+
+var (
+	// ErrGetProperties is returned when GetProperties fails
+	ErrGetProperties = errors.New("list properties")
+
+	// ErrGetDatasetFields is returned when GetDatasetFields fails
+	ErrGetDatasetFields = errors.New("list data set fields")
+
+	// ErrGetAppSecConfigs is returned when GetAppSecConfigs fails
+	ErrGetAppSecConfigs = errors.New("list appsec configs")
+
+	// ErrListAnswerXServiceIDs is returned when ListAnswerXServiceIDs fails
+	ErrListAnswerXServiceIDs = errors.New("list answerx service ids")
+
+	// ErrCreateStream represents an error when stream creation fails
+	ErrCreateStream = errors.New("creating stream")
+
+	// ErrGetStream represents error when fetching stream fails
+	ErrGetStream = errors.New("fetching stream information")
+
+	// ErrUpdateStream represents error when updating stream fails
+	ErrUpdateStream = errors.New("updating stream")
+
+	// ErrDeleteStream represents error when deleting stream fails
+	ErrDeleteStream = errors.New("deleting stream")
+
+	// ErrListStreams represents error when listing streams fails
+	ErrListStreams = errors.New("listing streams")
+
+	// ErrActivateStream is returned when ActivateStream fails
+	ErrActivateStream = errors.New("activate stream")
+
+	// ErrDeactivateStream is returned when DeactivateStream fails
+	ErrDeactivateStream = errors.New("deactivate stream")
+
+	// ErrGetActivationHistory is returned when GetActivationHistory fails
+	ErrGetActivationHistory = errors.New("view activation history")
 )
 
 // Error parses an error from the response

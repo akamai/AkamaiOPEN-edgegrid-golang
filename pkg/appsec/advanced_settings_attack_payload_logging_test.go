@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -175,26 +176,26 @@ func TestAppSec_UpdateAdvancedSettingsAttackPayloadLogging(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := UpdateAdvancedSettingsAttackPayloadLoggingRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsAttackPayloadLogging/AdvancedSettingsAttackPayloadLoggingConfig.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := UpdateAdvancedSettingsAttackPayloadLoggingRequest{
+		ConfigID:       43253,
+		Version:        15,
+		JSONPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           UpdateAdvancedSettingsAttackPayloadLoggingRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateAdvancedSettingsAttackPayloadLoggingResponse
-		withError        error
-		headers          http.Header
+		params              UpdateAdvancedSettingsAttackPayloadLoggingRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateAdvancedSettingsAttackPayloadLoggingResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
-			params: UpdateAdvancedSettingsAttackPayloadLoggingRequest{
-				ConfigID: 43253,
-				Version:  15,
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -204,10 +205,7 @@ func TestAppSec_UpdateAdvancedSettingsAttackPayloadLogging(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/advanced-settings/logging/attack-payload",
 		},
 		"500 internal server error": {
-			params: UpdateAdvancedSettingsAttackPayloadLoggingRequest{
-				ConfigID: 43253,
-				Version:  15,
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -230,6 +228,11 @@ func TestAppSec_UpdateAdvancedSettingsAttackPayloadLogging(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
 				w.WriteHeader(test.responseStatus)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
 					assert.NoError(t, err)
@@ -259,27 +262,27 @@ func TestAppSec_UpdateAdvancedSettingsAttackPayloadLoggingPolicy(t *testing.T) {
 	err := json.Unmarshal([]byte(respData), &result)
 	require.NoError(t, err)
 
-	req := UpdateAdvancedSettingsAttackPayloadLoggingRequest{}
-
 	reqData := compactJSON(loadFixtureBytes("testdata/TestAdvancedSettingsAttackPayloadLogging/AdvancedSettingsAttackPayloadLoggingPolicy.json"))
-	err = json.Unmarshal([]byte(reqData), &req)
-	require.NoError(t, err)
+	req := UpdateAdvancedSettingsAttackPayloadLoggingRequest{
+		ConfigID:       43253,
+		Version:        15,
+		PolicyID:       "test_policy",
+		JSONPayloadRaw: json.RawMessage(reqData),
+	}
 
 	tests := map[string]struct {
-		params           UpdateAdvancedSettingsAttackPayloadLoggingRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateAdvancedSettingsAttackPayloadLoggingResponse
-		withError        error
-		headers          http.Header
+		params              UpdateAdvancedSettingsAttackPayloadLoggingRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateAdvancedSettingsAttackPayloadLoggingResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
-			params: UpdateAdvancedSettingsAttackPayloadLoggingRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "test_policy",
-			},
+			params:              req,
+			expectedRequestBody: reqData,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -289,11 +292,7 @@ func TestAppSec_UpdateAdvancedSettingsAttackPayloadLoggingPolicy(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/security-policies/test_policy/advanced-settings/logging/attack-payload",
 		},
 		"500 internal server error": {
-			params: UpdateAdvancedSettingsAttackPayloadLoggingRequest{
-				ConfigID: 43253,
-				Version:  15,
-				PolicyID: "test_policy",
-			},
+			params:         req,
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{
@@ -316,6 +315,11 @@ func TestAppSec_UpdateAdvancedSettingsAttackPayloadLoggingPolicy(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
 				w.WriteHeader(test.responseStatus)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
 					assert.NoError(t, err)

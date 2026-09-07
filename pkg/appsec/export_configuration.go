@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -245,6 +245,7 @@ type (
 			EvasivePathMatch               *EvasivePathMatchexp                  `json:"evasivePathMatch,omitempty"`
 			RequestBody                    *RequestBody                          `json:"requestBody,omitempty"`
 			BotManagement                  *BotManagement                        `json:"botManagement,omitempty"`
+			AIRules                        *ExportAIRulesResponse                `json:"aiRules,omitempty"`
 		} `json:"securityPolicies"`
 		Siem            *Siemexp            `json:"siem,omitempty"`
 		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
@@ -302,15 +303,16 @@ type (
 
 	// AdvancedOptionsexp is returned as part of GetExportConfigurationResponse.
 	AdvancedOptionsexp struct {
-		Logging              *Loggingexp                        `json:"logging"`
-		AttackPayloadLogging *AttackPayloadLogging              `json:"attackPayloadLogging"`
-		EvasivePathMatch     *EvasivePathMatchexp               `json:"evasivePathMatch,omitempty"`
-		JA4Fingerprint       *JA4Fingerprintexp                 `json:"ja4Fingerprint,omitempty"`
-		Prefetch             *Prefetch                          `json:"prefetch"`
-		PragmaHeader         *GetAdvancedSettingsPragmaResponse `json:"pragmaHeader,omitempty"`
-		AsePenaltyBox        *AsePenaltyBoxexp                  `json:"asePenaltyBox,omitempty"`
-		RequestBody          *RequestBody                       `json:"requestBody,omitempty"`
-		PIILearning          *PIILearningexp                    `json:"piiLearning,omitempty"`
+		Logging              *Loggingexp                                   `json:"logging"`
+		AttackPayloadLogging *AttackPayloadLogging                         `json:"attackPayloadLogging"`
+		EvasivePathMatch     *EvasivePathMatchexp                          `json:"evasivePathMatch,omitempty"`
+		JA4Fingerprint       *JA4Fingerprintexp                            `json:"ja4Fingerprint,omitempty"`
+		Prefetch             *Prefetch                                     `json:"prefetch"`
+		PragmaHeader         *GetAdvancedSettingsPragmaResponse            `json:"pragmaHeader,omitempty"`
+		AsePenaltyBox        *AsePenaltyBoxexp                             `json:"asePenaltyBox,omitempty"`
+		RequestBody          *RequestBody                                  `json:"requestBody,omitempty"`
+		PIILearning          *PIILearningexp                               `json:"piiLearning,omitempty"`
+		URLEvasionDefense    *GetAdvancedSettingsURLEvasionDefenseResponse `json:"urlEvasion,omitempty"`
 	}
 
 	// CustomDenyListexp is returned as part of GetExportConfigurationResponse.
@@ -607,6 +609,7 @@ type (
 	// AdvancedSettings is returned as part of GetExportConfigurationResponse
 	AdvancedSettings struct {
 		BotAnalyticsCookieSettings              map[string]interface{} `json:"botAnalyticsCookieSettings,omitempty"`
+		BotAnalyticsSettings                    map[string]interface{} `json:"botAnalyticsSettings,omitempty"`
 		ClientSideSecuritySettings              map[string]interface{} `json:"clientSideSecuritySettings,omitempty"`
 		TransactionalEndpointProtectionSettings map[string]interface{} `json:"transactionalEndpointProtectionSettings,omitempty"`
 		UserRiskResponseStrategySettings        map[string]interface{} `json:"userRiskResponseStrategySettings,omitempty"`
@@ -646,6 +649,41 @@ type (
 	TransactionalEndpoints struct {
 		BotProtection           []map[string]interface{} `json:"botProtection,omitempty"`
 		BotProtectionExceptions map[string]interface{}   `json:"botProtectionExceptions,omitempty"`
+	}
+
+	// ExportAIRulesResponse is the aiRules object nested inside a security policy in the export response.
+	ExportAIRulesResponse struct {
+		AIRuleStatus string               `json:"aiRuleStatus"`
+		AIRules      []ExportPolicyAIRule `json:"aiRules"`
+	}
+
+	// ExportPolicyAIRule is an AI rule as returned in the exported response.
+	ExportPolicyAIRule struct {
+		RuleID              int64                            `json:"ruleId"`
+		RuleVersion         int64                            `json:"ruleVersion"`
+		Title               string                           `json:"title"`
+		RiskScoreGroup      string                           `json:"riskScoreGroup"`
+		RuleDescription     string                           `json:"ruleDescription"`
+		Action              string                           `json:"action"`
+		ConditionExceptions []ExportAIRuleConditionException `json:"conditionExceptions"`
+	}
+
+	// ExportAIRuleConditionException is a single condition exception entry within an exported AI rule.
+	ExportAIRuleConditionException struct {
+		Exception *ExportAIRuleException `json:"exception"`
+	}
+
+	// ExportAIRuleException holds the exception selectors for an exported AI rule.
+	ExportAIRuleException struct {
+		Selectors []ExportAIRuleExceptionSelector `json:"selectors"`
+	}
+
+	// ExportAIRuleExceptionSelector is a single selector entry within an AI rule exception.
+	ExportAIRuleExceptionSelector struct {
+		Names          []string `json:"names"`
+		Selector       string   `json:"selector"`
+		Wildcard       bool     `json:"wildcard"`
+		RiskScoreGroup string   `json:"riskScoreGroup"`
 	}
 )
 

@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"slices"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/errs"
 )
 
 var (

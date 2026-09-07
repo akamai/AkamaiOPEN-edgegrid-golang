@@ -4,7 +4,7 @@ package cloudcertificates
 import (
 	"context"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 )
 
 // CloudCertificates defines the interface for Akamai Cloud Certificate Manager operations.

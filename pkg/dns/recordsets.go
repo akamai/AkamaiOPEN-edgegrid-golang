@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -74,6 +74,27 @@ type (
 
 	// UpdateRecordSetsRequest contains request parameters for UpdateRecordSets
 	UpdateRecordSetsRequest RecordSetsRequest
+
+	// ListRecordSetNamesRequest contains request parameters for ListRecordSetNames
+	ListRecordSetNamesRequest struct {
+		Zone string
+	}
+
+	// ListRecordSetNamesResponse contains record set names for a zone
+	ListRecordSetNamesResponse struct {
+		Names []string `json:"names"`
+	}
+
+	// ListRecordSetTypesRequest contains request parameters for ListRecordSetTypes
+	ListRecordSetTypesRequest struct {
+		Zone       string
+		RecordName string
+	}
+
+	// ListRecordSetTypesResponse contains record set types for a record name
+	ListRecordSetTypesResponse struct {
+		Types []string `json:"types"`
+	}
 )
 
 var (
@@ -83,6 +104,10 @@ var (
 	ErrGetRecordSets = errors.New("get record sets")
 	// ErrUpdateRecordSets is returned when UpdateRecordSets fails
 	ErrUpdateRecordSets = errors.New("update record sets")
+	// ErrListRecordSetNames is returned when ListRecordSetNames fails
+	ErrListRecordSetNames = errors.New("list record set names")
+	// ErrListRecordSetTypes is returned when ListRecordSetTypes fails
+	ErrListRecordSetTypes = errors.New("list record set types")
 )
 
 // Validate validates GetRecordSetsRequest
@@ -105,6 +130,21 @@ func (r UpdateRecordSetsRequest) Validate() error {
 	return edgegriderr.ParseValidationErrors(validation.Errors{
 		"Zone":       validation.Validate(r.Zone, validation.Required),
 		"RecordSets": validation.Validate(r.RecordSets, validation.Required),
+	})
+}
+
+// Validate validates ListRecordSetNamesRequest
+func (r ListRecordSetNamesRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Zone": validation.Validate(r.Zone, validation.Required),
+	})
+}
+
+// Validate validates ListRecordSetTypesRequest
+func (r ListRecordSetTypesRequest) Validate() error {
+	return edgegriderr.ParseValidationErrors(validation.Errors{
+		"Zone":       validation.Validate(r.Zone, validation.Required),
+		"RecordName": validation.Validate(r.RecordName, validation.Required),
 	})
 }
 
@@ -269,4 +309,60 @@ func (d *dns) UpdateRecordSets(ctx context.Context, params UpdateRecordSetsReque
 	}
 
 	return nil
+}
+
+func (d *dns) ListRecordSetNames(ctx context.Context, params ListRecordSetNamesRequest) (*ListRecordSetNamesResponse, error) {
+	logger := d.Log(ctx)
+	logger.Debug("ListRecordSetNames")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListRecordSetNames, ErrStructValidation, err)
+	}
+
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names", params.Zone)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ListRecordSetNames request: %w", err)
+	}
+
+	var result ListRecordSetNamesResponse
+	resp, err := d.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("ListRecordSetNames request failed: %w", err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, d.Error(resp)
+	}
+
+	return &result, nil
+}
+
+func (d *dns) ListRecordSetTypes(ctx context.Context, params ListRecordSetTypesRequest) (*ListRecordSetTypesResponse, error) {
+	logger := d.Log(ctx)
+	logger.Debug("ListRecordSetTypes")
+
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%s: %w: %s", ErrListRecordSetTypes, ErrStructValidation, err)
+	}
+
+	getURL := fmt.Sprintf("/config-dns/v2/zones/%s/names/%s/types", params.Zone, params.RecordName)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ListRecordSetTypes request: %w", err)
+	}
+
+	var result ListRecordSetTypesResponse
+	resp, err := d.Exec(req, &result)
+	if err != nil {
+		return nil, fmt.Errorf("ListRecordSetTypes request failed: %w", err)
+	}
+	defer session.CloseResponseBody(resp)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, d.Error(resp)
+	}
+
+	return &result, nil
 }

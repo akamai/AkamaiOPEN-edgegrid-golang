@@ -6,12 +6,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -362,15 +362,15 @@ func (p *papi) ActivateInclude(ctx context.Context, params ActivateIncludeReques
 		ActivationTypeActivate,
 	}
 
-	uri := fmt.Sprintf("/papi/v1/includes/%s/activations", params.IncludeID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/papi/v1/includes/%s/activations", params.IncludeID).
+		WithBody(requestBody).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrActivateInclude, err)
 	}
 
 	var result ActivationIncludeResponse
-	resp, err := p.Exec(req, &result, requestBody)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateInclude, err)
 	}
@@ -409,15 +409,15 @@ func (p *papi) DeactivateInclude(ctx context.Context, params DeactivateIncludeRe
 		ActivationTypeDeactivate,
 	}
 
-	uri := fmt.Sprintf("/papi/v1/includes/%s/activations", params.IncludeID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/papi/v1/includes/%s/activations", params.IncludeID).
+		WithBody(requestBody).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeactivateInclude, err)
 	}
 
 	var result DeactivationIncludeResponse
-	resp, err := p.Exec(req, &result, requestBody)
+	resp, err := p.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeactivateInclude, err)
 	}
@@ -444,17 +444,10 @@ func (p *papi) CancelIncludeActivation(ctx context.Context, params CancelInclude
 		return nil, fmt.Errorf("%s: %w: %s", ErrCancelIncludeActivation, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/includes/%s/activations/%s", params.IncludeID, params.ActivationID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCancelIncludeActivation, err)
-	}
-
-	q := uri.Query()
-	q.Add("contractId", params.ContractID)
-	q.Add("groupId", params.GroupID)
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/papi/v1/includes/%s/activations/%s", params.IncludeID, params.ActivationID).
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParam("groupId", params.GroupID).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCancelIncludeActivation, err)
 	}
@@ -481,9 +474,7 @@ func (p *papi) GetIncludeActivation(ctx context.Context, params GetIncludeActiva
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetIncludeActivation, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/papi/v1/includes/%s/activations/%s", params.IncludeID, params.ActivationID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/papi/v1/includes/%s/activations/%s", params.IncludeID, params.ActivationID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetIncludeActivation, err)
 	}
@@ -524,17 +515,10 @@ func (p *papi) ListIncludeActivations(ctx context.Context, params ListIncludeAct
 		return nil, fmt.Errorf("%s: %w: %s", ErrListIncludeActivations, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/papi/v1/includes/%s/activations", params.IncludeID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListIncludeActivations, err)
-	}
-
-	q := uri.Query()
-	q.Add("contractId", params.ContractID)
-	q.Add("groupId", params.GroupID)
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/includes/%s/activations", params.IncludeID).
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParam("groupId", params.GroupID).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListIncludeActivations, err)
 	}

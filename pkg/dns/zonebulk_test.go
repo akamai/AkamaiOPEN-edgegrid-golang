@@ -3,11 +3,12 @@ package dns
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -170,14 +171,15 @@ func TestDNS_GetBulkZoneCreateResult(t *testing.T) {
 
 func TestDNS_CreateBulkZones(t *testing.T) {
 	tests := map[string]struct {
-		params           CreateBulkZonesRequest
-		zones            BulkZonesCreate
-		query            ZoneQueryString
-		responseStatus   int
-		responseBody     string
-		expectedResponse *CreateBulkZonesResponse
-		expectedPath     string
-		withError        error
+		params              CreateBulkZonesRequest
+		zones               BulkZonesCreate
+		query               ZoneQueryString
+		responseStatus      int
+		responseBody        string
+		expectedResponse    *CreateBulkZonesResponse
+		expectedPath        string
+		expectedRequestBody string
+		withError           error
 	}{
 		"200 Created": {
 			params: CreateBulkZonesRequest{
@@ -209,7 +211,8 @@ func TestDNS_CreateBulkZones(t *testing.T) {
 				},
 				ZoneQueryString: ZoneQueryString{Contract: "1-2ABCDE", Group: "testgroup"},
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"zones":[{"zone":"one.testbulk.net","type":"secondary","masters":["1.2.3.4","1.2.3.10"],"comment":"testing bulk operations","signAndServe":false,"outboundZoneTransfer":{"ACL":["192.0.2.156/24"],"enabled":true,"notifyTargets":["192.0.2.192"],"tsigKey":{"name":"other.com.akamai.com3","algorithm":"hmac-sha1","secret":"fakeR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="}}},{"zone":"two.testbulk.net","type":"secondary","masters":["1.2.3.6","1.2.3.70"],"comment":"testing bulk operations","signAndServe":false}]}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
     "requestId": "93e97a28-4e05-45f4-8b9a-cebd71155949",
@@ -263,6 +266,11 @@ func TestDNS_CreateBulkZones(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -441,12 +449,13 @@ func TestDNS_GetBulkZoneDeleteResult(t *testing.T) {
 
 func TestDNS_DeleteBulkZones(t *testing.T) {
 	tests := map[string]struct {
-		params           DeleteBulkZonesRequest
-		responseStatus   int
-		responseBody     string
-		expectedResponse *DeleteBulkZonesResponse
-		expectedPath     string
-		withError        error
+		params              DeleteBulkZonesRequest
+		responseStatus      int
+		responseBody        string
+		expectedResponse    *DeleteBulkZonesResponse
+		expectedPath        string
+		expectedRequestBody string
+		withError           error
 	}{
 		"200 Created": {
 			params: DeleteBulkZonesRequest{
@@ -455,7 +464,8 @@ func TestDNS_DeleteBulkZones(t *testing.T) {
 				},
 				BypassSafetyChecks: ptr.To(true),
 			},
-			responseStatus: http.StatusCreated,
+			expectedRequestBody: `{"zones":["one.testbulk.net","two.testbulk.net"]}`,
+			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
     "requestId": "93e97a28-4e05-45f4-8b9a-cebd71155949",
@@ -496,6 +506,11 @@ func TestDNS_DeleteBulkZones(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

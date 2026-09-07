@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -229,27 +229,11 @@ func (p *papi) GetPropertyHostnameActivation(ctx context.Context, params GetProp
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetPropertyHostnameActivation, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s/hostname-activations/%s",
-		params.PropertyID,
-		params.HostnameActivationID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPropertyHostnameActivation, err)
-	}
-	q := uri.Query()
-	if params.GroupID != "" {
-		q.Add("groupId", params.GroupID)
-	}
-	if params.ContractID != "" {
-		q.Add("contractId", params.ContractID)
-	}
-	if params.IncludeHostnames {
-		q.Add("includeHostnames", "true")
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/properties/%s/hostname-activations/%s", params.PropertyID, params.HostnameActivationID).
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		AddQueryParamIf("includeHostnames", "true", params.IncludeHostnames).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPropertyHostnameActivation, err)
 	}
@@ -275,31 +259,14 @@ func (p *papi) ListPropertyHostnameActivations(ctx context.Context, params ListP
 		return nil, fmt.Errorf("%s: %w: %s", ErrListPropertyHostnameActivations, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s/hostname-activations",
-		params.PropertyID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPropertyHostnameActivations, err)
-	}
-	q := uri.Query()
-	if params.ContractID != "" {
-		q.Add("contractId", params.ContractID)
-	}
-	if params.GroupID != "" {
-		q.Add("groupId", params.GroupID)
-	}
-	if params.Offset != 0 {
-		q.Add("offset", strconv.Itoa(params.Offset))
-	}
-	if params.Limit != 0 {
-		q.Add("limit", strconv.Itoa(params.Limit))
-	}
-	uri.RawQuery = q.Encode()
-
 	var result ListPropertyHostnameActivationsResponse
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/papi/v1/properties/%s/hostname-activations", params.PropertyID).
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("offset", strconv.Itoa(params.Offset), params.Offset != 0).
+		AddQueryParamIf("limit", strconv.Itoa(params.Limit), params.Limit != 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPropertyHostnameActivations, err)
 	}
@@ -325,25 +292,10 @@ func (p *papi) CancelPropertyHostnameActivation(ctx context.Context, params Canc
 		return nil, fmt.Errorf("%s: %w: %s", ErrCancelPropertyHostnameActivation, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/papi/v1/properties/%s/hostname-activations/%s",
-		params.PropertyID,
-		params.HostnameActivationID),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCancelPropertyHostnameActivation, err)
-	}
-	q := uri.Query()
-	if params.GroupID != "" {
-		q.Add("groupId", params.GroupID)
-	}
-	if params.ContractID != "" {
-		q.Add("contractId", params.ContractID)
-	}
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/papi/v1/properties/%s/hostname-activations/%s", params.PropertyID, params.HostnameActivationID).
+		AddQueryParamIf("groupId", params.GroupID, params.GroupID != "").
+		AddQueryParamIf("contractId", params.ContractID, params.ContractID != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCancelPropertyHostnameActivation, err)
 	}

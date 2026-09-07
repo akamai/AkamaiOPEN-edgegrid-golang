@@ -3,11 +3,12 @@ package botman
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -104,12 +105,13 @@ func TestBotman_GetCustomBotCategorySequence(t *testing.T) {
 // Test Update CustomBotCategorySequence.
 func TestBotman_UpdateCustomBotCategorySequence(t *testing.T) {
 	tests := map[string]struct {
-		params           UpdateCustomBotCategorySequenceRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CustomBotCategorySequenceResponse
-		withError        func(*testing.T, error)
+		params              UpdateCustomBotCategorySequenceRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CustomBotCategorySequenceResponse
+		withError           func(*testing.T, error)
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateCustomBotCategorySequenceRequest{
@@ -117,8 +119,9 @@ func TestBotman_UpdateCustomBotCategorySequence(t *testing.T) {
 				Version:  15,
 				Sequence: []string{"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "d79285df-e399-43e8-bb0f-c0d980a88e4f", "afa309b8-4fd5-430e-a061-1c61df1d2ac2"},
 			},
-			responseStatus: http.StatusOK,
-			responseBody:   `{"sequence":["cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "d79285df-e399-43e8-bb0f-c0d980a88e4f", "afa309b8-4fd5-430e-a061-1c61df1d2ac2"]}`,
+			expectedRequestBody: `{"sequence":["cc9c3f89-e179-4892-89cf-d5e623ba9dc7","d79285df-e399-43e8-bb0f-c0d980a88e4f","afa309b8-4fd5-430e-a061-1c61df1d2ac2"]}`,
+			responseStatus:      http.StatusOK,
+			responseBody:        `{"sequence":["cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "d79285df-e399-43e8-bb0f-c0d980a88e4f", "afa309b8-4fd5-430e-a061-1c61df1d2ac2"]}`,
 			expectedResponse: &CustomBotCategorySequenceResponse{
 				Sequence: []string{"cc9c3f89-e179-4892-89cf-d5e623ba9dc7", "d79285df-e399-43e8-bb0f-c0d980a88e4f", "afa309b8-4fd5-430e-a061-1c61df1d2ac2"},
 			},
@@ -188,6 +191,11 @@ func TestBotman_UpdateCustomBotCategorySequence(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

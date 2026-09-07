@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v13/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -303,14 +304,15 @@ func TestAppSec_CreateURLProtectionPolicyHostnamePaths(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           CreateURLProtectionPolicyRequest
-		prop             *CreateURLProtectionPolicyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *CreateURLProtectionPolicyResponse
-		withError        error
-		headers          http.Header
+		params              CreateURLProtectionPolicyRequest
+		prop                *CreateURLProtectionPolicyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *CreateURLProtectionPolicyResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 
 		"201 Created with HostnamePaths": {
@@ -362,6 +364,7 @@ func TestAppSec_CreateURLProtectionPolicyHostnamePaths(t *testing.T) {
 					},
 				},
 			},
+			expectedRequestBody: `{"name":"Test URL Protection Policy with Hostname Paths","bypassCondition":{"atomicConditions":[{"className":"NetworkListCondition","value":["12345_10CLIENTLIST","54321_123"]},{"className":"RequestHeaderCondition","name":["my-custom-header"],"nameWildcard":true,"value":["my-custom-value"],"valueCase":false,"valueWildcard":false}]},"rateThreshold":400,"hostnamePaths":[{"hostname":"custom.com","paths":["/asd","/my-test-path"]}],"intelligentLoadShedding":false,"categories":[{"type":"BOTS","positiveMatch":null},{"type":"CLIENT_LIST","positiveMatch":true,"listIds":["12345_10CLIENTLIST","54321_123"]}]}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -421,6 +424,7 @@ func TestAppSec_CreateURLProtectionPolicyHostnamePaths(t *testing.T) {
 					},
 				},
 			},
+			expectedRequestBody: `{"name":"Test URL Protection Policy with Hostname Paths","bypassCondition":{"atomicConditions":[{"className":"NetworkListCondition","value":["12345_10CLIENTLIST","54321_123"]},{"className":"RequestHeaderCondition","name":["my-custom-header"],"nameWildcard":true,"value":["my-custom-value"],"valueCase":false,"valueWildcard":false}]},"rateThreshold":195,"apiDefinitions":[{"apiDefinitionId":3216157,"definedResources":true,"resourceIds":[],"undefinedResources":true}],"intelligentLoadShedding":false,"categories":[{"type":"BOTS","positiveMatch":null},{"type":"CLIENT_LIST","positiveMatch":true,"listIds":["12345_10CLIENTLIST","54321_123"]}]}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -540,6 +544,11 @@ func TestAppSec_CreateURLProtectionPolicyHostnamePaths(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))
@@ -577,13 +586,14 @@ func TestAppSec_UpdateURLProtectionPolicy(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := map[string]struct {
-		params           UpdateURLProtectionPolicyRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateURLProtectionPolicyResponse
-		withError        error
-		headers          http.Header
+		params              UpdateURLProtectionPolicyRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedResponse    *UpdateURLProtectionPolicyResponse
+		withError           error
+		headers             http.Header
+		expectedRequestBody string
 	}{
 		"200 Success": {
 			params: UpdateURLProtectionPolicyRequest{
@@ -595,6 +605,7 @@ func TestAppSec_UpdateURLProtectionPolicy(t *testing.T) {
 					MaxRateThreshold: 400,
 				},
 			},
+			expectedRequestBody: `{"name":"Test URL Protection Policy with Hostname Paths","rateThreshold":400,"intelligentLoadShedding":false}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
 			},
@@ -694,6 +705,11 @@ func TestAppSec_UpdateURLProtectionPolicy(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPut, r.Method)
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				if len(test.responseBody) > 0 {
 					_, err := w.Write([]byte(test.responseBody))

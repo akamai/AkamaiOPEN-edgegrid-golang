@@ -1,0 +1,15 @@
+{
+  "configId": 77653,
+  "configName": "Example WAF Config",
+  "version": 25,
+  "securityPolicies": [
+    {
+      "id": "abc1_22345",
+      "name": "Secondary Policy",
+      "aiRules": {
+        "aiRuleStatus": "DISABLED",
+        "aiRules": []
+      }
+    }
+  ]
+}
