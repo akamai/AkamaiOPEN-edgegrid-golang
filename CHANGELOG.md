@@ -82,9 +82,8 @@
 ### BUG FIXES:
 
 
-
-
-
+* General
+  * Removed an unmaintained `github.com/mitchellh/go-homedir` dependency, replacing its usage in the `edgegrid` package with the standard library's `os.UserHomeDir()` ([I#227](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/issues/227)).  
 
 
 

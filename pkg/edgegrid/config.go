@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/mitchellh/go-homedir"
 	"gopkg.in/ini.v1"
 )
 
@@ -125,7 +125,7 @@ func (c *Config) FromFile(file string, section string) error {
 		requiredOptions = []string{"host", "client_token", "client_secret", "access_token"}
 	)
 
-	path, err := homedir.Expand(file)
+	path, err := expandHomeDir(file)
 	if err != nil {
 		return fmt.Errorf("invalid path: %w", err)
 	}
@@ -228,4 +228,22 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("%w: %q", ErrHostContainsSlashAtTheEnd, c.Host)
 	}
 	return nil
+}
+
+// expandHomeDir expands a leading "~" in path to the current user's home directory.
+func expandHomeDir(path string) (string, error) {
+	if len(path) == 0 || path[0] != '~' {
+		return path, nil
+	}
+
+	if len(path) > 1 && path[1] != '/' && path[1] != '\\' {
+		return "", errors.New("cannot expand user-specific home dir")
+	}
+
+	dir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(dir, path[1:]), nil
 }
