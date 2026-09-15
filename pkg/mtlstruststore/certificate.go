@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -92,18 +93,20 @@ func (m *mtlstruststore) ValidateCertificates(ctx context.Context, params Valida
 	logger.Debug("ValidateCertificates")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrValidateCertificates, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrValidateCertificates, ErrStructValidation, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/mtls-edge-truststore/v2/certificates/validate", nil)
+	req, err := request.NewPost(ctx, "/mtls-edge-truststore/v2/certificates/validate").
+		WithBody(params).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrValidateCertificates, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrValidateCertificates, err)
 	}
 
 	var result ValidateCertificatesResponse
-	resp, err := m.Exec(req, &result, params)
+	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrValidateCertificates, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrValidateCertificates, err)
 	}
 	defer session.CloseResponseBody(resp)
 
