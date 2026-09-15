@@ -149,6 +149,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 	[
         {
             "type": "cdMatchRule",
+			"akaRuleId": "rule-id",
             "end": 0,
             "id": 0,
             "matchURL": null,
@@ -184,10 +185,11 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 			expectedObject: MatchRules{
 				&MatchRulePR{
-					Type:     "cdMatchRule",
-					End:      0,
-					ID:       0,
-					MatchURL: "",
+					AkaRuleID: "rule-id",
+					Type:      "cdMatchRule",
+					End:       0,
+					ID:        0,
+					MatchURL:  "",
 					Matches: []MatchCriteriaPR{
 						{
 							CaseSensitive: false,
@@ -222,6 +224,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 	[
         {
             "type": "frMatchRule",
+			"akaRuleId": "rule-id",
             "end": 0,
             "id": 0,
             "matchURL": null,
@@ -254,10 +257,11 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 			expectedObject: MatchRules{
 				&MatchRuleFR{
-					Type:     "frMatchRule",
-					End:      0,
-					ID:       0,
-					MatchURL: "",
+					AkaRuleID: "rule-id",
+					Type:      "frMatchRule",
+					End:       0,
+					ID:        0,
+					MatchURL:  "",
 					Matches: []MatchCriteriaFR{
 						{
 							CaseSensitive: false,
@@ -279,6 +283,18 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 					},
 					Name:  "Rule3",
 					Start: 0,
+				},
+			},
+		},
+
+		"valid MatchRuleER": {
+			responseBody: `[{"type":"erMatchRule","akaRuleId":"rule-id","statusCode":301,"redirectURL":"abc.com"}]`,
+			expectedObject: MatchRules{
+				&MatchRuleER{
+					AkaRuleID:   "rule-id",
+					Type:        "erMatchRule",
+					StatusCode:  301,
+					RedirectURL: "abc.com",
 				},
 			},
 		},
@@ -316,6 +332,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 	[
         {
             "type": "apMatchRule",
+			"akaRuleId": "rule-id",
             "end": 0,
             "passThroughPercent": 50.50,
             "id": 0,
@@ -348,6 +365,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 `,
 			expectedObject: MatchRules{
 				&MatchRuleAP{
+					AkaRuleID:          "rule-id",
 					Type:               "apMatchRule",
 					End:                0,
 					PassThroughPercent: ptr.To(50.50),
@@ -383,6 +401,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 		{
             "name": "rule 10",
             "type": "asMatchRule",
+			"akaRuleId": "rule-id",
             "matchURL": "http://source.com/test1",
 
             "forwardSettings": {
@@ -419,9 +438,10 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 	]`,
 			expectedObject: MatchRules{
 				&MatchRuleAS{
-					Name:     "rule 10",
-					Type:     "asMatchRule",
-					MatchURL: "http://source.com/test1",
+					AkaRuleID: "rule-id",
+					Name:      "rule 10",
+					Type:      "asMatchRule",
+					MatchURL:  "http://source.com/test1",
 					ForwardSettings: ForwardSettingsAS{
 						OriginID:  "origin_remote_1",
 						PathAndQS: "/cpaths/test1.html",
@@ -460,6 +480,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 	[
 		{
 			"type": "igMatchRule",
+			"akaRuleId": "rule-id",
 			"end": 0,
 			"allowDeny": "allow",
 			"id": 0,
@@ -491,6 +512,7 @@ func TestUnmarshalJSONMatchRules(t *testing.T) {
 	]`,
 			expectedObject: MatchRules{
 				&MatchRuleRC{
+					AkaRuleID: "rule-id",
 					Name:      "Rule3",
 					Type:      "igMatchRule",
 					AllowDeny: Allow,

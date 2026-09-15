@@ -34,6 +34,25 @@
 
 
 
+* Cloudlets
+  * Added support for `AkaRuleID` field to all v3 match rule types.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

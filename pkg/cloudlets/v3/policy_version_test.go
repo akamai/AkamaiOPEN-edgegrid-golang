@@ -313,7 +313,7 @@ func TestGetPolicyVersion(t *testing.T) {
 			"matchURL": null,
 			"disabled": true,
 			"matches": [],
-			"akaRuleId": "6d3bbc891fc0d8ce",
+			"akaRuleId": "abc123",
 			"statusCode": 301,
 			"redirectURL": "/path",
 			"useIncomingQueryString": false
@@ -335,6 +335,7 @@ func TestGetPolicyVersion(t *testing.T) {
 				ID:            6551242,
 				MatchRules: MatchRules{
 					&MatchRuleER{
+						AkaRuleID:              "abc123",
 						Type:                   "erMatchRule",
 						End:                    0,
 						ID:                     0,
@@ -368,7 +369,7 @@ func TestGetPolicyVersion(t *testing.T) {
 		    "matchRules": [
 		        {
 		            "type": "asMatchRule",
-		            "akaRuleId": "f58014ee0cc17ce",
+		            "akaRuleId": "abc123",
 		            "end": 0,
 		            "forwardSettings": {
 		                "originId": "originremote2",
@@ -405,8 +406,9 @@ func TestGetPolicyVersion(t *testing.T) {
 				Description: ptr.To("Initial version"),
 				MatchRules: MatchRules{
 					&MatchRuleAS{
-						Type: "asMatchRule",
-						End:  0,
+						AkaRuleID: "abc123",
+						Type:      "asMatchRule",
+						End:       0,
 						ForwardSettings: ForwardSettingsAS{
 							OriginID:               "originremote2",
 							PathAndQS:              "/sales/Q1/",
@@ -451,7 +453,7 @@ func TestGetPolicyVersion(t *testing.T) {
 		    "matchRules": [
 		        {
 		            "type": "cdMatchRule",
-		            "akaRuleId": "b151ca68e51f5a61",
+		            "akaRuleId": "abc123",
 		            "end": 0,
 		            "forwardSettings": {
 		                "originId": "fr_test_krk_dc2",
@@ -488,8 +490,9 @@ func TestGetPolicyVersion(t *testing.T) {
 				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T09:46:57.395Z")),
 				MatchRules: MatchRules{
 					&MatchRulePR{
-						Type: "cdMatchRule",
-						End:  0,
+						AkaRuleID: "abc123",
+						Type:      "cdMatchRule",
+						End:       0,
 						ForwardSettings: ForwardSettingsPR{
 							OriginID: "fr_test_krk_dc2",
 							Percent:  11,
@@ -786,7 +789,7 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "asMatchRule",
-            "akaRuleId": "f58014ee0cc17ce",
+            "akaRuleId": "abc123",
             "end": 0,
             "forwardSettings": {
                 "originId": "originremote2",
@@ -854,8 +857,9 @@ func TestCreatePolicyVersion(t *testing.T) {
 				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules: MatchRules{
 					&MatchRuleAS{
-						Type: "asMatchRule",
-						End:  0,
+						AkaRuleID: "abc123",
+						Type:      "asMatchRule",
+						End:       0,
 						ForwardSettings: ForwardSettingsAS{
 							OriginID:               "originremote2",
 							PathAndQS:              "/sales/Q1/",
@@ -2133,7 +2137,7 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "frMatchRule",
-            "akaRuleId": "893947a3d5a85c1b",
+            "akaRuleId": "abc123",
             "end": 0,
             "forwardSettings": {
                 "pathAndQS": "/test_images/otherimage.jpg",
@@ -2170,7 +2174,7 @@ func TestCreatePolicyVersion(t *testing.T) {
         },
         {
             "type": "frMatchRule",
-            "akaRuleId": "aa379d230efcded0",
+            "akaRuleId": "abc456",
             "end": 0,
             "forwardSettings": {
                 "pathAndQS": "/test_images/simpleimg.jpg",
@@ -2184,7 +2188,7 @@ func TestCreatePolicyVersion(t *testing.T) {
         },
         {
             "type": "frMatchRule",
-            "akaRuleId": "1afe03d843996766",
+            "akaRuleId": "abc789",
             "end": 0,
             "forwardSettings": {
                 "pathAndQS": "/test_images/otherimage.jpg",
@@ -2211,12 +2215,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 				PolicyVersion: 6,
 				MatchRules: MatchRules{
 					&MatchRuleFR{
-						Type:     "frMatchRule",
-						End:      0,
-						ID:       0,
-						MatchURL: "",
-						Name:     "rul3",
-						Start:    0,
+						AkaRuleID: "abc123",
+						Type:      "frMatchRule",
+						End:       0,
+						ID:        0,
+						MatchURL:  "",
+						Name:      "rul3",
+						Start:     0,
 						Matches: []MatchCriteriaFR{
 							{
 								MatchType:     "hostname",
@@ -2247,12 +2252,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 						},
 					},
 					&MatchRuleFR{
-						Name:     "rule 1",
-						Type:     "frMatchRule",
-						Start:    0,
-						End:      0,
-						ID:       0,
-						MatchURL: "ddd.aaa",
+						AkaRuleID: "abc456",
+						Name:      "rule 1",
+						Type:      "frMatchRule",
+						Start:     0,
+						End:       0,
+						ID:        0,
+						MatchURL:  "ddd.aaa",
 						ForwardSettings: ForwardSettingsFR{
 							PathAndQS:              "/test_images/simpleimg.jpg",
 							UseIncomingQueryString: true,
@@ -2260,12 +2266,13 @@ func TestCreatePolicyVersion(t *testing.T) {
 						},
 					},
 					&MatchRuleFR{
-						Name:     "rule 2",
-						Type:     "frMatchRule",
-						Start:    0,
-						End:      0,
-						ID:       0,
-						MatchURL: "abc.com",
+						AkaRuleID: "abc789",
+						Name:      "rule 2",
+						Type:      "frMatchRule",
+						Start:     0,
+						End:       0,
+						ID:        0,
+						MatchURL:  "abc.com",
 						ForwardSettings: ForwardSettingsFR{
 							PathAndQS:              "/test_images/otherimage.jpg",
 							UseIncomingQueryString: true,
@@ -2323,7 +2330,7 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "frMatchRule",
-            "akaRuleId": "f2168e71692e6d9f",
+            "akaRuleId": "abc123",
             "end": 0,
             "forwardSettings": {},
             "id": 0,
@@ -2363,6 +2370,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules: MatchRules{
 					&MatchRuleFR{
+						AkaRuleID:       "abc123",
 						ForwardSettings: ForwardSettingsFR{},
 						Matches: []MatchCriteriaFR{
 							{
@@ -2438,7 +2446,7 @@ func TestCreatePolicyVersion(t *testing.T) {
     "matchRules": [
         {
             "type": "frMatchRule",
-            "akaRuleId": "f2168e71692e6d9f",
+            "akaRuleId": "abc123",
             "end": 0,
             "forwardSettings": {
                 "pathAndQS": "/test_images/otherimage.jpg",
@@ -2476,6 +2484,7 @@ func TestCreatePolicyVersion(t *testing.T) {
 				ModifiedDate: ptr.To(test.NewTimeFromString(t, "2023-10-19T08:50:47.350Z")),
 				MatchRules: MatchRules{
 					&MatchRuleFR{
+						AkaRuleID: "abc123",
 						ForwardSettings: ForwardSettingsFR{
 							PathAndQS:              "/test_images/otherimage.jpg",
 							UseIncomingQueryString: true,
