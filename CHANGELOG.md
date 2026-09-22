@@ -33,6 +33,9 @@
 
 
 
+* Appsec
+  * Extended the `GetExportConfiguration` response to include rapid rules data for security policies.
+
 
 * Cloudlets
   * Added support for `AkaRuleID` field to all v3 match rule types.

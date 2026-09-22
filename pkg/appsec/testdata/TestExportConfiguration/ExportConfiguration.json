@@ -1693,6 +1693,63 @@
 			"ipGeoFirewall": {
 				"block": "blockSpecificIPGeo"
 			},
+			"rapidRules": {
+				"defaultAction": "alert",
+				"enabled": true,
+				"threatIntel": "on",
+				"policyRules": [
+					{
+						"action": "deny",
+						"lock": false,
+						"ruleId": 1001,
+						"ruleVersion": 1,
+						"group": "SQL",
+						"rulesetVersionId": 7392,
+						"conditionException": {
+							"conditions": [
+								{
+									"type": "extensionMatch",
+									"extensions": [
+										"php"
+									],
+									"positiveMatch": true
+								}
+							],
+							"exception": {
+								"specificHeaderCookieParamXmlOrJsonNames": [
+									{
+										"names": [
+											"Cookie1001"
+										],
+										"selector": "REQUEST_COOKIES_NAMES",
+										"wildcard": true
+									}
+								]
+							},
+							"advancedExceptions": {
+								"conditionOperator": "AND",
+								"specificHeaderCookieParamXmlOrJsonNames": [
+									{
+										"names": [
+											"adv1001"
+										],
+										"selector": "REQUEST_COOKIES",
+										"wildcard": false
+									}
+								]
+							}
+						}
+					},
+					{
+						"action": "alert",
+						"lock": true,
+						"ruleId": 1002,
+						"ruleVersion": 2,
+						"group": "XSS",
+						"rulesetVersionId": 7392
+					}
+				]
+			},
 			"penaltyBoxConditions": {
 				"conditionOperator": "AND",
 				"conditions": [

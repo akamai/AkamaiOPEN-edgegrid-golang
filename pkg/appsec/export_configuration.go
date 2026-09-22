@@ -29,6 +29,22 @@ type (
 	// ConditionsValue is a slice of strings that describe conditions.
 	ConditionsValue []string
 
+	// RapidRules is returned as part of GetExportConfigurationResponse.
+	RapidRules struct {
+		DefaultAction string `json:"defaultAction"`
+		Enabled       bool   `json:"enabled"`
+		ThreatIntel   string `json:"threatIntel"`
+		PolicyRules   []struct {
+			Action             string                  `json:"action"`
+			Lock               bool                    `json:"lock"`
+			RuleID             int                     `json:"ruleId"`
+			RuleVersion        int                     `json:"ruleVersion"`
+			Group              string                  `json:"group"`
+			RulesetVersionID   int                     `json:"rulesetVersionId"`
+			ConditionException *RuleConditionException `json:"conditionException,omitempty"`
+		} `json:"policyRules,omitempty"`
+	}
+
 	// GetExportConfigurationRequest is used to call GetExportConfiguration.
 	GetExportConfigurationRequest struct {
 		ConfigID int    `json:"configId"`
@@ -233,6 +249,7 @@ type (
 			MalwarePolicyActions           []MalwarePolicyActionBody             `json:"malwarePolicyActions,omitempty"`
 			URLProtectionPoliciesActions   []URLProtectionActionResp             `json:"urlProtectionPolicyActions,omitempty"`
 			IPGeoFirewall                  *IPGeoFirewall                        `json:"ipGeoFirewall,omitempty"`
+			RapidRules                     *RapidRules                           `json:"rapidRules,omitempty"`
 			PenaltyBox                     *SecurityPoliciesPenaltyBox           `json:"penaltyBox,omitempty"`
 			EvaluationPenaltyBox           *SecurityPoliciesPenaltyBox           `json:"evaluationPenaltyBox,omitempty"`
 			PenaltyBoxConditions           *SecurityPoliciesPenaltyBoxConditions `json:"penaltyBoxConditions,omitempty"`

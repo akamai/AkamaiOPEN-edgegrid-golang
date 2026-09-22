@@ -35,7 +35,7 @@ type (
 
 	// GetAdvancedSettingsPragmaResponse is returned from a call to GetAdvancedSettingsPragma.
 	GetAdvancedSettingsPragmaResponse struct {
-		Action            string             `json:"action,,omitempty"`
+		Action            string             `json:"action,omitempty"`
 		ConditionOperator string             `json:"conditionOperator,omitempty"`
 		ExcludeCondition  []ExcludeCondition `json:"excludeCondition,omitempty"`
 	}
