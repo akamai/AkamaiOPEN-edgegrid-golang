@@ -32,6 +32,11 @@
   * Deprecated `CCMCertificates` and `CCMCertificatesResp`, including their corresponding fields, in favor of `CCMCertID` for the CCM V3 flow.
 
 
+* General
+  * Migrated to Go `1.26`.
+  * Adopted Go toolchain `1.26.8`.
+  * Updated various dependencies.
+
 
 
 
@@ -101,6 +106,9 @@
 
 * General
   * Removed an unmaintained `github.com/mitchellh/go-homedir` dependency, replacing its usage in the `edgegrid` package with the standard library's `os.UserHomeDir()` ([I#227](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/issues/227)).  
+
+* PAPI
+  * `GetIncludeActivation` now fails when the API validation summary reports an error, including when no structured validation error can be extracted.
 
 
 

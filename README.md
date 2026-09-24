@@ -28,7 +28,7 @@ import (
 
 ## Install
 
-To use the library, you need to have Go 1.25+ installed on your system.
+To use the library, you need Go 1.26 or later installed on your system.
 
 
 ## Authentication

@@ -493,9 +493,10 @@ func (p *papi) GetIncludeActivation(ctx context.Context, params GetIncludeActiva
 	if result.Validations != nil {
 		val := result.Validations.ValidationSummary
 		if val.HasClientError || val.HasValidationError || val.HasSystemError {
-			if err = extractError(val.ErrorMessage); err != nil {
-				return nil, fmt.Errorf("%s: %w", ErrGetIncludeActivation, err)
+			if err := extractError(val.ErrorMessage); err != nil {
+				return nil, fmt.Errorf("%w: %w", ErrGetIncludeActivation, err)
 			}
+			return nil, fmt.Errorf("%w: activation validation failed", ErrGetIncludeActivation)
 		}
 	}
 
@@ -540,7 +541,11 @@ func (p *papi) ListIncludeActivations(ctx context.Context, params ListIncludeAct
 // extractError extracts error from validation object in GetIncludeActivation response if it is present
 func extractError(rawError string) error {
 	startIndex := strings.Index(rawError, "{")
-	endIndex := strings.LastIndex(rawError, "}") + 1
+	endIndex := strings.LastIndex(rawError, "}")
+	if startIndex == -1 || endIndex == -1 || endIndex < startIndex {
+		return nil
+	}
+	endIndex++
 	formattedError := rawError[startIndex:endIndex]
 
 	var e ActivationError
