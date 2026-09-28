@@ -32,6 +32,7 @@ type (
 		MatchURL           string            `json:"matchURL,omitempty"`
 		PassThroughPercent *float64          `json:"passThroughPercent"`
 		Disabled           bool              `json:"disabled,omitempty"`
+		AkaRuleID          string            `json:"akaRuleId,omitempty"`
 	}
 
 	// MatchRuleAS represents an Application Segmentation (AS) match rule resource for create or update resource
@@ -45,6 +46,7 @@ type (
 		MatchURL        string            `json:"matchURL,omitempty"`
 		ForwardSettings ForwardSettingsAS `json:"forwardSettings"`
 		Disabled        bool              `json:"disabled,omitempty"`
+		AkaRuleID       string            `json:"akaRuleId,omitempty"`
 	}
 
 	// ForwardSettingsAS represents forward settings for an Application Segmentation (AS)
@@ -66,6 +68,7 @@ type (
 		ForwardSettings ForwardSettingsPR `json:"forwardSettings"`
 		Disabled        bool              `json:"disabled,omitempty"`
 		MatchesAlways   bool              `json:"matchesAlways,omitempty"`
+		AkaRuleID       string            `json:"akaRuleId,omitempty"`
 	}
 
 	// ForwardSettingsPR represents forward settings for a Phased Release (PR aka CD)
@@ -90,6 +93,7 @@ type (
 		UseIncomingQueryString   bool              `json:"useIncomingQueryString"`
 		UseIncomingSchemeAndHost bool              `json:"useIncomingSchemeAndHost"`
 		Disabled                 bool              `json:"disabled,omitempty"`
+		AkaRuleID                string            `json:"akaRuleId,omitempty"`
 	}
 
 	// MatchRuleFR represents a Forward Rewrite (FR) match rule resource for create or update resource
@@ -103,6 +107,7 @@ type (
 		MatchURL        string            `json:"matchURL,omitempty"`
 		ForwardSettings ForwardSettingsFR `json:"forwardSettings"`
 		Disabled        bool              `json:"disabled,omitempty"`
+		AkaRuleID       string            `json:"akaRuleId,omitempty"`
 	}
 
 	// ForwardSettingsFR represents forward settings for a Forward Rewrite (FR)
@@ -123,6 +128,7 @@ type (
 		MatchesAlways bool              `json:"matchesAlways,omitempty"`
 		AllowDeny     AllowDeny         `json:"allowDeny"`
 		Disabled      bool              `json:"disabled,omitempty"`
+		AkaRuleID     string            `json:"akaRuleId,omitempty"`
 	}
 
 	// MatchCriteria represents a match criteria resource for match rule for cloudlet

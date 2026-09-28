@@ -5,13 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"regexp"
 	"slices"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/texts"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
@@ -544,23 +544,21 @@ func (m *mtlstruststore) CreateCASet(ctx context.Context, params CreateCASetRequ
 	logger.Debug("CreateCASet")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateCASet, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrCreateCASet, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/mtls-edge-truststore/v2/ca-sets")
+	req, err := request.NewPost(ctx, "/mtls-edge-truststore/v2/ca-sets").
+		WithBody(params).
+		Build()
 	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateCASet, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrCreateCASet, err)
 	}
 
 	var result CreateCASetResponse
-	resp, err := m.Exec(req, &result, params)
+
+	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateCASet, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrCreateCASet, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -576,23 +574,20 @@ func (m *mtlstruststore) GetCASet(ctx context.Context, params GetCASetRequest) (
 	logger.Debug("GetCASet")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetCASet, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetCASet, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/mtls-edge-truststore/v2/ca-sets/%s", params.CASetID))
+	req, err := request.NewGet(ctx, "/mtls-edge-truststore/v2/ca-sets/%s", params.CASetID).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetCASet, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCASet, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetCASet, err)
 	}
 
 	var result GetCASetResponse
+
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCASet, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetCASet, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -608,34 +603,23 @@ func (m *mtlstruststore) ListCASets(ctx context.Context, params ListCASetsReques
 	logger.Debug("ListCASets")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListCASets, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrListCASets, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/mtls-edge-truststore/v2/ca-sets")
+	req, err := request.NewGet(ctx, "/mtls-edge-truststore/v2/ca-sets").
+		AddQueryParamIf("caSetNamePrefix", params.CASetNamePrefix, params.CASetNamePrefix != "").
+		AddQueryParamIf("activatedOn", string(params.ActivatedOn), params.ActivatedOn != "").
+		AddQueryParamIf("caSetStatus", texts.JoinStringBased(params.CASetStatuses, ","), len(params.CASetStatuses) > 0).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListCASets, err)
-	}
-	q := uri.Query()
-	if params.CASetNamePrefix != "" {
-		q.Add("caSetNamePrefix", params.CASetNamePrefix)
-	}
-	if params.ActivatedOn != "" {
-		q.Add("activatedOn", string(params.ActivatedOn))
-	}
-	if len(params.CASetStatuses) > 0 {
-		q.Add("caSetStatus", texts.JoinStringBased(params.CASetStatuses, ","))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListCASets, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListCASets, err)
 	}
 
 	var result ListCASetsResponse
+
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListCASets, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListCASets, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -651,22 +635,18 @@ func (m *mtlstruststore) DeleteCASet(ctx context.Context, params DeleteCASetRequ
 	logger.Debug("DeleteCASet")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w: %s", ErrDeleteCASet, ErrStructValidation, err)
+		return fmt.Errorf("%w: %w: %w", ErrDeleteCASet, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/mtls-edge-truststore/v2/ca-sets/%s", params.CASetID))
+	req, err := request.NewDelete(ctx, "/mtls-edge-truststore/v2/ca-sets/%s", params.CASetID).
+		Build()
 	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrDeleteCASet, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteCASet, err)
+		return fmt.Errorf("%w: failed to create request: %w", ErrDeleteCASet, err)
 	}
 
 	resp, err := m.Exec(req, nil)
 	if err != nil {
-		return fmt.Errorf("%w: request failed: %s", ErrDeleteCASet, err)
+		return fmt.Errorf("%w: request failed: %w", ErrDeleteCASet, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -682,28 +662,20 @@ func (m *mtlstruststore) ListCASetAssociations(ctx context.Context, params ListC
 	logger.Debug("ListCASetAssociations")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListCASetAssociations, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrListCASetAssociations, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/mtls-edge-truststore/v2/ca-sets/%s/associations", params.CASetID))
+	req, err := request.NewGet(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/associations", params.CASetID).
+		AddQueryParamIf("associationType", string(params.AssociationType), params.AssociationType != "").
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListCASets, err)
-	}
-	q := uri.Query()
-	if params.AssociationType != "" {
-		q.Add("associationType", string(params.AssociationType))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListCASetAssociations, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListCASetAssociations, err)
 	}
 
 	var result ListCASetAssociationsResponse
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListCASetAssociations, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListCASetAssociations, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -719,28 +691,22 @@ func (m *mtlstruststore) CloneCASet(ctx context.Context, params CloneCASetReques
 	logger.Debug("CloneCASet")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCloneCASet, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrCloneCASet, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/mtls-edge-truststore/v2/ca-sets/%s/clone", params.CloneFromSetID))
+	req, err := request.NewPost(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/clone", params.CloneFromSetID).
+		AddQueryParamIf("cloneFromVersion", strconv.FormatInt(params.CloneFromVersion, 10), params.CloneFromVersion != 0).
+		WithBody(params).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCloneCASet, err)
-	}
-	q := uri.Query()
-	if params.CloneFromVersion != 0 {
-		q.Add("cloneFromVersion", strconv.FormatInt(params.CloneFromVersion, 10))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCloneCASet, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrCloneCASet, err)
 	}
 
 	var result CloneCASetResponse
-	resp, err := m.Exec(req, &result, params)
+
+	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrCloneCASet, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrCloneCASet, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -756,18 +722,19 @@ func (m *mtlstruststore) GetCASetDeletionStatus(ctx context.Context, params GetC
 	logger.Debug("GetCASetDeletionStatus")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetCASetDeletionStatus, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetCASetDeletionStatus, ErrStructValidation, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("/mtls-edge-truststore/v2/ca-sets/%s/status/delete", params.CASetID), nil)
+	req, err := request.NewGet(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/status/delete", params.CASetID).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCASetDeletionStatus, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetCASetDeletionStatus, err)
 	}
 
 	var result GetCASetDeletionStatusResponse
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCASetDeletionStatus, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetCASetDeletionStatus, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -780,7 +747,7 @@ func (m *mtlstruststore) GetCASetDeletionStatus(ctx context.Context, params GetC
 	if resp.Header.Get("Retry-After") != "" {
 		after, err := time.Parse(time.RFC1123, resp.Header.Get("Retry-After"))
 		if err != nil {
-			return nil, fmt.Errorf("%w: failed to parse Retry-After header: %s",
+			return nil, fmt.Errorf("%w: failed to parse Retry-After header: %w",
 				ErrGetCASetDeletionStatus, err)
 		}
 		result.RetryAfter = after
@@ -794,31 +761,22 @@ func (m *mtlstruststore) ListCASetActivities(ctx context.Context, params ListCAS
 	logger.Debug("ListCASetActivities")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListCASetActivities, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrListCASetActivities, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/mtls-edge-truststore/v2/ca-sets/%s/activities", params.CASetID))
+	req, err := request.NewGet(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/activities", params.CASetID).
+		AddQueryParamIf("start", params.Start.Format(time.RFC3339Nano), !params.Start.IsZero()).
+		AddQueryParamIf("end", params.End.Format(time.RFC3339Nano), !params.End.IsZero()).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListCASetActivities, err)
-	}
-	q := uri.Query()
-	if !params.Start.IsZero() {
-		q.Add("start", params.Start.Format(time.RFC3339Nano))
-	}
-	if !params.End.IsZero() {
-		q.Add("end", params.End.Format(time.RFC3339Nano))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListCASetActivities, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListCASetActivities, err)
 	}
 
 	var result ListCASetActivitiesResponse
+
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListCASetActivities, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListCASetActivities, err)
 	}
 	defer session.CloseResponseBody(resp)
 

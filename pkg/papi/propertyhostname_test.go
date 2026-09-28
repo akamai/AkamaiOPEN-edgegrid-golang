@@ -456,6 +456,62 @@ func TestPapiGetPropertyVersionHostnames(t *testing.T) {
 				},
 			},
 		},
+		"200 OK - support for a hostname bound to a single CCM certificate lineage via ccmCertId": {
+			params: GetPropertyVersionHostnamesRequest{
+				PropertyID:        "prp_123456",
+				PropertyVersion:   3,
+				GroupID:           "grp_54321",
+				ContractID:        "ctr_C-0N7RAC7",
+				IncludeCertStatus: true,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+  "accountId": "act_A-CCT5678",
+  "contractId": "ctr_C-0N7RAC7",
+  "etag": "6aed418629b4e5c0",
+  "groupId": "grp_54321",
+  "hostnames": {
+    "items": [
+      {
+        "ccmCertId": "164877",
+        "ccmCertLink": "/ccm/v2/lineages/164877",
+        "certProvisioningType": "CCM",
+        "cnameFrom": "www.example-ccm.com",
+        "cnameTo": "example.com.edgesuite.net",
+        "cnameType": "EDGE_HOSTNAME",
+        "edgeHostnameId": "ehn_7123"
+      }
+    ]
+  },
+  "propertyId": "prp_123456",
+  "propertyName": "mytestproperty.com",
+  "propertyVersion": 1
+}`,
+			expectedPath: "/papi/v1/properties/prp_123456/versions/3/hostnames?contractId=ctr_C-0N7RAC7&groupId=grp_54321&includeCertStatus=true&validateHostnames=false",
+			expectedResponse: &GetPropertyVersionHostnamesResponse{
+				AccountID:       "act_A-CCT5678",
+				ContractID:      "ctr_C-0N7RAC7",
+				GroupID:         "grp_54321",
+				PropertyID:      "prp_123456",
+				PropertyVersion: 1,
+				Etag:            "6aed418629b4e5c0",
+				PropertyName:    "mytestproperty.com",
+				Hostnames: HostnameResponseItems{
+					Items: []HostnameResponseItem{
+						{
+							CertProvisioningType: "CCM",
+							CnameFrom:            "www.example-ccm.com",
+							CnameTo:              "example.com.edgesuite.net",
+							CnameType:            "EDGE_HOSTNAME",
+							EdgeHostnameID:       "ehn_7123",
+							CCMCertID:            ptr.To("164877"),
+							CCMCertLink:          ptr.To("/ccm/v2/lineages/164877"),
+						},
+					},
+				},
+			},
+		},
 		"302 - missed contractId and groupId": {
 			params: GetPropertyVersionHostnamesRequest{
 				PropertyID:        "prp_175780",
@@ -1078,6 +1134,104 @@ func TestPapiUpdatePropertyVersionHostnames(t *testing.T) {
 				},
 			},
 		},
+		"200 OK - support for binding a hostname to a single CCM certificate lineage via ccmCertId": {
+			params: UpdatePropertyVersionHostnamesRequest{
+				PropertyID:      "prp_201660900",
+				PropertyVersion: 1,
+				GroupID:         "grp_117988",
+				ContractID:      "ctr_G-29RS4N8",
+				Hostnames: []Hostname{
+					{
+						CnameType:            "EDGE_HOSTNAME",
+						CnameFrom:            "mmtest.piotrunia.com",
+						CnameTo:              "mmtest.piotrunia.com.edgesuite.net",
+						CertProvisioningType: "CCM",
+						CCMCertID:            "164877",
+					},
+				},
+			},
+			responseStatus: http.StatusOK,
+			requestBody:    `[{"cnameType":"EDGE_HOSTNAME","cnameFrom":"mmtest.piotrunia.com","cnameTo":"mmtest.piotrunia.com.edgesuite.net","certProvisioningType":"CCM","ccmCertId":"164877"}]`,
+			responseBody: `
+{
+    "accountId": "act_B-G-29RS4M7",
+    "contractId": "ctr_G-29RS4N8",
+    "groupId": "grp_117988",
+    "propertyId": "prp_201660900",
+    "propertyName": "mmtest_binding_ccm_v3",
+    "propertyVersion": 1,
+    "etag": "ebecda0d541caa63d62742fac70727da7647d5c5",
+    "hostnames": {
+        "items": [
+            {
+                "cnameType": "EDGE_HOSTNAME",
+                "cnameFrom": "mmtest.piotrunia.com",
+                "cnameTo": "mmtest.piotrunia.com.edgesuite.net",
+                "certProvisioningType": "CCM",
+                "domainOwnershipVerification": {
+                    "status": "VALIDATED"
+                },
+                "ccmCertId": "164877",
+                "ccmCertLink": "/ccm/v2/lineages/164877",
+                "ccmCertStatuses": [
+                    {
+                        "keyType": "RSA",
+                        "network": "STAGING",
+                        "status": "UNKNOWN"
+                    },
+                    {
+                        "keyType": "RSA",
+                        "network": "PRODUCTION",
+                        "status": "UNKNOWN"
+                    },
+                    {
+                        "keyType": "ECDSA",
+                        "network": "STAGING",
+                        "status": "UNKNOWN"
+                    },
+                    {
+                        "keyType": "ECDSA",
+                        "network": "PRODUCTION",
+                        "status": "UNKNOWN"
+                    }
+                ]
+            }
+        ]
+    }
+}
+`,
+			expectedPath: "/papi/v1/properties/prp_201660900/versions/1/hostnames?contractId=ctr_G-29RS4N8&groupId=grp_117988&includeCertStatus=false&validateHostnames=false",
+			expectedResponse: &UpdatePropertyVersionHostnamesResponse{
+				AccountID:       "act_B-G-29RS4M7",
+				ContractID:      "ctr_G-29RS4N8",
+				GroupID:         "grp_117988",
+				PropertyID:      "prp_201660900",
+				PropertyName:    "mmtest_binding_ccm_v3",
+				PropertyVersion: 1,
+				Etag:            "ebecda0d541caa63d62742fac70727da7647d5c5",
+				Hostnames: HostnameResponseItems{
+					Items: []HostnameResponseItem{
+						{
+							CnameType:            "EDGE_HOSTNAME",
+							CnameFrom:            "mmtest.piotrunia.com",
+							CnameTo:              "mmtest.piotrunia.com.edgesuite.net",
+							CertProvisioningType: "CCM",
+							DomainOwnershipVerification: &DomainOwnershipVerification{
+								Status: "VALIDATED",
+							},
+							CCMCertID:   ptr.To("164877"),
+							CCMCertLink: ptr.To("/ccm/v2/lineages/164877"),
+							CCMCertStatuses: []CCMCertStatusItem{
+								{KeyType: "RSA", Network: "STAGING", Status: "UNKNOWN"},
+								{KeyType: "RSA", Network: "PRODUCTION", Status: "UNKNOWN"},
+								{KeyType: "ECDSA", Network: "STAGING", Status: "UNKNOWN"},
+								{KeyType: "ECDSA", Network: "PRODUCTION", Status: "UNKNOWN"},
+							},
+						},
+					},
+				},
+			},
+		},
 		"200 empty hostnames": {
 			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:        "prp_175780",
@@ -1283,6 +1437,109 @@ func TestPapiUpdatePropertyVersionHostnames(t *testing.T) {
 				assert.Contains(t, err.Error(), "either RSACertID or ECDSACertID must be provided")
 			},
 		},
+		"validation error - CCMCertID is not a digit": {
+			params: UpdatePropertyVersionHostnamesRequest{
+				PropertyID:      "prp_123456",
+				PropertyVersion: 3,
+				Hostnames: []Hostname{
+					{
+						CertProvisioningType: "CCM",
+						CnameFrom:            "www.example-ccm.com",
+						CnameTo:              "example.com.edgesuite.net",
+						CnameType:            "EDGE_HOSTNAME",
+						CCMCertID:            "12345a",
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "CCMCertID: must contain digits only")
+			},
+		},
+		"validation error - CCMCertID is provided without certProvisioningType set to CCM": {
+			params: UpdatePropertyVersionHostnamesRequest{
+				PropertyID:      "prp_123456",
+				PropertyVersion: 3,
+				Hostnames: []Hostname{
+					{
+						CnameFrom: "www.example-ccm.com",
+						CnameTo:   "example.com.edgesuite.net",
+						CnameType: "EDGE_HOSTNAME",
+						CCMCertID: "164877",
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "the `ccmCertId` is provided without `certProvisioningType` set to `CCM`")
+			},
+		},
+		"validation error - CCMCertID is only valid for CCM": {
+			params: UpdatePropertyVersionHostnamesRequest{
+				PropertyID:      "prp_123456",
+				PropertyVersion: 3,
+				Hostnames: []Hostname{
+					{
+						CertProvisioningType: "CPS_MANAGED",
+						CnameFrom:            "www.example-ccm.com",
+						CnameTo:              "example.com.edgesuite.net",
+						CnameType:            "EDGE_HOSTNAME",
+						CCMCertID:            "164877",
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "the `ccmCertId` is provided without `certProvisioningType` set to `CCM`")
+			},
+		},
+		"validation error - both CCMCertID and CCMCertificates provided": {
+			params: UpdatePropertyVersionHostnamesRequest{
+				PropertyID:      "prp_123456",
+				PropertyVersion: 3,
+				Hostnames: []Hostname{
+					{
+						CertProvisioningType: "CCM",
+						CnameFrom:            "www.example-ccm.com",
+						CnameTo:              "example.com.edgesuite.net",
+						CnameType:            "EDGE_HOSTNAME",
+						CCMCertificates: &CCMCertificates{
+							RSACertID: "12345",
+						},
+						CCMCertID: "164877",
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "provide either `ccmCertId` or `ccmCertificates`, not both")
+			},
+		},
+		"validation error - both CCMCertID and empty CCMCertificates provided": {
+			params: UpdatePropertyVersionHostnamesRequest{
+				PropertyID:      "prp_123456",
+				PropertyVersion: 3,
+				Hostnames: []Hostname{
+					{
+						CertProvisioningType: "CCM",
+						CnameFrom:            "www.example-ccm.com",
+						CnameTo:              "example.com.edgesuite.net",
+						CnameType:            "EDGE_HOSTNAME",
+						CCMCertificates:      &CCMCertificates{},
+						CCMCertID:            "164877",
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "provide either `ccmCertId` or `ccmCertificates`, not both")
+			},
+		},
 		"validation error - CCMCertificates is required for CCM": {
 			params: UpdatePropertyVersionHostnamesRequest{
 				PropertyID:        "prp_123456",
@@ -1307,7 +1564,7 @@ func TestPapiUpdatePropertyVersionHostnames(t *testing.T) {
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "struct validation: Hostnames[0]: {\n\tValidateCCMHostname: when using `certProvisioningType` set to `CCM`, the request body must contain `ccmCertificates` with at least `rsaCertId` or `ecdsaCertId`")
+				assert.Contains(t, err.Error(), "struct validation: Hostnames[0]: {\n\tValidateCCMHostname: when using `certProvisioningType` set to `CCM`, the request body must contain either `ccmCertId` or `ccmCertificates` with at least `rsaCertId` or `ecdsaCertId`")
 			},
 		},
 		"validation error - MTLS is only valid for CCM": {
@@ -1902,6 +2159,105 @@ func TestPapiPatchPropertyVersionHostnames(t *testing.T) {
 								DisallowedTLSVersions:    []string{"TLSv1_1", "TLSv1"},
 								StapleServerOcspResponse: true,
 								FIPSMode:                 false,
+							},
+						},
+					},
+				},
+			},
+		},
+		"200 OK - support for adding a hostname bound to a single CCM certificate lineage via ccmCertId": {
+			params: PatchPropertyVersionHostnamesRequest{
+				PropertyID:      "prp_201660900",
+				PropertyVersion: 1,
+				ContractID:      "ctr_G-29RS4N8",
+				GroupID:         "grp_117988",
+				Body: PatchPropertyVersionHostnamesRequestBody{
+					Add: []HostnameAdd{
+						{
+							CnameType:            HostnameCnameTypeEdgeHostname,
+							CnameFrom:            "mmtest.piotrunia.com",
+							CnameTo:              "mmtest.piotrunia.com.edgesuite.net",
+							CertProvisioningType: CertTypeCCM,
+							CCMCertID:            "164877",
+						},
+					},
+				},
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "accountId": "act_B-G-29RS4M7",
+    "contractId": "ctr_G-29RS4N8",
+    "groupId": "grp_117988",
+    "propertyId": "prp_201660900",
+    "propertyName": "mmtest_binding_ccm_v3",
+    "propertyVersion": 1,
+    "etag": "012450679ab375d64dcb41afe07b9c9922dca9c7",
+    "hostnames": {
+        "items": [
+            {
+                "cnameType": "EDGE_HOSTNAME",
+                "cnameFrom": "mmtest.piotrunia.com",
+                "cnameTo": "mmtest.piotrunia.com.edgesuite.net",
+                "certProvisioningType": "CCM",
+                "domainOwnershipVerification": {
+                    "status": "VALIDATED"
+                },
+                "ccmCertId": "164877",
+                "ccmCertLink": "/ccm/v2/lineages/164877",
+                "ccmCertStatuses": [
+                    {
+                        "keyType": "RSA",
+                        "network": "STAGING",
+                        "status": "UNKNOWN"
+                    },
+                    {
+                        "keyType": "RSA",
+                        "network": "PRODUCTION",
+                        "status": "UNKNOWN"
+                    },
+                    {
+                        "keyType": "ECDSA",
+                        "network": "STAGING",
+                        "status": "UNKNOWN"
+                    },
+                    {
+                        "keyType": "ECDSA",
+                        "network": "PRODUCTION",
+                        "status": "UNKNOWN"
+                    }
+                ]
+            }
+        ]
+    }
+}`,
+			expectedPath:        "/papi/v1/properties/prp_201660900/versions/1/hostnames?contractId=ctr_G-29RS4N8&groupId=grp_117988",
+			expectedRequestBody: `{"add":[{"cnameFrom":"mmtest.piotrunia.com","cnameType":"EDGE_HOSTNAME","cnameTo":"mmtest.piotrunia.com.edgesuite.net","certProvisioningType":"CCM","ccmCertId":"164877"}]}`,
+			expectedResponse: &PatchPropertyVersionHostnamesResponse{
+				AccountID:       "act_B-G-29RS4M7",
+				ContractID:      "ctr_G-29RS4N8",
+				GroupID:         "grp_117988",
+				PropertyID:      "prp_201660900",
+				PropertyName:    "mmtest_binding_ccm_v3",
+				PropertyVersion: 1,
+				Etag:            "012450679ab375d64dcb41afe07b9c9922dca9c7",
+				Hostnames: HostnameResponseItems{
+					Items: []HostnameResponseItem{
+						{
+							CnameType:            "EDGE_HOSTNAME",
+							CnameFrom:            "mmtest.piotrunia.com",
+							CnameTo:              "mmtest.piotrunia.com.edgesuite.net",
+							CertProvisioningType: "CCM",
+							DomainOwnershipVerification: &DomainOwnershipVerification{
+								Status: "VALIDATED",
+							},
+							CCMCertID:   ptr.To("164877"),
+							CCMCertLink: ptr.To("/ccm/v2/lineages/164877"),
+							CCMCertStatuses: []CCMCertStatusItem{
+								{KeyType: "RSA", Network: "STAGING", Status: "UNKNOWN"},
+								{KeyType: "RSA", Network: "PRODUCTION", Status: "UNKNOWN"},
+								{KeyType: "ECDSA", Network: "STAGING", Status: "UNKNOWN"},
+								{KeyType: "ECDSA", Network: "PRODUCTION", Status: "UNKNOWN"},
 							},
 						},
 					},
@@ -2534,6 +2890,119 @@ func TestPapiPatchPropertyVersionHostnames(t *testing.T) {
 				assert.Contains(t, err.Error(), "either RSACertID or ECDSACertID must be provided")
 			},
 		},
+		"validation error - CCMCertID is not a digit": {
+			params: PatchPropertyVersionHostnamesRequest{
+				PropertyID:      "prp_123456",
+				PropertyVersion: 3,
+				Body: PatchPropertyVersionHostnamesRequestBody{
+					Add: []HostnameAdd{
+						{
+							CertProvisioningType: "CCM",
+							CnameFrom:            "www.example-ccm.com",
+							CnameTo:              "example.com.edgesuite.net",
+							CnameType:            "EDGE_HOSTNAME",
+							CCMCertID:            "12345a",
+						},
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "CCMCertID: must contain digits only")
+			},
+		},
+		"validation error - CCMCertID is provided without certProvisioningType set to CCM": {
+			params: PatchPropertyVersionHostnamesRequest{
+				PropertyID:      "prp_123456",
+				PropertyVersion: 3,
+				Body: PatchPropertyVersionHostnamesRequestBody{
+					Add: []HostnameAdd{
+						{
+							CnameFrom: "www.example-ccm.com",
+							CnameTo:   "example.com.edgesuite.net",
+							CnameType: "EDGE_HOSTNAME",
+							CCMCertID: "164877",
+						},
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "the `ccmCertId` is provided without `certProvisioningType` set to `CCM`")
+			},
+		},
+		"validation error - CCMCertID is only valid for CCM": {
+			params: PatchPropertyVersionHostnamesRequest{
+				PropertyID:      "prp_123456",
+				PropertyVersion: 3,
+				Body: PatchPropertyVersionHostnamesRequestBody{
+					Add: []HostnameAdd{
+						{
+							CertProvisioningType: "CPS_MANAGED",
+							CnameFrom:            "www.example-ccm.com",
+							CnameTo:              "example.com.edgesuite.net",
+							CnameType:            "EDGE_HOSTNAME",
+							CCMCertID:            "164877",
+						},
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "the `ccmCertId` is provided without `certProvisioningType` set to `CCM`")
+			},
+		},
+		"validation error - both CCMCertID and CCMCertificates provided": {
+			params: PatchPropertyVersionHostnamesRequest{
+				PropertyID:      "prp_123456",
+				PropertyVersion: 3,
+				Body: PatchPropertyVersionHostnamesRequestBody{
+					Add: []HostnameAdd{
+						{
+							CertProvisioningType: "CCM",
+							CnameFrom:            "www.example-ccm.com",
+							CnameTo:              "example.com.edgesuite.net",
+							CnameType:            "EDGE_HOSTNAME",
+							CCMCertificates: &CCMCertificates{
+								RSACertID: "12345",
+							},
+							CCMCertID: "164877",
+						},
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "provide either `ccmCertId` or `ccmCertificates`, not both")
+			},
+		},
+		"validation error - both CCMCertID and empty CCMCertificates provided": {
+			params: PatchPropertyVersionHostnamesRequest{
+				PropertyID:      "prp_123456",
+				PropertyVersion: 3,
+				Body: PatchPropertyVersionHostnamesRequestBody{
+					Add: []HostnameAdd{
+						{
+							CertProvisioningType: "CCM",
+							CnameFrom:            "www.example-ccm.com",
+							CnameTo:              "example.com.edgesuite.net",
+							CnameType:            "EDGE_HOSTNAME",
+							CCMCertificates:      &CCMCertificates{},
+							CCMCertID:            "164877",
+						},
+					},
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				want := ErrStructValidation
+				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
+				assert.Contains(t, err.Error(), "provide either `ccmCertId` or `ccmCertificates`, not both")
+			},
+		},
 		"validation error - CCMCertificates is required for CCM": {
 			params: PatchPropertyVersionHostnamesRequest{
 				PropertyID:      "prp_123456",
@@ -2557,7 +3026,7 @@ func TestPapiPatchPropertyVersionHostnames(t *testing.T) {
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
-				assert.Contains(t, err.Error(), "struct validation: Body: {\n\tAdd[0]: {\n\t\tValidateCCMHostname: when using `certProvisioningType` set to `CCM`, the request body must contain `ccmCertificates` with at least `rsaCertId` or `ecdsaCertId`\n\t}\n}")
+				assert.Contains(t, err.Error(), "struct validation: Body: {\n\tAdd[0]: {\n\t\tValidateCCMHostname: when using `certProvisioningType` set to `CCM`, the request body must contain either `ccmCertId` or `ccmCertificates` with at least `rsaCertId` or `ecdsaCertId`\n\t}\n}")
 			},
 		},
 		"validation error - MTLS is only valid for CCM": {

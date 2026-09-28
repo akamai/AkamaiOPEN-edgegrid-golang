@@ -624,6 +624,7 @@ func TestGetIncludeActivation(t *testing.T) {
 		expectedPath     string
 		expectedResponse *GetIncludeActivationResponse
 		withError        error
+		assertError      func(*testing.T, error)
 	}{
 		"200 Get include activation": {
 			params: GetIncludeActivationRequest{
@@ -849,6 +850,33 @@ func TestGetIncludeActivation(t *testing.T) {
     }
 }`,
 			withError: ErrMissingComplianceRecord,
+			assertError: func(t *testing.T, err error) {
+				assert.ErrorIs(t, err, ErrGetIncludeActivation)
+			},
+		},
+		"200 but with unparseable activation validation error": {
+			params: GetIncludeActivationRequest{
+				IncludeID:    "inc_12345",
+				ActivationID: "atv_12345",
+			},
+			expectedPath:   "/papi/v1/includes/inc_12345/activations/atv_12345",
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "validations": {
+        "validationSummary": {
+            "hasClientError": true,
+            "errorMessage": "activation validation failed"
+        }
+    },
+    "activations": {
+        "items": []
+    }
+}`,
+			withError: ErrGetIncludeActivation,
+			assertError: func(t *testing.T, err error) {
+				assert.EqualError(t, err, "get include activation: activation validation failed")
+			},
 		},
 		"500 internal server error": {
 			params: GetIncludeActivationRequest{
@@ -898,6 +926,9 @@ func TestGetIncludeActivation(t *testing.T) {
 			result, err := client.GetIncludeActivation(context.Background(), test.params)
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				if test.assertError != nil {
+					test.assertError(t, err)
+				}
 				return
 			}
 			require.NoError(t, err)

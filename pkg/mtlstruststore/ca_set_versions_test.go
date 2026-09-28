@@ -2888,22 +2888,20 @@ func TestListCASetVersions(t *testing.T) {
 
 func TestGetCASetVersionCertificates(t *testing.T) {
 	tests := map[string]struct {
-		request             GetCASetVersionCertificatesRequest
-		responseStatus      int
-		responseBody        string
-		expectedPath        string
-		expectedResponse    *GetCASetVersionCertificatesResponse
-		withError           func(*testing.T, error)
-		expectedRequestBody string
+		request          GetCASetVersionCertificatesRequest
+		responseStatus   int
+		responseBody     string
+		expectedPath     string
+		expectedResponse *GetCASetVersionCertificatesResponse
+		withError        func(*testing.T, error)
 	}{
 		"200 Successful get certificates of a version": {
 			request: GetCASetVersionCertificatesRequest{
 				CASetID: "123",
 				Version: 1,
 			},
-			expectedRequestBody: `{"caSetId":"123","version":1,"CertificateStatus":null,"ExpiryThresholdInDays":null,"ExpiryThresholdTimestamp":"0001-01-01T00:00:00Z"}`,
-			responseStatus:      http.StatusOK,
-			expectedPath:        "/mtls-edge-truststore/v2/ca-sets/123/versions/1/certificates",
+			responseStatus: http.StatusOK,
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets/123/versions/1/certificates",
 			responseBody: `{
 				  "caSetId" : "123",
 				  "caSetName": "test1",
@@ -2977,9 +2975,8 @@ func TestGetCASetVersionCertificates(t *testing.T) {
 				Version:           1,
 				CertificateStatus: ptr.To(ExpiredOrExpiringCert),
 			},
-			expectedRequestBody: `{"caSetId":"123","version":1,"CertificateStatus":"EXPIRING,EXPIRED","ExpiryThresholdInDays":null,"ExpiryThresholdTimestamp":"0001-01-01T00:00:00Z"}`,
-			responseStatus:      http.StatusOK,
-			expectedPath:        "/mtls-edge-truststore/v2/ca-sets/123/versions/1/certificates?certificateStatus=EXPIRING%2CEXPIRED",
+			responseStatus: http.StatusOK,
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets/123/versions/1/certificates?certificateStatus=EXPIRING%2CEXPIRED",
 			responseBody: `{
 				  "caSetId" : "123",
 				  "caSetName": "test1",
@@ -3054,9 +3051,8 @@ func TestGetCASetVersionCertificates(t *testing.T) {
 				ExpiryThresholdInDays: ptr.To(10),
 				CertificateStatus:     ptr.To(ExpiredCert),
 			},
-			expectedRequestBody: `{"caSetId":"123","version":1,"CertificateStatus":"EXPIRED","ExpiryThresholdInDays":10,"ExpiryThresholdTimestamp":"0001-01-01T00:00:00Z"}`,
-			responseStatus:      http.StatusOK,
-			expectedPath:        "/mtls-edge-truststore/v2/ca-sets/123/versions/1/certificates?certificateStatus=EXPIRED&expiryThresholdInDays=10",
+			responseStatus: http.StatusOK,
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets/123/versions/1/certificates?certificateStatus=EXPIRED&expiryThresholdInDays=10",
 			responseBody: `{
 				  "caSetId" : "123",
 				  "caSetName": "test1",
@@ -3131,9 +3127,8 @@ func TestGetCASetVersionCertificates(t *testing.T) {
 				ExpiryThresholdTimestamp: test.NewTimeFromString(t, "2020-04-07T17:40:00Z"),
 				CertificateStatus:        ptr.To(ExpiredCert),
 			},
-			expectedRequestBody: `{"caSetId":"123","version":1,"CertificateStatus":"EXPIRED","ExpiryThresholdInDays":null,"ExpiryThresholdTimestamp":"2020-04-07T17:40:00Z"}`,
-			responseStatus:      http.StatusOK,
-			expectedPath:        "/mtls-edge-truststore/v2/ca-sets/123/versions/1/certificates?certificateStatus=EXPIRED&expiryThresholdTimestamp=2020-04-07T17%3A40%3A00Z",
+			responseStatus: http.StatusOK,
+			expectedPath:   "/mtls-edge-truststore/v2/ca-sets/123/versions/1/certificates?certificateStatus=EXPIRED&expiryThresholdTimestamp=2020-04-07T17%3A40%3A00Z",
 			responseBody: `{
 				  "caSetId" : "123",
 				  "caSetName": "test1",
@@ -3295,11 +3290,6 @@ func TestGetCASetVersionCertificates(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
-				if tc.expectedRequestBody != "" {
-					body, err := io.ReadAll(r.Body)
-					assert.NoError(t, err)
-					assert.JSONEq(t, tc.expectedRequestBody, string(body))
-				}
 				w.WriteHeader(tc.responseStatus)
 				_, err := w.Write([]byte(tc.responseBody))
 				assert.NoError(t, err)

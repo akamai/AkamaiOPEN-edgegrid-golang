@@ -14,6 +14,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// Trimmed PEM material shared across the cloudcertificates test suite.
+const (
+	rsaCSRPEM        = "-----BEGIN CERTIFICATE REQUEST-----\nRSA-CSR\n-----END CERTIFICATE REQUEST-----\n"
+	ecdsaCSRPEM      = "-----BEGIN CERTIFICATE REQUEST-----\nECDSA-CSR\n-----END CERTIFICATE REQUEST-----\n"
+	rsaCertPEM       = "-----BEGIN CERTIFICATE-----\nRSA-CERT\n-----END CERTIFICATE-----\n"
+	ecdsaCertPEM     = "-----BEGIN CERTIFICATE-----\nECDSA-CERT\n-----END CERTIFICATE-----\n"
+	rsaTrustChainPEM = "-----BEGIN CERTIFICATE-----\nRSA-TRUST-CHAIN\n-----END CERTIFICATE-----\n"
+)
+
 func mockAPIClient(t *testing.T, mockServer *httptest.Server) CloudCertificates {
 	serverURL, err := url.Parse(mockServer.URL)
 	require.NoError(t, err)

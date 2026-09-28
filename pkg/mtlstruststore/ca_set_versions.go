@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -475,26 +474,21 @@ func (m *mtlstruststore) CreateCASetVersion(ctx context.Context, params CreateCA
 	logger.Debug("CreateCASetVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateCASetVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrCreateCASetVersion, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/mtls-edge-truststore/v2/ca-sets/%s/versions",
-		params.CASetID),
-	)
+	req, err := request.NewPost(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/versions", params.CASetID).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateCASetVersion, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateCASetVersion, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrCreateCASetVersion, err)
 	}
 
 	var result CreateCASetVersionResponse
-	resp, err := m.Exec(req, &result, params.Body)
+
+	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateCASetVersion, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrCreateCASetVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -510,27 +504,21 @@ func (m *mtlstruststore) CloneCASetVersion(ctx context.Context, params CloneCASe
 	logger.Debug("CloneCASetVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCloneCASetVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrCloneCASetVersion, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/mtls-edge-truststore/v2/ca-sets/%s/versions/%d/clone",
-		params.CASetID,
-		params.Version),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCloneCASetVersion, err)
-	}
+	req, err := request.NewPost(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/versions/%d/clone", params.CASetID, params.Version).
+		Build()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCloneCASetVersion, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrCloneCASetVersion, err)
 	}
 
 	var result CloneCASetVersionResponse
+
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrCloneCASetVersion, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrCloneCASetVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -546,27 +534,21 @@ func (m *mtlstruststore) GetCASetVersion(ctx context.Context, params GetCASetVer
 	logger.Debug("GetCASetVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetCASetVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetCASetVersion, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/mtls-edge-truststore/v2/ca-sets/%s/versions/%d",
+	req, err := request.NewGet(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/versions/%d",
 		params.CASetID,
-		params.Version),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetCASetVersion, err)
-	}
+		params.Version).Build()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCASetVersion, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetCASetVersion, err)
 	}
 
 	var result GetCASetVersionResponse
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCASetVersion, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetCASetVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -582,40 +564,23 @@ func (m *mtlstruststore) ListCASetVersions(ctx context.Context, params ListCASet
 	logger.Debug("ListCASetVersions")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListCASetVersions, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrListCASetVersions, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/mtls-edge-truststore/v2/ca-sets/%s/versions", params.CASetID),
-	)
+	req, err := request.NewGet(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/versions", params.CASetID).
+		AddQueryParamIf("includeCertificates", strconv.FormatBool(params.IncludeCertificates), params.IncludeCertificates).
+		AddQueryParamIf("activeVersionsOnly", strconv.FormatBool(params.ActiveVersionsOnly), params.ActiveVersionsOnly).
+		AddQueryParamIf("caSetVersionStatus", texts.JoinStringBased(params.CASetVersionStatuses, ","), len(params.CASetVersionStatuses) > 0).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListCASetVersions, err)
-	}
-
-	query := url.Values{}
-	if params.IncludeCertificates {
-		query.Set("includeCertificates", strconv.FormatBool(params.IncludeCertificates))
-	}
-
-	if params.ActiveVersionsOnly {
-		query.Set("activeVersionsOnly", strconv.FormatBool(params.ActiveVersionsOnly))
-	}
-
-	if len(params.CASetVersionStatuses) > 0 {
-		query.Set("caSetVersionStatus", texts.JoinStringBased(params.CASetVersionStatuses, ","))
-	}
-
-	uri.RawQuery = query.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListCASetVersions, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListCASetVersions, err)
 	}
 
 	var result ListCASetVersionsResponse
+
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListCASetVersions, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListCASetVersions, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -631,41 +596,27 @@ func (m *mtlstruststore) GetCASetVersionCertificates(ctx context.Context, params
 	logger.Debug("GetCASetVersionCertificates")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetCASetVersionCertificates, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetCASetVersionCertificates, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/mtls-edge-truststore/v2/ca-sets/%s/versions/%d/certificates",
-		params.CASetID,
-		params.Version))
+	req, err := request.NewGet(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/versions/%d/certificates", params.CASetID, params.Version).
+		AddQueryParamFunc("certificateStatus", func() string {
+			return string(*params.CertificateStatus)
+		}, params.CertificateStatus != nil).
+		AddQueryParamFunc("expiryThresholdInDays", func() string {
+			return strconv.Itoa(*params.ExpiryThresholdInDays)
+		}, params.ExpiryThresholdInDays != nil).
+		AddQueryParamIf("expiryThresholdTimestamp", params.ExpiryThresholdTimestamp.Format(time.RFC3339Nano), !params.ExpiryThresholdTimestamp.IsZero()).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetCASetVersionCertificates, err)
-	}
-
-	query := url.Values{}
-	if params.CertificateStatus != nil {
-		query.Set("certificateStatus", string(*params.CertificateStatus))
-	}
-
-	if params.ExpiryThresholdInDays != nil {
-		query.Set("expiryThresholdInDays", strconv.Itoa(*params.ExpiryThresholdInDays))
-	}
-
-	if !params.ExpiryThresholdTimestamp.IsZero() {
-		query.Set("expiryThresholdTimestamp", params.ExpiryThresholdTimestamp.Format(time.RFC3339Nano))
-	}
-
-	uri.RawQuery = query.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCASetVersionCertificates, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetCASetVersionCertificates, err)
 	}
 
 	var result GetCASetVersionCertificatesResponse
-	resp, err := m.Exec(req, &result, params)
+
+	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCASetVersionCertificates, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetCASetVersionCertificates, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -681,24 +632,21 @@ func (m *mtlstruststore) UpdateCASetVersion(ctx context.Context, params UpdateCA
 	logger.Debug("UpdateCASetVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateCASetVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrUpdateCASetVersion, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/mtls-edge-truststore/v2/ca-sets/%s/versions/%d", params.CASetID, params.Version))
+	req, err := request.NewPut(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/versions/%d", params.CASetID, params.Version).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateCASetVersion, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateCASetVersion, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrUpdateCASetVersion, err)
 	}
 
 	var result UpdateCASetVersionResponse
 
-	resp, err := m.Exec(req, &result, params.Body)
+	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateCASetVersion, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrUpdateCASetVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -722,18 +670,18 @@ func (m *mtlstruststore) DeleteCASetVersion(ctx context.Context, params DeleteCA
 	logger.Debug("DeleteCASetVersion")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w: %s", ErrDeleteCASetVersion, ErrStructValidation, err)
+		return fmt.Errorf("%w: %w: %w", ErrDeleteCASetVersion, ErrStructValidation, err)
 	}
 
 	req, err := request.NewDelete(ctx, "/mtls-edge-truststore/v2/ca-sets/%s/versions/%d", params.CASetID, params.Version).
 		Build()
 	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteCASetVersion, err)
+		return fmt.Errorf("%w: failed to create request: %w", ErrDeleteCASetVersion, err)
 	}
 
 	resp, err := m.Exec(req, nil)
 	if err != nil {
-		return fmt.Errorf("%w: request failed: %s", ErrDeleteCASetVersion, err)
+		return fmt.Errorf("%w: request failed: %w", ErrDeleteCASetVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 

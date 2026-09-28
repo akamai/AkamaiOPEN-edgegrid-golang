@@ -10,16 +10,14 @@ V = 0
 Q = $(if $(filter 1,$V),,@)
 M = $(shell echo ">")
 
-GOIMPORTS_VERSION = v0.24.0
-GOCOV_VERSION = v1.1.0
+GOIMPORTS_VERSION = v0.50.0
 GO_JUNIT_REPORT_VERSION = v2.1.0
-GOCOVXML_VERSION = v1.1.0
-GOLANGCI_LINT_VERSION = v2.6.1
+GOCOVER_COBERTURA_VERSION = v1.5.0
+GOLANGCI_LINT_VERSION = v2.13.2
 
 clean-tools:
 	@rm -rf $(BIN)/go*
 
-# Until v0.25.0 is not fixed, we have to use previous version. To install it, we must enable module aware mode.
 GOIMPORTS = $(BIN)/goimports
 # Rule to install goimports with version pinning
 $(GOIMPORTS): | $(BIN) ; $(info $(M) Installing goimports $(GOIMPORTS_VERSION)...)
@@ -30,21 +28,15 @@ $(BIN):
 $(BIN)/%: | $(BIN) ; $(info $(M) Building $(PACKAGE)...)
 	env GOBIN=$(BIN) $(GO) install $(PACKAGE)
 
-GOLINT = $(BIN)/golint
-$(BIN)/golint: PACKAGE=golang.org/x/lint/golint
-
-GOCOV = $(BIN)/gocov
-$(BIN)/gocov: PACKAGE=github.com/axw/gocov/gocov@$(GOCOV_VERSION)
-
-GOCOVXML = $(BIN)/gocov-xml
-$(BIN)/gocov-xml: PACKAGE=github.com/AlekSi/gocov-xml@$(GOCOVXML_VERSION)
+GOCOVER_COBERTURA = $(BIN)/gocover-cobertura
+$(GOCOVER_COBERTURA): PACKAGE=github.com/boumenot/gocover-cobertura@$(GOCOVER_COBERTURA_VERSION)
 
 GOJUNITREPORT = $(BIN)/go-junit-report
 $(BIN)/go-junit-report: PACKAGE=github.com/jstemmer/go-junit-report/v2@$(GO_JUNIT_REPORT_VERSION)
 
 GOLANGCILINT = $(BIN)/golangci-lint
 $(BIN)/golangci-lint: ; $(info $(M) Installing golangci-lint...) @
-	$Q curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(BIN) $(GOLANGCI_LINT_VERSION)
+	$Q curl -sSfL https://golangci-lint.run/install.sh | sh -s -- -b $(BIN) $(GOLANGCI_LINT_VERSION)
 
 
 .PHONY: all
@@ -81,9 +73,9 @@ create-junit-report: | $(GOJUNITREPORT) ; $(info $(M) Creating junit xml report)
 
 .PHONY: create-coverage-files
 create-coverage-files: COVERAGE_DIR := $(CURDIR)/test/coverage
-create-coverage-files: $(CURDIR)/test/coverage/profile.out | $(GOCOV) $(GOCOVXML); $(info $(M) Creating coverage files...) @ ## Run coverage tests
+create-coverage-files: $(CURDIR)/test/coverage/profile.out | $(GOCOVER_COBERTURA); $(info $(M) Creating coverage files...) @ ## Run coverage tests
 	$Q $(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
-	$Q $(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
+	$Q $(GOCOVER_COBERTURA) -strict < $(COVERAGE_PROFILE) > $(COVERAGE_XML)
 
 .PHONY: lint
 lint: | $(GOLANGCILINT) ; $(info $(M) Running golangci-lint...) @

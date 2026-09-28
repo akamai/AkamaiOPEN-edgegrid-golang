@@ -1,5 +1,55 @@
 # RELEASE NOTES
 
+## 14.1.0 (Sep 28, 2026)
+
+### FEATURES/ENHANCEMENTS:
+
+* General
+  * Migrated to Go `1.26`.
+  * Adopted Go toolchain `1.26.8`.
+  * Updated various dependencies.
+
+* Appsec
+  * Extended the `GetExportConfiguration` response to include rapid rules data for security policies.
+
+* Cloud Certificates (Beta)
+  * Replaced the legacy certificate API with the current certificate API. As a result, the following methods and types have been removed: `CreateCertificate`, `GetCertificate`, `UpdateCertificate`, `PatchCertificate`, `DeleteCertificate`, `ListCertificates`, `ListCertificateBindings`, `ListBindings`, `CertificateBinding`, `Links`, `ResourceLimitsMetadata`, `ErrCertificateResourceNotFound`, and `SortFieldPat`.
+  * Added the following methods. Public API documentation for these endpoints isn't available yet; it's planned for a later release.
+    * `CreateLineage` - Creates a new certificate lineage, generating a certificate signing request (CSR) for each requested key type.
+    * `GetLineage` - Retrieves a single certificate lineage by its lineage ID, optionally expanding its head, current production, current staging, and previous production generations.
+    * `ListLineages` - Returns a paginated, filterable, and sortable list of certificate lineages accessible to the requesting user.
+    * `RenameLineage` - Updates the name of a certificate lineage.
+    * `DeleteLineage` - Permanently deletes a certificate lineage. The lineage must have no active production or staging generation and no pending activation in progress.
+    * `ListLineageActivity` - Returns a paginated, newest-first list of activity events recorded for a certificate lineage.
+    * `RenewLineage` - Creates a new head generation for a lineage, generating fresh CSRs for all key types in the lineage's key specs. Any existing head generation is abandoned as part of the renewal.
+    * `CompleteLineage` - Adds the second algorithm (e.g. ECDSA) to a `MULTIPLE_STACK` lineage where only one algorithm (e.g. RSA) is currently live on production, creating a new generation with the completed algorithm ready for use.
+    * `GetGeneration` - Retrieves a single certificate generation within a lineage, including full algorithm instance details.
+    * `ListArchivedGenerations` - Returns the unpaginated list of archived and abandoned generations for a certificate lineage. Optionally accepts an `IncludeAlgorithms` flag to return full algorithm instance details (CSR/signed certificate PEM, issuer, validity dates, etc.) instead of identifier-only fields for each generation's algorithms.
+    * `DeleteGeneration` - Permanently deletes a single certificate generation within a lineage. The generation must not be currently deployed on staging or production, and must not be the only generation in the lineage.
+    * `UploadSignedCertificate` - Uploads a PEM-encoded signed certificate and optional trust chain for one or more key types of a lineage generation. Optionally accepts an `AutoActivate` list of target networks (`STAGING`/`PRODUCTION`) to immediately promote the generation to those networks after a successful upload.
+    * `PromoteLineage` - Promotes a lineage's head generation to one or more networks (`STAGING`/`PRODUCTION`). Defaults to promoting to production only when no networks are given.
+    * `RollbackLineage` - Rolls a lineage's production generation back to its previous production generation.
+    * `ReplaceStagingLineage` - Replaces the generation currently deployed on staging with the lineage's current production or previous production generation.
+    * `GetActivationStatus` - Retrieves the status of a lineage activation request, as returned by `PromoteLineage`, `RollbackLineage`, or `ReplaceStagingLineage`.
+    * `ListActivations` - Returns a paginated, newest-first list of activation requests (`PROMOTE`, `ROLLBACK`, or `REPLACE_STAGING`) recorded for a certificate lineage.
+    * `ListLineageBindings` - Returns a paginated list of hostname bindings for a certificate lineage, optionally filtered by network and sorted chronologically.
+
+* Cloudlets
+  * Added support for the `AkaRuleID` field to all V3 match rule types.
+
+* PAPI
+  * Added `CCMCertID` to `Hostname` and `HostnameAdd` to bind a single Cloud Certificates certificate lineage to a property hostname using the `ccmCertId` JSON field.
+  * Added `CCMCertID`, `CCMCertLink`, and `CCMCertStatuses` to `HostnameResponseItem`, and added the `CCMCertStatusItem` type, to expose the bound lineage and its deployment statuses.
+  * Deprecated `CCMCertificates` and `CCMCertificatesResp`, including their corresponding fields, in favor of `CCMCertID`.
+
+### BUG FIXES:
+
+* General
+  * Removed an unmaintained `github.com/mitchellh/go-homedir` dependency, replacing its usage in the `edgegrid` package with the standard library's `os.UserHomeDir()` ([I#227](https://github.com/akamai/AkamaiOPEN-edgegrid-golang/issues/227)).
+
+* PAPI
+  * Fixed `GetIncludeActivation` to fail when the API validation summary reports an error, including when no structured validation error can be extracted.
+
 ## 14.0.0 (Sep 7, 2026)
 
 ### BREAKING CHANGES:
@@ -318,7 +368,7 @@
   * Added new methods `GetHostMoveValidation` and `CreateActivationsWithHostMove`.
 
 * Cloud Certificates (Beta)
-  * Added support for the Cloud Certificate Manager (CCM) API:
+  * Added support for the Cloud Certificates API:
     * [CreateCertificate](https://techdocs.akamai.com/ccm/reference/post-certificates) - Creates a third party certificate.
     * [GetCertificate](https://techdocs.akamai.com/ccm/reference/get-cert) - Retrieves a single certificate by its certificate ID.
     * [UpdateCertificate](https://techdocs.akamai.com/ccm/reference/put-cert) - Uploads a PEM-encoded signed certificate and optionally a trust chain and renames or resets the certificate name.
@@ -327,7 +377,7 @@
     * [ListCertificates](https://techdocs.akamai.com/ccm/reference/get-certificates) - Lists all certificates that are accessible for the requesting user.
     * [ListCertificateBindings](https://techdocs.akamai.com/ccm/reference/get-single-cert-bindings) - Provides hostname bindings for the given certificate.
     * [ListBindings](https://techdocs.akamai.com/ccm/reference/get-all-cert-bindings) - Provides hostname bindings for certificates accessible to the requesting user, optionally filtered by contract, group, domain, or expiration days.
-  * Added support for the `Akamai-RateLimit-Limit` and `Akamai-RateLimit-Remaining` headers in the CCM API responses to help monitor and manage the API rate limits.
+  * Added support for the `Akamai-RateLimit-Limit` and `Akamai-RateLimit-Remaining` headers in the Cloud Certificates API responses to help monitor and manage the API rate limits.
   * Added support for the `Akamai-RateLimit-Next` header which is returned when the rate limit is exceeded, indicating when the next request can be made.
 
 * Datastream
@@ -356,8 +406,8 @@
     * `MTLS`
     * `TLSConfiguration`
     * `CCMCertificates`
-  * Added a new certificate type `CertTypeCCM` for certificates created via Cloud Certificate Manager (CCM).
-  * Added fields specific to Cloud Certificate Manager (CCM) in the response of the `ListActivePropertyHostnames` method.
+  * Added a new certificate type `CertTypeCCM` for certificates created via Cloud Certificates API.
+  * Added fields specific to Cloud Certificates API in the response of the `ListActivePropertyHostnames` method.
 
 ## 12.1.0 (Oct 13, 2025)
 
