@@ -63,7 +63,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 				"generationId": 2912,
 				"generationModifiedBy": "terraform-dev",
 				"generationModifiedTime": "2026-07-08T13:14:25Z",
-				"generationStatus": ["READY_FOR_USE"],
+				"generationStatus": "READY_FOR_USE",
 				"lineageId": 500001
 			}`,
 			expectedResponse: &UploadSignedCertificateResponse{
@@ -87,7 +87,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 				GenerationID:           2912,
 				GenerationModifiedBy:   "terraform-dev",
 				GenerationModifiedTime: test.NewTimeFromString(t, "2026-07-08T13:14:25Z"),
-				GenerationStatus:       []GenerationStatus{GenerationStatusReadyForUse},
+				GenerationStatus:       string(GenerationStatusReadyForUse),
 				LineageID:              500001,
 			},
 		},
@@ -127,7 +127,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 				"generationId": 2912,
 				"generationModifiedBy": "terraform-dev",
 				"generationModifiedTime": "2026-07-08T13:14:25Z",
-				"generationStatus": ["READY_FOR_USE"],
+				"generationStatus": "READY_FOR_USE",
 				"lineageId": 500001
 			}`,
 			expectedResponse: &UploadSignedCertificateResponse{
@@ -151,7 +151,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 				GenerationID:           2912,
 				GenerationModifiedBy:   "terraform-dev",
 				GenerationModifiedTime: test.NewTimeFromString(t, "2026-07-08T13:14:25Z"),
-				GenerationStatus:       []GenerationStatus{GenerationStatusReadyForUse},
+				GenerationStatus:       string(GenerationStatusReadyForUse),
 				LineageID:              500001,
 			},
 		},
@@ -184,7 +184,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 				"generationId": 3247,
 				"generationModifiedBy": "terraform-dev",
 				"generationModifiedTime": "2026-07-27T12:51:26Z",
-				"generationStatus": ["READY_FOR_USE"],
+				"generationStatus": "READY_FOR_USE",
 				"lineageId": 500016
 			}`,
 			expectedResponse: &UploadSignedCertificateResponse{
@@ -203,7 +203,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 				GenerationID:           3247,
 				GenerationModifiedBy:   "terraform-dev",
 				GenerationModifiedTime: test.NewTimeFromString(t, "2026-07-27T12:51:26Z"),
-				GenerationStatus:       []GenerationStatus{GenerationStatusReadyForUse},
+				GenerationStatus:       string(GenerationStatusReadyForUse),
 				LineageID:              500016,
 			},
 		},
@@ -244,7 +244,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 				"generationId": 3250,
 				"generationModifiedBy": "terraform-dev",
 				"generationModifiedTime": "2026-07-27T13:33:41Z",
-				"generationStatus": ["ACTIVE"],
+				"generationStatus": "ACTIVE",
 				"lineageId": 500017
 			}`,
 			expectedResponse: &UploadSignedCertificateResponse{
@@ -269,7 +269,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 				GenerationID:                3250,
 				GenerationModifiedBy:        "terraform-dev",
 				GenerationModifiedTime:      test.NewTimeFromString(t, "2026-07-27T13:33:41Z"),
-				GenerationStatus:            []GenerationStatus{GenerationStatusActive},
+				GenerationStatus:            string(GenerationStatusActive),
 				LineageID:                   500017,
 			},
 		},
@@ -312,7 +312,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 				"generationId": 2912,
 				"generationModifiedBy": "terraform-dev",
 				"generationModifiedTime": "2026-07-08T13:24:17Z",
-				"generationStatus": ["READY_FOR_USE"],
+				"generationStatus": "READY_FOR_USE",
 				"lineageId": 500001
 			}`,
 			expectedResponse: &UploadSignedCertificateResponse{
@@ -341,7 +341,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 				GenerationID:           2912,
 				GenerationModifiedBy:   "terraform-dev",
 				GenerationModifiedTime: test.NewTimeFromString(t, "2026-07-08T13:24:17Z"),
-				GenerationStatus:       []GenerationStatus{GenerationStatusReadyForUse},
+				GenerationStatus:       string(GenerationStatusReadyForUse),
 				LineageID:              500001,
 			},
 		},
