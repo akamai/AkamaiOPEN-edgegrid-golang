@@ -101,6 +101,7 @@
 
 
 
+
 ### FEATURES/ENHANCEMENTS:
 
 * EdgeWorkers
@@ -160,7 +161,8 @@
   * Added the `DeliveryPolicy` field and map detail fields (`MapDetailsSerialNumber`, `MapDetailsSlotNumber`, and `MapDetailsMapDomain`) to responses from `GetEdgeHostnames` and `GetEdgeHostname`. The map detail fields are returned when the request's `Options` value is `mapDetails`.
 
 
-
+* Cloud Certificates (Beta)
+  * Changed `UploadSignedCertificateResponse.GenerationStatus` from `string` to `[]GenerationStatus` to match the API's actual response shape.
 
 
 

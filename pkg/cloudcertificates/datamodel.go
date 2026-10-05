@@ -629,8 +629,8 @@ type (
 		// GenerationModifiedTime is the time the generation was last modified.
 		GenerationModifiedTime time.Time `json:"generationModifiedTime"`
 
-		// GenerationStatus is the status of the generation.
-		GenerationStatus string `json:"generationStatus"`
+		// GenerationStatus is the list of statuses of the generation.
+		GenerationStatus []GenerationStatus `json:"generationStatus"`
 
 		// LineageID is the unique identifier of the lineage.
 		LineageID int64 `json:"lineageId"`
