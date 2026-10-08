@@ -30,6 +30,9 @@
 
 
 
+* PAPI
+  * Changed the `Options` field in `GetEdgeHostnames` and `GetEdgeHostname` requests from `[]string` to `string`.
+  * Removed the `Options` field from `CreateEdgeHostnameRequest`.
 
 
 
@@ -78,6 +81,8 @@
 
 
 
+* PAPI
+  * Added the `DeliveryPolicy` field and map detail fields (`MapDetailsSerialNumber`, `MapDetailsSlotNumber`, and `MapDetailsMapDomain`) to responses from `GetEdgeHostnames` and `GetEdgeHostname`. The map detail fields are returned when the request's `Options` value is `mapDetails`.
 
 
 

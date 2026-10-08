@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"strings"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
@@ -19,7 +18,7 @@ type (
 	GetEdgeHostnamesRequest struct {
 		ContractID string
 		GroupID    string
-		Options    []string
+		Options    string
 	}
 
 	// GetEdgeHostnameRequest contains path and query params used to fetch specific edge hostname
@@ -27,7 +26,7 @@ type (
 		EdgeHostnameID string
 		ContractID     string
 		GroupID        string
-		Options        []string
+		Options        string
 	}
 
 	// GetEdgeHostnamesResponse contains data received by calling GetEdgeHostnames or GetEdgeHostname
@@ -46,16 +45,33 @@ type (
 
 	// EdgeHostnameGetItem contains GET details for edge hostname
 	EdgeHostnameGetItem struct {
-		ID                  string    `json:"edgeHostnameId"`
-		Domain              string    `json:"edgeHostnameDomain"`
-		ProductID           string    `json:"productId"`
-		DomainPrefix        string    `json:"domainPrefix"`
-		DomainSuffix        string    `json:"domainSuffix"`
-		Status              string    `json:"status,omitempty"`
-		Secure              bool      `json:"secure"`
-		IPVersionBehavior   string    `json:"ipVersionBehavior"`
-		UseCases            []UseCase `json:"useCases,omitempty"`
-		HTTPSServiceBinding *string   `json:"httpsServiceBinding"`
+		ID                     string          `json:"edgeHostnameId"`
+		Domain                 string          `json:"edgeHostnameDomain"`
+		ProductID              string          `json:"productId"`
+		DeliveryPolicy         *DeliveryPolicy `json:"deliveryPolicy"`
+		DomainPrefix           string          `json:"domainPrefix"`
+		DomainSuffix           string          `json:"domainSuffix"`
+		Status                 string          `json:"status,omitempty"`
+		Secure                 bool            `json:"secure"`
+		IPVersionBehavior      string          `json:"ipVersionBehavior"`
+		UseCases               []UseCase       `json:"useCases,omitempty"`
+		HTTPSServiceBinding    *string         `json:"httpsServiceBinding"`
+		MapDetailsSerialNumber *int64          `json:"mapDetails:serialNumber"`
+		MapDetailsSlotNumber   *int64          `json:"mapDetails:slotNumber"`
+		MapDetailsMapDomain    *string         `json:"mapDetails:mapDomain"`
+	}
+
+	// DeliveryPolicy contains delivery policy data
+	DeliveryPolicy struct {
+		PolicyType       string            `json:"policyType"`
+		PolicyAttributes []PolicyAttribute `json:"policyAttributes"`
+	}
+
+	// PolicyAttribute contains policy attribute data
+	PolicyAttribute struct {
+		AttributeType string `json:"attributeType"`
+		Code          string `json:"code"`
+		Name          string `json:"name"`
 	}
 
 	// UseCase contains UseCase data
@@ -69,7 +85,6 @@ type (
 	CreateEdgeHostnameRequest struct {
 		ContractID   string
 		GroupID      string
-		Options      []string
 		EdgeHostname EdgeHostnameCreate
 	}
 
@@ -203,7 +218,7 @@ func (p *papi) GetEdgeHostnames(ctx context.Context, params GetEdgeHostnamesRequ
 	req, err := request.NewGet(ctx, "/papi/v1/edgehostnames").
 		AddQueryParam("groupId", params.GroupID).
 		AddQueryParam("contractId", params.ContractID).
-		AddQueryParamIf("options", strings.Join(params.Options, ","), len(params.Options) > 0).
+		AddQueryParamIf("options", params.Options, params.Options != "").
 		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeHostnames, err)
@@ -235,7 +250,7 @@ func (p *papi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 	req, err := request.NewGet(ctx, "/papi/v1/edgehostnames/%s", params.EdgeHostnameID).
 		AddQueryParam("groupId", params.GroupID).
 		AddQueryParam("contractId", params.ContractID).
-		AddQueryParamIf("options", strings.Join(params.Options, ","), len(params.Options) > 0).
+		AddQueryParamIf("options", params.Options, params.Options != "").
 		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeHostname, err)
@@ -275,7 +290,6 @@ func (p *papi) CreateEdgeHostname(ctx context.Context, params CreateEdgeHostname
 	req, err := request.NewPost(ctx, "/papi/v1/edgehostnames").
 		AddQueryParam("groupId", params.GroupID).
 		AddQueryParam("contractId", params.ContractID).
-		AddQueryParamIf("options", strings.Join(params.Options, ","), len(params.Options) > 0).
 		WithBody(params.EdgeHostname).
 		Build()
 	if err != nil {
