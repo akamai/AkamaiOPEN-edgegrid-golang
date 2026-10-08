@@ -40,6 +40,7 @@ type (
 		ApiHostnameCoverageOverlapping
 		ApiRequestConstraints
 		AttackGroup
+		ClientSideProtectionRule
 		Configuration
 		ConfigurationClone
 		ConfigurationVersion

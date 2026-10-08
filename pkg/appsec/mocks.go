@@ -360,6 +360,35 @@ func (m *Mock) UpdateAdvancedSettingsAttackPayloadLogging(ctx context.Context, r
 	return args.Get(0).(*UpdateAdvancedSettingsAttackPayloadLoggingResponse), args.Error(1)
 }
 
+func (m *Mock) ListClientSideProtectionRules(ctx context.Context, req ListClientSideProtectionRulesRequest) (*ListClientSideProtectionRulesResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*ListClientSideProtectionRulesResponse), args.Error(1)
+}
+
+func (m *Mock) CreateClientSideProtectionRule(ctx context.Context, req CreateClientSideProtectionRuleRequest) (*CreateClientSideProtectionRuleResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*CreateClientSideProtectionRuleResponse), args.Error(1)
+}
+
+func (m *Mock) UpdateClientSideProtectionRule(ctx context.Context, req UpdateClientSideProtectionRuleRequest) (*UpdateClientSideProtectionRuleResponse, error) {
+	args := m.Called(ctx, req)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*UpdateClientSideProtectionRuleResponse), args.Error(1)
+}
+
+func (m *Mock) DeleteClientSideProtectionRule(ctx context.Context, req DeleteClientSideProtectionRuleRequest) error {
+	args := m.Called(ctx, req)
+	return args.Error(0)
+}
+
 func (m *Mock) UpdateAdvancedSettingsEvasivePathMatch(ctx context.Context, req UpdateAdvancedSettingsEvasivePathMatchRequest) (*UpdateAdvancedSettingsEvasivePathMatchResponse, error) {
 	args := m.Called(ctx, req)
 	if args.Get(0) == nil {

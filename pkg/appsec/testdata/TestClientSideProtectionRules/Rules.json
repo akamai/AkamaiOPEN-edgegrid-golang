@@ -1,0 +1,24 @@
+[
+  {
+    "ruleId": 3000601,
+    "ruleName": "Block PCI Data Access",
+    "description": "Prevents third-party scripts from accessing payment card data",
+    "conditions": {
+      "page": {
+        "condition": "MATCHES",
+        "values": ["/checkout", "/billing/*"]
+      },
+      "script": {
+        "scriptType": "THIRD_PARTY",
+        "condition": "MATCHES",
+        "values": ["analytics.example.com/*"]
+      },
+      "activityTypeValues": {
+        "condition": "MATCHES",
+        "values": ["CREDIT_CARD", "PII"]
+      }
+    },
+    "activityType": "DATA_ACCESS",
+    "action": "deny"
+  }
+]

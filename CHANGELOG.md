@@ -108,6 +108,12 @@
 
 * EdgeWorkers
   * Added `ActiveOnNetwork` and `Network` filters to the `ListActivationsRequest`.
+* Appsec
+  * (Beta) Added Client-Side Protection Rules API:
+    * `CreateClientSideProtectionRule`
+    * `ListClientSideProtectionRules`
+    * `UpdateClientSideProtectionRule`
+    * `DeleteClientSideProtectionRule`
 
 
 
