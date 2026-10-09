@@ -18,6 +18,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func newMockAPIClient(t *testing.T, handler http.HandlerFunc) APPSEC {
+	server := httptest.NewTLSServer(handler)
+	t.Cleanup(server.Close)
+	return mockAPIClient(t, server)
+}
+
 func mockAPIClient(t *testing.T, mockServer *httptest.Server) APPSEC {
 	serverURL, err := url.Parse(mockServer.URL)
 	require.NoError(t, err)

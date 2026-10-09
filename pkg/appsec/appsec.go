@@ -41,6 +41,7 @@ type (
 		ApiRequestConstraints
 		AttackGroup
 		ClientSideProtectionRule
+		ClientsideProtectionConfiguration
 		Configuration
 		ConfigurationClone
 		ConfigurationVersion

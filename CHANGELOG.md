@@ -114,6 +114,9 @@
     * `ListClientSideProtectionRules`
     * `UpdateClientSideProtectionRule`
     * `DeleteClientSideProtectionRule`
+  * (Beta) Added Clientside Protection Configuration API:
+    * `GetClientsideProtectionConfiguration`
+    * `UpdateClientsideProtectionConfiguration`
 
 
 
