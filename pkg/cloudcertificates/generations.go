@@ -10,11 +10,6 @@ import (
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 )
 
-// The API's UploadSignedCertificate endpoint declares a fixed `produces` media type on its server-side mapping,
-// rejecting the session's default `Accept: application/json` with a 406 media-type-not-acceptable error. This
-// vendor media type must be set explicitly as the Accept header.
-const mediaTypeCertificateLineageUploadV3 = "application/prs.akamai.cps-ccm-api.third-party.certificate-lineage-create.v3+json; charset=UTF-8"
-
 func (c *cloudcertificates) RenewLineage(ctx context.Context, params RenewLineageRequest) (*RenewLineageResponse, error) {
 	logger := c.Log(ctx)
 	logger.Debug("RenewLineage")
@@ -169,7 +164,6 @@ func (c *cloudcertificates) UploadSignedCertificate(ctx context.Context, params 
 
 	req, err := request.NewPatch(ctx, "/ccm/v2/lineages/%d/generations/%d", params.LineageID, params.GenerationID).
 		AddQueryParamIf("acknowledgeWarnings", strconv.FormatBool(params.AcknowledgeWarnings), params.AcknowledgeWarnings).
-		AddHeader("Accept", mediaTypeCertificateLineageUploadV3).
 		WithBody(params.Body).
 		Build()
 	if err != nil {

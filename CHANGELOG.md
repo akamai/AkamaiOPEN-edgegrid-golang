@@ -4,6 +4,9 @@
 
 ### BREAKING CHANGES:
 
+* Cloud Certificates (Beta)
+  * `UploadSignedCertificate` no longer sends a custom vendor `Accept` header; the API now rejects it (406) and only accepts the session's default `application/json`.
+
 
 * IAM
   * Changed the `SecondaryEmail` field in the `UserBasicInfo` structure from `string` to `*string` to distinguish an omitted value from an explicitly cleared one ([I#699](https://github.com/akamai/terraform-provider-akamai/issues/699)).

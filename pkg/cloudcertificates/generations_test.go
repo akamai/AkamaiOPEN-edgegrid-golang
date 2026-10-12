@@ -726,7 +726,7 @@ func TestUploadSignedCertificate(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tc.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPatch, r.Method)
-				assert.Equal(t, mediaTypeCertificateLineageUploadV3, r.Header.Get("Accept"))
+				assert.Equal(t, "application/json", r.Header.Get("Accept"))
 				if tc.expectedRequestBody != "" {
 					requestBody, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
