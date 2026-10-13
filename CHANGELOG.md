@@ -29,6 +29,45 @@
 
 
 
+* HAPI
+  * Renamed the `GetChangeRequest` request struct to `GetChangeRequestRequest` and changed the `GetChangeRequest` method's return type from `*ChangeRequest` to `*GetChangeRequestResponse`.
+  * Changed the `GetEdgeHostname` method to accept the `GetEdgeHostnameRequest` struct instead of an integer ID, with an `int64` `EdgeHostnameID` field and optional `IncludeDeliveryPolicy` support.
+  * Renamed the `EdgeHostname.ProductId` field to `ProductID` and the `GetEdgeHostnameResponse.ChinaCdn` field to `ChinaCDN`.
+  * Changed the `Error.Status` field from `int` to `int64` and the `Error.RequestTime` field from `string` to `time.Time`.
+  * Changed the following integer fields from `int` to `int64`:
+    * The `ChangeID` field in the `GetChangeRequestRequest`, `DeleteEdgeHostnameResponse`, and `UpdateEdgeHostnameResponse` structs.
+    * The `EdgeHostnameID`, `TTL` and `SerialNumber` fields in the `EdgeHostname` and `GetEdgeHostnameResponse` structs.
+  * Changed the `StatusUpdateDate` and `SubmitDate` fields from `string` to `time.Time` in the `DeleteEdgeHostnameResponse`, `UpdateEdgeHostnameResponse`, and `GetChangeRequestResponse` structs.
+  * Added required-ID validation to the `GetEdgeHostnameRequest` and `GetChangeRequestRequest` structs.
+  * Changed the following fields to pointers:
+    * The `SlotNumber` (from `int` to `*int64`), `CustomTarget`, `MapAlias`, and `IsEdgeIPBindingEnabled` fields in the `EdgeHostname`, `GetEdgeHostnameResponse`, `GetChangeRequestResponse`, `UpdateEdgeHostnameResponse`, and `DeleteEdgeHostnameResponse` structs.
+    * The `CustomChinaCDNMap` field in the `ChinaCDN` struct.
+    * The `StatusUpdateEmail` field in the `GetChangeRequestResponse`, `UpdateEdgeHostnameResponse`, and `DeleteEdgeHostnameResponse` structs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 * PAPI
   * Changed the `Options` field in `GetEdgeHostnames` and `GetEdgeHostname` requests from `[]string` to `string`.
@@ -59,6 +98,35 @@
 
 
 ### FEATURES/ENHANCEMENTS:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* HAPI
+  * Added the following methods:
+    * [`ListChangeRequests`](https://techdocs.akamai.com/edge-hostnames/reference/get-change-requests) - Lists pending change requests.
+    * [`ListChangeRequestsPerEdgeHostname`](https://techdocs.akamai.com/edge-hostnames/reference/get-edgehostname-change-requests) - Lists all change requests for the specified edge hostname.
+  * Added the optional `IncludeDeliveryPolicy` field to the `GetChangeRequestRequest` struct.
+  * Added the `OptimizationStatus` field to the `GetChangeRequestResponse` and `UpdateEdgeHostnameResponse` structs.
+  * Added the `DeliveryPolicy` and `DNSSerial` fields to the `EdgeHostname` and `GetEdgeHostnameResponse` structs. These fields are also available in the nested `EdgeHostnames` entries in the following response structures:
+    * `GetChangeRequestResponse`
+    * `ListChangeRequestsResponse`
+    * `ListChangeRequestsPerEdgeHostnameResponse`
+    * `UpdateEdgeHostnameResponse`
+    * `DeleteEdgeHostnameResponse`
+  * Added the `ChinaPartner` and `GTMDomain` fields to the `ChinaCDN` struct.
+  * Added the `ChangeID` and `ExtensionFields` fields to the `Error` struct.
 
 
 
@@ -113,6 +181,7 @@
 
 
 ### BUG FIXES:
+
 
 
 

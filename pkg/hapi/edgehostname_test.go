@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -73,8 +74,8 @@ func TestDeleteEdgeHostname(t *testing.T) {
 				},
 				Status:           "PENDING",
 				StatusMessage:    "File uploaded and awaiting validation",
-				StatusUpdateDate: "2021-09-23T15:07:10.000+00:00",
-				SubmitDate:       "2021-09-23T15:07:10.000+00:00",
+				StatusUpdateDate: test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
+				SubmitDate:       test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
 				Submitter:        "ftzgvvigljhoq5ib",
 				SubmitterEmail:   "ftzgvvigljhoq5ib@nomail-akamai.com",
 			},
@@ -130,8 +131,8 @@ func TestDeleteEdgeHostname(t *testing.T) {
 				}},
 				Status:           "PENDING",
 				StatusMessage:    "File uploaded and awaiting validation",
-				StatusUpdateDate: "2021-09-23T15:07:10.000+00:00",
-				SubmitDate:       "2021-09-23T15:07:10.000+00:00",
+				StatusUpdateDate: test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
+				SubmitDate:       test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
 				Submitter:        "ftzgvvigljhoq5ib",
 				SubmitterEmail:   "ftzgvvigljhoq5ib@nomail-akamai.com",
 			},
@@ -167,7 +168,7 @@ func TestDeleteEdgeHostname(t *testing.T) {
 				Instance:        "/hapi/error-instances/47f08d26-00b4-4c05-a8c0-bcbc542b9bce",
 				RequestInstance: "http://cloud-qa-resource-impl.luna-dev.akamaiapis.net/hapi/open/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-003#9ea9060c",
 				Method:          "DELETE",
-				RequestTime:     "2021-09-23T15:37:28.383173Z",
+				RequestTime:     test.NewTimeFromString(t, "2021-09-23T15:37:28.383173Z"),
 				DomainPrefix:    "mgw-test-003",
 				DomainSuffix:    "edgesuite.net",
 			},
@@ -228,13 +229,15 @@ func TestDeleteEdgeHostname(t *testing.T) {
 }
 
 func TestGetEdgeHostname(t *testing.T) {
+	t.Parallel()
 	tests := map[string]struct {
-		edgeHostnameID   int
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *GetEdgeHostnameResponse
-		withError        error
+		edgeHostnameID        int64
+		includeDeliveryPolicy *bool
+		responseStatus        int
+		responseBody          string
+		expectedPath          string
+		expectedResponse      *GetEdgeHostnameResponse
+		withError             error
 	}{
 		"200 OK": {
 			edgeHostnameID: 1234,
@@ -267,7 +270,7 @@ func TestGetEdgeHostname(t *testing.T) {
 			}`,
 			expectedPath: "/hapi/v1/edge-hostnames/1234",
 			expectedResponse: &GetEdgeHostnameResponse{
-				ChinaCdn: ChinaCDN{
+				ChinaCDN: ChinaCDN{
 					IsChinaCDN: false,
 				},
 				Comments:          "Created by Property-Manager/PAPI on Thu Mar 03 15:58:17 GMT 2022",
@@ -278,11 +281,11 @@ func TestGetEdgeHostname(t *testing.T) {
 				Map:               "e;dscx.akamaiedge.net",
 				RecordName:        "aws_ci_pearltest-asorigin-na-as-eu-ionp.cumulus-essl.webexp-ipqa-ion.com-v2",
 				SecurityType:      "ENHANCED-TLS",
-				SlotNumber:        47463,
+				SlotNumber:        ptr.To(int64(47463)),
 				TTL:               21600,
 				UseDefaultMap:     true,
 				UseDefaultTTL:     true,
-				MapAlias:          "al",
+				MapAlias:          ptr.To("al"),
 				UseCases: []UseCase{
 					{
 						Type:    "GLOBAL",
@@ -318,7 +321,7 @@ func TestGetEdgeHostname(t *testing.T) {
 			}`,
 			expectedPath: "/hapi/v1/edge-hostnames/1234",
 			expectedResponse: &GetEdgeHostnameResponse{
-				ChinaCdn: ChinaCDN{
+				ChinaCDN: ChinaCDN{
 					IsChinaCDN: false,
 				},
 				Comments:            "Created by Property-Manager/PAPI on Thu Mar 03 15:58:17 GMT 2022",
@@ -329,14 +332,134 @@ func TestGetEdgeHostname(t *testing.T) {
 				Map:                 "e;dscx.akamaiedge.net",
 				RecordName:          "aws_ci_pearltest-asorigin-na-as-eu-ionp.cumulus-essl.webexp-ipqa-ion.com-v2",
 				SecurityType:        "ENHANCED-TLS",
-				SlotNumber:          47463,
+				SlotNumber:          ptr.To(int64(47463)),
 				TTL:                 21600,
 				UseDefaultMap:       true,
 				UseDefaultTTL:       true,
-				MapAlias:            "al",
+				MapAlias:            ptr.To("al"),
 				HTTPSServiceBinding: ptr.To("H2"),
 				UseCases:            []UseCase{},
 			},
+		},
+		"200 OK with hostname metadata and delivery policy": {
+			edgeHostnameID: 1234,
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"recordName":"www.example.com","dnsZone":"edgesuite.net","securityType":"STANDARD-TLS",
+				"productId":"DSA","useDefaultMap":true,"useDefaultTtl":true,
+				"dnsSerial":1234567890,
+				"chinaCdn":{"isChinaCdn":true,"chinaPartner":"example-partner","customChinaCdnMap":"partner.example.com","gtmDomain":"example.akadns.net"},
+				"deliveryPolicy":{"policyType":"GEO_OPT_IN","policyAttributes":[{"attributeType":"GEO","code":"US","name":"USA"}]}
+			}`,
+			expectedPath: "/hapi/v1/edge-hostnames/1234",
+			expectedResponse: &GetEdgeHostnameResponse{
+				RecordName: "www.example.com", DNSZone: "edgesuite.net", SecurityType: "STANDARD-TLS",
+				ProductID: "DSA", UseDefaultMap: true, UseDefaultTTL: true, DNSSerial: ptr.To(int64(1234567890)),
+				ChinaCDN: ChinaCDN{
+					IsChinaCDN: true, CustomChinaCDNMap: ptr.To("partner.example.com"),
+					ChinaPartner: ptr.To("example-partner"), GTMDomain: ptr.To("example.akadns.net"),
+				},
+				DeliveryPolicy: &DeliveryPolicy{
+					PolicyType:       "GEO_OPT_IN",
+					PolicyAttributes: []DeliveryPolicyAttribute{{AttributeType: ptr.To("GEO"), Code: "US", Name: ptr.To("USA")}},
+				},
+			},
+		},
+		"200 OK with null delivery policy": {
+			edgeHostnameID:   1234,
+			responseStatus:   http.StatusOK,
+			responseBody:     `{"deliveryPolicy":null}`,
+			expectedPath:     "/hapi/v1/edge-hostnames/1234",
+			expectedResponse: &GetEdgeHostnameResponse{},
+		},
+		"200 OK with empty and null hostname metadata": {
+			edgeHostnameID:   1234,
+			responseStatus:   http.StatusOK,
+			responseBody:     `{"dnsSerial":0,"chinaCdn":{"chinaPartner":"","gtmDomain":null}}`,
+			expectedPath:     "/hapi/v1/edge-hostnames/1234",
+			expectedResponse: &GetEdgeHostnameResponse{DNSSerial: ptr.To(int64(0)), ChinaCDN: ChinaCDN{ChinaPartner: ptr.To("")}},
+		},
+		"200 OK with delivery policy explicitly included": {
+			edgeHostnameID:        1234,
+			includeDeliveryPolicy: ptr.To(true),
+			responseStatus:        http.StatusOK,
+			responseBody:          `{"deliveryPolicy":{"policyType":"GEO_OPT_IN","policyAttributes":[{"code":"US"}]}}`,
+			expectedPath:          "/hapi/v1/edge-hostnames/1234?includeDeliveryPolicy=true",
+			expectedResponse: &GetEdgeHostnameResponse{
+				DeliveryPolicy: &DeliveryPolicy{PolicyType: "GEO_OPT_IN", PolicyAttributes: []DeliveryPolicyAttribute{{Code: "US"}}},
+			},
+		},
+		"200 OK with delivery policy explicitly excluded": {
+			edgeHostnameID:        1234,
+			includeDeliveryPolicy: ptr.To(false),
+			responseStatus:        http.StatusOK,
+			responseBody:          `{}`,
+			expectedPath:          "/hapi/v1/edge-hostnames/1234?includeDeliveryPolicy=false",
+			expectedResponse:      &GetEdgeHostnameResponse{},
+		},
+		"200 OK with 64-bit hostname values": {
+			edgeHostnameID:   2147483648,
+			responseStatus:   http.StatusOK,
+			responseBody:     `{"edgeHostnameId":2147483648,"ttl":2147483648,"slotNumber":2147483648,"serialNumber":2147483648}`,
+			expectedPath:     "/hapi/v1/edge-hostnames/2147483648",
+			expectedResponse: &GetEdgeHostnameResponse{EdgeHostnameID: 2147483648, TTL: 2147483648, SlotNumber: ptr.To(int64(2147483648)), SerialNumber: 2147483648},
+		},
+		"200 OK with standard TLS and omitted optional fields": {
+			edgeHostnameID: 1234,
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"chinaCdn":{"isChinaCdn":false},
+				"comments":"Created by Property-Manager/PAPI",
+				"dnsZone":"edgesuite.net","edgeHostnameId":1234,
+				"ipVersionBehavior":"IPV4","map":"a;r.akamai.net","productId":"IONNA",
+				"recordName":"example.com","securityType":"STANDARD-TLS",
+				"dnsSerial":1153,"serialNumber":1153,"ttl":21600,
+				"useDefaultMap":true,"useDefaultTtl":true
+			}`,
+			expectedPath: "/hapi/v1/edge-hostnames/1234",
+			expectedResponse: &GetEdgeHostnameResponse{
+				Comments: "Created by Property-Manager/PAPI", DNSZone: "edgesuite.net", EdgeHostnameID: 1234,
+				IPVersionBehavior: "IPV4", Map: "a;r.akamai.net", ProductID: "IONNA",
+				RecordName: "example.com", SecurityType: "STANDARD-TLS",
+				DNSSerial: ptr.To(int64(1153)), SerialNumber: 1153, TTL: 21600,
+				UseDefaultMap: true, UseDefaultTTL: true,
+			},
+		},
+		"200 OK with explicitly zero-valued optional fields": {
+			edgeHostnameID: 1234,
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"slotNumber":0,"serialNumber":0,"dnsSerial":0,
+				"customTarget":"","isEdgeIPBindingEnabled":false,"mapAlias":"",
+				"chinaCdn":{"isChinaCdn":false,"customChinaCdnMap":"","chinaPartner":"","gtmDomain":""}
+			}`,
+			expectedPath: "/hapi/v1/edge-hostnames/1234",
+			expectedResponse: &GetEdgeHostnameResponse{
+				SlotNumber: ptr.To(int64(0)), SerialNumber: 0, DNSSerial: ptr.To(int64(0)),
+				CustomTarget: ptr.To(""), IsEdgeIPBindingEnabled: ptr.To(false), MapAlias: ptr.To(""),
+				ChinaCDN: ChinaCDN{CustomChinaCDNMap: ptr.To(""), ChinaPartner: ptr.To(""), GTMDomain: ptr.To("")},
+			},
+		},
+		"200 OK with null optional fields": {
+			edgeHostnameID: 1234,
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"slotNumber":null,"dnsSerial":null,
+				"customTarget":null,"isEdgeIPBindingEnabled":null,"mapAlias":null,
+				"chinaCdn":{"customChinaCdnMap":null,"chinaPartner":null,"gtmDomain":null}
+			}`,
+			expectedPath:     "/hapi/v1/edge-hostnames/1234",
+			expectedResponse: &GetEdgeHostnameResponse{},
+		},
+		"missing edge hostname ID": {
+			withError: ErrStructValidation,
+		},
+		"invalid DNS serial type": {
+			edgeHostnameID: 1234,
+			responseStatus: http.StatusOK,
+			responseBody:   `{"dnsSerial":"1153"}`,
+			expectedPath:   "/hapi/v1/edge-hostnames/1234",
+			withError:      ErrGetEdgeHostname,
 		},
 		"404 could not find edge hostname": {
 			edgeHostnameID: 9999,
@@ -362,7 +485,7 @@ func TestGetEdgeHostname(t *testing.T) {
 				Instance:        "/hapi/error-instances/cdc47ffa-46f2-410d-8059-3f454c435e93",
 				RequestInstance: "http://cloud-qa-resource-impl.luna-dev.akamaiapis.net/hapi/open/v1/edge-hostnames/9999#8a702528",
 				Method:          "GET",
-				RequestTime:     "2022-03-03T16:43:19.876613Z",
+				RequestTime:     test.NewTimeFromString(t, "2022-03-03T16:43:19.876613Z"),
 			},
 		},
 		"500 internal server error": {
@@ -387,6 +510,7 @@ func TestGetEdgeHostname(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodGet, r.Method)
@@ -396,9 +520,14 @@ func TestGetEdgeHostname(t *testing.T) {
 			}))
 			defer mockServer.Close()
 			client := mockAPIClient(t, mockServer)
-			result, err := client.GetEdgeHostname(context.Background(), test.edgeHostnameID)
+			result, err := client.GetEdgeHostname(context.Background(), GetEdgeHostnameRequest{
+				EdgeHostnameID: test.edgeHostnameID, IncludeDeliveryPolicy: test.includeDeliveryPolicy,
+			})
 			if test.withError != nil {
 				assert.True(t, errors.Is(err, test.withError), "want: %s; got: %s", test.withError, err)
+				if errors.Is(test.withError, ErrStructValidation) {
+					assert.ErrorContains(t, err, "EdgeHostnameID: cannot be blank")
+				}
 				return
 			}
 			require.NoError(t, err)
@@ -407,15 +536,61 @@ func TestGetEdgeHostname(t *testing.T) {
 	}
 }
 
-func TestPatchEdgeHostname(t *testing.T) {
+func TestUpdateEdgeHostname(t *testing.T) {
+	t.Parallel()
 	tests := map[string]struct {
 		request          UpdateEdgeHostnameRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
+		expectedBody     string
 		expectedResponse *UpdateEdgeHostnameResponse
 		withError        error
 	}{
+		"202 Accepted with optimization status": {
+			request: UpdateEdgeHostnameRequest{
+				DNSZone: "edgesuite.net", RecordName: "www.example.com",
+				Body: []UpdateEdgeHostnameRequestBody{{Op: "replace", Path: "/ttl", Value: "10000"}},
+			},
+			responseStatus:   http.StatusAccepted,
+			responseBody:     `{"changeId":123,"optimizationStatus":"SUCCEEDED"}`,
+			expectedPath:     "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/www.example.com",
+			expectedBody:     `[{"op":"replace","path":"/ttl","value":"10000"}]`,
+			expectedResponse: &UpdateEdgeHostnameResponse{ChangeID: 123, OptimizationStatus: ptr.To("SUCCEEDED")},
+		},
+		"202 Accepted with empty optimization status": {
+			request: UpdateEdgeHostnameRequest{
+				DNSZone: "edgesuite.net", RecordName: "www.example.com",
+				Body: []UpdateEdgeHostnameRequestBody{{Op: "replace", Path: "/ttl", Value: "10000"}},
+			},
+			responseStatus:   http.StatusAccepted,
+			responseBody:     `{"changeId":123,"optimizationStatus":""}`,
+			expectedPath:     "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/www.example.com",
+			expectedBody:     `[{"op":"replace","path":"/ttl","value":"10000"}]`,
+			expectedResponse: &UpdateEdgeHostnameResponse{ChangeID: 123, OptimizationStatus: ptr.To("")},
+		},
+		"202 Accepted with null optimization status": {
+			request: UpdateEdgeHostnameRequest{
+				DNSZone: "edgesuite.net", RecordName: "www.example.com",
+				Body: []UpdateEdgeHostnameRequestBody{{Op: "replace", Path: "/ttl", Value: "10000"}},
+			},
+			responseStatus:   http.StatusAccepted,
+			responseBody:     `{"changeId":123,"optimizationStatus":null}`,
+			expectedPath:     "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/www.example.com",
+			expectedBody:     `[{"op":"replace","path":"/ttl","value":"10000"}]`,
+			expectedResponse: &UpdateEdgeHostnameResponse{ChangeID: 123},
+		},
+		"202 Accepted with 64-bit change ID and null timestamps": {
+			request: UpdateEdgeHostnameRequest{
+				DNSZone: "edgesuite.net", RecordName: "www.example.com",
+				Body: []UpdateEdgeHostnameRequestBody{{Op: "replace", Path: "/ttl", Value: "10000"}},
+			},
+			responseStatus:   http.StatusAccepted,
+			responseBody:     `{"changeId":2147483648,"submitDate":null,"statusUpdateDate":null}`,
+			expectedPath:     "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/www.example.com",
+			expectedBody:     `[{"op":"replace","path":"/ttl","value":"10000"}]`,
+			expectedResponse: &UpdateEdgeHostnameResponse{ChangeID: 2147483648},
+		},
 		"202 Accepted": {
 			request: UpdateEdgeHostnameRequest{
 				DNSZone:           "edgesuite.net",
@@ -463,6 +638,10 @@ func TestPatchEdgeHostname(t *testing.T) {
     "submitterEmail": "ftzgvvigljhoq5ib@nomail-akamai.com"
 }`,
 			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-001?comments=some+comment&statusUpdateEmail=some%40example.com",
+			expectedBody: `[
+				{"op":"replace","path":"/ttl","value":"10000"},
+				{"op":"replace","path":"/ipVersionBehavior","value":"IPV4"}
+			]`,
 			expectedResponse: &UpdateEdgeHostnameResponse{
 				Action:   "EDIT",
 				ChangeID: 66025603,
@@ -482,8 +661,8 @@ func TestPatchEdgeHostname(t *testing.T) {
 				},
 				Status:           "PENDING",
 				StatusMessage:    "File uploaded and awaiting validation",
-				StatusUpdateDate: "2021-09-23T15:07:10.000+00:00",
-				SubmitDate:       "2021-09-23T15:07:10.000+00:00",
+				StatusUpdateDate: test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
+				SubmitDate:       test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
 				Submitter:        "ftzgvvigljhoq5ib",
 				SubmitterEmail:   "ftzgvvigljhoq5ib@nomail-akamai.com",
 			},
@@ -531,6 +710,7 @@ func TestPatchEdgeHostname(t *testing.T) {
     "submitterEmail": "ftzgvvigljhoq5ib@nomail-akamai.com"
 }`,
 			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-001?comments=some+comment&statusUpdateEmail=some%40example.com",
+			expectedBody: `[{"op":"replace","path":"/ttl","value":"10000"}]`,
 			expectedResponse: &UpdateEdgeHostnameResponse{
 				Action:   "EDIT",
 				ChangeID: 66025604,
@@ -550,8 +730,8 @@ func TestPatchEdgeHostname(t *testing.T) {
 				}},
 				Status:           "PENDING",
 				StatusMessage:    "File uploaded and awaiting validation",
-				StatusUpdateDate: "2021-09-23T15:07:10.000+00:00",
-				SubmitDate:       "2021-09-23T15:07:10.000+00:00",
+				StatusUpdateDate: test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
+				SubmitDate:       test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
 				Submitter:        "ftzgvvigljhoq5ib",
 				SubmitterEmail:   "ftzgvvigljhoq5ib@nomail-akamai.com",
 			},
@@ -597,6 +777,7 @@ func TestPatchEdgeHostname(t *testing.T) {
     "submitterEmail": "ftzgvvigljhoq5ib@nomail-akamai.com"
 }`,
 			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-001?comments=some+comment&statusUpdateEmail=some%40example.com",
+			expectedBody: `[{"op":"replace","path":"/httpsServiceBinding","value":"H2_AND_H3"}]`,
 			expectedResponse: &UpdateEdgeHostnameResponse{
 				Action:   "EDIT",
 				ChangeID: 66025605,
@@ -614,8 +795,8 @@ func TestPatchEdgeHostname(t *testing.T) {
 				}},
 				Status:           "PENDING",
 				StatusMessage:    "File uploaded and awaiting validation",
-				StatusUpdateDate: "2021-09-23T15:07:10.000+00:00",
-				SubmitDate:       "2021-09-23T15:07:10.000+00:00",
+				StatusUpdateDate: test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
+				SubmitDate:       test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
 				Submitter:        "ftzgvvigljhoq5ib",
 				SubmitterEmail:   "ftzgvvigljhoq5ib@nomail-akamai.com",
 			},
@@ -661,6 +842,7 @@ func TestPatchEdgeHostname(t *testing.T) {
     "submitterEmail": "ftzgvvigljhoq5ib@nomail-akamai.com"
 }`,
 			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-001?comments=some+comment&statusUpdateEmail=some%40example.com",
+			expectedBody: `[{"op":"add","path":"/httpsServiceBinding","value":"H3"}]`,
 			expectedResponse: &UpdateEdgeHostnameResponse{
 				Action:   "EDIT",
 				ChangeID: 66025606,
@@ -678,8 +860,8 @@ func TestPatchEdgeHostname(t *testing.T) {
 				}},
 				Status:           "PENDING",
 				StatusMessage:    "File uploaded and awaiting validation",
-				StatusUpdateDate: "2021-09-23T15:07:10.000+00:00",
-				SubmitDate:       "2021-09-23T15:07:10.000+00:00",
+				StatusUpdateDate: test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
+				SubmitDate:       test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
 				Submitter:        "ftzgvvigljhoq5ib",
 				SubmitterEmail:   "ftzgvvigljhoq5ib@nomail-akamai.com",
 			},
@@ -723,6 +905,7 @@ func TestPatchEdgeHostname(t *testing.T) {
     "submitterEmail": "ftzgvvigljhoq5ib@nomail-akamai.com"
 }`,
 			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-001?comments=some+comment&statusUpdateEmail=some%40example.com",
+			expectedBody: `[{"op":"remove","path":"/httpsServiceBinding","value":""}]`,
 			expectedResponse: &UpdateEdgeHostnameResponse{
 				Action:   "EDIT",
 				ChangeID: 66025607,
@@ -739,8 +922,8 @@ func TestPatchEdgeHostname(t *testing.T) {
 				}},
 				Status:           "PENDING",
 				StatusMessage:    "File uploaded and awaiting validation",
-				StatusUpdateDate: "2021-09-23T15:07:10.000+00:00",
-				SubmitDate:       "2021-09-23T15:07:10.000+00:00",
+				StatusUpdateDate: test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
+				SubmitDate:       test.NewTimeFromString(t, "2021-09-23T15:07:10.000+00:00"),
 				Submitter:        "ftzgvvigljhoq5ib",
 				SubmitterEmail:   "ftzgvvigljhoq5ib@nomail-akamai.com",
 			},
@@ -856,6 +1039,7 @@ func TestPatchEdgeHostname(t *testing.T) {
     "errors": []
 }`,
 			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-001?comments=some+comment&statusUpdateEmail=some%40example.com",
+			expectedBody: `[{"op":"","path":"/incorrect","value":"some Value"}]`,
 			withError:    ErrUpdateEdgeHostname,
 		},
 		"500 internal server error": {
@@ -864,6 +1048,7 @@ func TestPatchEdgeHostname(t *testing.T) {
 				RecordName:        "mgw-test-002",
 				StatusUpdateEmail: []string{"some@example.com"},
 				Comments:          "some comment",
+				Body:              []UpdateEdgeHostnameRequestBody{{Op: "replace", Path: "/ttl", Value: "10000"}},
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -874,6 +1059,7 @@ func TestPatchEdgeHostname(t *testing.T) {
 	"status": 500
 }`,
 			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/mgw-test-002?comments=some+comment&statusUpdateEmail=some%40example.com",
+			expectedBody: `[{"op":"replace","path":"/ttl","value":"10000"}]`,
 			withError:    ErrUpdateEdgeHostname,
 		},
 	}
@@ -883,8 +1069,12 @@ func TestPatchEdgeHostname(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPatch, r.Method)
+				assert.Equal(t, "application/json-patch+json", r.Header.Get("Content-Type"))
+				body, err := io.ReadAll(r.Body)
+				assert.NoError(t, err)
+				assert.JSONEq(t, test.expectedBody, string(body))
 				w.WriteHeader(test.responseStatus)
-				_, err := w.Write([]byte(test.responseBody))
+				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)
 			}))
 			defer mockServer.Close()
@@ -975,7 +1165,7 @@ func TestGetCertificate(t *testing.T) {
 				Instance:        "/hapi/error-instances/a30f67cc-df20-4e02-bbc3-cf7c204a4aab",
 				RequestInstance: "http://origin.pulsar.akamai.com/hapi/open/v1/dns-zones/edgekey.net/edge-hostnames/example.com/certificate?depth=ALL&accountSwitchKey=F-AC-1937217#d7aa7348",
 				Method:          "GET",
-				RequestTime:     "2022-11-30T18:51:43.482982Z",
+				RequestTime:     test.NewTimeFromString(t, "2022-11-30T18:51:43.482982Z"),
 			}),
 		},
 		"500 internal server error": {

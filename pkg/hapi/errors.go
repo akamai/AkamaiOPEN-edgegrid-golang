@@ -6,8 +6,35 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/errs"
+)
+
+var (
+	// ErrDeleteEdgeHostname is returned when deleting an edge hostname fails.
+	ErrDeleteEdgeHostname = errors.New("delete edge hostname")
+
+	// ErrGetEdgeHostname is returned when retrieving an edge hostname fails.
+	ErrGetEdgeHostname = errors.New("get edge hostname")
+
+	// ErrUpdateEdgeHostname is returned when updating an edge hostname fails.
+	ErrUpdateEdgeHostname = errors.New("update edge hostname")
+
+	// ErrGetCertificate is returned when retrieving an edge hostname certificate fails.
+	ErrGetCertificate = errors.New("get edge hostname certificate")
+
+	// ErrNotFound indicates the requested resource was not found.
+	ErrNotFound = errors.New("not found")
+
+	// ErrGetChangeRequest is returned when retrieving a change request fails.
+	ErrGetChangeRequest = errors.New("get change request")
+
+	// ErrListChangeRequests is returned when listing account change requests fails.
+	ErrListChangeRequests = errors.New("list change requests")
+
+	// ErrListChangeRequestsPerEdgeHostname is returned when listing an edge hostname's change requests fails.
+	ErrListChangeRequestsPerEdgeHostname = errors.New("list change requests per edge hostname")
 )
 
 type (
@@ -19,13 +46,15 @@ type (
 		Instance        string      `json:"instance,omitempty"`
 		RequestInstance string      `json:"requestInstance,omitempty"`
 		Method          string      `json:"method,omitempty"`
-		RequestTime     string      `json:"requestTime,omitempty"`
+		RequestTime     time.Time   `json:"requestTime,omitzero"`
 		BehaviorName    string      `json:"behaviorName,omitempty"`
 		ErrorLocation   string      `json:"errorLocation,omitempty"`
-		Status          int         `json:"status,omitempty"`
+		Status          int64       `json:"status,omitempty"`
 		DomainPrefix    string      `json:"domainPrefix,omitempty"`
 		DomainSuffix    string      `json:"domainSuffix,omitempty"`
 		Errors          []ErrorItem `json:"errors,omitempty"`
+		ChangeID        string      `json:"changeId,omitempty"`
+		ExtensionFields []ErrorItem `json:"extensionFields,omitempty"`
 	}
 
 	// ErrorItem represents single error item
@@ -44,7 +73,7 @@ func (h *hapi) Error(r *http.Response) error {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		h.Log(r.Request.Context()).Errorf("reading error response body: %s", err)
-		e.Status = r.StatusCode
+		e.Status = int64(r.StatusCode)
 		e.Title = "Failed to read error body"
 		e.Detail = err.Error()
 		return &e
@@ -56,7 +85,7 @@ func (h *hapi) Error(r *http.Response) error {
 		e.Detail = errs.UnescapeContent(string(body))
 	}
 
-	e.Status = r.StatusCode
+	e.Status = int64(r.StatusCode)
 
 	return &e
 }
