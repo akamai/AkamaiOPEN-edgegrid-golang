@@ -102,6 +102,9 @@
 
 ### FEATURES/ENHANCEMENTS:
 
+* EdgeWorkers
+  * Added `ActiveOnNetwork` and `Network` filters to the `ListActivationsRequest`.
+
 
 
 
