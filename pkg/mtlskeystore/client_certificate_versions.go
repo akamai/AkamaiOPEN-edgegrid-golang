@@ -381,7 +381,7 @@ func (m *mtlskeystore) ListClientCertificateVersions(ctx context.Context, params
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrListClientCertificateVersions, err)
+		return nil, fmt.Errorf("%w: failed to parse URL: %w", ErrListClientCertificateVersions, err)
 	}
 
 	if params.IncludeAssociatedProperties {
@@ -398,7 +398,7 @@ func (m *mtlskeystore) ListClientCertificateVersions(ctx context.Context, params
 	var result ListClientCertificateVersionsResponse
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request execution failed: %s", ErrListClientCertificateVersions, err)
+		return nil, fmt.Errorf("%w: request execution failed: %w", ErrListClientCertificateVersions, err)
 	}
 	defer session.CloseResponseBody(resp)
 

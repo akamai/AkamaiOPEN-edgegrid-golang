@@ -647,6 +647,7 @@ func TestMTLS_Keystore_GetClientCertificate(t *testing.T) {
 
 func TestMTLS_Keystore_ListClientCertificates(t *testing.T) {
 	tests := map[string]struct {
+		request          ListClientCertificatesRequest
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
@@ -692,36 +693,40 @@ func TestMTLS_Keystore_ListClientCertificates(t *testing.T) {
 }`,
 			expectedPath: "/mtls-origin-keystore/v1/client-certificates",
 			expectedResponse: &ListClientCertificatesResponse{
-				Certificates: []Certificate{
+				Certificates: []ListClientCertificatesResponseItem{
 					{
-						CertificateID:   1234,
-						CertificateName: "test-certificate1",
-						CreatedBy:       "jsmith",
-						CreatedDate:     test.NewTimeFromString(t, "2023-01-01T00:00:00Z"),
-						Geography:       "CORE",
-						KeyAlgorithm:    "RSA",
-						NotificationEmails: []string{
-							"jsmith@akamai.com",
-							"jkowalski@akamai.com",
+						Certificate: Certificate{
+							CertificateID:   1234,
+							CertificateName: "test-certificate1",
+							CreatedBy:       "jsmith",
+							CreatedDate:     test.NewTimeFromString(t, "2023-01-01T00:00:00Z"),
+							Geography:       "CORE",
+							KeyAlgorithm:    "RSA",
+							NotificationEmails: []string{
+								"jsmith@akamai.com",
+								"jkowalski@akamai.com",
+							},
+							SecureNetwork: "STANDARD_TLS",
+							Signer:        "AKAMAI",
+							Subject:       "/C=US/O=Akamai Technologies, Inc./OU=123 test-contract 12345/CN=test-certificate1",
 						},
-						SecureNetwork: "STANDARD_TLS",
-						Signer:        "AKAMAI",
-						Subject:       "/C=US/O=Akamai Technologies, Inc./OU=123 test-contract 12345/CN=test-certificate1",
 					},
 					{
-						CertificateID:   12345,
-						CertificateName: "test-certificate2",
-						CreatedBy:       "jsmith",
-						CreatedDate:     test.NewTimeFromString(t, "2023-01-02T00:00:00Z"),
-						Geography:       "CORE",
-						KeyAlgorithm:    "RSA",
-						NotificationEmails: []string{
-							"jsmith@akamai.com",
-							"jkowalski@akamai.com",
+						Certificate: Certificate{
+							CertificateID:   12345,
+							CertificateName: "test-certificate2",
+							CreatedBy:       "jsmith",
+							CreatedDate:     test.NewTimeFromString(t, "2023-01-02T00:00:00Z"),
+							Geography:       "CORE",
+							KeyAlgorithm:    "RSA",
+							NotificationEmails: []string{
+								"jsmith@akamai.com",
+								"jkowalski@akamai.com",
+							},
+							SecureNetwork: "STANDARD_TLS",
+							Signer:        "AKAMAI",
+							Subject:       "/C=US/O=Akamai Technologies, Inc./OU=123 test-contract 12345/CN=test-certificate2",
 						},
-						SecureNetwork: "STANDARD_TLS",
-						Signer:        "AKAMAI",
-						Subject:       "/C=US/O=Akamai Technologies, Inc./OU=123 test-contract 12345/CN=test-certificate2",
 					},
 				},
 			},
@@ -762,7 +767,7 @@ func TestMTLS_Keystore_ListClientCertificates(t *testing.T) {
 			defer mockServer.Close()
 
 			client := mockAPIClient(t, mockServer)
-			result, err := client.ListClientCertificates(context.Background())
+			result, err := client.ListClientCertificates(context.Background(), tc.request)
 			if tc.withError != nil {
 				tc.withError(t, err)
 				return

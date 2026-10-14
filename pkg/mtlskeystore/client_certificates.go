@@ -14,10 +14,19 @@ import (
 )
 
 type (
+	// ListClientCertificatesRequest is a request to list client certificates.
+	ListClientCertificatesRequest struct {
+	}
+
 	// ListClientCertificatesResponse is the response from the ListClientCertificates API.
 	ListClientCertificatesResponse struct {
 		// Certificates is the list of client certificates.
-		Certificates []Certificate `json:"certificates"`
+		Certificates []ListClientCertificatesResponseItem `json:"certificates"`
+	}
+
+	// ListClientCertificatesResponseItem is a client certificate returned by the ListClientCertificates API.
+	ListClientCertificatesResponseItem struct {
+		Certificate
 	}
 
 	// Geography represents the geography type: `CORE`, `RUSSIA_AND_CORE`, or `CHINA_AND_CORE`.
@@ -271,7 +280,7 @@ func preferredCAValidate(r CreateClientCertificateRequest) func(any) error {
 	}
 }
 
-func (m *mtlskeystore) ListClientCertificates(ctx context.Context) (*ListClientCertificatesResponse, error) {
+func (m *mtlskeystore) ListClientCertificates(ctx context.Context, _ ListClientCertificatesRequest) (*ListClientCertificatesResponse, error) {
 	logger := m.Log(ctx)
 	logger.Debug("ListClientCertificates")
 

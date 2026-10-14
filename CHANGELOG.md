@@ -18,6 +18,9 @@
 
 
 
+* mTLS Keystore
+  * [`ListClientCertificates`](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-certs) was updated to accept `ListClientCertificatesRequest`.
+  * Changed the type of `ListClientCertificatesResponse.Certificates` from `Certificate` to `ListClientCertificatesResponseItem`. `ListClientCertificatesResponseItem` embedds `Certificate`.
 
 
 
