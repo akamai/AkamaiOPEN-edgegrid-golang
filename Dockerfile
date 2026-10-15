@@ -38,16 +38,16 @@ ARG GO_JUNIT_REPORT_VERSION=v2.1.0
 
 RUN echo "Installing goimports" && \
     go-proxy install golang.org/x/tools/cmd/goimports@${GOIMPORTS_VERSION} && \
-    echo "Installing golangci-lint" && \
-    go-proxy install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION} && \
-    echo "Installing gocov" && \
-    go-proxy install github.com/boumenot/gocover-cobertura@${GOCOVER_COBERTURA_VERSION} && \
 
+#    echo "Installing golangci-lint" && \
+#    go-proxy install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION} && \
+#    echo "Installing gocov" && \
+#    go-proxy install github.com/boumenot/gocover-cobertura@${GOCOVER_COBERTURA_VERSION} && \
 #    go-proxy install github.com/axw/gocov/gocov@${GOCOV_VERSION} && \
 #    echo "Installing gocov-xml" && \
 #    go-proxy install github.com/AlekSi/gocov-xml@${GOCOV_XML_VERSION} && \
-    echo "Installing go-junit-report" && \
-    go-proxy install github.com/jstemmer/go-junit-report/v2@${GO_JUNIT_REPORT_VERSION}
+#    echo "Installing go-junit-report" && \
+#    go-proxy install github.com/jstemmer/go-junit-report/v2@${GO_JUNIT_REPORT_VERSION}
 
 # Pre-fetch dependencies to speed up builds
 WORKDIR /tmp/go-mod-download
