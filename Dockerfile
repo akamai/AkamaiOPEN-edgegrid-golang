@@ -1,4 +1,4 @@
-FROM docker.akamai.com/images/golang:1.24.10-alpine3.22
+FROM docker.akamai.com/images/golang:1.26.9-alpine3.23
 
 # Install the certs
 COPY certs /certs
