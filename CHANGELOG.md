@@ -5,7 +5,8 @@
 ### BREAKING CHANGES:
 
 
-
+* IAM
+  * Changed the `SecondaryEmail` field in the `UserBasicInfo` structure from `string` to `*string` to distinguish an omitted value from an explicitly cleared one ([I#699](https://github.com/akamai/terraform-provider-akamai/issues/699)).
 
 
 

@@ -107,7 +107,7 @@ type (
 		TimeZone                 string         `json:"timeZone,omitempty"`
 		JobTitle                 string         `json:"jobTitle"`
 		TFAEnabled               bool           `json:"tfaEnabled"`
-		SecondaryEmail           string         `json:"secondaryEmail,omitempty"`
+		SecondaryEmail           *string        `json:"secondaryEmail,omitempty"`
 		MobilePhone              string         `json:"mobilePhone,omitempty"`
 		Address                  string         `json:"address,omitempty"`
 		City                     string         `json:"city,omitempty"`
