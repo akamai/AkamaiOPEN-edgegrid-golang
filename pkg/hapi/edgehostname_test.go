@@ -553,10 +553,10 @@ func TestUpdateEdgeHostname(t *testing.T) {
 				Body: []UpdateEdgeHostnameRequestBody{{Op: "replace", Path: "/ttl", Value: "10000"}},
 			},
 			responseStatus:   http.StatusAccepted,
-			responseBody:     `{"changeId":123,"optimizationStatus":"SUCCEEDED"}`,
+			responseBody:     `{"changeId":123,"optimizationStatus":"PROCESSING"}`,
 			expectedPath:     "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/www.example.com",
 			expectedBody:     `[{"op":"replace","path":"/ttl","value":"10000"}]`,
-			expectedResponse: &UpdateEdgeHostnameResponse{ChangeID: 123, OptimizationStatus: ptr.To("SUCCEEDED")},
+			expectedResponse: &UpdateEdgeHostnameResponse{ChangeID: 123, OptimizationStatus: ptr.To("PROCESSING")},
 		},
 		"202 Accepted with empty optimization status": {
 			request: UpdateEdgeHostnameRequest{

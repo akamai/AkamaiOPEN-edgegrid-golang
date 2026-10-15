@@ -8,8 +8,27 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// ChangeRequestStatusPending selects pending change requests.
-const ChangeRequestStatusPending ChangeRequestStatus = "PENDING"
+const (
+	// ChangeRequestStatusPending selects pending change requests.
+	ChangeRequestStatusPending ChangeRequestStatus = "PENDING"
+	// ChangeRequestStatusSucceeded represents a successful change request.
+	ChangeRequestStatusSucceeded = "SUCCEEDED"
+	// ChangeRequestStatusFailed represents a failed change request.
+	ChangeRequestStatusFailed = "FAILED"
+	// ChangeRequestStatusIgnored represents an ignored change request.
+	ChangeRequestStatusIgnored = "IGNORED"
+
+	// ChangeRequestOptimizationStatusProcessing represents optimization in progress.
+	ChangeRequestOptimizationStatusProcessing = "PROCESSING"
+	// ChangeRequestOptimizationStatusProcessed represents completed optimization.
+	ChangeRequestOptimizationStatusProcessed = "PROCESSED"
+	// ChangeRequestOptimizationStatusRejected represents rejected optimization.
+	ChangeRequestOptimizationStatusRejected = "REJECTED"
+	// ChangeRequestOptimizationStatusRetryFailed represents a failed optimization retry.
+	ChangeRequestOptimizationStatusRetryFailed = "RETRY_FAILED"
+	// ChangeRequestOptimizationStatusIgnored represents ignored optimization.
+	ChangeRequestOptimizationStatusIgnored = "IGNORED"
+)
 
 type (
 	// DeleteEdgeHostnameRequest represents the parameters for deleting an edge hostname.
@@ -309,7 +328,8 @@ type (
 		// SubmitterEmail is the email address of the change request's submitter.
 		SubmitterEmail string `json:"submitterEmail"`
 
-		// OptimizationStatus is the change request's optimization status, either "PENDING", "SUCCEEDED", "FAILED", or "IGNORED".
+		// OptimizationStatus is the change request's optimization status, either "PROCESSING", "PROCESSED", "REJECTED", "RETRY_FAILED", or "IGNORED".
+		// It can be null.
 		OptimizationStatus *string `json:"optimizationStatus"`
 	}
 

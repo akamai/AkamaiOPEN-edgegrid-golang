@@ -181,6 +181,24 @@
 
 
 
+* HAPI
+  * Added the following constants for change request status and optimization status:
+    * `ChangeRequestStatusSucceeded`
+    * `ChangeRequestStatusFailed`
+    * `ChangeRequestStatusIgnored`
+    * `ChangeRequestOptimizationStatusProcessing`
+    * `ChangeRequestOptimizationStatusProcessed`
+    * `ChangeRequestOptimizationStatusRejected`
+    * `ChangeRequestOptimizationStatusRetryFailed`
+    * `ChangeRequestOptimizationStatusIgnored`
+
+
+
+
+
+
+
+
 
 
 

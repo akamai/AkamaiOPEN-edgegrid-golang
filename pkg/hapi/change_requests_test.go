@@ -162,9 +162,9 @@ func TestGetChangeRequest(t *testing.T) {
 				IncludeDeliveryPolicy: ptr.To(false),
 			},
 			responseStatus:   http.StatusOK,
-			responseBody:     `{"changeId":123,"optimizationStatus":"SUCCEEDED"}`,
+			responseBody:     `{"changeId":123,"optimizationStatus":"PROCESSED"}`,
 			expectedPath:     "/hapi/v1/change-requests/123?includeDeliveryPolicy=false",
-			expectedResponse: &GetChangeRequestResponse{ChangeID: 123, OptimizationStatus: ptr.To("SUCCEEDED")},
+			expectedResponse: &GetChangeRequestResponse{ChangeID: 123, OptimizationStatus: ptr.To("PROCESSED")},
 		},
 		"200 OK with full metadata and delivery policy option": {
 			request:        GetChangeRequestRequest{ChangeID: 123, IncludeDeliveryPolicy: ptr.To(true)},
@@ -422,13 +422,13 @@ func TestListChangeRequests(t *testing.T) {
 		"200 OK with all query options": {
 			request:        ListChangeRequestsRequest{Status: ChangeRequestStatusPending, IncludeDeliveryPolicy: ptr.To(true)},
 			responseStatus: http.StatusOK,
-			responseBody: `{"changeRequests":[{"changeId":123,"optimizationStatus":"PENDING","edgeHostnames":[{
+			responseBody: `{"changeRequests":[{"changeId":123,"optimizationStatus":"PROCESSING","edgeHostnames":[{
 				"recordName":"www.example.com","dnsZone":"edgesuite.net",
 				"deliveryPolicy":{"policyType":"GEO_OPT_IN","policyAttributes":[{"attributeType":"GEO","code":"US","name":"USA"}]}
 			}]}]}`,
 			expectedPath: "/hapi/v1/change-requests?includeDeliveryPolicy=true&status=PENDING",
 			expectedResponse: &ListChangeRequestsResponse{ChangeRequests: []ChangeRequest{{
-				ChangeID: 123, OptimizationStatus: ptr.To("PENDING"),
+				ChangeID: 123, OptimizationStatus: ptr.To("PROCESSING"),
 				EdgeHostnames: []EdgeHostname{{
 					RecordName: "www.example.com", DNSZone: "edgesuite.net",
 					DeliveryPolicy: &DeliveryPolicy{
@@ -534,13 +534,13 @@ func TestListChangeRequestsPerEdgeHostname(t *testing.T) {
 		"200 OK with all query options": {
 			request:        ListChangeRequestsPerEdgeHostnameRequest{DNSZone: "edgesuite.net", RecordName: "www.example.com", IncludeDeliveryPolicy: ptr.To(true)},
 			responseStatus: http.StatusOK,
-			responseBody: `{"changeRequests":[{"changeId":123,"optimizationStatus":"SUCCEEDED","edgeHostnames":[{
+			responseBody: `{"changeRequests":[{"changeId":123,"optimizationStatus":"PROCESSED","edgeHostnames":[{
 				"recordName":"www.example.com","dnsZone":"edgesuite.net",
 				"deliveryPolicy":{"policyType":"GEO_OPT_IN","policyAttributes":[{"attributeType":"GEO","code":"US","name":"USA"}]}
 			}]}]}`,
 			expectedPath: "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/www.example.com/change-requests?includeDeliveryPolicy=true",
 			expectedResponse: &ListChangeRequestsPerEdgeHostnameResponse{ChangeRequests: []ChangeRequest{{
-				ChangeID: 123, OptimizationStatus: ptr.To("SUCCEEDED"),
+				ChangeID: 123, OptimizationStatus: ptr.To("PROCESSED"),
 				EdgeHostnames: []EdgeHostname{{
 					RecordName: "www.example.com", DNSZone: "edgesuite.net",
 					DeliveryPolicy: &DeliveryPolicy{
