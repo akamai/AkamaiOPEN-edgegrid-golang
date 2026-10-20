@@ -46,17 +46,7 @@ type (
 
 	// GetConfigurationsResponse is returned from a call to GetConfigurations.
 	GetConfigurationsResponse struct {
-		Configurations []struct {
-			Description         string   `json:"description,omitempty"`
-			FileType            string   `json:"fileType,omitempty"`
-			ID                  int      `json:"id,omitempty"`
-			LatestVersion       int      `json:"latestVersion,omitempty"`
-			Name                string   `json:"name,omitempty"`
-			StagingVersion      int      `json:"stagingVersion,omitempty"`
-			TargetProduct       string   `json:"targetProduct,omitempty"`
-			ProductionHostnames []string `json:"productionHostnames,omitempty"`
-			ProductionVersion   int      `json:"productionVersion,omitempty"`
-		} `json:"configurations,omitempty"`
+		Configurations []GetConfigurationResponse `json:"configurations,omitempty"`
 	}
 
 	// GetConfigurationRequest GetConfigurationRequest is used to retrieve information about a specific configuration.

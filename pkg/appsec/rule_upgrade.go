@@ -52,13 +52,19 @@ type (
 	}
 
 	// RuleData contains updates to rules
-	RuleData []struct {
+	RuleData []RuleDataItem
+
+	// RuleDataItem represents an individual rule update item.
+	RuleDataItem struct {
 		ID    int    `json:"id,omitempty"`
 		Title string `json:"title,omitempty"`
 	}
 
 	// GroupData contains updates to attack groups
-	GroupData []struct {
+	GroupData []GroupDataItem
+
+	// GroupDataItem represents an individual attack group update item.
+	GroupDataItem struct {
 		Group     int    `json:"group,omitempty"`
 		GroupName string `json:"groupName,omitempty"`
 	}

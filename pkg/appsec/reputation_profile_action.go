@@ -40,10 +40,13 @@ type (
 
 	// GetReputationProfileActionsResponse is returned from a call to GetReputationProfileActions.
 	GetReputationProfileActionsResponse struct {
-		ReputationProfiles []struct {
-			Action string `json:"action,omitempty"`
-			ID     int    `json:"id,omitempty"`
-		} `json:"reputationProfiles,omitempty"`
+		ReputationProfiles []GetReputationProfileActionsResponseReputationProfile `json:"reputationProfiles,omitempty"`
+	}
+
+	// GetReputationProfileActionsResponseReputationProfile describes a reputation profile action item returned in GetReputationProfileActionsResponse.
+	GetReputationProfileActionsResponseReputationProfile struct {
+		Action string `json:"action,omitempty"`
+		ID     int    `json:"id,omitempty"`
 	}
 
 	// GetReputationProfileActionRequest is used to retrieve the details for a specific reputation profile.
@@ -75,9 +78,7 @@ type (
 	}
 
 	// ReputationProfileActionPost is currently unused.
-	ReputationProfileActionPost struct {
-		Action string `json:"action"`
-	}
+	ReputationProfileActionPost UpdateReputationProfileActionResponse
 )
 
 // Validate validates a GetReputationProfileActionRequest.

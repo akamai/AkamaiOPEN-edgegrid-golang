@@ -76,22 +76,24 @@ type (
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
+	// AdvancedSettingsLoggingHeader describes HTTP header or cookie logging configuration.
+	AdvancedSettingsLoggingHeader struct {
+		Type   string   `json:"type"`
+		Values []string `json:"values,omitempty"`
+	}
+
+	// RemoveAdvancedSettingsLoggingCookies describes the cookies configuration in RemoveAdvancedSettingsLoggingResponse.
+	RemoveAdvancedSettingsLoggingCookies struct {
+		Type string `json:"type"`
+	}
+
 	// UpdateAdvancedSettingsLoggingResponse is returned from a call to UpdateAdvancedSettingsLogging.
 	UpdateAdvancedSettingsLoggingResponse struct {
-		Override      bool `json:"override"`
-		AllowSampling bool `json:"allowSampling"`
-		Cookies       struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"cookies"`
-		CustomHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"customHeaders"`
-		StandardHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"standardHeaders"`
+		Override        bool                          `json:"override"`
+		AllowSampling   bool                          `json:"allowSampling"`
+		Cookies         AdvancedSettingsLoggingHeader `json:"cookies"`
+		CustomHeaders   AdvancedSettingsLoggingHeader `json:"customHeaders"`
+		StandardHeaders AdvancedSettingsLoggingHeader `json:"standardHeaders"`
 	}
 
 	// RemoveAdvancedSettingsLoggingRequest is used to disable HTTP header logging for a configuration or policy.
@@ -105,19 +107,11 @@ type (
 
 	// RemoveAdvancedSettingsLoggingResponse is returned from a call to RemoveAdvancedSettingsLogging.
 	RemoveAdvancedSettingsLoggingResponse struct {
-		Override      bool `json:"override"`
-		AllowSampling bool `json:"allowSampling"`
-		Cookies       struct {
-			Type string `json:"type"`
-		} `json:"cookies"`
-		CustomHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"customHeaders"`
-		StandardHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"standardHeaders"`
+		Override        bool                                 `json:"override"`
+		AllowSampling   bool                                 `json:"allowSampling"`
+		Cookies         RemoveAdvancedSettingsLoggingCookies `json:"cookies"`
+		CustomHeaders   AdvancedSettingsLoggingHeader        `json:"customHeaders"`
+		StandardHeaders AdvancedSettingsLoggingHeader        `json:"standardHeaders"`
 	}
 )
 

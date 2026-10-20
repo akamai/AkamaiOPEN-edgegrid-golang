@@ -85,7 +85,10 @@ type (
 	}
 
 	// Evidences is used to describe evidences for a recommendation.
-	Evidences []struct {
+	Evidences []Evidence
+
+	// Evidence describes host, path, and user data evidences for a recommendation.
+	Evidence struct {
 		HostEvidences     []string `json:"hostEvidences,omitempty"`
 		PathEvidences     []string `json:"pathEvidences,omitempty"`
 		UserDataEvidences []string `json:"userDataEvidences,omitempty"`

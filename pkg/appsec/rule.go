@@ -46,11 +46,14 @@ type (
 
 	// GetRulesResponse is returned from a call to GetRules.
 	GetRulesResponse struct {
-		Rules []struct {
-			ID                 int                     `json:"id,omitempty"`
-			Action             string                  `json:"action,omitempty"`
-			ConditionException *RuleConditionException `json:"conditionException,omitempty"`
-		} `json:"ruleActions,omitempty"`
+		Rules []GetRulesResponseRule `json:"ruleActions,omitempty"`
+	}
+
+	// GetRulesResponseRule describes an individual rule action item in GetRulesResponse.
+	GetRulesResponseRule struct {
+		ID                 int                     `json:"id,omitempty"`
+		Action             string                  `json:"action,omitempty"`
+		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
 	}
 
 	// GetRuleRequest is used to retrieve a rule together with its action and its condition and exception information.
@@ -78,10 +81,7 @@ type (
 	}
 
 	// UpdateRuleResponse is returned from a call to UpdateRule.
-	UpdateRuleResponse struct {
-		Action             string                  `json:"action,omitempty"`
-		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
-	}
+	UpdateRuleResponse GetRuleResponse
 
 	// AdvancedExceptions is used to describe advanced exceptions used in Adaptive Security Engine(ASE) rules.
 	AdvancedExceptions AttackGroupAdvancedExceptions
@@ -94,26 +94,10 @@ type (
 	}
 
 	// RuleConditions is used to describe the conditions for a rule.
-	RuleConditions []struct {
-		Type          string   `json:"type,omitempty"`
-		Extensions    []string `json:"extensions,omitempty"`
-		Filenames     []string `json:"filenames,omitempty"`
-		Hosts         []string `json:"hosts,omitempty"`
-		Ips           []string `json:"ips,omitempty"`
-		Methods       []string `json:"methods,omitempty"`
-		Paths         []string `json:"paths,omitempty"`
-		Header        string   `json:"header,omitempty"`
-		CaseSensitive bool     `json:"caseSensitive,omitempty"`
-		Name          string   `json:"name,omitempty"`
-		NameCase      bool     `json:"nameCase,omitempty"`
-		PositiveMatch bool     `json:"positiveMatch"`
-		Value         string   `json:"value,omitempty"`
-		Wildcard      bool     `json:"wildcard,omitempty"`
-		ValueCase     bool     `json:"valueCase,omitempty"`
-		ValueWildcard bool     `json:"valueWildcard,omitempty"`
-		UseHeaders    bool     `json:"useHeaders,omitempty"`
-		ClientLists   []string `json:"clientLists,omitempty"`
-	}
+	RuleConditions []RuleCondition
+
+	// RuleCondition describes condition information for a rule.
+	RuleCondition AttackGroupCondition
 
 	// RuleException is used to describe the exceptions for a rule.
 	RuleException struct {
@@ -126,7 +110,10 @@ type (
 	}
 
 	// SpecificHeaderCookieOrParamNamesPtr is used as part of condition and exception information for a rule.
-	SpecificHeaderCookieOrParamNamesPtr []struct {
+	SpecificHeaderCookieOrParamNamesPtr []SpecificHeaderCookieOrParamNamesPtrItem
+
+	// SpecificHeaderCookieOrParamNamesPtrItem represents header, cookie, or parameter names in an exception.
+	SpecificHeaderCookieOrParamNamesPtrItem struct {
 		Names    []string `json:"names,omitempty"`
 		Selector string   `json:"selector,omitempty"`
 	}

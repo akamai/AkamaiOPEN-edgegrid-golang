@@ -29,17 +29,20 @@ type (
 
 	// GetSelectableHostnamesResponse is returned from a call to GetSelectableHostnames.
 	GetSelectableHostnamesResponse struct {
-		AvailableSet []struct {
-			ActiveInProduction     bool   `json:"activeInProduction,omitempty"`
-			ActiveInStaging        bool   `json:"activeInStaging,omitempty"`
-			ArlInclusion           bool   `json:"arlInclusion,omitempty"`
-			Hostname               string `json:"hostname,omitempty"`
-			ConfigIDInProduction   int    `json:"configIdInProduction,omitempty"`
-			ConfigNameInProduction string `json:"configNameInProduction,omitempty"`
-		} `json:"availableSet,omitempty"`
-		ConfigID                int  `json:"configId,omitempty"`
-		ConfigVersion           int  `json:"configVersion,omitempty"`
-		ProtectARLInclusionHost bool `json:"protectARLInclusionHost,omitempty"`
+		AvailableSet            []GetSelectableHostnamesResponseAvailableSetItem `json:"availableSet,omitempty"`
+		ConfigID                int                                              `json:"configId,omitempty"`
+		ConfigVersion           int                                              `json:"configVersion,omitempty"`
+		ProtectARLInclusionHost bool                                             `json:"protectARLInclusionHost,omitempty"`
+	}
+
+	// GetSelectableHostnamesResponseAvailableSetItem describes an available hostname item.
+	GetSelectableHostnamesResponseAvailableSetItem struct {
+		ActiveInProduction     bool   `json:"activeInProduction,omitempty"`
+		ActiveInStaging        bool   `json:"activeInStaging,omitempty"`
+		ArlInclusion           bool   `json:"arlInclusion,omitempty"`
+		Hostname               string `json:"hostname,omitempty"`
+		ConfigIDInProduction   int    `json:"configIdInProduction,omitempty"`
+		ConfigNameInProduction string `json:"configNameInProduction,omitempty"`
 	}
 )
 

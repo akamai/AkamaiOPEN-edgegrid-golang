@@ -114,10 +114,12 @@ func (p *appsec) UpdateAdvancedSettingsPIILearning(ctx context.Context, params U
 	}
 
 	var result AdvancedSettingsPIILearningResponse
-	resp, err := p.Exec(req, &result, struct {
+	type requestBody struct {
 		EnablePIILearning bool `json:"enablePiiLearning"`
-	}{
-		EnablePIILearning: params.EnablePIILearning})
+	}
+	resp, err := p.Exec(req, &result, requestBody{
+		EnablePIILearning: params.EnablePIILearning,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrAPICallFailure, err.Error())
 	}

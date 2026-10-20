@@ -29,21 +29,24 @@ type (
 
 	// GetApiEndpointsResponse is returned from a call to GetApiEndpoints.
 	GetApiEndpointsResponse struct {
-		APIEndpoints []struct {
-			ID               int      `json:"id"`
-			Name             string   `json:"name"`
-			BasePath         string   `json:"basePath"`
-			APIEndPointHosts []string `json:"apiEndPointHosts"`
-			StagingVersion   struct {
-				Status        string `json:"status"`
-				VersionNumber int    `json:"versionNumber"`
-			} `json:"stagingVersion"`
-			ProductionVersion struct {
-				Status        string `json:"status"`
-				VersionNumber int    `json:"versionNumber"`
-			} `json:"productionVersion"`
-			RequestConstraintsEnabled bool `json:"requestConstraintsEnabled"`
-		} `json:"apiEndpoints"`
+		APIEndpoints []ApiEndpointItem `json:"apiEndpoints"`
+	}
+
+	// ApiEndpointItem describes an API endpoint associated with a security policy.
+	ApiEndpointItem struct {
+		ID                        int                `json:"id"`
+		Name                      string             `json:"name"`
+		BasePath                  string             `json:"basePath"`
+		APIEndPointHosts          []string           `json:"apiEndPointHosts"`
+		StagingVersion            ApiEndpointVersion `json:"stagingVersion"`
+		ProductionVersion         ApiEndpointVersion `json:"productionVersion"`
+		RequestConstraintsEnabled bool               `json:"requestConstraintsEnabled"`
+	}
+
+	// ApiEndpointVersion describes version status and number of an API endpoint in staging or production.
+	ApiEndpointVersion struct {
+		Status        string `json:"status"`
+		VersionNumber int    `json:"versionNumber"`
 	}
 )
 

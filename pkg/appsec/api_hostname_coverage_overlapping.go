@@ -28,14 +28,17 @@ type (
 
 	// GetApiHostnameCoverageOverlappingResponse is returned from a call to GetApiHostnameCoverageOverlapping.
 	GetApiHostnameCoverageOverlappingResponse struct {
-		OverLappingList []struct {
-			ConfigID      int      `json:"configId"`
-			ConfigName    string   `json:"configName"`
-			ConfigVersion int      `json:"configVersion"`
-			ContractID    string   `json:"contractId"`
-			ContractName  string   `json:"contractName"`
-			VersionTags   []string `json:"versionTags"`
-		} `json:"overLappingList"`
+		OverLappingList []HostnameCoverageOverlappingItem `json:"overLappingList"`
+	}
+
+	// HostnameCoverageOverlappingItem describes a configuration version that contains an overlapping hostname.
+	HostnameCoverageOverlappingItem struct {
+		ConfigID      int      `json:"configId"`
+		ConfigName    string   `json:"configName"`
+		ConfigVersion int      `json:"configVersion"`
+		ContractID    string   `json:"contractId"`
+		ContractName  string   `json:"contractName"`
+		VersionTags   []string `json:"versionTags"`
 	}
 )
 

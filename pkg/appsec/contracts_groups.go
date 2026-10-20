@@ -30,11 +30,14 @@ type (
 
 	// GetContractsGroupsResponse is returned from a call to GetContractsGroups.
 	GetContractsGroupsResponse struct {
-		ContractGroups []struct {
-			ContractID  string `json:"contractId"`
-			DisplayName string `json:"displayName"`
-			GroupID     int    `json:"groupId"`
-		} `json:"contract_groups"`
+		ContractGroups []ContractGroup `json:"contract_groups"`
+	}
+
+	// ContractGroup represents an individual contract and group item.
+	ContractGroup struct {
+		ContractID  string `json:"contractId"`
+		DisplayName string `json:"displayName"`
+		GroupID     int    `json:"groupId"`
 	}
 )
 

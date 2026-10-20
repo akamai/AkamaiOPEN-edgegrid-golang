@@ -55,14 +55,17 @@ type (
 
 	// GetSecurityPoliciesResponse is returned from a call to GetSecurityPolicies.
 	GetSecurityPoliciesResponse struct {
-		ConfigID int `json:"configId,omitempty"`
-		Version  int `json:"version,omitempty"`
-		Policies []struct {
-			PolicyID                string            `json:"policyId,omitempty"`
-			PolicyName              string            `json:"policyName,omitempty"`
-			HasRatePolicyWithAPIKey bool              `json:"hasRatePolicyWithApiKey,omitempty"`
-			PolicySecurityControls  *SecurityControls `json:"policySecurityControls,omitempty"`
-		} `json:"policies,omitempty"`
+		ConfigID int                                 `json:"configId,omitempty"`
+		Version  int                                 `json:"version,omitempty"`
+		Policies []GetSecurityPoliciesResponsePolicy `json:"policies,omitempty"`
+	}
+
+	// GetSecurityPoliciesResponsePolicy describes an individual security policy in GetSecurityPoliciesResponse.
+	GetSecurityPoliciesResponsePolicy struct {
+		PolicyID                string            `json:"policyId,omitempty"`
+		PolicyName              string            `json:"policyName,omitempty"`
+		HasRatePolicyWithAPIKey bool              `json:"hasRatePolicyWithApiKey,omitempty"`
+		PolicySecurityControls  *SecurityControls `json:"policySecurityControls,omitempty"`
 	}
 
 	// GetSecurityPolicyRequest is used to retrieve information about a security policy.
@@ -99,8 +102,8 @@ type (
 		PolicyPrefix string `json:"policyPrefix"`
 	}
 
-	// CreateSecurityPolicyResponse is returned from a call to CreateSecurityPolicy.
-	CreateSecurityPolicyResponse struct {
+	// UpsertSecurityPolicyResponse is returned from calls to CreateSecurityPolicy and UpdateSecurityPolicy.
+	UpsertSecurityPolicyResponse struct {
 		ConfigID               int               `json:"configId"`
 		PolicyID               string            `json:"policyId"`
 		PolicyName             string            `json:"policyName"`
@@ -108,6 +111,9 @@ type (
 		PolicySecurityControls *SecurityControls `json:"policySecurityControls,omitempty"`
 		Version                int               `json:"version"`
 	}
+
+	// CreateSecurityPolicyResponse is returned from a call to CreateSecurityPolicy.
+	CreateSecurityPolicyResponse UpsertSecurityPolicyResponse
 
 	// UpdateSecurityPolicyRequest is used to modify a security policy.
 	UpdateSecurityPolicyRequest struct {
@@ -118,14 +124,7 @@ type (
 	}
 
 	// UpdateSecurityPolicyResponse is returned from a call to UpdateSecurityPolicy.
-	UpdateSecurityPolicyResponse struct {
-		ConfigID               int               `json:"configId"`
-		PolicyID               string            `json:"policyId"`
-		PolicyName             string            `json:"policyName"`
-		DefaultSettings        bool              `json:"defaultSettings,omitempty"`
-		PolicySecurityControls *SecurityControls `json:"policySecurityControls,omitempty"`
-		Version                int               `json:"version"`
-	}
+	UpdateSecurityPolicyResponse UpsertSecurityPolicyResponse
 
 	// RemoveSecurityPolicyRequest is used to remove a security policy.
 	RemoveSecurityPolicyRequest struct {

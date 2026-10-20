@@ -36,11 +36,14 @@ type (
 
 	// GetRatePolicyActionsResponse is returned from a call to GetRatePolicyActions.
 	GetRatePolicyActionsResponse struct {
-		RatePolicyActions []struct {
-			ID         int    `json:"id"`
-			Ipv4Action string `json:"ipv4Action,omitempty"`
-			Ipv6Action string `json:"ipv6Action,omitempty"`
-		} `json:"ratePolicyActions,omitempty"`
+		RatePolicyActions []GetRatePolicyActionsResponseRatePolicyAction `json:"ratePolicyActions,omitempty"`
+	}
+
+	// GetRatePolicyActionsResponseRatePolicyAction describes a rate policy action item returned in GetRatePolicyActionsResponse.
+	GetRatePolicyActionsResponseRatePolicyAction struct {
+		ID         int    `json:"id"`
+		Ipv4Action string `json:"ipv4Action,omitempty"`
+		Ipv6Action string `json:"ipv6Action,omitempty"`
 	}
 
 	// UpdateRatePolicyActionRequest is used to update the actions for a rate policy.

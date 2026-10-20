@@ -55,7 +55,11 @@
 
 
 
+* Appsec
+  * Refactored the request and response structures to use named types instead of inline anonymous structures.
 
+* Networklists
+  * Refactored the request and response structures to use named types instead of inline anonymous structures.
 
 
 

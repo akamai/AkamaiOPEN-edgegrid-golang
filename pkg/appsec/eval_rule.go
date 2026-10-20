@@ -40,11 +40,14 @@ type (
 
 	// GetEvalRulesResponse is returned from a call to GetEvalRules.
 	GetEvalRulesResponse struct {
-		Rules []struct {
-			ID                 int                     `json:"id,omitempty"`
-			Action             string                  `json:"action,omitempty"`
-			ConditionException *RuleConditionException `json:"conditionException,omitempty"`
-		} `json:"evalRuleActions,omitempty"`
+		Rules []GetEvalRulesResponseRule `json:"evalRuleActions,omitempty"`
+	}
+
+	// GetEvalRulesResponseRule describes an individual rule item returned in GetEvalRulesResponse.
+	GetEvalRulesResponseRule struct {
+		ID                 int                     `json:"id,omitempty"`
+		Action             string                  `json:"action,omitempty"`
+		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
 	}
 
 	// GetEvalRuleRequest is used to retrieve a rule available for evaluation and its action.
@@ -72,10 +75,7 @@ type (
 	}
 
 	// UpdateEvalRuleResponse is returned from a call to UpdateEvalRule.
-	UpdateEvalRuleResponse struct {
-		Action             string                  `json:"action,omitempty"`
-		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
-	}
+	UpdateEvalRuleResponse GetEvalRuleResponse
 )
 
 // IsEmptyConditionException checks whether the ConditionException field is empty.

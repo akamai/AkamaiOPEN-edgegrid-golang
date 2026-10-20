@@ -26,51 +26,38 @@ type (
 
 	// GetConfigurationCloneRequest is used to retrieve information about an existing security configuration.
 	GetConfigurationCloneRequest struct {
-		ConfigID     int       `json:"configId"`
-		ConfigName   string    `json:"configName"`
-		Version      int       `json:"version"`
-		VersionNotes string    `json:"versionNotes"`
-		CreateDate   time.Time `json:"createDate"`
-		CreatedBy    string    `json:"createdBy"`
-		BasedOn      int       `json:"basedOn"`
-		Production   struct {
-			Status string    `json:"status"`
-			Time   time.Time `json:"time"`
-		} `json:"production"`
-		Staging struct {
-			Status string `json:"status"`
-		} `json:"staging"`
+		ConfigID     int                          `json:"configId"`
+		ConfigName   string                       `json:"configName"`
+		Version      int                          `json:"version"`
+		VersionNotes string                       `json:"versionNotes"`
+		CreateDate   time.Time                    `json:"createDate"`
+		CreatedBy    string                       `json:"createdBy"`
+		BasedOn      int                          `json:"basedOn"`
+		Production   ConfigurationCloneProduction `json:"production"`
+		Staging      ConfigurationCloneStaging    `json:"staging"`
 	}
 
 	// GetConfigurationCloneResponse is returned from a call to GetConfigurationClone.
 	GetConfigurationCloneResponse struct {
-		ConfigID     int       `json:"configId"`
-		ConfigName   string    `json:"configName"`
-		Version      int       `json:"version"`
-		VersionNotes string    `json:"versionNotes"`
-		CreateDate   time.Time `json:"createDate"`
-		CreatedBy    string    `json:"createdBy"`
-		BasedOn      int       `json:"basedOn"`
-		Production   struct {
-			Status string    `json:"status"`
-			Time   time.Time `json:"time"`
-		} `json:"production"`
-		Staging struct {
-			Status string `json:"status"`
-		} `json:"staging"`
+		ConfigID     int                          `json:"configId"`
+		ConfigName   string                       `json:"configName"`
+		Version      int                          `json:"version"`
+		VersionNotes string                       `json:"versionNotes"`
+		CreateDate   time.Time                    `json:"createDate"`
+		CreatedBy    string                       `json:"createdBy"`
+		BasedOn      int                          `json:"basedOn"`
+		Production   ConfigurationCloneProduction `json:"production"`
+		Staging      ConfigurationCloneStaging    `json:"staging"`
 	}
 
 	// CreateConfigurationCloneRequest is used to clone an existing security configuration.
 	CreateConfigurationCloneRequest struct {
-		Name        string   `json:"name"`
-		Description string   `json:"description"`
-		ContractID  string   `json:"contractId"`
-		GroupID     int      `json:"groupId"`
-		Hostnames   []string `json:"hostnames"`
-		CreateFrom  struct {
-			ConfigID int `json:"configId"`
-			Version  int `json:"version"`
-		} `json:"createFrom"`
+		Name        string                             `json:"name"`
+		Description string                             `json:"description"`
+		ContractID  string                             `json:"contractId"`
+		GroupID     int                                `json:"groupId"`
+		Hostnames   []string                           `json:"hostnames"`
+		CreateFrom  CreateConfigurationCloneCreateFrom `json:"createFrom"`
 	}
 
 	// CreateConfigurationCloneResponse is returned from a call to CreateConfigurationClone.
@@ -79,6 +66,23 @@ type (
 		Version     int    `json:"version"`
 		Description string `json:"description"`
 		Name        string `json:"name"`
+	}
+
+	// ConfigurationCloneProduction describes the production network status for a cloned configuration.
+	ConfigurationCloneProduction struct {
+		Status string    `json:"status"`
+		Time   time.Time `json:"time"`
+	}
+
+	// ConfigurationCloneStaging describes the staging network status for a cloned configuration.
+	ConfigurationCloneStaging struct {
+		Status string `json:"status"`
+	}
+
+	// CreateConfigurationCloneCreateFrom describes the configuration version to clone from.
+	CreateConfigurationCloneCreateFrom struct {
+		ConfigID int `json:"configId"`
+		Version  int `json:"version"`
 	}
 )
 

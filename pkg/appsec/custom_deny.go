@@ -53,16 +53,15 @@ type (
 
 	// GetCustomDenyListResponse is returned from a call to GetCustomDenyList.
 	GetCustomDenyListResponse struct {
-		CustomDenyList []struct {
-			Description string       `json:"description,omitempty"`
-			Name        string       `json:"name"`
-			ID          customDenyID `json:"id"`
-			Parameters  []struct {
-				DisplayName string `json:"-"`
-				Name        string `json:"name"`
-				Value       string `json:"value"`
-			} `json:"parameters"`
-		} `json:"customDenyList"`
+		CustomDenyList []GetCustomDenyListItem `json:"customDenyList"`
+	}
+
+	// GetCustomDenyListItem represents an individual custom deny action in the list.
+	GetCustomDenyListItem struct {
+		Description string                `json:"description,omitempty"`
+		Name        string                `json:"name"`
+		ID          customDenyID          `json:"id"`
+		Parameters  []CustomDenyParameter `json:"parameters"`
 	}
 
 	// GetCustomDenyRequest is used to retrieve a specific custom deny action.
@@ -74,14 +73,10 @@ type (
 
 	// GetCustomDenyResponse is returned from a call to GetCustomDeny.
 	GetCustomDenyResponse struct {
-		Description string       `json:"description,omitempty"`
-		Name        string       `json:"name"`
-		ID          customDenyID `json:"-"`
-		Parameters  []struct {
-			DisplayName string `json:"-"`
-			Name        string `json:"name"`
-			Value       string `json:"value"`
-		} `json:"parameters"`
+		Description string                `json:"description,omitempty"`
+		Name        string                `json:"name"`
+		ID          customDenyID          `json:"-"`
+		Parameters  []CustomDenyParameter `json:"parameters"`
 	}
 
 	// CreateCustomDenyRequest is used to create a new custom deny action for a specific configuration.
@@ -93,14 +88,10 @@ type (
 
 	// CreateCustomDenyResponse is returned from a call to CreateCustomDeny.
 	CreateCustomDenyResponse struct {
-		Description string       `json:"description,omitempty"`
-		Name        string       `json:"name"`
-		ID          customDenyID `json:"id"`
-		Parameters  []struct {
-			DisplayName string `json:"-"`
-			Name        string `json:"name"`
-			Value       string `json:"value"`
-		} `json:"parameters"`
+		Description string                `json:"description,omitempty"`
+		Name        string                `json:"name"`
+		ID          customDenyID          `json:"id"`
+		Parameters  []CustomDenyParameter `json:"parameters"`
 	}
 
 	// UpdateCustomDenyRequest is used to details for a specific custom deny action.
@@ -112,16 +103,7 @@ type (
 	}
 
 	// UpdateCustomDenyResponse is returned from a call to UpdateCustomDeny.
-	UpdateCustomDenyResponse struct {
-		Description string       `json:"description,omitempty"`
-		Name        string       `json:"name"`
-		ID          customDenyID `json:"-"`
-		Parameters  []struct {
-			DisplayName string `json:"-"`
-			Name        string `json:"name"`
-			Value       string `json:"value"`
-		} `json:"parameters"`
-	}
+	UpdateCustomDenyResponse GetCustomDenyResponse
 
 	// RemoveCustomDenyRequest is used to remove an existing custom deny action.
 	RemoveCustomDenyRequest struct {
@@ -133,6 +115,13 @@ type (
 	// RemoveCustomDenyResponse is returned from a call to RemoveCustomDeny.
 	RemoveCustomDenyResponse struct {
 		Empty string `json:"-"`
+	}
+
+	// CustomDenyParameter represents a parameter of a custom deny action.
+	CustomDenyParameter struct {
+		DisplayName string `json:"-"`
+		Name        string `json:"name"`
+		Value       string `json:"value"`
 	}
 )
 

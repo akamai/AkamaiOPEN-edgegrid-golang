@@ -27,13 +27,16 @@ type (
 
 	// GetApiHostnameCoverageResponse is returned from a call to GetApiHostnameCoverage.
 	GetApiHostnameCoverageResponse struct {
-		HostnameCoverage []struct {
-			Configuration  *ConfigurationHostnameCoverage `json:"configuration,omitempty"`
-			Status         string                         `json:"status"`
-			HasMatchTarget bool                           `json:"hasMatchTarget"`
-			Hostname       string                         `json:"hostname"`
-			PolicyNames    []string                       `json:"policyNames"`
-		} `json:"hostnameCoverage"`
+		HostnameCoverage []HostnameCoverageItem `json:"hostnameCoverage"`
+	}
+
+	// HostnameCoverageItem describes protections and status for a single hostname.
+	HostnameCoverageItem struct {
+		Configuration  *ConfigurationHostnameCoverage `json:"configuration,omitempty"`
+		Status         string                         `json:"status"`
+		HasMatchTarget bool                           `json:"hasMatchTarget"`
+		Hostname       string                         `json:"hostname"`
+		PolicyNames    []string                       `json:"policyNames"`
 	}
 
 	// ConfigurationHostnameCoverage describes a specific configuration version.

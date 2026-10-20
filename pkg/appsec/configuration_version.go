@@ -32,19 +32,22 @@ type (
 
 	// GetConfigurationVersionsResponse is returned from a call to GetConfigurationVersions.
 	GetConfigurationVersionsResponse struct {
-		ConfigID           int    `json:"configId,omitempty"`
-		ConfigName         string `json:"configName,omitempty"`
-		LastCreatedVersion int    `json:"lastCreatedVersion,omitempty"`
-		Page               int    `json:"page,omitempty"`
-		PageSize           int    `json:"pageSize,omitempty"`
-		TotalSize          int    `json:"totalSize,omitempty"`
-		VersionList        []struct {
-			ConfigID   int               `json:"configId,omitempty"`
-			Production EnvironmentStatus `json:"production,omitempty"`
-			Staging    EnvironmentStatus `json:"staging,omitempty"`
-			Version    int               `json:"version,omitempty"`
-			BasedOn    int               `json:"basedOn,omitempty"`
-		} `json:"versionList,omitempty"`
+		ConfigID           int                                               `json:"configId,omitempty"`
+		ConfigName         string                                            `json:"configName,omitempty"`
+		LastCreatedVersion int                                               `json:"lastCreatedVersion,omitempty"`
+		Page               int                                               `json:"page,omitempty"`
+		PageSize           int                                               `json:"pageSize,omitempty"`
+		TotalSize          int                                               `json:"totalSize,omitempty"`
+		VersionList        []GetConfigurationVersionsResponseVersionListItem `json:"versionList,omitempty"`
+	}
+
+	// GetConfigurationVersionsResponseVersionListItem represents an individual version item in the version list.
+	GetConfigurationVersionsResponseVersionListItem struct {
+		ConfigID   int               `json:"configId,omitempty"`
+		Production EnvironmentStatus `json:"production,omitempty"`
+		Staging    EnvironmentStatus `json:"staging,omitempty"`
+		Version    int               `json:"version,omitempty"`
+		BasedOn    int               `json:"basedOn,omitempty"`
 	}
 
 	// GetConfigurationVersionRequest is used to retrieve information about a specific configuration version.

@@ -24,11 +24,14 @@ type (
 
 	// GetFailoverHostnamesResponse is returned from a call to GetFailoverHostnames.
 	GetFailoverHostnamesResponse struct {
-		ConfigID      int `json:"-"`
-		ConfigVersion int `json:"-"`
-		HostnameList  []struct {
-			Hostname string `json:"hostname"`
-		} `json:"hostnameList"`
+		ConfigID      int                `json:"-"`
+		ConfigVersion int                `json:"-"`
+		HostnameList  []HostnameListItem `json:"hostnameList"`
+	}
+
+	// HostnameListItem represents an individual hostname item.
+	HostnameListItem struct {
+		Hostname string `json:"hostname"`
 	}
 )
 

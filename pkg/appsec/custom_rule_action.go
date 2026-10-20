@@ -38,13 +38,7 @@ type (
 	}
 
 	// GetCustomRuleActionsResponse is returned from a call to GetCustomRuleActions.
-	GetCustomRuleActionsResponse []struct {
-		Action                string `json:"action,omitempty"`
-		CanUseAdvancedActions bool   `json:"canUseAdvancedActions,omitempty"`
-		Link                  string `json:"link,omitempty"`
-		Name                  string `json:"name,omitempty"`
-		RuleID                int    `json:"ruleId,omitempty"`
-	}
+	GetCustomRuleActionsResponse []GetCustomRuleActionResponse
 
 	// GetCustomRuleActionRequest is used to retrieve the action for a custom rule.
 	GetCustomRuleActionRequest struct {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -31,40 +30,10 @@ type (
 	}
 
 	// GetConfigurationVersionCloneRequest is used to retrieve information about an existing configuration version.
-	GetConfigurationVersionCloneRequest struct {
-		ConfigID     int       `json:"configId"`
-		ConfigName   string    `json:"configName"`
-		Version      int       `json:"version"`
-		VersionNotes string    `json:"versionNotes"`
-		CreateDate   time.Time `json:"createDate"`
-		CreatedBy    string    `json:"createdBy"`
-		BasedOn      int       `json:"basedOn"`
-		Production   struct {
-			Status string    `json:"status"`
-			Time   time.Time `json:"time"`
-		} `json:"production"`
-		Staging struct {
-			Status string `json:"status"`
-		} `json:"staging"`
-	}
+	GetConfigurationVersionCloneRequest GetConfigurationCloneRequest
 
 	// GetConfigurationVersionCloneResponse is returned from a call to GetConfigurationVersionClone.
-	GetConfigurationVersionCloneResponse struct {
-		ConfigID     int       `json:"configId"`
-		ConfigName   string    `json:"configName"`
-		Version      int       `json:"version"`
-		VersionNotes string    `json:"versionNotes"`
-		CreateDate   time.Time `json:"createDate"`
-		CreatedBy    string    `json:"createdBy"`
-		BasedOn      int       `json:"basedOn"`
-		Production   struct {
-			Status string    `json:"status"`
-			Time   time.Time `json:"time"`
-		} `json:"production"`
-		Staging struct {
-			Status string `json:"status"`
-		} `json:"staging"`
-	}
+	GetConfigurationVersionCloneResponse GetConfigurationCloneResponse
 
 	// CreateConfigurationVersionCloneRequest is used to clone an existing configuration version.
 	CreateConfigurationVersionCloneRequest struct {
@@ -74,22 +43,7 @@ type (
 	}
 
 	// CreateConfigurationVersionCloneResponse is returned from a call to CreateConfigurationVersionClone.
-	CreateConfigurationVersionCloneResponse struct {
-		ConfigID     int       `json:"configId"`
-		ConfigName   string    `json:"configName"`
-		Version      int       `json:"version"`
-		VersionNotes string    `json:"versionNotes"`
-		CreateDate   time.Time `json:"createDate"`
-		CreatedBy    string    `json:"createdBy"`
-		BasedOn      int       `json:"basedOn"`
-		Production   struct {
-			Status string    `json:"status"`
-			Time   time.Time `json:"time"`
-		} `json:"production"`
-		Staging struct {
-			Status string `json:"status"`
-		} `json:"staging"`
-	}
+	CreateConfigurationVersionCloneResponse GetConfigurationCloneResponse
 
 	// RemoveConfigurationVersionCloneRequest is used to remove an existing configuration version.
 	RemoveConfigurationVersionCloneRequest struct {
