@@ -517,11 +517,13 @@ func (p *papi) ListReferencedIncludes(ctx context.Context, params ListReferenced
 
 // UnmarshalJSON reads a ListAvailableIncludesResponse struct from its data argument and transform map of includes into array for better usability.
 func (r *ListAvailableIncludesResponse) UnmarshalJSON(data []byte) error {
-	var response struct {
-		ExternalResources struct {
-			ExternalIncludes map[string]ExternalIncludeData `json:"include"`
-		} `json:"externalResources"`
+	type externalResources struct {
+		ExternalIncludes map[string]ExternalIncludeData `json:"include"`
 	}
+	type availableIncludesResponse struct {
+		ExternalResources externalResources `json:"externalResources"`
+	}
+	var response availableIncludesResponse
 
 	if err := json.Unmarshal(data, &response); err != nil {
 		return err
