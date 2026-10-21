@@ -166,6 +166,16 @@
 
 
 
+* Cloud Certificates (Beta)
+  * Replaced the `ErrorTypes` string field on `GetActivationStatusResponse` (also returned via `ListActivationsResponse.Items`) 
+    with an `Errors` field of the new `ActivationError` type, to surface structured.
+  * Removed the `CertificateStatusCertUploadProcessing` and `ActivityEventTypeLineageDeleted` constants, as well as the
+    `ErrCSRExpired`, `ErrCertSANMismatch`, and `ErrCertSubjectMismatch` error variables, none of which are returned by the API.
+
+
+
+
+
 
 
 

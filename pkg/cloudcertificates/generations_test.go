@@ -91,6 +91,71 @@ func TestUploadSignedCertificate(t *testing.T) {
 				LineageID:              500001,
 			},
 		},
+		"200 OK - upload RSA signed certificate with trust chain": {
+			params: UploadSignedCertificateRequest{
+				LineageID:           500001,
+				GenerationID:        2912,
+				AcknowledgeWarnings: true,
+				Body: UploadSignedCertificateRequestBody{
+					Algorithms: map[CryptographicAlgorithm]SignedCertificate{
+						CryptographicAlgorithmRSA: {SignedCertificatePEM: rsaCertPEM, TrustChainPEM: rsaTrustChainPEM},
+					},
+				},
+			},
+			expectedPath:        "/ccm/v2/lineages/500001/generations/2912?acknowledgeWarnings=true",
+			expectedRequestBody: `{"algorithms":{"RSA":{"signedCertificatePem":"-----BEGIN CERTIFICATE-----\nRSA-CERT\n-----END CERTIFICATE-----\n","trustChainPem":"-----BEGIN CERTIFICATE-----\nRSA-TRUST-CHAIN\n-----END CERTIFICATE-----\n"}}}`,
+			responseStatus:      http.StatusOK,
+			responseBody: `{
+				"algorithms": [
+					{
+						"certificateStatus": "CSR_READY",
+						"csrExpirationDate": "2027-07-07T10:18:46Z",
+						"keyType": "ECDSA"
+					},
+					{
+						"certificateStatus": "READY_FOR_USE",
+						"csrExpirationDate": "2027-07-07T10:18:46Z",
+						"keyType": "RSA",
+						"signedCertificateIssuer": "CN=Test Certificate Authority",
+						"signedCertificateNotValidAfterDate": "2027-07-08T13:06:53Z",
+						"signedCertificateNotValidBeforeDate": "2026-07-08T13:06:53Z",
+						"signedCertificateSerialNumber": "12:34:56:78:9a:bc:de:f0:12:34:56:78:9a:bc:de:f0:12:34:56:01",
+						"signedCertificateSha256Fingerprint": "12:34:56:78:9A:BC:DE:01",
+						"trustChainPem": "-----BEGIN CERTIFICATE-----\nRSA-TRUST-CHAIN\n-----END CERTIFICATE-----\n"
+					}
+				],
+				"generationId": 2912,
+				"generationModifiedBy": "terraform-dev",
+				"generationModifiedTime": "2026-07-08T13:14:25Z",
+				"generationStatus": "READY_FOR_USE",
+				"lineageId": 500001
+			}`,
+			expectedResponse: &UploadSignedCertificateResponse{
+				Algorithms: []Algorithm{
+					{
+						CertificateStatus: CertificateStatusCSRReady,
+						CSRExpirationDate: ptr.To(test.NewTimeFromString(t, "2027-07-07T10:18:46Z")),
+						KeyType:           string(CryptographicAlgorithmECDSA),
+					},
+					{
+						CertificateStatus:                   CertificateStatusReadyForUse,
+						CSRExpirationDate:                   ptr.To(test.NewTimeFromString(t, "2027-07-07T10:18:46Z")),
+						KeyType:                             string(CryptographicAlgorithmRSA),
+						SignedCertificateIssuer:             ptr.To("CN=Test Certificate Authority"),
+						SignedCertificateNotValidAfterDate:  ptr.To(test.NewTimeFromString(t, "2027-07-08T13:06:53Z")),
+						SignedCertificateNotValidBeforeDate: ptr.To(test.NewTimeFromString(t, "2026-07-08T13:06:53Z")),
+						SignedCertificateSerialNumber:       ptr.To("12:34:56:78:9a:bc:de:f0:12:34:56:78:9a:bc:de:f0:12:34:56:01"),
+						SignedCertificateSHA256Fingerprint:  ptr.To("12:34:56:78:9A:BC:DE:01"),
+						TrustChainPEM:                       ptr.To(rsaTrustChainPEM),
+					},
+				},
+				GenerationID:           2912,
+				GenerationModifiedBy:   "terraform-dev",
+				GenerationModifiedTime: test.NewTimeFromString(t, "2026-07-08T13:14:25Z"),
+				GenerationStatus:       string(GenerationStatusReadyForUse),
+				LineageID:              500001,
+			},
+		},
 		"200 OK - upload RSA signed certificate, empty (non-nil) AutoActivate is omitted from request body": {
 			params: UploadSignedCertificateRequest{
 				LineageID:           500001,
@@ -1804,6 +1869,42 @@ func TestCompleteLineage(t *testing.T) {
 				assert.ErrorIs(t, err, ErrCompleteLineage)
 			},
 		},
+		"409 not multiple stack": {
+			params: CompleteLineageRequest{
+				LineageID: 500013,
+				Body: CompleteLineageRequestBody{
+					Algorithms: map[CryptographicAlgorithm]SignedCertificate{
+						CryptographicAlgorithmECDSA: {SignedCertificatePEM: ecdsaCertPEM},
+					},
+				},
+			},
+			expectedPath:        "/ccm/v2/lineages/500013/generations/complete",
+			expectedRequestBody: `{"algorithms":{"ECDSA":{"signedCertificatePem":"-----BEGIN CERTIFICATE-----\nECDSA-CERT\n-----END CERTIFICATE-----\n"}}}`,
+			responseStatus:      http.StatusConflict,
+			responseBody: `{
+				"type": "/error-types/single-generation-no-complete",
+				"title": "Complete upload on single-generation lineages is not supported.",
+				"status": 409,
+				"detail": "Lineage {500013} is SINGLE_GENERATION type. Complete is not supported.",
+				"instance": "/error-types/single-generation-no-complete?traceId=1234567891051",
+				"context": {
+					"lineageId": 500013
+				}
+			}`,
+			withError: func(t *testing.T, err error) {
+				want := fmt.Errorf("%w: %w", ErrCompleteLineage, &Error{
+					Type:     "/error-types/single-generation-no-complete",
+					Title:    "Complete upload on single-generation lineages is not supported.",
+					Status:   http.StatusConflict,
+					Detail:   "Lineage {500013} is SINGLE_GENERATION type. Complete is not supported.",
+					Instance: "/error-types/single-generation-no-complete?traceId=1234567891051",
+					Context:  map[string]any{"lineageId": float64(500013)},
+				})
+				assert.EqualError(t, err, want.Error(), "want: %s; got: %s", want, err)
+				assert.ErrorIs(t, err, ErrNotMultipleStack)
+				assert.ErrorIs(t, err, ErrCompleteLineage)
+			},
+		},
 		"409 no current production": {
 			params: CompleteLineageRequest{
 				LineageID: 500013,
@@ -2416,6 +2517,148 @@ func TestGetGeneration(t *testing.T) {
 				},
 				GenerationID:     33490,
 				GenerationStatus: "READY_FOR_USE",
+			},
+		},
+		"200 OK - get generation, abandoned generation with abandoned algorithms": {
+			params:         GetGenerationRequest{LineageID: 500018, GenerationID: 3260},
+			expectedPath:   "/ccm/v2/lineages/500018/generations/3260",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"algorithms": [
+					{
+						"algorithmInstanceCreatedBy": "terraform-dev",
+						"algorithmInstanceCreatedTime": "2026-07-28T07:39:20Z",
+						"algorithmInstanceId": 4701,
+						"certificateStatus": "ABANDONED",
+						"csrExpirationDate": "2027-09-29T07:39:18Z",
+						"csrPem": "-----BEGIN CERTIFICATE REQUEST-----\nRSA-CSR\n-----END CERTIFICATE REQUEST-----\n",
+						"keyType": "RSA"
+					},
+					{
+						"algorithmInstanceCreatedBy": "terraform-dev",
+						"algorithmInstanceCreatedTime": "2026-07-28T07:39:20Z",
+						"algorithmInstanceId": 4702,
+						"certificateStatus": "ABANDONED",
+						"csrExpirationDate": "2027-09-29T07:39:17Z",
+						"csrPem": "-----BEGIN CERTIFICATE REQUEST-----\nECDSA-CSR\n-----END CERTIFICATE REQUEST-----\n",
+						"keyType": "ECDSA"
+					}
+				],
+				"generationCreatedBy": "terraform-dev",
+				"generationCreatedTime": "2026-07-28T07:39:20Z",
+				"generationId": 3260,
+				"generationModifiedBy": "terraform-dev",
+				"generationStatus": "ABANDONED"
+			}`,
+			expectedResponse: &GetGenerationResponse{
+				Generation: Generation{
+					Algorithms: []Algorithm{
+						{
+							AlgorithmInstanceCreatedBy:   "terraform-dev",
+							AlgorithmInstanceCreatedTime: ptr.To(test.NewTimeFromString(t, "2026-07-28T07:39:20Z")),
+							AlgorithmInstanceID:          4701,
+							CertificateStatus:            CertificateStatusAbandoned,
+							CSRExpirationDate:            ptr.To(test.NewTimeFromString(t, "2027-09-29T07:39:18Z")),
+							CSRPEM:                       rsaCSRPEM,
+							KeyType:                      string(CryptographicAlgorithmRSA),
+						},
+						{
+							AlgorithmInstanceCreatedBy:   "terraform-dev",
+							AlgorithmInstanceCreatedTime: ptr.To(test.NewTimeFromString(t, "2026-07-28T07:39:20Z")),
+							AlgorithmInstanceID:          4702,
+							CertificateStatus:            CertificateStatusAbandoned,
+							CSRExpirationDate:            ptr.To(test.NewTimeFromString(t, "2027-09-29T07:39:17Z")),
+							CSRPEM:                       ecdsaCSRPEM,
+							KeyType:                      string(CryptographicAlgorithmECDSA),
+						},
+					},
+					GenerationCreatedBy:   ptr.To("terraform-dev"),
+					GenerationCreatedTime: ptr.To(test.NewTimeFromString(t, "2026-07-28T07:39:20Z")),
+					GenerationModifiedBy:  ptr.To("terraform-dev"),
+				},
+				GenerationID:     3260,
+				GenerationStatus: string(GenerationStatusAbandoned),
+			},
+		},
+		"200 OK - get generation, archived generation with mixed ready-for-use and CSR-ready algorithms": {
+			params:         GetGenerationRequest{LineageID: 500019, GenerationID: 3119},
+			expectedPath:   "/ccm/v2/lineages/500019/generations/3119",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"algorithms": [
+					{
+						"algorithmInstanceCreatedBy": "terraform-dev",
+						"algorithmInstanceCreatedTime": "2026-07-27T14:04:53Z",
+						"algorithmInstanceId": 4612,
+						"algorithmInstanceModifiedBy": "terraform-dev",
+						"algorithmInstanceModifiedTime": "2026-07-27T14:08:07Z",
+						"certificateStatus": "READY_FOR_USE",
+						"csrExpirationDate": "2027-09-28T14:04:52Z",
+						"csrPem": "-----BEGIN CERTIFICATE REQUEST-----\nRSA-CSR\n-----END CERTIFICATE REQUEST-----\n",
+						"keyType": "RSA",
+						"signedCertificateIssuer": "CN=Local Sign CA",
+						"signedCertificateNotValidAfterDate": "2027-07-27T14:06:19Z",
+						"signedCertificateNotValidBeforeDate": "2026-07-27T14:06:19Z",
+						"signedCertificatePem": "-----BEGIN CERTIFICATE-----\nRSA-CERT\n-----END CERTIFICATE-----\n",
+						"signedCertificateSerialNumber": "5a:7b:5f:66:c6:35:da:85:88:85:63:31:e1:51:3f:20:9a:b2:0c:4d",
+						"signedCertificateSha256Fingerprint": "A8:EE:96:18:F7:1E:4E:99:A1:B7:9C:10:AE:DB:84:DA:07:DF:FE:95:EE:46:65:A1:34:C6:F6:5D:59:6B:CD:65"
+					},
+					{
+						"algorithmInstanceCreatedBy": "terraform-dev",
+						"algorithmInstanceCreatedTime": "2026-07-27T14:04:53Z",
+						"algorithmInstanceId": 4613,
+						"certificateStatus": "CSR_READY",
+						"csrExpirationDate": "2027-09-28T14:04:51Z",
+						"csrPem": "-----BEGIN CERTIFICATE REQUEST-----\nECDSA-CSR\n-----END CERTIFICATE REQUEST-----\n",
+						"keyType": "ECDSA"
+					}
+				],
+				"firstPromotedToProductionTime": "2026-07-27T14:11:25Z",
+				"generationCreatedBy": "terraform-dev",
+				"generationCreatedTime": "2026-07-27T14:04:53Z",
+				"generationId": 3119,
+				"generationModifiedBy": "terraform-dev",
+				"generationModifiedTime": "2026-07-27T14:08:07Z",
+				"generationStatus": "ARCHIVED"
+			}`,
+			expectedResponse: &GetGenerationResponse{
+				Generation: Generation{
+					Algorithms: []Algorithm{
+						{
+							AlgorithmInstanceCreatedBy:          "terraform-dev",
+							AlgorithmInstanceCreatedTime:        ptr.To(test.NewTimeFromString(t, "2026-07-27T14:04:53Z")),
+							AlgorithmInstanceID:                 4612,
+							AlgorithmInstanceModifiedBy:         ptr.To("terraform-dev"),
+							AlgorithmInstanceModifiedTime:       ptr.To(test.NewTimeFromString(t, "2026-07-27T14:08:07Z")),
+							CertificateStatus:                   CertificateStatusReadyForUse,
+							CSRExpirationDate:                   ptr.To(test.NewTimeFromString(t, "2027-09-28T14:04:52Z")),
+							CSRPEM:                              rsaCSRPEM,
+							KeyType:                             string(CryptographicAlgorithmRSA),
+							SignedCertificateIssuer:             ptr.To("CN=Local Sign CA"),
+							SignedCertificateNotValidAfterDate:  ptr.To(test.NewTimeFromString(t, "2027-07-27T14:06:19Z")),
+							SignedCertificateNotValidBeforeDate: ptr.To(test.NewTimeFromString(t, "2026-07-27T14:06:19Z")),
+							SignedCertificatePEM:                ptr.To(rsaCertPEM),
+							SignedCertificateSerialNumber:       ptr.To("5a:7b:5f:66:c6:35:da:85:88:85:63:31:e1:51:3f:20:9a:b2:0c:4d"),
+							SignedCertificateSHA256Fingerprint:  ptr.To("A8:EE:96:18:F7:1E:4E:99:A1:B7:9C:10:AE:DB:84:DA:07:DF:FE:95:EE:46:65:A1:34:C6:F6:5D:59:6B:CD:65"),
+						},
+						{
+							AlgorithmInstanceCreatedBy:   "terraform-dev",
+							AlgorithmInstanceCreatedTime: ptr.To(test.NewTimeFromString(t, "2026-07-27T14:04:53Z")),
+							AlgorithmInstanceID:          4613,
+							CertificateStatus:            CertificateStatusCSRReady,
+							CSRExpirationDate:            ptr.To(test.NewTimeFromString(t, "2027-09-28T14:04:51Z")),
+							CSRPEM:                       ecdsaCSRPEM,
+							KeyType:                      string(CryptographicAlgorithmECDSA),
+						},
+					},
+					FirstPromotedToProductionTime: ptr.To(test.NewTimeFromString(t, "2026-07-27T14:11:25Z")),
+					GenerationCreatedBy:           ptr.To("terraform-dev"),
+					GenerationCreatedTime:         ptr.To(test.NewTimeFromString(t, "2026-07-27T14:04:53Z")),
+					GenerationModifiedBy:          ptr.To("terraform-dev"),
+					GenerationModifiedTime:        ptr.To(test.NewTimeFromString(t, "2026-07-27T14:08:07Z")),
+				},
+				GenerationID:     3119,
+				GenerationStatus: string(GenerationStatusArchived),
 			},
 		},
 		"500 internal server error": {

@@ -580,16 +580,17 @@ func TestCreateLineage(t *testing.T) {
 				Subject:             Subject{},
 			},
 		},
-		"201 Created - create lineage with explicit LineageName": {
+		"201 Created - create lineage with explicit LineageName and SINGLE_GENERATION LineageType": {
 			params: CreateLineageRequest{
 				Body: CreateLineageRequestBody{
 					ContractID:    "C-0N7RAC7",
 					GroupID:       12345,
 					LineageName:   "test 1",
-					SecureNetwork: SecureNetworkEnhancedTLS,
+					LineageType:   LineageTypeSingleGeneration,
+					SecureNetwork: SecureNetworkStandardTLS,
 					KeySpecs: []KeySpec{
-						{KeyType: CryptographicAlgorithmRSA, KeySize: KeySize2048},
-						{KeyType: CryptographicAlgorithmECDSA, KeySize: KeySizeP256},
+						{KeyType: CryptographicAlgorithmRSA, KeySize: KeySize4096},
+						{KeyType: CryptographicAlgorithmECDSA, KeySize: KeySizeP384},
 					},
 					SANs: []string{"www.example.com", "example.com"},
 					Subject: ptr.To(Subject{
@@ -607,10 +608,11 @@ func TestCreateLineage(t *testing.T) {
 				"contractId": "C-0N7RAC7",
 				"groupId": 12345,
 				"lineageName": "test 1",
-				"secureNetwork": "ENHANCED_TLS",
+				"lineageType": "SINGLE_GENERATION",
+				"secureNetwork": "STANDARD_TLS",
 				"keySpecs": [
-					{"keyType": "RSA", "keySize": "2048"},
-					{"keyType": "ECDSA", "keySize": "P-256"}
+					{"keyType": "RSA", "keySize": "4096"},
+					{"keyType": "ECDSA", "keySize": "P-384"}
 				],
 				"sans": ["www.example.com", "example.com"],
 				"subject": {
@@ -656,8 +658,8 @@ func TestCreateLineage(t *testing.T) {
 					"headGenerationStatus": "CSR_READY"
 				},
 				"keySpecs": [
-					{"keySize": "2048", "keyType": "RSA"},
-					{"keySize": "P-256", "keyType": "ECDSA"}
+					{"keySize": "4096", "keyType": "RSA"},
+					{"keySize": "P-384", "keyType": "ECDSA"}
 				],
 				"lineageCreatedBy": "terraform-dev",
 				"lineageCreatedTime": "2026-07-27T08:44:31Z",
@@ -665,9 +667,9 @@ func TestCreateLineage(t *testing.T) {
 				"lineageModifiedBy": "terraform-dev",
 				"lineageModifiedTime": "2026-07-27T08:44:31Z",
 				"lineageName": "test 1",
-				"lineageType": "MULTIPLE_GENERATION",
+				"lineageType": "SINGLE_GENERATION",
 				"sans": ["www.example.com", "example.com"],
-				"secureNetwork": "ENHANCED_TLS",
+				"secureNetwork": "STANDARD_TLS",
 				"stackMode": "MULTIPLE_STACK",
 				"subject": {
 					"commonName": "example.com",
@@ -713,8 +715,8 @@ func TestCreateLineage(t *testing.T) {
 					HeadGenerationStatus: string(GenerationStatusCSRReady),
 				},
 				KeySpecs: []KeySpecResponse{
-					{KeySize: string(KeySize2048), KeyType: string(CryptographicAlgorithmRSA)},
-					{KeySize: string(KeySizeP256), KeyType: string(CryptographicAlgorithmECDSA)},
+					{KeySize: string(KeySize4096), KeyType: string(CryptographicAlgorithmRSA)},
+					{KeySize: string(KeySizeP384), KeyType: string(CryptographicAlgorithmECDSA)},
 				},
 				LineageCreatedBy:    "terraform-dev",
 				LineageCreatedTime:  test.NewTimeFromString(t, "2026-07-27T08:44:31Z"),
@@ -722,9 +724,9 @@ func TestCreateLineage(t *testing.T) {
 				LineageModifiedBy:   "terraform-dev",
 				LineageModifiedTime: test.NewTimeFromString(t, "2026-07-27T08:44:31Z"),
 				LineageName:         "test 1",
-				LineageType:         string(LineageTypeMultipleGeneration),
+				LineageType:         string(LineageTypeSingleGeneration),
 				SANs:                []string{"www.example.com", "example.com"},
-				SecureNetwork:       string(SecureNetworkEnhancedTLS),
+				SecureNetwork:       string(SecureNetworkStandardTLS),
 				StackMode:           string(StackModeMultipleStack),
 				Subject: Subject{
 					CommonName:         "example.com",
@@ -4226,6 +4228,204 @@ func TestListLineageActivity(t *testing.T) {
 				TotalCount: 22,
 			},
 		},
+		"200 OK - list lineage activity, GENERATION_COMPLETED event": {
+			params:         ListLineageActivityRequest{LineageID: 500023},
+			expectedPath:   "/ccm/v2/lineages/500023/activity",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"events": [
+					{
+						"activityId": 5301,
+						"createdBy": "terraform-dev",
+						"createdTime": "2026-07-24T06:43:31Z",
+						"eventType": "GENERATION_COMPLETED",
+						"generationId": 3305,
+						"lineageId": 500023
+					},
+					{
+						"activityId": 5300,
+						"createdBy": "terraform-dev",
+						"createdTime": "2026-07-23T15:46:44Z",
+						"eventType": "GENERATION_PROMOTED_TO_PRODUCTION",
+						"generationId": 3106,
+						"lineageId": 500023,
+						"network": "PRODUCTION"
+					},
+					{
+						"activityId": 5299,
+						"createdBy": "terraform-dev",
+						"createdTime": "2026-07-23T15:46:44Z",
+						"eventType": "GENERATION_PROMOTED_TO_STAGING",
+						"generationId": 3106,
+						"lineageId": 500023,
+						"network": "STAGING"
+					},
+					{
+						"activityId": 5298,
+						"createdBy": "terraform-dev",
+						"createdTime": "2026-07-23T15:45:41Z",
+						"eventType": "CERT_UPLOADED",
+						"generationId": 3106,
+						"lineageId": 500023
+					},
+					{
+						"activityId": 5297,
+						"createdBy": "terraform-dev",
+						"createdTime": "2026-07-23T15:44:11Z",
+						"eventType": "LINEAGE_CREATED",
+						"generationId": 3106,
+						"lineageId": 500023
+					}
+				],
+				"totalCount": 5
+			}`,
+			expectedResponse: &ListLineageActivityResponse{
+				Events: []LineageActivityEvent{
+					{
+						ActivityID:   5301,
+						CreatedBy:    "terraform-dev",
+						CreatedTime:  test.NewTimeFromString(t, "2026-07-24T06:43:31Z"),
+						EventType:    ActivityEventTypeGenerationCompleted,
+						GenerationID: ptr.To(int64(3305)),
+						LineageID:    500023,
+					},
+					{
+						ActivityID:   5300,
+						CreatedBy:    "terraform-dev",
+						CreatedTime:  test.NewTimeFromString(t, "2026-07-23T15:46:44Z"),
+						EventType:    ActivityEventTypeGenerationPromotedToProduction,
+						GenerationID: ptr.To(int64(3106)),
+						LineageID:    500023,
+						Network:      ptr.To("PRODUCTION"),
+					},
+					{
+						ActivityID:   5299,
+						CreatedBy:    "terraform-dev",
+						CreatedTime:  test.NewTimeFromString(t, "2026-07-23T15:46:44Z"),
+						EventType:    ActivityEventTypeGenerationPromotedToStaging,
+						GenerationID: ptr.To(int64(3106)),
+						LineageID:    500023,
+						Network:      ptr.To("STAGING"),
+					},
+					{
+						ActivityID:   5298,
+						CreatedBy:    "terraform-dev",
+						CreatedTime:  test.NewTimeFromString(t, "2026-07-23T15:45:41Z"),
+						EventType:    ActivityEventTypeCertUploaded,
+						GenerationID: ptr.To(int64(3106)),
+						LineageID:    500023,
+					},
+					{
+						ActivityID:   5297,
+						CreatedBy:    "terraform-dev",
+						CreatedTime:  test.NewTimeFromString(t, "2026-07-23T15:44:11Z"),
+						EventType:    ActivityEventTypeLineageCreated,
+						GenerationID: ptr.To(int64(3106)),
+						LineageID:    500023,
+					},
+				},
+				TotalCount: 5,
+			},
+		},
+		"200 OK - list lineage activity, GENERATION_ABANDONED event": {
+			params:         ListLineageActivityRequest{LineageID: 500024},
+			expectedPath:   "/ccm/v2/lineages/500024/activity",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"events": [
+					{
+						"activityId": 5310,
+						"createdBy": "terraform-dev",
+						"createdTime": "2026-07-20T08:39:04Z",
+						"eventType": "GENERATION_ABANDONED",
+						"generationId": 3089,
+						"lineageId": 500024
+					},
+					{
+						"activityId": 5309,
+						"createdBy": "terraform-dev",
+						"createdTime": "2026-07-23T15:46:44Z",
+						"eventType": "GENERATION_PROMOTED_TO_PRODUCTION",
+						"generationId": 3089,
+						"lineageId": 500024,
+						"network": "PRODUCTION"
+					},
+					{
+						"activityId": 52308,
+						"createdBy": "terraform-dev",
+						"createdTime": "2026-07-23T15:46:44Z",
+						"eventType": "GENERATION_PROMOTED_TO_STAGING",
+						"generationId": 3089,
+						"lineageId": 500024,
+						"network": "STAGING"
+					},
+					{
+						"activityId": 5307,
+						"createdBy": "terraform-dev",
+						"createdTime": "2026-07-23T15:45:41Z",
+						"eventType": "CERT_UPLOADED",
+						"generationId": 3089,
+						"lineageId": 500024
+					},
+					{
+						"activityId": 5306,
+						"createdBy": "terraform-dev",
+						"createdTime": "2026-07-23T15:44:11Z",
+						"eventType": "LINEAGE_CREATED",
+						"generationId": 3089,
+						"lineageId": 500024
+					}
+				],
+				"totalCount": 5
+			}`,
+			expectedResponse: &ListLineageActivityResponse{
+				Events: []LineageActivityEvent{
+					{
+						ActivityID:   5310,
+						CreatedBy:    "terraform-dev",
+						CreatedTime:  test.NewTimeFromString(t, "2026-07-20T08:39:04Z"),
+						EventType:    ActivityEventTypeGenerationAbandoned,
+						GenerationID: ptr.To(int64(3089)),
+						LineageID:    500024,
+					},
+					{
+						ActivityID:   5309,
+						CreatedBy:    "terraform-dev",
+						CreatedTime:  test.NewTimeFromString(t, "2026-07-23T15:46:44Z"),
+						EventType:    ActivityEventTypeGenerationPromotedToProduction,
+						GenerationID: ptr.To(int64(3089)),
+						LineageID:    500024,
+						Network:      ptr.To("PRODUCTION"),
+					},
+					{
+						ActivityID:   52308,
+						CreatedBy:    "terraform-dev",
+						CreatedTime:  test.NewTimeFromString(t, "2026-07-23T15:46:44Z"),
+						EventType:    ActivityEventTypeGenerationPromotedToStaging,
+						GenerationID: ptr.To(int64(3089)),
+						LineageID:    500024,
+						Network:      ptr.To("STAGING"),
+					},
+					{
+						ActivityID:   5307,
+						CreatedBy:    "terraform-dev",
+						CreatedTime:  test.NewTimeFromString(t, "2026-07-23T15:45:41Z"),
+						EventType:    ActivityEventTypeCertUploaded,
+						GenerationID: ptr.To(int64(3089)),
+						LineageID:    500024,
+					},
+					{
+						ActivityID:   5306,
+						CreatedBy:    "terraform-dev",
+						CreatedTime:  test.NewTimeFromString(t, "2026-07-23T15:44:11Z"),
+						EventType:    ActivityEventTypeLineageCreated,
+						GenerationID: ptr.To(int64(3089)),
+						LineageID:    500024,
+					},
+				},
+				TotalCount: 5,
+			},
+		},
 		"404 lineage not found": {
 			params:         ListLineageActivityRequest{LineageID: 999999},
 			expectedPath:   "/ccm/v2/lineages/999999/activity",
@@ -4794,6 +4994,39 @@ func TestPromoteLineage(t *testing.T) {
 				})
 				assert.EqualError(t, err, want.Error(), "want: %s; got: %s", want, err)
 				assert.ErrorIs(t, err, ErrFirstPromoteRequiresBothNetworks)
+				assert.ErrorIs(t, err, ErrPromoteLineage)
+			},
+		},
+		"409 pending activation in progress": {
+			params: PromoteLineageRequest{
+				LineageID:    185485,
+				GenerationID: 9000,
+				Networks:     []TargetNetwork{TargetNetworkProduction},
+			},
+			expectedPath:        "/ccm/v2/lineages/185485/activations",
+			expectedRequestBody: `{"operationType":"PROMOTE","generationId":9000,"networks":["PRODUCTION"]}`,
+			responseStatus:      http.StatusConflict,
+			responseBody: `{
+				"type": "/error-types/pending-activation-in-progress",
+				"title": "An activation is already in progress for this lineage.",
+				"status": 409,
+				"detail": "Lineage {185485} already has a pending {{reason}} activation. Complete or wait for it to finish before starting another.",
+				"instance": "/error-types/pending-activation-in-progress?traceId=e2caf7b12cb940c5",
+				"context": {
+					"lineageId": 185485
+				}
+			}`,
+			withError: func(t *testing.T, err error) {
+				want := fmt.Errorf("%w: %w", ErrPromoteLineage, &Error{
+					Type:     "/error-types/pending-activation-in-progress",
+					Title:    "An activation is already in progress for this lineage.",
+					Status:   http.StatusConflict,
+					Detail:   "Lineage {185485} already has a pending {{reason}} activation. Complete or wait for it to finish before starting another.",
+					Instance: "/error-types/pending-activation-in-progress?traceId=e2caf7b12cb940c5",
+					Context:  map[string]any{"lineageId": float64(185485)},
+				})
+				assert.EqualError(t, err, want.Error(), "want: %s; got: %s", want, err)
+				assert.ErrorIs(t, err, ErrPendingActivationInProgress)
 				assert.ErrorIs(t, err, ErrPromoteLineage)
 			},
 		},
@@ -5582,6 +5815,78 @@ func TestGetActivationStatus(t *testing.T) {
 				ModifiedBy:             "terraform-dev",
 			},
 		},
+		"200 OK - get activation status, pre-empted by a subsequent activation": {
+			params:         GetActivationStatusRequest{LineageID: 500020, ActivationID: 1070},
+			expectedPath:   "/ccm/v2/lineages/500020/activations/1070",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"activationCreatedTime": "2026-10-12T14:22:13Z",
+				"activationId": 1070,
+				"activationModifiedTime": "2026-10-12T14:34:52Z",
+				"activationStatus": "PRE_EMPTED",
+				"activationType": "PROMOTE",
+				"createdBy": "terraform-dev",
+				"generationId": 2448,
+				"lineageId": 500020,
+				"modifiedBy": "terraform-dev",
+				"preEmptedBy": 500019,
+				"targetEnvironment": "PRODUCTION"
+			}`,
+			expectedResponse: &GetActivationStatusResponse{
+				ActivationID:           1070,
+				LineageID:              500020,
+				ActivationType:         "PROMOTE",
+				ActivationStatus:       "PRE_EMPTED",
+				GenerationID:           2448,
+				ActivationCreatedTime:  time.Date(2026, 10, 12, 14, 22, 13, 0, time.UTC),
+				ActivationModifiedTime: time.Date(2026, 10, 12, 14, 34, 52, 0, time.UTC),
+				TargetEnvironment:      "PRODUCTION",
+				PreEmptedBy:            ptr.To(int64(500019)),
+				CreatedBy:              "terraform-dev",
+				ModifiedBy:             "terraform-dev",
+			},
+		},
+		"200 OK - get activation status, DELAYED with upstream error": {
+			params:         GetActivationStatusRequest{LineageID: 500023, ActivationID: 1080},
+			expectedPath:   "/ccm/v2/lineages/500023/activations/1080",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"activationCreatedTime": "2026-10-13T09:59:01Z",
+				"activationId": 1080,
+				"activationModifiedTime": "2026-10-13T11:10:53Z",
+				"activationStatus": "DELAYED",
+				"activationType": "PROMOTE",
+				"createdBy": "terraform-dev",
+				"errors": [
+					{
+						"message": "An error occurred in an Akamai internal service while activating the certificate. Contact support if this persists.",
+						"type": "UPSTREAM_ERROR"
+					}
+				],
+				"generationId": 3300,
+				"lineageId": 500023,
+				"modifiedBy": "terraform-dev",
+				"targetEnvironment": "STAGING"
+			}`,
+			expectedResponse: &GetActivationStatusResponse{
+				ActivationID:           1080,
+				LineageID:              500023,
+				ActivationType:         "PROMOTE",
+				ActivationStatus:       "DELAYED",
+				GenerationID:           3300,
+				ActivationCreatedTime:  time.Date(2026, 10, 13, 9, 59, 1, 0, time.UTC),
+				ActivationModifiedTime: time.Date(2026, 10, 13, 11, 10, 53, 0, time.UTC),
+				TargetEnvironment:      "STAGING",
+				CreatedBy:              "terraform-dev",
+				ModifiedBy:             "terraform-dev",
+				Errors: []ActivationError{
+					{
+						Message: "An error occurred in an Akamai internal service while activating the certificate. Contact support if this persists.",
+						Type:    "UPSTREAM_ERROR",
+					},
+				},
+			},
+		},
 		"validation error - missing LineageID": {
 			params: GetActivationStatusRequest{ActivationID: 1075},
 			withError: func(t *testing.T, err error) {
@@ -6000,6 +6305,129 @@ func TestListActivations(t *testing.T) {
 				},
 				NextCursor: ptr.To("MTI1Ng"),
 				TotalCount: 12,
+			},
+		},
+		"200 OK - list activations, DELAYED activation with errors and a PRE_EMPTED history": {
+			params:         ListActivationsRequest{LineageID: 500040},
+			expectedPath:   "/ccm/v2/lineages/500040/activations",
+			responseStatus: http.StatusOK,
+			responseBody: `{
+				"items": [
+					{
+						"activationCreatedTime": "2026-09-10T19:28:39Z",
+						"activationId": 1309,
+						"activationModifiedTime": "2026-09-10T19:44:47Z",
+						"activationStatus": "DELAYED",
+						"activationType": "PROMOTE",
+						"createdBy": "terraform-dev",
+						"errors": [
+							{
+								"message": "The certificate could not be deployed to the Akamai network. Akamai is retrying automatically; contact support if this persists.",
+								"type": "DEPLOYMENT_FAILURE"
+							}
+						],
+						"generationId": 3306,
+						"inProgressHostnameCount": 1,
+						"lineageId": 500040,
+						"modifiedBy": "terraform-dev",
+						"targetEnvironment": "PRODUCTION",
+						"totalHostnameCount": 1
+					},
+					{
+						"activationCreatedTime": "2026-09-10T19:28:39Z",
+						"activationId": 1308,
+						"activationModifiedTime": "2026-09-10T19:29:13Z",
+						"activationStatus": "COMPLETE",
+						"activationType": "PROMOTE",
+						"createdBy": "terraform-dev",
+						"generationId": 3306,
+						"inProgressHostnameCount": 0,
+						"lineageId": 500040,
+						"modifiedBy": "terraform-dev",
+						"targetEnvironment": "STAGING",
+						"totalHostnameCount": 0
+					},
+					{
+						"activationCreatedTime": "2026-09-10T19:25:59Z",
+						"activationId": 1307,
+						"activationModifiedTime": "2026-09-10T19:28:39Z",
+						"activationStatus": "PRE_EMPTED",
+						"activationType": "PROMOTE",
+						"createdBy": "terraform-dev",
+						"generationId": 3305,
+						"inProgressHostnameCount": 1,
+						"lineageId": 500040,
+						"modifiedBy": "terraform-dev",
+						"preEmptedBy": 1309,
+						"targetEnvironment": "PRODUCTION",
+						"totalHostnameCount": 1
+					},
+					{
+						"activationCreatedTime": "2026-09-10T19:25:59Z",
+						"activationId": 1306,
+						"activationModifiedTime": "2026-09-10T19:26:29Z",
+						"activationStatus": "COMPLETE",
+						"activationType": "PROMOTE",
+						"createdBy": "terraform-dev",
+						"generationId": 3305,
+						"inProgressHostnameCount": 0,
+						"lineageId": 500040,
+						"modifiedBy": "terraform-dev",
+						"targetEnvironment": "STAGING",
+						"totalHostnameCount": 0
+					}
+				],
+				"nextCursor": "MTMwNQ",
+				"totalCount": 19
+			}`,
+			expectedResponse: &ListActivationsResponse{
+				Items: []GetActivationStatusResponse{
+					{
+						ActivationID: 1309, LineageID: 500040, ActivationType: "PROMOTE", ActivationStatus: "DELAYED", GenerationID: 3306,
+						ActivationCreatedTime:   time.Date(2026, 9, 10, 19, 28, 39, 0, time.UTC),
+						ActivationModifiedTime:  time.Date(2026, 9, 10, 19, 44, 47, 0, time.UTC),
+						TargetEnvironment:       "PRODUCTION",
+						TotalHostnameCount:      ptr.To(int64(1)),
+						InProgressHostnameCount: ptr.To(int64(1)),
+						CreatedBy:               "terraform-dev", ModifiedBy: "terraform-dev",
+						Errors: []ActivationError{
+							{
+								Message: "The certificate could not be deployed to the Akamai network. Akamai is retrying automatically; contact support if this persists.",
+								Type:    "DEPLOYMENT_FAILURE",
+							},
+						},
+					},
+					{
+						ActivationID: 1308, LineageID: 500040, ActivationType: "PROMOTE", ActivationStatus: "COMPLETE", GenerationID: 3306,
+						ActivationCreatedTime:   time.Date(2026, 9, 10, 19, 28, 39, 0, time.UTC),
+						ActivationModifiedTime:  time.Date(2026, 9, 10, 19, 29, 13, 0, time.UTC),
+						TargetEnvironment:       "STAGING",
+						TotalHostnameCount:      ptr.To(int64(0)),
+						InProgressHostnameCount: ptr.To(int64(0)),
+						CreatedBy:               "terraform-dev", ModifiedBy: "terraform-dev",
+					},
+					{
+						ActivationID: 1307, LineageID: 500040, ActivationType: "PROMOTE", ActivationStatus: "PRE_EMPTED", GenerationID: 3305,
+						ActivationCreatedTime:   time.Date(2026, 9, 10, 19, 25, 59, 0, time.UTC),
+						ActivationModifiedTime:  time.Date(2026, 9, 10, 19, 28, 39, 0, time.UTC),
+						TargetEnvironment:       "PRODUCTION",
+						TotalHostnameCount:      ptr.To(int64(1)),
+						InProgressHostnameCount: ptr.To(int64(1)),
+						PreEmptedBy:             ptr.To(int64(1309)),
+						CreatedBy:               "terraform-dev", ModifiedBy: "terraform-dev",
+					},
+					{
+						ActivationID: 1306, LineageID: 500040, ActivationType: "PROMOTE", ActivationStatus: "COMPLETE", GenerationID: 3305,
+						ActivationCreatedTime:   time.Date(2026, 9, 10, 19, 25, 59, 0, time.UTC),
+						ActivationModifiedTime:  time.Date(2026, 9, 10, 19, 26, 29, 0, time.UTC),
+						TargetEnvironment:       "STAGING",
+						TotalHostnameCount:      ptr.To(int64(0)),
+						InProgressHostnameCount: ptr.To(int64(0)),
+						CreatedBy:               "terraform-dev", ModifiedBy: "terraform-dev",
+					},
+				},
+				NextCursor: ptr.To("MTMwNQ"),
+				TotalCount: 19,
 			},
 		},
 		"404 lineage not found": {

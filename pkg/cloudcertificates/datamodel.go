@@ -80,9 +80,6 @@ const (
 	// CertificateStatusCSRReady indicates the CSR generation is complete and available for download.
 	CertificateStatusCSRReady = "CSR_READY"
 
-	// CertificateStatusCertUploadProcessing indicates the uploaded certificate is being validated. This is a transient status.
-	CertificateStatusCertUploadProcessing = "CERT_UPLOAD_PROCESSING"
-
 	// CertificateStatusAbandoned indicates the algorithm instance was cascaded to abandoned along with its generation.
 	CertificateStatusAbandoned = "ABANDONED"
 
@@ -190,9 +187,6 @@ const (
 
 	// ActivityEventTypeLineageRenamed indicates a lineage was renamed.
 	ActivityEventTypeLineageRenamed = "LINEAGE_RENAMED"
-
-	// ActivityEventTypeLineageDeleted indicates a lineage was deleted.
-	ActivityEventTypeLineageDeleted = "LINEAGE_DELETED"
 
 	// OperationTypePromote indicates a PROMOTE activation operation.
 	OperationTypePromote = "PROMOTE"
@@ -795,8 +789,17 @@ type (
 		// ModifiedBy is the user who last modified the activation request.
 		ModifiedBy string `json:"modifiedBy"`
 
-		// ErrorTypes optionally contains error type information when the activation failed, empty otherwise.
-		ErrorTypes string `json:"errorTypes"`
+		// Errors optionally contains the errors encountered while processing the activation. Empty when there are none.
+		Errors []ActivationError `json:"errors"`
+	}
+
+	// ActivationError represents a single error recorded against a lineage activation request.
+	ActivationError struct {
+		// Message is an error message information when the activation failed.
+		Message string `json:"message"`
+
+		// Type is an error type information when the activation failed.
+		Type string `json:"type"`
 	}
 
 	// ListActivationsRequest represents the parameters for listing the activation requests ([OperationTypePromote],

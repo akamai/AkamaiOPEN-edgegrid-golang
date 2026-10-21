@@ -157,9 +157,9 @@ var (
 	// still-valid, unexpired certificate. Set `ConfirmAbandonHead` on the request to explicitly abandon it.
 	ErrConfirmationRequired = &Error{Type: "/error-types/confirmation-required"}
 
-	// ErrNotMultipleStack represents an error when completing a lineage that is not MULTIPLE_STACK type. Only
-	// MULTIPLE_STACK lineages support the complete operation.
-	ErrNotMultipleStack = &Error{Type: "/error-types/not-multiple-stack"}
+	// ErrNotMultipleStack represents an error when completing a lineage that is not MULTIPLE_STACK type (e.g. a
+	// SINGLE_GENERATION lineage). Only MULTIPLE_STACK lineages support the complete operation.
+	ErrNotMultipleStack = &Error{Type: "/error-types/single-generation-no-complete"}
 
 	// ErrNoCurrentProduction represents an error when completing a lineage that has no current production
 	// generation to complete.
@@ -169,18 +169,6 @@ var (
 	// pending head generation already exists, no unique CSR_READY algorithm was found, or the given key type
 	// does not match the CSR_READY algorithm on current production.
 	ErrCompletePreconditionFailed = &Error{Type: "/error-types/complete-precondition-failed"}
-
-	// ErrCSRExpired represents an error when completing a lineage whose stored CSR for the given key type has
-	// expired.
-	ErrCSRExpired = &Error{Type: "/error-types/csr-expired"}
-
-	// ErrCertSANMismatch represents an error when the uploaded certificate's SANs do not match the lineage's
-	// SANs.
-	ErrCertSANMismatch = &Error{Type: "/error-types/cert-san-mismatch"}
-
-	// ErrCertSubjectMismatch represents an error when the uploaded certificate's non-common-name subject fields
-	// differ from the stored CSR's subject fields.
-	ErrCertSubjectMismatch = &Error{Type: "/error-types/cert-subject-mismatch"}
 
 	// ErrMediaTypeNotSupported represents an error when the request media type is not supported.
 	ErrMediaTypeNotSupported = &Error{Type: "/error-types/media-type-not-supported"}
