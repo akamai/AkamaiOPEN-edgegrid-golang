@@ -76,7 +76,7 @@ type (
 		DefaultFile                  string                         `json:"defaultFile,omitempty"`
 		IsNegativeFileExtensionMatch bool                           `json:"isNegativeFileExtensionMatch,omitempty"`
 		IsNegativePathMatch          *json.RawMessage               `json:"isNegativePathMatch,omitempty"`
-		Sequence                     int                            `json:"-"`
+		Sequence                     int                            `json:"sequence"`
 		TargetID                     int                            `json:"targetId,omitempty"`
 		Type                         string                         `json:"type,omitempty"`
 		FileExtensions               []string                       `json:"fileExtensions,omitempty"`
@@ -104,7 +104,7 @@ type (
 		FilePaths                    []string                       `json:"filePaths,omitempty"`
 		FileExtensions               []string                       `json:"fileExtensions,omitempty"`
 		SecurityPolicy               MatchTargetSecurityPolicy      `json:"securityPolicy,omitempty"`
-		Sequence                     int                            `json:"-"`
+		Sequence                     int                            `json:"sequence"`
 		TargetID                     int                            `json:"targetId"`
 		BypassNetworkLists           []MatchTargetBypassNetworkList `json:"bypassNetworkLists,omitempty"`
 	}
@@ -128,7 +128,7 @@ type (
 		FilePaths                    []string                    `json:"filePaths"`
 		FileExtensions               []string                    `json:"fileExtensions"`
 		SecurityPolicy               MatchTargetSecurityPolicyID `json:"securityPolicy"`
-		Sequence                     int                         `json:"-"`
+		Sequence                     int                         `json:"sequence"`
 		TargetID                     int                         `json:"targetId"`
 		BypassNetworkLists           []BypassNetworkList         `json:"bypassNetworkLists"`
 	}
@@ -153,7 +153,7 @@ type (
 		FilePaths                    []string                    `json:"filePaths"`
 		FileExtensions               []string                    `json:"fileExtensions"`
 		SecurityPolicy               MatchTargetSecurityPolicyID `json:"securityPolicy"`
-		Sequence                     int                         `json:"-"`
+		Sequence                     int                         `json:"sequence"`
 		TargetID                     int                         `json:"targetId"`
 		BypassNetworkLists           []BypassNetworkList         `json:"bypassNetworkLists"`
 	}

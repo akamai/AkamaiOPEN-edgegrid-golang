@@ -11,6 +11,9 @@
 * IAM
   * Changed the `SecondaryEmail` field in the `UserBasicInfo` structure from `string` to `*string` to distinguish an omitted value from an explicitly cleared one ([I#699](https://github.com/akamai/terraform-provider-akamai/issues/699)).
 
+* Appsec
+  * Dropped from `UpdateReputationProfileResponse` never populated fields: `policyId`, `configId`, `configVersion`, `matchType`, `type`, `averageThreshold`, `burstThreshold`, `clientIdentifier`, `useXForwardForHeaders`, `requestType`, `sameActionOnIpv6`, `path`, `pathMatchType`, `pathUriPositiveMatch`, `fileExtensions`, `hostNames`, `additionalMatchOptions`, `queryParameters`, `createDate`, `updateDate`, `used`.
+  * Dropped `ReputationProfileResponsePath` and `QueryParameter` structs.
 
 
 
@@ -50,7 +53,6 @@
     * The `SlotNumber` (from `int` to `*int64`), `CustomTarget`, `MapAlias`, and `IsEdgeIPBindingEnabled` fields in the `EdgeHostname`, `GetEdgeHostnameResponse`, `GetChangeRequestResponse`, `UpdateEdgeHostnameResponse`, and `DeleteEdgeHostnameResponse` structs.
     * The `CustomChinaCDNMap` field in the `ChinaCDN` struct.
     * The `StatusUpdateEmail` field in the `GetChangeRequestResponse`, `UpdateEdgeHostnameResponse`, and `DeleteEdgeHostnameResponse` structs.
-
 
 
 
@@ -121,6 +123,7 @@
   * (Beta) Added Clientside Protection Configuration API:
     * `GetClientsideProtectionConfiguration`
     * `UpdateClientsideProtectionConfiguration`
+  * Added to `UpdateReputationProfileResponse` the following fields: `context`, `threshold`, `sharedIpHandling`, `condition`, `enabled`.
 
 
 
@@ -241,6 +244,9 @@
 
 
 
+* Appsec
+  * Fixed `GetRatePolicyResponse.ID` and `GetReputationProfileResponse.ID` incorrectly tagged with `json:"-"`, causing the `ID` field to always deserialize as `0` even when the API response includes it.
+  * Fixed `GetMatchTargetResponse.Sequence`, `CreateMatchTargetResponse.Sequence`, `UpdateMatchTargetResponse.Sequence`, and `GetMatchTargetsResponseMatchTargetsWebsiteTargetsItem.Sequence` incorrectly tagged with `json:"-"`, causing the `Sequence` field to always deserialize as `0` even when the API response includes it.
 
 
 

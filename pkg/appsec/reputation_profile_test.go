@@ -144,6 +144,20 @@ func TestAppSec_GetReputationProfile(t *testing.T) {
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
+		// expectedResponse here is a hand-written literal rather than unmarshaled from the
+		// response body, so this case -- unlike the others above -- actually fails if
+		// GetReputationProfileResponse.ID regresses to json:"-" instead of json:"id".
+		"id field deserializes correctly": {
+			params: GetReputationProfileRequest{
+				ConfigID:            43253,
+				ConfigVersion:       15,
+				ReputationProfileId: 134644,
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     `{"id": 134644}`,
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/reputation-profiles/134644",
+			expectedResponse: &GetReputationProfileResponse{ID: 134644},
+		},
 	}
 
 	for name, test := range tests {
@@ -258,11 +272,14 @@ func TestAppSec_CreateReputationProfile(t *testing.T) {
 
 // Test Update ReputationProfile
 func TestAppSec_UpdateReputationProfile(t *testing.T) {
-	result := UpdateReputationProfileResponse{}
-
 	respData := compactJSON(loadFixtureBytes("testdata/TestReputationProfile/ReputationProfile.json"))
-	err := json.Unmarshal([]byte(respData), &result)
-	require.NoError(t, err)
+
+	rawJSON := func(v any) *json.RawMessage {
+		b, err := json.Marshal(v)
+		require.NoError(t, err)
+		r := json.RawMessage(b)
+		return &r
+	}
 
 	reqData := compactJSON(loadFixtureBytes("testdata/TestReputationProfile/ReputationProfile.json"))
 	req := UpdateReputationProfileRequest{
@@ -290,8 +307,46 @@ func TestAppSec_UpdateReputationProfile(t *testing.T) {
 			expectedRequestBody: reqData,
 			responseStatus:      http.StatusCreated,
 			responseBody:        respData,
-			expectedResponse:    &result,
-			expectedPath:        "/appsec/v1/configs/43253/versions/15/reputation-profiles/134644",
+			// expectedResponse is a hand-written literal matching the fixture, not unmarshalled through
+			// UpdateReputationProfileResponse, so a wrong struct shape fails this case.
+			expectedResponse: &UpdateReputationProfileResponse{
+				ID:               12345,
+				Name:             "Web Attack Rep Profile",
+				Context:          "WEBATCK",
+				Description:      "Reputation profile description",
+				Threshold:        5,
+				SharedIPHandling: "NON_SHARED",
+				Enabled:          false,
+				Condition: &GetReputationProfileResponseCondition{
+					AtomicConditions: []ReputationProfileConditionAtomicCondition{
+						{
+							CheckIps:      rawJSON("connecting"),
+							ClassName:     "AsNumberCondition",
+							Index:         1,
+							PositiveMatch: rawJSON(true),
+							Value:         []string{"1"},
+						},
+						{
+							ClassName:     "RequestCookieCondition",
+							Index:         2,
+							Name:          rawJSON("x-header"),
+							NameCase:      true,
+							NameWildcard:  rawJSON(true),
+							PositiveMatch: rawJSON(true),
+							ValueWildcard: rawJSON(true),
+						},
+						{
+							ClassName:     "HostCondition",
+							Host:          []string{"*.com"},
+							Index:         3,
+							PositiveMatch: rawJSON(true),
+							ValueWildcard: rawJSON(true),
+						},
+					},
+					PositiveMatch: rawJSON(true),
+				},
+			},
+			expectedPath: "/appsec/v1/configs/43253/versions/15/reputation-profiles/134644",
 		},
 		"500 internal server error": {
 			params:         req,

@@ -144,6 +144,17 @@ func TestAppSec_GetRatePolicy(t *testing.T) {
 				StatusCode: http.StatusInternalServerError,
 			},
 		},
+		"id field deserializes correctly": {
+			params: GetRatePolicyRequest{
+				ConfigID:      43253,
+				ConfigVersion: 15,
+				RatePolicyID:  134644,
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     `{"id": 134644}`,
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/rate-policies/134644",
+			expectedResponse: &GetRatePolicyResponse{ID: 134644},
+		},
 	}
 
 	for name, test := range tests {

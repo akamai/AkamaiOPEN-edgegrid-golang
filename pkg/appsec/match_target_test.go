@@ -44,6 +44,41 @@ func TestAppSec_ListMatchTargets(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets",
 			expectedResponse: &result,
 		},
+		"200 OK sequence deserializes for website and api targets": {
+			params: GetMatchTargetsRequest{
+				ConfigID:      43253,
+				ConfigVersion: 15,
+			},
+			headers: http.Header{
+				"Content-Type": []string{"application/json"},
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `{"matchTargets":{` +
+				`"websiteTargets":[{"type":"website","targetId":3008967,"sequence":2,"securityPolicy":{"policyId":"AAAA_81230"}}],` +
+				`"apiTargets":[{"type":"api","targetId":3008968,"sequence":3,"apis":[{"id":1111,"name":"API 1"}],"securityPolicy":{"policyId":"AAAA_81230"}}]}}`,
+			expectedPath: "/appsec/v1/configs/43253/versions/15/match-targets",
+			expectedResponse: &GetMatchTargetsResponse{
+				MatchTargets: GetMatchTargetsResponseMatchTargets{
+					WebsiteTargets: []GetMatchTargetsResponseMatchTargetsWebsiteTargetsItem{
+						{
+							Type:           "website",
+							TargetID:       3008967,
+							Sequence:       2,
+							SecurityPolicy: MatchTargetSecurityPolicy{PolicyID: "AAAA_81230"},
+						},
+					},
+					APITargets: []GetMatchTargetsResponseMatchTargetsAPITargetsItem{
+						{
+							Type:           "api",
+							TargetID:       3008968,
+							Sequence:       3,
+							Apis:           []MatchTargetAPIItem{{ID: 1111, Name: "API 1"}},
+							SecurityPolicy: MatchTargetSecurityPolicy{PolicyID: "AAAA_81230"},
+						},
+					},
+				},
+			},
+		},
 		"500 internal server error": {
 			params: GetMatchTargetsRequest{
 				ConfigID:      43253,
@@ -122,6 +157,17 @@ func TestAppSec_GetMatchTarget(t *testing.T) {
 			responseBody:     respData,
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/3008967?includeChildObjectName=true",
 			expectedResponse: &result,
+		},
+		"sequence field deserializes correctly": {
+			params: GetMatchTargetRequest{
+				ConfigID:      43253,
+				ConfigVersion: 15,
+				TargetID:      3008967,
+			},
+			responseStatus:   http.StatusOK,
+			responseBody:     `{"sequence": 1, "targetId": 3008967}`,
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/3008967?includeChildObjectName=true",
+			expectedResponse: &GetMatchTargetResponse{Sequence: 1, TargetID: 3008967},
 		},
 		"500 internal server error": {
 			params: GetMatchTargetRequest{
@@ -205,6 +251,17 @@ func TestAppSec_CreateMatchTarget(t *testing.T) {
 			responseBody:     respData,
 			expectedResponse: &result,
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets",
+		},
+		"sequence field deserializes correctly": {
+			params: req,
+			headers: http.Header{
+				"Content-Type": []string{"application/json;charset=UTF-8"},
+			},
+			expectedRequestBody: reqData,
+			responseStatus:      http.StatusCreated,
+			responseBody:        `{"sequence": 1, "targetId": 3008967}`,
+			expectedResponse:    &CreateMatchTargetResponse{Sequence: 1, TargetID: 3008967},
+			expectedPath:        "/appsec/v1/configs/43253/versions/15/match-targets",
 		},
 		"500 internal server error": {
 			params:         req,
@@ -291,6 +348,17 @@ func TestAppSec_UpdateMatchTarget(t *testing.T) {
 			responseStatus:   http.StatusCreated,
 			responseBody:     respData,
 			expectedResponse: &result,
+			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/3008967",
+		},
+		"sequence field deserializes correctly": {
+			params:              req,
+			expectedRequestBody: reqData,
+			headers: http.Header{
+				"Content-Type": []string{"application/json;charset=UTF-8"},
+			},
+			responseStatus:   http.StatusCreated,
+			responseBody:     `{"sequence": 1, "targetId": 3008967}`,
+			expectedResponse: &UpdateMatchTargetResponse{Sequence: 1, TargetID: 3008967},
 			expectedPath:     "/appsec/v1/configs/43253/versions/15/match-targets/3008967",
 		},
 		"500 internal server error": {

@@ -80,7 +80,7 @@ type (
 		Context          string                                 `json:"context,omitempty"`
 		ContextReadable  string                                 `json:"-"`
 		Enabled          bool                                   `json:"-"`
-		ID               int                                    `json:"-"`
+		ID               int                                    `json:"id"`
 		Name             string                                 `json:"name,omitempty"`
 		SharedIPHandling string                                 `json:"sharedIpHandling,omitempty"`
 		Threshold        int                                    `json:"threshold,omitempty"`
@@ -136,44 +136,14 @@ type (
 
 	// UpdateReputationProfileResponse is returned from a call to UpdateReputationProfile.
 	UpdateReputationProfileResponse struct {
-		ID                     int                           `json:"id"`
-		PolicyID               int                           `json:"policyId"`
-		ConfigID               int                           `json:"configId"`
-		ConfigVersion          int                           `json:"configVersion"`
-		MatchType              string                        `json:"matchType"`
-		Type                   string                        `json:"type"`
-		Name                   string                        `json:"name"`
-		Description            string                        `json:"description"`
-		AverageThreshold       int                           `json:"averageThreshold"`
-		BurstThreshold         int                           `json:"burstThreshold"`
-		ClientIdentifier       string                        `json:"clientIdentifier"`
-		UseXForwardForHeaders  bool                          `json:"useXForwardForHeaders"`
-		RequestType            string                        `json:"requestType"`
-		SameActionOnIpv6       bool                          `json:"sameActionOnIpv6"`
-		Path                   ReputationProfileResponsePath `json:"path"`
-		PathMatchType          string                        `json:"pathMatchType"`
-		PathURIPositiveMatch   bool                          `json:"pathUriPositiveMatch"`
-		FileExtensions         ReputationProfileResponsePath `json:"fileExtensions"`
-		Hostnames              []string                      `json:"hostNames"`
-		AdditionalMatchOptions []AdditionalMatchOption       `json:"additionalMatchOptions"`
-		QueryParameters        []QueryParameter              `json:"queryParameters"`
-		CreateDate             string                        `json:"createDate"`
-		UpdateDate             string                        `json:"updateDate"`
-		Used                   bool                          `json:"used"`
-	}
-
-	// ReputationProfileResponsePath describes the path criteria in a reputation profile response.
-	ReputationProfileResponsePath struct {
-		PositiveMatch bool     `json:"positiveMatch"`
-		Values        []string `json:"values"`
-	}
-
-	// QueryParameter describes a query parameter item in a reputation profile response.
-	QueryParameter struct {
-		Name          string   `json:"name"`
-		Values        []string `json:"values"`
-		PositiveMatch bool     `json:"positiveMatch"`
-		ValueInRange  bool     `json:"valueInRange"`
+		ID               int                                    `json:"id"`
+		Name             string                                 `json:"name"`
+		Context          string                                 `json:"context"`
+		Description      string                                 `json:"description"`
+		Threshold        int                                    `json:"threshold"`
+		SharedIPHandling string                                 `json:"sharedIpHandling"`
+		Condition        *GetReputationProfileResponseCondition `json:"condition,omitempty"`
+		Enabled          bool                                   `json:"enabled"`
 	}
 
 	// RemoveReputationProfileRequest is used to remove a reputation profile.

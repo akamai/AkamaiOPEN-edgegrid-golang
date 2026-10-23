@@ -173,7 +173,7 @@ type (
 
 	// GetRatePolicyResponse is returned from a call to GetRatePolicy.
 	GetRatePolicyResponse struct {
-		ID                     int                        `json:"-"`
+		ID                     int                        `json:"id"`
 		ConfigID               int                        `json:"-"`
 		ConfigVersion          int                        `json:"-"`
 		MatchType              string                     `json:"matchType,omitempty"`
