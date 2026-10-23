@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -118,18 +118,15 @@ func (d *domainownership) ValidateDomains(ctx context.Context, params ValidateDo
 		return nil, fmt.Errorf("%w: %w:\n%w", ErrValidateDomains, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/domain-validation/v1/domains/validate-now")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %w", ErrValidateDomains, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/domain-validation/v1/domains/validate-now").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrValidateDomains, err)
 	}
 
 	var result ValidateDomainsResponse
-	resp, err := d.Exec(req, &result, params)
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrValidateDomains, err)
 	}
@@ -150,17 +147,9 @@ func (d *domainownership) InvalidateDomain(ctx context.Context, params Invalidat
 		return nil, fmt.Errorf("%w: %w:\n%w", ErrInvalidateDomain, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/domain-validation/v1/domains/invalidate/%s", params.DomainName))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %w", ErrInvalidateDomain, err)
-	}
-
-	q := uri.Query()
-	q.Add("validationScope", string(params.ValidationScope))
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/domain-validation/v1/domains/invalidate/%s", params.DomainName).
+		AddQueryParam("validationScope", string(params.ValidationScope)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrInvalidateDomain, err)
 	}
@@ -187,18 +176,15 @@ func (d *domainownership) InvalidateDomains(ctx context.Context, params Invalida
 		return nil, fmt.Errorf("%w: %w:\n%w", ErrInvalidateDomains, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/domain-validation/v1/domains/invalidate")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %w", ErrInvalidateDomains, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/domain-validation/v1/domains/invalidate").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrInvalidateDomains, err)
 	}
 
 	var result InvalidateDomainsResponse
-	resp, err := d.Exec(req, &result, params)
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrInvalidateDomains, err)
 	}

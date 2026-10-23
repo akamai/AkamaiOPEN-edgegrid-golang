@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -63,32 +63,26 @@ func (c *cloudwrapper) ListAuthKeys(ctx context.Context, params ListAuthKeysRequ
 	logger.Debug("ListAuthKeys")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListAuthKeys, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrListAuthKeys, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/cloud-wrapper/v1/multi-cdn/auth-keys")
+	req, err := request.NewGet(ctx, "/cloud-wrapper/v1/multi-cdn/auth-keys").
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParam("cdnCode", params.CDNCode).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListAuthKeys, err)
-	}
-	q := uri.Query()
-	q.Add("contractId", params.ContractID)
-	q.Add("cdnCode", params.CDNCode)
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAuthKeys, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListAuthKeys, err)
 	}
 
 	var result ListAuthKeysResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListAuthKeys, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListAuthKeys, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListAuthKeys, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListAuthKeys, c.Error(resp))
 	}
 
 	return &result, nil
@@ -98,22 +92,20 @@ func (c *cloudwrapper) ListCDNProviders(ctx context.Context) (*ListCDNProvidersR
 	logger := c.Log(ctx)
 	logger.Debug("ListCDNProviders")
 
-	uri := "/cloud-wrapper/v1/multi-cdn/providers"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/cloud-wrapper/v1/multi-cdn/providers").Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListCDNProviders, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListCDNProviders, err)
 	}
 
 	var result ListCDNProvidersResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListCDNProviders, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListCDNProviders, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListCDNProviders, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListCDNProviders, c.Error(resp))
 	}
 
 	return &result, nil

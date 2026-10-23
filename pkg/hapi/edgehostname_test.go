@@ -24,6 +24,18 @@ func TestDeleteEdgeHostname(t *testing.T) {
 		expectedResponse *DeleteEdgeHostnameResponse
 		withError        error
 	}{
+		"202 Accepted with multiple notification emails": {
+			request: DeleteEdgeHostnameRequest{
+				DNSZone:           "edgesuite.net",
+				RecordName:        "www.example.com",
+				StatusUpdateEmail: []string{"first@example.com", "second@example.com"},
+				Comments:          "remove & notify",
+			},
+			responseStatus:   http.StatusAccepted,
+			responseBody:     `{"changeId":123}`,
+			expectedPath:     "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/www.example.com?comments=remove+%26+notify&statusUpdateEmail=first%40example.com%2Csecond%40example.com",
+			expectedResponse: &DeleteEdgeHostnameResponse{ChangeID: 123},
+		},
 		"202 Accepted": {
 			request: DeleteEdgeHostnameRequest{
 				DNSZone:           "edgesuite.net",
@@ -547,6 +559,20 @@ func TestUpdateEdgeHostname(t *testing.T) {
 		expectedResponse *UpdateEdgeHostnameResponse
 		withError        error
 	}{
+		"202 Accepted with multiple notification emails": {
+			request: UpdateEdgeHostnameRequest{
+				DNSZone:           "edgesuite.net",
+				RecordName:        "www.example.com",
+				StatusUpdateEmail: []string{"first@example.com", "second@example.com"},
+				Comments:          "update & notify",
+				Body:              []UpdateEdgeHostnameRequestBody{{Op: "replace", Path: "/ttl", Value: "10000"}},
+			},
+			responseStatus:   http.StatusAccepted,
+			responseBody:     `{"changeId":123}`,
+			expectedPath:     "/hapi/v1/dns-zones/edgesuite.net/edge-hostnames/www.example.com?comments=update+%26+notify&statusUpdateEmail=first%40example.com%2Csecond%40example.com",
+			expectedBody:     `[{"op":"replace","path":"/ttl","value":"10000"}]`,
+			expectedResponse: &UpdateEdgeHostnameResponse{ChangeID: 123},
+		},
 		"202 Accepted with optimization status": {
 			request: UpdateEdgeHostnameRequest{
 				DNSZone: "edgesuite.net", RecordName: "www.example.com",
@@ -927,6 +953,14 @@ func TestUpdateEdgeHostname(t *testing.T) {
 				Submitter:        "ftzgvvigljhoq5ib",
 				SubmitterEmail:   "ftzgvvigljhoq5ib@nomail-akamai.com",
 			},
+		},
+		"request builder error - malformed path": {
+			request: UpdateEdgeHostnameRequest{
+				DNSZone:    "edgesuite.net",
+				RecordName: "%",
+				Body:       []UpdateEdgeHostnameRequestBody{{Op: "replace", Path: "/ttl", Value: "10000"}},
+			},
+			withError: ErrUpdateEdgeHostname,
 		},
 		"validation error - invalid httpsServiceBinding value": {
 			request: UpdateEdgeHostnameRequest{

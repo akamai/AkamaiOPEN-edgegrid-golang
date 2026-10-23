@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -118,28 +118,23 @@ func (c *cloudaccess) LookupProperties(ctx context.Context, params LookupPropert
 	logger.Debug("LookupProperties")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrLookupProperties, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrLookupProperties, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cam/v1/access-keys/%d/versions/%d/properties", params.AccessKeyUID, params.Version))
+	req, err := request.NewGet(ctx, "/cam/v1/access-keys/%d/versions/%d/properties", params.AccessKeyUID, params.Version).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrLookupProperties, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrLookupProperties, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrLookupProperties, err)
 	}
 
 	var result LookupPropertiesResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrLookupProperties, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrLookupProperties, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrLookupProperties, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrLookupProperties, c.Error(resp))
 	}
 
 	return &result, nil
@@ -150,28 +145,23 @@ func (c *cloudaccess) GetAsyncPropertiesLookupID(ctx context.Context, params Get
 	logger.Debug("GetAsyncPropertiesLookupID")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetAsyncLookupIDProperties, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetAsyncLookupIDProperties, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cam/v1/access-keys/%d/versions/%d/property-lookup-id", params.AccessKeyUID, params.Version))
+	req, err := request.NewGet(ctx, "/cam/v1/access-keys/%d/versions/%d/property-lookup-id", params.AccessKeyUID, params.Version).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetAsyncLookupIDProperties, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAsyncLookupIDProperties, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetAsyncLookupIDProperties, err)
 	}
 
 	var result GetAsyncPropertiesLookupIDResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetAsyncLookupIDProperties, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetAsyncLookupIDProperties, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
-		return nil, fmt.Errorf("%s: %w", ErrGetAsyncLookupIDProperties, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrGetAsyncLookupIDProperties, c.Error(resp))
 	}
 
 	return &result, nil
@@ -182,28 +172,23 @@ func (c *cloudaccess) PerformAsyncPropertiesLookup(ctx context.Context, params P
 	logger.Debug("PerformAsyncPropertiesLookup")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrPerformAsyncLookupProperties, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrPerformAsyncLookupProperties, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cam/v1/property-lookups/%d", params.LookupID))
+	req, err := request.NewGet(ctx, "/cam/v1/property-lookups/%d", params.LookupID).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrPerformAsyncLookupProperties, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrPerformAsyncLookupProperties, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrPerformAsyncLookupProperties, err)
 	}
 
 	var result PerformAsyncPropertiesLookupResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrPerformAsyncLookupProperties, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrPerformAsyncLookupProperties, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrPerformAsyncLookupProperties, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrPerformAsyncLookupProperties, c.Error(resp))
 	}
 
 	return &result, nil

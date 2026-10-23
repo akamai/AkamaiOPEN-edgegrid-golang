@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -337,26 +337,18 @@ func (m *mtlskeystore) RotateClientCertificateVersion(ctx context.Context, param
 
 	err := params.Validate()
 	if err != nil {
-		return nil, fmt.Errorf("%w: validation failed: %s", ErrRotateClientCertificateVersion, err)
+		return nil, fmt.Errorf("%w: validation failed: %w", ErrRotateClientCertificateVersion, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/mtls-origin-keystore/v1/client-certificates/%d/versions",
-		params.CertificateID),
-	)
+	req, err := request.NewPost(ctx, "/mtls-origin-keystore/v1/client-certificates/%d/versions", params.CertificateID).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrRotateClientCertificateVersion, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create HTTP request: %s", ErrRotateClientCertificateVersion, err)
+		return nil, fmt.Errorf("%w: failed to create HTTP request: %w", ErrRotateClientCertificateVersion, err)
 	}
 
 	var result RotateClientCertificateVersionResponse
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request execution failed: %s", ErrRotateClientCertificateVersion, err)
+		return nil, fmt.Errorf("%w: request execution failed: %w", ErrRotateClientCertificateVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -372,27 +364,14 @@ func (m *mtlskeystore) ListClientCertificateVersions(ctx context.Context, params
 	logger.Debug("Fetching client certificate versions")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: validation failed: %s", ErrListClientCertificateVersions, err)
+		return nil, fmt.Errorf("%w: validation failed: %w", ErrListClientCertificateVersions, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/mtls-origin-keystore/v1/client-certificates/%d/versions",
-		params.CertificateID),
-	)
-
+	req, err := request.NewGet(ctx, "/mtls-origin-keystore/v1/client-certificates/%d/versions", params.CertificateID).
+		AddQueryParamIf("includeAssociatedProperties", strconv.FormatBool(params.IncludeAssociatedProperties), params.IncludeAssociatedProperties).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse URL: %w", ErrListClientCertificateVersions, err)
-	}
-
-	if params.IncludeAssociatedProperties {
-		query := url.Values{}
-		query.Set("includeAssociatedProperties", strconv.FormatBool(params.IncludeAssociatedProperties))
-		uri.RawQuery = query.Encode()
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create HTTP request: %s", ErrListClientCertificateVersions, err)
+		return nil, fmt.Errorf("%w: failed to create HTTP request: %w", ErrListClientCertificateVersions, err)
 	}
 
 	var result ListClientCertificateVersionsResponse
@@ -415,26 +394,18 @@ func (m *mtlskeystore) DeleteClientCertificateVersion(ctx context.Context, param
 
 	err := params.Validate()
 	if err != nil {
-		return nil, fmt.Errorf("%w: validation failed: %s", ErrDeleteClientCertificateVersion, err)
+		return nil, fmt.Errorf("%w: validation failed: %w", ErrDeleteClientCertificateVersion, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf(
-		"/mtls-origin-keystore/v1/client-certificates/%d/versions/%d",
-		params.CertificateID,
-		params.Version))
+	req, err := request.NewDelete(ctx, "/mtls-origin-keystore/v1/client-certificates/%d/versions/%d", params.CertificateID, params.Version).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrDeleteClientCertificateVersion, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create HTTP request: %s", ErrDeleteClientCertificateVersion, err)
+		return nil, fmt.Errorf("%w: failed to create HTTP request: %w", ErrDeleteClientCertificateVersion, err)
 	}
 
 	var result DeleteClientCertificateVersionResponse
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request execution failed: %s", ErrDeleteClientCertificateVersion, err)
+		return nil, fmt.Errorf("%w: request execution failed: %w", ErrDeleteClientCertificateVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -455,32 +426,22 @@ func (m *mtlskeystore) UploadSignedClientCertificate(ctx context.Context, params
 
 	err := params.Validate()
 	if err != nil {
-		return fmt.Errorf("%w: validation failed: %s", ErrUploadClientCertificateVersion, err)
+		return fmt.Errorf("%w: validation failed: %w", ErrUploadClientCertificateVersion, err)
 	}
 
-	query := url.Values{}
-	if params.AcknowledgeAllWarnings != nil {
-		query.Set("acknowledgeAllWarnings", strconv.FormatBool(*params.AcknowledgeAllWarnings))
-	}
-
-	uri, err := url.Parse(fmt.Sprintf(
-		"/mtls-origin-keystore/v1/client-certificates/%d/versions/%d/certificate-block",
-		params.CertificateID,
-		params.Version))
+	req, err := request.NewPost(ctx, "/mtls-origin-keystore/v1/client-certificates/%d/versions/%d/certificate-block", params.CertificateID, params.Version).
+		AddQueryParamFunc("acknowledgeAllWarnings", func() string {
+			return strconv.FormatBool(*params.AcknowledgeAllWarnings)
+		}, params.AcknowledgeAllWarnings != nil).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
-		return fmt.Errorf("%w: failed to parse URL: %s", ErrUploadClientCertificateVersion, err)
+		return fmt.Errorf("%w: failed to create HTTP request: %w", ErrUploadClientCertificateVersion, err)
 	}
 
-	uri.RawQuery = query.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	resp, err := m.Exec(req, nil)
 	if err != nil {
-		return fmt.Errorf("%w: failed to create HTTP request: %s", ErrUploadClientCertificateVersion, err)
-	}
-
-	resp, err := m.Exec(req, nil, params.Body)
-	if err != nil {
-		return fmt.Errorf("%w: request execution failed: %s", ErrUploadClientCertificateVersion, err)
+		return fmt.Errorf("%w: request execution failed: %w", ErrUploadClientCertificateVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 

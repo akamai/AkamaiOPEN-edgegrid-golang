@@ -1,11 +1,8 @@
 package hapi
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
@@ -18,39 +15,27 @@ func (h *hapi) DeleteEdgeHostname(ctx context.Context, params DeleteEdgeHostname
 	logger.Debug("DeleteEdgeHostname")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrDeleteEdgeHostname, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrDeleteEdgeHostname, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf(
-		"/hapi/v1/dns-zones/%s/edge-hostnames/%s",
-		params.DNSZone,
-		params.RecordName,
-	)
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := request.NewDelete(ctx, "/hapi/v1/dns-zones/%s/edge-hostnames/%s", params.DNSZone, params.RecordName).
+		AddQueryParamIf("statusUpdateEmail", strings.Join(params.StatusUpdateEmail, ","), len(params.StatusUpdateEmail) > 0).
+		AddQueryParamIf("comments", params.Comments, params.Comments != "").
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeleteEdgeHostname, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrDeleteEdgeHostname, err)
 	}
-
-	q := req.URL.Query()
-	if len(params.StatusUpdateEmail) > 0 {
-		emails := strings.Join(params.StatusUpdateEmail, ",")
-		q.Add("statusUpdateEmail", emails)
-	}
-	if params.Comments != "" {
-		q.Add("comments", params.Comments)
-	}
-	req.URL.RawQuery = q.Encode()
 
 	var rval DeleteEdgeHostnameResponse
 
 	resp, err := h.Exec(req, &rval)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrDeleteEdgeHostname, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrDeleteEdgeHostname, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
-		return nil, fmt.Errorf("%s: %w", ErrDeleteEdgeHostname, h.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrDeleteEdgeHostname, h.Error(resp))
 	}
 
 	return &rval, nil
@@ -88,48 +73,34 @@ func (h *hapi) GetEdgeHostname(ctx context.Context, params GetEdgeHostnameReques
 	return &rval, nil
 }
 
-func (h *hapi) UpdateEdgeHostname(ctx context.Context, request UpdateEdgeHostnameRequest) (*UpdateEdgeHostnameResponse, error) {
+func (h *hapi) UpdateEdgeHostname(ctx context.Context, params UpdateEdgeHostnameRequest) (*UpdateEdgeHostnameResponse, error) {
 	logger := h.Log(ctx)
 	logger.Debug("UpdateEdgeHostname")
 
-	if err := request.Validate(); err != nil {
-		return nil, fmt.Errorf("%w: %s: %s", ErrUpdateEdgeHostname, ErrStructValidation, err)
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("%w: %w: %w", ErrUpdateEdgeHostname, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/hapi/v1/dns-zones/%s/edge-hostnames/%s", request.DNSZone, request.RecordName)
-
-	body, err := buildBody(request.Body)
+	req, err := request.NewPatch(ctx, "/hapi/v1/dns-zones/%s/edge-hostnames/%s", params.DNSZone, params.RecordName).
+		AddQueryParamIf("statusUpdateEmail", strings.Join(params.StatusUpdateEmail, ","), len(params.StatusUpdateEmail) > 0).
+		AddQueryParamIf("comments", params.Comments, params.Comments != "").
+		AddHeader("Content-Type", "application/json-patch+json").
+		WithBody(params.Body).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request body", err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrUpdateEdgeHostname, err)
 	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, uri, body)
-	if err != nil {
-		return nil, err
-	}
-
-	q := req.URL.Query()
-	if len(request.StatusUpdateEmail) > 0 {
-		emails := strings.Join(request.StatusUpdateEmail, ",")
-		q.Add("statusUpdateEmail", emails)
-	}
-	if request.Comments != "" {
-		q.Add("comments", request.Comments)
-	}
-	req.URL.RawQuery = q.Encode()
-
-	req.Header.Set("Content-Type", "application/json-patch+json")
 
 	var result UpdateEdgeHostnameResponse
 
 	resp, err := h.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEdgeHostname, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrUpdateEdgeHostname, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
-		return nil, fmt.Errorf("%w: %s", ErrUpdateEdgeHostname, h.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrUpdateEdgeHostname, h.Error(resp))
 	}
 
 	return &result, nil
@@ -140,41 +111,28 @@ func (h *hapi) GetCertificate(ctx context.Context, params GetCertificateRequest)
 	logger.Debug("GetCertificate")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetCertificate, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetCertificate, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf(
-		"/hapi/v1/dns-zones/%s/edge-hostnames/%s/certificate",
-		params.DNSZone,
-		params.RecordName,
-	)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/hapi/v1/dns-zones/%s/edge-hostnames/%s/certificate", params.DNSZone, params.RecordName).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetCertificate, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetCertificate, err)
 	}
 
 	var result GetCertificateResponse
 
 	resp, err := h.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetCertificate, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetCertificate, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("%s: %s: %w", ErrGetCertificate, ErrNotFound, h.Error(resp))
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetCertificate, ErrNotFound, h.Error(resp))
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrGetCertificate, h.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrGetCertificate, h.Error(resp))
 	}
 
 	return &result, nil
-}
-
-func buildBody(body []UpdateEdgeHostnameRequestBody) (io.Reader, error) {
-	reqBody, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	return bytes.NewBuffer(reqBody), nil
 }

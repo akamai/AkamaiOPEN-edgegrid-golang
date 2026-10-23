@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 )
 
@@ -70,31 +70,22 @@ func (c *cloudwrapper) ListCapacities(ctx context.Context, params ListCapacities
 	logger := c.Log(ctx)
 	logger.Debug("ListCapacities")
 
-	uri, err := url.Parse("/cloud-wrapper/v1/capacity")
+	req, err := request.NewGet(ctx, "/cloud-wrapper/v1/capacity").
+		AddQueryParams("contractIds", params.ContractIDs).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListCapacities, err)
-	}
-
-	q := uri.Query()
-	for _, contractID := range params.ContractIDs {
-		q.Add("contractIds", contractID)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListCapacities, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListCapacities, err)
 	}
 
 	var result ListCapacitiesResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListCapacities, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListCapacities, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListCapacities, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListCapacities, c.Error(resp))
 	}
 
 	return &result, nil

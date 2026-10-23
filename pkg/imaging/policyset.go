@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -184,36 +184,28 @@ func (i *imaging) ListPolicySets(ctx context.Context, params ListPolicySetsReque
 	logger.Debug("ListPolicySets")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w:\n%s", ErrListPolicySets, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w:\n%w", ErrListPolicySets, ErrStructValidation, err)
 	}
 
-	var uri *url.URL
-	var err error
+	builder := request.NewGet(ctx, "/imaging/v2/policysets")
 	if params.Network != NetworkBoth {
-		uri, err = url.Parse(fmt.Sprintf("/imaging/v2/network/%s/policysets", params.Network))
-	} else {
-		uri, err = url.Parse("/imaging/v2/policysets")
-	}
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListPolicySets, err)
+		builder = request.NewGet(ctx, "/imaging/v2/network/%s/policysets", params.Network)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := builder.AddHeader("Contract", params.ContractID).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPolicySets, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListPolicySets, err)
 	}
-
-	req.Header.Set("Contract", params.ContractID)
 
 	var result []PolicySet
 	resp, err := i.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListPolicySets, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListPolicySets, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListPolicySets, i.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListPolicySets, i.Error(resp))
 	}
 
 	return result, nil
@@ -224,36 +216,28 @@ func (i *imaging) GetPolicySet(ctx context.Context, params GetPolicySetRequest) 
 	logger.Debug("GetPolicySet")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w:\n%s", ErrGetPolicySet, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w:\n%w", ErrGetPolicySet, ErrStructValidation, err)
 	}
 
-	var uri *url.URL
-	var err error
+	builder := request.NewGet(ctx, "/imaging/v2/policysets/%s", params.PolicySetID)
 	if params.Network != NetworkBoth {
-		uri, err = url.Parse(fmt.Sprintf("/imaging/v2/network/%s/policysets/%s", params.Network, params.PolicySetID))
-	} else {
-		uri, err = url.Parse(fmt.Sprintf("/imaging/v2/policysets/%s", params.PolicySetID))
-	}
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetPolicySet, err)
+		builder = request.NewGet(ctx, "/imaging/v2/network/%s/policysets/%s", params.Network, params.PolicySetID)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := builder.AddHeader("Contract", params.ContractID).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPolicySet, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetPolicySet, err)
 	}
-
-	req.Header.Set("Contract", params.ContractID)
 
 	var result PolicySet
 	resp, err := i.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetPolicySet, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetPolicySet, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrGetPolicySet, i.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrGetPolicySet, i.Error(resp))
 	}
 
 	return &result, nil
@@ -264,26 +248,26 @@ func (i *imaging) CreatePolicySet(ctx context.Context, params CreatePolicySetReq
 	logger.Debug("CreatePolicySet")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreatePolicySet, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w:\n%w", ErrCreatePolicySet, ErrStructValidation, err)
 	}
 
-	uri := "/imaging/v2/policysets"
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/imaging/v2/policysets").
+		AddHeader("Contract", params.ContractID).
+		WithBody(params.CreatePolicySet).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreatePolicySet, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrCreatePolicySet, err)
 	}
-
-	req.Header.Set("Contract", params.ContractID)
 
 	var result PolicySet
-	resp, err := i.Exec(req, &result, params.CreatePolicySet)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrCreatePolicySet, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrCreatePolicySet, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("%s: %w", ErrCreatePolicySet, i.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrCreatePolicySet, i.Error(resp))
 	}
 
 	return &result, nil
@@ -294,31 +278,27 @@ func (i *imaging) UpdatePolicySet(ctx context.Context, params UpdatePolicySetReq
 	logger.Debug("UpdatePolicySet")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdatePolicySet, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w:\n%w", ErrUpdatePolicySet, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/imaging/v2/policysets/%s", params.PolicySetID))
+	req, err := request.NewPut(ctx, "/imaging/v2/policysets/%s", params.PolicySetID).
+		AddHeader("Contract", params.ContractID).
+		WithBody(params.UpdatePolicySet).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdatePolicySet, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrUpdatePolicySet, err)
 	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdatePolicySet, err)
-	}
-
-	req.Header.Set("Contract", params.ContractID)
 
 	var result PolicySet
 
-	resp, err := i.Exec(req, &result, params.UpdatePolicySet)
+	resp, err := i.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdatePolicySet, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrUpdatePolicySet, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrUpdatePolicySet, i.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrUpdatePolicySet, i.Error(resp))
 	}
 
 	return &result, nil
@@ -329,29 +309,24 @@ func (i *imaging) DeletePolicySet(ctx context.Context, params DeletePolicySetReq
 	logger.Debug("DeletePolicySet")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w:\n%s", ErrDeletePolicySet, ErrStructValidation, err)
+		return fmt.Errorf("%w: %w:\n%w", ErrDeletePolicySet, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/imaging/v2/policysets/%s", params.PolicySetID))
+	req, err := request.NewDelete(ctx, "/imaging/v2/policysets/%s", params.PolicySetID).
+		AddHeader("Contract", params.ContractID).
+		Build()
 	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrDeletePolicySet, err)
+		return fmt.Errorf("%w: failed to create request: %w", ErrDeletePolicySet, err)
 	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrDeletePolicySet, err)
-	}
-
-	req.Header.Set("Contract", params.ContractID)
 
 	resp, err := i.Exec(req, nil)
 	if err != nil {
-		return fmt.Errorf("%w: request failed: %s", ErrDeletePolicySet, err)
+		return fmt.Errorf("%w: request failed: %w", ErrDeletePolicySet, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("%s: %w", ErrDeletePolicySet, i.Error(resp))
+		return fmt.Errorf("%w: %w", ErrDeletePolicySet, i.Error(resp))
 	}
 
 	return nil

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -168,13 +169,12 @@ func (c *cloudaccess) GetAccessKeyVersionStatus(ctx context.Context, params GetA
 	logger.Debug("GetAccessKeyStatusVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetAccessKeyVersionStatus, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetAccessKeyVersionStatus, ErrStructValidation, err)
 	}
 
-	getURL := fmt.Sprintf("/cam/v1/access-key-version-create-requests/%d", params.RequestID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	req, err := request.NewGet(ctx, "/cam/v1/access-key-version-create-requests/%d", params.RequestID).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAccessKeyVersionStatus, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetAccessKeyVersionStatus, err)
 	}
 
 	var result GetAccessKeyVersionStatusResponse
@@ -185,7 +185,7 @@ func (c *cloudaccess) GetAccessKeyVersionStatus(ctx context.Context, params GetA
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrGetAccessKeyVersionStatus, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrGetAccessKeyVersionStatus, c.Error(resp))
 	}
 
 	return &result, nil
@@ -196,25 +196,25 @@ func (c *cloudaccess) CreateAccessKeyVersion(ctx context.Context, params CreateA
 	logger.Debug("CreateAccessKeyVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateAccessKeyVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrCreateAccessKeyVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cam/v1/access-keys/%d/versions", params.AccessKeyUID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/cam/v1/access-keys/%d/versions", params.AccessKeyUID).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateAccessKeyVersion, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrCreateAccessKeyVersion, err)
 	}
 
 	var result CreateAccessKeyVersionResponse
-	resp, err := c.Exec(req, &result, params.Body)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrCreateAccessKeyVersion, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
-		return nil, fmt.Errorf("%s: %w", ErrCreateAccessKeyVersion, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrCreateAccessKeyVersion, c.Error(resp))
 	}
 
 	return &result, nil
@@ -225,14 +225,12 @@ func (c *cloudaccess) GetAccessKeyVersion(ctx context.Context, params GetAccessK
 	logger.Debug("GetAccessKeyVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetAccessKeyVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetAccessKeyVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cam/v1/access-keys/%d/versions/%d", params.AccessKeyUID, params.Version)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/cam/v1/access-keys/%d/versions/%d", params.AccessKeyUID, params.Version).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetAccessKeyVersion, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetAccessKeyVersion, err)
 	}
 
 	var result GetAccessKeyVersionResponse
@@ -243,7 +241,7 @@ func (c *cloudaccess) GetAccessKeyVersion(ctx context.Context, params GetAccessK
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrGetAccessKeyVersion, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrGetAccessKeyVersion, c.Error(resp))
 	}
 
 	return &result, nil
@@ -254,14 +252,12 @@ func (c *cloudaccess) ListAccessKeyVersions(ctx context.Context, params ListAcce
 	logger.Debug("ListAccessKeyVersions")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListAccessKeyVersions, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrListAccessKeyVersions, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cam/v1/access-keys/%d/versions", params.AccessKeyUID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/cam/v1/access-keys/%d/versions", params.AccessKeyUID).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAccessKeyVersions, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListAccessKeyVersions, err)
 	}
 
 	var result ListAccessKeyVersionsResponse
@@ -272,7 +268,7 @@ func (c *cloudaccess) ListAccessKeyVersions(ctx context.Context, params ListAcce
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListAccessKeyVersions, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListAccessKeyVersions, c.Error(resp))
 	}
 
 	return &result, nil
@@ -283,14 +279,12 @@ func (c *cloudaccess) DeleteAccessKeyVersion(ctx context.Context, params DeleteA
 	logger.Debug("DeleteAccessKeyVersion")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrDeleteAccessKeyVersion, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrDeleteAccessKeyVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cam/v1/access-keys/%d/versions/%d", params.AccessKeyUID, params.Version)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := request.NewDelete(ctx, "/cam/v1/access-keys/%d/versions/%d", params.AccessKeyUID, params.Version).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeleteAccessKeyVersion, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrDeleteAccessKeyVersion, err)
 	}
 
 	var result DeleteAccessKeyVersionResponse
@@ -301,7 +295,7 @@ func (c *cloudaccess) DeleteAccessKeyVersion(ctx context.Context, params DeleteA
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
-		return nil, fmt.Errorf("%s: %w", ErrDeleteAccessKeyVersion, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrDeleteAccessKeyVersion, c.Error(resp))
 	}
 
 	return &result, nil

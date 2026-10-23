@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 )
 
@@ -37,21 +38,20 @@ var (
 )
 
 func (c *cloudwrapper) ListLocations(ctx context.Context) (*ListLocationResponse, error) {
-	url := "/cloud-wrapper/v1/locations"
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	req, err := request.NewGet(ctx, "/cloud-wrapper/v1/locations").Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request:\n%s", ErrListLocations, err)
+		return nil, fmt.Errorf("%w: failed to create request:\n%w", ErrListLocations, err)
 	}
 
 	var locations ListLocationResponse
 	resp, err := c.Exec(req, &locations)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed:\n%s", ErrListLocations, err)
+		return nil, fmt.Errorf("%w: request failed:\n%w", ErrListLocations, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListLocations, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListLocations, c.Error(resp))
 	}
 
 	return &locations, nil
