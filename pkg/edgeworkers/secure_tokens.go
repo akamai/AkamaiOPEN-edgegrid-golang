@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -53,14 +54,15 @@ func (e *edgeworkers) CreateSecureToken(ctx context.Context, params CreateSecure
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateSecureToken, ErrStructValidation, err)
 	}
 
-	uri := "/edgeworkers/v1/secure-token"
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/edgeworkers/v1/secure-token").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateSecureToken, err)
 	}
 
 	var result CreateSecureTokenResponse
-	resp, err := e.Exec(req, &result, params)
+	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateSecureToken, err)
 	}

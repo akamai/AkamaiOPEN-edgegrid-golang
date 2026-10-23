@@ -172,9 +172,7 @@ func (e *edgeworkers) GetActivation(ctx context.Context, params GetActivationReq
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetActivation, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/activations/%d", params.EdgeWorkerID, params.ActivationID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d/activations/%d", params.EdgeWorkerID, params.ActivationID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetActivation, err)
 	}
@@ -201,16 +199,16 @@ func (e *edgeworkers) ActivateVersion(ctx context.Context, params ActivateVersio
 		return nil, fmt.Errorf("%s: %w: %s", ErrActivateVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/activations", params.EdgeWorkerID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/edgeworkers/v1/ids/%d/activations", params.EdgeWorkerID).
+		WithBody(params.ActivateVersion).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrActivateVersion, err)
 	}
 
 	var result Activation
 
-	resp, err := e.Exec(req, &result, params.ActivateVersion)
+	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateVersion, err)
 	}
@@ -231,9 +229,7 @@ func (e *edgeworkers) CancelPendingActivation(ctx context.Context, params Cancel
 		return nil, fmt.Errorf("%s: %w: %s", ErrCancelActivation, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/activations/%d", params.EdgeWorkerID, params.ActivationID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := request.NewDelete(ctx, "/edgeworkers/v1/ids/%d/activations/%d", params.EdgeWorkerID, params.ActivationID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCancelActivation, err)
 	}

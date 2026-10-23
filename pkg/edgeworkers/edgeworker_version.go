@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -121,8 +122,7 @@ func (e *edgeworkers) GetEdgeWorkerVersion(ctx context.Context, params GetEdgeWo
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetEdgeWorkerVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/versions/%s", params.EdgeWorkerID, params.Version)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d/versions/%s", params.EdgeWorkerID, params.Version).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeWorkerVersion, err)
 	}
@@ -149,8 +149,7 @@ func (e *edgeworkers) ListEdgeWorkerVersions(ctx context.Context, params ListEdg
 		return nil, fmt.Errorf("%s: %w: %s", ErrListEdgeWorkerVersions, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/versions", params.EdgeWorkerID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d/versions", params.EdgeWorkerID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListEdgeWorkerVersions, err)
 	}
@@ -177,13 +176,13 @@ func (e *edgeworkers) GetEdgeWorkerVersionContent(ctx context.Context, params Ge
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetEdgeWorkerVersionContent, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/versions/%s/content", params.EdgeWorkerID, params.Version)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d/versions/%s/content", params.EdgeWorkerID, params.Version).
+		AddHeader("Accept", "application/gzip").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeWorkerVersionContent, err)
 	}
 
-	req.Header.Add("Accept", "application/gzip")
 	resp, err := e.Exec(req, nil)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrGetEdgeWorkerVersionContent, err)
@@ -213,13 +212,14 @@ func (e *edgeworkers) CreateEdgeWorkerVersion(ctx context.Context, params Create
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateEdgeWorkerVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/versions", params.EdgeWorkerID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, io.NopCloser(params.ContentBundle))
+	req, err := request.NewPost(ctx, "/edgeworkers/v1/ids/%d/versions", params.EdgeWorkerID).
+		AddHeader("Content-Type", "application/gzip").
+		WithBody(params.ContentBundle).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateEdgeWorkerVersion, err)
 	}
 
-	req.Header.Add("Content-Type", "application/gzip")
 	var result EdgeWorkerVersion
 	resp, err := e.Exec(req, &result)
 	if err != nil {
@@ -241,8 +241,7 @@ func (e *edgeworkers) DeleteEdgeWorkerVersion(ctx context.Context, params Delete
 		return fmt.Errorf("%s: %w:\n%s", ErrDeleteEdgeWorkerVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/versions/%s", params.EdgeWorkerID, params.Version)
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := request.NewDelete(ctx, "/edgeworkers/v1/ids/%d/versions/%s", params.EdgeWorkerID, params.Version).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteEdgeWorkerVersion, err)
 	}

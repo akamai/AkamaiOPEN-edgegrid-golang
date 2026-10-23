@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -491,6 +492,7 @@ func TestCreateEdgeWorkerVersion(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
+		expectedBody     string
 		expectedResponse *EdgeWorkerVersion
 		withError        error
 	}{
@@ -499,6 +501,7 @@ func TestCreateEdgeWorkerVersion(t *testing.T) {
 				EdgeWorkerID:  88334,
 				ContentBundle: Bundle{bytes.NewBuffer([]byte("testing create"))},
 			},
+			expectedBody:   "testing create",
 			responseStatus: http.StatusCreated,
 			responseBody: `
 {
@@ -605,6 +608,12 @@ func TestCreateEdgeWorkerVersion(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				assert.Equal(t, "application/gzip", r.Header.Get("Content-Type"))
+				if test.expectedBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.Equal(t, test.expectedBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

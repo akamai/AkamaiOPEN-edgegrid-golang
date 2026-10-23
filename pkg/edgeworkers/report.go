@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -226,28 +226,13 @@ func (e *edgeworkers) GetSummaryReport(ctx context.Context, params GetSummaryRep
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetSummaryReport, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/edgeworkers/v1/reports/1")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetSummaryReport, err)
-	}
-
-	q := uri.Query()
-	q.Add("edgeWorker", params.EdgeWorker)
-	q.Add("start", params.Start)
-	if params.End != "" {
-		q.Add("end", params.End)
-	}
-	if params.Status != nil {
-		status := *params.Status
-		q.Add("status", status)
-	}
-	if params.EventHandler != nil {
-		status := *params.EventHandler
-		q.Add("eventHandler", status)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/reports/1").
+		AddQueryParam("edgeWorker", params.EdgeWorker).
+		AddQueryParam("start", params.Start).
+		AddQueryParamIf("end", params.End, params.End != "").
+		AddQueryParamIf("status", stringFromPtr(params.Status), params.Status != nil).
+		AddQueryParamIf("eventHandler", stringFromPtr(params.EventHandler), params.EventHandler != nil).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetSummaryReport, err)
 	}
@@ -274,28 +259,13 @@ func (e *edgeworkers) GetReport(ctx context.Context, params GetReportRequest) (*
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetReport, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgeworkers/v1/reports/%d", params.ReportID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetReport, err)
-	}
-
-	q := uri.Query()
-	q.Add("edgeWorker", params.EdgeWorker)
-	q.Add("start", params.Start)
-	if params.End != "" {
-		q.Add("end", params.End)
-	}
-	if params.Status != nil {
-		status := *params.Status
-		q.Add("status", status)
-	}
-	if params.EventHandler != nil {
-		status := *params.EventHandler
-		q.Add("eventHandler", status)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/reports/%d", params.ReportID).
+		AddQueryParam("edgeWorker", params.EdgeWorker).
+		AddQueryParam("start", params.Start).
+		AddQueryParamIf("end", params.End, params.End != "").
+		AddQueryParamIf("status", stringFromPtr(params.Status), params.Status != nil).
+		AddQueryParamIf("eventHandler", stringFromPtr(params.EventHandler), params.EventHandler != nil).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetReport, err)
 	}
@@ -318,9 +288,7 @@ func (e *edgeworkers) ListReports(ctx context.Context) (*ListReportsResponse, er
 	logger := e.Log(ctx)
 	logger.Debug("ListReports")
 
-	uri := "/edgeworkers/v1/reports"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/reports").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListReports, err)
 	}

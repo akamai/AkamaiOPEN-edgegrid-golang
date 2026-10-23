@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -55,16 +55,9 @@ func (e *edgeworkers) ListProperties(ctx context.Context, params ListPropertiesR
 		return nil, fmt.Errorf("%s: %w: %s", ErrListProperties, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgeworkers/v1/ids/%d/properties", params.EdgeWorkerID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListProperties, err)
-	}
-
-	q := uri.Query()
-	q.Add("activeOnly", strconv.FormatBool(params.ActiveOnly))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d/properties", params.EdgeWorkerID).
+		AddQueryParam("activeOnly", strconv.FormatBool(params.ActiveOnly)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListProperties, err)
 	}

@@ -1,7 +1,6 @@
 package edgeworkers
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -9,6 +8,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -130,9 +130,7 @@ func (e *edgeworkers) ListItems(ctx context.Context, params ListItemsRequest) (*
 		return nil, fmt.Errorf("%s: %w: %s", ErrListItems, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/groups/%s", params.Network, params.NamespaceID, params.GroupID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgekv/v1/networks/%s/namespaces/%s/groups/%s", params.Network, params.NamespaceID, params.GroupID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListItems, err)
 	}
@@ -159,10 +157,8 @@ func (e *edgeworkers) GetItem(ctx context.Context, params GetItemRequest) (*Item
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetItem, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/groups/%s/items/%s", params.Network,
-		params.NamespaceID, params.GroupID, params.ItemID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgekv/v1/networks/%s/namespaces/%s/groups/%s/items/%s", params.Network,
+		params.NamespaceID, params.GroupID, params.ItemID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetItem, err)
 	}
@@ -194,18 +190,13 @@ func (e *edgeworkers) UpsertItem(ctx context.Context, params UpsertItemRequest) 
 		return nil, fmt.Errorf("%s: %w: %s", ErrUpsertItem, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/groups/%s/items/%s", params.Network,
-		params.NamespaceID, params.GroupID, params.ItemID)
-
-	data := []byte(params.ItemData)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, io.NopCloser(bytes.NewBuffer(data)))
+	req, err := request.NewPut(ctx, "/edgekv/v1/networks/%s/namespaces/%s/groups/%s/items/%s", params.Network,
+		params.NamespaceID, params.GroupID, params.ItemID).
+		AddHeaderIf("Content-Type", "text/plain", !IsJSON(params.ItemData)).
+		WithBody([]byte(params.ItemData)).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpsertItem, err)
-	}
-	req.ContentLength = int64(len(data))
-
-	if !IsJSON(params.ItemData) {
-		req.Header.Set("Content-Type", "text/plain")
 	}
 
 	resp, err := e.Exec(req, nil)
@@ -218,7 +209,7 @@ func (e *edgeworkers) UpsertItem(ctx context.Context, params UpsertItemRequest) 
 		return nil, fmt.Errorf("%s: %w", ErrUpsertItem, e.Error(resp))
 	}
 
-	data, err = io.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to fetch data: %s", ErrUpsertItem, err)
 	}
@@ -235,10 +226,8 @@ func (e *edgeworkers) DeleteItem(ctx context.Context, params DeleteItemRequest) 
 		return nil, fmt.Errorf("%s: %w: %s", ErrDeleteItem, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/groups/%s/items/%s", params.Network,
-		params.NamespaceID, params.GroupID, params.ItemID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := request.NewDelete(ctx, "/edgekv/v1/networks/%s/namespaces/%s/groups/%s/items/%s", params.Network,
+		params.NamespaceID, params.GroupID, params.ItemID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeleteItem, err)
 	}

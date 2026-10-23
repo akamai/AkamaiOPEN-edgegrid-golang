@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -166,15 +166,15 @@ func (e *edgeworkers) CreateEdgeKVAccessToken(ctx context.Context, params Create
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEdgeKVAccessToken, ErrStructValidation, err)
 	}
 
-	uri := "/edgekv/v1/tokens"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/edgekv/v1/tokens").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateEdgeKVAccessToken, err)
 	}
 
 	var result CreateEdgeKVAccessTokenResponse
-	resp, err := e.Exec(req, &result, params)
+	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEdgeKVAccessToken, err)
 	}
@@ -195,11 +195,7 @@ func (e *edgeworkers) GetEdgeKVAccessToken(ctx context.Context, params GetEdgeKV
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetEdgeKVAccessToken, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgekv/v1/tokens/%s", params.TokenName))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetEdgeKVAccessToken, err)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgekv/v1/tokens/%s", params.TokenName).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeKVAccessToken, err)
 	}
@@ -222,18 +218,9 @@ func (e *edgeworkers) ListEdgeKVAccessTokens(ctx context.Context, params ListEdg
 	logger := e.Log(ctx)
 	logger.Debug("ListEdgeKVAccessToken")
 
-	uri, err := url.Parse("/edgekv/v1/tokens")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListEdgeKVAccessToken, err)
-	}
-
-	q := uri.Query()
-	if params.IncludeExpired {
-		q.Add("includeExpired", strconv.FormatBool(params.IncludeExpired))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgekv/v1/tokens").
+		AddQueryParamIf("includeExpired", strconv.FormatBool(params.IncludeExpired), params.IncludeExpired).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListEdgeKVAccessToken, err)
 	}
@@ -259,12 +246,7 @@ func (e *edgeworkers) DeleteEdgeKVAccessToken(ctx context.Context, params Delete
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrDeleteEdgeKVAccessToken, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgekv/v1/tokens/%s", params.TokenName))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrDeleteEdgeKVAccessToken, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/edgekv/v1/tokens/%s", params.TokenName).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeleteEdgeKVAccessToken, err)
 	}
