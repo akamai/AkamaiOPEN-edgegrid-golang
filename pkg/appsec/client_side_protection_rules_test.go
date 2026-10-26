@@ -1,6 +1,7 @@
 package appsec
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -402,4 +403,53 @@ func TestAppSec_DeleteClientSideProtectionRule(t *testing.T) {
 			require.NoError(t, err)
 		})
 	}
+}
+
+func TestAppSec_cpcError(t *testing.T) {
+	// Build a minimal appsec client — cpcError only needs the session for p.Error() fallback.
+	server := httptest.NewTLSServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {}))
+	t.Cleanup(server.Close)
+	p := mockAPIClient(t, server).(*appsec)
+
+	makeResp := func(status int, body string) *http.Response {
+		req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, server.URL, nil)
+		return &http.Response{
+			StatusCode: status,
+			Body:       io.NopCloser(bytes.NewBufferString(body)),
+			Request:    req,
+		}
+	}
+
+	t.Run("CPC error shape surfaces details field", func(t *testing.T) {
+		resp := makeResp(http.StatusBadRequest, `{"title":"Bad Request","details":"Client Side Protection is disabled for this policy","statusCode":400}`)
+		err := p.cpcError(resp)
+		require.Error(t, err)
+		var appsecErr *Error
+		require.ErrorAs(t, err, &appsecErr)
+		assert.Equal(t, "Bad Request", appsecErr.Title)
+		assert.Equal(t, "Client Side Protection is disabled for this policy", appsecErr.Detail)
+		assert.Equal(t, http.StatusBadRequest, appsecErr.StatusCode)
+	})
+
+	t.Run("standard appsec error falls back to p.Error", func(t *testing.T) {
+		resp := makeResp(http.StatusBadRequest, `{"type":"https://problems.luna.akamaiapis.net/appsec/error-types/INVALID-INPUT-ERROR","title":"Invalid Input Error","detail":"configId incorrect type","status":400}`)
+		err := p.cpcError(resp)
+		require.Error(t, err)
+		var appsecErr *Error
+		require.ErrorAs(t, err, &appsecErr)
+		assert.Equal(t, "Invalid Input Error", appsecErr.Title)
+		assert.Equal(t, "configId incorrect type", appsecErr.Detail)
+		assert.Equal(t, http.StatusBadRequest, appsecErr.StatusCode)
+	})
+
+	t.Run("empty details field falls back to p.Error", func(t *testing.T) {
+		resp := makeResp(http.StatusBadRequest, `{"title":"Bad Request","details":"","statusCode":400}`)
+		err := p.cpcError(resp)
+		require.Error(t, err)
+		var appsecErr *Error
+		require.ErrorAs(t, err, &appsecErr)
+		assert.Equal(t, "Bad Request", appsecErr.Title)
+		assert.Empty(t, appsecErr.Detail) // p.Error parses "detail" not "details", so Detail is empty
+		assert.Equal(t, http.StatusBadRequest, appsecErr.StatusCode)
+	})
 }

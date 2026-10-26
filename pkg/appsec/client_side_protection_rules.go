@@ -1,8 +1,11 @@
 package appsec
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
@@ -142,6 +145,28 @@ func (v DeleteClientSideProtectionRuleRequest) Validate() error {
 	}.Filter()
 }
 
+// cpcError parses the CPC-specific error shape {"title","details","statusCode"} which
+// uses different field names than the standard appsec error shape handled by p.Error().
+// If the body does not match the CPC shape it falls back to p.Error().
+func (p *appsec) cpcError(resp *http.Response) error {
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return &Error{StatusCode: resp.StatusCode, Title: "Failed to read error body", Detail: err.Error()}
+	}
+	var cpc struct {
+		Title   string `json:"title"`
+		Details string `json:"details"`
+	}
+	if json.Unmarshal(body, &cpc) == nil && cpc.Details != "" {
+		return &Error{Title: cpc.Title, Detail: cpc.Details, StatusCode: resp.StatusCode}
+	}
+	// Not CPC-style — copy the response so the original body is not mutated and
+	// deferred session.CloseResponseBody() on the caller's resp still works.
+	fallback := *resp
+	fallback.Body = io.NopCloser(bytes.NewReader(body))
+	return p.Error(&fallback)
+}
+
 func (p *appsec) ListClientSideProtectionRules(ctx context.Context, params ListClientSideProtectionRulesRequest) (*ListClientSideProtectionRulesResponse, error) {
 	logger := p.Log(ctx)
 	logger.Debug("ListClientSideProtectionRules")
@@ -165,7 +190,7 @@ func (p *appsec) ListClientSideProtectionRules(ctx context.Context, params ListC
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, p.cpcError(resp)
 	}
 
 	return &result, nil
@@ -196,7 +221,7 @@ func (p *appsec) CreateClientSideProtectionRule(ctx context.Context, params Crea
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, p.cpcError(resp)
 	}
 
 	return &result, nil
@@ -227,7 +252,7 @@ func (p *appsec) UpdateClientSideProtectionRule(ctx context.Context, params Upda
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, p.cpcError(resp)
 	}
 
 	return &result, nil
@@ -255,7 +280,7 @@ func (p *appsec) DeleteClientSideProtectionRule(ctx context.Context, params Dele
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNoContent {
-		return p.Error(resp)
+		return p.cpcError(resp)
 	}
 
 	return nil

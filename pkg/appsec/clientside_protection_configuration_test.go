@@ -38,6 +38,21 @@ func TestAppSec_GetClientsideProtectionConfiguration(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/43253/versions/7/security-policies/test_policy_id/client-side-protection",
 			expectedResponse: &result,
 		},
+		"200 OK with scriptTagAttributes": {
+			params: GetClientsideProtectionConfigurationRequest{
+				ConfigID:         43253,
+				Version:          7,
+				SecurityPolicyID: "test_policy_id",
+			},
+			responseStatus: http.StatusOK,
+			responseBody:   compactJSON(loadFixtureBytes("testdata/TestClientsideProtectionConfiguration/GetClientsideProtectionConfigurationWithScriptTagAttributes.json")),
+			expectedPath:   "/appsec/v1/configs/43253/versions/7/security-policies/test_policy_id/client-side-protection",
+			expectedResponse: func() *GetClientsideProtectionConfigurationResponse {
+				var r GetClientsideProtectionConfigurationResponse
+				require.NoError(t, json.Unmarshal(loadFixtureBytes("testdata/TestClientsideProtectionConfiguration/GetClientsideProtectionConfigurationWithScriptTagAttributes.json"), &r))
+				return &r
+			}(),
+		},
 		"500 internal server error": {
 			params: GetClientsideProtectionConfigurationRequest{
 				ConfigID:         43253,
@@ -142,7 +157,7 @@ func TestAppSec_UpdateClientsideProtectionConfiguration(t *testing.T) {
 		},
 	}
 
-	expectedRequestBody := `{
+	baseRequestBody := `{
 		"edgeInjection":{"loadScriptAsync":true},
 		"edgeTestParameters":{
 			"disableInjectionKey":"disable-key",
@@ -159,26 +174,78 @@ func TestAppSec_UpdateClientsideProtectionConfiguration(t *testing.T) {
 	}`
 
 	tests := map[string]struct {
-		params           UpdateClientsideProtectionConfigurationRequest
-		responseStatus   int
-		responseBody     string
-		expectedPath     string
-		expectedResponse *UpdateClientsideProtectionConfigurationResponse
-		withError        func(*testing.T, error)
+		params              UpdateClientsideProtectionConfigurationRequest
+		responseStatus      int
+		responseBody        string
+		expectedPath        string
+		expectedRequestBody string
+		expectedResponse    *UpdateClientsideProtectionConfigurationResponse
+		withError           func(*testing.T, error)
 	}{
 		"200 OK": {
-			params:           params,
-			responseStatus:   http.StatusOK,
-			responseBody:     data,
-			expectedPath:     "/appsec/v1/configs/43253/versions/7/security-policies/test_policy_id/client-side-protection",
-			expectedResponse: &result,
+			params:              params,
+			responseStatus:      http.StatusOK,
+			responseBody:        data,
+			expectedPath:        "/appsec/v1/configs/43253/versions/7/security-policies/test_policy_id/client-side-protection",
+			expectedRequestBody: baseRequestBody,
+			expectedResponse:    &result,
 		},
 		"201 Created": {
-			params:           params,
-			responseStatus:   http.StatusCreated,
-			responseBody:     data,
-			expectedPath:     "/appsec/v1/configs/43253/versions/7/security-policies/test_policy_id/client-side-protection",
-			expectedResponse: &result,
+			params:              params,
+			responseStatus:      http.StatusCreated,
+			responseBody:        data,
+			expectedPath:        "/appsec/v1/configs/43253/versions/7/security-policies/test_policy_id/client-side-protection",
+			expectedRequestBody: baseRequestBody,
+			expectedResponse:    &result,
+		},
+		"200 OK with scriptTagAttributes": {
+			params: UpdateClientsideProtectionConfigurationRequest{
+				ConfigID:         43253,
+				Version:          7,
+				SecurityPolicyID: "test_policy_id",
+				Body: UpdateClientsideProtectionConfigurationRequestBody{
+					EdgeInjection: ClientsideProtectionEdgeInjectionRequest{
+						LoadScriptAsync: true,
+					},
+					EdgeTestParameters: ClientsideProtectionEdgeTestParameters{
+						DisableInjectionKey:   "disable-key",
+						DisableInjectionValue: "disable-value",
+						ForceInjectionKey:     "force-key",
+						ForceInjectionValue:   "force-value",
+					},
+					InjectionCriteria: ClientsideProtectionInjectionCriteria{
+						InjectionPathIncludes: ptr.To("/include-path"),
+						InjectionPathExcludes: ptr.To("/exclude-path"),
+						InjectionPercent:      100,
+						InjectionPolicy:       ptr.To("head"),
+						ScriptTagAttributes:   []string{`nonce="abc123"`, `data-integrity="sha256"`},
+					},
+				},
+			},
+			responseStatus: http.StatusOK,
+			responseBody:   compactJSON(loadFixtureBytes("testdata/TestClientsideProtectionConfiguration/GetClientsideProtectionConfigurationWithScriptTagAttributes.json")),
+			expectedPath:   "/appsec/v1/configs/43253/versions/7/security-policies/test_policy_id/client-side-protection",
+			expectedRequestBody: `{
+				"edgeInjection":{"loadScriptAsync":true},
+				"edgeTestParameters":{
+					"disableInjectionKey":"disable-key",
+					"disableInjectionValue":"disable-value",
+					"forceInjectionKey":"force-key",
+					"forceInjectionValue":"force-value"
+				},
+				"injectionCriteria":{
+					"injectionPathIncludes":"/include-path",
+					"injectionPathExcludes":"/exclude-path",
+					"injectionPercent":100,
+					"injectionPolicy":"head",
+					"scriptTagAttributes":["nonce=\"abc123\"","data-integrity=\"sha256\""]
+				}
+			}`,
+			expectedResponse: func() *UpdateClientsideProtectionConfigurationResponse {
+				var r UpdateClientsideProtectionConfigurationResponse
+				require.NoError(t, json.Unmarshal(loadFixtureBytes("testdata/TestClientsideProtectionConfiguration/GetClientsideProtectionConfigurationWithScriptTagAttributes.json"), &r))
+				return &r
+			}(),
 		},
 		"500 internal server error": {
 			params:         params,
@@ -247,9 +314,11 @@ func TestAppSec_UpdateClientsideProtectionConfiguration(t *testing.T) {
 			client := newMockAPIClient(t, func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPut, r.Method)
-				body, err := io.ReadAll(r.Body)
-				require.NoError(t, err)
-				assert.JSONEq(t, expectedRequestBody, string(body))
+				if test.expectedRequestBody != "" {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, test.expectedRequestBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err = w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

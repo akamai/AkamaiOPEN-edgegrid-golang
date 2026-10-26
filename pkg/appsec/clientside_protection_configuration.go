@@ -48,10 +48,11 @@ type (
 
 	// ClientsideProtectionInjectionCriteria contains criteria controlling where and how scripts are injected
 	ClientsideProtectionInjectionCriteria struct {
-		InjectionPathIncludes *string `json:"injectionPathIncludes,omitempty"`
-		InjectionPathExcludes *string `json:"injectionPathExcludes,omitempty"`
-		InjectionPercent      int     `json:"injectionPercent"`
-		InjectionPolicy       *string `json:"injectionPolicy,omitempty"`
+		InjectionPathIncludes *string  `json:"injectionPathIncludes,omitempty"`
+		InjectionPathExcludes *string  `json:"injectionPathExcludes,omitempty"`
+		InjectionPercent      int      `json:"injectionPercent"`
+		InjectionPolicy       *string  `json:"injectionPolicy,omitempty"`
+		ScriptTagAttributes   []string `json:"scriptTagAttributes,omitempty"`
 	}
 
 	// ClientsideProtectionConfigurationResponse is the common response shape for get and update operations
@@ -125,7 +126,7 @@ func (p *appsec) GetClientsideProtectionConfiguration(ctx context.Context, param
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, p.Error(resp)
+		return nil, p.cpcError(resp)
 	}
 
 	return &result, nil
@@ -156,7 +157,7 @@ func (p *appsec) UpdateClientsideProtectionConfiguration(ctx context.Context, pa
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return nil, p.Error(resp)
+		return nil, p.cpcError(resp)
 	}
 
 	return &result, nil

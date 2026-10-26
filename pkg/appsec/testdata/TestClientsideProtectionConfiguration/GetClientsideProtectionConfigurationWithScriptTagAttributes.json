@@ -1,0 +1,19 @@
+{
+    "edgeInjection": {
+        "clientSideProtectionConfigId": 12345,
+        "loadScriptAsync": true
+    },
+    "edgeTestParameters": {
+        "disableInjectionKey": "disable-key",
+        "disableInjectionValue": "disable-value",
+        "forceInjectionKey": "force-key",
+        "forceInjectionValue": "force-value"
+    },
+    "injectionCriteria": {
+        "injectionPathIncludes": "/include-path",
+        "injectionPathExcludes": "/exclude-path",
+        "injectionPercent": 100,
+        "injectionPolicy": "head",
+        "scriptTagAttributes": ["nonce=\"abc123\"", "data-integrity=\"sha256\""]
+    }
+}
