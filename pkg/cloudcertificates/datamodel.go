@@ -110,6 +110,14 @@ const (
 	// GeoClassStandardWorldwide represents the `STANDARD_WORLDWIDE` geographic class.
 	GeoClassStandardWorldwide GeoClass = "STANDARD_WORLDWIDE"
 
+	// GeoClassContiguousUS represents the `CONTIGUOUS_US` geographic class. Only valid when SecureNetwork is
+	// [SecureNetworkEnhancedTLS].
+	GeoClassContiguousUS GeoClass = "CONTIGUOUS_US"
+
+	// GeoClassReservedGlobal represents the `RESERVED_GLOBAL` geographic class. Only valid when SecureNetwork is
+	// [SecureNetworkEnhancedTLS].
+	GeoClassReservedGlobal GeoClass = "RESERVED_GLOBAL"
+
 	// TargetNetworkStaging represents the `STAGING` deployment network.
 	TargetNetworkStaging TargetNetwork = "STAGING"
 
@@ -244,6 +252,7 @@ type (
 		GroupID int64 `json:"groupId"`
 
 		// GeoClass is the geographic class of the certificate. If empty, the API assigns a default value.
+		// [GeoClassContiguousUS] and [GeoClassReservedGlobal] are only valid when SecureNetwork is [SecureNetworkEnhancedTLS].
 		GeoClass GeoClass `json:"geoClass,omitempty"`
 
 		// LineageName is the name of the lineage, up to 270 characters. If empty, the API generates one.
@@ -771,14 +780,6 @@ type (
 		// TargetEnvironment is the network the generation is being activated to: [TargetNetworkStaging] or [TargetNetworkProduction].
 		TargetEnvironment string `json:"targetEnvironment"`
 
-		// TotalHostnameCount is the total number of hostnames being deployed as part of this activation, or nil
-		// if not yet known.
-		TotalHostnameCount *int64 `json:"totalHostnameCount"`
-
-		// InProgressHostnameCount is the number of hostnames still in progress for this activation, or nil if
-		// not yet known.
-		InProgressHostnameCount *int64 `json:"inProgressHostnameCount"`
-
 		// PreEmptedBy optionally identifies the activation request that pre-empted (superseded) this one, or
 		// nil if this activation was not pre-empted.
 		PreEmptedBy *int64 `json:"preEmptedBy"`
@@ -1168,8 +1169,9 @@ type (
 	// [KeySizeP256] or [KeySizeP384] for [CryptographicAlgorithmECDSA].
 	KeySize string
 
-	// GeoClass represents the geographic class of a certificate. [GeoClassStandardWorldwide] is the only value
-	// confirmed by API documentation and live responses to date.
+	// GeoClass represents the geographic class of a certificate: [GeoClassStandardWorldwide], [GeoClassContiguousUS],
+	// or [GeoClassReservedGlobal]. [GeoClassContiguousUS] and [GeoClassReservedGlobal] are only valid when
+	// SecureNetwork is [SecureNetworkEnhancedTLS].
 	GeoClass string
 
 	// ExpandGenerations represents which generations of a lineage to expand in a response: [ExpandGenerationsHead], [ExpandGenerationsCurrentProduction],
@@ -1239,9 +1241,11 @@ func (r CreateLineageRequest) Validate() error {
 // Validate validates CreateLineageRequestBody.
 func (r CreateLineageRequestBody) Validate() error {
 	return validation.Errors{
-		"ContractID":    validation.Validate(r.ContractID, validation.Required),
-		"GroupID":       validation.Validate(r.GroupID, validation.Required),
-		"GeoClass":      validation.Validate(r.GeoClass),
+		"ContractID": validation.Validate(r.ContractID, validation.Required),
+		"GroupID":    validation.Validate(r.GroupID, validation.Required),
+		"GeoClass": validation.Validate(r.GeoClass, validation.When(r.SecureNetwork == SecureNetworkStandardTLS,
+			validation.NotIn(GeoClassContiguousUS, GeoClassReservedGlobal).
+				Error(fmt.Sprintf("value '%s' is only valid when secureNetwork is '%s'", r.GeoClass, SecureNetworkEnhancedTLS)))),
 		"LineageName":   validation.Validate(r.LineageName, validation.Length(0, 270)),
 		"LineageType":   validation.Validate(r.LineageType),
 		"SecureNetwork": validation.Validate(r.SecureNetwork, validation.Required),
@@ -1464,8 +1468,9 @@ func (s SecureNetwork) Validate() error {
 
 // Validate validates GeoClass.
 func (g GeoClass) Validate() error {
-	return validation.In(GeoClassStandardWorldwide).
-		Error(fmt.Sprintf("value '%s' is invalid. Must be '%s'", g, GeoClassStandardWorldwide)).
+	return validation.In(GeoClassStandardWorldwide, GeoClassContiguousUS, GeoClassReservedGlobal).
+		Error(fmt.Sprintf("value '%s' is invalid. Must be one of: '%s', '%s', or '%s'",
+			g, GeoClassStandardWorldwide, GeoClassContiguousUS, GeoClassReservedGlobal)).
 		Validate(g)
 }
 

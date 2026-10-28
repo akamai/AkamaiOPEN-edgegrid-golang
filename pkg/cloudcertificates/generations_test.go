@@ -1882,13 +1882,49 @@ func TestCompleteLineage(t *testing.T) {
 			expectedRequestBody: `{"algorithms":{"ECDSA":{"signedCertificatePem":"-----BEGIN CERTIFICATE-----\nECDSA-CERT\n-----END CERTIFICATE-----\n"}}}`,
 			responseStatus:      http.StatusConflict,
 			responseBody: `{
+				"type": "/error-types/not-multiple-stack",
+				"title": "Lineage is not MULTIPLE_STACK type.",
+				"status": 409,
+				"detail": "Lineage {500013} must be MULTIPLE_STACK type to use the complete operation.",
+				"instance": "/error-types/not-multiple-stack?traceId=1234567891051",
+				"context": {
+					"lineageId": 500013
+				}
+			}`,
+			withError: func(t *testing.T, err error) {
+				want := fmt.Errorf("%w: %w", ErrCompleteLineage, &Error{
+					Type:     "/error-types/not-multiple-stack",
+					Title:    "Lineage is not MULTIPLE_STACK type.",
+					Status:   http.StatusConflict,
+					Detail:   "Lineage {500013} must be MULTIPLE_STACK type to use the complete operation.",
+					Instance: "/error-types/not-multiple-stack?traceId=1234567891051",
+					Context:  map[string]any{"lineageId": float64(500013)},
+				})
+				assert.EqualError(t, err, want.Error(), "want: %s; got: %s", want, err)
+				assert.ErrorIs(t, err, ErrNotMultipleStack)
+				assert.ErrorIs(t, err, ErrCompleteLineage)
+			},
+		},
+		"409 single generation no complete": {
+			params: CompleteLineageRequest{
+				LineageID: 500014,
+				Body: CompleteLineageRequestBody{
+					Algorithms: map[CryptographicAlgorithm]SignedCertificate{
+						CryptographicAlgorithmECDSA: {SignedCertificatePEM: ecdsaCertPEM},
+					},
+				},
+			},
+			expectedPath:        "/ccm/v2/lineages/500014/generations/complete",
+			expectedRequestBody: `{"algorithms":{"ECDSA":{"signedCertificatePem":"-----BEGIN CERTIFICATE-----\nECDSA-CERT\n-----END CERTIFICATE-----\n"}}}`,
+			responseStatus:      http.StatusConflict,
+			responseBody: `{
 				"type": "/error-types/single-generation-no-complete",
 				"title": "Complete upload on single-generation lineages is not supported.",
 				"status": 409,
-				"detail": "Lineage {500013} is SINGLE_GENERATION type. Complete is not supported.",
+				"detail": "Lineage {500014} is SINGLE_GENERATION type. Complete is not supported.",
 				"instance": "/error-types/single-generation-no-complete?traceId=1234567891051",
 				"context": {
-					"lineageId": 500013
+					"lineageId": 500014
 				}
 			}`,
 			withError: func(t *testing.T, err error) {
@@ -1896,12 +1932,12 @@ func TestCompleteLineage(t *testing.T) {
 					Type:     "/error-types/single-generation-no-complete",
 					Title:    "Complete upload on single-generation lineages is not supported.",
 					Status:   http.StatusConflict,
-					Detail:   "Lineage {500013} is SINGLE_GENERATION type. Complete is not supported.",
+					Detail:   "Lineage {500014} is SINGLE_GENERATION type. Complete is not supported.",
 					Instance: "/error-types/single-generation-no-complete?traceId=1234567891051",
-					Context:  map[string]any{"lineageId": float64(500013)},
+					Context:  map[string]any{"lineageId": float64(500014)},
 				})
 				assert.EqualError(t, err, want.Error(), "want: %s; got: %s", want, err)
-				assert.ErrorIs(t, err, ErrNotMultipleStack)
+				assert.ErrorIs(t, err, ErrSingleGenerationNoComplete)
 				assert.ErrorIs(t, err, ErrCompleteLineage)
 			},
 		},

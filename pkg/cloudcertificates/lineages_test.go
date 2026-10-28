@@ -478,6 +478,210 @@ func TestCreateLineage(t *testing.T) {
 				},
 			},
 		},
+		"201 Created - create lineage with GeoClass CONTIGUOUS_US and SecureNetwork ENHANCED_TLS": {
+			params: CreateLineageRequest{
+				Body: CreateLineageRequestBody{
+					ContractID:    "C-0N7RAC7",
+					GroupID:       12345,
+					GeoClass:      GeoClassContiguousUS,
+					SecureNetwork: SecureNetworkEnhancedTLS,
+					KeySpecs: []KeySpec{
+						{KeyType: CryptographicAlgorithmRSA, KeySize: KeySize2048},
+					},
+					SANs: []string{"www.example.com", "example.com"},
+				},
+			},
+			expectedPath: "/ccm/v2/lineages",
+			expectedRequestBody: `{
+				"contractId": "C-0N7RAC7",
+				"groupId": 12345,
+				"geoClass": "CONTIGUOUS_US",
+				"secureNetwork": "ENHANCED_TLS",
+				"keySpecs": [
+					{"keyType": "RSA", "keySize": "2048"}
+				],
+				"sans": ["www.example.com", "example.com"]
+			}`,
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+				"accountId": "A-CCT1234",
+				"contractId": "C-0N7RAC7",
+				"geoClass": "CONTIGUOUS_US",
+				"groupId": 12345,
+				"head": {
+					"algorithms": [
+						{
+							"algorithmInstanceCreatedBy": "terraform-dev",
+							"algorithmInstanceCreatedTime": "2026-07-17T12:28:59Z",
+							"algorithmInstanceId": 1714,
+							"certificateStatus": "CSR_READY",
+							"csrExpirationDate": "2027-07-17T12:28:59Z",
+							"csrPem": "-----BEGIN CERTIFICATE REQUEST-----\nRSA-CSR\n-----END CERTIFICATE REQUEST-----\n",
+							"keyType": "RSA"
+						}
+					],
+					"generationCreatedBy": "terraform-dev",
+					"generationCreatedTime": "2026-07-17T12:28:59Z",
+					"generationModifiedBy": "terraform-dev",
+					"headGenerationId": 929,
+					"headGenerationStatus": "CSR_READY"
+				},
+				"keySpecs": [
+					{"keySize": "2048", "keyType": "RSA"}
+				],
+				"lineageCreatedBy": "terraform-dev",
+				"lineageCreatedTime": "2026-07-17T12:28:59Z",
+				"lineageId": 500005,
+				"lineageModifiedBy": "terraform-dev",
+				"lineageModifiedTime": "2026-07-17T12:28:59Z",
+				"lineageName": "www.example.com20260717122858498674",
+				"lineageType": "MULTIPLE_GENERATION",
+				"sans": ["www.example.com", "example.com"],
+				"secureNetwork": "ENHANCED_TLS",
+				"stackMode": "SINGLE_STACK"
+			}`,
+			expectedResponse: &CreateLineageResponse{
+				AccountID:  "A-CCT1234",
+				ContractID: "C-0N7RAC7",
+				GeoClass:   string(GeoClassContiguousUS),
+				GroupID:    12345,
+				Head: &HeadGeneration{
+					Generation: Generation{
+						Algorithms: []Algorithm{
+							{
+								AlgorithmInstanceCreatedBy:   "terraform-dev",
+								AlgorithmInstanceCreatedTime: ptr.To(test.NewTimeFromString(t, "2026-07-17T12:28:59Z")),
+								AlgorithmInstanceID:          1714,
+								CertificateStatus:            CertificateStatusCSRReady,
+								CSRExpirationDate:            ptr.To(test.NewTimeFromString(t, "2027-07-17T12:28:59Z")),
+								CSRPEM:                       rsaCSRPEM,
+								KeyType:                      string(CryptographicAlgorithmRSA),
+							},
+						},
+						GenerationCreatedBy:   ptr.To("terraform-dev"),
+						GenerationCreatedTime: ptr.To(test.NewTimeFromString(t, "2026-07-17T12:28:59Z")),
+						GenerationModifiedBy:  ptr.To("terraform-dev"),
+					},
+					HeadGenerationID:     929,
+					HeadGenerationStatus: string(GenerationStatusCSRReady),
+				},
+				KeySpecs: []KeySpecResponse{
+					{KeySize: string(KeySize2048), KeyType: string(CryptographicAlgorithmRSA)},
+				},
+				LineageCreatedBy:    "terraform-dev",
+				LineageCreatedTime:  test.NewTimeFromString(t, "2026-07-17T12:28:59Z"),
+				LineageID:           500005,
+				LineageModifiedBy:   "terraform-dev",
+				LineageModifiedTime: test.NewTimeFromString(t, "2026-07-17T12:28:59Z"),
+				LineageName:         "www.example.com20260717122858498674",
+				LineageType:         string(LineageTypeMultipleGeneration),
+				SANs:                []string{"www.example.com", "example.com"},
+				SecureNetwork:       string(SecureNetworkEnhancedTLS),
+				StackMode:           string(StackModeSingleStack),
+			},
+		},
+		"201 Created - create lineage with GeoClass RESERVED_GLOBAL and SecureNetwork ENHANCED_TLS": {
+			params: CreateLineageRequest{
+				Body: CreateLineageRequestBody{
+					ContractID:    "C-0N7RAC7",
+					GroupID:       12345,
+					GeoClass:      GeoClassReservedGlobal,
+					SecureNetwork: SecureNetworkEnhancedTLS,
+					KeySpecs: []KeySpec{
+						{KeyType: CryptographicAlgorithmRSA, KeySize: KeySize2048},
+					},
+					SANs: []string{"www.example.com", "example.com"},
+				},
+			},
+			expectedPath: "/ccm/v2/lineages",
+			expectedRequestBody: `{
+				"contractId": "C-0N7RAC7",
+				"groupId": 12345,
+				"geoClass": "RESERVED_GLOBAL",
+				"secureNetwork": "ENHANCED_TLS",
+				"keySpecs": [
+					{"keyType": "RSA", "keySize": "2048"}
+				],
+				"sans": ["www.example.com", "example.com"]
+			}`,
+			responseStatus: http.StatusCreated,
+			responseBody: `{
+				"accountId": "A-CCT1234",
+				"contractId": "C-0N7RAC7",
+				"geoClass": "RESERVED_GLOBAL",
+				"groupId": 12345,
+				"head": {
+					"algorithms": [
+						{
+							"algorithmInstanceCreatedBy": "terraform-dev",
+							"algorithmInstanceCreatedTime": "2026-07-17T12:28:59Z",
+							"algorithmInstanceId": 1714,
+							"certificateStatus": "CSR_READY",
+							"csrExpirationDate": "2027-07-17T12:28:59Z",
+							"csrPem": "-----BEGIN CERTIFICATE REQUEST-----\nRSA-CSR\n-----END CERTIFICATE REQUEST-----\n",
+							"keyType": "RSA"
+						}
+					],
+					"generationCreatedBy": "terraform-dev",
+					"generationCreatedTime": "2026-07-17T12:28:59Z",
+					"generationModifiedBy": "terraform-dev",
+					"headGenerationId": 929,
+					"headGenerationStatus": "CSR_READY"
+				},
+				"keySpecs": [
+					{"keySize": "2048", "keyType": "RSA"}
+				],
+				"lineageCreatedBy": "terraform-dev",
+				"lineageCreatedTime": "2026-07-17T12:28:59Z",
+				"lineageId": 500005,
+				"lineageModifiedBy": "terraform-dev",
+				"lineageModifiedTime": "2026-07-17T12:28:59Z",
+				"lineageName": "www.example.com20260717122858498674",
+				"lineageType": "MULTIPLE_GENERATION",
+				"sans": ["www.example.com", "example.com"],
+				"secureNetwork": "ENHANCED_TLS",
+				"stackMode": "SINGLE_STACK"
+			}`,
+			expectedResponse: &CreateLineageResponse{
+				AccountID:  "A-CCT1234",
+				ContractID: "C-0N7RAC7",
+				GeoClass:   string(GeoClassReservedGlobal),
+				GroupID:    12345,
+				Head: &HeadGeneration{
+					Generation: Generation{
+						Algorithms: []Algorithm{
+							{
+								AlgorithmInstanceCreatedBy:   "terraform-dev",
+								AlgorithmInstanceCreatedTime: ptr.To(test.NewTimeFromString(t, "2026-07-17T12:28:59Z")),
+								AlgorithmInstanceID:          1714,
+								CertificateStatus:            CertificateStatusCSRReady,
+								CSRExpirationDate:            ptr.To(test.NewTimeFromString(t, "2027-07-17T12:28:59Z")),
+								CSRPEM:                       rsaCSRPEM,
+								KeyType:                      string(CryptographicAlgorithmRSA),
+							},
+						},
+						GenerationCreatedBy:   ptr.To("terraform-dev"),
+						GenerationCreatedTime: ptr.To(test.NewTimeFromString(t, "2026-07-17T12:28:59Z")),
+						GenerationModifiedBy:  ptr.To("terraform-dev"),
+					},
+					HeadGenerationID:     929,
+					HeadGenerationStatus: string(GenerationStatusCSRReady),
+				},
+				KeySpecs: []KeySpecResponse{
+					{KeySize: string(KeySize2048), KeyType: string(CryptographicAlgorithmRSA)},
+				},
+				LineageCreatedBy:    "terraform-dev",
+				LineageCreatedTime:  test.NewTimeFromString(t, "2026-07-17T12:28:59Z"),
+				LineageID:           500005,
+				LineageModifiedBy:   "terraform-dev",
+				LineageModifiedTime: test.NewTimeFromString(t, "2026-07-17T12:28:59Z"),
+				LineageName:         "www.example.com20260717122858498674",
+				LineageType:         string(LineageTypeMultipleGeneration),
+				SANs:                []string{"www.example.com", "example.com"},
+				SecureNetwork:       string(SecureNetworkEnhancedTLS),
+				StackMode:           string(StackModeSingleStack),
+			},
+		},
 		"201 Created - create lineage without Subject omits it from request body": {
 			params: CreateLineageRequest{
 				Body: CreateLineageRequestBody{
@@ -1081,7 +1285,49 @@ func TestCreateLineage(t *testing.T) {
 			},
 			withError: func(t *testing.T, err error) {
 				assert.EqualError(t, err, "creating lineage: struct validation: Body: {\n\tGeoClass: value "+
-					"'INVALID_CLASS' is invalid. Must be 'STANDARD_WORLDWIDE'\n}")
+					"'INVALID_CLASS' is invalid. Must be one of: 'STANDARD_WORLDWIDE', 'CONTIGUOUS_US', or 'RESERVED_GLOBAL'\n}")
+				assert.ErrorIs(t, err, ErrCreateLineage)
+				assert.ErrorIs(t, err, ErrStructValidation)
+			},
+		},
+		"validation error - GeoClass CONTIGUOUS_US requires SecureNetwork ENHANCED_TLS": {
+			params: CreateLineageRequest{
+				Body: CreateLineageRequestBody{
+					ContractID:    "C-0N7RAC7",
+					GroupID:       12345,
+					GeoClass:      GeoClassContiguousUS,
+					SecureNetwork: SecureNetworkStandardTLS,
+					KeySpecs: []KeySpec{
+						{KeyType: CryptographicAlgorithmRSA, KeySize: KeySize2048},
+					},
+					SANs:    []string{"example.com"},
+					Subject: ptr.To(Subject{CommonName: "example.com"}),
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.EqualError(t, err, "creating lineage: struct validation: Body: {\n\tGeoClass: value "+
+					"'CONTIGUOUS_US' is only valid when secureNetwork is 'ENHANCED_TLS'\n}")
+				assert.ErrorIs(t, err, ErrCreateLineage)
+				assert.ErrorIs(t, err, ErrStructValidation)
+			},
+		},
+		"validation error - GeoClass RESERVED_GLOBAL requires SecureNetwork ENHANCED_TLS": {
+			params: CreateLineageRequest{
+				Body: CreateLineageRequestBody{
+					ContractID:    "C-0N7RAC7",
+					GroupID:       12345,
+					GeoClass:      GeoClassReservedGlobal,
+					SecureNetwork: SecureNetworkStandardTLS,
+					KeySpecs: []KeySpec{
+						{KeyType: CryptographicAlgorithmRSA, KeySize: KeySize2048},
+					},
+					SANs:    []string{"example.com"},
+					Subject: ptr.To(Subject{CommonName: "example.com"}),
+				},
+			},
+			withError: func(t *testing.T, err error) {
+				assert.EqualError(t, err, "creating lineage: struct validation: Body: {\n\tGeoClass: value "+
+					"'RESERVED_GLOBAL' is only valid when secureNetwork is 'ENHANCED_TLS'\n}")
 				assert.ErrorIs(t, err, ErrCreateLineage)
 				assert.ErrorIs(t, err, ErrStructValidation)
 			},
@@ -1236,6 +1482,14 @@ func TestGeoClass_Validate(t *testing.T) {
 			geoClass:  GeoClassStandardWorldwide,
 			withError: false,
 		},
+		"CONTIGUOUS_US is valid": {
+			geoClass:  GeoClassContiguousUS,
+			withError: false,
+		},
+		"RESERVED_GLOBAL is valid": {
+			geoClass:  GeoClassReservedGlobal,
+			withError: false,
+		},
 		"invalid value": {
 			geoClass:  "NOT_A_REAL_CLASS",
 			withError: true,
@@ -1248,7 +1502,70 @@ func TestGeoClass_Validate(t *testing.T) {
 			err := tc.geoClass.Validate()
 			if tc.withError {
 				require.Error(t, err)
-				assert.EqualError(t, err, "value 'NOT_A_REAL_CLASS' is invalid. Must be 'STANDARD_WORLDWIDE'")
+				assert.EqualError(t, err, "value 'NOT_A_REAL_CLASS' is invalid. Must be one of: "+
+					"'STANDARD_WORLDWIDE', 'CONTIGUOUS_US', or 'RESERVED_GLOBAL'")
+				return
+			}
+			assert.NoError(t, err)
+		})
+	}
+}
+
+func TestCreateLineageRequestBody_Validate_GeoClassSecureNetwork(t *testing.T) {
+	t.Parallel()
+
+	baseBody := func(geoClass GeoClass, secureNetwork SecureNetwork) CreateLineageRequestBody {
+		return CreateLineageRequestBody{
+			ContractID:    "C-0N7RAC7",
+			GroupID:       12345,
+			GeoClass:      geoClass,
+			SecureNetwork: secureNetwork,
+			KeySpecs: []KeySpec{
+				{KeyType: CryptographicAlgorithmRSA, KeySize: KeySize2048},
+			},
+			SANs: []string{"example.com"},
+		}
+	}
+
+	tests := map[string]struct {
+		body     CreateLineageRequestBody
+		errorMsg string
+	}{
+		"STANDARD_WORLDWIDE with ENHANCED_TLS is valid": {
+			body: baseBody(GeoClassStandardWorldwide, SecureNetworkEnhancedTLS),
+		},
+		"STANDARD_WORLDWIDE with STANDARD_TLS is valid": {
+			body: baseBody(GeoClassStandardWorldwide, SecureNetworkStandardTLS),
+		},
+		"empty GeoClass with STANDARD_TLS is valid": {
+			body: baseBody("", SecureNetworkStandardTLS),
+		},
+		"empty GeoClass with ENHANCED_TLS is valid": {
+			body: baseBody("", SecureNetworkEnhancedTLS),
+		},
+		"CONTIGUOUS_US with ENHANCED_TLS is valid": {
+			body: baseBody(GeoClassContiguousUS, SecureNetworkEnhancedTLS),
+		},
+		"RESERVED_GLOBAL with ENHANCED_TLS is valid": {
+			body: baseBody(GeoClassReservedGlobal, SecureNetworkEnhancedTLS),
+		},
+		"CONTIGUOUS_US with STANDARD_TLS is invalid": {
+			body:     baseBody(GeoClassContiguousUS, SecureNetworkStandardTLS),
+			errorMsg: "GeoClass: value 'CONTIGUOUS_US' is only valid when secureNetwork is 'ENHANCED_TLS'.",
+		},
+		"RESERVED_GLOBAL with STANDARD_TLS is invalid": {
+			body:     baseBody(GeoClassReservedGlobal, SecureNetworkStandardTLS),
+			errorMsg: "GeoClass: value 'RESERVED_GLOBAL' is only valid when secureNetwork is 'ENHANCED_TLS'.",
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			err := tc.body.Validate()
+			if tc.errorMsg != "" {
+				require.Error(t, err)
+				assert.EqualError(t, err, tc.errorMsg)
 				return
 			}
 			assert.NoError(t, err)
@@ -6327,11 +6644,9 @@ func TestListActivations(t *testing.T) {
 							}
 						],
 						"generationId": 3306,
-						"inProgressHostnameCount": 1,
 						"lineageId": 500040,
 						"modifiedBy": "terraform-dev",
-						"targetEnvironment": "PRODUCTION",
-						"totalHostnameCount": 1
+						"targetEnvironment": "PRODUCTION"
 					},
 					{
 						"activationCreatedTime": "2026-09-10T19:28:39Z",
@@ -6341,11 +6656,9 @@ func TestListActivations(t *testing.T) {
 						"activationType": "PROMOTE",
 						"createdBy": "terraform-dev",
 						"generationId": 3306,
-						"inProgressHostnameCount": 0,
 						"lineageId": 500040,
 						"modifiedBy": "terraform-dev",
-						"targetEnvironment": "STAGING",
-						"totalHostnameCount": 0
+						"targetEnvironment": "STAGING"
 					},
 					{
 						"activationCreatedTime": "2026-09-10T19:25:59Z",
@@ -6355,12 +6668,10 @@ func TestListActivations(t *testing.T) {
 						"activationType": "PROMOTE",
 						"createdBy": "terraform-dev",
 						"generationId": 3305,
-						"inProgressHostnameCount": 1,
 						"lineageId": 500040,
 						"modifiedBy": "terraform-dev",
 						"preEmptedBy": 1309,
-						"targetEnvironment": "PRODUCTION",
-						"totalHostnameCount": 1
+						"targetEnvironment": "PRODUCTION"
 					},
 					{
 						"activationCreatedTime": "2026-09-10T19:25:59Z",
@@ -6370,11 +6681,9 @@ func TestListActivations(t *testing.T) {
 						"activationType": "PROMOTE",
 						"createdBy": "terraform-dev",
 						"generationId": 3305,
-						"inProgressHostnameCount": 0,
 						"lineageId": 500040,
 						"modifiedBy": "terraform-dev",
-						"targetEnvironment": "STAGING",
-						"totalHostnameCount": 0
+						"targetEnvironment": "STAGING"
 					}
 				],
 				"nextCursor": "MTMwNQ",
@@ -6384,12 +6693,10 @@ func TestListActivations(t *testing.T) {
 				Items: []GetActivationStatusResponse{
 					{
 						ActivationID: 1309, LineageID: 500040, ActivationType: "PROMOTE", ActivationStatus: "DELAYED", GenerationID: 3306,
-						ActivationCreatedTime:   time.Date(2026, 9, 10, 19, 28, 39, 0, time.UTC),
-						ActivationModifiedTime:  time.Date(2026, 9, 10, 19, 44, 47, 0, time.UTC),
-						TargetEnvironment:       "PRODUCTION",
-						TotalHostnameCount:      ptr.To(int64(1)),
-						InProgressHostnameCount: ptr.To(int64(1)),
-						CreatedBy:               "terraform-dev", ModifiedBy: "terraform-dev",
+						ActivationCreatedTime:  time.Date(2026, 9, 10, 19, 28, 39, 0, time.UTC),
+						ActivationModifiedTime: time.Date(2026, 9, 10, 19, 44, 47, 0, time.UTC),
+						TargetEnvironment:      "PRODUCTION",
+						CreatedBy:              "terraform-dev", ModifiedBy: "terraform-dev",
 						Errors: []ActivationError{
 							{
 								Message: "The certificate could not be deployed to the Akamai network. Akamai is retrying automatically; contact support if this persists.",
@@ -6399,31 +6706,25 @@ func TestListActivations(t *testing.T) {
 					},
 					{
 						ActivationID: 1308, LineageID: 500040, ActivationType: "PROMOTE", ActivationStatus: "COMPLETE", GenerationID: 3306,
-						ActivationCreatedTime:   time.Date(2026, 9, 10, 19, 28, 39, 0, time.UTC),
-						ActivationModifiedTime:  time.Date(2026, 9, 10, 19, 29, 13, 0, time.UTC),
-						TargetEnvironment:       "STAGING",
-						TotalHostnameCount:      ptr.To(int64(0)),
-						InProgressHostnameCount: ptr.To(int64(0)),
-						CreatedBy:               "terraform-dev", ModifiedBy: "terraform-dev",
+						ActivationCreatedTime:  time.Date(2026, 9, 10, 19, 28, 39, 0, time.UTC),
+						ActivationModifiedTime: time.Date(2026, 9, 10, 19, 29, 13, 0, time.UTC),
+						TargetEnvironment:      "STAGING",
+						CreatedBy:              "terraform-dev", ModifiedBy: "terraform-dev",
 					},
 					{
 						ActivationID: 1307, LineageID: 500040, ActivationType: "PROMOTE", ActivationStatus: "PRE_EMPTED", GenerationID: 3305,
-						ActivationCreatedTime:   time.Date(2026, 9, 10, 19, 25, 59, 0, time.UTC),
-						ActivationModifiedTime:  time.Date(2026, 9, 10, 19, 28, 39, 0, time.UTC),
-						TargetEnvironment:       "PRODUCTION",
-						TotalHostnameCount:      ptr.To(int64(1)),
-						InProgressHostnameCount: ptr.To(int64(1)),
-						PreEmptedBy:             ptr.To(int64(1309)),
-						CreatedBy:               "terraform-dev", ModifiedBy: "terraform-dev",
+						ActivationCreatedTime:  time.Date(2026, 9, 10, 19, 25, 59, 0, time.UTC),
+						ActivationModifiedTime: time.Date(2026, 9, 10, 19, 28, 39, 0, time.UTC),
+						TargetEnvironment:      "PRODUCTION",
+						PreEmptedBy:            ptr.To(int64(1309)),
+						CreatedBy:              "terraform-dev", ModifiedBy: "terraform-dev",
 					},
 					{
 						ActivationID: 1306, LineageID: 500040, ActivationType: "PROMOTE", ActivationStatus: "COMPLETE", GenerationID: 3305,
-						ActivationCreatedTime:   time.Date(2026, 9, 10, 19, 25, 59, 0, time.UTC),
-						ActivationModifiedTime:  time.Date(2026, 9, 10, 19, 26, 29, 0, time.UTC),
-						TargetEnvironment:       "STAGING",
-						TotalHostnameCount:      ptr.To(int64(0)),
-						InProgressHostnameCount: ptr.To(int64(0)),
-						CreatedBy:               "terraform-dev", ModifiedBy: "terraform-dev",
+						ActivationCreatedTime:  time.Date(2026, 9, 10, 19, 25, 59, 0, time.UTC),
+						ActivationModifiedTime: time.Date(2026, 9, 10, 19, 26, 29, 0, time.UTC),
+						TargetEnvironment:      "STAGING",
+						CreatedBy:              "terraform-dev", ModifiedBy: "terraform-dev",
 					},
 				},
 				NextCursor: ptr.To("MTMwNQ"),

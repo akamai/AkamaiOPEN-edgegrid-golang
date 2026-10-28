@@ -170,13 +170,19 @@
   * Replaced the `ErrorTypes` string field on `GetActivationStatusResponse` (also returned via `ListActivationsResponse.Items`) 
     with an `Errors` field of the new `ActivationError` type, to surface structured.
   * Removed the `CertificateStatusCertUploadProcessing` and `ActivityEventTypeLineageDeleted` constants, as well as the
-    `ErrCSRExpired`, `ErrCertSANMismatch`, and `ErrCertSubjectMismatch` error variables, none of which are returned by the API.
+    `ErrCSRExpired`, `ErrCertSANMismatch`, `ErrHeadDeployedOnNetwork`, and `ErrCertSubjectMismatch` error variables, none of which are returned by the API.
 
 
 
 
 
 
+
+
+* Cloud Certificates (Beta)
+  * Removed the `TotalHostnameCount` and `InProgressHostnameCount` fields from the `GetActivationStatusResponse` structure, as they are no longer returned by the API.
+  * Added the `GeoClassContiguousUS` and `GeoClassReservedGlobal` values for the `GeoClass`. Both require `SecureNetwork` to be `ENHANCED_TLS`.
+  * The `/error-types/single-generation-no-complete` error is now matched by the new `ErrSingleGenerationNoComplete` error variable.
 
 
 
