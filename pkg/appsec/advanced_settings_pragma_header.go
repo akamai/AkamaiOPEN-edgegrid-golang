@@ -27,8 +27,8 @@ type (
 
 	// GetAdvancedSettingsPragmaRequest is used to retrieve the pragma settings for a security policy.
 	GetAdvancedSettingsPragmaRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Group    string `json:"group"`
 	}
@@ -54,8 +54,8 @@ type (
 
 	// UpdateAdvancedSettingsPragmaRequest is used to modify the pragma settings for a security policy.
 	UpdateAdvancedSettingsPragmaRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		PolicyID       string          `json:"-"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}

@@ -21,8 +21,8 @@ type (
 
 	// GetContractsGroupsRequest is used to retrieve the list of contracts and groups for your account.
 	GetContractsGroupsRequest struct {
-		ConfigID   int    `json:"-"`
-		Version    int    `json:"-"`
+		ConfigID   int64  `json:"-"`
+		Version    int64  `json:"-"`
 		PolicyID   string `json:"-"`
 		ContractID string `json:"-"`
 		GroupID    int    `json:"-"`

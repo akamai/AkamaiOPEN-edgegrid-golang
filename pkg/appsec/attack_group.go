@@ -137,8 +137,8 @@ type (
 
 	// GetAttackGroupsRequest is used to retrieve a list of attack groups with their associated actions.
 	GetAttackGroupsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Group    string `json:"group,omitempty"`
 	}
@@ -157,8 +157,8 @@ type (
 
 	// GetAttackGroupRequest is used to retrieve a list of attack groups with their associated actions.
 	GetAttackGroupRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Group    string `json:"group"`
 	}
@@ -171,8 +171,8 @@ type (
 
 	// UpdateAttackGroupRequest is used to modify what action to take when an attack group’s rule triggers.
 	UpdateAttackGroupRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		PolicyID       string          `json:"-"`
 		Group          string          `json:"-"`
 		Action         string          `json:"action"`

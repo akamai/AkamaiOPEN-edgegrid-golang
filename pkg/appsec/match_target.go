@@ -41,9 +41,9 @@ type (
 
 	// GetMatchTargetsRequest is used to retrieve the match targets for a configuration.
 	GetMatchTargetsRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		TargetID      int `json:"targetId"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
+		TargetID      int   `json:"targetId"`
 	}
 
 	// GetMatchTargetsResponse is returned from a call to GetMatchTargets.
@@ -63,16 +63,16 @@ type (
 		Apis               []MatchTargetAPIItem           `json:"apis"`
 		Sequence           int                            `json:"sequence"`
 		TargetID           int                            `json:"targetId"`
-		ConfigID           int                            `json:"configId,omitempty"`
-		ConfigVersion      int                            `json:"configVersion,omitempty"`
+		ConfigID           int64                          `json:"configId,omitempty"`
+		ConfigVersion      int64                          `json:"configVersion,omitempty"`
 		SecurityPolicy     MatchTargetSecurityPolicy      `json:"securityPolicy,omitempty"`
 		BypassNetworkLists []MatchTargetBypassNetworkList `json:"bypassNetworkLists,omitempty"`
 	}
 
 	// GetMatchTargetsResponseMatchTargetsWebsiteTargetsItem represents a website match target item.
 	GetMatchTargetsResponseMatchTargetsWebsiteTargetsItem struct {
-		ConfigID                     int                            `json:"configId,omitempty"`
-		ConfigVersion                int                            `json:"configVersion,omitempty"`
+		ConfigID                     int64                          `json:"configId,omitempty"`
+		ConfigVersion                int64                          `json:"configVersion,omitempty"`
 		DefaultFile                  string                         `json:"defaultFile,omitempty"`
 		IsNegativeFileExtensionMatch bool                           `json:"isNegativeFileExtensionMatch,omitempty"`
 		IsNegativePathMatch          *json.RawMessage               `json:"isNegativePathMatch,omitempty"`
@@ -88,9 +88,9 @@ type (
 
 	// GetMatchTargetRequest is used to retrieve a match target.
 	GetMatchTargetRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		TargetID      int `json:"targetId"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
+		TargetID      int   `json:"targetId"`
 	}
 
 	// GetMatchTargetResponse is returned from a call to GetMatchTarget.
@@ -112,8 +112,8 @@ type (
 	// CreateMatchTargetRequest is used to create a match target.
 	CreateMatchTargetRequest struct {
 		Type           string          `json:"type"`
-		ConfigID       int             `json:"configId"`
-		ConfigVersion  int             `json:"configVersion"`
+		ConfigID       int64           `json:"configId"`
+		ConfigVersion  int64           `json:"configVersion"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
@@ -135,8 +135,8 @@ type (
 
 	// UpdateMatchTargetRequest is used to modify an existing match target.
 	UpdateMatchTargetRequest struct {
-		ConfigID       int             `json:"configId"`
-		ConfigVersion  int             `json:"configVersion"`
+		ConfigID       int64           `json:"configId"`
+		ConfigVersion  int64           `json:"configVersion"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 		TargetID       int             `json:"targetId"`
 	}
@@ -144,8 +144,8 @@ type (
 	// UpdateMatchTargetResponse is returned from a call to UpdateMatchTarget.
 	UpdateMatchTargetResponse struct {
 		Type                         string                      `json:"type"`
-		ConfigID                     int                         `json:"configId"`
-		ConfigVersion                int                         `json:"configVersion"`
+		ConfigID                     int64                       `json:"configId"`
+		ConfigVersion                int64                       `json:"configVersion"`
 		DefaultFile                  string                      `json:"defaultFile"`
 		Hostnames                    []string                    `json:"hostnames"`
 		IsNegativeFileExtensionMatch bool                        `json:"isNegativeFileExtensionMatch"`
@@ -160,16 +160,16 @@ type (
 
 	// RemoveMatchTargetRequest is used to remove a match target.
 	RemoveMatchTargetRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		TargetID      int `json:"targetId"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
+		TargetID      int   `json:"targetId"`
 	}
 
 	// RemoveMatchTargetResponse is returned from a call to RemoveMatchTarget.
 	RemoveMatchTargetResponse struct {
 		Type                         string                      `json:"type"`
-		ConfigID                     int                         `json:"configId"`
-		ConfigVersion                int                         `json:"configVersion"`
+		ConfigID                     int64                       `json:"configId"`
+		ConfigVersion                int64                       `json:"configVersion"`
 		DefaultFile                  string                      `json:"defaultFile"`
 		Hostnames                    []string                    `json:"hostnames"`
 		IsNegativeFileExtensionMatch bool                        `json:"isNegativeFileExtensionMatch"`
@@ -220,8 +220,8 @@ type (
 		Type               string                      `json:"type"`
 		Apis               []MatchTargetAPIItem        `json:"apis"`
 		BypassNetworkLists []BypassNetworkList         `json:"bypassNetworkLists"`
-		ConfigID           int                         `json:"configId"`
-		ConfigVersion      int                         `json:"configVersion"`
+		ConfigID           int64                       `json:"configId"`
+		ConfigVersion      int64                       `json:"configVersion"`
 		SecurityPolicy     MatchTargetSecurityPolicyID `json:"securityPolicy"`
 		Sequence           int                         `json:"-"`
 		TargetID           int                         `json:"targetId"`

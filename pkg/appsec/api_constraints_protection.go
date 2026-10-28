@@ -28,8 +28,8 @@ type (
 
 	// GetAPIConstraintsProtectionRequest is used to retrieve the API constraints protection setting.
 	GetAPIConstraintsProtectionRequest struct {
-		ConfigID            int    `json:"-"`
-		Version             int    `json:"-"`
+		ConfigID            int64  `json:"-"`
+		Version             int64  `json:"-"`
 		PolicyID            string `json:"-"`
 		ApplyAPIConstraints bool   `json:"applyApiConstraints"`
 	}
@@ -51,8 +51,8 @@ type (
 
 	// UpdateAPIConstraintsProtectionRequest is used to modify the API constraints protection setting.
 	UpdateAPIConstraintsProtectionRequest struct {
-		ConfigID            int    `json:"-"`
-		Version             int    `json:"-"`
+		ConfigID            int64  `json:"-"`
+		Version             int64  `json:"-"`
 		PolicyID            string `json:"-"`
 		ApplyAPIConstraints bool   `json:"applyApiConstraints"`
 	}

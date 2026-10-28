@@ -20,8 +20,8 @@ type (
 
 	// GetApiEndpointsRequest is used to retrieve the endpoints associated with a security policy.
 	GetApiEndpointsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		Name     string `json:"-"`
 		PolicyID string `json:"-"`
 		ID       int    `json:"-"`

@@ -26,8 +26,8 @@ type (
 
 	// GetWAFModeRequest is used to retrieve the setting that determines this mode how rules will be kept up to date.
 	GetWAFModeRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Current  string `json:"current"`
 		Mode     string `json:"mode"`
@@ -45,8 +45,8 @@ type (
 
 	// UpdateWAFModeRequest is used to modify the setting that determines this mode how rules will be kept up to date.
 	UpdateWAFModeRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Current  string `json:"-"`
 		Mode     string `json:"mode"`

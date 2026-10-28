@@ -34,8 +34,8 @@ type (
 
 	// GetWAFProtectionRequest is used to retrieve the WAF protection setting.
 	GetWAFProtectionRequest struct {
-		ConfigID                      int    `json:"-"`
-		Version                       int    `json:"-"`
+		ConfigID                      int64  `json:"-"`
+		Version                       int64  `json:"-"`
 		PolicyID                      string `json:"-"`
 		ApplyApplicationLayerControls bool   `json:"applyApplicationLayerControls"`
 	}
@@ -46,8 +46,8 @@ type (
 	// GetWAFProtectionsRequest is used to retrieve the WAF protection setting.
 	// Deprecated: this struct will be removed in a future release.
 	GetWAFProtectionsRequest struct {
-		ConfigID                      int    `json:"-"`
-		Version                       int    `json:"-"`
+		ConfigID                      int64  `json:"-"`
+		Version                       int64  `json:"-"`
 		PolicyID                      string `json:"-"`
 		ApplyApplicationLayerControls bool   `json:"applyApplicationLayerControls"`
 	}
@@ -58,8 +58,8 @@ type (
 
 	// UpdateWAFProtectionRequest is used to modify the WAF protection setting.
 	UpdateWAFProtectionRequest struct {
-		ConfigID                      int    `json:"-"`
-		Version                       int    `json:"-"`
+		ConfigID                      int64  `json:"-"`
+		Version                       int64  `json:"-"`
 		PolicyID                      string `json:"-"`
 		ApplyApplicationLayerControls bool   `json:"applyApplicationLayerControls"`
 	}

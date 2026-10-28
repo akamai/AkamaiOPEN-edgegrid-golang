@@ -20,8 +20,8 @@ type (
 
 	// GetApiHostnameCoverageRequest is used to call GetApiHostnameCoverage.
 	GetApiHostnameCoverageRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		Hostname string `json:"-"`
 	}
 
@@ -43,7 +43,7 @@ type (
 	ConfigurationHostnameCoverage struct {
 		ID      int    `json:"id,omitempty"`
 		Name    string `json:"name,omitempty"`
-		Version int    `json:"version,omitempty"`
+		Version int64  `json:"version,omitempty"`
 	}
 )
 

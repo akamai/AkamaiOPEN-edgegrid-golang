@@ -26,8 +26,8 @@ type (
 
 	// GetRatePolicyActionsRequest is used to retrieve a configuration's rate policies and their associated actions.
 	GetRatePolicyActionsRequest struct {
-		ConfigID     int    `json:"configId"`
-		Version      int    `json:"version"`
+		ConfigID     int64  `json:"configId"`
+		Version      int64  `json:"version"`
 		PolicyID     string `json:"policyId"`
 		RatePolicyID int    `json:"id"`
 		Ipv4Action   string `json:"ipv4Action"`
@@ -48,8 +48,8 @@ type (
 
 	// UpdateRatePolicyActionRequest is used to update the actions for a rate policy.
 	UpdateRatePolicyActionRequest struct {
-		ConfigID     int    `json:"-"`
-		Version      int    `json:"-"`
+		ConfigID     int64  `json:"-"`
+		Version      int64  `json:"-"`
 		PolicyID     string `json:"-"`
 		RatePolicyID int    `json:"-"`
 		Ipv4Action   string `json:"ipv4Action"`

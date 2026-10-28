@@ -19,8 +19,8 @@ type (
 
 	// GetWAPSelectedHostnamesRequest is used to retrieve the WAP selected hostnames and evaluated hostnames.
 	GetWAPSelectedHostnamesRequest struct {
-		ConfigID         int    `json:"configId"`
-		Version          int    `json:"version"`
+		ConfigID         int64  `json:"configId"`
+		Version          int64  `json:"version"`
 		SecurityPolicyID string `json:"securityPolicyID"`
 	}
 
@@ -32,8 +32,8 @@ type (
 
 	// UpdateWAPSelectedHostnamesRequest is used to modify the WAP selected hostnames and evaluated hostnames.
 	UpdateWAPSelectedHostnamesRequest struct {
-		ConfigID         int      `json:"configId"`
-		Version          int      `json:"version"`
+		ConfigID         int64    `json:"configId"`
+		Version          int64    `json:"version"`
 		SecurityPolicyID string   `json:"securityPolicyID"`
 		ProtectedHosts   []string `json:"protectedHostnames"`
 		EvaluatedHosts   []string `json:"evalHostnames"`

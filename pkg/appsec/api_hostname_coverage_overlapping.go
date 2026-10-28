@@ -21,8 +21,8 @@ type (
 
 	// GetApiHostnameCoverageOverlappingRequest is used to retrieve the configuration versions that contain a hostname included in the current configuration version.
 	GetApiHostnameCoverageOverlappingRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		Hostname string `json:"-"`
 	}
 
@@ -33,9 +33,9 @@ type (
 
 	// HostnameCoverageOverlappingItem describes a configuration version that contains an overlapping hostname.
 	HostnameCoverageOverlappingItem struct {
-		ConfigID      int      `json:"configId"`
+		ConfigID      int64    `json:"configId"`
 		ConfigName    string   `json:"configName"`
-		ConfigVersion int      `json:"configVersion"`
+		ConfigVersion int64    `json:"configVersion"`
 		ContractID    string   `json:"contractId"`
 		ContractName  string   `json:"contractName"`
 		VersionTags   []string `json:"versionTags"`

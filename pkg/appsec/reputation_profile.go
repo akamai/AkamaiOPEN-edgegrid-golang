@@ -45,9 +45,9 @@ type (
 
 	// GetReputationProfilesRequest is used to retrieve the reputation profiles for a configuration.
 	GetReputationProfilesRequest struct {
-		ConfigID            int `json:"configId"`
-		ConfigVersion       int `json:"configVersion"`
-		ReputationProfileId int `json:"-"`
+		ConfigID            int64 `json:"configId"`
+		ConfigVersion       int64 `json:"configVersion"`
+		ReputationProfileID int64 `json:"-"`
 	}
 
 	// GetReputationProfilesResponse is returned from a call to GetReputationProfiles.
@@ -61,7 +61,7 @@ type (
 		Context          string                      `json:"context,omitempty"`
 		ContextReadable  string                      `json:"-"`
 		Enabled          bool                        `json:"-"`
-		ID               int                         `json:"id,omitempty"`
+		ID               int64                       `json:"id,omitempty"`
 		Name             string                      `json:"name,omitempty"`
 		SharedIPHandling string                      `json:"sharedIpHandling,omitempty"`
 		Threshold        int                         `json:"threshold,omitempty"`
@@ -69,9 +69,9 @@ type (
 
 	// GetReputationProfileRequest is used to retrieve the details for a specific reputation profile.
 	GetReputationProfileRequest struct {
-		ConfigID            int `json:"configId"`
-		ConfigVersion       int `json:"configVersion"`
-		ReputationProfileId int `json:"-"`
+		ConfigID            int64 `json:"configId"`
+		ConfigVersion       int64 `json:"configVersion"`
+		ReputationProfileID int64 `json:"-"`
 	}
 
 	// GetReputationProfileResponse is returned from a call to GetReputationProfile.
@@ -88,8 +88,8 @@ type (
 
 	// CreateReputationProfileRequest is used to create a reputation profile.
 	CreateReputationProfileRequest struct {
-		ConfigID       int             `json:"-"`
-		ConfigVersion  int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		ConfigVersion  int64           `json:"-"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
@@ -128,9 +128,9 @@ type (
 
 	// UpdateReputationProfileRequest is used to modify an existing reputation profile.
 	UpdateReputationProfileRequest struct {
-		ConfigID            int             `json:"-"`
-		ConfigVersion       int             `json:"-"`
-		ReputationProfileId int             `json:"-"`
+		ConfigID            int64           `json:"-"`
+		ConfigVersion       int64           `json:"-"`
+		ReputationProfileID int64           `json:"-"`
 		JsonPayloadRaw      json.RawMessage `json:"-"`
 	}
 
@@ -148,9 +148,9 @@ type (
 
 	// RemoveReputationProfileRequest is used to remove a reputation profile.
 	RemoveReputationProfileRequest struct {
-		ConfigID            int `json:"configId"`
-		ConfigVersion       int `json:"configVersion"`
-		ReputationProfileId int `json:"-"`
+		ConfigID            int64 `json:"configId"`
+		ConfigVersion       int64 `json:"configVersion"`
+		ReputationProfileID int64 `json:"-"`
 	}
 
 	// RemoveReputationProfileResponse is returned from a call to RemoveReputationProfile.
@@ -214,9 +214,9 @@ func (c *atomicConditionsName) UnmarshalJSON(data []byte) error {
 // Validate validates a GetReputationProfileRequest.
 func (v GetReputationProfileRequest) Validate() error {
 	return validation.Errors{
-		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
-		"ConfigVersion": validation.Validate(v.ConfigVersion, validation.Required),
-		"RatePolicyID":  validation.Validate(v.ReputationProfileId, validation.Required),
+		"ConfigID":            validation.Validate(v.ConfigID, validation.Required),
+		"ConfigVersion":       validation.Validate(v.ConfigVersion, validation.Required),
+		"ReputationProfileID": validation.Validate(v.ReputationProfileID, validation.Required),
 	}.Filter()
 }
 
@@ -241,7 +241,7 @@ func (v UpdateReputationProfileRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":            validation.Validate(v.ConfigID, validation.Required),
 		"ConfigVersion":       validation.Validate(v.ConfigVersion, validation.Required),
-		"ReputationProfileId": validation.Validate(v.ReputationProfileId, validation.Required),
+		"ReputationProfileID": validation.Validate(v.ReputationProfileID, validation.Required),
 	}.Filter()
 }
 
@@ -250,7 +250,7 @@ func (v RemoveReputationProfileRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":            validation.Validate(v.ConfigID, validation.Required),
 		"ConfigVersion":       validation.Validate(v.ConfigVersion, validation.Required),
-		"ReputationProfileId": validation.Validate(v.ReputationProfileId, validation.Required),
+		"ReputationProfileID": validation.Validate(v.ReputationProfileID, validation.Required),
 	}.Filter()
 }
 
@@ -266,7 +266,7 @@ func (p *appsec) GetReputationProfile(ctx context.Context, params GetReputationP
 		"/appsec/v1/configs/%d/versions/%d/reputation-profiles/%d",
 		params.ConfigID,
 		params.ConfigVersion,
-		params.ReputationProfileId)
+		params.ReputationProfileID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -317,10 +317,10 @@ func (p *appsec) GetReputationProfiles(ctx context.Context, params GetReputation
 		return nil, p.Error(resp)
 	}
 
-	if params.ReputationProfileId != 0 {
+	if params.ReputationProfileID != 0 {
 		var filteredResult GetReputationProfilesResponse
 		for _, val := range result.ReputationProfiles {
-			if val.ID == params.ReputationProfileId {
+			if val.ID == params.ReputationProfileID {
 				filteredResult.ReputationProfiles = append(filteredResult.ReputationProfiles, val)
 			}
 		}
@@ -342,7 +342,7 @@ func (p *appsec) UpdateReputationProfile(ctx context.Context, params UpdateReput
 		"/appsec/v1/configs/%d/versions/%d/reputation-profiles/%d",
 		params.ConfigID,
 		params.ConfigVersion,
-		params.ReputationProfileId,
+		params.ReputationProfileID,
 	)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
@@ -407,7 +407,7 @@ func (p *appsec) RemoveReputationProfile(ctx context.Context, params RemoveReput
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/reputation-profiles/%d", params.ConfigID, params.ConfigVersion, params.ReputationProfileId)
+	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/reputation-profiles/%d", params.ConfigID, params.ConfigVersion, params.ReputationProfileID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveReputationProfile request: %w", err)

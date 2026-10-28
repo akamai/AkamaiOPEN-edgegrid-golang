@@ -38,8 +38,8 @@ type (
 
 	// GetRulesRequest is used to retrieve the rules for a configuration and policy, together with their actions and condition and exception information.
 	GetRulesRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int    `json:"-"`
 	}
@@ -58,8 +58,8 @@ type (
 
 	// GetRuleRequest is used to retrieve a rule together with its action and its condition and exception information.
 	GetRuleRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int    `json:"-"`
 	}
@@ -72,8 +72,8 @@ type (
 
 	// UpdateRuleRequest is used to modify the settings for a rule.
 	UpdateRuleRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		PolicyID       string          `json:"-"`
 		RuleID         int             `json:"-"`
 		Action         string          `json:"action"`
@@ -136,8 +136,8 @@ type (
 
 	// UpdateConditionExceptionRequest is used to update the condition and exception information for a rule.
 	UpdateConditionExceptionRequest struct {
-		ConfigID               int                 `json:"-"`
-		Version                int                 `json:"-"`
+		ConfigID               int64               `json:"-"`
+		Version                int64               `json:"-"`
 		PolicyID               string              `json:"-"`
 		RuleID                 int                 `json:"-"`
 		Conditions             *RuleConditions     `json:"conditions,omitempty"`

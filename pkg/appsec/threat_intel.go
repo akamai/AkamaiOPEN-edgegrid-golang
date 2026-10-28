@@ -25,8 +25,8 @@ type (
 
 	// GetThreatIntelRequest is used to retrieve the threat intel settings.
 	GetThreatIntelRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 	}
 
@@ -37,8 +37,8 @@ type (
 
 	// UpdateThreatIntelRequest is used to update the threat intel settings.
 	UpdateThreatIntelRequest struct {
-		ConfigID    int    `json:"-"`
-		Version     int    `json:"-"`
+		ConfigID    int64  `json:"-"`
+		Version     int64  `json:"-"`
 		PolicyID    string `json:"-"`
 		ThreatIntel string `json:"threatIntel"`
 	}

@@ -21,8 +21,8 @@ type (
 
 	// GetApiHostnameCoverageMatchTargetsRequest is used to retrieve the API and website match targets that protect a hostname.
 	GetApiHostnameCoverageMatchTargetsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		Hostname string `json:"-"`
 	}
 
@@ -41,8 +41,8 @@ type (
 	HostnameCoverageWebsiteTarget struct {
 		Type                         string                                                `json:"type"`
 		BypassNetworkLists           *HostnameCoverageMatchTargetBypassNetworkLists        `json:"bypassNetworkLists,omitempty"`
-		ConfigID                     int                                                   `json:"configId"`
-		ConfigVersion                int                                                   `json:"configVersion"`
+		ConfigID                     int64                                                 `json:"configId"`
+		ConfigVersion                int64                                                 `json:"configVersion"`
 		DefaultFile                  string                                                `json:"defaultFile"`
 		EffectiveSecurityControls    *HostnameCoverageMatchTargetEffectiveSecurityControls `json:"effectiveSecurityControls,omitempty"`
 		FilePaths                    []string                                              `json:"filePaths"`

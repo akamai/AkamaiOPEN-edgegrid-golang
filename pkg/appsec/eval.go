@@ -37,8 +37,8 @@ type (
 	// GetEvalsRequest is used to retrieve the mode setting that conveys how rules will be kept up to date.
 	// Deprecated: this struct will be removed in a future release.
 	GetEvalsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Current  string `json:"current"`
 		Mode     string `json:"mode"`
@@ -57,8 +57,8 @@ type (
 
 	// GetEvalRequest is used to retrieve the mode setting that conveys how rules will be kept up to date.
 	GetEvalRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Current  string `json:"current"`
 		Mode     string `json:"mode"`
@@ -76,8 +76,8 @@ type (
 
 	// RemoveEvalRequest is used to remove an evaluation mode setting.
 	RemoveEvalRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Current  string `json:"-"`
 		Mode     string `json:"-"`
@@ -93,8 +93,8 @@ type (
 
 	// UpdateEvalRequest is used to modify an evaluation mode setting.
 	UpdateEvalRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Current  string `json:"-"`
 		Mode     string `json:"-"`

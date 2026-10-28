@@ -32,14 +32,14 @@ type (
 
 	// GetSecurityPolicyClonesRequest is used to retrieve the available security policies.
 	GetSecurityPolicyClonesRequest struct {
-		ConfigID int `json:"configId"`
-		Version  int `json:"version"`
+		ConfigID int64 `json:"configId"`
+		Version  int64 `json:"version"`
 	}
 
 	// GetSecurityPolicyClonesResponse is returned from a call to GetSecurityPolicyClones.
 	GetSecurityPolicyClonesResponse struct {
-		ConfigID int                                           `json:"configId"`
-		Version  int                                           `json:"version"`
+		ConfigID int64                                         `json:"configId"`
+		Version  int64                                         `json:"version"`
 		Policies []GetSecurityPolicyClonesResponsePoliciesItem `json:"policies"`
 	}
 
@@ -53,24 +53,24 @@ type (
 
 	// GetSecurityPolicyCloneRequest is used to retrieve a security policy.
 	GetSecurityPolicyCloneRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		PolicyID string `json:"policyId"`
 	}
 
 	// GetSecurityPolicyCloneResponse is returned from a call to GetSecurityPolicyClone.
 	GetSecurityPolicyCloneResponse struct {
-		ConfigID               int                    `json:"configId,omitempty"`
+		ConfigID               int64                  `json:"configId,omitempty"`
 		PolicyID               string                 `json:"policyId,omitempty"`
 		PolicyName             string                 `json:"policyName,omitempty"`
 		PolicySecurityControls PolicySecurityControls `json:"policySecurityControls,omitempty"`
-		Version                int                    `json:"version,omitempty"`
+		Version                int64                  `json:"version,omitempty"`
 	}
 
 	// CreateSecurityPolicyCloneRequest is used to clone a security policy.
 	CreateSecurityPolicyCloneRequest struct {
-		ConfigID                 int    `json:"configId"`
-		Version                  int    `json:"version"`
+		ConfigID                 int64  `json:"configId"`
+		Version                  int64  `json:"version"`
 		CreateFromSecurityPolicy string `json:"createFromSecurityPolicy"`
 		PolicyName               string `json:"policyName"`
 		PolicyPrefix             string `json:"policyPrefix"`
@@ -86,9 +86,9 @@ type (
 
 	// SecurityPolicyCloneResponse is currently unused.
 	SecurityPolicyCloneResponse struct {
-		ConfigID int        `json:"configId"`
+		ConfigID int64      `json:"configId"`
 		Policies []Policies `json:"policies"`
-		Version  int        `json:"version"`
+		Version  int64      `json:"version"`
 	}
 
 	// Policies is used as part of a description of available security policies.
@@ -103,11 +103,11 @@ type (
 
 	// CreateSecurityPolicyClonePostResponse is currently unused.
 	CreateSecurityPolicyClonePostResponse struct {
-		ConfigID               int                    `json:"configId"`
+		ConfigID               int64                  `json:"configId"`
 		PolicyID               string                 `json:"policyId"`
 		PolicyName             string                 `json:"policyName"`
 		PolicySecurityControls PolicySecurityControls `json:"policySecurityControls"`
-		Version                int                    `json:"version"`
+		Version                int64                  `json:"version"`
 	}
 
 	// PolicySecurityControls represents the security controls for a policy clone.

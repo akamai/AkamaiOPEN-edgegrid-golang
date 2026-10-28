@@ -50,7 +50,7 @@ type (
 	// GetCustomRulesUsageRequest is used to return the custom rule usages for config version.
 	GetCustomRulesUsageRequest struct {
 		ConfigID    int64
-		Version     int
+		Version     int64
 		RequestBody RuleIDs
 	}
 
@@ -84,8 +84,8 @@ type (
 
 	// GetCustomRulesRequest is used to retrieve the custom rules for a configuration.
 	GetCustomRulesRequest struct {
-		ConfigID int `json:"configid,omitempty"`
-		ID       int `json:"-"`
+		ConfigID int64 `json:"configid,omitempty"`
+		ID       int   `json:"-"`
 	}
 
 	// GetCustomRulesResponse is returned from a call to GetCustomRules.
@@ -99,7 +99,7 @@ type (
 		Link                string                     `json:"link"`
 		Name                string                     `json:"name"`
 		Status              string                     `json:"status"`
-		Version             int                        `json:"version"`
+		Version             int64                      `json:"version"`
 		EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
 		SamplingRate        *int                       `json:"samplingRate,omitempty"`
 		StagingOnly         *bool                      `json:"stagingOnly,omitempty"`
@@ -107,8 +107,8 @@ type (
 
 	// GetCustomRuleRequest is used to retrieve the details of a custom rule.
 	GetCustomRuleRequest struct {
-		ConfigID int `json:"configid,omitempty"`
-		ID       int `json:"id,omitempty"`
+		ConfigID int64 `json:"configid,omitempty"`
+		ID       int   `json:"id,omitempty"`
 	}
 
 	// GetCustomRuleResponse is returned from a call to GetCustomRule.
@@ -119,7 +119,7 @@ type (
 		ID                  int                        `json:"-"`
 		Name                string                     `json:"name"`
 		Description         string                     `json:"description,omitempty"`
-		Version             int                        `json:"-"`
+		Version             int64                      `json:"-"`
 		RuleActivated       bool                       `json:"-"`
 		Structured          bool                       `json:"-"`
 		Tag                 []string                   `json:"tag"`
@@ -157,8 +157,8 @@ type (
 
 	// CreateCustomRuleRequest is used to create a custom rule.
 	CreateCustomRuleRequest struct {
-		ConfigID       int             `json:"configid,omitempty"`
-		Version        int             `json:"version,omitempty"`
+		ConfigID       int64           `json:"configid,omitempty"`
+		Version        int64           `json:"version,omitempty"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
@@ -167,7 +167,7 @@ type (
 		ID                  int                        `json:"id,omitempty"`
 		Name                string                     `json:"name"`
 		Description         string                     `json:"description,omitempty"`
-		Version             int                        `json:"-"`
+		Version             int64                      `json:"-"`
 		RuleActivated       bool                       `json:"-"`
 		Structured          bool                       `json:"-"`
 		Tag                 []string                   `json:"tag"`
@@ -181,9 +181,9 @@ type (
 
 	// UpdateCustomRuleRequest is used to modify an existing custom rule.
 	UpdateCustomRuleRequest struct {
-		ConfigID       int             `json:"configid,omitempty"`
+		ConfigID       int64           `json:"configid,omitempty"`
 		ID             int             `json:"id,omitempty"`
-		Version        int             `json:"version,omitempty"`
+		Version        int64           `json:"version,omitempty"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
@@ -192,8 +192,8 @@ type (
 
 	// RemoveCustomRuleRequest is used to remove a custom rule.
 	RemoveCustomRuleRequest struct {
-		ConfigID int `json:"configid,omitempty"`
-		ID       int `json:"id,omitempty"`
+		ConfigID int64 `json:"configid,omitempty"`
+		ID       int   `json:"id,omitempty"`
 	}
 
 	// RemoveCustomRuleResponse is returned from a call to RemoveCustomRule.

@@ -25,15 +25,15 @@ type (
 
 	// GetPolicyProtectionsRequest is used to retrieve the policy protection setting.
 	GetPolicyProtectionsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 	}
 
 	// UpdatePolicyProtectionsRequest is used to modify the policy protection setting.
 	UpdatePolicyProtectionsRequest struct {
-		ConfigID                       int    `json:"-"`
-		Version                        int    `json:"-"`
+		ConfigID                       int64  `json:"-"`
+		Version                        int64  `json:"-"`
 		PolicyID                       string `json:"-"`
 		ApplyAPIConstraints            bool   `json:"applyApiConstraints"`
 		ApplyAccountProtectionControls bool   `json:"applyAccountProtectionControls"`

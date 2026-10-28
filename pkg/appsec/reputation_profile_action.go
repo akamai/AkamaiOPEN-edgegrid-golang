@@ -31,8 +31,8 @@ type (
 
 	// GetReputationProfileActionsRequest is used to retrieve the list of reputation profiles and their associated actions.
 	GetReputationProfileActionsRequest struct {
-		ConfigID            int    `json:"configId"`
-		Version             int    `json:"version"`
+		ConfigID            int64  `json:"configId"`
+		Version             int64  `json:"version"`
 		PolicyID            string `json:"policyId"`
 		ReputationProfileID int    `json:"id"`
 		Action              string `json:"action"`
@@ -51,8 +51,8 @@ type (
 
 	// GetReputationProfileActionRequest is used to retrieve the details for a specific reputation profile.
 	GetReputationProfileActionRequest struct {
-		ConfigID            int    `json:"configId"`
-		Version             int    `json:"version"`
+		ConfigID            int64  `json:"configId"`
+		Version             int64  `json:"version"`
 		PolicyID            string `json:"policyId"`
 		ReputationProfileID int    `json:"id"`
 		Action              string `json:"action"`
@@ -65,8 +65,8 @@ type (
 
 	// UpdateReputationProfileActionRequest is used to modify the details for a specific reputation profile.
 	UpdateReputationProfileActionRequest struct {
-		ConfigID            int    `json:"-"`
-		Version             int    `json:"-"`
+		ConfigID            int64  `json:"-"`
+		Version             int64  `json:"-"`
 		PolicyID            string `json:"-"`
 		ReputationProfileID int    `json:"-"`
 		Action              string `json:"action"`

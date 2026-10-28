@@ -62,7 +62,7 @@ type (
 	// together with their actions, actions lock and condition and exception information.
 	GetRapidRulesRequest struct {
 		ConfigID             int64
-		Version              int
+		Version              int64
 		PolicyID             string
 		RuleID               *int64
 		IncludeExpiryDetails bool
@@ -79,7 +79,7 @@ type (
 		Action             string                  `json:"action"`
 		Lock               bool                    `json:"lock"`
 		Name               string                  `json:"title"`
-		Version            int                     `json:"version"`
+		Version            int64                   `json:"version"`
 		RiskScoreGroups    []string                `json:"riskScoreGroups"`
 		ConditionException *RuleConditionException `json:"conditionException"`
 		Expired            *bool                   `json:"expired"`
@@ -110,7 +110,7 @@ type (
 	// UpdateRapidRulesStatusRequest is used to modify the status (enabled/disabled) for a rapid ruleset.
 	UpdateRapidRulesStatusRequest struct {
 		ConfigID int64
-		Version  int
+		Version  int64
 		PolicyID string
 		Body     UpdateRapidRulesStatusRequestBody
 	}
@@ -126,7 +126,7 @@ type (
 	// UpdateRapidRulesDefaultActionRequest is used to modify a new rapid rules default action.
 	UpdateRapidRulesDefaultActionRequest struct {
 		ConfigID int64
-		Version  int
+		Version  int64
 		PolicyID string
 		Body     UpdateRapidRulesDefaultActionRequestBody
 	}
@@ -142,7 +142,7 @@ type (
 	// UpdateRapidRuleActionLockRequest is used to modify a rapid rule action lock.
 	UpdateRapidRuleActionLockRequest struct {
 		ConfigID int64
-		Version  int
+		Version  int64
 		PolicyID string
 		RuleID   int64
 		Body     UpdateRapidRuleActionLockRequestBody
@@ -159,10 +159,10 @@ type (
 	// UpdateRapidRuleActionRequest is used to modify a rapid rule action.
 	UpdateRapidRuleActionRequest struct {
 		ConfigID    int64
-		Version     int
+		Version     int64
 		PolicyID    string
 		RuleID      int64
-		RuleVersion int
+		RuleVersion int64
 		Body        UpdateRapidRuleActionRequestBody
 	}
 
@@ -175,7 +175,7 @@ type (
 	// UpdateRapidRuleExceptionRequest is used to modify a rapid rule exception.
 	UpdateRapidRuleExceptionRequest struct {
 		ConfigID int64
-		Version  int
+		Version  int64
 		PolicyID string
 		RuleID   int64
 		Body     RuleConditionException
@@ -578,7 +578,7 @@ func (p *appsec) UpdateRapidRuleException(ctx context.Context, params UpdateRapi
 	return &result, nil
 }
 
-func getRapidRulesStatusURI(configID int64, version int, policyID string) string {
+func getRapidRulesStatusURI(configID int64, version int64, policyID string) string {
 	return fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rapid-rules/status",
 		configID,
@@ -586,7 +586,7 @@ func getRapidRulesStatusURI(configID int64, version int, policyID string) string
 		policyID)
 }
 
-func getRapidRulesDefaultActionURI(configID int64, version int, policyID string) string {
+func getRapidRulesDefaultActionURI(configID int64, version int64, policyID string) string {
 	return fmt.Sprintf(
 		"/appsec/v1/configs/%d/versions/%d/security-policies/%s/rapid-rules/action",
 		configID,

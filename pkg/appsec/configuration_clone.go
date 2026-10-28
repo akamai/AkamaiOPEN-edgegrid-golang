@@ -26,9 +26,9 @@ type (
 
 	// GetConfigurationCloneRequest is used to retrieve information about an existing security configuration.
 	GetConfigurationCloneRequest struct {
-		ConfigID     int                          `json:"configId"`
+		ConfigID     int64                        `json:"configId"`
 		ConfigName   string                       `json:"configName"`
-		Version      int                          `json:"version"`
+		Version      int64                        `json:"version"`
 		VersionNotes string                       `json:"versionNotes"`
 		CreateDate   time.Time                    `json:"createDate"`
 		CreatedBy    string                       `json:"createdBy"`
@@ -39,9 +39,9 @@ type (
 
 	// GetConfigurationCloneResponse is returned from a call to GetConfigurationClone.
 	GetConfigurationCloneResponse struct {
-		ConfigID     int                          `json:"configId"`
+		ConfigID     int64                        `json:"configId"`
 		ConfigName   string                       `json:"configName"`
-		Version      int                          `json:"version"`
+		Version      int64                        `json:"version"`
 		VersionNotes string                       `json:"versionNotes"`
 		CreateDate   time.Time                    `json:"createDate"`
 		CreatedBy    string                       `json:"createdBy"`
@@ -62,8 +62,8 @@ type (
 
 	// CreateConfigurationCloneResponse is returned from a call to CreateConfigurationClone.
 	CreateConfigurationCloneResponse struct {
-		ConfigID    int    `json:"configId"`
-		Version     int    `json:"version"`
+		ConfigID    int64  `json:"configId"`
+		Version     int64  `json:"version"`
 		Description string `json:"description"`
 		Name        string `json:"name"`
 	}
@@ -81,8 +81,8 @@ type (
 
 	// CreateConfigurationCloneCreateFrom describes the configuration version to clone from.
 	CreateConfigurationCloneCreateFrom struct {
-		ConfigID int `json:"configId"`
-		Version  int `json:"version"`
+		ConfigID int64 `json:"configId"`
+		Version  int64 `json:"version"`
 	}
 )
 

@@ -26,8 +26,8 @@ type (
 
 	// GetRuleUpgradeRequest is used to verify changes in the KRS rule sets.
 	GetRuleUpgradeRequest struct {
-		ConfigID int
-		Version  int
+		ConfigID int64
+		Version  int64
 		PolicyID string
 	}
 
@@ -71,8 +71,8 @@ type (
 
 	// UpdateRuleUpgradeRequest is used to upgrade to the most recent version of the KRS rule set.
 	UpdateRuleUpgradeRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Upgrade  bool   `json:"upgrade"`
 		Mode     string `json:"mode,omitempty"`

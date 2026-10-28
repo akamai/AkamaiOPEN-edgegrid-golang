@@ -31,8 +31,8 @@ type (
 
 	// GetCustomRuleActionsRequest is used to retrieve the custom rule actions for a configuration.
 	GetCustomRuleActionsRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		PolicyID string `json:"policyId"`
 		RuleID   int    `json:"ruleId"`
 	}
@@ -42,8 +42,8 @@ type (
 
 	// GetCustomRuleActionRequest is used to retrieve the action for a custom rule.
 	GetCustomRuleActionRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		PolicyID string `json:"policyId"`
 		RuleID   int    `json:"ruleId"`
 	}
@@ -59,8 +59,8 @@ type (
 
 	// UpdateCustomRuleActionRequest is used to modify an existing custom rule.
 	UpdateCustomRuleActionRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int    `json:"-"`
 		Action   string `json:"action"`

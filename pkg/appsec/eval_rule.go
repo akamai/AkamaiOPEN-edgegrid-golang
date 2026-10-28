@@ -32,8 +32,8 @@ type (
 
 	// GetEvalRulesRequest is used to retrieve the rules available for evaluation and their actions.
 	GetEvalRulesRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int    `json:"-"`
 	}
@@ -52,8 +52,8 @@ type (
 
 	// GetEvalRuleRequest is used to retrieve a rule available for evaluation and its action.
 	GetEvalRuleRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int    `json:"ruleId"`
 	}
@@ -66,8 +66,8 @@ type (
 
 	// UpdateEvalRuleRequest is used to modify a rule available for evaluation and its action.
 	UpdateEvalRuleRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		PolicyID       string          `json:"-"`
 		RuleID         int             `json:"-"`
 		Action         string          `json:"action"`

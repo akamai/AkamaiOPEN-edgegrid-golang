@@ -39,8 +39,8 @@ type (
 
 	// GetAdvancedSettingsAttackPayloadLoggingRequest is used to retrieve the Attack Payload logging settings for a configuration or policy.
 	GetAdvancedSettingsAttackPayloadLoggingRequest struct {
-		ConfigID int
-		Version  int
+		ConfigID int64
+		Version  int64
 		PolicyID string
 	}
 
@@ -64,8 +64,8 @@ type (
 
 	// UpdateAdvancedSettingsAttackPayloadLoggingRequest is used to update the Attack Payload logging settings for a configuration or policy.
 	UpdateAdvancedSettingsAttackPayloadLoggingRequest struct {
-		ConfigID       int
-		Version        int
+		ConfigID       int64
+		Version        int64
 		PolicyID       string
 		JSONPayloadRaw json.RawMessage `json:"-"`
 	}
@@ -80,8 +80,8 @@ type (
 
 	// RemoveAdvancedSettingsAttackPayloadLoggingRequest is used to disable Attack Payload logging for a configuration or policy.
 	RemoveAdvancedSettingsAttackPayloadLoggingRequest struct {
-		ConfigID     int
-		Version      int
+		ConfigID     int64
+		Version      int64
 		PolicyID     string
 		Override     bool                             `json:"override"`
 		Enabled      bool                             `json:"enabled"`
@@ -217,7 +217,7 @@ func (a *appsec) RemoveAdvancedSettingsAttackPayloadLogging(ctx context.Context,
 	return &result, nil
 }
 
-func getURI(configID, configVersion int, policyID string) string {
+func getURI(configID, configVersion int64, policyID string) string {
 	var uri string
 	if policyID != "" {
 		uri = fmt.Sprintf(

@@ -25,8 +25,8 @@ type (
 
 	// GetVersionNotesRequest is used to retrieve the version notes for a configuration version.
 	GetVersionNotesRequest struct {
-		ConfigID int `json:"-"`
-		Version  int `json:"-"`
+		ConfigID int64 `json:"-"`
+		Version  int64 `json:"-"`
 	}
 
 	// GetVersionNotesResponse is returned from a call to GetVersionNotes.
@@ -36,8 +36,8 @@ type (
 
 	// UpdateVersionNotesRequest is used to modify the version notes for a configuration version.
 	UpdateVersionNotesRequest struct {
-		ConfigID int `json:"-"`
-		Version  int `json:"-"`
+		ConfigID int64 `json:"-"`
+		Version  int64 `json:"-"`
 
 		Notes string `json:"notes"`
 	}

@@ -37,9 +37,9 @@ type (
 
 	// CreateConfigurationVersionCloneRequest is used to clone an existing configuration version.
 	CreateConfigurationVersionCloneRequest struct {
-		ConfigID          int  `json:"-"`
-		CreateFromVersion int  `json:"createFromVersion"`
-		RuleUpdate        bool `json:"ruleUpdate"`
+		ConfigID          int64 `json:"-"`
+		CreateFromVersion int64 `json:"createFromVersion"`
+		RuleUpdate        bool  `json:"ruleUpdate"`
 	}
 
 	// CreateConfigurationVersionCloneResponse is returned from a call to CreateConfigurationVersionClone.
@@ -47,8 +47,8 @@ type (
 
 	// RemoveConfigurationVersionCloneRequest is used to remove an existing configuration version.
 	RemoveConfigurationVersionCloneRequest struct {
-		ConfigID int `json:"-"`
-		Version  int `json:"-"`
+		ConfigID int64 `json:"-"`
+		Version  int64 `json:"-"`
 	}
 
 	// RemoveConfigurationVersionCloneResponse is returned from a call to RemoveConfigurationVersionClone.

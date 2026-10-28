@@ -29,8 +29,8 @@ type (
 
 	// GetAdvancedSettingsAsePenaltyBoxRequest is used to retrieve the AsePenaltyBox setting.
 	GetAdvancedSettingsAsePenaltyBoxRequest struct {
-		ConfigID int `json:"-"`
-		Version  int `json:"-"`
+		ConfigID int64 `json:"-"`
+		Version  int64 `json:"-"`
 	}
 
 	// GetAdvancedSettingsAsePenaltyBoxResponse returns the AsePenaltyBox setting.
@@ -44,8 +44,8 @@ type (
 
 	// UpdateAdvancedSettingsAsePenaltyBoxRequest is used to update the AsePenaltyBox setting.
 	UpdateAdvancedSettingsAsePenaltyBoxRequest struct {
-		ConfigID                int                      `json:"-"`
-		Version                 int                      `json:"-"`
+		ConfigID                int64                    `json:"-"`
+		Version                 int64                    `json:"-"`
 		BlockDuration           int                      `json:"blockDuration,omitempty"`
 		QualificationExclusions *QualificationExclusions `json:"qualificationExclusions,omitempty"`
 	}
@@ -61,8 +61,8 @@ type (
 
 	// RemoveAdvancedSettingsAsePenaltyBoxRequest is used to clear the AsePenaltyBox setting.
 	RemoveAdvancedSettingsAsePenaltyBoxRequest struct {
-		ConfigID int `json:"-"`
-		Version  int `json:"-"`
+		ConfigID int64 `json:"-"`
+		Version  int64 `json:"-"`
 	}
 
 	// RemoveAdvancedSettingsAsePenaltyBoxResponse returns the result of clearing the AsePenaltyBox setting.

@@ -116,7 +116,7 @@ func TestAppSec_GetReputationProfile(t *testing.T) {
 			params: GetReputationProfileRequest{
 				ConfigID:            43253,
 				ConfigVersion:       15,
-				ReputationProfileId: 134644,
+				ReputationProfileID: 134644,
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     respData,
@@ -127,7 +127,7 @@ func TestAppSec_GetReputationProfile(t *testing.T) {
 			params: GetReputationProfileRequest{
 				ConfigID:            43253,
 				ConfigVersion:       15,
-				ReputationProfileId: 134644,
+				ReputationProfileID: 134644,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -151,7 +151,7 @@ func TestAppSec_GetReputationProfile(t *testing.T) {
 			params: GetReputationProfileRequest{
 				ConfigID:            43253,
 				ConfigVersion:       15,
-				ReputationProfileId: 134644,
+				ReputationProfileID: 134644,
 			},
 			responseStatus:   http.StatusOK,
 			responseBody:     `{"id": 134644}`,
@@ -285,7 +285,7 @@ func TestAppSec_UpdateReputationProfile(t *testing.T) {
 	req := UpdateReputationProfileRequest{
 		ConfigID:            43253,
 		ConfigVersion:       15,
-		ReputationProfileId: 134644,
+		ReputationProfileID: 134644,
 		JsonPayloadRaw:      json.RawMessage(reqData),
 	}
 
@@ -426,7 +426,7 @@ func TestAppSec_RemoveReputationProfile(t *testing.T) {
 			params: RemoveReputationProfileRequest{
 				ConfigID:            43253,
 				ConfigVersion:       15,
-				ReputationProfileId: 134644,
+				ReputationProfileID: 134644,
 			},
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -440,7 +440,7 @@ func TestAppSec_RemoveReputationProfile(t *testing.T) {
 			params: RemoveReputationProfileRequest{
 				ConfigID:            43253,
 				ConfigVersion:       15,
-				ReputationProfileId: 134644,
+				ReputationProfileID: 134644,
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `

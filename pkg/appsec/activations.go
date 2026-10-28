@@ -55,19 +55,19 @@ type (
 
 	// GetActivationHistoryRequest is used to request the activation history for a configuration.
 	GetActivationHistoryRequest struct {
-		ConfigID int `json:"configId"`
+		ConfigID int64 `json:"configId"`
 	}
 
 	// GetActivationHistoryResponse lists the activation history for a configuration.
 	GetActivationHistoryResponse struct {
-		ConfigID          int          `json:"configId"`
+		ConfigID          int64        `json:"configId"`
 		ActivationHistory []Activation `json:"activationHistory,omitempty"`
 	}
 
 	// Activation represents the status of a configuration activation.
 	Activation struct {
 		ActivationID       int       `json:"activationId"`
-		Version            int       `json:"version"`
+		Version            int64     `json:"version"`
 		Status             string    `json:"status"`
 		Network            string    `json:"Network"`
 		ActivatedBy        string    `json:"activatedBy"`
@@ -100,15 +100,15 @@ type (
 
 	// ActivationConfigRequestItem describes a specific configuration version to be activated or deactivated.
 	ActivationConfigRequestItem struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
 	}
 
 	// ActivationConfigResponseItem is used in responses that include activation configuration details.
 	ActivationConfigResponseItem struct {
-		ConfigID              int    `json:"configId"`
+		ConfigID              int64  `json:"configId"`
 		ConfigName            string `json:"configName"`
-		ConfigVersion         int    `json:"configVersion"`
+		ConfigVersion         int64  `json:"configVersion"`
 		PreviousConfigVersion int    `json:"previousConfigVersion"`
 	}
 

@@ -50,8 +50,8 @@ type (
 
 	// GetExportConfigurationRequest is used to call GetExportConfiguration.
 	GetExportConfigurationRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		Source   string `json:"source,omitempty"`
 	}
 
@@ -71,9 +71,9 @@ type (
 
 	// GetExportConfigurationResponse is returned from a call to GetExportConfiguration.
 	GetExportConfigurationResponse struct {
-		ConfigID                  int                                               `json:"configId"`
+		ConfigID                  int64                                             `json:"configId"`
 		ConfigName                string                                            `json:"configName"`
-		Version                   int                                               `json:"version"`
+		Version                   int64                                             `json:"version"`
 		BasedOn                   int                                               `json:"basedOn"`
 		Staging                   GetExportConfigurationResponseStatus              `json:"staging"`
 		Production                GetExportConfigurationResponseStatus              `json:"production"`

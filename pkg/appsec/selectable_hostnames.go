@@ -21,18 +21,19 @@ type (
 
 	// GetSelectableHostnamesRequest is used to retrieve the selectable hostnames for a configuration.
 	GetSelectableHostnamesRequest struct {
-		ConfigID   int    `json:"configId"`
-		Version    int    `json:"version"`
+		ConfigID   int64  `json:"configId"`
+		Version    int64  `json:"version"`
 		ContractID string `json:"-"`
 		GroupID    int    `json:"-"`
 	}
 
 	// GetSelectableHostnamesResponse is returned from a call to GetSelectableHostnames.
 	GetSelectableHostnamesResponse struct {
-		AvailableSet            []GetSelectableHostnamesResponseAvailableSetItem `json:"availableSet,omitempty"`
-		ConfigID                int                                              `json:"configId,omitempty"`
-		ConfigVersion           int                                              `json:"configVersion,omitempty"`
-		ProtectARLInclusionHost bool                                             `json:"protectARLInclusionHost,omitempty"`
+		ConfigID                int64 `json:"configId,omitempty"`
+		ConfigVersion           int64 `json:"configVersion,omitempty"`
+		ProtectARLInclusionHost bool  `json:"protectARLInclusionHost,omitempty"`
+
+		AvailableSet []GetSelectableHostnamesResponseAvailableSetItem `json:"availableSet,omitempty"`
 	}
 
 	// GetSelectableHostnamesResponseAvailableSetItem describes an available hostname item.

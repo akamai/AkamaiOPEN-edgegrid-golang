@@ -36,8 +36,8 @@ type (
 
 	// GetAdvancedSettingsLoggingRequest is used to retrieve the HTTP header logging settings for a configuration or policy.
 	GetAdvancedSettingsLoggingRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 	}
 
@@ -70,8 +70,8 @@ type (
 
 	// UpdateAdvancedSettingsLoggingRequest is used to update the HTTP header logging settings for a configuration or policy.
 	UpdateAdvancedSettingsLoggingRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		PolicyID       string          `json:"-"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
@@ -98,8 +98,8 @@ type (
 
 	// RemoveAdvancedSettingsLoggingRequest is used to disable HTTP header logging for a configuration or policy.
 	RemoveAdvancedSettingsLoggingRequest struct {
-		ConfigID      int    `json:"-"`
-		Version       int    `json:"-"`
+		ConfigID      int64  `json:"-"`
+		Version       int64  `json:"-"`
 		PolicyID      string `json:"-"`
 		Override      bool   `json:"override"`
 		AllowSampling bool   `json:"allowSampling"`

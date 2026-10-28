@@ -25,8 +25,8 @@ type (
 
 	// GetSlowPostProtectionSettingsRequest is used to retrieve the slow post protection settings for a configuration.
 	GetSlowPostProtectionSettingsRequest struct {
-		ConfigID          int                                         `json:"configId"`
-		Version           int                                         `json:"version"`
+		ConfigID          int64                                       `json:"configId"`
+		Version           int64                                       `json:"version"`
 		PolicyID          string                                      `json:"policyId"`
 		Action            string                                      `json:"action"`
 		SlowRateThreshold *SlowPostProtectionSettingSlowRateThreshold `json:"slowRateThreshold,omitempty"`
@@ -42,8 +42,8 @@ type (
 
 	// UpdateSlowPostProtectionSettingRequest is used to modify the slow post protection settings for a configuration.
 	UpdateSlowPostProtectionSettingRequest struct {
-		ConfigID          int                                        `json:"configId"`
-		Version           int                                        `json:"version"`
+		ConfigID          int64                                      `json:"configId"`
+		Version           int64                                      `json:"version"`
 		PolicyID          string                                     `json:"policyId"`
 		Action            string                                     `json:"action"`
 		SlowRateThreshold SlowPostProtectionSettingSlowRateThreshold `json:"slowRateThreshold"`

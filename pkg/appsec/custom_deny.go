@@ -46,8 +46,8 @@ type (
 
 	// GetCustomDenyListRequest is used to retrieve the custom deny actions for a configuration.
 	GetCustomDenyListRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		ID       string `json:"id,omitempty"`
 	}
 
@@ -66,8 +66,8 @@ type (
 
 	// GetCustomDenyRequest is used to retrieve a specific custom deny action.
 	GetCustomDenyRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		ID       string `json:"id,omitempty"`
 	}
 
@@ -81,8 +81,8 @@ type (
 
 	// CreateCustomDenyRequest is used to create a new custom deny action for a specific configuration.
 	CreateCustomDenyRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
@@ -96,8 +96,8 @@ type (
 
 	// UpdateCustomDenyRequest is used to details for a specific custom deny action.
 	UpdateCustomDenyRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		ID             string          `json:"id"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
@@ -107,8 +107,8 @@ type (
 
 	// RemoveCustomDenyRequest is used to remove an existing custom deny action.
 	RemoveCustomDenyRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		ID       string `json:"id,omitempty"`
 	}
 

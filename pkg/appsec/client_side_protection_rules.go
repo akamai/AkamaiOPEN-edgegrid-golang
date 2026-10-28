@@ -40,23 +40,23 @@ type (
 
 	// ListClientSideProtectionRulesRequest is used to retrieve all script behavior rules for a policy.
 	ListClientSideProtectionRulesRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 	}
 
 	// CreateClientSideProtectionRuleRequest is used to create a new script behavior rule.
 	CreateClientSideProtectionRuleRequest struct {
-		ConfigID int                          `json:"-"`
-		Version  int                          `json:"-"`
+		ConfigID int64                        `json:"-"`
+		Version  int64                        `json:"-"`
 		PolicyID string                       `json:"-"`
 		Body     ClientSideProtectionRuleBody `json:"-"`
 	}
 
 	// UpdateClientSideProtectionRuleRequest is used to update an existing script behavior rule.
 	UpdateClientSideProtectionRuleRequest struct {
-		ConfigID int                          `json:"-"`
-		Version  int                          `json:"-"`
+		ConfigID int64                        `json:"-"`
+		Version  int64                        `json:"-"`
 		PolicyID string                       `json:"-"`
 		RuleID   int64                        `json:"-"`
 		Body     ClientSideProtectionRuleBody `json:"-"`
@@ -64,8 +64,8 @@ type (
 
 	// DeleteClientSideProtectionRuleRequest is used to delete a script behavior rule.
 	DeleteClientSideProtectionRuleRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int64  `json:"-"`
 	}

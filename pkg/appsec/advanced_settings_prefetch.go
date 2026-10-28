@@ -26,8 +26,8 @@ type (
 
 	// GetAdvancedSettingsPrefetchRequest is used to retrieve the prefetch request settings.
 	GetAdvancedSettingsPrefetchRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Group    string `json:"group"`
 	}
@@ -42,8 +42,8 @@ type (
 
 	// UpdateAdvancedSettingsPrefetchRequest is used to modify the prefetch request settings.
 	UpdateAdvancedSettingsPrefetchRequest struct {
-		ConfigID           int      `json:"-"`
-		Version            int      `json:"-"`
+		ConfigID           int64    `json:"-"`
+		Version            int64    `json:"-"`
 		AllExtensions      bool     `json:"allExtensions"`
 		EnableAppLayer     bool     `json:"enableAppLayer"`
 		EnableRateControls bool     `json:"enableRateControls"`
@@ -60,8 +60,8 @@ type (
 
 	// RemoveAdvancedSettingsPrefetchRequest is used to remove the prefetch request settings.
 	RemoveAdvancedSettingsPrefetchRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Action   string `json:"action"`
 	}

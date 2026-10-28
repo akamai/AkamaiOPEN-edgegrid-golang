@@ -33,8 +33,8 @@ type (
 
 	// GetAdvancedSettingsJA4FingerprintRequest is used to retrieve the JA4 TLS Fingerprint settings for a configuration.
 	GetAdvancedSettingsJA4FingerprintRequest struct {
-		ConfigID int
-		Version  int
+		ConfigID int64
+		Version  int64
 	}
 
 	// GetAdvancedSettingsJA4FingerprintResponse is returned from a call to GetAdvancedSettingsJA4Fingerprint.
@@ -44,8 +44,8 @@ type (
 
 	// UpdateAdvancedSettingsJA4FingerprintRequest is used to update the JA4 TLS Fingerprint settings for a configuration.
 	UpdateAdvancedSettingsJA4FingerprintRequest struct {
-		ConfigID    int
-		Version     int
+		ConfigID    int64
+		Version     int64
 		HeaderNames []string `json:"headerNames,omitempty"`
 	}
 
@@ -56,8 +56,8 @@ type (
 
 	// RemoveAdvancedSettingsJA4FingerprintRequest is used to disable JA4 TLS Fingerprint for a configuration.
 	RemoveAdvancedSettingsJA4FingerprintRequest struct {
-		ConfigID int
-		Version  int
+		ConfigID int64
+		Version  int64
 	}
 
 	// RemoveAdvancedSettingsJA4FingerprintResponse is returned from a call to RemoveAdvancedSettingsJA4Fingerprint.

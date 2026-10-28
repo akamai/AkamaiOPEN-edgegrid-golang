@@ -38,8 +38,8 @@ type (
 
 	// GetAdvancedSettingsRequestBodyRequest is used to retrieve the Request Size Inspection Limit settings for a configuration or policy.
 	GetAdvancedSettingsRequestBodyRequest struct {
-		ConfigID int
-		Version  int
+		ConfigID int64
+		Version  int64
 		PolicyID string
 	}
 
@@ -51,8 +51,8 @@ type (
 
 	// UpdateAdvancedSettingsRequestBodyRequest is used to update the Request body settings for a configuration or policy.
 	UpdateAdvancedSettingsRequestBodyRequest struct {
-		ConfigID                           int
-		Version                            int
+		ConfigID                           int64
+		Version                            int64
 		PolicyID                           string
 		RequestBodyInspectionLimitInKB     RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
 		RequestBodyInspectionLimitOverride bool                 `json:"override"`
@@ -66,8 +66,8 @@ type (
 
 	// RemoveAdvancedSettingsRequestBodyRequest is used to reset the Request body settings for a configuration or policy.
 	RemoveAdvancedSettingsRequestBodyRequest struct {
-		ConfigID                           int
-		Version                            int
+		ConfigID                           int64
+		Version                            int64
 		PolicyID                           string
 		RequestBodyInspectionLimitInKB     RequestBodySizeLimit `json:"requestBodyInspectionLimitInKB"`
 		RequestBodyInspectionLimitOverride bool                 `json:"override"`
@@ -205,7 +205,7 @@ func (a *appsec) RemoveAdvancedSettingsRequestBody(ctx context.Context, params R
 	return &result, nil
 }
 
-func getRequestBodyURI(configID, configVersion int, policyID string) string {
+func getRequestBodyURI(configID, configVersion int64, policyID string) string {
 	var uri string
 	if policyID != "" {
 		uri = fmt.Sprintf(

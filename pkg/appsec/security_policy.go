@@ -48,15 +48,15 @@ type (
 
 	// GetSecurityPoliciesRequest is used to retrieve the security policies for a configuration.
 	GetSecurityPoliciesRequest struct {
-		ConfigID   int    `json:"configId"`
-		Version    int    `json:"version"`
+		ConfigID   int64  `json:"configId"`
+		Version    int64  `json:"version"`
 		PolicyName string `json:"-"`
 	}
 
 	// GetSecurityPoliciesResponse is returned from a call to GetSecurityPolicies.
 	GetSecurityPoliciesResponse struct {
-		ConfigID int                                 `json:"configId,omitempty"`
-		Version  int                                 `json:"version,omitempty"`
+		ConfigID int64                               `json:"configId,omitempty"`
+		Version  int64                               `json:"version,omitempty"`
 		Policies []GetSecurityPoliciesResponsePolicy `json:"policies,omitempty"`
 	}
 
@@ -70,25 +70,25 @@ type (
 
 	// GetSecurityPolicyRequest is used to retrieve information about a security policy.
 	GetSecurityPolicyRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		PolicyID string `json:"policyId"`
 	}
 
 	// GetSecurityPolicyResponse is returned from a call to GetSecurityPolicy.
 	GetSecurityPolicyResponse struct {
-		ConfigID               int               `json:"configId,omitempty"`
+		ConfigID               int64             `json:"configId,omitempty"`
 		PolicyID               string            `json:"policyId,omitempty"`
 		PolicyName             string            `json:"policyName,omitempty"`
 		DefaultSettings        bool              `json:"defaultSettings,omitempty"`
 		PolicySecurityControls *SecurityControls `json:"policySecurityControls,omitempty"`
-		Version                int               `json:"version,omitempty"`
+		Version                int64             `json:"version,omitempty"`
 	}
 
 	// CreateSecurityPolicyRequest is used to create a security policy.
 	CreateSecurityPolicyRequest struct {
-		ConfigID        int    `json:"-"`
-		Version         int    `json:"-"`
+		ConfigID        int64  `json:"-"`
+		Version         int64  `json:"-"`
 		PolicyID        string `json:"-"`
 		PolicyName      string `json:"policyName"`
 		PolicyPrefix    string `json:"policyPrefix"`
@@ -104,12 +104,12 @@ type (
 
 	// UpsertSecurityPolicyResponse is returned from calls to CreateSecurityPolicy and UpdateSecurityPolicy.
 	UpsertSecurityPolicyResponse struct {
-		ConfigID               int               `json:"configId"`
+		ConfigID               int64             `json:"configId"`
 		PolicyID               string            `json:"policyId"`
 		PolicyName             string            `json:"policyName"`
 		DefaultSettings        bool              `json:"defaultSettings,omitempty"`
 		PolicySecurityControls *SecurityControls `json:"policySecurityControls,omitempty"`
-		Version                int               `json:"version"`
+		Version                int64             `json:"version"`
 	}
 
 	// CreateSecurityPolicyResponse is returned from a call to CreateSecurityPolicy.
@@ -117,8 +117,8 @@ type (
 
 	// UpdateSecurityPolicyRequest is used to modify a security policy.
 	UpdateSecurityPolicyRequest struct {
-		ConfigID   int    `json:"-"`
-		Version    int    `json:"-"`
+		ConfigID   int64  `json:"-"`
+		Version    int64  `json:"-"`
 		PolicyID   string `json:"-"`
 		PolicyName string `json:"policyName"`
 	}
@@ -128,18 +128,18 @@ type (
 
 	// RemoveSecurityPolicyRequest is used to remove a security policy.
 	RemoveSecurityPolicyRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		PolicyID string `json:"policyId"`
 	}
 
 	// RemoveSecurityPolicyResponse is returned from a call to RemoveSecurityPolicy.
 	RemoveSecurityPolicyResponse struct {
-		ConfigID               int               `json:"configId"`
+		ConfigID               int64             `json:"configId"`
 		PolicyID               string            `json:"policyId"`
 		PolicyName             string            `json:"policyName"`
 		PolicySecurityControls *SecurityControls `json:"policySecurityControls,omitempty"`
-		Version                int               `json:"version"`
+		Version                int64             `json:"version"`
 	}
 
 	// SecurityControls is returned as part of GetSecurityPoliciesResponse and similar responses.

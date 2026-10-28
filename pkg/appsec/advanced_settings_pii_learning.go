@@ -27,7 +27,7 @@ type (
 	// ConfigVersion is used to specify a security configuration and version.
 	ConfigVersion struct {
 		ConfigID int64
-		Version  int
+		Version  int64
 	}
 
 	// GetAdvancedSettingsPIILearningRequest is used to retrieve the PIILearning setting.

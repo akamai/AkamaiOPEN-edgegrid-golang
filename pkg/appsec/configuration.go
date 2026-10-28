@@ -40,7 +40,7 @@ type (
 
 	// GetConfigurationsRequest is used to list the available security configurations.
 	GetConfigurationsRequest struct {
-		ConfigID int    `json:"configId"`
+		ConfigID int64  `json:"configId"`
 		Name     string `json:"-"`
 	}
 
@@ -51,20 +51,20 @@ type (
 
 	// GetConfigurationRequest GetConfigurationRequest is used to retrieve information about a specific configuration.
 	GetConfigurationRequest struct {
-		ConfigID int `json:"configId"`
+		ConfigID int64 `json:"configId"`
 	}
 
 	// GetConfigurationResponse is returned from a call to GetConfiguration.
 	GetConfigurationResponse struct {
 		Description         string   `json:"description,omitempty"`
 		FileType            string   `json:"fileType,omitempty"`
-		ID                  int      `json:"id,omitempty"`
-		LatestVersion       int      `json:"latestVersion,omitempty"`
+		ID                  int64    `json:"id,omitempty"`
+		LatestVersion       int64    `json:"latestVersion,omitempty"`
 		Name                string   `json:"name,omitempty"`
-		StagingVersion      int      `json:"stagingVersion,omitempty"`
+		StagingVersion      int64    `json:"stagingVersion,omitempty"`
 		TargetProduct       string   `json:"targetProduct,omitempty"`
 		ProductionHostnames []string `json:"productionHostnames,omitempty"`
-		ProductionVersion   int      `json:"productionVersion,omitempty"`
+		ProductionVersion   int64    `json:"productionVersion,omitempty"`
 	}
 
 	// CreateConfigurationRequest is used to create a new WAP or KSD security configuration.
@@ -78,15 +78,15 @@ type (
 
 	// CreateConfigurationResponse is returned from a call to CreateConfiguration.
 	CreateConfigurationResponse struct {
-		ConfigID    int    `json:"configId"`
-		Version     int    `json:"version"`
+		ConfigID    int64  `json:"configId"`
+		Version     int64  `json:"version"`
 		Description string `json:"description"`
 		Name        string `json:"name"`
 	}
 
 	// UpdateConfigurationRequest is used tdo modify the name or description of an existing security configuration.
 	UpdateConfigurationRequest struct {
-		ConfigID    int    `json:"-"`
+		ConfigID    int64  `json:"-"`
 		Name        string `json:"name"`
 		Description string `json:"description"`
 	}
@@ -99,7 +99,7 @@ type (
 
 	// RemoveConfigurationRequest is used to remove an existing security configuration.
 	RemoveConfigurationRequest struct {
-		ConfigID int `json:"configId"`
+		ConfigID int64 `json:"configId"`
 	}
 
 	// RemoveConfigurationResponse is returned from a call to RemoveConfiguration.

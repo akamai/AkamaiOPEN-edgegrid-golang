@@ -19,13 +19,13 @@ type (
 
 	// GetFailoverHostnamesRequest is used to retrieve the failover hostnames for a configuration.
 	GetFailoverHostnamesRequest struct {
-		ConfigID int `json:"-"`
+		ConfigID int64 `json:"-"`
 	}
 
 	// GetFailoverHostnamesResponse is returned from a call to GetFailoverHostnames.
 	GetFailoverHostnamesResponse struct {
-		ConfigID      int                `json:"-"`
-		ConfigVersion int                `json:"-"`
+		ConfigID      int64              `json:"-"`
+		ConfigVersion int64              `json:"-"`
 		HostnameList  []HostnameListItem `json:"hostnameList"`
 	}
 

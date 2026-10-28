@@ -25,8 +25,8 @@ type (
 
 	// GetMatchTargetSequenceRequest is used to retrieve the sequence of match targets for a configuration.
 	GetMatchTargetSequenceRequest struct {
-		ConfigID      int    `json:"configId"`
-		ConfigVersion int    `json:"configVersion"`
+		ConfigID      int64  `json:"configId"`
+		ConfigVersion int64  `json:"configVersion"`
 		Type          string `json:"type"`
 	}
 
@@ -38,8 +38,8 @@ type (
 
 	// UpdateMatchTargetSequenceRequest UpdateMatchTargetSequenceRequest is used to modify an existing match target sequence.
 	UpdateMatchTargetSequenceRequest struct {
-		ConfigID       int               `json:"-"`
-		ConfigVersion  int               `json:"-"`
+		ConfigID       int64             `json:"-"`
+		ConfigVersion  int64             `json:"-"`
 		TargetSequence []MatchTargetItem `json:"targetSequence"`
 		Type           string            `json:"type"`
 	}

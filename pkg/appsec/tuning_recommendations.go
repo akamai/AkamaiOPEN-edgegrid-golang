@@ -31,16 +31,16 @@ type (
 
 	// GetTuningRecommendationsRequest is used to retrieve tuning recommendations for a security policy.
 	GetTuningRecommendationsRequest struct {
-		ConfigID    int
-		Version     int
+		ConfigID    int64
+		Version     int64
 		PolicyID    string
 		RulesetType RulesetType
 	}
 
 	// GetAttackGroupRecommendationsRequest is used to retrieve tuning recommendations for a specific attack group.
 	GetAttackGroupRecommendationsRequest struct {
-		ConfigID    int
-		Version     int
+		ConfigID    int64
+		Version     int64
 		PolicyID    string
 		Group       string
 		RulesetType RulesetType
@@ -48,8 +48,8 @@ type (
 
 	// GetRuleRecommendationsRequest is used to retrieve tuning recommendations for a specific rule.
 	GetRuleRecommendationsRequest struct {
-		ConfigID    int
-		Version     int
+		ConfigID    int64
+		Version     int64
 		PolicyID    string
 		RuleID      int
 		RulesetType RulesetType

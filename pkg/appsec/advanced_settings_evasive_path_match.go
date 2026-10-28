@@ -30,8 +30,8 @@ type (
 
 	// GetAdvancedSettingsEvasivePathMatchRequest is used to retrieve the EvasivePathMatch setting
 	GetAdvancedSettingsEvasivePathMatchRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 	}
 
@@ -42,8 +42,8 @@ type (
 
 	// UpdateAdvancedSettingsEvasivePathMatchRequest is used to update the EvasivePathMatch setting
 	UpdateAdvancedSettingsEvasivePathMatchRequest struct {
-		ConfigID        int    `json:"-"`
-		Version         int    `json:"-"`
+		ConfigID        int64  `json:"-"`
+		Version         int64  `json:"-"`
 		PolicyID        string `json:"-"`
 		EnablePathMatch bool   `json:"enablePathMatch"`
 	}
@@ -55,16 +55,16 @@ type (
 
 	// RemoveAdvancedSettingsEvasivePathMatchRequest is used to clear the EvasivePathMatch setting
 	RemoveAdvancedSettingsEvasivePathMatchRequest struct {
-		ConfigID        int    `json:"-"`
-		Version         int    `json:"-"`
+		ConfigID        int64  `json:"-"`
+		Version         int64  `json:"-"`
 		PolicyID        string `json:"-"`
 		EnablePathMatch bool   `json:"enablePathMatch"`
 	}
 
 	// RemoveAdvancedSettingsEvasivePathMatchResponse returns the result of clearing the EvasivePathMatch setting
 	RemoveAdvancedSettingsEvasivePathMatchResponse struct {
-		ConfigID        int    `json:"-"`
-		Version         int    `json:"-"`
+		ConfigID        int64  `json:"-"`
+		Version         int64  `json:"-"`
 		PolicyID        string `json:"-"`
 		EnablePathMatch bool   `json:"enablePathMatch"`
 	}

@@ -42,16 +42,16 @@ type (
 	// CreateRatePolicyRequest is used to create a rate policy.
 	CreateRatePolicyRequest struct {
 		ID             int             `json:"-"`
-		ConfigID       int             `json:"configId"`
-		ConfigVersion  int             `json:"configVersion"`
+		ConfigID       int64           `json:"configId"`
+		ConfigVersion  int64           `json:"configVersion"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	// UpsertRatePolicyResponse is returned from calls to CreateRatePolicy, UpdateRatePolicy, and RemoveRatePolicy.
 	UpsertRatePolicyResponse struct {
 		ID                     int                                     `json:"id"`
-		ConfigID               int                                     `json:"configId"`
-		ConfigVersion          int                                     `json:"configVersion"`
+		ConfigID               int64                                   `json:"configId"`
+		ConfigVersion          int64                                   `json:"configVersion"`
 		MatchType              string                                  `json:"matchType"`
 		Type                   string                                  `json:"type"`
 		Name                   string                                  `json:"name"`
@@ -99,8 +99,8 @@ type (
 	// UpdateRatePolicyRequest is used to modify an existing rate policy.
 	UpdateRatePolicyRequest struct {
 		RatePolicyID   int             `json:"id"`
-		ConfigID       int             `json:"configId"`
-		ConfigVersion  int             `json:"configVersion"`
+		ConfigID       int64           `json:"configId"`
+		ConfigVersion  int64           `json:"configVersion"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
@@ -109,9 +109,9 @@ type (
 
 	// RemoveRatePolicyRequest is used to remove a rate policy.
 	RemoveRatePolicyRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		RatePolicyID  int `json:"ratePolicyId"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
+		RatePolicyID  int   `json:"ratePolicyId"`
 	}
 
 	// RemoveRatePolicyResponse is returned from a call to RemoveRatePolicy.
@@ -119,9 +119,9 @@ type (
 
 	// GetRatePoliciesRequest is used to retrieve the rate policies for a configuration.
 	GetRatePoliciesRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		RatePolicyID  int `json:"ratePolicyId"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
+		RatePolicyID  int   `json:"ratePolicyId"`
 	}
 
 	// GetRatePoliciesResponse is returned from a call to GetRatePolicies.
@@ -132,8 +132,8 @@ type (
 	// GetRatePoliciesResponseRatePoliciesItem represents an individual rate policy in GetRatePoliciesResponse.
 	GetRatePoliciesResponseRatePoliciesItem struct {
 		ID                     int                        `json:"id"`
-		ConfigID               int                        `json:"-"`
-		ConfigVersion          int                        `json:"-"`
+		ConfigID               int64                      `json:"-"`
+		ConfigVersion          int64                      `json:"-"`
 		MatchType              string                     `json:"matchType,omitempty"`
 		Type                   string                     `json:"type,omitempty"`
 		Name                   string                     `json:"name,omitempty"`
@@ -166,16 +166,16 @@ type (
 
 	// GetRatePolicyRequest is used to retrieve information about a specific rate policy.
 	GetRatePolicyRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		RatePolicyID  int `json:"ratePolicyId"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
+		RatePolicyID  int   `json:"ratePolicyId"`
 	}
 
 	// GetRatePolicyResponse is returned from a call to GetRatePolicy.
 	GetRatePolicyResponse struct {
 		ID                     int                        `json:"id"`
-		ConfigID               int                        `json:"-"`
-		ConfigVersion          int                        `json:"-"`
+		ConfigID               int64                      `json:"-"`
+		ConfigVersion          int64                      `json:"-"`
 		MatchType              string                     `json:"matchType,omitempty"`
 		Type                   string                     `json:"type,omitempty"`
 		Name                   string                     `json:"name,omitempty"`

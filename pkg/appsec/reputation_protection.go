@@ -41,8 +41,8 @@ type (
 
 	// GetReputationProtectionRequest is used to retrieve the reputation protection setting.
 	GetReputationProtectionRequest struct {
-		ConfigID                int    `json:"-"`
-		Version                 int    `json:"-"`
+		ConfigID                int64  `json:"-"`
+		Version                 int64  `json:"-"`
 		PolicyID                string `json:"-"`
 		ApplyReputationControls bool   `json:"applyReputationControls"`
 	}
@@ -53,8 +53,8 @@ type (
 	// GetReputationProtectionsRequest is used to retrieve the reputation protection setting.
 	// Deprecated: this struct will be removed in a future release.
 	GetReputationProtectionsRequest struct {
-		ConfigID                int    `json:"-"`
-		Version                 int    `json:"-"`
+		ConfigID                int64  `json:"-"`
+		Version                 int64  `json:"-"`
 		PolicyID                string `json:"-"`
 		ApplyReputationControls bool   `json:"applyReputationControls"`
 	}
@@ -65,8 +65,8 @@ type (
 
 	// UpdateReputationProtectionRequest is used to modify the reputation protection setting.
 	UpdateReputationProtectionRequest struct {
-		ConfigID                int    `json:"-"`
-		Version                 int    `json:"-"`
+		ConfigID                int64  `json:"-"`
+		Version                 int64  `json:"-"`
 		PolicyID                string `json:"-"`
 		ApplyReputationControls bool   `json:"applyReputationControls"`
 	}
@@ -77,8 +77,8 @@ type (
 	// RemoveReputationProtectionRequest is used to remove the reputation protection settings.
 	// Deprecated: this struct will be removed in a future release.
 	RemoveReputationProtectionRequest struct {
-		ConfigID                int    `json:"-"`
-		Version                 int    `json:"-"`
+		ConfigID                int64  `json:"-"`
+		Version                 int64  `json:"-"`
 		PolicyID                string `json:"-"`
 		ApplyReputationControls bool   `json:"applyReputationControls"`
 	}

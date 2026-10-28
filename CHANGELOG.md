@@ -58,6 +58,11 @@
 
 
 * Appsec
+  * Changed `ConfigID` and `ConfigVersion` field types from `int` to `int64` in all appsec request and response structs to align with API integer precision requirements.
+  * Renamed `ReputationProfileId` to `ReputationProfileID` and changed its type from `int` to `int64` in `GetReputationProfileRequest`, `GetReputationProfilesRequest`, `UpdateReputationProfileRequest`, and `RemoveReputationProfileRequest`.
+  * Changed `ID` field type from `int` to `int64` in `GetReputationProfilesResponseReputationProfile`.
+
+* Appsec
   * Refactored the request and response structures to use named types instead of inline anonymous structures.
 
 * Networklists
