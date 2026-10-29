@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/texts"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/texts"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 func (c *cloudcertificates) CreateLineage(ctx context.Context, params CreateLineageRequest) (*CreateLineageResponse, error) {

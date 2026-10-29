@@ -9,8 +9,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/log"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/log"
 )
 
 type (
@@ -66,7 +66,7 @@ var (
 
 const (
 	// Version is the client version
-	Version = "14.0.0"
+	Version = "15.0.0"
 )
 
 // New returns a new session

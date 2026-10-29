@@ -1,4 +1,4 @@
-module github.com/akamai/AkamaiOPEN-edgegrid-golang/v14
+module github.com/akamai/AkamaiOPEN-edgegrid-golang/v15
 
 go 1.26.0
 
@@ -11,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.12.1
 	github.com/wk8/go-ordered-map/v2 v2.1.8
 	go.uber.org/ratelimit v0.3.1
-	golang.org/x/net v0.59.0
+	golang.org/x/net v0.62.0
 	gopkg.in/ini.v1 v1.67.3
 )
 
