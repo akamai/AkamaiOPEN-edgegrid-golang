@@ -4,7 +4,7 @@ pipeline {
     agent any
     triggers {
         // Nightly regression run; 'H' spreads load across the hour
-        cron('H 9 * * *')
+        cron('0 * * * *')
     }
     environment {
         BIN = "/go/bin"
