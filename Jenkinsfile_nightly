@@ -88,8 +88,8 @@ pipeline {
                     def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME ?: env.GIT_BRANCH ?: 'unknown'
                     def branchPrefix = branch.replaceFirst('^origin/', '').split('/')[0].replaceAll('[^A-Za-z0-9._-]', '-')
                     runOsvScan(
-                        projectName: "akamaiopen-edgegrid-golang-${branchPrefix}",
-                        projectVersion: '12.3.0',
+                        projectName: 'akamaiopen-edgegrid-golang',
+                        projectVersion: "akamaiopen-edgegrid-golang-${branchPrefix}",
                         tokenCredsId: 'devexp_manual_vuln_scan_token',
                         blackDuckUrl: 'https://manual.vuln.akamai.com',
                         configFilePath: '.config/blackduck/blackduck.properties'
